@@ -54,8 +54,12 @@ function delete() {
 function rollback() {
   echo "Dropping all changes"
   git checkout -f # drop all changes
-  reset "$PROD" "$prod_head"
-  reset "$DEV" "$dev_head"
+  if [[ -z "$prod_head" ]]; then
+    reset "$PROD" "$prod_head"
+  fi
+  if [[ -z "$dev_head" ]]; then
+    reset "$DEV" "$dev_head"
+  fi
   delete "$releaseBranch" || true # delete release branch if exists
   switch_to "$WORK_BRANCH" # switch back
 }
@@ -68,7 +72,7 @@ function on_error() {
 
 # ------- MAIN --------#
 fetch
-trap 'on_error $LINENO' ERR # Run on_error on any error
+trap 'on_error $LINENO' ERR INT # Run on_error on any error
 
 switch_to "$PROD"
 prod_head="$(git rev-parse HEAD)"
