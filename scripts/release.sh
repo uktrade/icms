@@ -28,10 +28,22 @@ function switch_to() {
     git checkout --quiet "$1"
 }
 
+function exists() {
+  if [ -n "$1"]; then
+    git show-ref -q --heads "$1"
+  else
+    exit 1
+  fi
+}
+
 function reset() {
-  echo "Resetting branch $1 to commit $2"
-  switch_to "$1"
-  git reset --hard "$2"
+  local branch="$1"
+  local rev="$2" # reset reference, commit id or branch name
+  if [[ -n "$rev" ]]; then
+    echo "Resetting branch $branch to commit $rev"
+    switch_to "$branch"
+    git reset --hard "$rev"
+  fi
 }
 
 function merge_release_to() {
@@ -46,14 +58,11 @@ function fetch() {
   git fetch --quiet
 }
 
-function delete() {
-  git branch -D "$1"
-}
-
 function clean() {
-  if [[ -n "$prod_head" ]]; then reset "$PROD" "$prod_head"; fi
-  if [[ -n "$dev_head" ]]; then reset "$DEV" "$dev_head"; fi
-  if [[ -n "$releaseBranch" ]]; then delete "$releaseBranch"; fi
+  reset "$PROD" "$prod_head"
+  reset "$DEV" "$dev_head"
+  if exists "$releaseBranch"; then git branch -D "$releaseBranch"; fi
+  if exists "$newVersion"; then git tag -D "$newVersion"; fi
   switch_to "$WORK_BRANCH" # switch back
 }
 
@@ -79,10 +88,10 @@ reset "$DEV" "${REMOTE}/$DEV"
 # Read current version on dev branch
 version=$(<VERSION)
 echo "Current version is $version"
-newVersion=$(scripts/bump_version.py "$BUMP" "$version")  # Bumped version
-releaseBranch="release/$newVersion"
+newVersion=v"$(scripts/bump_version.py "$BUMP" "$version")"# Bumped version
 
 # create the release branch from develop branch
+releaseBranch="release/$newVersion"
 echo "Creating release branch $releaseBranch from $DEV"
 git checkout --quiet -b $releaseBranch
 
@@ -96,8 +105,8 @@ merge_release_to "$PROD"
 merge_release_to "$DEV"
 
 # create tag for new version from -master
-git tag "v${newVersion}"
+git tag "${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
-git push --atomic "$REMOTE" "$DEV" "$PROD" "v${newVersion}"
+git push --atomic "$REMOTE" "$DEV" "$PROD" "${newVersion}"
 
 clean
