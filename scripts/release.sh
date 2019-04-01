@@ -7,8 +7,8 @@ set -oe pipefail
 WORK_BRANCH=$(git rev-parse --abbrev-ref HEAD) # current Git branch
 BUMP="$1" # major|minor|patch
 REMOTE=origin
-DEV="${REMOTE}/develop"
-PROD="${REMOTE}/master"
+DEV="develop"
+PROD="master"
 dev_head=
 prod_head=
 
@@ -51,9 +51,7 @@ function delete() {
   git branch -d "$1"
 }
 
-function rollback() {
-  echo "Dropping all changes"
-  git checkout -f # drop all changes
+function clean() {
   if [[ -z "$prod_head" ]]; then
     reset "$PROD" "$prod_head"
   fi
@@ -66,8 +64,9 @@ function rollback() {
 
 function on_error() {
   local line="$1"
-  echo "Error on line:$line"
-  rollback
+  echo "Error on line:$line, reverting all changes"
+  git checkout -f # drop all changes
+  clean
 }
 
 # ------- MAIN --------#
@@ -76,8 +75,10 @@ trap 'on_error $LINENO' ERR INT # Run on_error on any error
 
 switch_to "$PROD"
 prod_head="$(git rev-parse HEAD)"
+reset "$PROD" "${REMOTE}/$PROD"
 switch_to "$DEV"
 dev_head="$(git rev-parse HEAD)"
+reset "$DEV" "${REMOTE}/$DEV"
 
 # Read current version on dev branch
 version=$(<VERSION)
@@ -98,12 +99,9 @@ git commit -am "version $version"
 merge_release_to "$PROD"
 merge_release_to "$DEV"
 
-git branch -d $releaseBranch # Delete release branch
-
 # create tag for new version from -master
 git tag "v${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
 git push --atomic "$REMOTE" "$DEV" "$PROD" "v${newVersion}"
 
-#switch back to branch started with
-switch_to $WORK_BRANCH
+clean
