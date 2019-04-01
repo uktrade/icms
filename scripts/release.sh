@@ -4,37 +4,39 @@
 set -oe pipefail
 
 # define branch names
-BRANCH=$(git rev-parse --abbrev-ref HEAD) # current Git branch
-DEV_BRANCH="develop"
-PRODUCTION_BRANCH="master"
+WORK_BRANCH=$(git rev-parse --abbrev-ref HEAD) # current Git branch
 BUMP="$1" # major|minor|patch
 REMOTE=origin
+DEV="${REMOTE}/develop"
+PROD="${REMOTE}/master"
+dev_head=
+prod_head=
 
 
 function validate() {
-  # validate bump string
-  [ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
-
   if [[ -n $(git status --porcelain) ]]; then
     echo "Repo is dirty" && \
     echo "Please stash or commit your changes before releasing" && \
     exit 1;
   fi
+
+  # validate bump string
+  [ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
 }
 
 function switch_to() {
     echo "Switching to $1"
-    git checkout --quiet $1
+    git checkout --quiet "$1"
 }
 
-function update() {
-    switch_to $1
-    echo "Pulling latest $1"
-    git pull --rebase --quiet
+function reset() {
+  echo "Resetting branch $1 to commit $2"
+  switch_to "$1"
+  git reset --hard "$2"
 }
 
 function merge_release_to() {
-  update "$1"
+   switch_to "$1"
    echo "Merging release to $1"
    git merge --quiet --no-edit --no-ff $releaseBranch
 }
@@ -45,12 +47,6 @@ function fetch() {
   git fetch --quiet
 }
 
-function reset() {
-  echo "Resetting branch $1"
-  switch_to "$1"
-  git reset --hard "${REMOTE}/${1}"
-}
-
 function delete() {
   echo "Deleting branch $1"
   git branch -d "$1"
@@ -58,11 +54,11 @@ function delete() {
 
 function rollback() {
   echo "Dropping all changes"
-  git stash drop # drop all changes
-  reset "$PRODUCTION_BRANCH"
-  reset "$DEV_BRANCH"
+  git checkout -f # drop all changes
+  reset "$PROD" "$prod_head"
+  reset "$DEV" "$dev_head"
   delete "$releaseBranch" || true # delete release branch if exists
-  switch_to "$BRANCH" # switch back
+  switch_to "$WORK_BRANCH" # switch back
 }
 
 function on_error() {
@@ -71,12 +67,15 @@ function on_error() {
   rollback
 }
 
+# ------- MAIN --------#
+validate
+fetch
 trap 'on_error $LINENO' ERR # Run on_error on any error
 
-# ------- MAIN --------#
-validat
-fetch
-update $DEV_BRANCH
+switch_to "$PROD"
+prod_head="$(git rev-parse HEAD)"
+switch_to "$DEV"
+dev_head="$(git rev-parse HEAD)"
 
 # Read current version on dev branch
 version=$(<VERSION)
@@ -85,7 +84,7 @@ newVersion=$(scripts/bump_version.py "$BUMP" "$version")  # Bumped version
 releaseBranch="release/$newVersion"
 
 # create the release branch from develop branch
-echo "Creating release branch $releaseBranch from $DEV_BRANCH"
+echo "Creating release branch $releaseBranch from $DEV"
 git checkout --quiet -b $releaseBranch
 
 echo "$newVersion" > VERSION
@@ -94,15 +93,15 @@ echo "Bumped version to $newVersion"
 # commit version number increment
 git commit -am "version $version"
 
-merge_release_to $PRODUCTION_BRANCH
-merge_release_to $DEV_BRANCH
+merge_release_to "$PROD"
+merge_release_to "$DEV"
 
 git branch -d $releaseBranch # Delete release branch
 
 # create tag for new version from -master
 git tag "v${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
-git push --atomic "$REMOTE" $DEV_BRANCH $PRODUCTION_BRANCH "v${newVersion}"
+git push --atomic "$REMOTE" "$DEV" "$PROD" "v${newVersion}"
 
 #switch back to branch started with
-switch_to $BRANCH
+switch_to $WORK_BRANCH
