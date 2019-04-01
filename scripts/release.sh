@@ -14,11 +14,11 @@ prod_head=
 
 
 
-if [[ -n $(git status --porcelain) ]]; then
-  echo "Repo is dirty" && \
-  echo "Please stash or commit your changes before releasing" && \
-  exit 1;
-fi
+# if [[ -n $(git status --porcelain) ]]; then
+#   echo "Repo is dirty" && \
+#   echo "Please stash or commit your changes before releasing" && \
+#   exit 1;
+# fi
 
 # validate bump string
 [ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
