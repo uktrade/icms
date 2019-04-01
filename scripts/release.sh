@@ -14,11 +14,11 @@ prod_head=
 
 
 
-if [[ -n $(git status --porcelain) ]]; then
-  echo "Repo is dirty" && \
-  echo "Please stash or commit your changes before releasing" && \
-  exit 1;
-fi
+# if [[ -n $(git status --porcelain) ]]; then
+#   echo "Repo is dirty" && \
+#   echo "Please stash or commit your changes before releasing" && \
+#   exit 1;
+# fi
 
 # validate bump string
 [ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
@@ -105,8 +105,8 @@ merge_release_to "$PROD"
 merge_release_to "$DEV"
 
 # create tag for new version from -master
-git tag "${newVersion}"
+# git tag "${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
-git push --atomic "$REMOTE" "$DEV" "$PROD" "${newVersion}"
+# git push --atomic "$REMOTE" "$DEV" "$PROD" "${newVersion}"
 
 clean
