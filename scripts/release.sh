@@ -45,21 +45,37 @@ function fetch() {
   git fetch --quiet
 }
 
+function reset() {
+  echo "Resetting branch $1"
+  switch_to "$1"
+  git reset --hard "${REMOTE}/${1}"
+}
+
+function delete() {
+  echo "Deleting branch $1"
+  git branch -d "$1"
+}
+
+function rollback() {
+  echo "Dropping all changes"
+  git stash drop # drop all changes
+  reset "$PRODUCTION_BRANCH"
+  reset "$DEV_BRANCH"
+  delete "$releaseBranch" || true # delete release branch if exists
+  switch_to "$BRANCH" # switch back
+}
+
 function on_error() {
   local line="$1"
   echo "Error on line:$line"
-  git stash drop # drop all changes made by release script
-  git reset --head "$REMOTE" "$DEV_BRANCH"
-  switch_to "$BRANCH"
-  git branch -D "$releaseBranch" || true
+  rollback
 }
 
 trap 'on_error $LINENO' ERR # Run on_error on any error
 
 # ------- MAIN --------#
-validate
+validat
 fetch
-update $PRODUCTION_BRANCH
 update $DEV_BRANCH
 
 # Read current version on dev branch
@@ -84,9 +100,9 @@ merge_release_to $DEV_BRANCH
 git branch -d $releaseBranch # Delete release branch
 
 # create tag for new version from -master
-git tag $newVersion
+git tag "v${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
-git push --atomic "$REMOTE" $DEV_BRANCH $PRODUCTION_BRANCH $newVersion
+git push --atomic "$REMOTE" $DEV_BRANCH $PRODUCTION_BRANCH "v${newVersion}"
 
 #switch back to branch started with
 switch_to $BRANCH
