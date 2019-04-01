@@ -51,13 +51,9 @@ function delete() {
 }
 
 function clean() {
-  if [[ -n "$prod_head" ]]; then
-    reset "$PROD" "$prod_head"
-  fi
-  if [[ -n "$dev_head" ]]; then
-    reset "$DEV" "$dev_head"
-  fi
-  delete "$releaseBranch" || true # delete release branch if exists
+  if [[ -n "$prod_head" ]]; then reset "$PROD" "$prod_head"; fi
+  if [[ -n "$dev_head" ]]; then reset "$DEV" "$dev_head"; fi
+  if [[ -n "$releaseBranch" ]]; then delete "$releaseBranch"; fi
   switch_to "$WORK_BRANCH" # switch back
 }
 
