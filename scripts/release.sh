@@ -47,7 +47,6 @@ function fetch() {
 }
 
 function delete() {
-  echo "Deleting branch $1"
   git branch -D "$1"
 }
 
