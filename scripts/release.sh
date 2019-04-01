@@ -52,10 +52,10 @@ function delete() {
 }
 
 function clean() {
-  if [[ -z "$prod_head" ]]; then
+  if [[ -n "$prod_head" ]]; then
     reset "$PROD" "$prod_head"
   fi
-  if [[ -z "$dev_head" ]]; then
+  if [[ -n "$dev_head" ]]; then
     reset "$DEV" "$dev_head"
   fi
   delete "$releaseBranch" || true # delete release branch if exists
