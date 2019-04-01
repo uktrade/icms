@@ -29,7 +29,7 @@ function switch_to() {
 }
 
 function exists() {
-  if [ -n "$1"]; then
+  if [ -n "$1" ]; then
     git show-ref -q --heads "$1"
   else
     exit 1
@@ -105,8 +105,8 @@ merge_release_to "$PROD"
 merge_release_to "$DEV"
 
 # create tag for new version from -master
-git tag "${newVersion}"
+# git tag "${newVersion}"
 #Atomic ensures nothing is pushed if any of the repos fails to push
-git push --atomic "$REMOTE" "$DEV" "$PROD" "${newVersion}"
+# git push --atomic "$REMOTE" "$DEV" "$PROD" "${newVersion}"
 
 clean
