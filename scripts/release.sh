@@ -14,6 +14,7 @@ prod_head=
 
 
 function validate() {
+
   if [[ -n $(git status --porcelain) ]]; then
     echo "Repo is dirty" && \
     echo "Please stash or commit your changes before releasing" && \
