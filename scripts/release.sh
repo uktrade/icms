@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #Exit on error
 set -oe pipefail
@@ -65,7 +65,7 @@ update $DEV_BRANCH
 # Read current version on dev branch
 version=$(<VERSION)
 echo "Current version is $version"
-newVersion=$(scripts/bump_version.py "$bump")  # Bumped version
+newVersion=$(scripts/bump_version.py "$BUMP" "$version")  # Bumped version
 releaseBranch="release/$newVersion"
 
 # create the release branch from develop branch
