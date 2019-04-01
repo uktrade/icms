@@ -13,17 +13,15 @@ dev_head=
 prod_head=
 
 
-function validate() {
 
-  if [[ -n $(git status --porcelain) ]]; then
-    echo "Repo is dirty" && \
-    echo "Please stash or commit your changes before releasing" && \
-    exit 1;
-  fi
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Repo is dirty" && \
+  echo "Please stash or commit your changes before releasing" && \
+  exit 1;
+fi
 
-  # validate bump string
-  [ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
-}
+# validate bump string
+[ -z "$BUMP" ] && echo "Please speficy version (major|minor|patch)" && exit 1
 
 function switch_to() {
     echo "Switching to $1"
@@ -69,7 +67,6 @@ function on_error() {
 }
 
 # ------- MAIN --------#
-validate
 fetch
 trap 'on_error $LINENO' ERR # Run on_error on any error
 
