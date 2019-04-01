@@ -1,18 +1,19 @@
+#!/usr/bin/env python
+
 import sys,semver
 from pathlib import Path
 
-update=sys.argv[1]
-version=Path('VERSION').read_text().strip()
-newVersion=''
+bump=sys.argv[1]
+version=sys.argv[2]
 
-if update=='major':
+if bump=='major':
   newVersion=semver.bump_major(version)
-elif update=='minor':
+elif bump=='minor':
   newVersion=semver.bump_minor(version)
-elif update=='patch':
+elif bump=='patch':
   newVersion=semver.bump_patch(version)
 else:
-  error="Invalid version '{}', please specify version in (major|minor|patch)".format(update)
+  error="Invalid version '{}', please specify version in (major|minor|patch)".format(bump)
   print(error)
   exit(1)
 
