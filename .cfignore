@@ -1,0 +1,15 @@
+.git
+
+# OSX
+.DS_Store
+
+# Python
+*.py[cod]
+__pycache__
+*.egg-info
+
+# JS
+node_modules
+
+# Pycharm
+.idea/*
