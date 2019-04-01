@@ -71,7 +71,8 @@ function on_error() {
 
 # ------- MAIN --------#
 fetch
-trap 'on_error $LINENO' ERR INT # Run on_error on any error
+trap 'on_error $LINENO' INT # Run on_error on interrupts
+trap 'on_error $LINENO' ERR # Run on_error on any error
 
 switch_to "$PROD"
 prod_head="$(git rev-parse HEAD)"
