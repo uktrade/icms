@@ -33,7 +33,7 @@ Make sure to rebuild the image  if new dependencies are installed and added to r
 | --------------------------------- | ------------------------------------------ | ---------------------------------                      |
 | ICMS_DEBUG                        | False                                      |                                                        |
 | ICMS_WEB_PORT                     | 8000                                       |                                                        |
-| ICMS_DB_URL                       | postgres://postgres@db:5432/postgres       | Format postgres://username/password@host:port/database |
+| DATABASE_URL                      | postgres://postgres@db:5432/postgres       | Format postgres://username/password@host:port/database |
 | ICMS_MIGRATE                      | True                                       | Runs Django migrate before starting the app            |
 | ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
 | ICMS_ALLOWED_HOSTS                |                                            | Comma separated list of hosts                          |
