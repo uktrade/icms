@@ -1,1 +1,1 @@
-web: python manage.py runserver 0.0.0.0:8080
+web: scripts/entry.sh
