@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:11
+  web:
+    build: .
+    environment:
+      - ICMS_WEB_PORT=8000
+      - ICMS_DEBUG=True
+    tty: true
+    ports:
+      - "8000:8000"
+      - "35729:35729"
+    volumes:
+      - .:/code
+    depends_on:
+      - db
