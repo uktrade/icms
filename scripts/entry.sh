@@ -7,7 +7,7 @@ stop_live_reload() {
     kill "$live_reload_pid"
 }
 
-if [ "${ICMS_MIGRATE:-True}" = 'True' ]; then
+if [ "${ICMS_MIGRATE:-False}" = 'True' ]; then
   echo "Running migrations"
   python manage.py migrate
 fi
