@@ -19,4 +19,4 @@ if [ "${ICMS_DEBUG:-False}" = 'True' ]; then
   trap "stop_live_reload" EXIT
 fi
 
-python manage.py runserver 0:"${ICMS_WEB_PORT:-8000}"
+python manage.py runserver 0:"${ICMS_WEB_PORT:-8080}"
