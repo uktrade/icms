@@ -73,6 +73,7 @@ WSGI_APPLICATION = 'icms.wsgi.application'
 DATABASES = {
     'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
 }
+<<<<<<< HEAD
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -81,6 +82,8 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
 ]
+=======
+>>>>>>> develop
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

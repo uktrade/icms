@@ -1,5 +1,4 @@
 #!/bin/sh -e
-
 if [ "${ICMS_MIGRATE:-True}" = 'True' ]; then
   echo "Running migrations"
   python manage.py migrate
