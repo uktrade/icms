@@ -10,19 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
-from lib import util
-from conf.env import env  # configuration
+import environ
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env = environ.Env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('ICMS_SECRET_KEY')
-DEBUG = env('ICMS_DEBUG')
-ALLOWED_HOSTS = env('ICMS_ALLOWED_HOSTS')
+SECRET_KEY = env.str('ICMS_SECRET_KEY', get_random_secret_key())
+DEBUG = env.bool('ICMS_DEBUG', False)
+ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=[])
+LOGIN_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
@@ -35,8 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-util.enable_on_debug('livereload')
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -46,8 +46,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-util.middleware_on_debug('livereload.middleware.LiveReloadScript')
 
 ROOT_URLCONF = 'icms.urls'
 
@@ -72,11 +70,13 @@ WSGI_APPLICATION = 'icms.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {'default': env.db('DATABASE_URL')}
+DATABASES = {
+    'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
+}
 
 PASSWORD_HASHERS = [
-    'icms.fox_hasher.FOXPBKDF2SHA1Hasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'icms.fox_hasher.FOXPBKDF2SHA1Hasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',

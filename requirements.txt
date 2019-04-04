@@ -1,11 +1,10 @@
 beautifulsoup4==4.7.1
 Django==2.1.7
 django-environ==0.4.5
-django-livereload-server==0.3.2
 entrypoints==0.3
 flake8==3.7.7
 mccabe==0.6.1
-psycopg2==2.7.7
+psycopg2-binary==2.7.7
 pycodestyle==2.5.0
 pyflakes==2.1.1
 pytz==2018.9

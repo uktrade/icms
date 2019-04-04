@@ -5,14 +5,14 @@ services:
     ports:
       - "5432:5432"
   web:
+    restart: always
     build: .
     environment:
-      - ICMS_WEB_PORT=8000
+      - ICMS_WEB_PORT=8080
       - ICMS_DEBUG=True
     tty: true
     ports:
-      - "8000:8000"
-      - "35729:35729"
+      - "8080:8080"
     volumes:
       - .:/code
     depends_on:
