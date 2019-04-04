@@ -1,6 +1,4 @@
 #!/bin/sh -e
-live_reload_pid=
-
 if [ "${ICMS_MIGRATE:-True}" = 'True' ]; then
   echo "Running migrations"
   python manage.py migrate
