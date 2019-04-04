@@ -24,6 +24,7 @@ env = environ.Env()
 SECRET_KEY = env.str('ICMS_SECRET_KEY', get_random_secret_key())
 DEBUG = env.bool('ICMS_DEBUG', False)
 ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=[])
+LOGIN_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
@@ -72,6 +73,14 @@ WSGI_APPLICATION = 'icms.wsgi.application'
 DATABASES = {
     'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
 }
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'icms.fox_hasher.FOXPBKDF2SHA1Hasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
