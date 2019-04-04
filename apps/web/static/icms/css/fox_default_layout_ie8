@@ -1,0 +1,115 @@
+body,
+input,
+select,
+textarea,
+.tagger {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Dropdowns - border instead of box-shadow */
+ul.dropdown-menu>li>ul {
+  border: 1px solid #eee;
+  border-top: none;
+  border-bottom: 3px solid #0F5B93;
+}
+
+/* Collapsed top menu - take gradient off buttons */
+ul.dropdown-menu button.primary-button {
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)" !important
+}
+
+/* Workaround for lack of calc() support for finding width of #content */
+#content {
+  float: none;
+  width: 100%;
+  padding: 1em 1em 1em 16em;
+  box-sizing: border-box;
+}
+
+#sidebar {
+  float: left;
+}
+
+#content-ie8-float {
+  float: left;
+  width: 100%;
+}
+
+/* Buttons - IE compatible gradients */
+input[type='button'],
+input[type='submit'],
+a.button,
+.button {
+  border-width: 1px 1px 2px 1px;
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00000000, endColorstr=#09000000)";
+}
+
+.primary-button,
+.positive-button,
+.danger-button {
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#00000000, endColorstr=#22000000)" !important;
+}
+
+input[type='button'].link-button,
+input[type='submit'].link-button,
+a.button.link-button,
+.button.link-button,
+button.link-button {
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(enabled=false)" !important
+}
+/* Tabs */
+.tabs {
+  width: 100%;
+}
+
+/* Context actions - workaround for lack of :last-child support and other layout issues */
+.content-actions {
+  border-top: 1px solid #e5e5e5;
+  clear: both;
+  margin-left: -1em;
+  margin-right: -1em;
+}
+
+.content-actions:first-child {
+  border-top: none;
+}
+
+/* Datepicker - border instead of shadow */
+#ui-datepicker-div {
+  border: 2px solid #ccc;
+}
+
+/* Dev toolbar */
+.tall-dev-toolbar #dev-toolbar-view {
+  margin-left: -2em !important;
+}
+
+.tall-dev-toolbar #dev-toolbar-doms li,
+.tall-dev-toolbar #dev-toolbar-view li
+ {
+  float: left !important;
+  width: 6em !important;
+  list-style-type: none !important;
+}
+
+/* Workaround for lack of nth-child */
+.tall-dev-toolbar #dev-toolbar-doms li:first-child + li + li + li,
+.tall-dev-toolbar #dev-toolbar-doms li:first-child + li + li + li + li + li + li + li,
+.tall-dev-toolbar #dev-toolbar-view li:first-child + li + li {
+  clear: left !important;
+}
+
+.tall-dev-toolbar #dev-toolbar-doms:before,
+.tall-dev-toolbar #dev-toolbar-view:before {
+  max-height: none !important;
+  height: auto !important;
+  text-align: left !important;
+  width: 6em !important;
+  float: left !important;
+  margin-bottom: 0 !important;
+}
+
+/* Environment indicator */
+#environment-indicator {
+  padding: 0.5em 1em;
+}

@@ -1,0 +1,3290 @@
+.no-icomoon [class^="icon-"]:before, .no-icomoon [class*=" icon-"]:before {
+  content: "\00a0";
+  display: inline-block;
+  width: 1em;
+  -webkit-background-size: contain;
+  background-size: contain;
+}
+
+.no-icomoon .icon-home:before {
+  background-image: url('png/home.png');
+}
+.no-icomoon .icon-office:before {
+  background-image: url('png/office.png');
+}
+.no-icomoon .icon-newspaper:before {
+  background-image: url('png/newspaper.png');
+}
+.no-icomoon .icon-pencil:before {
+  background-image: url('png/pencil.png');
+}
+.no-icomoon .icon-blog:before {
+  background-image: url('png/blog.png');
+}
+.no-icomoon .icon-eyedropper:before {
+  background-image: url('png/eyedropper.png');
+}
+.no-icomoon .icon-droplet:before {
+  background-image: url('png/droplet.png');
+}
+.no-icomoon .icon-paint-format:before {
+  background-image: url('png/paint-format.png');
+}
+.no-icomoon .icon-image:before {
+  background-image: url('png/image.png');
+}
+.no-icomoon .icon-images:before {
+  background-image: url('png/images.png');
+  width: 1.125em;  
+}
+.no-icomoon .icon-camera:before {
+  background-image: url('png/camera.png');
+}
+.no-icomoon .icon-headphones:before {
+  background-image: url('png/headphones.png');
+}
+.no-icomoon .icon-music:before {
+  background-image: url('png/music.png');
+}
+.no-icomoon .icon-play:before {
+  background-image: url('png/play.png');
+}
+.no-icomoon .icon-film:before {
+  background-image: url('png/film.png');
+}
+.no-icomoon .icon-video-camera:before {
+  background-image: url('png/video-camera.png');
+}
+.no-icomoon .icon-dice:before {
+  background-image: url('png/dice.png');
+}
+.no-icomoon .icon-pacman:before {
+  background-image: url('png/pacman.png');
+}
+.no-icomoon .icon-spades:before {
+  background-image: url('png/spades.png');
+}
+.no-icomoon .icon-clubs:before {
+  background-image: url('png/clubs.png');
+}
+.no-icomoon .icon-diamonds:before {
+  background-image: url('png/diamonds.png');
+}
+.no-icomoon .icon-bullhorn:before {
+  background-image: url('png/bullhorn.png');
+}
+.no-icomoon .icon-connection:before {
+  background-image: url('png/connection.png');
+  width: 1.25em;  
+}
+.no-icomoon .icon-podcast:before {
+  background-image: url('png/podcast.png');
+}
+.no-icomoon .icon-feed:before {
+  background-image: url('png/feed.png');
+}
+.no-icomoon .icon-mic:before {
+  background-image: url('png/mic.png');
+}
+.no-icomoon .icon-book:before {
+  background-image: url('png/book.png');
+}
+.no-icomoon .icon-books:before {
+  background-image: url('png/books.png');
+  width: 1.125em;  
+}
+.no-icomoon .icon-library:before {
+  background-image: url('png/library.png');
+  width: 1.0625em;  
+}
+.no-icomoon .icon-file-text:before {
+  background-image: url('png/file-text.png');
+}
+.no-icomoon .icon-profile:before {
+  background-image: url('png/profile.png');
+}
+.no-icomoon .icon-file-empty:before {
+  background-image: url('png/file-empty.png');
+}
+.no-icomoon .icon-files-empty:before {
+  background-image: url('png/files-empty.png');
+}
+.no-icomoon .icon-file-text2:before {
+  background-image: url('png/file-text2.png');
+}
+.no-icomoon .icon-file-picture:before {
+  background-image: url('png/file-picture.png');
+}
+.no-icomoon .icon-file-music:before {
+  background-image: url('png/file-music.png');
+}
+.no-icomoon .icon-file-play:before {
+  background-image: url('png/file-play.png');
+}
+.no-icomoon .icon-file-video:before {
+  background-image: url('png/file-video.png');
+}
+.no-icomoon .icon-file-zip:before {
+  background-image: url('png/file-zip.png');
+}
+.no-icomoon .icon-copy:before {
+  background-image: url('png/copy.png');
+}
+.no-icomoon .icon-paste:before {
+  background-image: url('png/paste.png');
+}
+.no-icomoon .icon-stack:before {
+  background-image: url('png/stack.png');
+}
+.no-icomoon .icon-folder:before {
+  background-image: url('png/folder.png');
+}
+.no-icomoon .icon-folder-open:before {
+  background-image: url('png/folder-open.png');
+}
+.no-icomoon .icon-folder-plus:before {
+  background-image: url('png/folder-plus.png');
+}
+.no-icomoon .icon-folder-minus:before {
+  background-image: url('png/folder-minus.png');
+}
+.no-icomoon .icon-folder-download:before {
+  background-image: url('png/folder-download.png');
+}
+.no-icomoon .icon-folder-upload:before {
+  background-image: url('png/folder-upload.png');
+}
+.no-icomoon .icon-price-tag:before {
+  background-image: url('png/price-tag.png');
+}
+.no-icomoon .icon-price-tags:before {
+  background-image: url('png/price-tags.png');
+  width: 1.25em;  
+}
+.no-icomoon .icon-barcode:before {
+  background-image: url('png/barcode.png');
+}
+.no-icomoon .icon-qrcode:before {
+  background-image: url('png/qrcode.png');
+}
+.no-icomoon .icon-ticket:before {
+  background-image: url('png/ticket.png');
+}
+.no-icomoon .icon-cart:before {
+  background-image: url('png/cart.png');
+}
+.no-icomoon .icon-coin-dollar:before {
+  background-image: url('png/coin-dollar.png');
+}
+.no-icomoon .icon-coin-euro:before {
+  background-image: url('png/coin-euro.png');
+}
+.no-icomoon .icon-coin-pound:before {
+  background-image: url('png/coin-pound.png');
+}
+.no-icomoon .icon-coin-yen:before {
+  background-image: url('png/coin-yen.png');
+}
+.no-icomoon .icon-credit-card:before {
+  background-image: url('png/credit-card.png');
+}
+.no-icomoon .icon-calculator:before {
+  background-image: url('png/calculator.png');
+}
+.no-icomoon .icon-lifebuoy:before {
+  background-image: url('png/lifebuoy.png');
+}
+.no-icomoon .icon-phone:before {
+  background-image: url('png/phone.png');
+}
+.no-icomoon .icon-phone-hang-up:before {
+  background-image: url('png/phone-hang-up.png');
+}
+.no-icomoon .icon-address-book:before {
+  background-image: url('png/address-book.png');
+}
+.no-icomoon .icon-envelop:before {
+  background-image: url('png/envelop.png');
+}
+.no-icomoon .icon-pushpin:before {
+  background-image: url('png/pushpin.png');
+}
+.no-icomoon .icon-location:before {
+  background-image: url('png/location.png');
+}
+.no-icomoon .icon-compass:before {
+  background-image: url('png/compass.png');
+}
+.no-icomoon .icon-compass2:before {
+  background-image: url('png/compass2.png');
+}
+.no-icomoon .icon-map:before {
+  background-image: url('png/map.png');
+}
+.no-icomoon .icon-map2:before {
+  background-image: url('png/map2.png');
+}
+.no-icomoon .icon-history:before {
+  background-image: url('png/history.png');
+  width: 1.0625em;  
+}
+.no-icomoon .icon-clock:before {
+  background-image: url('png/clock.png');
+}
+.no-icomoon .icon-clock2:before {
+  background-image: url('png/clock2.png');
+}
+.no-icomoon .icon-alarm:before {
+  background-image: url('png/alarm.png');
+}
+.no-icomoon .icon-bell:before {
+  background-image: url('png/bell.png');
+}
+.no-icomoon .icon-stopwatch:before {
+  background-image: url('png/stopwatch.png');
+}
+.no-icomoon .icon-calendar:before {
+  background-image: url('png/calendar.png');
+}
+.no-icomoon .icon-printer:before {
+  background-image: url('png/printer.png');
+}
+.no-icomoon .icon-keyboard:before {
+  background-image: url('png/keyboard.png');
+  width: 1.125em;  
+}
+.no-icomoon .icon-display:before {
+  background-image: url('png/display.png');
+}
+.no-icomoon .icon-laptop:before {
+  background-image: url('png/laptop.png');
+}
+.no-icomoon .icon-mobile:before {
+  background-image: url('png/mobile.png');
+}
+.no-icomoon .icon-tablet:before {
+  background-image: url('png/tablet.png');
+}
+.no-icomoon .icon-tv:before {
+  background-image: url('png/tv.png');
+}
+.no-icomoon .icon-drawer:before {
+  background-image: url('png/drawer.png');
+}
+.no-icomoon .icon-drawer2:before {
+  background-image: url('png/drawer2.png');
+}
+.no-icomoon .icon-box-add:before {
+  background-image: url('png/box-add.png');
+}
+.no-icomoon .icon-box-remove:before {
+  background-image: url('png/box-remove.png');
+}
+.no-icomoon .icon-download:before {
+  background-image: url('png/download.png');
+}
+.no-icomoon .icon-upload:before {
+  background-image: url('png/upload.png');
+}
+.no-icomoon .icon-floppy-disk:before {
+  background-image: url('png/floppy-disk.png');
+}
+.no-icomoon .icon-drive:before {
+  background-image: url('png/drive.png');
+}
+.no-icomoon .icon-database:before {
+  background-image: url('png/database.png');
+}
+.no-icomoon .icon-undo:before {
+  background-image: url('png/undo.png');
+}
+.no-icomoon .icon-redo:before {
+  background-image: url('png/redo.png');
+}
+.no-icomoon .icon-undo2:before {
+  background-image: url('png/undo2.png');
+}
+.no-icomoon .icon-redo2:before {
+  background-image: url('png/redo2.png');
+}
+.no-icomoon .icon-forward:before {
+  background-image: url('png/forward.png');
+}
+.no-icomoon .icon-reply:before {
+  background-image: url('png/reply.png');
+}
+.no-icomoon .icon-bubble:before {
+  background-image: url('png/bubble.png');
+}
+.no-icomoon .icon-bubbles2:before {
+  background-image: url('png/bubbles2.png');
+  width: 1.125em;  
+}
+.no-icomoon .icon-user:before {
+  background-image: url('png/user.png');
+}
+.no-icomoon .icon-users:before {
+  background-image: url('png/users.png');
+  width: 1.125em;  
+}
+.no-icomoon .icon-user-plus:before {
+  background-image: url('png/user-plus.png');
+}
+.no-icomoon .icon-user-minus:before {
+  background-image: url('png/user-minus.png');
+}
+.no-icomoon .icon-user-check:before {
+  background-image: url('png/user-check.png');
+}
+.no-icomoon .icon-user-tie:before {
+  background-image: url('png/user-tie.png');
+}
+.no-icomoon .icon-quotes-left:before {
+  background-image: url('png/quotes-left.png');
+}
+.no-icomoon .icon-quotes-right:before {
+  background-image: url('png/quotes-right.png');
+}
+.no-icomoon .icon-hour-glass:before {
+  background-image: url('png/hour-glass.png');
+}
+.no-icomoon .icon-spinner2:before {
+  background-image: url('png/spinner2.png');
+}
+
+.no-icomoon .icon-animated-spinner:before {
+  background-image: url('png/spinner2.png');
+  animation: spinner 1s infinite linear;
+  -webkit-animation: spinner 1s infinite linear;
+  display: inline-block;
+}
+
+.no-icomoon .icon-spinner11:before {
+  background-image: url('png/spinner11.png');
+}
+.no-icomoon .icon-binoculars:before {
+  background-image: url('png/binoculars.png');
+}
+.no-icomoon .icon-search:before {
+  background-image: url('png/search.png');
+}
+.no-icomoon .icon-zoom-in:before {
+  background-image: url('png/zoom-in.png');
+}
+.no-icomoon .icon-zoom-out:before {
+  background-image: url('png/zoom-out.png');
+}
+.no-icomoon .icon-enlarge:before {
+  background-image: url('png/enlarge.png');
+}
+.no-icomoon .icon-shrink:before {
+  background-image: url('png/shrink.png');
+}
+.no-icomoon .icon-enlarge2:before {
+  background-image: url('png/enlarge2.png');
+}
+.no-icomoon .icon-shrink2:before {
+  background-image: url('png/shrink2.png');
+}
+.no-icomoon .icon-key:before {
+  background-image: url('png/key.png');
+}
+.no-icomoon .icon-lock:before {
+  background-image: url('png/lock.png');
+}
+.no-icomoon .icon-unlocked:before {
+  background-image: url('png/unlocked.png');
+}
+.no-icomoon .icon-wrench:before {
+  background-image: url('png/wrench.png');
+}
+.no-icomoon .icon-equalizer:before {
+  background-image: url('png/equalizer.png');
+}
+.no-icomoon .icon-equalizer2:before {
+  background-image: url('png/equalizer2.png');
+}
+.no-icomoon .icon-cog:before {
+  background-image: url('png/cog.png');
+}
+.no-icomoon .icon-cogs:before {
+  background-image: url('png/cogs.png');
+}
+.no-icomoon .icon-hammer:before {
+  background-image: url('png/hammer.png');
+}
+.no-icomoon .icon-magic-wand:before {
+  background-image: url('png/magic-wand.png');
+}
+.no-icomoon .icon-aid-kit:before {
+  background-image: url('png/aid-kit.png');
+}
+.no-icomoon .icon-bug:before {
+  background-image: url('png/bug.png');
+}
+.no-icomoon .icon-pie-chart:before {
+  background-image: url('png/pie-chart.png');
+}
+.no-icomoon .icon-stats-dots:before {
+  background-image: url('png/stats-dots.png');
+}
+.no-icomoon .icon-stats-bars:before {
+  background-image: url('png/stats-bars.png');
+}
+.no-icomoon .icon-stats-bars2:before {
+  background-image: url('png/stats-bars2.png');
+}
+.no-icomoon .icon-trophy:before {
+  background-image: url('png/trophy.png');
+}
+.no-icomoon .icon-gift:before {
+  background-image: url('png/gift.png');
+}
+.no-icomoon .icon-glass:before {
+  background-image: url('png/glass.png');
+}
+.no-icomoon .icon-glass2:before {
+  background-image: url('png/glass2.png');
+}
+.no-icomoon .icon-mug:before {
+  background-image: url('png/mug.png');
+}
+.no-icomoon .icon-spoon-knife:before {
+  background-image: url('png/spoon-knife.png');
+}
+.no-icomoon .icon-leaf:before {
+  background-image: url('png/leaf.png');
+}
+.no-icomoon .icon-rocket:before {
+  background-image: url('png/rocket.png');
+}
+.no-icomoon .icon-meter:before {
+  background-image: url('png/meter.png');
+}
+.no-icomoon .icon-hammer2:before {
+  background-image: url('png/hammer2.png');
+}
+.no-icomoon .icon-fire:before {
+  background-image: url('png/fire.png');
+}
+.no-icomoon .icon-lab:before {
+  background-image: url('png/lab.png');
+}
+.no-icomoon .icon-magnet:before {
+  background-image: url('png/magnet.png');
+}
+.no-icomoon .icon-bin:before {
+  background-image: url('png/bin.png');
+}
+.no-icomoon .icon-briefcase:before {
+  background-image: url('png/briefcase.png');
+}
+.no-icomoon .icon-airplane:before {
+  background-image: url('png/airplane.png');
+}
+.no-icomoon .icon-truck:before {
+  background-image: url('png/truck.png');
+}
+.no-icomoon .icon-road:before {
+  background-image: url('png/road.png');
+}
+.no-icomoon .icon-accessibility:before {
+  background-image: url('png/accessibility.png');
+}
+.no-icomoon .icon-target:before {
+  background-image: url('png/target.png');
+}
+.no-icomoon .icon-shield:before {
+  background-image: url('png/shield.png');
+}
+.no-icomoon .icon-power:before {
+  background-image: url('png/power.png');
+}
+.no-icomoon .icon-switch:before {
+  background-image: url('png/switch.png');
+}
+.no-icomoon .icon-power-cord:before {
+  background-image: url('png/power-cord.png');
+}
+.no-icomoon .icon-clipboard:before {
+  background-image: url('png/clipboard.png');
+}
+.no-icomoon .icon-list-numbered:before {
+  background-image: url('png/list-numbered.png');
+}
+.no-icomoon .icon-list:before {
+  background-image: url('png/list.png');
+}
+.no-icomoon .icon-list2:before {
+  background-image: url('png/list2.png');
+}
+.no-icomoon .icon-tree:before {
+  background-image: url('png/tree.png');
+}
+.no-icomoon .icon-menu:before {
+  background-image: url('png/menu.png');
+}
+.no-icomoon .icon-menu2:before {
+  background-image: url('png/menu2.png');
+  width: 1.375em;  
+}
+.no-icomoon .icon-menu3:before {
+  background-image: url('png/menu3.png');
+  width: 1.375em;  
+}
+.no-icomoon .icon-menu4:before {
+  background-image: url('png/menu4.png');
+  width: 1.375em;  
+}
+.no-icomoon .icon-cloud:before {
+  background-image: url('png/cloud.png');
+}
+.no-icomoon .icon-cloud-download:before {
+  background-image: url('png/cloud-download.png');
+}
+.no-icomoon .icon-cloud-upload:before {
+  background-image: url('png/cloud-upload.png');
+}
+.no-icomoon .icon-cloud-check:before {
+  background-image: url('png/cloud-check.png');
+}
+.no-icomoon .icon-download2:before {
+  background-image: url('png/download2.png');
+}
+.no-icomoon .icon-upload2:before {
+  background-image: url('png/upload2.png');
+}
+.no-icomoon .icon-sphere:before {
+  background-image: url('png/sphere.png');
+}
+.no-icomoon .icon-earth:before {
+  background-image: url('png/earth.png');
+}
+.no-icomoon .icon-link:before {
+  background-image: url('png/link.png');
+}
+.no-icomoon .icon-flag:before {
+  background-image: url('png/flag.png');
+}
+.no-icomoon .icon-attachment:before {
+  background-image: url('png/attachment.png');
+}
+.no-icomoon .icon-eye:before {
+  background-image: url('png/eye.png');
+}
+.no-icomoon .icon-eye-plus:before {
+  background-image: url('png/eye-plus.png');
+}
+.no-icomoon .icon-eye-minus:before {
+  background-image: url('png/eye-minus.png');
+}
+.no-icomoon .icon-eye-blocked:before {
+  background-image: url('png/eye-blocked.png');
+}
+.no-icomoon .icon-bookmark:before {
+  background-image: url('png/bookmark.png');
+}
+.no-icomoon .icon-bookmarks:before {
+  background-image: url('png/bookmarks.png');
+}
+.no-icomoon .icon-sun:before {
+  background-image: url('png/sun.png');
+}
+.no-icomoon .icon-contrast:before {
+  background-image: url('png/contrast.png');
+}
+.no-icomoon .icon-brightness-contrast:before {
+  background-image: url('png/brightness-contrast.png');
+}
+.no-icomoon .icon-star-empty:before {
+  background-image: url('png/star-empty.png');
+}
+.no-icomoon .icon-star-half:before {
+  background-image: url('png/star-half.png');
+}
+.no-icomoon .icon-star-full:before {
+  background-image: url('png/star-full.png');
+}
+.no-icomoon .icon-heart:before {
+  background-image: url('png/heart.png');
+}
+.no-icomoon .icon-heart-broken:before {
+  background-image: url('png/heart-broken.png');
+}
+.no-icomoon .icon-man:before {
+  background-image: url('png/man.png');
+}
+.no-icomoon .icon-woman:before {
+  background-image: url('png/woman.png');
+}
+.no-icomoon .icon-man-woman:before {
+  background-image: url('png/man-woman.png');
+}
+.no-icomoon .icon-happy:before {
+  background-image: url('png/happy.png');
+}
+.no-icomoon .icon-happy2:before {
+  background-image: url('png/happy2.png');
+}
+.no-icomoon .icon-smile:before {
+  background-image: url('png/smile.png');
+}
+.no-icomoon .icon-smile2:before {
+  background-image: url('png/smile2.png');
+}
+.no-icomoon .icon-tongue:before {
+  background-image: url('png/tongue.png');
+}
+.no-icomoon .icon-tongue2:before {
+  background-image: url('png/tongue2.png');
+}
+.no-icomoon .icon-sad:before {
+  background-image: url('png/sad.png');
+}
+.no-icomoon .icon-sad2:before {
+  background-image: url('png/sad2.png');
+}
+.no-icomoon .icon-wink:before {
+  background-image: url('png/wink.png');
+}
+.no-icomoon .icon-wink2:before {
+  background-image: url('png/wink2.png');
+}
+.no-icomoon .icon-grin:before {
+  background-image: url('png/grin.png');
+}
+.no-icomoon .icon-grin2:before {
+  background-image: url('png/grin2.png');
+}
+.no-icomoon .icon-cool:before {
+  background-image: url('png/cool.png');
+}
+.no-icomoon .icon-cool2:before {
+  background-image: url('png/cool2.png');
+}
+.no-icomoon .icon-angry:before {
+  background-image: url('png/angry.png');
+}
+.no-icomoon .icon-angry2:before {
+  background-image: url('png/angry2.png');
+}
+.no-icomoon .icon-evil:before {
+  background-image: url('png/evil.png');
+}
+.no-icomoon .icon-evil2:before {
+  background-image: url('png/evil2.png');
+}
+.no-icomoon .icon-shocked:before {
+  background-image: url('png/shocked.png');
+}
+.no-icomoon .icon-shocked2:before {
+  background-image: url('png/shocked2.png');
+}
+.no-icomoon .icon-baffled:before {
+  background-image: url('png/baffled.png');
+}
+.no-icomoon .icon-baffled2:before {
+  background-image: url('png/baffled2.png');
+}
+.no-icomoon .icon-confused:before {
+  background-image: url('png/confused.png');
+}
+.no-icomoon .icon-confused2:before {
+  background-image: url('png/confused2.png');
+}
+.no-icomoon .icon-neutral:before {
+  background-image: url('png/neutral.png');
+}
+.no-icomoon .icon-neutral2:before {
+  background-image: url('png/neutral2.png');
+}
+.no-icomoon .icon-hipster:before {
+  background-image: url('png/hipster.png');
+}
+.no-icomoon .icon-hipster2:before {
+  background-image: url('png/hipster2.png');
+}
+.no-icomoon .icon-wondering:before {
+  background-image: url('png/wondering.png');
+}
+.no-icomoon .icon-wondering2:before {
+  background-image: url('png/wondering2.png');
+}
+.no-icomoon .icon-sleepy:before {
+  background-image: url('png/sleepy.png');
+}
+.no-icomoon .icon-sleepy2:before {
+  background-image: url('png/sleepy2.png');
+}
+.no-icomoon .icon-frustrated:before {
+  background-image: url('png/frustrated.png');
+}
+.no-icomoon .icon-frustrated2:before {
+  background-image: url('png/frustrated2.png');
+}
+.no-icomoon .icon-crying:before {
+  background-image: url('png/crying.png');
+}
+.no-icomoon .icon-crying2:before {
+  background-image: url('png/crying2.png');
+}
+.no-icomoon .icon-point-up:before {
+  background-image: url('png/point-up.png');
+}
+.no-icomoon .icon-point-right:before {
+  background-image: url('png/point-right.png');
+}
+.no-icomoon .icon-point-down:before {
+  background-image: url('png/point-down.png');
+}
+.no-icomoon .icon-point-left:before {
+  background-image: url('png/point-left.png');
+}
+.no-icomoon .icon-warning:before {
+  background-image: url('png/warning.png');
+}
+.no-icomoon .icon-notification:before {
+  background-image: url('png/notification.png');
+}
+.no-icomoon .icon-question:before {
+  background-image: url('png/question.png');
+}
+.no-icomoon .icon-plus:before {
+  background-image: url('png/plus.png');
+}
+.no-icomoon .icon-minus:before {
+  background-image: url('png/minus.png');
+}
+.no-icomoon .icon-info:before {
+  background-image: url('png/info.png');
+}
+.no-icomoon .icon-cancel-circle:before {
+  background-image: url('png/cancel-circle.png');
+}
+.no-icomoon .icon-blocked:before {
+  background-image: url('png/blocked.png');
+}
+.no-icomoon .icon-cross:before {
+  background-image: url('png/cross.png');
+}
+.no-icomoon .icon-checkmark:before {
+  background-image: url('png/checkmark.png');
+}
+.no-icomoon .icon-spell-check:before {
+  background-image: url('png/spell-check.png');
+}
+.no-icomoon .icon-enter:before {
+  background-image: url('png/enter.png');
+}
+.no-icomoon .icon-exit:before {
+  background-image: url('png/exit.png');
+}
+.no-icomoon .icon-play2:before {
+  background-image: url('png/play2.png');
+}
+.no-icomoon .icon-pause:before {
+  background-image: url('png/pause.png');
+}
+.no-icomoon .icon-stop:before {
+  background-image: url('png/stop.png');
+}
+.no-icomoon .icon-previous:before {
+  background-image: url('png/previous.png');
+}
+.no-icomoon .icon-next:before {
+  background-image: url('png/next.png');
+}
+.no-icomoon .icon-backward:before {
+  background-image: url('png/backward.png');
+}
+.no-icomoon .icon-forward2:before {
+  background-image: url('png/forward2.png');
+}
+.no-icomoon .icon-play3:before {
+  background-image: url('png/play3.png');
+}
+.no-icomoon .icon-pause2:before {
+  background-image: url('png/pause2.png');
+}
+.no-icomoon .icon-stop2:before {
+  background-image: url('png/stop2.png');
+}
+.no-icomoon .icon-backward2:before {
+  background-image: url('png/backward2.png');
+}
+.no-icomoon .icon-forward3:before {
+  background-image: url('png/forward3.png');
+}
+.no-icomoon .icon-first:before {
+  background-image: url('png/first.png');
+}
+.no-icomoon .icon-last:before {
+  background-image: url('png/last.png');
+}
+.no-icomoon .icon-previous2:before {
+  background-image: url('png/previous2.png');
+}
+.no-icomoon .icon-next2:before {
+  background-image: url('png/next2.png');
+}
+.no-icomoon .icon-eject:before {
+  background-image: url('png/eject.png');
+}
+.no-icomoon .icon-volume-high:before {
+  background-image: url('png/volume-high.png');
+  width: 1.0625em;  
+}
+.no-icomoon .icon-volume-medium:before {
+  background-image: url('png/volume-medium.png');
+}
+.no-icomoon .icon-volume-low:before {
+  background-image: url('png/volume-low.png');
+}
+.no-icomoon .icon-volume-mute:before {
+  background-image: url('png/volume-mute.png');
+}
+.no-icomoon .icon-volume-mute2:before {
+  background-image: url('png/volume-mute2.png');
+}
+.no-icomoon .icon-volume-increase:before {
+  background-image: url('png/volume-increase.png');
+}
+.no-icomoon .icon-volume-decrease:before {
+  background-image: url('png/volume-decrease.png');
+}
+.no-icomoon .icon-loop:before {
+  background-image: url('png/loop.png');
+}
+.no-icomoon .icon-loop2:before {
+  background-image: url('png/loop2.png');
+}
+.no-icomoon .icon-infinite:before {
+  background-image: url('png/infinite.png');
+}
+.no-icomoon .icon-shuffle:before {
+  background-image: url('png/shuffle.png');
+}
+.no-icomoon .icon-arrow-up-left:before {
+  background-image: url('png/arrow-up-left.png');
+}
+.no-icomoon .icon-arrow-up:before {
+  background-image: url('png/arrow-up.png');
+}
+.no-icomoon .icon-arrow-up-right:before {
+  background-image: url('png/arrow-up-right.png');
+}
+.no-icomoon .icon-arrow-right:before {
+  background-image: url('png/arrow-right.png');
+}
+.no-icomoon .icon-arrow-down-right:before {
+  background-image: url('png/arrow-down-right.png');
+}
+.no-icomoon .icon-arrow-down:before {
+  background-image: url('png/arrow-down.png');
+}
+.no-icomoon .icon-arrow-down-left:before {
+  background-image: url('png/arrow-down-left.png');
+}
+.no-icomoon .icon-arrow-left:before {
+  background-image: url('png/arrow-left.png');
+}
+.no-icomoon .icon-arrow-up-left2:before {
+  background-image: url('png/arrow-up-left2.png');
+}
+.no-icomoon .icon-arrow-up2:before {
+  background-image: url('png/arrow-up2.png');
+}
+.no-icomoon .icon-arrow-up-right2:before {
+  background-image: url('png/arrow-up-right2.png');
+}
+.no-icomoon .icon-arrow-right2:before {
+  background-image: url('png/arrow-right2.png');
+}
+.no-icomoon .icon-arrow-down-right2:before {
+  background-image: url('png/arrow-down-right2.png');
+}
+.no-icomoon .icon-arrow-down2:before {
+  background-image: url('png/arrow-down2.png');
+}
+.no-icomoon .icon-arrow-down-left2:before {
+  background-image: url('png/arrow-down-left2.png');
+}
+.no-icomoon .icon-arrow-left2:before {
+  background-image: url('png/arrow-left2.png');
+}
+.no-icomoon .icon-circle-up:before {
+  background-image: url('png/circle-up.png');
+}
+.no-icomoon .icon-circle-right:before {
+  background-image: url('png/circle-right.png');
+}
+.no-icomoon .icon-circle-down:before {
+  background-image: url('png/circle-down.png');
+}
+.no-icomoon .icon-circle-left:before {
+  background-image: url('png/circle-left.png');
+}
+.no-icomoon .icon-tab:before {
+  background-image: url('png/tab.png');
+}
+.no-icomoon .icon-move-up:before {
+  background-image: url('png/move-up.png');
+}
+.no-icomoon .icon-move-down:before {
+  background-image: url('png/move-down.png');
+}
+.no-icomoon .icon-sort-alpha-asc:before {
+  background-image: url('png/sort-alpha-asc.png');
+}
+.no-icomoon .icon-sort-alpha-desc:before {
+  background-image: url('png/sort-alpha-desc.png');
+}
+.no-icomoon .icon-sort-numeric-asc:before {
+  background-image: url('png/sort-numeric-asc.png');
+}
+.no-icomoon .icon-sort-numberic-desc:before {
+  background-image: url('png/sort-numberic-desc.png');
+}
+.no-icomoon .icon-sort-amount-asc:before {
+  background-image: url('png/sort-amount-asc.png');
+}
+.no-icomoon .icon-sort-amount-desc:before {
+  background-image: url('png/sort-amount-desc.png');
+}
+.no-icomoon .icon-command:before {
+  background-image: url('png/command.png');
+}
+.no-icomoon .icon-ctrl:before {
+  background-image: url('png/ctrl.png');
+}
+.no-icomoon .icon-opt:before {
+  background-image: url('png/opt.png');
+}
+.no-icomoon .icon-checkbox-checked:before {
+  background-image: url('png/checkbox-checked.png');
+}
+.no-icomoon .icon-checkbox-unchecked:before {
+  background-image: url('png/checkbox-unchecked.png');
+}
+.no-icomoon .icon-radio-checked:before {
+  background-image: url('png/radio-checked.png');
+}
+.no-icomoon .icon-radio-checked2:before {
+  background-image: url('png/radio-checked2.png');
+}
+.no-icomoon .icon-radio-unchecked:before {
+  background-image: url('png/radio-unchecked.png');
+}
+.no-icomoon .icon-crop:before {
+  background-image: url('png/crop.png');
+}
+.no-icomoon .icon-make-group:before {
+  background-image: url('png/make-group.png');
+}
+.no-icomoon .icon-ungroup:before {
+  background-image: url('png/ungroup.png');
+}
+.no-icomoon .icon-scissors:before {
+  background-image: url('png/scissors.png');
+}
+.no-icomoon .icon-filter:before {
+  background-image: url('png/filter.png');
+}
+.no-icomoon .icon-font:before {
+  background-image: url('png/font.png');
+}
+.no-icomoon .icon-ligature:before {
+  background-image: url('png/ligature.png');
+}
+.no-icomoon .icon-ligature2:before {
+  background-image: url('png/ligature2.png');
+}
+.no-icomoon .icon-text-height:before {
+  background-image: url('png/text-height.png');
+}
+.no-icomoon .icon-text-width:before {
+  background-image: url('png/text-width.png');
+}
+.no-icomoon .icon-font-size:before {
+  background-image: url('png/font-size.png');
+}
+.no-icomoon .icon-bold:before {
+  background-image: url('png/bold.png');
+}
+.no-icomoon .icon-underline:before {
+  background-image: url('png/underline.png');
+}
+.no-icomoon .icon-italic:before {
+  background-image: url('png/italic.png');
+}
+.no-icomoon .icon-strikethrough:before {
+  background-image: url('png/strikethrough.png');
+}
+.no-icomoon .icon-omega:before {
+  background-image: url('png/omega.png');
+}
+.no-icomoon .icon-sigma:before {
+  background-image: url('png/sigma.png');
+}
+.no-icomoon .icon-page-break:before {
+  background-image: url('png/page-break.png');
+}
+.no-icomoon .icon-superscript:before {
+  background-image: url('png/superscript.png');
+}
+.no-icomoon .icon-subscript:before {
+  background-image: url('png/subscript.png');
+}
+.no-icomoon .icon-superscript2:before {
+  background-image: url('png/superscript2.png');
+}
+.no-icomoon .icon-subscript2:before {
+  background-image: url('png/subscript2.png');
+}
+.no-icomoon .icon-text-color:before {
+  background-image: url('png/text-color.png');
+}
+.no-icomoon .icon-pagebreak:before {
+  background-image: url('png/pagebreak.png');
+}
+.no-icomoon .icon-clear-formatting:before {
+  background-image: url('png/clear-formatting.png');
+}
+.no-icomoon .icon-table:before {
+  background-image: url('png/table.png');
+}
+.no-icomoon .icon-table2:before {
+  background-image: url('png/table2.png');
+}
+.no-icomoon .icon-insert-template:before {
+  background-image: url('png/insert-template.png');
+}
+.no-icomoon .icon-pilcrow:before {
+  background-image: url('png/pilcrow.png');
+}
+.no-icomoon .icon-ltr:before {
+  background-image: url('png/ltr.png');
+}
+.no-icomoon .icon-rtl:before {
+  background-image: url('png/rtl.png');
+}
+.no-icomoon .icon-section:before {
+  background-image: url('png/section.png');
+}
+.no-icomoon .icon-paragraph-left:before {
+  background-image: url('png/paragraph-left.png');
+}
+.no-icomoon .icon-paragraph-center:before {
+  background-image: url('png/paragraph-center.png');
+}
+.no-icomoon .icon-paragraph-right:before {
+  background-image: url('png/paragraph-right.png');
+}
+.no-icomoon .icon-paragraph-justify:before {
+  background-image: url('png/paragraph-justify.png');
+}
+.no-icomoon .icon-indent-increase:before {
+  background-image: url('png/indent-increase.png');
+}
+.no-icomoon .icon-indent-decrease:before {
+  background-image: url('png/indent-decrease.png');
+}
+.no-icomoon .icon-share:before {
+  background-image: url('png/share.png');
+}
+.no-icomoon .icon-new-tab:before {
+  background-image: url('png/new-tab.png');
+}
+.no-icomoon .icon-embed:before {
+  background-image: url('png/embed.png');
+}
+.no-icomoon .icon-embed2:before {
+  background-image: url('png/embed2.png');
+  width: 1.25em;  
+}
+.no-icomoon .icon-terminal:before {
+  background-image: url('png/terminal.png');
+}
+.no-icomoon .icon-share2:before {
+  background-image: url('png/share2.png');
+}
+.no-icomoon .icon-mail:before {
+  background-image: url('png/mail.png');
+}
+.no-icomoon .icon-mail2:before {
+  background-image: url('png/mail2.png');
+}
+.no-icomoon .icon-mail3:before {
+  background-image: url('png/mail3.png');
+}
+.no-icomoon .icon-mail4:before {
+  background-image: url('png/mail4.png');
+}
+.no-icomoon .icon-amazon:before {
+  background-image: url('png/amazon.png');
+}
+.no-icomoon .icon-google:before {
+  background-image: url('png/google.png');
+}
+.no-icomoon .icon-google2:before {
+  background-image: url('png/google2.png');
+}
+.no-icomoon .icon-google3:before {
+  background-image: url('png/google3.png');
+}
+.no-icomoon .icon-google-plus:before {
+  background-image: url('png/google-plus.png');
+}
+.no-icomoon .icon-google-plus2:before {
+  background-image: url('png/google-plus2.png');
+}
+.no-icomoon .icon-google-plus3:before {
+  background-image: url('png/google-plus3.png');
+}
+.no-icomoon .icon-hangouts:before {
+  background-image: url('png/hangouts.png');
+}
+.no-icomoon .icon-google-drive:before {
+  background-image: url('png/google-drive.png');
+}
+.no-icomoon .icon-facebook:before {
+  background-image: url('png/facebook.png');
+}
+.no-icomoon .icon-facebook2:before {
+  background-image: url('png/facebook2.png');
+}
+.no-icomoon .icon-instagram:before {
+  background-image: url('png/instagram.png');
+}
+.no-icomoon .icon-whatsapp:before {
+  background-image: url('png/whatsapp.png');
+}
+.no-icomoon .icon-spotify:before {
+  background-image: url('png/spotify.png');
+}
+.no-icomoon .icon-telegram:before {
+  background-image: url('png/telegram.png');
+}
+.no-icomoon .icon-twitter:before {
+  background-image: url('png/twitter.png');
+}
+.no-icomoon .icon-vine:before {
+  background-image: url('png/vine.png');
+}
+.no-icomoon .icon-vk:before {
+  background-image: url('png/vk.png');
+}
+.no-icomoon .icon-renren:before {
+  background-image: url('png/renren.png');
+}
+.no-icomoon .icon-sina-weibo:before {
+  background-image: url('png/sina-weibo.png');
+}
+.no-icomoon .icon-rss:before {
+  background-image: url('png/rss.png');
+}
+.no-icomoon .icon-rss2:before {
+  background-image: url('png/rss2.png');
+}
+.no-icomoon .icon-youtube:before {
+  background-image: url('png/youtube.png');
+}
+.no-icomoon .icon-youtube2:before {
+  background-image: url('png/youtube2.png');
+  width: 2.5087890625em;  
+}
+.no-icomoon .icon-twitch:before {
+  background-image: url('png/twitch.png');
+}
+.no-icomoon .icon-vimeo:before {
+  background-image: url('png/vimeo.png');
+}
+.no-icomoon .icon-vimeo2:before {
+  background-image: url('png/vimeo2.png');
+}
+.no-icomoon .icon-lanyrd:before {
+  background-image: url('png/lanyrd.png');
+}
+.no-icomoon .icon-flickr:before {
+  background-image: url('png/flickr.png');
+}
+.no-icomoon .icon-flickr2:before {
+  background-image: url('png/flickr2.png');
+}
+.no-icomoon .icon-flickr3:before {
+  background-image: url('png/flickr3.png');
+}
+.no-icomoon .icon-flickr4:before {
+  background-image: url('png/flickr4.png');
+}
+.no-icomoon .icon-dribbble:before {
+  background-image: url('png/dribbble.png');
+}
+.no-icomoon .icon-behance:before {
+  background-image: url('png/behance.png');
+}
+.no-icomoon .icon-behance2:before {
+  background-image: url('png/behance2.png');
+}
+.no-icomoon .icon-deviantart:before {
+  background-image: url('png/deviantart.png');
+}
+.no-icomoon .icon-steam:before {
+  background-image: url('png/steam.png');
+}
+.no-icomoon .icon-steam2:before {
+  background-image: url('png/steam2.png');
+}
+.no-icomoon .icon-dropbox:before {
+  background-image: url('png/dropbox.png');
+}
+.no-icomoon .icon-onedrive:before {
+  background-image: url('png/onedrive.png');
+}
+.no-icomoon .icon-github:before {
+  background-image: url('png/github.png');
+}
+.no-icomoon .icon-npm:before {
+  background-image: url('png/npm.png');
+}
+.no-icomoon .icon-basecamp:before {
+  background-image: url('png/basecamp.png');
+}
+.no-icomoon .icon-trello:before {
+  background-image: url('png/trello.png');
+}
+.no-icomoon .icon-wordpress:before {
+  background-image: url('png/wordpress.png');
+}
+.no-icomoon .icon-joomla:before {
+  background-image: url('png/joomla.png');
+}
+.no-icomoon .icon-ello:before {
+  background-image: url('png/ello.png');
+}
+.no-icomoon .icon-blogger:before {
+  background-image: url('png/blogger.png');
+}
+.no-icomoon .icon-blogger2:before {
+  background-image: url('png/blogger2.png');
+}
+.no-icomoon .icon-tumblr:before {
+  background-image: url('png/tumblr.png');
+}
+.no-icomoon .icon-tumblr2:before {
+  background-image: url('png/tumblr2.png');
+}
+.no-icomoon .icon-yahoo:before {
+  background-image: url('png/yahoo.png');
+}
+.no-icomoon .icon-yahoo2:before {
+  background-image: url('png/yahoo2.png');
+}
+.no-icomoon .icon-tux:before {
+  background-image: url('png/tux.png');
+}
+.no-icomoon .icon-appleinc:before {
+  background-image: url('png/appleinc.png');
+}
+.no-icomoon .icon-finder:before {
+  background-image: url('png/finder.png');
+}
+.no-icomoon .icon-android:before {
+  background-image: url('png/android.png');
+}
+.no-icomoon .icon-windows:before {
+  background-image: url('png/windows.png');
+}
+.no-icomoon .icon-windows8:before {
+  background-image: url('png/windows8.png');
+}
+.no-icomoon .icon-soundcloud:before {
+  background-image: url('png/soundcloud.png');
+}
+.no-icomoon .icon-soundcloud2:before {
+  background-image: url('png/soundcloud2.png');
+}
+.no-icomoon .icon-skype:before {
+  background-image: url('png/skype.png');
+}
+.no-icomoon .icon-reddit:before {
+  background-image: url('png/reddit.png');
+}
+.no-icomoon .icon-hackernews:before {
+  background-image: url('png/hackernews.png');
+}
+.no-icomoon .icon-wikipedia:before {
+  background-image: url('png/wikipedia.png');
+}
+.no-icomoon .icon-linkedin:before {
+  background-image: url('png/linkedin.png');
+}
+.no-icomoon .icon-linkedin2:before {
+  background-image: url('png/linkedin2.png');
+}
+.no-icomoon .icon-lastfm:before {
+  background-image: url('png/lastfm.png');
+}
+.no-icomoon .icon-lastfm2:before {
+  background-image: url('png/lastfm2.png');
+}
+.no-icomoon .icon-delicious:before {
+  background-image: url('png/delicious.png');
+}
+.no-icomoon .icon-stumbleupon:before {
+  background-image: url('png/stumbleupon.png');
+}
+.no-icomoon .icon-stumbleupon2:before {
+  background-image: url('png/stumbleupon2.png');
+}
+.no-icomoon .icon-stackoverflow:before {
+  background-image: url('png/stackoverflow.png');
+}
+.no-icomoon .icon-pinterest:before {
+  background-image: url('png/pinterest.png');
+}
+.no-icomoon .icon-pinterest2:before {
+  background-image: url('png/pinterest2.png');
+}
+.no-icomoon .icon-xing:before {
+  background-image: url('png/xing.png');
+}
+.no-icomoon .icon-xing2:before {
+  background-image: url('png/xing2.png');
+}
+.no-icomoon .icon-flattr:before {
+  background-image: url('png/flattr.png');
+}
+.no-icomoon .icon-foursquare:before {
+  background-image: url('png/foursquare.png');
+}
+.no-icomoon .icon-yelp:before {
+  background-image: url('png/yelp.png');
+}
+.no-icomoon .icon-paypal:before {
+  background-image: url('png/paypal.png');
+}
+.no-icomoon .icon-chrome:before {
+  background-image: url('png/chrome.png');
+}
+.no-icomoon .icon-firefox:before {
+  background-image: url('png/firefox.png');
+}
+.no-icomoon .icon-IE:before {
+  background-image: url('png/IE.png');
+}
+.no-icomoon .icon-edge:before {
+  background-image: url('png/edge.png');
+}
+.no-icomoon .icon-opera:before {
+  background-image: url('png/opera.png');
+}
+.no-icomoon .icon-file-pdf:before {
+  background-image: url('png/file-pdf.png');
+}
+.no-icomoon .icon-file-openoffice:before {
+  background-image: url('png/file-openoffice.png');
+}
+.no-icomoon .icon-file-word:before {
+  background-image: url('png/file-word.png');
+}
+.no-icomoon .icon-file-excel:before {
+  background-image: url('png/file-excel.png');
+}
+.no-icomoon .icon-libreoffice:before {
+  background-image: url('png/libreoffice.png');
+}
+.no-icomoon .icon-html-five:before {
+  background-image: url('png/html-five.png');
+}
+.no-icomoon .icon-html-five2:before {
+  background-image: url('png/html-five2.png');
+}
+.no-icomoon .icon-css3:before {
+  background-image: url('png/css3.png');
+}
+.no-icomoon .icon-git:before {
+  background-image: url('png/git.png');
+}
+.no-icomoon .icon-codepen:before {
+  background-image: url('png/codepen.png');
+}
+.no-icomoon .icon-svg:before {
+  background-image: url('png/svg.png');
+}
+.no-icomoon .icon-IcoMoon:before {
+  background-image: url('png/IcoMoon.png');
+}
+
+/*
+ * White versions
+ */
+.no-icomoon .primary-button.icon-home:before,
+.no-icomoon .danger-button.icon-home:before {
+  background-image: url('png-white/home.png');
+}
+.no-icomoon .primary-button.icon-office:before,
+.no-icomoon .danger-button.icon-office:before {
+  background-image: url('png-white/office.png');
+}
+.no-icomoon .primary-button.icon-newspaper:before,
+.no-icomoon .danger-button.icon-newspaper:before {
+  background-image: url('png-white/newspaper.png');
+}
+.no-icomoon .primary-button.icon-pencil:before,
+.no-icomoon .danger-button.icon-pencil:before {
+  background-image: url('png-white/pencil.png');
+}
+.no-icomoon .primary-button.icon-blog:before,
+.no-icomoon .danger-button.icon-blog:before {
+  background-image: url('png-white/blog.png');
+}
+.no-icomoon .primary-button.icon-eyedropper:before,
+.no-icomoon .danger-button.icon-eyedropper:before {
+  background-image: url('png-white/eyedropper.png');
+}
+.no-icomoon .primary-button.icon-droplet:before,
+.no-icomoon .danger-button.icon-droplet:before {
+  background-image: url('png-white/droplet.png');
+}
+.no-icomoon .primary-button.icon-paint-format:before,
+.no-icomoon .danger-button.icon-paint-format:before {
+  background-image: url('png-white/paint-format.png');
+}
+.no-icomoon .primary-button.icon-image:before,
+.no-icomoon .danger-button.icon-image:before {
+  background-image: url('png-white/image.png');
+}
+.no-icomoon .primary-button.icon-images:before,
+.no-icomoon .danger-button.icon-images:before {
+  background-image: url('png-white/images.png');
+  width: 1.125em;  
+}
+.no-icomoon .primary-button.icon-camera:before,
+.no-icomoon .danger-button.icon-camera:before {
+  background-image: url('png-white/camera.png');
+}
+.no-icomoon .primary-button.icon-headphones:before,
+.no-icomoon .danger-button.icon-headphones:before {
+  background-image: url('png-white/headphones.png');
+}
+.no-icomoon .primary-button.icon-music:before,
+.no-icomoon .danger-button.icon-music:before {
+  background-image: url('png-white/music.png');
+}
+.no-icomoon .primary-button.icon-play:before,
+.no-icomoon .danger-button.icon-play:before {
+  background-image: url('png-white/play.png');
+}
+.no-icomoon .primary-button.icon-film:before,
+.no-icomoon .danger-button.icon-film:before {
+  background-image: url('png-white/film.png');
+}
+.no-icomoon .primary-button.icon-video-camera:before,
+.no-icomoon .danger-button.icon-video-camera:before {
+  background-image: url('png-white/video-camera.png');
+}
+.no-icomoon .primary-button.icon-dice:before,
+.no-icomoon .danger-button.icon-dice:before {
+  background-image: url('png-white/dice.png');
+}
+.no-icomoon .primary-button.icon-pacman:before,
+.no-icomoon .danger-button.icon-pacman:before {
+  background-image: url('png-white/pacman.png');
+}
+.no-icomoon .primary-button.icon-spades:before,
+.no-icomoon .danger-button.icon-spades:before {
+  background-image: url('png-white/spades.png');
+}
+.no-icomoon .primary-button.icon-clubs:before,
+.no-icomoon .danger-button.icon-clubs:before {
+  background-image: url('png-white/clubs.png');
+}
+.no-icomoon .primary-button.icon-diamonds:before,
+.no-icomoon .danger-button.icon-diamonds:before {
+  background-image: url('png-white/diamonds.png');
+}
+.no-icomoon .primary-button.icon-bullhorn:before,
+.no-icomoon .danger-button.icon-bullhorn:before {
+  background-image: url('png-white/bullhorn.png');
+}
+.no-icomoon .primary-button.icon-connection:before,
+.no-icomoon .danger-button.icon-connection:before {
+  background-image: url('png-white/connection.png');
+  width: 1.25em;  
+}
+.no-icomoon .primary-button.icon-podcast:before,
+.no-icomoon .danger-button.icon-podcast:before {
+  background-image: url('png-white/podcast.png');
+}
+.no-icomoon .primary-button.icon-feed:before,
+.no-icomoon .danger-button.icon-feed:before {
+  background-image: url('png-white/feed.png');
+}
+.no-icomoon .primary-button.icon-mic:before,
+.no-icomoon .danger-button.icon-mic:before {
+  background-image: url('png-white/mic.png');
+}
+.no-icomoon .primary-button.icon-book:before,
+.no-icomoon .danger-button.icon-book:before {
+  background-image: url('png-white/book.png');
+}
+.no-icomoon .primary-button.icon-books:before,
+.no-icomoon .danger-button.icon-books:before {
+  background-image: url('png-white/books.png');
+  width: 1.125em;  
+}
+.no-icomoon .primary-button.icon-library:before,
+.no-icomoon .danger-button.icon-library:before {
+  background-image: url('png-white/library.png');
+  width: 1.0625em;  
+}
+.no-icomoon .primary-button.icon-file-text:before,
+.no-icomoon .danger-button.icon-file-text:before {
+  background-image: url('png-white/file-text.png');
+}
+.no-icomoon .primary-button.icon-profile:before,
+.no-icomoon .danger-button.icon-profile:before {
+  background-image: url('png-white/profile.png');
+}
+.no-icomoon .primary-button.icon-file-empty:before,
+.no-icomoon .danger-button.icon-file-empty:before {
+  background-image: url('png-white/file-empty.png');
+}
+.no-icomoon .primary-button.icon-files-empty:before,
+.no-icomoon .danger-button.icon-files-empty:before {
+  background-image: url('png-white/files-empty.png');
+}
+.no-icomoon .primary-button.icon-file-text2:before,
+.no-icomoon .danger-button.icon-file-text2:before {
+  background-image: url('png-white/file-text2.png');
+}
+.no-icomoon .primary-button.icon-file-picture:before,
+.no-icomoon .danger-button.icon-file-picture:before {
+  background-image: url('png-white/file-picture.png');
+}
+.no-icomoon .primary-button.icon-file-music:before,
+.no-icomoon .danger-button.icon-file-music:before {
+  background-image: url('png-white/file-music.png');
+}
+.no-icomoon .primary-button.icon-file-play:before,
+.no-icomoon .danger-button.icon-file-play:before {
+  background-image: url('png-white/file-play.png');
+}
+.no-icomoon .primary-button.icon-file-video:before,
+.no-icomoon .danger-button.icon-file-video:before {
+  background-image: url('png-white/file-video.png');
+}
+.no-icomoon .primary-button.icon-file-zip:before,
+.no-icomoon .danger-button.icon-file-zip:before {
+  background-image: url('png-white/file-zip.png');
+}
+.no-icomoon .primary-button.icon-copy:before,
+.no-icomoon .danger-button.icon-copy:before {
+  background-image: url('png-white/copy.png');
+}
+.no-icomoon .primary-button.icon-paste:before,
+.no-icomoon .danger-button.icon-paste:before {
+  background-image: url('png-white/paste.png');
+}
+.no-icomoon .primary-button.icon-stack:before,
+.no-icomoon .danger-button.icon-stack:before {
+  background-image: url('png-white/stack.png');
+}
+.no-icomoon .primary-button.icon-folder:before,
+.no-icomoon .danger-button.icon-folder:before {
+  background-image: url('png-white/folder.png');
+}
+.no-icomoon .primary-button.icon-folder-open:before,
+.no-icomoon .danger-button.icon-folder-open:before {
+  background-image: url('png-white/folder-open.png');
+}
+.no-icomoon .primary-button.icon-folder-plus:before,
+.no-icomoon .danger-button.icon-folder-plus:before {
+  background-image: url('png-white/folder-plus.png');
+}
+.no-icomoon .primary-button.icon-folder-minus:before,
+.no-icomoon .danger-button.icon-folder-minus:before {
+  background-image: url('png-white/folder-minus.png');
+}
+.no-icomoon .primary-button.icon-folder-download:before,
+.no-icomoon .danger-button.icon-folder-download:before {
+  background-image: url('png-white/folder-download.png');
+}
+.no-icomoon .primary-button.icon-folder-upload:before,
+.no-icomoon .danger-button.icon-folder-upload:before {
+  background-image: url('png-white/folder-upload.png');
+}
+.no-icomoon .primary-button.icon-price-tag:before,
+.no-icomoon .danger-button.icon-price-tag:before {
+  background-image: url('png-white/price-tag.png');
+}
+.no-icomoon .primary-button.icon-price-tags:before,
+.no-icomoon .danger-button.icon-price-tags:before {
+  background-image: url('png-white/price-tags.png');
+  width: 1.25em;  
+}
+.no-icomoon .primary-button.icon-barcode:before,
+.no-icomoon .danger-button.icon-barcode:before {
+  background-image: url('png-white/barcode.png');
+}
+.no-icomoon .primary-button.icon-qrcode:before,
+.no-icomoon .danger-button.icon-qrcode:before {
+  background-image: url('png-white/qrcode.png');
+}
+.no-icomoon .primary-button.icon-ticket:before,
+.no-icomoon .danger-button.icon-ticket:before {
+  background-image: url('png-white/ticket.png');
+}
+.no-icomoon .primary-button.icon-cart:before,
+.no-icomoon .danger-button.icon-cart:before {
+  background-image: url('png-white/cart.png');
+}
+.no-icomoon .primary-button.icon-coin-dollar:before,
+.no-icomoon .danger-button.icon-coin-dollar:before {
+  background-image: url('png-white/coin-dollar.png');
+}
+.no-icomoon .primary-button.icon-coin-euro:before,
+.no-icomoon .danger-button.icon-coin-euro:before {
+  background-image: url('png-white/coin-euro.png');
+}
+.no-icomoon .primary-button.icon-coin-pound:before,
+.no-icomoon .danger-button.icon-coin-pound:before {
+  background-image: url('png-white/coin-pound.png');
+}
+.no-icomoon .primary-button.icon-coin-yen:before,
+.no-icomoon .danger-button.icon-coin-yen:before {
+  background-image: url('png-white/coin-yen.png');
+}
+.no-icomoon .primary-button.icon-credit-card:before,
+.no-icomoon .danger-button.icon-credit-card:before {
+  background-image: url('png-white/credit-card.png');
+}
+.no-icomoon .primary-button.icon-calculator:before,
+.no-icomoon .danger-button.icon-calculator:before {
+  background-image: url('png-white/calculator.png');
+}
+.no-icomoon .primary-button.icon-lifebuoy:before,
+.no-icomoon .danger-button.icon-lifebuoy:before {
+  background-image: url('png-white/lifebuoy.png');
+}
+.no-icomoon .primary-button.icon-phone:before,
+.no-icomoon .danger-button.icon-phone:before {
+  background-image: url('png-white/phone.png');
+}
+.no-icomoon .primary-button.icon-phone-hang-up:before,
+.no-icomoon .danger-button.icon-phone-hang-up:before {
+  background-image: url('png-white/phone-hang-up.png');
+}
+.no-icomoon .primary-button.icon-address-book:before,
+.no-icomoon .danger-button.icon-address-book:before {
+  background-image: url('png-white/address-book.png');
+}
+.no-icomoon .primary-button.icon-envelop:before,
+.no-icomoon .danger-button.icon-envelop:before {
+  background-image: url('png-white/envelop.png');
+}
+.no-icomoon .primary-button.icon-pushpin:before,
+.no-icomoon .danger-button.icon-pushpin:before {
+  background-image: url('png-white/pushpin.png');
+}
+.no-icomoon .primary-button.icon-location:before,
+.no-icomoon .danger-button.icon-location:before {
+  background-image: url('png-white/location.png');
+}
+.no-icomoon .primary-button.icon-compass:before,
+.no-icomoon .danger-button.icon-compass:before {
+  background-image: url('png-white/compass.png');
+}
+.no-icomoon .primary-button.icon-compass2:before,
+.no-icomoon .danger-button.icon-compass2:before {
+  background-image: url('png-white/compass2.png');
+}
+.no-icomoon .primary-button.icon-map:before,
+.no-icomoon .danger-button.icon-map:before {
+  background-image: url('png-white/map.png');
+}
+.no-icomoon .primary-button.icon-map2:before,
+.no-icomoon .danger-button.icon-map2:before {
+  background-image: url('png-white/map2.png');
+}
+.no-icomoon .primary-button.icon-history:before,
+.no-icomoon .danger-button.icon-history:before {
+  background-image: url('png-white/history.png');
+  width: 1.0625em;  
+}
+.no-icomoon .primary-button.icon-clock:before,
+.no-icomoon .danger-button.icon-clock:before {
+  background-image: url('png-white/clock.png');
+}
+.no-icomoon .primary-button.icon-clock2:before,
+.no-icomoon .danger-button.icon-clock2:before {
+  background-image: url('png-white/clock2.png');
+}
+.no-icomoon .primary-button.icon-alarm:before,
+.no-icomoon .danger-button.icon-alarm:before {
+  background-image: url('png-white/alarm.png');
+}
+.no-icomoon .primary-button.icon-bell:before,
+.no-icomoon .danger-button.icon-bell:before {
+  background-image: url('png-white/bell.png');
+}
+.no-icomoon .primary-button.icon-stopwatch:before,
+.no-icomoon .danger-button.icon-stopwatch:before {
+  background-image: url('png-white/stopwatch.png');
+}
+.no-icomoon .primary-button.icon-calendar:before,
+.no-icomoon .danger-button.icon-calendar:before {
+  background-image: url('png-white/calendar.png');
+}
+.no-icomoon .primary-button.icon-printer:before,
+.no-icomoon .danger-button.icon-printer:before {
+  background-image: url('png-white/printer.png');
+}
+.no-icomoon .primary-button.icon-keyboard:before,
+.no-icomoon .danger-button.icon-keyboard:before {
+  background-image: url('png-white/keyboard.png');
+  width: 1.125em;  
+}
+.no-icomoon .primary-button.icon-display:before,
+.no-icomoon .danger-button.icon-display:before {
+  background-image: url('png-white/display.png');
+}
+.no-icomoon .primary-button.icon-laptop:before,
+.no-icomoon .danger-button.icon-laptop:before {
+  background-image: url('png-white/laptop.png');
+}
+.no-icomoon .primary-button.icon-mobile:before,
+.no-icomoon .danger-button.icon-mobile:before {
+  background-image: url('png-white/mobile.png');
+}
+.no-icomoon .primary-button.icon-tablet:before,
+.no-icomoon .danger-button.icon-tablet:before {
+  background-image: url('png-white/tablet.png');
+}
+.no-icomoon .primary-button.icon-tv:before,
+.no-icomoon .danger-button.icon-tv:before {
+  background-image: url('png-white/tv.png');
+}
+.no-icomoon .primary-button.icon-drawer:before,
+.no-icomoon .danger-button.icon-drawer:before {
+  background-image: url('png-white/drawer.png');
+}
+.no-icomoon .primary-button.icon-drawer2:before,
+.no-icomoon .danger-button.icon-drawer2:before {
+  background-image: url('png-white/drawer2.png');
+}
+.no-icomoon .primary-button.icon-box-add:before,
+.no-icomoon .danger-button.icon-box-add:before {
+  background-image: url('png-white/box-add.png');
+}
+.no-icomoon .primary-button.icon-box-remove:before,
+.no-icomoon .danger-button.icon-box-remove:before {
+  background-image: url('png-white/box-remove.png');
+}
+.no-icomoon .primary-button.icon-download:before,
+.no-icomoon .danger-button.icon-download:before {
+  background-image: url('png-white/download.png');
+}
+.no-icomoon .primary-button.icon-upload:before,
+.no-icomoon .danger-button.icon-upload:before {
+  background-image: url('png-white/upload.png');
+}
+.no-icomoon .primary-button.icon-floppy-disk:before,
+.no-icomoon .danger-button.icon-floppy-disk:before {
+  background-image: url('png-white/floppy-disk.png');
+}
+.no-icomoon .primary-button.icon-drive:before,
+.no-icomoon .danger-button.icon-drive:before {
+  background-image: url('png-white/drive.png');
+}
+.no-icomoon .primary-button.icon-database:before,
+.no-icomoon .danger-button.icon-database:before {
+  background-image: url('png-white/database.png');
+}
+.no-icomoon .primary-button.icon-undo:before,
+.no-icomoon .danger-button.icon-undo:before {
+  background-image: url('png-white/undo.png');
+}
+.no-icomoon .primary-button.icon-redo:before,
+.no-icomoon .danger-button.icon-redo:before {
+  background-image: url('png-white/redo.png');
+}
+.no-icomoon .primary-button.icon-undo2:before,
+.no-icomoon .danger-button.icon-undo2:before {
+  background-image: url('png-white/undo2.png');
+}
+.no-icomoon .primary-button.icon-redo2:before,
+.no-icomoon .danger-button.icon-redo2:before {
+  background-image: url('png-white/redo2.png');
+}
+.no-icomoon .primary-button.icon-forward:before,
+.no-icomoon .danger-button.icon-forward:before {
+  background-image: url('png-white/forward.png');
+}
+.no-icomoon .primary-button.icon-reply:before,
+.no-icomoon .danger-button.icon-reply:before {
+  background-image: url('png-white/reply.png');
+}
+.no-icomoon .primary-button.icon-bubble:before,
+.no-icomoon .danger-button.icon-bubble:before {
+  background-image: url('png-white/bubble.png');
+}
+.no-icomoon .primary-button.icon-bubbles2:before,
+.no-icomoon .danger-button.icon-bubbles2:before {
+  background-image: url('png-white/bubbles2.png');
+  width: 1.125em;  
+}
+.no-icomoon .primary-button.icon-user:before,
+.no-icomoon .danger-button.icon-user:before {
+  background-image: url('png-white/user.png');
+}
+.no-icomoon .primary-button.icon-users:before,
+.no-icomoon .danger-button.icon-users:before {
+  background-image: url('png-white/users.png');
+  width: 1.125em;  
+}
+.no-icomoon .primary-button.icon-user-plus:before,
+.no-icomoon .danger-button.icon-user-plus:before {
+  background-image: url('png-white/user-plus.png');
+}
+.no-icomoon .primary-button.icon-user-minus:before,
+.no-icomoon .danger-button.icon-user-minus:before {
+  background-image: url('png-white/user-minus.png');
+}
+.no-icomoon .primary-button.icon-user-check:before,
+.no-icomoon .danger-button.icon-user-check:before {
+  background-image: url('png-white/user-check.png');
+}
+.no-icomoon .primary-button.icon-user-tie:before,
+.no-icomoon .danger-button.icon-user-tie:before {
+  background-image: url('png-white/user-tie.png');
+}
+.no-icomoon .primary-button.icon-quotes-left:before,
+.no-icomoon .danger-button.icon-quotes-left:before {
+  background-image: url('png-white/quotes-left.png');
+}
+.no-icomoon .primary-button.icon-quotes-right:before,
+.no-icomoon .danger-button.icon-quotes-right:before {
+  background-image: url('png-white/quotes-right.png');
+}
+.no-icomoon .primary-button.icon-hour-glass:before,
+.no-icomoon .danger-button.icon-hour-glass:before {
+  background-image: url('png-white/hour-glass.png');
+}
+.no-icomoon .primary-button.icon-spinner2:before,
+.no-icomoon .danger-button.icon-spinner2:before {
+  background-image: url('png-white/spinner2.png');
+}
+
+.no-icomoon .primary-button.icon-animated-spinner:before,
+.no-icomoon .danger-button.icon-animated-spinner:before {
+  background-image: url('png-white/spinner2.png');
+}
+
+.no-icomoon .primary-button.icon-spinner11:before,
+.no-icomoon .danger-button.icon-spinner11:before {
+  background-image: url('png-white/spinner11.png');
+}
+.no-icomoon .primary-button.icon-binoculars:before,
+.no-icomoon .danger-button.icon-binoculars:before {
+  background-image: url('png-white/binoculars.png');
+}
+.no-icomoon .primary-button.icon-search:before,
+.no-icomoon .danger-button.icon-search:before {
+  background-image: url('png-white/search.png');
+}
+.no-icomoon .primary-button.icon-zoom-in:before,
+.no-icomoon .danger-button.icon-zoom-in:before {
+  background-image: url('png-white/zoom-in.png');
+}
+.no-icomoon .primary-button.icon-zoom-out:before,
+.no-icomoon .danger-button.icon-zoom-out:before {
+  background-image: url('png-white/zoom-out.png');
+}
+.no-icomoon .primary-button.icon-enlarge:before,
+.no-icomoon .danger-button.icon-enlarge:before {
+  background-image: url('png-white/enlarge.png');
+}
+.no-icomoon .primary-button.icon-shrink:before,
+.no-icomoon .danger-button.icon-shrink:before {
+  background-image: url('png-white/shrink.png');
+}
+.no-icomoon .primary-button.icon-enlarge2:before,
+.no-icomoon .danger-button.icon-enlarge2:before {
+  background-image: url('png-white/enlarge2.png');
+}
+.no-icomoon .primary-button.icon-shrink2:before,
+.no-icomoon .danger-button.icon-shrink2:before {
+  background-image: url('png-white/shrink2.png');
+}
+.no-icomoon .primary-button.icon-key:before,
+.no-icomoon .danger-button.icon-key:before {
+  background-image: url('png-white/key.png');
+}
+.no-icomoon .primary-button.icon-lock:before,
+.no-icomoon .danger-button.icon-lock:before {
+  background-image: url('png-white/lock.png');
+}
+.no-icomoon .primary-button.icon-unlocked:before,
+.no-icomoon .danger-button.icon-unlocked:before {
+  background-image: url('png-white/unlocked.png');
+}
+.no-icomoon .primary-button.icon-wrench:before,
+.no-icomoon .danger-button.icon-wrench:before {
+  background-image: url('png-white/wrench.png');
+}
+.no-icomoon .primary-button.icon-equalizer:before,
+.no-icomoon .danger-button.icon-equalizer:before {
+  background-image: url('png-white/equalizer.png');
+}
+.no-icomoon .primary-button.icon-equalizer2:before,
+.no-icomoon .danger-button.icon-equalizer2:before {
+  background-image: url('png-white/equalizer2.png');
+}
+.no-icomoon .primary-button.icon-cog:before,
+.no-icomoon .danger-button.icon-cog:before {
+  background-image: url('png-white/cog.png');
+}
+.no-icomoon .primary-button.icon-cogs:before,
+.no-icomoon .danger-button.icon-cogs:before {
+  background-image: url('png-white/cogs.png');
+}
+.no-icomoon .primary-button.icon-hammer:before,
+.no-icomoon .danger-button.icon-hammer:before {
+  background-image: url('png-white/hammer.png');
+}
+.no-icomoon .primary-button.icon-magic-wand:before,
+.no-icomoon .danger-button.icon-magic-wand:before {
+  background-image: url('png-white/magic-wand.png');
+}
+.no-icomoon .primary-button.icon-aid-kit:before,
+.no-icomoon .danger-button.icon-aid-kit:before {
+  background-image: url('png-white/aid-kit.png');
+}
+.no-icomoon .primary-button.icon-bug:before,
+.no-icomoon .danger-button.icon-bug:before {
+  background-image: url('png-white/bug.png');
+}
+.no-icomoon .primary-button.icon-pie-chart:before,
+.no-icomoon .danger-button.icon-pie-chart:before {
+  background-image: url('png-white/pie-chart.png');
+}
+.no-icomoon .primary-button.icon-stats-dots:before,
+.no-icomoon .danger-button.icon-stats-dots:before {
+  background-image: url('png-white/stats-dots.png');
+}
+.no-icomoon .primary-button.icon-stats-bars:before,
+.no-icomoon .danger-button.icon-stats-bars:before {
+  background-image: url('png-white/stats-bars.png');
+}
+.no-icomoon .primary-button.icon-stats-bars2:before,
+.no-icomoon .danger-button.icon-stats-bars2:before {
+  background-image: url('png-white/stats-bars2.png');
+}
+.no-icomoon .primary-button.icon-trophy:before,
+.no-icomoon .danger-button.icon-trophy:before {
+  background-image: url('png-white/trophy.png');
+}
+.no-icomoon .primary-button.icon-gift:before,
+.no-icomoon .danger-button.icon-gift:before {
+  background-image: url('png-white/gift.png');
+}
+.no-icomoon .primary-button.icon-glass:before,
+.no-icomoon .danger-button.icon-glass:before {
+  background-image: url('png-white/glass.png');
+}
+.no-icomoon .primary-button.icon-glass2:before,
+.no-icomoon .danger-button.icon-glass2:before {
+  background-image: url('png-white/glass2.png');
+}
+.no-icomoon .primary-button.icon-mug:before,
+.no-icomoon .danger-button.icon-mug:before {
+  background-image: url('png-white/mug.png');
+}
+.no-icomoon .primary-button.icon-spoon-knife:before,
+.no-icomoon .danger-button.icon-spoon-knife:before {
+  background-image: url('png-white/spoon-knife.png');
+}
+.no-icomoon .primary-button.icon-leaf:before,
+.no-icomoon .danger-button.icon-leaf:before {
+  background-image: url('png-white/leaf.png');
+}
+.no-icomoon .primary-button.icon-rocket:before,
+.no-icomoon .danger-button.icon-rocket:before {
+  background-image: url('png-white/rocket.png');
+}
+.no-icomoon .primary-button.icon-meter:before,
+.no-icomoon .danger-button.icon-meter:before {
+  background-image: url('png-white/meter.png');
+}
+.no-icomoon .primary-button.icon-hammer2:before,
+.no-icomoon .danger-button.icon-hammer2:before {
+  background-image: url('png-white/hammer2.png');
+}
+.no-icomoon .primary-button.icon-fire:before,
+.no-icomoon .danger-button.icon-fire:before {
+  background-image: url('png-white/fire.png');
+}
+.no-icomoon .primary-button.icon-lab:before,
+.no-icomoon .danger-button.icon-lab:before {
+  background-image: url('png-white/lab.png');
+}
+.no-icomoon .primary-button.icon-magnet:before,
+.no-icomoon .danger-button.icon-magnet:before {
+  background-image: url('png-white/magnet.png');
+}
+.no-icomoon .primary-button.icon-bin:before,
+.no-icomoon .danger-button.icon-bin:before {
+  background-image: url('png-white/bin.png');
+}
+.no-icomoon .primary-button.icon-briefcase:before,
+.no-icomoon .danger-button.icon-briefcase:before {
+  background-image: url('png-white/briefcase.png');
+}
+.no-icomoon .primary-button.icon-airplane:before,
+.no-icomoon .danger-button.icon-airplane:before {
+  background-image: url('png-white/airplane.png');
+}
+.no-icomoon .primary-button.icon-truck:before,
+.no-icomoon .danger-button.icon-truck:before {
+  background-image: url('png-white/truck.png');
+}
+.no-icomoon .primary-button.icon-road:before,
+.no-icomoon .danger-button.icon-road:before {
+  background-image: url('png-white/road.png');
+}
+.no-icomoon .primary-button.icon-accessibility:before,
+.no-icomoon .danger-button.icon-accessibility:before {
+  background-image: url('png-white/accessibility.png');
+}
+.no-icomoon .primary-button.icon-target:before,
+.no-icomoon .danger-button.icon-target:before {
+  background-image: url('png-white/target.png');
+}
+.no-icomoon .primary-button.icon-shield:before,
+.no-icomoon .danger-button.icon-shield:before {
+  background-image: url('png-white/shield.png');
+}
+.no-icomoon .primary-button.icon-power:before,
+.no-icomoon .danger-button.icon-power:before {
+  background-image: url('png-white/power.png');
+}
+.no-icomoon .primary-button.icon-switch:before,
+.no-icomoon .danger-button.icon-switch:before {
+  background-image: url('png-white/switch.png');
+}
+.no-icomoon .primary-button.icon-power-cord:before,
+.no-icomoon .danger-button.icon-power-cord:before {
+  background-image: url('png-white/power-cord.png');
+}
+.no-icomoon .primary-button.icon-clipboard:before,
+.no-icomoon .danger-button.icon-clipboard:before {
+  background-image: url('png-white/clipboard.png');
+}
+.no-icomoon .primary-button.icon-list-numbered:before,
+.no-icomoon .danger-button.icon-list-numbered:before {
+  background-image: url('png-white/list-numbered.png');
+}
+.no-icomoon .primary-button.icon-list:before,
+.no-icomoon .danger-button.icon-list:before {
+  background-image: url('png-white/list.png');
+}
+.no-icomoon .primary-button.icon-list2:before,
+.no-icomoon .danger-button.icon-list2:before {
+  background-image: url('png-white/list2.png');
+}
+.no-icomoon .primary-button.icon-tree:before,
+.no-icomoon .danger-button.icon-tree:before {
+  background-image: url('png-white/tree.png');
+}
+.no-icomoon .primary-button.icon-menu:before,
+.no-icomoon .danger-button.icon-menu:before {
+  background-image: url('png-white/menu.png');
+}
+.no-icomoon .primary-button.icon-menu2:before,
+.no-icomoon .danger-button.icon-menu2:before {
+  background-image: url('png-white/menu2.png');
+  width: 1.375em;  
+}
+.no-icomoon .primary-button.icon-menu3:before,
+.no-icomoon .danger-button.icon-menu3:before {
+  background-image: url('png-white/menu3.png');
+  width: 1.375em;  
+}
+.no-icomoon .primary-button.icon-menu4:before,
+.no-icomoon .danger-button.icon-menu4:before {
+  background-image: url('png-white/menu4.png');
+  width: 1.375em;  
+}
+.no-icomoon .primary-button.icon-cloud:before,
+.no-icomoon .danger-button.icon-cloud:before {
+  background-image: url('png-white/cloud.png');
+}
+.no-icomoon .primary-button.icon-cloud-download:before,
+.no-icomoon .danger-button.icon-cloud-download:before {
+  background-image: url('png-white/cloud-download.png');
+}
+.no-icomoon .primary-button.icon-cloud-upload:before,
+.no-icomoon .danger-button.icon-cloud-upload:before {
+  background-image: url('png-white/cloud-upload.png');
+}
+.no-icomoon .primary-button.icon-cloud-check:before,
+.no-icomoon .danger-button.icon-cloud-check:before {
+  background-image: url('png-white/cloud-check.png');
+}
+.no-icomoon .primary-button.icon-download2:before,
+.no-icomoon .danger-button.icon-download2:before {
+  background-image: url('png-white/download2.png');
+}
+.no-icomoon .primary-button.icon-upload2:before,
+.no-icomoon .danger-button.icon-upload2:before {
+  background-image: url('png-white/upload2.png');
+}
+.no-icomoon .primary-button.icon-sphere:before,
+.no-icomoon .danger-button.icon-sphere:before {
+  background-image: url('png-white/sphere.png');
+}
+.no-icomoon .primary-button.icon-earth:before,
+.no-icomoon .danger-button.icon-earth:before {
+  background-image: url('png-white/earth.png');
+}
+.no-icomoon .primary-button.icon-link:before,
+.no-icomoon .danger-button.icon-link:before {
+  background-image: url('png-white/link.png');
+}
+.no-icomoon .primary-button.icon-flag:before,
+.no-icomoon .danger-button.icon-flag:before {
+  background-image: url('png-white/flag.png');
+}
+.no-icomoon .primary-button.icon-attachment:before,
+.no-icomoon .danger-button.icon-attachment:before {
+  background-image: url('png-white/attachment.png');
+}
+.no-icomoon .primary-button.icon-eye:before,
+.no-icomoon .danger-button.icon-eye:before {
+  background-image: url('png-white/eye.png');
+}
+.no-icomoon .primary-button.icon-eye-plus:before,
+.no-icomoon .danger-button.icon-eye-plus:before {
+  background-image: url('png-white/eye-plus.png');
+}
+.no-icomoon .primary-button.icon-eye-minus:before,
+.no-icomoon .danger-button.icon-eye-minus:before {
+  background-image: url('png-white/eye-minus.png');
+}
+.no-icomoon .primary-button.icon-eye-blocked:before,
+.no-icomoon .danger-button.icon-eye-blocked:before {
+  background-image: url('png-white/eye-blocked.png');
+}
+.no-icomoon .primary-button.icon-bookmark:before,
+.no-icomoon .danger-button.icon-bookmark:before {
+  background-image: url('png-white/bookmark.png');
+}
+.no-icomoon .primary-button.icon-bookmarks:before,
+.no-icomoon .danger-button.icon-bookmarks:before {
+  background-image: url('png-white/bookmarks.png');
+}
+.no-icomoon .primary-button.icon-sun:before,
+.no-icomoon .danger-button.icon-sun:before {
+  background-image: url('png-white/sun.png');
+}
+.no-icomoon .primary-button.icon-contrast:before,
+.no-icomoon .danger-button.icon-contrast:before {
+  background-image: url('png-white/contrast.png');
+}
+.no-icomoon .primary-button.icon-brightness-contrast:before,
+.no-icomoon .danger-button.icon-brightness-contrast:before {
+  background-image: url('png-white/brightness-contrast.png');
+}
+.no-icomoon .primary-button.icon-star-empty:before,
+.no-icomoon .danger-button.icon-star-empty:before {
+  background-image: url('png-white/star-empty.png');
+}
+.no-icomoon .primary-button.icon-star-half:before,
+.no-icomoon .danger-button.icon-star-half:before {
+  background-image: url('png-white/star-half.png');
+}
+.no-icomoon .primary-button.icon-star-full:before,
+.no-icomoon .danger-button.icon-star-full:before {
+  background-image: url('png-white/star-full.png');
+}
+.no-icomoon .primary-button.icon-heart:before,
+.no-icomoon .danger-button.icon-heart:before {
+  background-image: url('png-white/heart.png');
+}
+.no-icomoon .primary-button.icon-heart-broken:before,
+.no-icomoon .danger-button.icon-heart-broken:before {
+  background-image: url('png-white/heart-broken.png');
+}
+.no-icomoon .primary-button.icon-man:before,
+.no-icomoon .danger-button.icon-man:before {
+  background-image: url('png-white/man.png');
+}
+.no-icomoon .primary-button.icon-woman:before,
+.no-icomoon .danger-button.icon-woman:before {
+  background-image: url('png-white/woman.png');
+}
+.no-icomoon .primary-button.icon-man-woman:before,
+.no-icomoon .danger-button.icon-man-woman:before {
+  background-image: url('png-white/man-woman.png');
+}
+.no-icomoon .primary-button.icon-happy:before,
+.no-icomoon .danger-button.icon-happy:before {
+  background-image: url('png-white/happy.png');
+}
+.no-icomoon .primary-button.icon-happy2:before,
+.no-icomoon .danger-button.icon-happy2:before {
+  background-image: url('png-white/happy2.png');
+}
+.no-icomoon .primary-button.icon-smile:before,
+.no-icomoon .danger-button.icon-smile:before {
+  background-image: url('png-white/smile.png');
+}
+.no-icomoon .primary-button.icon-smile2:before,
+.no-icomoon .danger-button.icon-smile2:before {
+  background-image: url('png-white/smile2.png');
+}
+.no-icomoon .primary-button.icon-tongue:before,
+.no-icomoon .danger-button.icon-tongue:before {
+  background-image: url('png-white/tongue.png');
+}
+.no-icomoon .primary-button.icon-tongue2:before,
+.no-icomoon .danger-button.icon-tongue2:before {
+  background-image: url('png-white/tongue2.png');
+}
+.no-icomoon .primary-button.icon-sad:before,
+.no-icomoon .danger-button.icon-sad:before {
+  background-image: url('png-white/sad.png');
+}
+.no-icomoon .primary-button.icon-sad2:before,
+.no-icomoon .danger-button.icon-sad2:before {
+  background-image: url('png-white/sad2.png');
+}
+.no-icomoon .primary-button.icon-wink:before,
+.no-icomoon .danger-button.icon-wink:before {
+  background-image: url('png-white/wink.png');
+}
+.no-icomoon .primary-button.icon-wink2:before,
+.no-icomoon .danger-button.icon-wink2:before {
+  background-image: url('png-white/wink2.png');
+}
+.no-icomoon .primary-button.icon-grin:before,
+.no-icomoon .danger-button.icon-grin:before {
+  background-image: url('png-white/grin.png');
+}
+.no-icomoon .primary-button.icon-grin2:before,
+.no-icomoon .danger-button.icon-grin2:before {
+  background-image: url('png-white/grin2.png');
+}
+.no-icomoon .primary-button.icon-cool:before,
+.no-icomoon .danger-button.icon-cool:before {
+  background-image: url('png-white/cool.png');
+}
+.no-icomoon .primary-button.icon-cool2:before,
+.no-icomoon .danger-button.icon-cool2:before {
+  background-image: url('png-white/cool2.png');
+}
+.no-icomoon .primary-button.icon-angry:before,
+.no-icomoon .danger-button.icon-angry:before {
+  background-image: url('png-white/angry.png');
+}
+.no-icomoon .primary-button.icon-angry2:before,
+.no-icomoon .danger-button.icon-angry2:before {
+  background-image: url('png-white/angry2.png');
+}
+.no-icomoon .primary-button.icon-evil:before,
+.no-icomoon .danger-button.icon-evil:before {
+  background-image: url('png-white/evil.png');
+}
+.no-icomoon .primary-button.icon-evil2:before,
+.no-icomoon .danger-button.icon-evil2:before {
+  background-image: url('png-white/evil2.png');
+}
+.no-icomoon .primary-button.icon-shocked:before,
+.no-icomoon .danger-button.icon-shocked:before {
+  background-image: url('png-white/shocked.png');
+}
+.no-icomoon .primary-button.icon-shocked2:before,
+.no-icomoon .danger-button.icon-shocked2:before {
+  background-image: url('png-white/shocked2.png');
+}
+.no-icomoon .primary-button.icon-baffled:before,
+.no-icomoon .danger-button.icon-baffled:before {
+  background-image: url('png-white/baffled.png');
+}
+.no-icomoon .primary-button.icon-baffled2:before,
+.no-icomoon .danger-button.icon-baffled2:before {
+  background-image: url('png-white/baffled2.png');
+}
+.no-icomoon .primary-button.icon-confused:before,
+.no-icomoon .danger-button.icon-confused:before {
+  background-image: url('png-white/confused.png');
+}
+.no-icomoon .primary-button.icon-confused2:before,
+.no-icomoon .danger-button.icon-confused2:before {
+  background-image: url('png-white/confused2.png');
+}
+.no-icomoon .primary-button.icon-neutral:before,
+.no-icomoon .danger-button.icon-neutral:before {
+  background-image: url('png-white/neutral.png');
+}
+.no-icomoon .primary-button.icon-neutral2:before,
+.no-icomoon .danger-button.icon-neutral2:before {
+  background-image: url('png-white/neutral2.png');
+}
+.no-icomoon .primary-button.icon-hipster:before,
+.no-icomoon .danger-button.icon-hipster:before {
+  background-image: url('png-white/hipster.png');
+}
+.no-icomoon .primary-button.icon-hipster2:before,
+.no-icomoon .danger-button.icon-hipster2:before {
+  background-image: url('png-white/hipster2.png');
+}
+.no-icomoon .primary-button.icon-wondering:before,
+.no-icomoon .danger-button.icon-wondering:before {
+  background-image: url('png-white/wondering.png');
+}
+.no-icomoon .primary-button.icon-wondering2:before,
+.no-icomoon .danger-button.icon-wondering2:before {
+  background-image: url('png-white/wondering2.png');
+}
+.no-icomoon .primary-button.icon-sleepy:before,
+.no-icomoon .danger-button.icon-sleepy:before {
+  background-image: url('png-white/sleepy.png');
+}
+.no-icomoon .primary-button.icon-sleepy2:before,
+.no-icomoon .danger-button.icon-sleepy2:before {
+  background-image: url('png-white/sleepy2.png');
+}
+.no-icomoon .primary-button.icon-frustrated:before,
+.no-icomoon .danger-button.icon-frustrated:before {
+  background-image: url('png-white/frustrated.png');
+}
+.no-icomoon .primary-button.icon-frustrated2:before,
+.no-icomoon .danger-button.icon-frustrated2:before {
+  background-image: url('png-white/frustrated2.png');
+}
+.no-icomoon .primary-button.icon-crying:before,
+.no-icomoon .danger-button.icon-crying:before {
+  background-image: url('png-white/crying.png');
+}
+.no-icomoon .primary-button.icon-crying2:before,
+.no-icomoon .danger-button.icon-crying2:before {
+  background-image: url('png-white/crying2.png');
+}
+.no-icomoon .primary-button.icon-point-up:before,
+.no-icomoon .danger-button.icon-point-up:before {
+  background-image: url('png-white/point-up.png');
+}
+.no-icomoon .primary-button.icon-point-right:before,
+.no-icomoon .danger-button.icon-point-right:before {
+  background-image: url('png-white/point-right.png');
+}
+.no-icomoon .primary-button.icon-point-down:before,
+.no-icomoon .danger-button.icon-point-down:before {
+  background-image: url('png-white/point-down.png');
+}
+.no-icomoon .primary-button.icon-point-left:before,
+.no-icomoon .danger-button.icon-point-left:before {
+  background-image: url('png-white/point-left.png');
+}
+.no-icomoon .primary-button.icon-warning:before,
+.no-icomoon .danger-button.icon-warning:before {
+  background-image: url('png-white/warning.png');
+}
+.no-icomoon .primary-button.icon-notification:before,
+.no-icomoon .danger-button.icon-notification:before {
+  background-image: url('png-white/notification.png');
+}
+.no-icomoon .primary-button.icon-question:before,
+.no-icomoon .danger-button.icon-question:before {
+  background-image: url('png-white/question.png');
+}
+.no-icomoon .primary-button.icon-plus:before,
+.no-icomoon .danger-button.icon-plus:before {
+  background-image: url('png-white/plus.png');
+}
+.no-icomoon .primary-button.icon-minus:before,
+.no-icomoon .danger-button.icon-minus:before {
+  background-image: url('png-white/minus.png');
+}
+.no-icomoon .primary-button.icon-info:before,
+.no-icomoon .danger-button.icon-info:before {
+  background-image: url('png-white/info.png');
+}
+.no-icomoon .primary-button.icon-cancel-circle:before,
+.no-icomoon .danger-button.icon-cancel-circle:before {
+  background-image: url('png-white/cancel-circle.png');
+}
+.no-icomoon .primary-button.icon-blocked:before,
+.no-icomoon .danger-button.icon-blocked:before {
+  background-image: url('png-white/blocked.png');
+}
+.no-icomoon .primary-button.icon-cross:before,
+.no-icomoon .danger-button.icon-cross:before {
+  background-image: url('png-white/cross.png');
+}
+.no-icomoon .primary-button.icon-checkmark:before,
+.no-icomoon .danger-button.icon-checkmark:before {
+  background-image: url('png-white/checkmark.png');
+}
+.no-icomoon .primary-button.icon-spell-check:before,
+.no-icomoon .danger-button.icon-spell-check:before {
+  background-image: url('png-white/spell-check.png');
+}
+.no-icomoon .primary-button.icon-enter:before,
+.no-icomoon .danger-button.icon-enter:before {
+  background-image: url('png-white/enter.png');
+}
+.no-icomoon .primary-button.icon-exit:before,
+.no-icomoon .danger-button.icon-exit:before {
+  background-image: url('png-white/exit.png');
+}
+.no-icomoon .primary-button.icon-play2:before,
+.no-icomoon .danger-button.icon-play2:before {
+  background-image: url('png-white/play2.png');
+}
+.no-icomoon .primary-button.icon-pause:before,
+.no-icomoon .danger-button.icon-pause:before {
+  background-image: url('png-white/pause.png');
+}
+.no-icomoon .primary-button.icon-stop:before,
+.no-icomoon .danger-button.icon-stop:before {
+  background-image: url('png-white/stop.png');
+}
+.no-icomoon .primary-button.icon-previous:before,
+.no-icomoon .danger-button.icon-previous:before {
+  background-image: url('png-white/previous.png');
+}
+.no-icomoon .primary-button.icon-next:before,
+.no-icomoon .danger-button.icon-next:before {
+  background-image: url('png-white/next.png');
+}
+.no-icomoon .primary-button.icon-backward:before,
+.no-icomoon .danger-button.icon-backward:before {
+  background-image: url('png-white/backward.png');
+}
+.no-icomoon .primary-button.icon-forward2:before,
+.no-icomoon .danger-button.icon-forward2:before {
+  background-image: url('png-white/forward2.png');
+}
+.no-icomoon .primary-button.icon-play3:before,
+.no-icomoon .danger-button.icon-play3:before {
+  background-image: url('png-white/play3.png');
+}
+.no-icomoon .primary-button.icon-pause2:before,
+.no-icomoon .danger-button.icon-pause2:before {
+  background-image: url('png-white/pause2.png');
+}
+.no-icomoon .primary-button.icon-stop2:before,
+.no-icomoon .danger-button.icon-stop2:before {
+  background-image: url('png-white/stop2.png');
+}
+.no-icomoon .primary-button.icon-backward2:before,
+.no-icomoon .danger-button.icon-backward2:before {
+  background-image: url('png-white/backward2.png');
+}
+.no-icomoon .primary-button.icon-forward3:before,
+.no-icomoon .danger-button.icon-forward3:before {
+  background-image: url('png-white/forward3.png');
+}
+.no-icomoon .primary-button.icon-first:before,
+.no-icomoon .danger-button.icon-first:before {
+  background-image: url('png-white/first.png');
+}
+.no-icomoon .primary-button.icon-last:before,
+.no-icomoon .danger-button.icon-last:before {
+  background-image: url('png-white/last.png');
+}
+.no-icomoon .primary-button.icon-previous2:before,
+.no-icomoon .danger-button.icon-previous2:before {
+  background-image: url('png-white/previous2.png');
+}
+.no-icomoon .primary-button.icon-next2:before,
+.no-icomoon .danger-button.icon-next2:before {
+  background-image: url('png-white/next2.png');
+}
+.no-icomoon .primary-button.icon-eject:before,
+.no-icomoon .danger-button.icon-eject:before {
+  background-image: url('png-white/eject.png');
+}
+.no-icomoon .primary-button.icon-volume-high:before,
+.no-icomoon .danger-button.icon-volume-high:before {
+  background-image: url('png-white/volume-high.png');
+  width: 1.0625em;  
+}
+.no-icomoon .primary-button.icon-volume-medium:before,
+.no-icomoon .danger-button.icon-volume-medium:before {
+  background-image: url('png-white/volume-medium.png');
+}
+.no-icomoon .primary-button.icon-volume-low:before,
+.no-icomoon .danger-button.icon-volume-low:before {
+  background-image: url('png-white/volume-low.png');
+}
+.no-icomoon .primary-button.icon-volume-mute:before,
+.no-icomoon .danger-button.icon-volume-mute:before {
+  background-image: url('png-white/volume-mute.png');
+}
+.no-icomoon .primary-button.icon-volume-mute2:before,
+.no-icomoon .danger-button.icon-volume-mute2:before {
+  background-image: url('png-white/volume-mute2.png');
+}
+.no-icomoon .primary-button.icon-volume-increase:before,
+.no-icomoon .danger-button.icon-volume-increase:before {
+  background-image: url('png-white/volume-increase.png');
+}
+.no-icomoon .primary-button.icon-volume-decrease:before,
+.no-icomoon .danger-button.icon-volume-decrease:before {
+  background-image: url('png-white/volume-decrease.png');
+}
+.no-icomoon .primary-button.icon-loop:before,
+.no-icomoon .danger-button.icon-loop:before {
+  background-image: url('png-white/loop.png');
+}
+.no-icomoon .primary-button.icon-loop2:before,
+.no-icomoon .danger-button.icon-loop2:before {
+  background-image: url('png-white/loop2.png');
+}
+.no-icomoon .primary-button.icon-infinite:before,
+.no-icomoon .danger-button.icon-infinite:before {
+  background-image: url('png-white/infinite.png');
+}
+.no-icomoon .primary-button.icon-shuffle:before,
+.no-icomoon .danger-button.icon-shuffle:before {
+  background-image: url('png-white/shuffle.png');
+}
+.no-icomoon .primary-button.icon-arrow-up-left:before,
+.no-icomoon .danger-button.icon-arrow-up-left:before {
+  background-image: url('png-white/arrow-up-left.png');
+}
+.no-icomoon .primary-button.icon-arrow-up:before,
+.no-icomoon .danger-button.icon-arrow-up:before {
+  background-image: url('png-white/arrow-up.png');
+}
+.no-icomoon .primary-button.icon-arrow-up-right:before,
+.no-icomoon .danger-button.icon-arrow-up-right:before {
+  background-image: url('png-white/arrow-up-right.png');
+}
+.no-icomoon .primary-button.icon-arrow-right:before,
+.no-icomoon .danger-button.icon-arrow-right:before {
+  background-image: url('png-white/arrow-right.png');
+}
+.no-icomoon .primary-button.icon-arrow-down-right:before,
+.no-icomoon .danger-button.icon-arrow-down-right:before {
+  background-image: url('png-white/arrow-down-right.png');
+}
+.no-icomoon .primary-button.icon-arrow-down:before,
+.no-icomoon .danger-button.icon-arrow-down:before {
+  background-image: url('png-white/arrow-down.png');
+}
+.no-icomoon .primary-button.icon-arrow-down-left:before,
+.no-icomoon .danger-button.icon-arrow-down-left:before {
+  background-image: url('png-white/arrow-down-left.png');
+}
+.no-icomoon .primary-button.icon-arrow-left:before,
+.no-icomoon .danger-button.icon-arrow-left:before {
+  background-image: url('png-white/arrow-left.png');
+}
+.no-icomoon .primary-button.icon-arrow-up-left2:before,
+.no-icomoon .danger-button.icon-arrow-up-left2:before {
+  background-image: url('png-white/arrow-up-left2.png');
+}
+.no-icomoon .primary-button.icon-arrow-up2:before,
+.no-icomoon .danger-button.icon-arrow-up2:before {
+  background-image: url('png-white/arrow-up2.png');
+}
+.no-icomoon .primary-button.icon-arrow-up-right2:before,
+.no-icomoon .danger-button.icon-arrow-up-right2:before {
+  background-image: url('png-white/arrow-up-right2.png');
+}
+.no-icomoon .primary-button.icon-arrow-right2:before,
+.no-icomoon .danger-button.icon-arrow-right2:before {
+  background-image: url('png-white/arrow-right2.png');
+}
+.no-icomoon .primary-button.icon-arrow-down-right2:before,
+.no-icomoon .danger-button.icon-arrow-down-right2:before {
+  background-image: url('png-white/arrow-down-right2.png');
+}
+.no-icomoon .primary-button.icon-arrow-down2:before,
+.no-icomoon .danger-button.icon-arrow-down2:before {
+  background-image: url('png-white/arrow-down2.png');
+}
+.no-icomoon .primary-button.icon-arrow-down-left2:before,
+.no-icomoon .danger-button.icon-arrow-down-left2:before {
+  background-image: url('png-white/arrow-down-left2.png');
+}
+.no-icomoon .primary-button.icon-arrow-left2:before,
+.no-icomoon .danger-button.icon-arrow-left2:before {
+  background-image: url('png-white/arrow-left2.png');
+}
+.no-icomoon .primary-button.icon-circle-up:before,
+.no-icomoon .danger-button.icon-circle-up:before {
+  background-image: url('png-white/circle-up.png');
+}
+.no-icomoon .primary-button.icon-circle-right:before,
+.no-icomoon .danger-button.icon-circle-right:before {
+  background-image: url('png-white/circle-right.png');
+}
+.no-icomoon .primary-button.icon-circle-down:before,
+.no-icomoon .danger-button.icon-circle-down:before {
+  background-image: url('png-white/circle-down.png');
+}
+.no-icomoon .primary-button.icon-circle-left:before,
+.no-icomoon .danger-button.icon-circle-left:before {
+  background-image: url('png-white/circle-left.png');
+}
+.no-icomoon .primary-button.icon-tab:before,
+.no-icomoon .danger-button.icon-tab:before {
+  background-image: url('png-white/tab.png');
+}
+.no-icomoon .primary-button.icon-move-up:before,
+.no-icomoon .danger-button.icon-move-up:before {
+  background-image: url('png-white/move-up.png');
+}
+.no-icomoon .primary-button.icon-move-down:before,
+.no-icomoon .danger-button.icon-move-down:before {
+  background-image: url('png-white/move-down.png');
+}
+.no-icomoon .primary-button.icon-sort-alpha-asc:before,
+.no-icomoon .danger-button.icon-sort-alpha-asc:before {
+  background-image: url('png-white/sort-alpha-asc.png');
+}
+.no-icomoon .primary-button.icon-sort-alpha-desc:before,
+.no-icomoon .danger-button.icon-sort-alpha-desc:before {
+  background-image: url('png-white/sort-alpha-desc.png');
+}
+.no-icomoon .primary-button.icon-sort-numeric-asc:before,
+.no-icomoon .danger-button.icon-sort-numeric-asc:before {
+  background-image: url('png-white/sort-numeric-asc.png');
+}
+.no-icomoon .primary-button.icon-sort-numberic-desc:before,
+.no-icomoon .danger-button.icon-sort-numberic-desc:before {
+  background-image: url('png-white/sort-numberic-desc.png');
+}
+.no-icomoon .primary-button.icon-sort-amount-asc:before,
+.no-icomoon .danger-button.icon-sort-amount-asc:before {
+  background-image: url('png-white/sort-amount-asc.png');
+}
+.no-icomoon .primary-button.icon-sort-amount-desc:before,
+.no-icomoon .danger-button.icon-sort-amount-desc:before {
+  background-image: url('png-white/sort-amount-desc.png');
+}
+.no-icomoon .primary-button.icon-command:before,
+.no-icomoon .danger-button.icon-command:before {
+  background-image: url('png-white/command.png');
+}
+.no-icomoon .primary-button.icon-ctrl:before,
+.no-icomoon .danger-button.icon-ctrl:before {
+  background-image: url('png-white/ctrl.png');
+}
+.no-icomoon .primary-button.icon-opt:before,
+.no-icomoon .danger-button.icon-opt:before {
+  background-image: url('png-white/opt.png');
+}
+.no-icomoon .primary-button.icon-checkbox-checked:before,
+.no-icomoon .danger-button.icon-checkbox-checked:before {
+  background-image: url('png-white/checkbox-checked.png');
+}
+.no-icomoon .primary-button.icon-checkbox-unchecked:before,
+.no-icomoon .danger-button.icon-checkbox-unchecked:before {
+  background-image: url('png-white/checkbox-unchecked.png');
+}
+.no-icomoon .primary-button.icon-radio-checked:before,
+.no-icomoon .danger-button.icon-radio-checked:before {
+  background-image: url('png-white/radio-checked.png');
+}
+.no-icomoon .primary-button.icon-radio-checked2:before,
+.no-icomoon .danger-button.icon-radio-checked2:before {
+  background-image: url('png-white/radio-checked2.png');
+}
+.no-icomoon .primary-button.icon-radio-unchecked:before,
+.no-icomoon .danger-button.icon-radio-unchecked:before {
+  background-image: url('png-white/radio-unchecked.png');
+}
+.no-icomoon .primary-button.icon-crop:before,
+.no-icomoon .danger-button.icon-crop:before {
+  background-image: url('png-white/crop.png');
+}
+.no-icomoon .primary-button.icon-make-group:before,
+.no-icomoon .danger-button.icon-make-group:before {
+  background-image: url('png-white/make-group.png');
+}
+.no-icomoon .primary-button.icon-ungroup:before,
+.no-icomoon .danger-button.icon-ungroup:before {
+  background-image: url('png-white/ungroup.png');
+}
+.no-icomoon .primary-button.icon-scissors:before,
+.no-icomoon .danger-button.icon-scissors:before {
+  background-image: url('png-white/scissors.png');
+}
+.no-icomoon .primary-button.icon-filter:before,
+.no-icomoon .danger-button.icon-filter:before {
+  background-image: url('png-white/filter.png');
+}
+.no-icomoon .primary-button.icon-font:before,
+.no-icomoon .danger-button.icon-font:before {
+  background-image: url('png-white/font.png');
+}
+.no-icomoon .primary-button.icon-ligature:before,
+.no-icomoon .danger-button.icon-ligature:before {
+  background-image: url('png-white/ligature.png');
+}
+.no-icomoon .primary-button.icon-ligature2:before,
+.no-icomoon .danger-button.icon-ligature2:before {
+  background-image: url('png-white/ligature2.png');
+}
+.no-icomoon .primary-button.icon-text-height:before,
+.no-icomoon .danger-button.icon-text-height:before {
+  background-image: url('png-white/text-height.png');
+}
+.no-icomoon .primary-button.icon-text-width:before,
+.no-icomoon .danger-button.icon-text-width:before {
+  background-image: url('png-white/text-width.png');
+}
+.no-icomoon .primary-button.icon-font-size:before,
+.no-icomoon .danger-button.icon-font-size:before {
+  background-image: url('png-white/font-size.png');
+}
+.no-icomoon .primary-button.icon-bold:before,
+.no-icomoon .danger-button.icon-bold:before {
+  background-image: url('png-white/bold.png');
+}
+.no-icomoon .primary-button.icon-underline:before,
+.no-icomoon .danger-button.icon-underline:before {
+  background-image: url('png-white/underline.png');
+}
+.no-icomoon .primary-button.icon-italic:before,
+.no-icomoon .danger-button.icon-italic:before {
+  background-image: url('png-white/italic.png');
+}
+.no-icomoon .primary-button.icon-strikethrough:before,
+.no-icomoon .danger-button.icon-strikethrough:before {
+  background-image: url('png-white/strikethrough.png');
+}
+.no-icomoon .primary-button.icon-omega:before,
+.no-icomoon .danger-button.icon-omega:before {
+  background-image: url('png-white/omega.png');
+}
+.no-icomoon .primary-button.icon-sigma:before,
+.no-icomoon .danger-button.icon-sigma:before {
+  background-image: url('png-white/sigma.png');
+}
+.no-icomoon .primary-button.icon-page-break:before,
+.no-icomoon .danger-button.icon-page-break:before {
+  background-image: url('png-white/page-break.png');
+}
+.no-icomoon .primary-button.icon-superscript:before,
+.no-icomoon .danger-button.icon-superscript:before {
+  background-image: url('png-white/superscript.png');
+}
+.no-icomoon .primary-button.icon-subscript:before,
+.no-icomoon .danger-button.icon-subscript:before {
+  background-image: url('png-white/subscript.png');
+}
+.no-icomoon .primary-button.icon-superscript2:before,
+.no-icomoon .danger-button.icon-superscript2:before {
+  background-image: url('png-white/superscript2.png');
+}
+.no-icomoon .primary-button.icon-subscript2:before,
+.no-icomoon .danger-button.icon-subscript2:before {
+  background-image: url('png-white/subscript2.png');
+}
+.no-icomoon .primary-button.icon-text-color:before,
+.no-icomoon .danger-button.icon-text-color:before {
+  background-image: url('png-white/text-color.png');
+}
+.no-icomoon .primary-button.icon-pagebreak:before,
+.no-icomoon .danger-button.icon-pagebreak:before {
+  background-image: url('png-white/pagebreak.png');
+}
+.no-icomoon .primary-button.icon-clear-formatting:before,
+.no-icomoon .danger-button.icon-clear-formatting:before {
+  background-image: url('png-white/clear-formatting.png');
+}
+.no-icomoon .primary-button.icon-table:before,
+.no-icomoon .danger-button.icon-table:before {
+  background-image: url('png-white/table.png');
+}
+.no-icomoon .primary-button.icon-table2:before,
+.no-icomoon .danger-button.icon-table2:before {
+  background-image: url('png-white/table2.png');
+}
+.no-icomoon .primary-button.icon-insert-template:before,
+.no-icomoon .danger-button.icon-insert-template:before {
+  background-image: url('png-white/insert-template.png');
+}
+.no-icomoon .primary-button.icon-pilcrow:before,
+.no-icomoon .danger-button.icon-pilcrow:before {
+  background-image: url('png-white/pilcrow.png');
+}
+.no-icomoon .primary-button.icon-ltr:before,
+.no-icomoon .danger-button.icon-ltr:before {
+  background-image: url('png-white/ltr.png');
+}
+.no-icomoon .primary-button.icon-rtl:before,
+.no-icomoon .danger-button.icon-rtl:before {
+  background-image: url('png-white/rtl.png');
+}
+.no-icomoon .primary-button.icon-section:before,
+.no-icomoon .danger-button.icon-section:before {
+  background-image: url('png-white/section.png');
+}
+.no-icomoon .primary-button.icon-paragraph-left:before,
+.no-icomoon .danger-button.icon-paragraph-left:before {
+  background-image: url('png-white/paragraph-left.png');
+}
+.no-icomoon .primary-button.icon-paragraph-center:before,
+.no-icomoon .danger-button.icon-paragraph-center:before {
+  background-image: url('png-white/paragraph-center.png');
+}
+.no-icomoon .primary-button.icon-paragraph-right:before,
+.no-icomoon .danger-button.icon-paragraph-right:before {
+  background-image: url('png-white/paragraph-right.png');
+}
+.no-icomoon .primary-button.icon-paragraph-justify:before,
+.no-icomoon .danger-button.icon-paragraph-justify:before {
+  background-image: url('png-white/paragraph-justify.png');
+}
+.no-icomoon .primary-button.icon-indent-increase:before,
+.no-icomoon .danger-button.icon-indent-increase:before {
+  background-image: url('png-white/indent-increase.png');
+}
+.no-icomoon .primary-button.icon-indent-decrease:before,
+.no-icomoon .danger-button.icon-indent-decrease:before {
+  background-image: url('png-white/indent-decrease.png');
+}
+.no-icomoon .primary-button.icon-share:before,
+.no-icomoon .danger-button.icon-share:before {
+  background-image: url('png-white/share.png');
+}
+.no-icomoon .primary-button.icon-new-tab:before,
+.no-icomoon .danger-button.icon-new-tab:before {
+  background-image: url('png-white/new-tab.png');
+}
+.no-icomoon .primary-button.icon-embed:before,
+.no-icomoon .danger-button.icon-embed:before {
+  background-image: url('png-white/embed.png');
+}
+.no-icomoon .primary-button.icon-embed2:before,
+.no-icomoon .danger-button.icon-embed2:before {
+  background-image: url('png-white/embed2.png');
+  width: 1.25em;  
+}
+.no-icomoon .primary-button.icon-terminal:before,
+.no-icomoon .danger-button.icon-terminal:before {
+  background-image: url('png-white/terminal.png');
+}
+.no-icomoon .primary-button.icon-share2:before,
+.no-icomoon .danger-button.icon-share2:before {
+  background-image: url('png-white/share2.png');
+}
+.no-icomoon .primary-button.icon-mail:before,
+.no-icomoon .danger-button.icon-mail:before {
+  background-image: url('png-white/mail.png');
+}
+.no-icomoon .primary-button.icon-mail2:before,
+.no-icomoon .danger-button.icon-mail2:before {
+  background-image: url('png-white/mail2.png');
+}
+.no-icomoon .primary-button.icon-mail3:before,
+.no-icomoon .danger-button.icon-mail3:before {
+  background-image: url('png-white/mail3.png');
+}
+.no-icomoon .primary-button.icon-mail4:before,
+.no-icomoon .danger-button.icon-mail4:before {
+  background-image: url('png-white/mail4.png');
+}
+.no-icomoon .primary-button.icon-amazon:before,
+.no-icomoon .danger-button.icon-amazon:before {
+  background-image: url('png-white/amazon.png');
+}
+.no-icomoon .primary-button.icon-google:before,
+.no-icomoon .danger-button.icon-google:before {
+  background-image: url('png-white/google.png');
+}
+.no-icomoon .primary-button.icon-google2:before,
+.no-icomoon .danger-button.icon-google2:before {
+  background-image: url('png-white/google2.png');
+}
+.no-icomoon .primary-button.icon-google3:before,
+.no-icomoon .danger-button.icon-google3:before {
+  background-image: url('png-white/google3.png');
+}
+.no-icomoon .primary-button.icon-google-plus:before,
+.no-icomoon .danger-button.icon-google-plus:before {
+  background-image: url('png-white/google-plus.png');
+}
+.no-icomoon .primary-button.icon-google-plus2:before,
+.no-icomoon .danger-button.icon-google-plus2:before {
+  background-image: url('png-white/google-plus2.png');
+}
+.no-icomoon .primary-button.icon-google-plus3:before,
+.no-icomoon .danger-button.icon-google-plus3:before {
+  background-image: url('png-white/google-plus3.png');
+}
+.no-icomoon .primary-button.icon-hangouts:before,
+.no-icomoon .danger-button.icon-hangouts:before {
+  background-image: url('png-white/hangouts.png');
+}
+.no-icomoon .primary-button.icon-google-drive:before,
+.no-icomoon .danger-button.icon-google-drive:before {
+  background-image: url('png-white/google-drive.png');
+}
+.no-icomoon .primary-button.icon-facebook:before,
+.no-icomoon .danger-button.icon-facebook:before {
+  background-image: url('png-white/facebook.png');
+}
+.no-icomoon .primary-button.icon-facebook2:before,
+.no-icomoon .danger-button.icon-facebook2:before {
+  background-image: url('png-white/facebook2.png');
+}
+.no-icomoon .primary-button.icon-instagram:before,
+.no-icomoon .danger-button.icon-instagram:before {
+  background-image: url('png-white/instagram.png');
+}
+.no-icomoon .primary-button.icon-whatsapp:before,
+.no-icomoon .danger-button.icon-whatsapp:before {
+  background-image: url('png-white/whatsapp.png');
+}
+.no-icomoon .primary-button.icon-spotify:before,
+.no-icomoon .danger-button.icon-spotify:before {
+  background-image: url('png-white/spotify.png');
+}
+.no-icomoon .primary-button.icon-telegram:before,
+.no-icomoon .danger-button.icon-telegram:before {
+  background-image: url('png-white/telegram.png');
+}
+.no-icomoon .primary-button.icon-twitter:before,
+.no-icomoon .danger-button.icon-twitter:before {
+  background-image: url('png-white/twitter.png');
+}
+.no-icomoon .primary-button.icon-vine:before,
+.no-icomoon .danger-button.icon-vine:before {
+  background-image: url('png-white/vine.png');
+}
+.no-icomoon .primary-button.icon-vk:before,
+.no-icomoon .danger-button.icon-vk:before {
+  background-image: url('png-white/vk.png');
+}
+.no-icomoon .primary-button.icon-renren:before,
+.no-icomoon .danger-button.icon-renren:before {
+  background-image: url('png-white/renren.png');
+}
+.no-icomoon .primary-button.icon-sina-weibo:before,
+.no-icomoon .danger-button.icon-sina-weibo:before {
+  background-image: url('png-white/sina-weibo.png');
+}
+.no-icomoon .primary-button.icon-rss:before,
+.no-icomoon .danger-button.icon-rss:before {
+  background-image: url('png-white/rss.png');
+}
+.no-icomoon .primary-button.icon-rss2:before,
+.no-icomoon .danger-button.icon-rss2:before {
+  background-image: url('png-white/rss2.png');
+}
+.no-icomoon .primary-button.icon-youtube:before,
+.no-icomoon .danger-button.icon-youtube:before {
+  background-image: url('png-white/youtube.png');
+}
+.no-icomoon .primary-button.icon-youtube2:before,
+.no-icomoon .danger-button.icon-youtube2:before {
+  background-image: url('png-white/youtube2.png');
+  width: 2.5087890625em;  
+}
+.no-icomoon .primary-button.icon-twitch:before,
+.no-icomoon .danger-button.icon-twitch:before {
+  background-image: url('png-white/twitch.png');
+}
+.no-icomoon .primary-button.icon-vimeo:before,
+.no-icomoon .danger-button.icon-vimeo:before {
+  background-image: url('png-white/vimeo.png');
+}
+.no-icomoon .primary-button.icon-vimeo2:before,
+.no-icomoon .danger-button.icon-vimeo2:before {
+  background-image: url('png-white/vimeo2.png');
+}
+.no-icomoon .primary-button.icon-lanyrd:before,
+.no-icomoon .danger-button.icon-lanyrd:before {
+  background-image: url('png-white/lanyrd.png');
+}
+.no-icomoon .primary-button.icon-flickr:before,
+.no-icomoon .danger-button.icon-flickr:before {
+  background-image: url('png-white/flickr.png');
+}
+.no-icomoon .primary-button.icon-flickr2:before,
+.no-icomoon .danger-button.icon-flickr2:before {
+  background-image: url('png-white/flickr2.png');
+}
+.no-icomoon .primary-button.icon-flickr3:before,
+.no-icomoon .danger-button.icon-flickr3:before {
+  background-image: url('png-white/flickr3.png');
+}
+.no-icomoon .primary-button.icon-flickr4:before,
+.no-icomoon .danger-button.icon-flickr4:before {
+  background-image: url('png-white/flickr4.png');
+}
+.no-icomoon .primary-button.icon-dribbble:before,
+.no-icomoon .danger-button.icon-dribbble:before {
+  background-image: url('png-white/dribbble.png');
+}
+.no-icomoon .primary-button.icon-behance:before,
+.no-icomoon .danger-button.icon-behance:before {
+  background-image: url('png-white/behance.png');
+}
+.no-icomoon .primary-button.icon-behance2:before,
+.no-icomoon .danger-button.icon-behance2:before {
+  background-image: url('png-white/behance2.png');
+}
+.no-icomoon .primary-button.icon-deviantart:before,
+.no-icomoon .danger-button.icon-deviantart:before {
+  background-image: url('png-white/deviantart.png');
+}
+.no-icomoon .primary-button.icon-steam:before,
+.no-icomoon .danger-button.icon-steam:before {
+  background-image: url('png-white/steam.png');
+}
+.no-icomoon .primary-button.icon-steam2:before,
+.no-icomoon .danger-button.icon-steam2:before {
+  background-image: url('png-white/steam2.png');
+}
+.no-icomoon .primary-button.icon-dropbox:before,
+.no-icomoon .danger-button.icon-dropbox:before {
+  background-image: url('png-white/dropbox.png');
+}
+.no-icomoon .primary-button.icon-onedrive:before,
+.no-icomoon .danger-button.icon-onedrive:before {
+  background-image: url('png-white/onedrive.png');
+}
+.no-icomoon .primary-button.icon-github:before,
+.no-icomoon .danger-button.icon-github:before {
+  background-image: url('png-white/github.png');
+}
+.no-icomoon .primary-button.icon-npm:before,
+.no-icomoon .danger-button.icon-npm:before {
+  background-image: url('png-white/npm.png');
+}
+.no-icomoon .primary-button.icon-basecamp:before,
+.no-icomoon .danger-button.icon-basecamp:before {
+  background-image: url('png-white/basecamp.png');
+}
+.no-icomoon .primary-button.icon-trello:before,
+.no-icomoon .danger-button.icon-trello:before {
+  background-image: url('png-white/trello.png');
+}
+.no-icomoon .primary-button.icon-wordpress:before,
+.no-icomoon .danger-button.icon-wordpress:before {
+  background-image: url('png-white/wordpress.png');
+}
+.no-icomoon .primary-button.icon-joomla:before,
+.no-icomoon .danger-button.icon-joomla:before {
+  background-image: url('png-white/joomla.png');
+}
+.no-icomoon .primary-button.icon-ello:before,
+.no-icomoon .danger-button.icon-ello:before {
+  background-image: url('png-white/ello.png');
+}
+.no-icomoon .primary-button.icon-blogger:before,
+.no-icomoon .danger-button.icon-blogger:before {
+  background-image: url('png-white/blogger.png');
+}
+.no-icomoon .primary-button.icon-blogger2:before,
+.no-icomoon .danger-button.icon-blogger2:before {
+  background-image: url('png-white/blogger2.png');
+}
+.no-icomoon .primary-button.icon-tumblr:before,
+.no-icomoon .danger-button.icon-tumblr:before {
+  background-image: url('png-white/tumblr.png');
+}
+.no-icomoon .primary-button.icon-tumblr2:before,
+.no-icomoon .danger-button.icon-tumblr2:before {
+  background-image: url('png-white/tumblr2.png');
+}
+.no-icomoon .primary-button.icon-yahoo:before,
+.no-icomoon .danger-button.icon-yahoo:before {
+  background-image: url('png-white/yahoo.png');
+}
+.no-icomoon .primary-button.icon-yahoo2:before,
+.no-icomoon .danger-button.icon-yahoo2:before {
+  background-image: url('png-white/yahoo2.png');
+}
+.no-icomoon .primary-button.icon-tux:before,
+.no-icomoon .danger-button.icon-tux:before {
+  background-image: url('png-white/tux.png');
+}
+.no-icomoon .primary-button.icon-appleinc:before,
+.no-icomoon .danger-button.icon-appleinc:before {
+  background-image: url('png-white/appleinc.png');
+}
+.no-icomoon .primary-button.icon-finder:before,
+.no-icomoon .danger-button.icon-finder:before {
+  background-image: url('png-white/finder.png');
+}
+.no-icomoon .primary-button.icon-android:before,
+.no-icomoon .danger-button.icon-android:before {
+  background-image: url('png-white/android.png');
+}
+.no-icomoon .primary-button.icon-windows:before,
+.no-icomoon .danger-button.icon-windows:before {
+  background-image: url('png-white/windows.png');
+}
+.no-icomoon .primary-button.icon-windows8:before,
+.no-icomoon .danger-button.icon-windows8:before {
+  background-image: url('png-white/windows8.png');
+}
+.no-icomoon .primary-button.icon-soundcloud:before,
+.no-icomoon .danger-button.icon-soundcloud:before {
+  background-image: url('png-white/soundcloud.png');
+}
+.no-icomoon .primary-button.icon-soundcloud2:before,
+.no-icomoon .danger-button.icon-soundcloud2:before {
+  background-image: url('png-white/soundcloud2.png');
+}
+.no-icomoon .primary-button.icon-skype:before,
+.no-icomoon .danger-button.icon-skype:before {
+  background-image: url('png-white/skype.png');
+}
+.no-icomoon .primary-button.icon-reddit:before,
+.no-icomoon .danger-button.icon-reddit:before {
+  background-image: url('png-white/reddit.png');
+}
+.no-icomoon .primary-button.icon-hackernews:before,
+.no-icomoon .danger-button.icon-hackernews:before {
+  background-image: url('png-white/hackernews.png');
+}
+.no-icomoon .primary-button.icon-wikipedia:before,
+.no-icomoon .danger-button.icon-wikipedia:before {
+  background-image: url('png-white/wikipedia.png');
+}
+.no-icomoon .primary-button.icon-linkedin:before,
+.no-icomoon .danger-button.icon-linkedin:before {
+  background-image: url('png-white/linkedin.png');
+}
+.no-icomoon .primary-button.icon-linkedin2:before,
+.no-icomoon .danger-button.icon-linkedin2:before {
+  background-image: url('png-white/linkedin2.png');
+}
+.no-icomoon .primary-button.icon-lastfm:before,
+.no-icomoon .danger-button.icon-lastfm:before {
+  background-image: url('png-white/lastfm.png');
+}
+.no-icomoon .primary-button.icon-lastfm2:before,
+.no-icomoon .danger-button.icon-lastfm2:before {
+  background-image: url('png-white/lastfm2.png');
+}
+.no-icomoon .primary-button.icon-delicious:before,
+.no-icomoon .danger-button.icon-delicious:before {
+  background-image: url('png-white/delicious.png');
+}
+.no-icomoon .primary-button.icon-stumbleupon:before,
+.no-icomoon .danger-button.icon-stumbleupon:before {
+  background-image: url('png-white/stumbleupon.png');
+}
+.no-icomoon .primary-button.icon-stumbleupon2:before,
+.no-icomoon .danger-button.icon-stumbleupon2:before {
+  background-image: url('png-white/stumbleupon2.png');
+}
+.no-icomoon .primary-button.icon-stackoverflow:before,
+.no-icomoon .danger-button.icon-stackoverflow:before {
+  background-image: url('png-white/stackoverflow.png');
+}
+.no-icomoon .primary-button.icon-pinterest:before,
+.no-icomoon .danger-button.icon-pinterest:before {
+  background-image: url('png-white/pinterest.png');
+}
+.no-icomoon .primary-button.icon-pinterest2:before,
+.no-icomoon .danger-button.icon-pinterest2:before {
+  background-image: url('png-white/pinterest2.png');
+}
+.no-icomoon .primary-button.icon-xing:before,
+.no-icomoon .danger-button.icon-xing:before {
+  background-image: url('png-white/xing.png');
+}
+.no-icomoon .primary-button.icon-xing2:before,
+.no-icomoon .danger-button.icon-xing2:before {
+  background-image: url('png-white/xing2.png');
+}
+.no-icomoon .primary-button.icon-flattr:before,
+.no-icomoon .danger-button.icon-flattr:before {
+  background-image: url('png-white/flattr.png');
+}
+.no-icomoon .primary-button.icon-foursquare:before,
+.no-icomoon .danger-button.icon-foursquare:before {
+  background-image: url('png-white/foursquare.png');
+}
+.no-icomoon .primary-button.icon-yelp:before,
+.no-icomoon .danger-button.icon-yelp:before {
+  background-image: url('png-white/yelp.png');
+}
+.no-icomoon .primary-button.icon-paypal:before,
+.no-icomoon .danger-button.icon-paypal:before {
+  background-image: url('png-white/paypal.png');
+}
+.no-icomoon .primary-button.icon-chrome:before,
+.no-icomoon .danger-button.icon-chrome:before {
+  background-image: url('png-white/chrome.png');
+}
+.no-icomoon .primary-button.icon-firefox:before,
+.no-icomoon .danger-button.icon-firefox:before {
+  background-image: url('png-white/firefox.png');
+}
+.no-icomoon .primary-button.icon-IE:before,
+.no-icomoon .danger-button.icon-IE:before {
+  background-image: url('png-white/IE.png');
+}
+.no-icomoon .primary-button.icon-edge:before,
+.no-icomoon .danger-button.icon-edge:before {
+  background-image: url('png-white/edge.png');
+}
+.no-icomoon .primary-button.icon-opera:before,
+.no-icomoon .danger-button.icon-opera:before {
+  background-image: url('png-white/opera.png');
+}
+.no-icomoon .primary-button.icon-file-pdf:before,
+.no-icomoon .danger-button.icon-file-pdf:before {
+  background-image: url('png-white/file-pdf.png');
+}
+.no-icomoon .primary-button.icon-file-openoffice:before,
+.no-icomoon .danger-button.icon-file-openoffice:before {
+  background-image: url('png-white/file-openoffice.png');
+}
+.no-icomoon .primary-button.icon-file-word:before,
+.no-icomoon .danger-button.icon-file-word:before {
+  background-image: url('png-white/file-word.png');
+}
+.no-icomoon .primary-button.icon-file-excel:before,
+.no-icomoon .danger-button.icon-file-excel:before {
+  background-image: url('png-white/file-excel.png');
+}
+.no-icomoon .primary-button.icon-libreoffice:before,
+.no-icomoon .danger-button.icon-libreoffice:before {
+  background-image: url('png-white/libreoffice.png');
+}
+.no-icomoon .primary-button.icon-html-five:before,
+.no-icomoon .danger-button.icon-html-five:before {
+  background-image: url('png-white/html-five.png');
+}
+.no-icomoon .primary-button.icon-html-five2:before,
+.no-icomoon .danger-button.icon-html-five2:before {
+  background-image: url('png-white/html-five2.png');
+}
+.no-icomoon .primary-button.icon-css3:before,
+.no-icomoon .danger-button.icon-css3:before {
+  background-image: url('png-white/css3.png');
+}
+.no-icomoon .primary-button.icon-git:before,
+.no-icomoon .danger-button.icon-git:before {
+  background-image: url('png-white/git.png');
+}
+.no-icomoon .primary-button.icon-codepen:before,
+.no-icomoon .danger-button.icon-codepen:before {
+  background-image: url('png-white/codepen.png');
+}
+.no-icomoon .primary-button.icon-svg:before,
+.no-icomoon .danger-button.icon-svg:before {
+  background-image: url('png-white/svg.png');
+}
+.no-icomoon .primary-button.icon-IcoMoon:before,
+.no-icomoon .danger-button.icon-IcoMoon:before {
+  background-image: url('png-white/IcoMoon.png');
+}

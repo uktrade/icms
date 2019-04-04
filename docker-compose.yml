@@ -2,6 +2,8 @@ version: '3'
 services:
   db:
     image: postgres:11
+    ports:
+      - "5432:5432"
   web:
     build: .
     environment:
