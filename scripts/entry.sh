@@ -1,5 +1,4 @@
 #!/bin/sh -e
-live_reload_pid=
 
 stop_live_reload() {
   echo "Stopping live reload"

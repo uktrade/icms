@@ -17,3 +17,4 @@ release-patch:
 	./scripts/release.sh patch
 
 all: requirements
+
