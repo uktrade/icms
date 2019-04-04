@@ -12,15 +12,15 @@
 
     <title>ICMS - Import Case Management System</title>
 
-    <script src="{% static 'icms/js/boomerang.js' %}" type="text/javascript"></script>
-    <script>
-        BOOMR.init({
-            beacon_url: '/icms/handle/!BOOM',
-            log: null
-        });
-        BOOMR.addVar('request_id', 's1wSOUn_plrkCVnta');
-    </script>
-    <script src="{% static 'icms/js/core-header.js' %}" type="text/javascript"></script>
+    <!-- <script src="{% static 'icms/js/boomerang.js' %}" type="text/javascript"></script> -->
+    <!-- <script> -->
+    <!-- BOOMR.init({ -->
+    <!-- beacon_url: '/icms/handle/!BOOM', -->
+    <!-- log: null -->
+    <!-- }); -->
+    <!-- BOOMR.addVar('request_id', 's1wSOUn_plrkCVnta'); -->
+    <!-- </script> -->
+    <!-- <script src="{% static 'icms/js/core-header.js' %}" type="text/javascript"></script> -->
     <link rel="stylesheet" type="text/css" href="{% static 'icms/css/OpenSans/OpenSans.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'icms/css/icomoon/icomoon.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'icms/css/icomoon/icomoon-png.css' %}">
@@ -33,7 +33,8 @@
 </head>
 
 <body><iframe id="iframe-wrapper" src="javascript:'';" style="border: none; overflow: hidden; visibility: hidden; display: none;">&nbsp;</iframe>
-    <form method="post" name="mainForm" action="/icms/fox/icms/" onSubmit="javascript: return false;" autocomplete="off" accept-charset="UTF-8"><input type="hidden" name="thread_id" id="thread_id" value="voabqvau2fgc6rqp01ip2vsgdih9bmi486g99d44knrj5isaukoqt4k3i9tlmo7ghba1gbm5e2ciraml4oib3mn1v2rj24lk13eu" />
+    <form method="post" name="mainForm" action="login" autocomplete="off" accept-charset="UTF-8"><input type="hidden" name="thread_id" id="thread_id" value="voabqvau2fgc6rqp01ip2vsgdih9bmi486g99d44knrj5isaukoqt4k3i9tlmo7ghba1gbm5e2ciraml4oib3mn1v2rj24lk13eu" />
+       {% csrf_token %}
         <input type="hidden" name="app_mnem" id="app_mnem" value="icms" />
         <input type="hidden" name="field_set" id="field_set" value="fss1xmFzo_plrkCVnta" />
         <input type="hidden" name="scroll_position" id="scroll_position" value="0" />
@@ -63,18 +64,25 @@
                     Log in to ICMS
                 </h2>
 
+
+                {% if login_error %}
+                <div id="login-error">
+                  Invalid username or password.<br /> N.B. passwords are case sensitive
+                </div>
+                {% endif %}
+
                 <div class="container setoutForm login-form" data-xfid="f5">
                     <div class="row">
                         <div class="three columns" data-xfid="g9"><label id="pg9" for="g9" class="prompt west">Username
                             </label>
                         </div>
-                        <div class="nine columns" data-xfid="g9"><input id="g9" name="g9" type="text" value="" size="20" aria-required="true" /></div>
+                        <div class="nine columns" data-xfid="g9"><input id="g9" name="username" type="text" value="" size="20" aria-required="true" /></div>
                     </div>
                     <div class="row">
                         <div class="three columns" data-xfid="g10"><label id="pg10" for="g10" class="prompt west">Password
                             </label>
                         </div>
-                        <div class="nine columns" data-xfid="g10"><input id="g10" name="g10" type="password" value="" size="20" aria-required="true" /></div>
+                        <div class="nine columns" data-xfid="g10"><input id="g10" name="password" type="password" value="" size="20" aria-required="true" /></div>
                     </div>
                     <div class="row">
                         <div class="three columns"></div>
@@ -135,14 +143,14 @@
             </div>
         </div>
     </form>
-    <script src="{% static 'icms/js/core-footer.js' %}" type="text/javascript"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            FOXjs.init(function() {
-                FOXjs.focus('g9', -9999);
-            });
-        });
-    </script>
+    <!-- <script src="{% static 'icms/js/core-footer.js' %}" type="text/javascript"></script> -->
+    <!-- <script type="text/javascript"> -->
+    <!-- $(document).ready(function() { -->
+    <!-- FOXjs.init(function() { -->
+    <!-- FOXjs.focus('g9', -9999); -->
+    <!-- }); -->
+    <!-- }); -->
+    <!-- </script> -->
 </body>
 
 </html>

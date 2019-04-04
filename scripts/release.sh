@@ -88,7 +88,7 @@ reset "$DEV" "${REMOTE}/$DEV"
 # Read current version on dev branch
 version=$(<VERSION)
 echo "Current version is $version"
-newVersion=v"$(scripts/bump_version.py "$BUMP" "$version")" # Bumped version
+newVersion="$(scripts/bump_version.py "$BUMP" "$version")" # Bumped version
 
 # create the release branch from develop branch
 releaseBranch="release/$newVersion"
@@ -99,7 +99,7 @@ echo "$newVersion" > VERSION
 echo "Bumped version to $newVersion"
 
 # commit version number increment
-git commit -am "version $version"
+git commit -am "version $newVersion"
 
 merge_release_to "$PROD"
 merge_release_to "$DEV"
