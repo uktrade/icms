@@ -73,7 +73,6 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
         password_bytes = bytearray(password, 'utf-8')
         salt_bytes = bytearray.fromhex(salt)
         hash = self.encrypt(password_bytes, salt_bytes, iterations, 16, 'sha1')
-        print(hash, password, salt, iterations)
         return "%s$%d$%s$%s" % (self.algorithm, iterations, salt, hash)
 
     def harden_runtime(self, password, encoded):
