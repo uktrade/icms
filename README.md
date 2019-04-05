@@ -8,23 +8,39 @@
 
 ## Requirements
 
-[Python 3.7](https://www.python.org/downloads/release/python-372/)
+[Python 3.7+](https://www.python.org/downloads/release/python-372/)
 
-[PostgreSQL](https://www.postgresql.org/)
+
+[PostgreSQL](https://www.postgresql.org/) 
+
+## Development requirements
+
+[Docker Compose 1.23.2+](https://docs.docker.com/compose/)
+
 
 ## Development installation
 
     git clone https://github.com/uktrade/icms.git
     cd icms
-    docker-compose up
+    make debug
 
-Go to url http://localhost:8000
+Go to url http://localhost:8080
 
-Above script will start a PostgreSQL database and ICMS app in debug mode with live reload functionality.
+Above script will start a PostgreSQL database and ICMS app in debug mode. In order to run with no debug and Gunicorn server for a production-like environment use:
 
-Make sure to rebuild the image  if new dependencies are installed and added to requirements.txt
+    make run
 
-    docker-compose up --build web
+Make sure to rebuild the image if new dependencies are installed and added to requirements.txt
+
+    make build 
+    
+or build and run using:
+
+    make build debug 
+    
+or
+    
+    make build run
     
 
 ## Environment Variables
@@ -32,9 +48,9 @@ Make sure to rebuild the image  if new dependencies are installed and added to r
 | Environment variable              | Default                                    | Notes                                                  |
 | --------------------------------- | ------------------------------------------ | ---------------------------------                      |
 | ICMS_DEBUG                        | False                                      |                                                        |
-| ICMS_WEB_PORT                     | 8000                                       |                                                        |
+| ICMS_WEB_PORT                     | 8080                                       |                                                        |
 | DATABASE_URL                      | postgres://postgres@db:5432/postgres       | Format postgres://username/password@host:port/database |
 | ICMS_MIGRATE                      | True                                       | Runs Django migrate before starting the app            |
 | ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
-| ICMS_ALLOWED_HOSTS                |                                            | Comma separated list of hosts                          |
+| ICMS_ALLOWED_HOSTS                | localhost                                  | Comma separated list of hosts                          |
 
