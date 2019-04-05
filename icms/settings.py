@@ -23,7 +23,7 @@ env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('ICMS_SECRET_KEY', get_random_secret_key())
 DEBUG = env.bool('ICMS_DEBUG', False)
-ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=[])
+ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost'])
 LOGIN_URL = '/'
 
 # Application definition
@@ -121,3 +121,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
