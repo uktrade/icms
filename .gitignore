@@ -117,5 +117,5 @@ dmypy.json
 .pyre/
 
 # Collected static files
-static/
+/static/
 
