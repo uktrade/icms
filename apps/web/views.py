@@ -7,7 +7,7 @@ from django.conf import settings
 
 
 def index(request):
-    template = loader.get_template('icms/index.html')
+    template = loader.get_template('icms/login.html')
     return HttpResponse(template.render({}, request))
 
 
@@ -26,7 +26,7 @@ def auth(request):
         return redirect('home')
     else:
         return HttpResponseForbidden(
-            loader.get_template('icms/index.html').render(
+            loader.get_template('icms/login.html').render(
                 {'login_error': True}, request))
 
 
