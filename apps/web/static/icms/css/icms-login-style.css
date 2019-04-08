@@ -1,4 +1,4 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
+/* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
 */
@@ -12,8 +12,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
   margin: 0;
@@ -24,7 +24,7 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
@@ -124,7 +124,7 @@ strong {
   background-color: #FFFFFF;
   margin: 0 auto;
   overflow: auto;
-} 
+}
 
 #logo {
   margin-bottom: 1em;
@@ -135,7 +135,7 @@ strong {
   float: left;
   padding: 0.5em 0 0 3em;
   width: 39.5em;
-} 
+}
 
 .half-width-box {
   width: 460px;
@@ -155,7 +155,7 @@ strong {
   font-size: 16px;
   background-color: #F9F9F9;
   border: 1px inset #E2E2E2;
-  font-family: "nta", Arial, sans-serif;  
+  font-family: "nta", Arial, sans-serif;
   border-radius: 0;
 }
 
@@ -174,7 +174,7 @@ strong {
  */
 
 .login-form input {
-  font-size: 1.1em;    
+  font-size: 1.1em;
   margin-bottom: 0.5em;
   padding: 0.3em 0 0.1em 0.4em;
   margin-right: 5px;
@@ -203,7 +203,7 @@ input:focus {
   border: none;
   font-family: "nta", Arial, sans-serif;
   font-size: 1.3em;
-  background-image: url('../img/gov-uk-button-pointer');
+  background-image: url('../img/gov-uk-button-pointer.png');
   background-position: 100% 50%;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -212,13 +212,13 @@ input:focus {
 .button:hover,
 .button.primary-button:hover {
   background-color: #1E5C9E;
-  background-image: url('../img/gov-uk-button-pointer');
+  background-image: url('../img/gov-uk-button-pointer.png');
   background-position: 100% 50%;
-  background-repeat: no-repeat;  
+  background-repeat: no-repeat;
   -webkit-box-shadow: 0 3px 0 #000000;
   -moz-box-shadow: 0 3px 0 #000000;
-  box-shadow: 0 3px 0 #000000;  
-} 
+  box-shadow: 0 3px 0 #000000;
+}
 
 button.button.link-button,
 button.button.link-button:hover {
@@ -234,13 +234,13 @@ button.button.link-button:hover {
 }
 
 #login-error {
-  background: url('../img/gov-uk-icon-important') no-repeat scroll 0.5em 0.5em;
+  background: url('../img/gov-uk-icon-important.png') no-repeat scroll 0.5em 0.5em;
   padding: 10px 10px 10px 45px;
   line-height: 1.5em;
 }
 
 #system-message {
-background: url('../img/system-message-border') repeat-x #EAEDEF;
+background: url('../img/system-message-border.png') repeat-x #EAEDEF;
 padding: 1.25em 0.5em 0.5em 0.5em;
 margin-bottom: 1em;
 line-height: 1.4em;
@@ -269,7 +269,7 @@ font-weight: bold;
 }
 
 .file-list li a.pdf {
-  background-image: url('../img/gov-uk-file-pdf');
+  background-image: url('../img/gov-uk-file-pdf.png');
 }
 
 /*
@@ -281,7 +281,7 @@ font-weight: bold;
   border-bottom: 1px solid #a1acb2;
   background: #dee0e2;
   padding: 2em 0;
-} 
+}
 
 #footer-content {
   width: 950px;
