@@ -1,0 +1,7 @@
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="error-message">{{error|escape}}</div>
+{% endfor %}
+{% endif %}
+
+{{field.field.widget.input_type}}
