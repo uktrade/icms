@@ -26,14 +26,25 @@
     </h2>
 
 
-    {% if login_error %}
+    {% if form.non_field_errors %}
     <div id="login-error">
         Invalid username or password.<br /> N.B. passwords are case sensitive
     </div>
     {% endif %}
 
+    {% if next %}
+    <div id="login-error">
+      {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+      {% else %}
+      <p>Please login to see this page.</p>
+      {% endif %}
+    </div>
+    {% endif %}
 
-    <form method="post" name="mainForm" action="login" autocomplete="off" accept-charset="UTF-8">
+
+    <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8">
         {% csrf_token %}
         <div class="container setoutForm login-form" data-xfid="f5">
             <div class="row">

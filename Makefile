@@ -13,6 +13,15 @@ debug:
 run: collectstatic
 	ICMS_DEBUG=False docker-compose up
 
+migrations:
+	docker-compose exec web ./manage.py makemigrations
+
+migrate:
+	docker-compose exec web ./manage.py migrate
+
+createsuperuser:
+	docker-compose exec web ./manage.py createsuperuser
+
 release_major:
 	./scripts/release.sh major
 
