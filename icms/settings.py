@@ -26,6 +26,7 @@ DEBUG = env.bool('ICMS_DEBUG', False)
 ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost'])
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/home'
+LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
