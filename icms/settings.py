@@ -25,6 +25,7 @@ SECRET_KEY = env.str('ICMS_SECRET_KEY', get_random_secret_key())
 DEBUG = env.bool('ICMS_DEBUG', False)
 ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost'])
 LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/home'
 
 # Application definition
 INSTALLED_APPS = [
@@ -104,6 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Auth user model
+AUTH_USER_MODEL = 'web.user'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
