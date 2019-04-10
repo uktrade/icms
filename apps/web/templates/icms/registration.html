@@ -1,0 +1,101 @@
+{% extends "icms/base.html" %}
+{% load static %}
+
+{% block title %} Register {% endblock %}
+
+{% block content %}
+<div id="header">
+    <h1>
+
+        Registration
+
+    </h1>
+    <p class="subheading">Import Case Management System</p>
+</div>
+<div class="clearBoth"> </div>
+
+<h2>
+    User Details
+</h2>
+<p>You are about to register for an Import Case Management System account. Note that after registering, you will not be able to apply for import licences until you have been granted permission to act as an importer by ILB.</p>
+<p>For further information, please refer to the guidance documents on the main login screen.</p>
+<p>All fields are mandatory.</p>
+
+
+<form method="post" name="registrationForm" action="{% url 'register' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {% csrf_token %}
+
+
+    <div class="container setoutForm">
+
+        {% for field in form %}
+        {% if field.name == 'captcha' %}
+        {% else %}
+        <div class="row">
+            <div class="four columns">
+                <label for="{{ field.id_for_label }}" class="prompt west">
+                    {{field.label}}
+                </label>
+            </div>
+            <div class="six columns {% if field.errors %}input-error{% endif %}">
+              <!-- <input id="{{ field.id_for_label}}" name="{{ field.html_name}}" type="{{field.field.widget.input_type}}" value="" size="80" aria-required="{{field.field.required|lower}}" /> -->
+              {{ field }}
+                {% if field.errors %}
+                {% for error in field.errors %}
+                <div class="error-message">{{error}}</div>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="two columns"></div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+    </div>
+    <p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
+
+    <div class="container setoutForm" data-xfid="f19">
+        <div class="row">
+            <div class="four columns" data-xfid="g20"><label id="pg20" for="g20" class="prompt west">Security check
+                </label>
+            </div>
+            <div class="six columns {% if form.captcha.errors %}input-error{% endif %}" data-xfid="g20">
+              {{form.captcha}}
+              <div class="clearBoth"> </div>
+              {% if form.captcha.errors %}
+              {% for error in form.captcha.errors %}
+              <div class="error-message">{{error}}</div>
+              {% endfor %}
+              {% endif %}
+            </div>
+            <div class="two columns"></div>
+        </div>
+
+    </div>
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="four columns">
+
+            </div>
+            <div class="eight columns">
+
+                <ul class="menu-out flow-across">
+                    <li> <button id="g23" name="g23" type="submit" class="primary-button button">
+                            Register </button></li>
+                    <li> <a id="g24" name="g24" href="/" class="link-button button">
+                            Cancel </a></li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
+{% endblock %}

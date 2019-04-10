@@ -1,10 +1,9 @@
 {% extends "icms/base.html" %}
 
-{% block title %}ICMS - Import Case Management System{% endblock %}
+{% block title %}Import Case Management System{% endblock %}
 
 {% block content %}
 {% load static %}
-<img alt="DIT Logo" width="21%" id="logo" src="{% static 'icms/img/dit_logo.png' %}">
 <div id="header">
     <h1>
 
@@ -43,11 +42,26 @@
     {% endif %}
 
 
-    <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8">
+    <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
         {% csrf_token %}
         <div class="container setoutForm login-form" data-xfid="f5">
-
-          {% include 'icms/partial/formset.html' with form=form label_class="three columns" label_position="west" input_class="nine columns" input_size=20 %}
+            {% for field in form %}
+            <div class="row">
+                <div class="three columns">
+                    <label for="{{ field.id_for_label }}" class="prompt west">
+                        {{field.label}}
+                    </label>
+                </div>
+                <div class="nine columns {% if field.errors %}input-error{% endif %}">
+                    {{field}}
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                    <div class="error-message">{{error}}</div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
 
             <div class="row">
                 <div class="three columns"></div>
@@ -99,6 +113,6 @@
     </ul>
 </div>
 <div class="clearBoth"> </div>
-<button id="g11" name="g11" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-register&quot;,&quot;ctxt&quot;:&quot;s1xnJp6_plrkCVnta&quot;}, this);" class="primary-button button">
-    Register </button>
+<a id="g11" href="{% url 'register' %}" class="primary-button button">
+    Register </a>
 {% endblock %}

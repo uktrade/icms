@@ -1,5 +1,5 @@
 requirements:
-	pip install -r requirements.txt
+	docker-compose exec web pip install -r requirements.txt
 
 collectstatic:
 	./manage.py collectstatic --noinput --traceback
@@ -30,5 +30,8 @@ release_minor:
 
 release_patch:
 	./scripts/release.sh patch
+
+shell:
+	docker-compose exec web ./manage.py shell
 
 all: requirements

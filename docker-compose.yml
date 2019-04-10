@@ -11,6 +11,7 @@ services:
       - ICMS_WEB_PORT=${ICMS_WEB_PORT:-8080}
       - ICMS_DEBUG=${ICMS_DEBUG:-True}
       - ICMS_MIGRATE=${ICMS_MIGRATE:-False}
+      - ICMS_EMAIL_API_KEY=${ICMS_EMAIL_API_KEY:-''}
     tty: true
     ports:
       - "8080:8080"

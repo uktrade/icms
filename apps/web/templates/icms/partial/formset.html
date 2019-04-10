@@ -1,19 +1,5 @@
-{% csrf_token %}
-{% for field in form %}
-<div class="row">
-    <div class="{{label_class}}">
-        <label for="{{field.id_for_label}}" class="prompt {{label_position}}">
-            {{field.label}}
-        </label>
-    </div>
-    <div class="{{input_class}} {% if field.errors %}input-error{% endif %}">
-      <input id="{{field.id_for_label}}" name="{{field.html_name}}" type="{{field.field.widget.input_type}}" value=""
-        size="{{input_size}}" aria-required="{{field.field.required|lower}}" />
-      {% if field.errors %}
-      {% for error in field.errors %}
-        <div class="error-message">{{error}}</div>
-        {% endfor %}
-      {% endif %}
-    </div>
-</div>
-{% endfor %}
+{% if field.errors %}
+{% for error in field.errors %}
+  <div class="error-message">{{error}}</div>
+  {% endfor %}
+{% endif %}
