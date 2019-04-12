@@ -38,7 +38,11 @@ def send(template_name, user, context={}):
     logger.debug('Sending template: %s to user: %s', template['name'],
                  user.username)
     logger.debug('email:%s', user.email)
-    client().send_email_notification(user.email, template['id'], context)
+    client().send_email_notification(
+        user.email,
+        template['id'],
+        context,
+        email_reply_to_id=settings.EMAIL_REPLY_TO_ID)
 
 
 class EmailDumper():

@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'icms/login.html')
+    return render(request, 'icms/public/login.html')
 
 
 @login_required
 def home(request):
-    return render(request, 'icms/home.html')
+    return render(request, 'icms/internal/home.html')
 
 
 @login_required
@@ -32,7 +32,8 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
 
-    return render(request, 'icms/change_password.html', {'form': form})
+    return render(request, 'icms/internal/change_password.html',
+                  {'form': form})
 
 
 def register(request):
@@ -52,4 +53,4 @@ def register(request):
         logger.debug('Loading registration form')
         form = RegistrationForm()
 
-    return render(request, 'icms/registration.html', {'form': form})
+    return render(request, 'icms/public/registration.html', {'form': form})

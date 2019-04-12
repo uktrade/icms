@@ -177,3 +177,4 @@ LOGGING = {
 
 # Email
 EMAIL_API_KEY = env.str('ICMS_EMAIL_API_KEY', '')
+EMAIL_REPLY_TO_ID = env.str('ICMS_EMAIL_REPLY_TO_ID', None)

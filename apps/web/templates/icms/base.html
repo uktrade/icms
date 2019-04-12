@@ -9,7 +9,7 @@
 
     <link rel="icon" href="{% static 'icms/img/favicon.png' %}" type="image/png">
 
-    <title>ICMS - {% block title %}{% endblock %}</title>
+    <title>{% block title %}ICMS - Import Case Management System{% endblock %}</title>
 
     <script src="{% static 'icms/js/core-header.js' %}" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icms/css/OpenSans/OpenSans.css' %}">
@@ -21,31 +21,19 @@
     <!--[if IE 8]><link rel="stylesheet" type="text/css" href="{% static 'icms/css/fox_default_layout_ie8.css' %}"><![endif]-->
 
     {% block css %}
-    <link rel="stylesheet" type="text/css" href="{% static 'icms/css/icms-login-style.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'icms/css/icms-login-fonts.css' %}">
     {% endblock %}
 </head>
 
-<body><iframe id="iframe-wrapper" src="javascript:'';" style="border: none; overflow: hidden; visibility: hidden; display: none;">&nbsp;</iframe>
-    <div class="content">
+<body>
+    {% block content %} {% endblock %}
 
-      <img alt="DIT Logo" width="21%" id="logo" src="{% static 'icms/img/dit_logo.png' %}">
-      {% block content %} {% endblock %}
-
-    </div>
-    <div id="footer">
-        <div id="footer-content">
-            © <a href="http://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm">Crown Copyright</a>. All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">Open Government Licence</a>, except where otherwise stated. <a href="https://www.ilb.trade.gov.uk/docs/DIT_DDaT_Fair_Processing_Notice_ICMS.pdf">Fair Processing Notice</a>
-        </div>
-    </div>
     <script src="{% static 'icms/js/core-footer.js' %}" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            FOXjs.init(function() {
-                FOXjs.focus('g9', -9999);
-            });
+            FOXjs.init(function() {});
         });
     </script>
+
 </body>
 
 </html>
