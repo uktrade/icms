@@ -6,7 +6,7 @@ from . import views
 urlpatterns = [
     path(
         '',
-        auth_view.LoginView.as_view(template_name='icms/login.html'),
+        auth_view.LoginView.as_view(template_name='icms/public/login.html'),
         name='login'),
     path('logout', auth_view.LogoutView.as_view(), name='logout'),
     path('home', views.home, name='home'),
