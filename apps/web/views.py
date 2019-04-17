@@ -1,35 +1,56 @@
-from django.http import HttpResponse, HttpResponseForbidden
-from django.template import loader
-from django.contrib.auth import authenticate, login, logout
+import random
+import logging
+from django.shortcuts import render, redirect
+from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.conf import settings
+from .forms import RegistrationForm, PasswordChangeForm
+from . import notify
+
+logger = logging.getLogger(__name__)
 
 
 def index(request):
-    template = loader.get_template('icms/index.html')
-    return HttpResponse(template.render({}, request))
+    return render(request, 'icms/public/login.html')
 
 
 @login_required
 def home(request):
-    template = loader.get_template('icms/home.html')
-    return HttpResponse(template.render({}, request))
+    return render(request, 'icms/internal/home.html')
 
 
-def auth(request):
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return redirect('home')
+@login_required
+def change_password(request):
+    logger.debug('Receieved change password requuest %r', request.user)
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            logger.debug('Form is valid')
+            user = form.save()
+            logger.debug('Saved user')
+            update_session_auth_hash(request, user)
+            return redirect('change_password')
     else:
-        return HttpResponseForbidden(
-            loader.get_template('icms/index.html').render(
-                {'login_error': True}, request))
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'icms/internal/change_password.html',
+                  {'form': form})
 
 
-def log_out(request):
-    logout(request)
-    return redirect(settings.LOGIN_URL)
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            logger.debug('Form is valid')
+            user = form.instance
+            temp_pass = random.randint(1000, 1000000)
+            user.set_password(temp_pass)
+            user.username = user.email
+            user.save()
+            notify.register(user, temp_pass)
+            login(request, user)
+            return redirect('change_password')
+    else:
+        logger.debug('Loading registration form')
+        form = RegistrationForm()
+
+    return render(request, 'icms/public/registration.html', {'form': form})

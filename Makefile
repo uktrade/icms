@@ -1,20 +1,37 @@
 requirements:
-	pip install -r requirements.txt
+	docker-compose exec web pip install -r requirements.txt
+
+collectstatic:
+	./manage.py collectstatic --noinput --traceback
+
+build:
+	docker-compose build web
 
 debug:
-	ICMS_DEBUG=True scripts/entry.sh
+	ICMS_DEBUG=True docker-compose up
 
-run:
-	ICMS_DEBUG=False scripts/entry.sh
+run: collectstatic
+	ICMS_DEBUG=False docker-compose up
 
-release-major:
+migrations:
+	docker-compose exec web ./manage.py makemigrations
+
+migrate:
+	docker-compose exec web ./manage.py migrate
+
+createsuperuser:
+	docker-compose exec web ./manage.py createsuperuser
+
+release_major:
 	./scripts/release.sh major
 
-release-minor:
+release_minor:
 	./scripts/release.sh minor
 
-release-patch:
+release_patch:
 	./scripts/release.sh patch
 
-all: requirements
+shell:
+	docker-compose exec web ./manage.py shell
 
+all: requirements

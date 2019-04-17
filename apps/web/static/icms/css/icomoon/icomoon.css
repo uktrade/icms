@@ -2,11 +2,11 @@
    Used under the CC BY 3.0 licence (https://creativecommons.org/licenses/by/3.0/) */
 @font-face {
 	font-family: 'icomoon';
-	src:url('icomoon.eot?-p4ivb2');
-	src:url('icomoon.eot?#iefix-p4ivb2') format('embedded-opentype'),
-		url('icomoon.woff?-p4ivb2') format('woff'),
-		url('icomoon.ttf?-p4ivb2') format('truetype'),
-		url('icomoon.svg?-p4ivb2#icomoon') format('svg');
+	src:url('icomoon.eot');
+	src:url('icomoon.eot?#iefix') format('embedded-opentype'),
+		url('icomoon.woff') format('woff'),
+		url('icomoon.ttf') format('truetype'),
+		url('icomoon.svg') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
