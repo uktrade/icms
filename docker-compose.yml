@@ -1,3 +1,5 @@
+# This docker-compose configuration is for ICMS development.
+# Production deployment does not use this configuration.
 version: '3'
 services:
   db:
@@ -8,8 +10,11 @@ services:
     restart: always
     build: .
     environment:
-      - ICMS_WEB_PORT=8080
-      - ICMS_DEBUG=True
+      - ICMS_WEB_PORT=${ICMS_WEB_PORT:-8080}
+      - ICMS_DEBUG=${ICMS_DEBUG:-True}
+      - ICMS_MIGRATE=${ICMS_MIGRATE:-False}
+      - ICMS_EMAIL_API_KEY=${ICMS_EMAIL_API_KEY:-''}
+      - ICMS_EMAIL_REPLY_TO_ID=${ICMS_EMAIL_REPLY_TO_ID:-''}
     tty: true
     ports:
       - "8080:8080"
