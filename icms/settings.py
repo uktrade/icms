@@ -30,6 +30,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
+    'viewflow',
     'apps.web',
     'captcha',
     'django.contrib.admin',
