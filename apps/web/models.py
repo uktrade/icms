@@ -12,6 +12,8 @@ class User(AbstractUser):
     security_question = models.CharField(
         max_length=4000, blank=False, null=True)
     security_answer = models.CharField(max_length=4000, blank=False, null=True)
+    register_complete = models.BooleanField(
+        blank=False, null=False, default=False)
 
 
 class AccessRequestQuerySet(QuerySet):
