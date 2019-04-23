@@ -6,5 +6,5 @@ from . import views, models
 
 class AccessRequestFlow(Flow):
     process_class = models.AccessRequestProcess
-    request = flow.Start(views.request_access).Next(this.process)
-    process = flow.View(views.home)
+    request = flow.Start(views.request_access).Next(this.approve)
+    approve = flow.View(views.home).Next(flow.End())

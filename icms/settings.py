@@ -165,6 +165,10 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
+        },
         'apps.web': {
             'handlers': ['console'],
             'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),

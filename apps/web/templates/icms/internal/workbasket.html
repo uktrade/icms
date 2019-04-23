@@ -1,0 +1,1231 @@
+{% extends "icms/internal/base.html" %}
+{% load static %}
+
+{% block title %}Workbasket{% endblock %}
+
+{% block sidebar %}
+<div id="sidebar-substitute"></div>
+<div id="sidebar">
+    <h4>
+
+
+        Filter
+
+
+    </h4>
+
+    <div class="container setoutForm tightForm" data-xfid="f25">
+        <div class="row">
+            <div class="twelve columns" data-xfid="g26"><label id="pg26" for="g26" class="prompt north">Transaction / Ref
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g26"><input id="g26" name="g26" type="text" value="" size="10" class="tightForm" aria-required="false" /></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g27"><label id="pg27" for="g27" class="prompt north">Subject
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g27"><select id="g27" name="g27" class="tightForm" aria-required="false">
+                    <option value="g27/__FX_N" selected="selected">All</option>
+                    <option value="g27/0">Account successfully created</option>
+                    <option value="g27/1">Certificate Application</option>
+                    <option value="g27/2">Exporter Access Request</option>
+                    <option value="g27/3">Importer Access Request</option>
+                </select></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g28"><label id="pg28" for="g28" class="prompt north">Topic
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g28"><input id="g28" name="g28" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g29"><label id="pg29" for="g29" class="prompt north">Company
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g29"><input id="g29" name="g29" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g30"><label id="pg30" for="g30" class="prompt north">Status
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g30"><input id="g30" name="g30" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g31"><label id="pg31" for="g31" class="prompt north">Information
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g31"><input id="g31" name="g31" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g32"><label id="pg32" for="g32" class="prompt north">Filter Tag
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="g32"><select id="g32" name="g32" class="tightForm" aria-required="true">
+                    <option value="g32/0">All</option>
+                    <option value="g32/1" selected="selected">For Attention</option>
+                </select></div>
+        </div>
+    </div>
+    <ul class="menu-out flow-across">
+        <li> <button id="g33" name="g33" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-filter-workbasket&quot;,&quot;ctxt&quot;:&quot;s9tVC_plrnqWp1W&quot;}, this);" class="primary-button small-button button">
+                Apply Filter </button></li>
+        <li> <button id="g34" name="g34" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-reset-filter&quot;,&quot;ctxt&quot;:&quot;s9tVC_plrnqWp1W&quot;}, this);" class="small-button link-button button">
+                Clear Filter </button></li>
+    </ul>
+
+</div>
+<div id="sidebar-background"></div>
+{% endblock %}
+
+{% block main-content %}
+
+{{process_list}}
+{% for p in process_list %}
+{{p}}
+{% endfor %}
+
+<div class="" id="content">
+    <div id="content-ie8-float">
+
+
+        <div class="content-actions"></div>
+
+        <a id="b37" class="skipTarget" tabindex="-1">Main content</a></li>
+
+        <div class="list-secondary-actions">
+            <ul class="menu-out grouped small-menu-out flow-across">
+                <li> <button id="g43" name="g43" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-sort-wb-asc&quot;,&quot;ctxt&quot;:&quot;s9tVC_plrnqWp1W&quot;}, this);" class="icon-sort-alpha-asc button no-prompt-action" aria-describedby="hint159-content" aria-label="Sort by selected column, ascending">
+                    </button>
+                    <div id="hint159-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in ascending order</div>
+                </li>
+                <li> <button id="g42" name="g42" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-sort-wb-desc&quot;,&quot;ctxt&quot;:&quot;s9tVC_plrnqWp1W&quot;}, this);" class="icon-sort-alpha-desc button no-prompt-action" aria-describedby="hint160-content" aria-label="Sort by selected column, descending">
+                    </button>
+                    <div id="hint160-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in descending order</div>
+                </li>
+                <li> <button id="g41" name="g41" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-clear-sort&quot;,&quot;ctxt&quot;:&quot;s9tVC_plrnqWp1W&quot;}, this);" class="icon-loop2 button no-prompt-action" aria-describedby="hint161-content" aria-label="Clear sorting">
+                    </button>
+                    <div id="hint161-content" role="tooltip" class="hint-content">Clear sorting</div>
+                </li>
+            </ul>
+        </div>
+        <table class="setoutList">
+            <thead>
+
+
+                <tr>
+                    <th>
+                        Transaction <label id="pg45/0" for="g45/0" class="radio-label"><input id="g45/0" name="g46" value="g45/0" type="radio" /> </label> /
+                        Ref
+                        <label id="pg47/0" for="g47/0" class="radio-label"><input id="g47/0" name="g46" value="g47/0" type="radio" /> </label>
+                    </th>
+                    <th>
+                        Subject <label id="pg48/0" for="g48/0" class="radio-label"><input id="g48/0" name="g46" value="g48/0" type="radio" /> </label> /
+                        Topic <label id="pg49/0" for="g49/0" class="radio-label"><input id="g49/0" name="g46" value="g49/0" type="radio" /> </label>
+                    </th>
+                    <th>
+                        Company <label id="pg50/0" for="g50/0" class="radio-label"><input id="g50/0" name="g46" value="g50/0" type="radio" /> </label>
+                    </th>
+                    <th>
+                        Status <label id="pg51/0" for="g51/0" class="radio-label"><input id="g51/0" name="g46" value="g51/0" type="radio" /> </label> /
+                        Date <label id="pg52/0" for="g52/0" class="radio-label"><input id="g52/0" name="g46" value="g52/0" type="radio" /> </label>
+                    </th>
+                    <th>
+                        <div class="container">
+
+                            <div class="row">
+
+
+                                <div class="six columns break-word">
+                                    Information
+                                </div>
+                                <div class="six columns">
+                                    Actions
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </th>
+                </tr>
+
+
+            </thead>
+
+            <tr>
+                <td>
+
+
+                    IAR/788
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    sdf<br />adf
+
+                </td>
+                <td>
+                    Submitted
+
+                    <br>
+                    18 APR 2019 13:04:25
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g53"><span id="g53" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f55">
+                                        <td data-xfid="g56"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td data-xfid="g57"> <button id="g57" name="g57" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
+                                                New </button>
+                                            <div id="hint164-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g58"><span id="g58" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f59">
+                                        <td data-xfid="g60"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tF1_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g61"><span id="g61" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    EAR/379
+
+
+
+
+                </td>
+                <td>
+                    Exporter Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    testing
+
+                </td>
+                <td>
+                    Submitted
+
+                    <br>
+                    15 APR 2019 12:53:33
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g62"><span id="g62" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f64">
+                                        <td data-xfid="g65"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tFp_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td data-xfid="g66"> <button id="g66" name="g66" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9tFp_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint167-content">
+                                                New </button>
+                                            <div id="hint167-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g67"><span id="g67" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f68">
+                                        <td data-xfid="g69"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IuX_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g70"><span id="g70" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    IAR/785
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    greatest imports
+
+                </td>
+                <td>
+                    Submitted
+
+                    <br>
+                    13 FEB 2019 17:29:30
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g71"><span id="g71" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f73">
+                                        <td data-xfid="g74"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Ivl_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g75"><span id="g75" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f76">
+                                        <td data-xfid="g77"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Ivw_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g78"><span id="g78" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    IAR/784
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    best imports
+
+                </td>
+                <td>
+                    Submitted
+
+                    <br>
+                    13 FEB 2019 17:28:06
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g79"><span id="g79" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f81">
+                                        <td data-xfid="g82"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IvT_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td data-xfid="g83"> <button id="g83" name="g83" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9IvT_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint172-content">
+                                                New </button>
+                                            <div id="hint172-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g84"><span id="g84" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f85">
+                                        <td data-xfid="g86"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Iw5_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g87"><span id="g87" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    Not Yet Assigned
+
+
+
+
+                </td>
+                <td>
+                    Certificate Application
+                    <br>
+                    Certificate of Free Sale
+
+                </td>
+                <td>
+                    EXPORT CO
+
+                </td>
+                <td>
+                    In Progress
+
+                    <br>
+                    06 FEB 2019
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g88"><span id="g88" class="text-widget ">Prepare Application</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f90">
+                                        <td data-xfid="g91"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Iwu_plrnqWp1W&quot;}, this);">Resume</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g92"><span id="g92" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f93">
+                                        <td data-xfid="g94"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to cancel this draft application? All entered data will be lost.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IwF_plrnqWp1W&quot;}, this);">Cancel</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g95"><span id="g95" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    EAR/378
+
+
+
+
+                </td>
+                <td>
+                    Exporter Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    EXPORT CO
+
+                </td>
+                <td>
+                    Closed (Approved)
+
+                    <br>
+                    04 FEB 2019 13:41:02
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g96"><span id="g96" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f98">
+                                        <td data-xfid="g99"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Ix2_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g100"><span id="g100" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f101">
+                                        <td data-xfid="g102"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Ixd_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g103"><span id="g103" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    IAR/780
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    MAMMOTH
+
+                </td>
+                <td>
+                    Submitted<br />(Approval: Completed)
+
+                    <br>
+                    04 FEB 2019 21:42:45
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g104"><span id="g104" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f106">
+                                        <td data-xfid="g107"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IxA_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g108"><span id="g108" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f109">
+                                        <td data-xfid="g110"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IxL_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g111"><span id="g111" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    IAR/777
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    NEW CO<br />London importers
+
+                </td>
+                <td>
+                    Closed (Approved)
+
+                    <br>
+                    04 FEB 2019 14:07:46
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g112"><span id="g112" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f114">
+                                        <td data-xfid="g115"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Iy8_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td data-xfid="g116"> <button id="g116" name="g116" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9Iy8_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint181-content">
+                                                New </button>
+                                            <div id="hint181-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g117"><span id="g117" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f118">
+                                        <td data-xfid="g119"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Iyk_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g120"><span id="g120" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    IAR/776
+
+
+
+
+                </td>
+                <td>
+                    Importer Access Request
+                    <br>
+
+
+                </td>
+                <td>
+                    NEW CO<br />my agent co
+
+                </td>
+                <td>
+                    Closed (Approved)
+
+                    <br>
+                    04 FEB 2019 13:42:29
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g121"><span id="g121" class="text-widget ">Access Request</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f123">
+                                        <td data-xfid="g124"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IyI_plrnqWp1W&quot;}, this);">View</a></td>
+                                        <td data-xfid="g125"> <button id="g125" name="g125" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9IyI_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint184-content">
+                                                New </button>
+                                            <div id="hint184-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g126"><span id="g126" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f127">
+                                        <td data-xfid="g128"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IyU_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g129"><span id="g129" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+                    <div class="individual-input" data-xfid="g130"> <img id="g130" src="/icmsfox5uat/static/icms/img/contact-new" class="image-button" alt="Account successfully created" tabindex="0" data-hint-id="g130" aria-describedby="hint185-content" />
+                        <div id="hint185-content" role="tooltip" class="hint-content">
+                            <h4>Account successfully created</h4>Welcome
+                        </div>
+                    </div>
+
+
+
+
+
+                </td>
+                <td>
+                    Account successfully created
+                    <br>
+                    Mr Exporter Testing
+
+                </td>
+                <td>
+                    EXPORTING BROTHERS
+
+                </td>
+                <td>
+                    N/A
+
+                    <br>
+
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g131"><span id="g131" class="text-widget ">Welcome &amp; Introduction</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f133">
+                                        <td data-xfid="g134"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Izl_plrnqWp1W&quot;}, this);">View Welcome Message</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g135"><span id="g135" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f136">
+                                        <td data-xfid="g137"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9Izw_plrnqWp1W&quot;}, this);">Clear From Workbasket</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g138"><span id="g138" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    Not Yet Assigned
+
+
+
+
+                </td>
+                <td>
+                    Certificate Application
+                    <br>
+                    Certificate of Free Sale
+
+                </td>
+                <td>
+                    EXPORT CO
+
+                </td>
+                <td>
+                    In Progress
+
+                    <br>
+                    18 JAN 2016
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g139"><span id="g139" class="text-widget ">Prepare Application</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f141">
+                                        <td data-xfid="g142"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IzU_plrnqWp1W&quot;}, this);">Resume</a></td>
+                                        <td data-xfid="g143"> <button id="g143" name="g143" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9IzU_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint190-content">
+                                                New </button>
+                                            <div id="hint190-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g144"><span id="g144" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f145">
+                                        <td data-xfid="g146"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to cancel this draft application? All entered data will be lost.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IA6_plrnqWp1W&quot;}, this);">Cancel</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g147"><span id="g147" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+
+
+                    Not Yet Assigned
+
+
+
+
+                </td>
+                <td>
+                    Certificate Application
+                    <br>
+                    Certificate of Free Sale
+
+                </td>
+                <td>
+                    EXPORT CO
+
+                </td>
+                <td>
+                    In Progress
+
+                    <br>
+                    13 JAN 2016
+                </td>
+                <td>
+                    <div class="container">
+
+
+                        <div class="row">
+
+
+                            <div class="six columns break-word">
+
+                                <div class="individual-input" data-xfid="g148"><span id="g148" class="text-widget ">Prepare Application</span></div>
+
+                            </div>
+                            <div class="six columns">
+
+                                <table class="nestedList setoutList">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                            <th scope="col">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tr data-xfid="f150">
+                                        <td data-xfid="g151"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IAv_plrnqWp1W&quot;}, this);">Resume</a></td>
+                                        <td data-xfid="g152"> <button id="g152" name="g152" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9IAv_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint193-content">
+                                                New </button>
+                                            <div id="hint193-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g153"><span id="g153" class="text-widget "></span></td>
+                                    </tr>
+                                    <tr data-xfid="f154">
+                                        <td data-xfid="g155"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to cancel this draft application? All entered data will be lost.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9IAH_plrnqWp1W&quot;}, this);">Cancel</a></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td data-xfid="g156"><span id="g156" class="text-widget "></span></td>
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+
+
+
+        <div class="result-count">
+            12 workbasket items
+        </div>
+
+
+
+
+
+        <div class="content-actions"></div>
+
+    </div>
+</div>
+{% endblock %}
