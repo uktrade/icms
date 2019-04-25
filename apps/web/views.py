@@ -6,6 +6,7 @@ from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
 from viewflow.decorators import flow_start_view
 from .decorators import require_registered
+from .models import AccessRequestProcess
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,8 @@ def index(request):
 
 @require_registered
 def home(request):
+    logger.debug('******Access request')
+    logger.debug(AccessRequestProcess._meta.model_name)
     return render(request, 'icms/internal/home.html')
 
 
@@ -88,3 +91,10 @@ def register(request):
         form = forms.RegistrationForm()
 
     return render(request, 'icms/public/registration.html', {'form': form})
+
+
+@require_registered
+def workbasket(request):
+    process = AccessRequestProcess.objects.owned_process(request.user)
+    return render(request, 'icms/internal/workbasket.html',
+                  {'process_list': process})
