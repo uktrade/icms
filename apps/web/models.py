@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models.query import QuerySet
 from viewflow.models import Process
+from .managers import AccessRequestQuerySet, ProcessQuerySet
 
 
 class User(AbstractUser):
@@ -14,18 +14,6 @@ class User(AbstractUser):
     security_answer = models.CharField(max_length=4000, blank=False, null=True)
     register_complete = models.BooleanField(
         blank=False, null=False, default=False)
-
-
-class AccessRequestQuerySet(QuerySet):
-    def importer_requests(self):
-        return self.filter(request_type__in=[
-            AccessRequest.IMPORTER, AccessRequest.IMPORTER_AGENT
-        ])
-
-    def exporter_requests(self):
-        return self.filter(request_type__in=[
-            AccessRequest.EXPORTER, AccessRequest.EXPORTER_AGENT
-        ])
 
 
 class AccessRequest(models.Model):
@@ -58,6 +46,13 @@ class AccessRequest(models.Model):
     def request_type_verbose(self):
         return dict(AccessRequest.REQUEST_TYPES)[self.request_type]
 
+    def request_type_short(self):
+        if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
+            return "Import Access Request"
+        else:
+            return "Exporter Access Request"
+
 
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
+    objects = ProcessQuerySet.as_manager()
