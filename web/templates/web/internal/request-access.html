@@ -1,4 +1,4 @@
-{% extends "icms/internal/base.html" %}
+{% extends "web/internal/base.html" %}
 {% load static %}
 
 {% block title %}Request Importer/Exporter Access{% endblock %}
@@ -138,7 +138,7 @@
 
               {{ activation.management_form }}
               {% for field in form %}
-                {% include 'icms/partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
+                {% include 'web/partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
               {% endfor %}
 
 

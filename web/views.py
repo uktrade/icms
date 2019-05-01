@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'icms/public/login.html')
+    return render(request, 'web/public/login.html')
 
 
 @require_registered
 def home(request):
     logger.debug('******Access request')
     logger.debug(AccessRequestProcess._meta.model_name)
-    return render(request, 'icms/internal/home.html')
+    return render(request, 'web/internal/home.html')
 
 
 @require_registered
@@ -33,9 +33,9 @@ def request_access(request):
         access_request.save()
         request.activation.process.access_request = access_request
         request.activation.done()
-        return render(request, 'icms/internal/request-access-success.html')
+        return render(request, 'web/internal/request-access-success.html')
 
-    return render(request, 'icms/internal/request-access.html', {
+    return render(request, 'web/internal/request-access.html', {
         'form': form,
         'activation': request.activation
     })
@@ -62,15 +62,14 @@ def set_password(request):
     if form.is_valid():
         return redirect('home')
 
-    return render(request, 'icms/internal/set-password.html', {'form': form})
+    return render(request, 'web/internal/set-password.html', {'form': form})
 
 
 @require_registered
 def change_password(request):
     form = update_password(request)
 
-    return render(request, 'icms/internal/change-password.html',
-                  {'form': form})
+    return render(request, 'web/internal/change-password.html', {'form': form})
 
 
 def register(request):
@@ -90,11 +89,11 @@ def register(request):
         logger.debug('Loading registration form')
         form = forms.RegistrationForm()
 
-    return render(request, 'icms/public/registration.html', {'form': form})
+    return render(request, 'web/public/registration.html', {'form': form})
 
 
 @require_registered
 def workbasket(request):
     process = AccessRequestProcess.objects.owned_process(request.user)
-    return render(request, 'icms/internal/workbasket.html',
+    return render(request, 'web/internal/workbasket.html',
                   {'process_list': process})

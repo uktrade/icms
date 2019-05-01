@@ -1,4 +1,4 @@
-{% extends "icms/base.html" %}
+{% extends "web/base.html" %}
 {% load static %}
 
 {% block title %}{% block page-title %}{% endblock %} - ICMS{% endblock %}
@@ -21,7 +21,7 @@
         <div id="wrapper">
             <header id="menu-bar">
                 <h1>
-                    <img alt="Department of International Trade" src="{% static 'icms/img/dit-horizontal-white-logo.png' %}">
+                    <img alt="Department of International Trade" src="{% static 'web/img/dit-horizontal-white-logo.png' %}">
                 </h1>
                 <input type="checkbox" id="top-nav-toggle">
                 <label for="top-nav-toggle" id="top-nav-toggle-label" class="icon-menu">
@@ -77,7 +77,7 @@
             </main>
             <footer> </footer>
         </div>
-        <!-- <script src="{% static 'icms/js/fox_default_layout.js' %}" type="text/javascript"></script> -->
+        <!-- <script src="{% static 'web/js/fox_default_layout.js' %}" type="text/javascript"></script> -->
     </form>
 
 {% endblock %}
