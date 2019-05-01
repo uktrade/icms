@@ -17,8 +17,6 @@ def index(request):
 
 @require_registered
 def home(request):
-    logger.debug('******Access request')
-    logger.debug(AccessRequestProcess._meta.model_name)
     return render(request, 'web/internal/home.html')
 
 

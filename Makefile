@@ -2,16 +2,22 @@ requirements:
 	docker-compose exec web pip install -r requirements.txt
 
 collectstatic:
+	DJANGO_SETTINGS_MODULE='config.settings.development' \
 	./manage.py collectstatic --noinput --traceback
 
 build:
 	docker-compose build web
 
 debug:
-	ICMS_DEBUG=True docker-compose up
+	ICMS_DEBUG=True \
+	ICMS_MIGRATE=False \
+	DJANGO_SETTINGS_MODULE='config.settings.development' \
+	docker-compose up
 
 run: collectstatic
-	ICMS_DEBUG=False docker-compose up
+	ICMS_DEBUG=False \
+	DJANGO_SETTINGS_MODULE='config.settings.development' \
+	docker-compose up
 
 migrations:
 	docker-compose exec web ./manage.py makemigrations
