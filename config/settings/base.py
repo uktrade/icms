@@ -31,7 +31,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Application definition
 INSTALLED_APPS = [
     'viewflow',
-    'apps.web',
+    'web',
     'captcha',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'icms.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'icms.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -81,7 +81,7 @@ DATABASES = {
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'apps.web.fox_hasher.FOXPBKDF2SHA1Hasher',
+    'web.fox_hasher.FOXPBKDF2SHA1Hasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
@@ -169,11 +169,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
         },
-        'apps.web': {
-            'handlers': ['console'],
-            'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
-        },
-        'icms': {
+        'web': {
             'handlers': ['console'],
             'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
         }

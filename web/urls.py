@@ -8,7 +8,7 @@ urlpatterns = [
     path(
         '',
         auth_view.LoginView.as_view(
-            template_name='icms/public/login.html',
+            template_name='web/public/login.html',
             redirect_authenticated_user=True),
         name='login'),
     path('logout/', auth_view.LogoutView.as_view(), name='logout'),

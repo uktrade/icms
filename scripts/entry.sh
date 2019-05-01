@@ -14,7 +14,7 @@ fi
 if [ "$ICMS_DEBUG" = 'True' ]; then
   python manage.py runserver 0:"$ICMS_WEB_PORT"
 else
-  gunicorn icms.wsgi \
+  gunicorn config.wsgi \
            --name icms \
            --workers "$ICMS_NUM_WORKERS" \
            --bind 0:"$ICMS_WEB_PORT"
