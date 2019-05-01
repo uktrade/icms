@@ -1,9 +1,9 @@
 requirements:
-	docker-compose exec web pip install -r requirements.txt
+	docker-compose run web pip install -r requirements.txt
 
 collectstatic:
 	DJANGO_SETTINGS_MODULE='config.settings.development' \
-	./manage.py collectstatic --noinput --traceback
+	docker-compose run web ./manage.py collectstatic --noinput --traceback
 
 build:
 	docker-compose build web
@@ -18,6 +18,9 @@ run: collectstatic
 	ICMS_DEBUG=False \
 	DJANGO_SETTINGS_MODULE='config.settings.development' \
 	docker-compose up
+
+test:
+	pytest
 
 migrations:
 	docker-compose exec web ./manage.py makemigrations
