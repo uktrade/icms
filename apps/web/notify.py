@@ -1,4 +1,4 @@
-from icms import email
+from . import email
 import logging
 
 # GDS Notify template names
