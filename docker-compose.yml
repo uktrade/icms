@@ -10,11 +10,17 @@ services:
     restart: always
     build: .
     environment:
-      - ICMS_WEB_PORT=${ICMS_WEB_PORT:-8080}
-      - ICMS_DEBUG=${ICMS_DEBUG:-True}
-      - ICMS_MIGRATE=${ICMS_MIGRATE:-False}
-      - ICMS_EMAIL_API_KEY=${ICMS_EMAIL_API_KEY:-''}
-      - ICMS_EMAIL_REPLY_TO_ID=${ICMS_EMAIL_REPLY_TO_ID:-''}
+      - ICMS_WEB_PORT
+      - ICMS_DEBUG
+      - ICMS_NUM_WORKERS # Gunicorn workers number
+      - ICMS_MIGRATE
+      # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
+      - DATABASE_URL
+      - ICMS_ALLOWED_HOSTS
+      - ICMS_SECRET_KEY
+      - ICMS_EMAIL_API_KEY
+      - ICMS_EMAIL_REPLY_TO_ID
+      - DJANGO_SETTINGS_MODULE
     tty: true
     ports:
       - "8080:8080"
