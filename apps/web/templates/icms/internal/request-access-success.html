@@ -1,0 +1,31 @@
+{% extends "icms/internal/base.html" %}
+{% load static %}
+
+{% block title %}Importer/Exporter Access Request{% endblock %}
+{% block context-header %}Importer/Exporter Access Request{% endblock %}
+
+
+{% block main-content %}
+    <div class="no-sidebar" id="content">
+        <div id="content-ie8-float">
+
+            <div class="content-actions"></div>
+
+            <div class="info-box info-box-success">
+
+                <p>Your access request has been submitted to ILB. You will receive an email notification when your request has been processed (usually within 1 working day).</p>
+                <p>You may submit another access request if you require access to multiple importers/exporters, or otherwise you may exit by logging out below.</p>
+
+            </div>
+            <ul class="menu-out flow-across">
+                <li> <a id="g19" href="{% url 'request_access' %}" name="g19"  class="link-button button">
+                        Submit Another Request </a></li>
+                <li> <a id="g18" href="{% url 'logout' %}" name="g18"  class="link-button button">
+                        Logout </a></li>
+            </ul>
+
+            <div class="content-actions"></div>
+
+        </div>
+    </div>
+{% endblock %}

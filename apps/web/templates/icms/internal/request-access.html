@@ -1,0 +1,163 @@
+{% extends "icms/internal/base.html" %}
+{% load static %}
+
+{% block title %}Request Importer/Exporter Access{% endblock %}
+{% block context-header %}Request Importer/Exporter Access{% endblock %}
+
+
+{% block main-content %}
+<div class="no-sidebar" id="content">
+    <div id="content-ie8-float">
+        <div class="content-actions"></div>
+
+        <h3>
+            <div class="list-secondary-actions">
+                <ul class="menu-out flow-across">
+                    <li> <a id="g28" name="g28" href="" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-get-open-access-requests&quot;,&quot;ctxt&quot;:&quot;s6JNe_plrnqWp1W&quot;}, this);" class="link-button icon-spinner11 button">
+                            Refresh </a></li>
+                </ul>
+            </div>
+            Pending Access Requests
+
+        </h3>
+        <p>Below are any pending access requests you have made. You will receive an email notification when your request has been processed (usually within 1 working day).</p>
+
+        <h4>
+            Importer Access Requests
+        </h4>
+
+
+
+
+
+        <table responsiveList class="setoutList">
+            <thead>
+                <tr>
+                    <th scope="col">Reference
+                    </th>
+                    <th scope="col">Requested Date
+                    </th>
+                    <th scope="col">Request Type
+                    </th>
+                    <th scope="col">Importer Name / Address
+                    </th>
+                    <th scope="col">Agent Name / Address
+                    </th>
+                    <th scope="col">Further Information Requests
+                    </th>
+                </tr>
+            </thead>
+            {% for request in user.access_requests.importer_requests %}
+            <tr data-xfid="f30">
+                <td data-title="Reference" data-xfid="g31"><span id="g31" class="text-widget ">IAR/785</span></td>
+                <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">13-FEB-2019 17:29</span></td>
+                <td data-title="Request Type" data-xfid="g33"><span id="g33" class="text-widget ">{{request.request_type_verbose}}</span></td>
+                <td data-title="Importer Name / Address" data-xfid="g34"><span id="g34" class="text-widget ">{{request.organisation_name}}<br><br>{{request.organisation_address}}</span></td>
+                <td data-title="Agent Name / Address" data-xfid="g35"><span id="g35" class="text-widget ">{{request.agent_name}}<br><br>{{request.agent_address}}</span></td>
+                <td data-title="Further Information Requests" data-xfid="f36">
+                    <table class="setoutList nestedList">
+                        <thead>
+                            <tr>
+                                <th colspan="2" class="listPrompt">Further Information Requests</th>
+                            </tr>
+                            <tr>
+                                <th scope="col">Requested
+                                </th>
+                                <th scope="col">Respond
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+
+        <h4>
+            Exporter Access Requests
+        </h4>
+
+        <table responsiveList class="setoutList">
+            <thead>
+                <tr>
+                    <th scope="col">Reference
+                    </th>
+                    <th scope="col">Requested Date
+                    </th>
+                    <th scope="col">Request Type
+                    </th>
+                    <th scope="col">Exporter Name / Address
+                    </th>
+                    <th scope="col">Agent Name / Address
+                    </th>
+                    <th scope="col">Further Information Requests
+                    </th>
+                </tr>
+            </thead>
+            {% for request in user.access_requests.exporter_requests %}
+            <tr data-xfid="f59">
+                <td data-title="Reference" data-xfid="g60"><span id="g60" class="text-widget ">EAR/379</span></td>
+                <td data-title="Requested Date" data-xfid="g61"><span id="g61" class="text-widget ">15-APR-2019 12:53</span></td>
+                <td data-title="Request Type" data-xfid="g62"><span id="g62" class="text-widget ">{{request.request_type_verbose}}</span></td>
+                <td data-title="Exporter Name / Address" data-xfid="g63"><span id="g63" class="text-widget ">{{request.organisation_name}}<br><br>{{request.organisation_address}}</span></td>
+                <td data-title="Agent Name / Address" data-xfid="g64"><span id="g64" class="text-widget ">{{request.agent_name}}<br><br>{{request.agent_address}}</span></td>
+                <td data-title="Further Information Requests" data-xfid="f65">
+                    <table class="setoutList nestedList">
+                        <thead>
+                            <tr>
+                                <th colspan="2" class="listPrompt">Further Information Requests</th>
+                            </tr>
+                            <tr>
+                                <th scope="col">Requested
+                                </th>
+                                <th scope="col">Respond
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+
+        <h3>
+            New Access Request
+        </h3>
+        <div class="info-box info-box-info">
+
+            <p>Enter the details below and submit your request to ILB. You will receive an email notification when your request has been processed (usually within 1 working day).</p>
+            <p>When you are requesting access as an agent, the importer/exporter will be asked to approve your access.</p>
+
+        </div>
+        <div class="container setoutForm" data-xfid="f66">
+            <form method="post" name="accessRequestForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
+              {% csrf_token %}
+
+              {{ activation.management_form }}
+              {% for field in form %}
+                {% include 'icms/partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
+              {% endfor %}
+
+
+
+                <div class="row">
+                    <div class="three columns"></div>
+                    <div class="six columns" data-xfid="g72">
+                        <ul class="menu-out flow-across">
+                            <li> <button id="g73" name="g73" type="submit" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-submit-new-request-exit-on-success&quot;,&quot;ctxt&quot;:&quot;s6Jh1_plrnqWp1W&quot;}, this);" class="primary-button button">
+                                    Submit Access Request </button></li>
+                        </ul>
+                    </div>
+                    <div class="three columns"></div>
+                </div>
+        </div>
+        </form>
+        <div class="content-actions"></div>
+
+    </div>
+</div>
+
+{% endblock %}
