@@ -43,23 +43,10 @@
     <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
         {% csrf_token %}
         <div class="container setoutForm login-form" data-xfid="f5">
-            {% for field in form %}
-            <div class="row">
-                <div class="three columns">
-                    <label for="{{ field.id_for_label }}" class="prompt west">
-                        {{field.label}}
-                    </label>
-                </div>
-                <div class="nine columns {% if field.errors %}input-error{% endif %}">
-                    {{field}}
-                    {% if field.errors %}
-                    {% for error in field.errors %}
-                    <div class="error-message">{{error}}</div>
-                    {% endfor %}
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+
+          {% include 'icms/partial/input.html' with field=form.username label_cols='three' input_cols='nine' %}
+          {% include 'icms/partial/input.html' with field=form.password label_cols='three' input_cols='nine' %}
+          <input type="hidden" name="next" value="{{ next }}">
 
             <div class="row">
                 <div class="three columns"></div>

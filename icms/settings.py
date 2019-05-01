@@ -30,6 +30,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
+    'viewflow',
     'apps.web',
     'captcha',
     'django.contrib.admin',
@@ -164,6 +165,10 @@ LOGGING = {
         },
     },
     'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),
+        },
         'apps.web': {
             'handlers': ['console'],
             'level': env.str('ICMS_LOG_LEVEL', 'DEBUG' if DEBUG else 'INFO'),

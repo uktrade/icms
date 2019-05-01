@@ -21,8 +21,6 @@
 
 <form method="post" name="registrationForm" action="{% url 'register' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
     {% csrf_token %}
-
-
     <div class="container setoutForm">
 
         {% for field in form %}
