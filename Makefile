@@ -18,7 +18,6 @@ build:
 debug:
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	ICMS_TEST=False \
 	docker-compose up
 
 # Run with Gunicorn and Whitenoise serving static files
