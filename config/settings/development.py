@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # NOQA”
 import environ
 from django.core.management.utils import get_random_secret_key
 

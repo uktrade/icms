@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import semver
-from pathlib import Path
 
 bump = sys.argv[1]
 version = sys.argv[2]

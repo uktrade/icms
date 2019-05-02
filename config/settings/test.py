@@ -1,1 +1,1 @@
-from .development import *
+from .development import *  # NOQA

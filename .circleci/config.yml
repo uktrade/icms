@@ -51,13 +51,14 @@ job_defaults: &job_defaults
         key: v1-icms-{{ checksum "requirements.txt" }}
         paths:
           - ~/cache/pip
-    - run:
-        name: Run Flake8
-        command: python -m flake8
 
     - run:
         name: Run tests
         command: python -m pytest -n 4 -p --cov=web --cov=config web/tests
+
+    - run:
+        name: Run Flake8
+        command: python -m flake8
 
     - store_test_results:
         path: test-reports
