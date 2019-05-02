@@ -22,7 +22,8 @@ run: collectstatic
 	docker-compose up
 
 test:
-	pytest
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose run web pytest -s --cov=web --cov=config web/tests
 
 migrations:
 	docker-compose run web ./manage.py makemigrations
