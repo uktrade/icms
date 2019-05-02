@@ -1,0 +1,87 @@
+version: 2.1
+
+job_defaults: &job_defaults
+  parameters:
+    python_image:
+      type: string
+
+    postgres_image:
+      type: string
+
+    publish_coverage:
+      type: boolean
+      default: false
+
+  environment:
+    DATABASE_URL: postgresql://postgres@localhost/icms
+    DEBUG: 'True'
+    DJANGO_SECRET_KEY: changeme
+    DJANGO_SETTINGS_MODULE: config.settings.test
+    AWS_DEFAULT_REGION: eu-west-2
+    AWS_ACCESS_KEY_ID: foo
+    AWS_SECRET_ACCESS_KEY: bar
+    DEFAULT_BUCKET: baz
+
+  working_directory: ~/code
+
+  docker:
+    - image: <<parameters.python_image>>
+
+    - image: <<parameters.postgres_image>>
+      environment:
+        POSTGRES_DB=icms
+
+  steps:
+    - checkout
+
+    - restore_cache:
+        name: Restore pip cache
+        keys:
+          - v1-icms-{{ checksum "requirements.txt" }}
+          - v1-icms-
+        paths:
+          - ~/cache/pip
+
+    - run:
+        name: Install dependencies
+        command: python -m pip install --cache-dir ~/cache/pip -r requirements.txt
+
+    - save_cache:
+        name: Save pip cache
+        key: v1-icms-{{ checksum "requirements.txt" }}
+        paths:
+          - ~/cache/pip
+    - run:
+        name: Run Flake8
+        command: python -m flake8
+
+    - run:
+        name: Run tests
+        command: python -m pytest -n 4 -p --cov=web --cov=config web/tests
+
+    - store_test_results:
+        path: test-reports
+
+    - when:
+        condition: <<parameters.publish_coverage>>
+        steps:
+        - run:
+            name: Publish coverage
+            command: |
+              wget -O codecov.sh https://codecov.io/bash
+              bash ./codecov.sh -t ${COV_TOKEN}
+
+jobs:
+  build:
+    <<: *job_defaults
+
+workflows:
+  version: 2
+
+  # Current standard environment
+  Default build:
+    jobs:
+      - build:
+          publish_coverage: true
+          python_image: python:3.7
+          postgres_image: postgres:9.5
