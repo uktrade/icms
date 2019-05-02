@@ -10,6 +10,8 @@ services:
     restart: always
     build: .
     user: ${UID}
+    entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
+    command: scripts/entry.sh
     environment:
       - ICMS_WEB_PORT
       - ICMS_DEBUG
