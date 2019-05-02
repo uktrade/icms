@@ -33,6 +33,11 @@ if [ "${ICMS_MIGRATE:-True}" = 'True' ]; then
   python manage.py migrate
 fi
 
+if [ "${ICMS_TEST:-True}" = 'True' ]; then
+  echo "Running tests"
+  pytest -s --cov=web --cov=config web/tests
+fi
+
 if [ "$ICMS_DEBUG" = 'True' ]; then
   python manage.py runserver 0:"$ICMS_WEB_PORT"
 else
