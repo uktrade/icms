@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # NOQA
 import environ
 
 env = environ.Env()

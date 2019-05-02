@@ -1,5 +1,6 @@
 [run]
 branch = True
+source = web
 
 omit =
     *migrations*

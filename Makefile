@@ -29,6 +29,10 @@ test: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest -s --cov=web --cov=config web/tests
 
+test_style: clean
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose run web pytest --flake8
+
 migrations:
 	docker-compose run web ./manage.py makemigrations
 

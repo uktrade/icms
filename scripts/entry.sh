@@ -1,5 +1,4 @@
 #!/bin/sh -e
-
 ICMS_WEB_PORT="${ICMS_WEB_PORT:-8080}"
 ICMS_DEBUG="${ICMS_DEBUG:-False}"
 ICMS_MIGRATE="${ICMS_MIGRATE:-True}"
