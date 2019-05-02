@@ -14,13 +14,9 @@ job_defaults: &job_defaults
 
   environment:
     DATABASE_URL: postgresql://postgres@localhost/icms
-    DEBUG: 'True'
-    DJANGO_SECRET_KEY: changeme
+    ICMS_DEBUG: 'True'
+    DJANGO_SECRET_KEY: test
     DJANGO_SETTINGS_MODULE: config.settings.test
-    AWS_DEFAULT_REGION: eu-west-2
-    AWS_ACCESS_KEY_ID: foo
-    AWS_SECRET_ACCESS_KEY: bar
-    DEFAULT_BUCKET: baz
 
   working_directory: ~/code
 
@@ -54,7 +50,7 @@ job_defaults: &job_defaults
 
     - run:
         name: Run tests
-        command: python -m pytest -n 4 -p --cov=web --cov=config web/tests
+        command: python -m pytest --cov=web --cov=config web/tests
 
     - run:
         name: Run Flake8
