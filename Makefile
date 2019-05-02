@@ -3,6 +3,9 @@ DJANGO_SETTINGS_MODULE=config.settings.development
 # Current user used in docker-compose.yml
 UID=$(shell id -u):$(shell id -g)
 
+clean:
+	docker-compose run web find . -type d -name __pycache__ -exec rm -r {} \+
+
 requirements:
 	docker-compose run web pip install -r requirements.txt
 
@@ -17,11 +20,12 @@ debug:
 	ICMS_MIGRATE=False \
 	docker-compose up
 
+# Run with Gunicorn and Whitenoise serving static files
 run: collectstatic
 	ICMS_DEBUG=False \
 	docker-compose up
 
-test:
+test: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest -s --cov=web --cov=config web/tests
 
