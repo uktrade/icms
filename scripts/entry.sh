@@ -7,7 +7,7 @@ DATABASE_URL="${DATABASE_URL:-postgres://postgres@db:5432/postgres}"
 
 retry=10
 
-function wait_for_db() {
+wait_for_db() {
   if [ ${retry} -eq 0 ]; then
     echo "Database access timedout" 1>&2
     exit 1;
