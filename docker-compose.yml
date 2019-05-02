@@ -9,6 +9,7 @@ services:
   web:
     restart: always
     build: .
+    user: ${UID}
     environment:
       - ICMS_WEB_PORT
       - ICMS_DEBUG
