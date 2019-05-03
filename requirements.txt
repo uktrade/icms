@@ -29,7 +29,6 @@ PyJWT==1.7.1
 pytest==4.4.1
 pytest-cov==2.6.1
 pytest-django==3.4.8
-pytest-flake8==1.0.4
 pytz==2018.9
 requests==2.21.0
 semver==2.8.1
