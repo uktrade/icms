@@ -29,6 +29,12 @@ test: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest -s --cov=web --cov=config web/tests
 
+smoke: clean
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose run web ./manage.py smoke_tests
+
+
+
 test_style: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest --flake8
