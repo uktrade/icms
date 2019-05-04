@@ -31,3 +31,14 @@ services:
       - .:/code
     depends_on:
       - db
+  pa11y:
+    build: ./pa11y
+    entrypoint: dockerize -wait tcp://web:8080 -timeout 20s
+    command: ./report.sh
+    ports:
+      - "9090:9090"
+    tty: true
+    volumes:
+      - ./pa11y:/code
+    depends_on:
+      - web

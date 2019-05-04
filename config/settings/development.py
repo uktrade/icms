@@ -7,7 +7,7 @@ env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('ICMS_SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('ICMS_DEBUG', True)
-ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost'])
+ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

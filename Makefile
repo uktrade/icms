@@ -33,7 +33,9 @@ smoke: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web ./manage.py smoke_tests
 
-
+# Generate accessibility reports
+accessibility:
+	docker-compose run pa11y node index.js
 
 test_style: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
