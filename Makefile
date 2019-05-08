@@ -27,7 +27,7 @@ run: clean test
 
 test: clean collectstatic
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web py.test -s --verbose --cov=web --cov=config web/tests
+	docker-compose run web pytest -s --verbose --cov=web --cov=config web/tests
 
 # Generate accessibility reports
 accessibility:
