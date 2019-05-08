@@ -4,11 +4,13 @@ ENV ICMS_WEB_PORT ${ICMS_WEB_PORT}
 ENV DOCKERIZE_VERSION v0.6.1
 RUN mkdir /code
 WORKDIR /code
-COPY requirements.txt /code/
+COPY Pipfile Pipfile.lock /code/
 RUN \
   apk add --no-cache postgresql-libs openssl && \
   apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
-  python3 -m pip install -r requirements.txt --no-cache-dir && \
+  python3 -m pip install --upgrade pip && \
+  python3 -m pip install pipenv && \
+  python3 -m pipenv install --system --dev --deploy && \
   apk --purge del .build-deps
 RUN \
   wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
