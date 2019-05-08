@@ -33,24 +33,24 @@ job_defaults: &job_defaults
     - restore_cache:
         name: Restore pip cache
         keys:
-          - v1-icms-{{ checksum "requirements.txt" }}
+          - v1-icms-{{ checksum "Pipfile.lock" }}
           - v1-icms-
         paths:
           - ~/cache/pip
 
     - run:
         name: Install dependencies
-        command: python -m pip install --cache-dir ~/cache/pip -r requirements.txt
+        command: pip install --user pipenv  && PIPENV_CACHE_DIR=~/cache/pip python -m pipenv install --dev --system --deploy
 
     - save_cache:
         name: Save pip cache
-        key: v1-icms-{{ checksum "requirements.txt" }}
+        key: v1-icms-{{ checksum "Pipfile.lock" }}
         paths:
           - ~/cache/pip
 
     - run:
         name: Run tests
-        command: python -m pytest --cov=web --cov=config web/tests
+        command: python -m py.test --cov=web --cov=config web/tests
 
     - run:
         name: Run Flake8

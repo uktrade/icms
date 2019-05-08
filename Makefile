@@ -7,7 +7,7 @@ clean:
 	docker-compose run web find . -type d -name __pycache__ -exec rm -r {} \+
 
 requirements:
-	docker-compose run web pip install --user -r requirements.txt
+	docker-compose run web pipenv install --dev --system --user -r requirements.txt
 
 collectstatic:
 	docker-compose run web ./manage.py collectstatic --noinput --traceback
