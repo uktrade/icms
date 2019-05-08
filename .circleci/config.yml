@@ -50,7 +50,7 @@ job_defaults: &job_defaults
 
     - run:
         name: Run tests
-        command: python -m py.test -p no:sugar --cov=web --cov=config web/tests
+        command: python -m pytest -p no:sugar --cov=web --cov=config web/tests
 
     - run:
         name: Run Flake8
