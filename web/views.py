@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from viewflow.decorators import flow_start_view
 from .decorators import require_registered
 from .models import AccessRequestProcess
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,12 @@ def change_password(request):
     return render(request, 'web/internal/change-password.html', {'form': form})
 
 
+@transaction.atomic
 def register(request):
+    """
+    An atomic transaction to save user information and send notifications
+    When an unexpected error occurs the whole transaction is rolled back
+    """
     if request.method == 'POST':
         form = forms.RegistrationForm(request.POST)
         if form.is_valid():
@@ -80,7 +86,7 @@ def register(request):
             user.set_password(temp_pass)
             user.username = user.email
             user.save()
-            notify.register(user, temp_pass)
+            notify.register(request, user, temp_pass)
             login(request, user)
             return redirect('change-password')
     else:

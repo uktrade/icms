@@ -56,3 +56,39 @@ class AccessRequest(models.Model):
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
     objects = ProcessQuerySet.as_manager()
+
+
+class OutboundEmail(models.Model):
+    FAILED = 'FAILED'
+    SENT = 'SENT'
+    PENDING = 'PENDING'
+    NOT_SENT = 'NOT_SENT'
+
+    STATUSES = (
+        (FAILED, 'Failed'),
+        (SENT, 'Sent'),
+        (PENDING, 'Pending'),
+        (NOT_SENT, 'Not Sent'),
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        blank=False,
+        null=False,
+        default=PENDING)
+    last_requested_date = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
+    format = models.CharField(
+        max_length=20, blank=False, null=False, default='Email')
+    to_name = models.CharField(max_length=170, null=True)
+    to_email = models.CharField(max_length=254, null=False)
+    subject = models.CharField(max_length=4000, null=True)
+
+
+class EmailAttachment(models.Model):
+    mail = models.ForeignKey(
+        OutboundEmail, on_delete=models.CASCADE, related_name='attachments')
+    filename = models.CharField(max_length=200, blank=True, null=True)
+    mimetype = models.CharField(max_length=200, null=False)
+    text_attachment = models.TextField(null=True)

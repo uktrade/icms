@@ -7,7 +7,7 @@ clean:
 	docker-compose run web find . -type d -name __pycache__ -exec rm -r {} \+
 
 requirements:
-	docker-compose run web pip install -r requirements.txt
+	docker-compose run web pip install --user -r requirements.txt
 
 collectstatic:
 	docker-compose run web ./manage.py collectstatic --noinput --traceback
@@ -21,17 +21,13 @@ debug:
 	docker-compose up
 
 # Run with Gunicorn and Whitenoise serving static files
-run: collectstatic
+run: clean test collectstatic
 	ICMS_DEBUG=False \
 	docker-compose up
 
-test: clean
+test: clean requirements
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web pytest -s --cov=web --cov=config web/tests
-
-smoke: clean
-	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web ./manage.py smoke_tests
+	docker-compose run web py.test -s --verbose --cov=web --cov=config web/tests
 
 # Generate accessibility reports
 accessibility:
