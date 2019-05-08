@@ -1,60 +1,45 @@
 from django.conf import settings
-from notifications_python_client.notifications import NotificationsAPIClient
+from django.core.mail import send_mail
+from .models import OutboundEmail, EmailAttachment
 import logging
+import traceback
+import html2text
 
-# Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
-def fetch_email_templates(client):
-    templates = {}
-    response = client.get_all_templates(template_type="email")
-    for template in response['templates']:
-        logger.debug('Template: %r', template)
-        templates[template['name']] = {
-            'name': template['name'],
-            'id': template['id']
-        }
+def send(subject, recipient, html_message):
+    """
+    Sends email to a single recipient
+    Message must be html, html is converted to text both formats are sent
+    as a multipart email.
 
-    logger.debug('Fetched templates %r', templates)
-    return templates
+    This function will not throw any exceptions, emails are stored
+    with status to be found in OutboundEmail table
+    """
 
+    message_text = html2text.html2text(html_message)
+    logger.debug('Email to %s:\n subject:%s message:\n%s', recipient, subject,
+                 message_text)
+    if not settings.AWS_ACCESS_KEY_ID:
+        return
 
-def client():
-    if settings.EMAIL_API_KEY:
-        return NotificationsAPIClient(settings.EMAIL_API_KEY)
-    else:
-        logger.warning('GDS Notify not configured. Dumping emails to console')
-        return EmailDumper()
-
-
-def get_template(template_name):
-    templates = fetch_email_templates(client())
-    return templates[template_name]
-
-
-def send(template_name, user, context={}):
-    template = get_template(template_name)
-    logger.debug('Sending template: %s to user: %s', template['name'],
-                 user.username)
-    logger.debug('email:%s', user.email)
-    client().send_email_notification(
-        user.email,
-        template['id'],
-        context,
-        email_reply_to_id=settings.EMAIL_REPLY_TO_ID)
-
-
-class EmailDumper():
-    def send_email_notification(self,
-                                email_address,
-                                template,
-                                personalisation=None,
-                                reference=None,
-                                email_reply_to_id=None):
-        logger.debug('Dumping email notification:')
-        logger.debug('To: %s', email_address)
-        logger.debug('Template Id: %s', template)
-        logger.debug('Personalisation %r', personalisation)
-        logger.debug('Reference: %s', reference)
-        logger.debug('Reply To Id: %s', email_reply_to_id)
+    mail = OutboundEmail(to_email=recipient, subject=subject)
+    mail.save()
+    attachment = EmailAttachment(
+        mail=mail, filename='body', mimetype='text/html')
+    attachment.save()
+    try:
+        send_mail(
+            subject,
+            message_text,
+            settings.EMAIL_FROM, [
+                recipient,
+            ],
+            html_message=html_message)
+        mail.status = OutboundEmail.SENT
+    except Exception:
+        logger.error(traceback.format_exc())
+        mail.status = OutboundEmail.FAILED
+    finally:
+        mail.save()

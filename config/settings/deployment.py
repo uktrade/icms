@@ -10,7 +10,6 @@ ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS')
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {'default': env.db('DATABASE_URL')}
 
 # TODO compression causes 50 error on server
@@ -21,8 +20,9 @@ RECAPTCHA_PUBLIC_KEY = env.str('ICMS_RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env.str('ICMS_RECAPTCHA_PRIVATE_KEY')
 
 # Email
-EMAIL_API_KEY = env.str('ICMS_EMAIL_API_KEY')
-EMAIL_REPLY_TO_ID = env.str('ICMS_EMAIL_REPLY_TO_ID', None)
+AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
+EMAIL_FROM = env.str('ICMS_EMAIL_FROM')
 
 # Loging
 LOGGING = {

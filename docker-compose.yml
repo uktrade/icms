@@ -21,8 +21,9 @@ services:
       - DATABASE_URL
       - ICMS_ALLOWED_HOSTS
       - ICMS_SECRET_KEY
-      - ICMS_EMAIL_API_KEY
-      - ICMS_EMAIL_REPLY_TO_ID
+      - ICMS_EMAIL_FROM
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
       - DJANGO_SETTINGS_MODULE
     tty: true
     ports:

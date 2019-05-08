@@ -1,20 +1,17 @@
 from . import email
+from django.template.loader import render_to_string
 import logging
-
-# GDS Notify template names
-__registration = 'registration'
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
 
-def register(user, password):
-    logger.debug('Notifying %s %s', user, password)
-    email.send(
-        __registration, user, {
-            'title': user.title,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'login': user.username,
-            'password': password
-        })
+def register(request, user, password):
+    logger.debug('Notifying %s for registration', user)
+    subject = 'Import Case Management System Account '
+    message = render_to_string('email/registration/registration.html', {
+        'subject': subject,
+        'user': user,
+        'password': password
+    }, request)
+    email.send(subject, user.email, message)
