@@ -10,6 +10,7 @@ pytest-django = "*"
 pytest-cov = "*"
 pytest-sugar = "*"
 flake8 = "*"
+pytest-xdist = "*"
 
 [packages]
 django = "==2.1.*"
