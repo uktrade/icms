@@ -20,12 +20,12 @@ debug:
 	docker-compose up
 
 # Run with Gunicorn and Whitenoise serving static files
-run: clean test
+run: test
 	UID=$(shell id -u):$(shell id -g) \
 	ICMS_DEBUG=False \
 	docker-compose up
 
-test: clean collectstatic
+test: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest -s --verbose --cov=web --cov=config web/tests
 

@@ -33,9 +33,7 @@ def send(subject, recipient, html_message):
         send_mail(
             subject,
             message_text,
-            settings.EMAIL_FROM, [
-                recipient,
-            ],
+            settings.EMAIL_FROM, [recipient],
             html_message=html_message)
         mail.status = OutboundEmail.SENT
     except Exception:
