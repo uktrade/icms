@@ -29,3 +29,4 @@ function report(url, name) {
 }
 
 report('http://web:8080', 'login');
+report('http://web:8080/register/', 'register');
