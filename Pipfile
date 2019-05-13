@@ -23,6 +23,7 @@ html2text = "*"
 django-viewflow = "*"
 psycopg2 = "*"
 whitenoise = "*"
+django-filter = "*"
 
 [requires]
 python_version = "3.7"

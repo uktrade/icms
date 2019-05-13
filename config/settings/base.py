@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'viewflow',
     'web',
     'captcha',
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

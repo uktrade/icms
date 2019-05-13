@@ -17,6 +17,11 @@ urlpatterns = [
     path('change-password/', views.change_password, name='change-password'),
     path('set-password/', views.set_password, name='set-password'),
     path('workbasket/', views.workbasket, name='workbasket'),
+
+    # Template Management
+    path('template/', views.templates, name='template-list'),
+
+    # Access Request
     path(
         'access/',
         generic.RedirectView.as_view(url='request', permanent=False),

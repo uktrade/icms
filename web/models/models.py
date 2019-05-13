@@ -92,3 +92,48 @@ class EmailAttachment(models.Model):
     filename = models.CharField(max_length=200, blank=True, null=True)
     mimetype = models.CharField(max_length=200, null=False)
     text_attachment = models.TextField(null=True)
+
+
+class Template(models.Model):
+
+    # Template types
+    ENDORSEMENT = 'ENDORSEMENT'
+    LETTER_TEMPLATE = 'LETTER_TEMPLATE'
+    EMAIL_TEMPLATE = 'EMAIL_TEMPLATE'
+    CFS_TRANSLATION = 'CFS_TRANSLATION'
+    DECLARATION = 'DECLARATION'
+
+    TYPES = (
+        (ENDORSEMENT, 'Endorsement'),
+        (LETTER_TEMPLATE, 'Letter template'),
+        (EMAIL_TEMPLATE, 'Email template'),
+        (CFS_TRANSLATION, 'CFS translation'),
+        (DECLARATION, 'Declaration'),
+    )
+
+    # Application domain
+    CERTIFICATE_APPLICATION = "CA"
+    IMPORT_APPLICATION = "IMA"
+    ACCESS_REQUEST = "IAR"
+
+    DOMAINS = (
+        (CERTIFICATE_APPLICATION, "Certificate Applications"),
+        (IMPORT_APPLICATION, "Import Applications"),
+        (ACCESS_REQUEST, "Access Requests"),
+    )
+
+    start_datetime = models.DateTimeField(blank=False, null=False)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(blank=False, null=False, default=False)
+    template_name = models.CharField(max_length=100, blank=False, null=False)
+    template_code = models.CharField(max_length=50, blank=True, null=True)
+    template_type = models.CharField(
+        max_length=20, choices=TYPES, blank=False, null=False)
+    application_domain = models.CharField(
+        max_length=20, choices=DOMAINS, blank=False, null=False)
+
+    def template_type_verbose(self):
+        return dict(Template.TYPES)[self.template_type]
+
+    def application_domain_verbose(self):
+        return dict(Template.DOMAINS)[self.application_domain]
