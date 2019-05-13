@@ -1,4 +1,4 @@
-{% extends "web/public/base.html" %}
+{% extends "layout/public.html" %}
 {% load static %}
 
 {% block main-content %}
@@ -44,8 +44,8 @@
         {% csrf_token %}
         <div class="container setoutForm login-form" data-xfid="f5">
 
-          {% include 'web/partial/input.html' with field=form.username label_cols='three' input_cols='nine' %}
-          {% include 'web/partial/input.html' with field=form.password label_cols='three' input_cols='nine' %}
+          {% include 'partial/input.html' with field=form.username label_cols='three' input_cols='nine' %}
+          {% include 'partial/input.html' with field=form.password label_cols='three' input_cols='nine' %}
           <input type="hidden" name="next" value="{{ next }}">
 
             <div class="row">

@@ -1,11 +1,9 @@
-{% extends "web/internal/base.html" %}
+{% extends "layout/sidebar.html" %}
 {% load static %}
 
 {% block title %}Workbasket{% endblock %}
 
 {% block sidebar %}
-<div id="sidebar-substitute"></div>
-<div id="sidebar">
     <h4>
         Filter
     </h4>
@@ -84,19 +82,9 @@
                 Clear Filter </button></li>
     </ul>
 
-</div>
-<div id="sidebar-background"></div>
 {% endblock %}
 
 {% block main-content %}
-
-<div class="" id="content">
-    <div id="content-ie8-float">
-
-
-        <div class="content-actions"></div>
-
-        <a id="b37" class="skipTarget" tabindex="-1">Main content</a></li>
 
         <div class="list-secondary-actions">
             <ul class="menu-out grouped small-menu-out flow-across">
@@ -251,6 +239,4 @@
 
         <div class="content-actions"></div>
 
-    </div>
-</div>
 {% endblock %}

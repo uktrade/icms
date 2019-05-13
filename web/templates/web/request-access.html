@@ -1,9 +1,8 @@
-{% extends "web/internal/base.html" %}
+{% extends "layout/simple.html" %}
 {% load static %}
 
 {% block title %}Request Importer/Exporter Access{% endblock %}
 {% block context-header %}Request Importer/Exporter Access{% endblock %}
-
 
 {% block main-content %}
 <div class="no-sidebar" id="content">
@@ -25,9 +24,6 @@
         <h4>
             Importer Access Requests
         </h4>
-
-
-
 
 
         <table responsiveList class="setoutList">
@@ -138,7 +134,7 @@
 
               {{ activation.management_form }}
               {% for field in form %}
-                {% include 'web/partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
+                {% include 'partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
               {% endfor %}
 
 
