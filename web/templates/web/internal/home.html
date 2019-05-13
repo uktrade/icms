@@ -1,0 +1,15 @@
+{% extends "web/internal/base.html" %}
+
+{% block page-title %}Request Importer/ Exporter Access{% endblock %}
+
+{% block main-content %}
+Hi {{ user.username }}, you are logged in
+
+<form method="post" name="logout-form" action="{% url 'logout' %}" autocomplete="off" accept-charset="UTF-8">
+{% csrf_token %}
+<button id="logout" name="logout" type="submit" class="primary-button button">
+    Logout </button>
+</form>
+
+
+{% endblock %}

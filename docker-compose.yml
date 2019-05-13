@@ -9,12 +9,22 @@ services:
   web:
     restart: always
     build: .
+    user: ${UID}
+    entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
+    command: scripts/entry.sh
     environment:
-      - ICMS_WEB_PORT=${ICMS_WEB_PORT:-8080}
-      - ICMS_DEBUG=${ICMS_DEBUG:-True}
-      - ICMS_MIGRATE=${ICMS_MIGRATE:-False}
-      - ICMS_EMAIL_API_KEY=${ICMS_EMAIL_API_KEY:-''}
-      - ICMS_EMAIL_REPLY_TO_ID=${ICMS_EMAIL_REPLY_TO_ID:-''}
+      - ICMS_WEB_PORT
+      - ICMS_DEBUG
+      - ICMS_NUM_WORKERS # Gunicorn workers number
+      - ICMS_MIGRATE
+      # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
+      - DATABASE_URL
+      - ICMS_ALLOWED_HOSTS
+      - ICMS_SECRET_KEY
+      - ICMS_EMAIL_FROM
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - DJANGO_SETTINGS_MODULE
     tty: true
     ports:
       - "8080:8080"
@@ -22,3 +32,14 @@ services:
       - .:/code
     depends_on:
       - db
+  pa11y:
+    build: ./pa11y
+    entrypoint: dockerize -wait tcp://web:8080 -timeout 20s
+    command: ./report.sh
+    ports:
+      - "9090:9090"
+    tty: true
+    volumes:
+      - ./pa11y:/code
+    depends_on:
+      - web

@@ -1,5 +1,7 @@
 # Import Case Management System - Python/Django port on PostgreSQL database
 
+[![image](https://circleci.com/gh/uktrade/icms/tree/master.svg?style=svg)](https://circleci.com/gh/uktrade/icms/tree/master)
+[![image](https://codecov.io/gh/uktrade/icms/branch/master/graph/badge.svg)](https://codecov.io/gh/uktrade/icms)
 
 <!-- [![circle-ci-image]][circle-ci] -->
 <!-- [![codecov-image]][codecov] -->
