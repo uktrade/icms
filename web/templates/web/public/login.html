@@ -1,0 +1,103 @@
+{% extends "web/public/base.html" %}
+{% load static %}
+
+{% block main-content %}
+<div id="header">
+    <h1>
+
+        Welcome to ICMS
+
+    </h1>
+    <p class="subheading">The DIT Import Licensing Branch's Import Case Management System for the issue of import licences and Certificates of Free Sale (CFS) for exporters</p>
+</div>
+<div class="clearBoth"> </div>
+
+<div class="clearBoth"> </div>
+<p class="lead">
+    <strong>Before registering on ICMS please read the "Do I need an import licence?" or "ICMS registration and guidance on import licence and Certificates of Free Sale applications" guide to see if you need to register. Requests that do not follow the registration guidance will be refused.</strong>
+</p>
+
+<div class="half-width-box">
+    <h2>
+        Log in to ICMS
+    </h2>
+
+    {% if form.non_field_errors %}
+    <div id="login-error">
+        Invalid username or password.<br /> N.B. passwords are case sensitive
+    </div>
+    {% endif %}
+
+    {% if next %}
+    <div id="login-error">
+        {% if user.is_authenticated %}
+        <p>Your account doesn't have access to this page. To proceed,
+            please login with an account that has access.</p>
+        {% else %}
+        <p>Please login to see this page.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+
+    <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
+        {% csrf_token %}
+        <div class="container setoutForm login-form" data-xfid="f5">
+
+          {% include 'web/partial/input.html' with field=form.username label_cols='three' input_cols='nine' %}
+          {% include 'web/partial/input.html' with field=form.password label_cols='three' input_cols='nine' %}
+          <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="row">
+                <div class="three columns"></div>
+                <div class="nine columns" data-xfid="g6">
+                    <ul class="menu-out flow-across">
+                        <li> <button id="g8" name="g8" type="submit" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-login&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="primary-button button">
+                                Sign in </button></li>
+                        <li> <button id="g7" name="g7" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-forgot-password&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="link-button button">
+                                Forgot your password? </button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="half-width-box right-box">
+    <h2 class="grey">
+        Contact Us
+    </h2>
+    <p>
+        Please read the guidance below on using ICMS. Email <a href="mailto:enquiries.ilb@trade.gov.uk">enquiries.ilb@trade.gov.uk</a> with your name and telephone number if you have a problem and we will contact you as quickly as possible.
+    </p>
+</div>
+<div class="clearBoth"> </div>
+<h2>
+    Registration and Guidance
+</h2>
+<p>
+    Detailed guidance on when and how to apply for import licences and Certificates of Free Sale for export can be found in the documents below.
+</p>
+<div class="half-width-box">
+    <ul class="file-list">
+        <li>
+            <a href="{% static 'web/docs/DoINeedAnImportLicence.pdf' %}" class="pdf" target="_blank">Do I Need an Import Licence?</a>
+        </li>
+        <li>
+            <a href="{% static 'web/docs/ApplicationGuidance.pdf' %}" class="pdf" target="_blank">ICMS registration and guidance on import licence and Certificates of Free Sale applications</a>
+        </li>
+    </ul>
+</div>
+<div class="half-width-box right-box">
+    <ul class="file-list">
+        <li>
+            <a href="{% static 'web/docs/UsingPopups.pdf' %}" class="pdf" target="_blank">Advice on Popups & Downloads</a>
+        </li>
+        <li>
+            <a href="{% static 'web/docs/ValidateDigSigs.pdf' %}" class="pdf" target="_blank">Validating Digital Signatures</a>
+        </li>
+    </ul>
+</div>
+<div class="clearBoth"> </div>
+<a id="g11" href="{% url 'register' %}" class="primary-button button">
+    Register </a>
+{% endblock %}

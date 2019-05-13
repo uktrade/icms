@@ -1,0 +1,25 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/icms-login-style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'web/css/icms-login-fonts.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<iframe id="iframe-wrapper" src="javascript:'';" style="border: none; overflow: hidden; visibility: hidden; display: none;">&nbsp;</iframe>
+<div class="content">
+
+  <img alt="DIT Logo" width="21%" id="logo" src="{% static 'web/img/dit_logo.png' %}">
+
+  {% block main-content %}
+  {% endblock %}
+
+</div>
+<div id="footer">
+  <div id="footer-content">
+    © <a href="http://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm">Crown Copyright</a>. All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">Open Government Licence</a>, except where otherwise stated. <a href="https://www.ilb.trade.gov.uk/docs/DIT_DDaT_Fair_Processing_Notice_ICMS.pdf">Fair Processing Notice</a>
+  </div>
+</div>
+{% endblock %}
