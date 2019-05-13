@@ -1,13 +1,14 @@
 import random
 import logging
-from . import forms, notify
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
-from viewflow.decorators import flow_start_view
-from .decorators import require_registered
-from .models import AccessRequestProcess
 from django.db import transaction
+from web.views import forms
+from web.notify import notify
+from web.auth.decorators import require_registered
+from web.models import AccessRequestProcess
+from viewflow.decorators import flow_start_view
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,5 @@
-from . import views, flows
+from .views import views
+from .flows import flows
 from django.urls import path, re_path, include
 from django.views import generic
 from django.contrib.auth import views as auth_view
