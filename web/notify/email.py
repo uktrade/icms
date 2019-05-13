@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail
-from .models import OutboundEmail, EmailAttachment
+from web.models import OutboundEmail, EmailAttachment
 import logging
 import traceback
 import html2text

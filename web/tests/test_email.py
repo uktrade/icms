@@ -1,7 +1,8 @@
 from django.core import mail
 from django.conf import settings
 from django.test import TestCase
-from web import email, models
+from web import models
+from web.notify import email
 from django.db.utils import IntegrityError
 import pytest
 

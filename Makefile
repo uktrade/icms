@@ -1,8 +1,11 @@
 .EXPORT_ALL_VARIABLES:
 DJANGO_SETTINGS_MODULE=config.settings.development
 
+UID=$(shell id -u):$(shell id -g)
+
 clean:
-	docker-compose run web find . -type d -name __pycache__ -exec rm -r {} \+
+	unset UID && \
+	docker-compose run web find . -type d -name __pycache__ -exec rm -rf {} \+
 
 requirements:
 	docker-compose run web python3 -m pipenv install --dev --system
@@ -14,14 +17,12 @@ build:
 	docker-compose build web
 
 debug:
-	UID=$(shell id -u):$(shell id -g) \
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
 	docker-compose up
 
 # Run with Gunicorn and Whitenoise serving static files
 run: test
-	UID=$(shell id -u):$(shell id -g) \
 	ICMS_DEBUG=False \
 	docker-compose up
 
@@ -31,6 +32,7 @@ test: clean
 
 # Generate accessibility reports
 accessibility:
+	unset UID && \
 	docker-compose run pa11y node index.js
 
 test_style: clean

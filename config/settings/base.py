@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'web.fox_hasher.FOXPBKDF2SHA1Hasher',
+    'web.auth.fox_hasher.FOXPBKDF2SHA1Hasher',
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',

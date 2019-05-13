@@ -1,7 +1,8 @@
 from viewflow import flow
 from viewflow.base import this, Flow
 
-from . import views, models
+from web.views import views
+from web import models
 
 
 class AccessRequestFlow(Flow):
