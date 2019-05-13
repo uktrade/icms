@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from functools import wraps
 
 
 def require_registered(function):
@@ -10,7 +11,8 @@ def require_registered(function):
     A user is marked registered after initial password setup
     """
 
-    def wrapper(request, *args, **kwargs):
+    @wraps(function)
+    def wrap(request, *args, **kwargs):
         decorated_view_func = login_required(request)
         if not decorated_view_func.user.is_authenticated:
             return decorated_view_func(request)  # return redirect to login
@@ -20,6 +22,4 @@ def require_registered(function):
         else:
             return function(request, *args, **kwargs)
 
-    wrapper.__doc__ = function.__doc__
-    wrapper.__name__ = function.__name__
-    return wrapper
+    return wrap

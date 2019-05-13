@@ -7,8 +7,9 @@ from django.db import transaction
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
-from web.models import AccessRequestProcess
 from viewflow.decorators import flow_start_view
+from web import models
+from . import filters
 
 logger = logging.getLogger(__name__)
 
@@ -99,5 +100,12 @@ def register(request):
 
 @require_registered
 def workbasket(request):
-    process = AccessRequestProcess.objects.owned_process(request.user)
+    process = models.AccessRequestProcess.objects.owned_process(request.user)
     return render(request, 'web/workbasket.html', {'process_list': process})
+
+
+@require_registered
+def templates(request):
+    filter = filters.TemplatesFilter(
+        request.GET, queryset=models.Template.objects.all())
+    return render(request, 'web/template/list.html', {'filter': filter})
