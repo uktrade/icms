@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 
 def index(request):
-    return render(request, 'web/public/login.html')
+    return render(request, 'web/login.html')
 
 
 @require_registered
 def home(request):
-    return render(request, 'web/internal/home.html')
+    return render(request, 'web/home.html')
 
 
 @require_registered
@@ -33,9 +33,9 @@ def request_access(request):
         access_request.save()
         request.activation.process.access_request = access_request
         request.activation.done()
-        return render(request, 'web/internal/request-access-success.html')
+        return render(request, 'web/request-access-success.html')
 
-    return render(request, 'web/internal/request-access.html', {
+    return render(request, 'web/request-access.html', {
         'form': form,
         'activation': request.activation
     })
@@ -62,14 +62,14 @@ def set_password(request):
     if form.is_valid():
         return redirect('home')
 
-    return render(request, 'web/internal/set-password.html', {'form': form})
+    return render(request, 'web/set-password.html', {'form': form})
 
 
 @require_registered
 def change_password(request):
     form = update_password(request)
 
-    return render(request, 'web/internal/change-password.html', {'form': form})
+    return render(request, 'web/change-password.html', {'form': form})
 
 
 @transaction.atomic
@@ -94,11 +94,10 @@ def register(request):
         logger.debug('Loading registration form')
         form = forms.RegistrationForm()
 
-    return render(request, 'web/public/registration.html', {'form': form})
+    return render(request, 'web/registration.html', {'form': form})
 
 
 @require_registered
 def workbasket(request):
     process = AccessRequestProcess.objects.owned_process(request.user)
-    return render(request, 'web/internal/workbasket.html',
-                  {'process_list': process})
+    return render(request, 'web/workbasket.html', {'process_list': process})

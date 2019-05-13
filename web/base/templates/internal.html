@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+<!-- Base template file with accessibility link and navigation, -->
+<!-- serves as base for internal pages -->
+
+{% load static %}
+
+{% block title %}{% block page-title %}{% endblock %} - ICMS{% endblock %}
+
+{% block header %}
+
+  <div class="" id="context-header">
+    <h2>
+      {% block context-header %}{% endblock %}
+    </h2>
+  </div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends "web/internal/base.html" %}
+{% extends "layout/sidebar.html" %}
 
 {% block page-title %}Request Importer/ Exporter Access{% endblock %}
 
@@ -10,6 +10,4 @@ Hi {{ user.username }}, you are logged in
 <button id="logout" name="logout" type="submit" class="primary-button button">
     Logout </button>
 </form>
-
-
 {% endblock %}
