@@ -3,6 +3,7 @@ import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db import transaction
 from web.views import forms
 from web.notify import notify
@@ -70,7 +71,7 @@ def set_password(request):
 def change_password(request):
     form = update_password(request)
 
-    return render(request, 'web/change-password.html', {'form': form})
+    return render(request, 'web/user/password.html', {'form': form})
 
 
 @transaction.atomic
@@ -82,7 +83,6 @@ def register(request):
     if request.method == 'POST':
         form = forms.RegistrationForm(request.POST)
         if form.is_valid():
-            logger.debug('Form is valid')
             user = form.instance
             temp_pass = random.randint(1000, 1000000)
             user.set_password(temp_pass)
@@ -92,7 +92,6 @@ def register(request):
             login(request, user)
             return redirect('change-password')
     else:
-        logger.debug('Loading registration form')
         form = forms.RegistrationForm()
 
     return render(request, 'web/registration.html', {'form': form})
@@ -109,3 +108,16 @@ def templates(request):
     filter = filters.TemplatesFilter(
         request.GET, queryset=models.Template.objects.all())
     return render(request, 'web/template/list.html', {'filter': filter})
+
+
+@require_registered
+def user_details(request):
+    if request.method == 'POST':
+        form = forms.UserDetailsUpdateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success('Central contact details have been saved.')
+    else:
+        form = forms.UserDetailsUpdateForm()
+
+    return render(request, 'web/user/details.html', {'form': form})

@@ -1,0 +1,343 @@
+{% extends "layout/sidebar.html" %}
+{% block page-title %}Contact Details{% endblock %}
+{% block context-header %}Contact Details{% endblock %}
+
+{% block sidebar %}
+<h4>My details</h4>
+<ul class="menu-out">
+    <li> <a href="{% url 'user-details' %}">Contact Details</a></li>
+    <li> <a href="{% url 'change-password' %}">Change Password</a></li>
+</ul>
+
+{% endblock %}
+
+
+{% block main-content %}
+
+<h3>
+    General Details
+</h3>
+
+<div class="info-box info-box-info">
+    These details will be used throughout the system and might be visible to other users. Please make sure they're accurate and up to date.
+</div>
+
+<div class="container setoutForm" data-xfid="f26">
+    <div class="row">
+        <div class="four columns" data-xfid="g27"><label id="pg27" for="g27" class="prompt west">Title
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g27">
+            <div class="eleven-column-input"><input id="g27" name="g27" type="text" value="Mr" size="5" maxlength="15" aria-required="true" aria-describedby="hint66-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint66-content" role="tooltip" class="hint-content">Preferred form of address. Examples: Mr, Ms, Miss, Mrs, Dr, Rev, etc.</div>
+                <div id="hint66" aria-describedby="hint66-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g28"><label id="pg28" for="g28" class="prompt west">Forename
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g28">
+            <div class="eleven-column-input"><input id="g28" name="g28" type="text" value="admin" size="16" maxlength="16" aria-required="true" aria-describedby="hint67-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint67-content" role="tooltip" class="hint-content">Formal given name</div>
+                <div id="hint67" aria-describedby="hint67-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g29"><label id="pg29" for="g29" class="prompt west">Preferred Forename
+                <span class="mand-label" aria-hidden="true">optional</span></label>
+        </div>
+        <div class="four columns input-group" data-xfid="g29">
+            <div class="eleven-column-input"><input id="g29" name="g29" type="text" value="admin" size="16" maxlength="16" aria-required="false" aria-describedby="hint68-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint68-content" role="tooltip" class="hint-content">Preferred forename can be left blank. It is not used on formal document. Example Forename(Preferred): Robert (Bob)</div>
+                <div id="hint68" aria-describedby="hint68-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g30"><label id="pg30" for="g30" class="prompt west">Middle Initials
+                <span class="mand-label" aria-hidden="true">optional</span></label>
+        </div>
+        <div class="four columns input-group" data-xfid="g30">
+            <div class="eleven-column-input"><input id="g30" name="g30" type="text" value="" size="10" maxlength="10" aria-required="false" aria-describedby="hint69-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint69-content" role="tooltip" class="hint-content">Initials of middle names (if used)</div>
+                <div id="hint69" aria-describedby="hint69-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g31"><label id="pg31" for="g31" class="prompt west">Surname
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g31">
+            <div class="eleven-column-input"><input id="g31" name="g31" type="text" value="dit" size="30" maxlength="50" aria-required="true" aria-describedby="hint70-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint70-content" role="tooltip" class="hint-content">Family or marriage name</div>
+                <div id="hint70" aria-describedby="hint70-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g32"><label id="pg32" for="g32" class="prompt west">Organisation Name (Employer)
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g32">
+            <div class="eleven-column-input"><input id="g32" name="g32" type="text" value="DIT" size="60" maxlength="60" aria-required="true" aria-describedby="hint71-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint71-content" role="tooltip" class="hint-content">Organisation name of direct employer. This is not the names of organisations which work may be carried out on behalf of, as this information is recorded elsewhere on the system.</div>
+                <div id="hint71" aria-describedby="hint71-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g33"><label id="pg33" for="g33" class="prompt west">Department Name (Employer)
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g33">
+            <div class="eleven-column-input"><input id="g33" name="g33" type="text" value="" size="60" maxlength="60" aria-required="true" aria-describedby="hint72-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint72-content" role="tooltip" class="hint-content">Department name associated with, within direct employing organisation.</div>
+                <div id="hint72" aria-describedby="hint72-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g34"><label id="pg34" for="g34" class="prompt west">Job Title (Employer)
+            </label>
+        </div>
+        <div class="four columns input-group" data-xfid="g34">
+            <div class="eleven-column-input"><input id="g34" name="g34" type="text" value="" size="60" maxlength="60" aria-required="true" aria-describedby="hint73-content" /></div>
+            <div class="input-group-addon hint-addon">
+                <div id="hint73-content" role="tooltip" class="hint-content">Job title used within direct employing organisation.</div>
+                <div id="hint73" aria-describedby="hint73-content" class="hint icon-info"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g35"><label id="pg35" for="g35" class="prompt west">Work Address
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g35"><textarea id="g35" name="g35" cols="50" rows="6" maxlength="4000" aria-required="true" readonly="readonly"></textarea></div>
+        <div class="four columns" data-xfid="g36"> <button id="g36" name="g36" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-correctAddress&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="link-button inline-link-button icon-pencil button no-prompt-action" aria-describedby="hint74-content" aria-label="Click here to edit Work Address">
+            </button>
+            <div id="hint74-content" role="tooltip" class="hint-content">Edit work address</div>
+        </div>
+    </div>
+</div>
+
+
+<h3>
+    Share Contact Details
+</h3>
+
+
+<div class="info-box info-box-info">
+    Non-DIT ILB users may want to add you to one of their work groups so you can have access to their organisation's work processes and data.
+</div>
+
+
+<div class="container setoutForm" data-xfid="g36">
+    <div class="row">
+        <div class="four columns" data-xfid="g37"><label id="pg37" for="g37" class="prompt west">Share Contact Details?
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g37"><select id="g37" name="g37" aria-required="true">
+                <option value="g37/__FX_N" selected="selected">Select One</option>
+                <option value="g37/0">Yes</option>
+                <option value="g37/1">No</option>
+            </select></div>
+        <div class="four columns"></div>
+    </div>
+</div>
+
+
+<p>Sharing your contact details will enable non-DIT ILB users to search for you and to easily and confirm your address and contact details. If you do not share your contact details, they will have to know your email address in advance and will not have access to the address or contact telephone numbers recorded here.</p>
+
+<h3>
+    Security Information
+</h3>
+
+<div class="info-box info-box-info">
+
+    These details help us to verify your identity. We'll use them if you have problems logging in to your account. You'll need to enter these details to reset your password if you forget it.
+
+</div>
+
+<div class="container setoutForm" data-xfid="g36">
+    <div class="row">
+        <div class="four columns" data-xfid="g38"><label id="pg38" for="g38" class="prompt west">Date Of Birth
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g38">
+            <div class="date-input-container"><input id="g38" name="g38" type="text" value="08-JAN-2019" size="11" class="date-input " aria-required="true" />
+                <div class="date-icon icon-calendar" id="icong38" aria-label="Click here to pop up the date picker"></div>
+            </div>
+        </div>
+        <div class="four columns"></div>
+    </div>
+</div>
+
+<div class="container setoutForm" data-xfid="g36">
+    <div class="row">
+        <div class="four columns" data-xfid="g39"><label id="pg39" for="g39" class="prompt west">Security Question
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g39"><textarea id="g39" name="g39" cols="60" rows="2" aria-required="false">1 + 1</textarea></div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g40"><label id="pg40" for="g40" class="prompt west">Security Answer
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g40"><input id="g40" name="g40" type="password" value=" " size="60" maxlength="60" aria-required="true" /></div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g41"><label id="pg41" for="g41" class="prompt west">Re-enter Security Answer
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g41"><input id="g41" name="g41" type="password" value=" " size="60" maxlength="60" aria-required="true" /></div>
+        <div class="four columns"></div>
+    </div>
+</div>
+
+
+
+
+<h3>
+    Telephone Number
+</h3>
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Telephone Number
+                <div id="hint75-content" role="tooltip" class="hint-content">Customary input formats:<br />- FOR United Kingdom:<br />FORMAT: STD NUMBER<br />U.Kingdom: 020 12345678<br />- FOR Mobiles:<br />FORMAT: STD NUMBER<br />U.Kingdom: 07654 123456<br />- FOR International:<br />FORMAT: +CC (NDD)STD NUMBER<br />Netherlands: +31 (0)20 12345678<br />Hungary: +36 (06)1 12345678<br />U.Kingdom: +44 (0)20 12345678<br />- FOR International without NDD:<br />FORMAT: +CC STD NUMBER<br />Norway: +47 123 4568900<br />Spain: +34 911 12345678<br />America: +1 123 4568900</div>
+                <div id="hint75" aria-describedby="hint75-content" class="hint icon-info"></div>
+            </th>
+            <th scope="col">Type
+            </th>
+            <th scope="col">Comment
+            </th>
+            <th scope="col">
+            </th>
+        </tr>
+    </thead>
+    <tr data-xfid="f43">
+        <td data-title="Telephone Number" data-xfid="g44"><input id="g44" name="g44" type="text" value="+44 (0)207 1" size="30" maxlength="30" aria-required="true" aria-describedby="hint76-content" /></td>
+        <td data-title="Type" data-xfid="g45"><select id="g45" name="g45" aria-required="true">
+                <option value="g45/0" selected="selected">Work</option>
+                <option value="g45/1">Fax</option>
+                <option value="g45/2">Mobile</option>
+                <option value="g45/3">Home</option>
+                <option value="g45/4">Minicom</option>
+            </select></td>
+        <td data-title="Comment" data-xfid="g46"><input id="g46" name="g46" type="text" value="" size="50" maxlength="50" aria-required="false" /></td>
+        <td></td>
+    </tr>
+</table>
+<div class="list-actions">
+    <button id="g49" name="g49" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addTelephoneNo&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-phone small-button button">
+        Add Telephone Number </button>
+</div>
+
+<h3>
+    Personal Email Addresses
+</h3>
+
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Email Address
+            </th>
+            <th scope="col">Type
+            </th>
+            <th scope="col">Portal Notifications
+            </th>
+            <th scope="col">Comment
+            </th>
+            <th scope="col">
+            </th>
+        </tr>
+    </thead>
+    <tr data-xfid="f51">
+        <td data-title="Email Address" data-xfid="g52"><input id="g52" name="g52" type="text" value="admin@dit.gov.uk" size="30" maxlength="180" aria-required="true" /></td>
+        <td data-title="Type" data-xfid="g53"><select id="g53" name="g53" aria-required="true">
+                <option value="g53/0" selected="selected">Work</option>
+                <option value="g53/1">Home</option>
+            </select></td>
+        <td data-title="Portal Notifications" data-xfid="g54"><select id="g54" name="g54" aria-required="true">
+                <option value="g54/0" selected="selected">Primary</option>
+                <option value="g54/1">Yes</option>
+                <option value="g54/2">No</option>
+            </select></td>
+        <td data-title="Comment" data-xfid="g55"><input id="g55" name="g55" type="text" value="" size="40" maxlength="40" aria-required="false" /></td>
+        <td></td>
+    </tr>
+</table>
+
+<div class="list-actions">
+    <button id="g58" name="g58" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addPersonalEmail&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-mail2 small-button button">
+        Add Email Address </button>
+</div>
+
+
+
+<h3>
+    Alternative Email Addresses
+</h3>
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Email Address
+            </th>
+            <th scope="col">Type
+            </th>
+            <th scope="col">Portal Notifications
+            </th>
+            <th scope="col">Comment
+            </th>
+            <th scope="col">
+            </th>
+        </tr>
+    </thead>
+</table>
+<div class="list-actions">
+    <button id="g60" name="g60" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addDistributionEmail&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-mail2 small-button button">
+        Add Email Address </button>
+</div>
+
+
+
+
+
+<div class="section-break"></div>
+<ul class="menu-out flow-across">
+    <li> <button id="g61" name="g61" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-save&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="primary-button button">
+            Save </button></li>
+    <li> <button id="g62" name="g62" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-exitWithoutSaving&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="link-button button">
+            Cancel </button></li>
+</ul>
+
+
+
+
+<div class="content-actions">
+    <ul class="menu-out flow-across">
+        <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-prev-module&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="prev-link">Importer/Exporter Access Request</a></li>
+    </ul>
+</div>
+{% endblock %}

@@ -7,13 +7,22 @@ from .managers import AccessRequestQuerySet, ProcessQuerySet
 class User(AbstractUser):
     title = models.CharField(max_length=20, blank=False, null=True)
     phone = models.CharField(max_length=60, blank=False, null=True)
+    preferred_first_name = models.CharField(
+        max_length=4000, blank=True, null=True)
+    middle_initials = models.CharField(max_length=40, blank=True, null=True)
     organisation = models.CharField(max_length=4000, blank=False, null=True)
+    department = models.CharField(max_length=4000, blank=False, null=True)
+    job_title = models.CharField(max_length=320, blank=False, null=True)
+    location_at_address = models.CharField(
+        max_length=4000, blank=False, null=True)
+    work_address = models.CharField(max_length=300, blank=False, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     security_question = models.CharField(
         max_length=4000, blank=False, null=True)
     security_answer = models.CharField(max_length=4000, blank=False, null=True)
     register_complete = models.BooleanField(
         blank=False, null=False, default=False)
+    share_contact_details = models.BooleanField(blank=False, null=True)
 
 
 class AccessRequest(models.Model):
