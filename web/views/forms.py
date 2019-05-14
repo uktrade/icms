@@ -71,3 +71,10 @@ class AccessRequestForm(forms.ModelForm):
             'description': forms.Textarea({'rows': 5}),
             'agent_address': forms.Textarea({'rows': 5})
         }
+
+
+class UserDetailsUpdateForm(forms.ModelForm):
+    class Meta(forms.ModelForm):
+        model = models.User
+
+        fields = ['email']
