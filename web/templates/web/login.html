@@ -44,8 +44,7 @@
         {% csrf_token %}
         <div class="container setoutForm login-form" data-xfid="f5">
 
-          {% include 'partial/input.html' with field=form.username label_cols='three' input_cols='nine' %}
-          {% include 'partial/input.html' with field=form.password label_cols='three' input_cols='nine' %}
+          {% include 'forms/form.html' with label_cols='three' input_cols='nine' %}
           <input type="hidden" name="next" value="{{ next }}">
 
             <div class="row">

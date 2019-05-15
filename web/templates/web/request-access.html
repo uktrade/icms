@@ -133,11 +133,7 @@
               {% csrf_token %}
 
               {{ activation.management_form }}
-              {% for field in form %}
-                {% include 'partial/input.html' with field=field label_cols='three' input_cols='six' extra_cols='three' %}
-              {% endfor %}
-
-
+              {% include 'forms/form.html' with label_cols='three' input_cols='six' padding='three' %}
 
                 <div class="row">
                     <div class="three columns"></div>

@@ -3,6 +3,7 @@ import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
 from web.views import forms
@@ -44,15 +45,16 @@ def request_access(request):
 
 
 def update_password(request):
-    if request.method == 'POST':
-        form = forms.PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.register_complete = True
-            user.save()
-            update_session_auth_hash(request, user)  # keep user logged in
-    else:
-        form = forms.PasswordChangeForm(request.user)
+    form = forms.PasswordChangeForm(
+        request.user,
+        request.POST or None,
+        initial={'security_question': request.user.security_question})
+
+    if form.is_valid():
+        user = form.save(commit=False)
+        user.register_complete = True
+        user.save()
+        update_session_auth_hash(request, user)  # keep user logged in
 
     return form
 
@@ -82,7 +84,8 @@ def register(request):
     """
     if request.method == 'POST':
         form = forms.RegistrationForm(request.POST)
-        if form.is_valid():
+        captcha_form = forms.CaptchaForm(request.POST)
+        if form.is_valid() and captcha_form.is_valid():
             user = form.instance
             temp_pass = random.randint(1000, 1000000)
             user.set_password(temp_pass)
@@ -93,8 +96,12 @@ def register(request):
             return redirect('change-password')
     else:
         form = forms.RegistrationForm()
+        captcha_form = forms.CaptchaForm()
 
-    return render(request, 'web/registration.html', {'form': form})
+    return render(request, 'web/registration.html', {
+        'form': form,
+        'captcha_form': captcha_form
+    })
 
 
 @require_registered
@@ -121,3 +128,9 @@ def user_details(request):
         form = forms.UserDetailsUpdateForm()
 
     return render(request, 'web/user/details.html', {'form': form})
+
+
+class LoginView(auth_views.LoginView):
+    form_class = forms.LoginForm
+    template_name = 'web/login.html'
+    redirect_authenticated_user = True
