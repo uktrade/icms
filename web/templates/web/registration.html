@@ -23,28 +23,8 @@
     {% csrf_token %}
     <div class="container setoutForm">
 
-        {% for field in form %}
-        {% if field.name == 'captcha' %}
-        {% else %}
-        <div class="row">
-            <div class="four columns">
-                <label for="{{ field.id_for_label }}" class="prompt west">
-                    {{field.label}}
-                </label>
-            </div>
-            <div class="six columns {% if field.errors %}input-error{% endif %}">
-              <!-- <input id="{{ field.id_for_label}}" name="{{ field.html_name}}" type="{{field.field.widget.input_type}}" value="" size="80" aria-required="{{field.field.required|lower}}" /> -->
-              {{ field }}
-                {% if field.errors %}
-                {% for error in field.errors %}
-                <div class="error-message">{{error}}</div>
-                {% endfor %}
-                {% endif %}
-            </div>
-            <div class="two columns"></div>
-        </div>
-        {% endif %}
-        {% endfor %}
+
+        {% include 'forms/form.html' with label_cols='four' input_cols='six' padding='two' %}
 
     </div>
     <p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
@@ -55,13 +35,13 @@
                 </label>
             </div>
             <div class="six columns {% if form.captcha.errors %}input-error{% endif %}" data-xfid="g20">
-              {{form.captcha}}
-              <div class="clearBoth"> </div>
-              {% if form.captcha.errors %}
-              {% for error in form.captcha.errors %}
-              <div class="error-message">{{error}}</div>
-              {% endfor %}
-              {% endif %}
+                {{captcha_form.captcha}}
+                <div class="clearBoth"> </div>
+                {% if captcha_form.captcha.errors %}
+                {% for error in captcha_form.captcha.errors %}
+                <div class="error-message">{{error}}</div>
+                {% endfor %}
+                {% endif %}
             </div>
             <div class="two columns"></div>
         </div>

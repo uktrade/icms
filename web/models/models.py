@@ -4,6 +4,54 @@ from viewflow.models import Process
 from .managers import AccessRequestQuerySet, ProcessQuerySet
 
 
+class Address(models.Model):
+    DRAFT = "DRAFT"
+    OVERSEAS = "OVERSEAS"
+    VALID = "VALID"
+
+    STATUSES = ((DRAFT, "Draft"), (OVERSEAS, "Overseas"), (VALID, "Valid"))
+    """Address for users and organisations"""
+    postcode_zip_full = models.CharField(max_length=30, blank=True, null=True)
+    postcode_zip_compressed = models.CharField(
+        max_length=30, blank=True, null=True)
+    address = models.CharField(max_length=4000, blank=False, null=False)
+    status = models.CharField(
+        max_length=12,
+        choices=STATUSES,
+        blank=False,
+        null=False,
+        default=DRAFT)
+    created_date = models.DateField(auto_now_add=True, blank=False, null=False)
+
+
+class EmailAddress(models.Model):
+    WORK = "WORK"
+    HOME = "HOME"
+    TYPES = ((WORK, 'Work'), (HOME, 'Home'))
+
+    email = models.CharField(max_length=254, blank=False, null=False)
+    type = models.CharField(
+        max_length=30, blank=False, null=False, default=WORK)
+    portal_notifications = models.BooleanField(
+        blank=False, null=False, default=False)
+    comment = models.CharField(max_length=4000, blank=True, null=True)
+
+
+class PhoneNumber(models.Model):
+    WORK = "WORK"
+    FAX = "FAX"
+    MOBILE = "MOBILE"
+    HOME = "HOME"
+    MINICOM = "MINICOM"
+    TYPES = ((WORK, 'Work'), (FAX, 'Fax'), (MOBILE, 'Mobile'), (HOME, 'Home'),
+             (MINICOM, 'Minicom'))
+
+    phone = models.CharField(max_length=60, blank=False, null=False)
+    type = models.CharField(
+        max_length=30, blank=False, null=False, default=WORK)
+    comment = models.CharField(max_length=4000, blank=True, null=True)
+
+
 class User(AbstractUser):
     title = models.CharField(max_length=20, blank=False, null=True)
     phone = models.CharField(max_length=60, blank=False, null=True)
@@ -16,13 +64,20 @@ class User(AbstractUser):
     location_at_address = models.CharField(
         max_length=4000, blank=False, null=True)
     work_address = models.CharField(max_length=300, blank=False, null=True)
-    date_of_birth = models.DateField(blank=True, null=True)
+    date_of_birth = models.DateField(blank=False, null=True)
     security_question = models.CharField(
         max_length=4000, blank=False, null=True)
     security_answer = models.CharField(max_length=4000, blank=False, null=True)
     register_complete = models.BooleanField(
         blank=False, null=False, default=False)
-    share_contact_details = models.BooleanField(blank=False, null=True)
+    share_contact_details = models.BooleanField(
+        blank=False, null=False, default=False)
+    work_address = models.ForeignKey(
+        Address, on_delete=models.SET_NULL, blank=False, null=True)
+    personal_emails = models.ManyToManyField(
+        EmailAddress, related_name='personal_emails')
+    alternative_emails = models.ManyToManyField(
+        EmailAddress, related_name='alternative_emails')
 
 
 class AccessRequest(models.Model):
@@ -87,7 +142,7 @@ class OutboundEmail(models.Model):
         null=False,
         default=PENDING)
     last_requested_date = models.DateTimeField(
-        auto_now_add=True, blank=False, null=False)
+        auto_now=True, blank=False, null=False)
     format = models.CharField(
         max_length=20, blank=False, null=False, default='Email')
     to_name = models.CharField(max_length=170, null=True)

@@ -1,0 +1,19 @@
+{% with exclude_list=exclude.split include_list=include.split %}
+  {% for field in form %}
+
+    {% if not field.html_name in exclude_list %}
+
+      {% if field.html_name in include_list or not include_list %}
+
+        {% if padding %}
+        {% include 'forms/row-padded.html' %}
+        {% else %}
+        {% include 'forms/row.html' %}
+        {% endif %}
+
+      {% endif %}
+
+    {% endif %}
+
+  {% endfor %}
+{% endwith %}

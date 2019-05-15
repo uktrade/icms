@@ -1,0 +1,14 @@
+{% extends 'forms/input.html' %}
+
+{% block input-class %} input-group {% endblock %}
+
+{% block input %}
+<div class="eleven-column-input">
+    {% include 'forms/field.html' %}
+</div>
+<div class="input-group-addon hint-addon">
+    <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">{{hint}}</div>
+    <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered">
+    </div>
+</div>
+{% endblock %}

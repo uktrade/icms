@@ -1,0 +1,8 @@
+<div
+  class="{{input_cols|default:'four'}} columns
+  {% if field.errors %}input-error{% endif %}
+  {% block input_class %}{% endblock %}">
+    {% block input %}
+    {% include 'forms/field.html' %}
+    {% endblock %}
+</div>

@@ -1,0 +1,12 @@
+<div class="row">
+    {% include 'forms/label.html' %}
+
+    {% if hint %}
+    {% include 'forms/input-with-hint.html' %}
+    {% else %}
+    {% include 'forms/input.html' %}
+    {% endif %}
+
+    {% block extra %}
+    {% endblock %}
+</div>
