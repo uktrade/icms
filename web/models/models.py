@@ -62,7 +62,7 @@ class User(AbstractUser):
     department = models.CharField(max_length=4000, blank=False, null=True)
     job_title = models.CharField(max_length=320, blank=False, null=True)
     location_at_address = models.CharField(
-        max_length=4000, blank=False, null=True)
+        max_length=4000, blank=True, null=True)
     work_address = models.CharField(max_length=300, blank=False, null=True)
     date_of_birth = models.DateField(blank=False, null=True)
     security_question = models.CharField(

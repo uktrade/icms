@@ -82,21 +82,17 @@ def register(request):
     An atomic transaction to save user information and send notifications
     When an unexpected error occurs the whole transaction is rolled back
     """
-    if request.method == 'POST':
-        form = forms.RegistrationForm(request.POST)
-        captcha_form = forms.CaptchaForm(request.POST)
-        if form.is_valid() and captcha_form.is_valid():
-            user = form.instance
-            temp_pass = random.randint(1000, 1000000)
-            user.set_password(temp_pass)
-            user.username = user.email
-            user.save()
-            notify.register(request, user, temp_pass)
-            login(request, user)
-            return redirect('change-password')
-    else:
-        form = forms.RegistrationForm()
-        captcha_form = forms.CaptchaForm()
+    form = forms.RegistrationForm(request.POST or None)
+    captcha_form = forms.CaptchaForm(request.POST or None)
+    if form.is_valid() and captcha_form.is_valid():
+        user = form.instance
+        temp_pass = random.randint(1000, 1000000)
+        user.set_password(temp_pass)
+        user.username = user.email
+        user.save()
+        notify.register(request, user, temp_pass)
+        login(request, user)
+        return redirect('change-password')
 
     return render(request, 'web/registration.html', {
         'form': form,
@@ -119,13 +115,11 @@ def templates(request):
 
 @require_registered
 def user_details(request):
-    if request.method == 'POST':
-        form = forms.UserDetailsUpdateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success('Central contact details have been saved.')
-    else:
-        form = forms.UserDetailsUpdateForm()
+    form = forms.UserDetailsUpdateForm(
+        request.POST or None, instance=request.user)
+    if form.is_valid():
+        form.save()
+        messages.success('Central contact details have been saved.')
 
     return render(request, 'web/user/details.html', {'form': form})
 

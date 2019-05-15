@@ -10,19 +10,142 @@
 
 <ul class="dropdown-menu" id="top-menu">
 
-  <li class="top-menu-dropdown">
-    <a class="dropdown-label" href="#">Admin</a>
-    <ul class="menu-out flow-down top-menu-subcategory-list">
-      <li class="top-menu-subcategory">
-        <ul class="top-menu-subcategory-actions">
-          <li class="top-menu-subcategory-action">
-            <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;4B0CD9E04A54A5C9AEDADF06D92F562A&quot;}, this);">Portal Dashboard</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </li>
+    <li class="top-menu-action">
+        <a href="{% url 'workbasket' %}">Workbasket</a>
+    </li>
 
+    <li class="top-menu-action">
+        <a href="">Dashboard</a>
+    </li>
+
+    <li class="top-menu-action">
+        <a href="">Reports</a>
+    </li>
+    <li class="top-menu-dropdown">
+        <a class="dropdown-label" href="#">Search</a>
+        <ul class="menu-out flow-down top-menu-subcategory-list">
+
+            <li class="top-menu-subcategory">
+
+                <ul class="top-menu-subcategory-actions">
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;2922CB4584BF66A88C2ABEED5C8E17A5&quot;}, this);">Search Import Applications</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;DA13B9EA7DF4B1F7C7F63695DFD43754&quot;}, this);">Search Certificate Applications</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;000C44E12803B2CED803BA61C1B3FA24&quot;}, this);">Search Mailshots</a>
+
+                    </li>
+
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+    <li class="top-menu-dropdown">
+        <a class="dropdown-label" href="#">Admin</a>
+        <ul class="menu-out flow-down top-menu-subcategory-list">
+
+            <li class="top-menu-subcategory">
+
+                <span class="top-menu-subcategory-prompt">Importers/Exporters</span>
+
+                <ul class="top-menu-subcategory-actions">
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;595F77D524F78729FB1D02A128494537&quot;}, this);">Importers</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;0F995B4F55BC00108428C86E02D1E3CA&quot;}, this);">Exporters</a>
+
+                    </li>
+
+                </ul>
+            </li>
+
+            <li class="top-menu-subcategory">
+
+                <ul class="top-menu-subcategory-actions">
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;F0650839C2F159043AFD7416CF93637C&quot;}, this);">Mailshots</a>
+
+                    </li>
+
+                </ul>
+            </li>
+
+            <li class="top-menu-subcategory">
+
+                <span class="top-menu-subcategory-prompt">Reference Data</span>
+
+                <ul class="top-menu-subcategory-actions">
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;958EA71F48DCF8A07E86F259BDBBB9F7&quot;}, this);">Commodities</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;2AF4009247BE613D2931323EC0B983C4&quot;}, this);">Constabularies</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;ABB581523AD5500269D16D9A5CFEA62B&quot;}, this);">Obsolete Calibres</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;F7B0F90A228D352FEAEE7665D3D26A2C&quot;}, this);">Product Legislation</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;59A81D12A078B84C230C5DC17AF95165&quot;}, this);">Countries</a>
+
+                    </li>
+
+                </ul>
+            </li>
+
+            <li class="top-menu-subcategory">
+
+                <ul class="top-menu-subcategory-actions">
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="{% url 'template-list' %}">Templates</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;4DB09E3CCF83A288AA390C6CAC0A8140&quot;}, this);">Matrix Folders</a>
+
+                    </li>
+
+                    <li class="top-menu-subcategory-action">
+                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;25ADB477D87FAA9C62373049B5DD7CAC&quot;}, this);">Teams</a>
+
+                    </li>
+
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+    <li class="top-menu-button">
+        <button id="g27" name="g27" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;8ED5AD37BA40C1A64EBA2F9DF252E364&quot;}, this);" class="primary-button button">
+            New Import Application </button>
+    </li>
     <li class="icon-user" id="user-info">
 
         <a class="dropdown-label" href="#">{{request.user.title}} {{request.user.first_name}} {{request.user.last_name}}</a>
@@ -30,7 +153,7 @@
 
             <li>
                 <ul class="menu-out">
-                    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-user-details&quot;,&quot;ctxt&quot;:&quot;s7we5q_plretrQph&quot;}, this);">My details</a></li>
+                    <li> <a href="{% url 'user-details' %}">My details</a></li>
                     <li> <a href="{% url 'logout' %}">Log out</a></li>
                 </ul>
             </li>
