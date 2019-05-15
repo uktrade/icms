@@ -7,7 +7,7 @@
     {% include 'forms/field.html' %}
 </div>
 <div class="input-group-addon hint-addon">
-    <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">{{hint}}</div>
+    <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">{{field.help_text}}</div>
     <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered">
     </div>
 </div>

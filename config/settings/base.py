@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
 import environ
+from django.forms import Field
 
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
 env = environ.Env()
@@ -104,12 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth user model
 AUTH_USER_MODEL = 'web.user'
 
+# Date formats
+DATE_INPUT_FORMATS = ['%d-%b-%Y']
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 LANGUAGE_CODE = 'en-gb'
 TIME_ZONE = 'Europe/London'
 USE_I18N = True
-USE_L10N = True
+# USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -122,3 +126,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_SES_REGION_NAME = 'eu-west-1'
 AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
+
+# Modify error messages globally
+Field.default_error_messages = {'required': 'You must enter this item'}
