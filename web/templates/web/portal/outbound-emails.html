@@ -1,0 +1,99 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% block page-title %}Portal Dashboard{% endblock %}
+
+{% block context-header %}Portal Dashboard{% endblock %}
+
+{% block main-content %}
+
+
+<ul class="tabs">
+
+    <li class="current-tab">
+
+        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-DASH001X-navigate-to-tab&quot;,&quot;ctxt&quot;:&quot;sO4Ad_plrnqWp1W&quot;}, this);">Outbound Emails</a>
+
+    </li>
+
+</ul>
+<div class="section-break"></div>
+
+
+<form method="get" name="emailSearchForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
+    <div class="container setoutForm" data-xfid="f24">
+
+        {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' %}
+
+
+        <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns" data-xfid="g33">
+                <ul class="menu-out flow-across">
+                    <li> <button id="g34" name="g34" type="submit" class="primary-button button">
+                            Search </button></li>
+                </ul>
+            </div>
+            <div class="three columns"></div>
+        </div>
+    </div>
+</form>
+
+<div class="list-actions">
+    <ul class="menu-out small-menu-out flow-across">
+        <li> <button id="g37" name="g37" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-select-all&quot;,&quot;ctxt&quot;:&quot;sO568_plrnqWp1W&quot;}, this);" class="icon-checkbox-checked button">
+                Select All </button></li>
+        <li> <button id="g35" name="g35" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-select-none&quot;,&quot;ctxt&quot;:&quot;sO568_plrnqWp1W&quot;}, this);" class="icon-checkbox-unchecked button">
+                Select None </button></li>
+        <li> <button id="g38" name="g38" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-resend&quot;,&quot;ctxt&quot;:&quot;sO568_plrnqWp1W&quot;}, this);" class="icon-mail2 button">
+                Resend Selected </button></li>
+        <li> <button id="g36" name="g36" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-update-resend&quot;,&quot;ctxt&quot;:&quot;sO568_plrnqWp1W&quot;}, this);" class="icon-pencil button">
+                Update Recipient and Resend Selected </button></li>
+    </ul>
+</div>
+<table class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Mail Id </th>
+            <th scope="col">Status </th>
+            <th scope="col">Last Requested / Sent Date </th>
+            <th scope="col">Format </th>
+            <th scope="col">To Email </th>
+            <th scope="col">Subject </th>
+            <th scope="col">Num. of Attachments </th>
+            <th scope="col">Resend </th>
+            <th scope="col">View </th>
+        </tr>
+    </thead>
+    {% for email in filter.qs %}
+    <tr data-xfid="f40">
+        <td><span class="text-widget ">{{email.id}}</span></td>
+        <td><span class="text-widget ">{{email.status}}</span></td>
+        <td><span class="text-widget ">{{email.last_requested_date}}</span></td>
+        <td><span class="text-widget ">Email</span></td>
+        <td><span class="text-widget ">{{email.to_email}}</span></td>
+        <td><span class="text-widget ">{{email.subject}}</span></td>
+        <td><span class="text-widget ">{{email.attachments.count}}</span></td>
+        <td><label for="resend-checkbox" class="radio-label"><input id="resend-checkbox" name="resend" value="" type="checkbox" /></label></td>
+        <td>
+            <div class="container setoutForm" data-xfid="f49">
+                <div class="row">
+                    <div class="twelve columns" data-xfid="g50"> <a href="">View</a></div>
+                </div>
+                <div class="row">
+                    <div class="twelve columns" data-xfid="g51"> <a href="">View Body</a></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="result-count">
+    {{filter.qs.count}} emails found
+</div>
+
+
+<div class="content-actions"></div>
+
+
+
+{% endblock %}
