@@ -3,6 +3,8 @@
   name="{{ widget.name }}"
   {% if widget.required%}
   aria-required="true"
+  {% else %}
+  aria-required="false"
   {% endif %}
   {% if widget.value != None %}
   value="{{ widget.value|stringformat:'s' }}"
