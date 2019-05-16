@@ -22,9 +22,26 @@
 <form method="get" name="emailSearchForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
     <div class="container setoutForm" data-xfid="f24">
 
-        {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' %}
-
-
+        {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' include='to_name to_email subject' hide_indicators=True %}
+        <div class="row">
+          <div class="three columns" data-xfid="g29">
+            <label id="pg29" for="g29" class="prompt west">Sent From </label>
+            </div>
+            <div class="six columns" data-xfid="g29">
+                <div class="container cellmates">
+                    <div class="row">
+                        {% include 'forms/input.html' with field=filter.form.sent_from input_cols='three' %}
+                        <div class="one columns" data-xfid="g30"><label id="pg30" for="g30" class="prompt west">To
+                            </label>
+                        </div>
+                        {% include 'forms/input.html' with field=filter.form.to input_cols='three' %}
+                        <div class="five columns"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="three columns"></div>
+        </div>
+        {% include 'forms/row-padded.html' with field=filter.form.status label_cols='three' input_cols='six' padding='three' hide_indicators=True %}
         <div class="row">
             <div class="three columns"></div>
             <div class="six columns" data-xfid="g33">

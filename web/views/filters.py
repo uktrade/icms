@@ -33,9 +33,15 @@ class OutboundEmailsFilter(filter.FilterSet):
     subject = filter.CharFilter(
         lookup_expr='icontains', widget=widgets.TextInput, label='Subject')
     sent_from = filter.DateFilter(
-        field_name='last_requested_date', lookup_expr='gte', label='Sent From')
+        field_name='last_requested_date',
+        widget=widgets.DateInput,
+        lookup_expr='gte',
+        label='Sent From')
     to = filter.DateFilter(
-        field_name='last_requested_date', lookup_expr='lte', label='To')
+        field_name='last_requested_date',
+        widget=widgets.DateInput,
+        lookup_expr='lte',
+        label='To')
     status = filter.ChoiceFilter(
         choices=models.OutboundEmail.STATUSES,
         lookup_expr='icontains',
