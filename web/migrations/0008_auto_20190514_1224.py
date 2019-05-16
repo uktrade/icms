@@ -14,31 +14,55 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Address',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('postcode_zip_full', models.CharField(blank=True, max_length=30, null=True)),
-                ('postcode_zip_compressed', models.CharField(blank=True, max_length=30, null=True)),
+                ('id',
+                 models.AutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
+                ('postcode_zip_full',
+                 models.CharField(blank=True, max_length=30, null=True)),
+                ('postcode_zip_compressed',
+                 models.CharField(blank=True, max_length=30, null=True)),
                 ('address', models.CharField(max_length=4000)),
-                ('status', models.CharField(choices=[('DRAFT', 'Draft'), ('OVERSEAS', 'Overseas'), ('VALID', 'Valid')], default='DRAFT', max_length=12)),
+                ('status',
+                 models.CharField(
+                     choices=[('DRAFT', 'Draft'), ('OVERSEAS', 'Overseas'),
+                              ('VALID', 'Valid')],
+                     default='DRAFT',
+                     max_length=12)),
                 ('created_date', models.DateField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
             name='EmailAddress',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id',
+                 models.AutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
                 ('email', models.CharField(max_length=254)),
                 ('type', models.CharField(default='WORK', max_length=30)),
                 ('portal_notifications', models.BooleanField(default=False)),
-                ('comment', models.CharField(blank=True, max_length=4000, null=True)),
+                ('comment',
+                 models.CharField(blank=True, max_length=4000, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='PhoneNumber',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id',
+                 models.AutoField(
+                     auto_created=True,
+                     primary_key=True,
+                     serialize=False,
+                     verbose_name='ID')),
                 ('phone', models.CharField(max_length=60)),
                 ('type', models.CharField(default='WORK', max_length=30)),
-                ('comment', models.CharField(blank=True, max_length=4000, null=True)),
+                ('comment',
+                 models.CharField(blank=True, max_length=4000, null=True)),
             ],
         ),
         migrations.AddField(
@@ -54,16 +78,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='user',
             name='work_address',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.Address'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='alternative_emails',
-            field=models.ManyToManyField(related_name='alternative_emails', to='web.EmailAddress'),
-        ),
-        migrations.AddField(
-            model_name='user',
-            name='personal_emails',
-            field=models.ManyToManyField(related_name='personal_emails', to='web.EmailAddress'),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to='web.Address'),
         ),
     ]

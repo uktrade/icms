@@ -8,6 +8,7 @@ clean:
 	docker-compose run web find . -type d -name __pycache__ -exec rm -rf {} \+
 
 requirements:
+	unset UID && \
 	docker-compose run web python3 -m pipenv install --dev --system
 
 collectstatic:

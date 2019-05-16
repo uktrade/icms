@@ -90,9 +90,14 @@ def register(request):
         user.set_password(temp_pass)
         user.username = user.email
         user.save()
+        user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
+        email = models.EmailAddress.objects.create(
+            email=user.email, portal_notifications=True)
+        models.PersonalEmail(
+            user=user, email_address=email, is_primary=True).save()
         notify.register(request, user, temp_pass)
         login(request, user)
-        return redirect('change-password')
+        return redirect('set-password')
 
     return render(request, 'web/registration.html', {
         'form': form,

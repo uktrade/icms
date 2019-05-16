@@ -37,7 +37,9 @@ class OutboundEmailsFilter(filter.FilterSet):
     to = filter.DateFilter(
         field_name='last_requested_date', lookup_expr='lte', label='To')
     status = filter.ChoiceFilter(
-        choices=models.OutboundEmail.STATUSES, lookup_expr='icontains')
+        choices=models.OutboundEmail.STATUSES,
+        lookup_expr='icontains',
+        label='Status')
 
     class Meta:
         model = models.OutboundEmail

@@ -54,7 +54,6 @@ class PhoneNumber(models.Model):
 
 class User(AbstractUser):
     title = models.CharField(max_length=20, blank=False, null=True)
-    phone = models.CharField(max_length=60, blank=False, null=True)
     preferred_first_name = models.CharField(
         max_length=4000, blank=True, null=True)
     middle_initials = models.CharField(max_length=40, blank=True, null=True)
@@ -74,10 +73,21 @@ class User(AbstractUser):
         blank=False, null=False, default=False)
     work_address = models.ForeignKey(
         Address, on_delete=models.SET_NULL, blank=False, null=True)
+    phone_numbers = models.ManyToManyField(PhoneNumber)
     personal_emails = models.ManyToManyField(
-        EmailAddress, related_name='personal_emails')
+        EmailAddress, through='PersonalEmail', related_name='users')
     alternative_emails = models.ManyToManyField(
-        EmailAddress, related_name='alternative_emails')
+        EmailAddress, related_name='alternative_users')
+
+
+class PersonalEmail(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
+    is_primary = models.BooleanField(blank=False, null=False, default=False)
+
+
+class AlternativeEmail(PersonalEmail):
+    pass
 
 
 class AccessRequest(models.Model):
