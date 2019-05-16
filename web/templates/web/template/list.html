@@ -11,7 +11,7 @@
     <div class="container setoutForm" data-xfid="f44">
 
 
-      {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' %}
+      {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' hide_indicators=True %}
 
         <div class="row">
             <div class="three columns"></div>
@@ -65,7 +65,7 @@
 
 </table>
 <div class="result-count">
-    80 templates found
+    {{filter.qs.count}} templates found
 </div>
 <div class="content-actions"></div>
 </div>
