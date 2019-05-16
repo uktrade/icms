@@ -4,6 +4,7 @@ from captcha.fields import ReCaptchaField
 from web import models
 from web.base.forms.widgets import (TextInput, PasswordInput)
 from web.base import forms
+from . import validators
 
 import logging
 
@@ -60,13 +61,7 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
         self.fields['new_password1'].help_text = None
 
     def clean_security_answer(self):
-        answer = self.cleaned_data['security_answer']
-        if answer != self.user.security_answer:
-            raise django_forms.ValidationError(
-                ("Your security answer didn't match the one you gave us when\
-                you created your account"))
-
-        return answer
+        return validators.validate_security_answer(self)
 
 
 class AccessRequestForm(django_forms.ModelForm):
@@ -108,6 +103,11 @@ class UserDetailsUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserDetailsUpdateForm, self).__init__(*args, **kwargs)
+        user = kwargs.get('instance')
+        self.fields['security_answer_repeat'].initial = user.security_answer
+
+    def clean_security_answer_repeat(self):
+        return validators.validate_security_answer_confirmation(self)
 
     class Meta(django_forms.ModelForm):
         model = models.User

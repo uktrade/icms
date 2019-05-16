@@ -9,39 +9,10 @@
 
 <form method="get" name="templateSearchForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
     <div class="container setoutForm" data-xfid="f44">
-        <div class="row">
-            <div class="three columns" data-xfid="g45"><label id="pg45" for="g45" class="prompt west">Template / Endorsement Name
-                </label>
-            </div>
-            <div class="six columns input-group" data-xfid="g45">
-              <div class="eleven-column-input">
-                {{filter.form.template_name}}
-              </div>
-                <div class="input-group-addon hint-addon">
-                    <div id="hint631-content" role="tooltip" class="hint-content">Use % for wildcard searching.</div>
-                    <div id="hint631" aria-describedby="hint631-content" class="hint icon-info"></div>
-                </div>
-            </div>
-            <div class="three columns"></div>
-        </div>
-        <div class="row">
-            <div class="three columns" data-xfid="g46"><label id="pg46" for="g46" class="prompt west">Application Domain
-                </label>
-            </div>
-            <div class="six columns" data-xfid="g46">
-              {{filter.form.application_domain}}
-            </div>
-            <div class="three columns"></div>
-        </div>
-        <div class="row">
-            <div class="three columns" data-xfid="g47"><label id="pg47" for="g47" class="prompt west">Template Type
-                </label>
-            </div>
-            <div class="six columns" data-xfid="g47">
-              {{filter.form.template_type}}
-            </div>
-            <div class="three columns"></div>
-        </div>
+
+
+      {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' %}
+
         <div class="row">
             <div class="three columns"></div>
             <div class="six columns" data-xfid="g48">

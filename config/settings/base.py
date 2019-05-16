@@ -128,4 +128,6 @@ AWS_SES_REGION_NAME = 'eu-west-1'
 AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
 
 # Modify error messages globally
-Field.default_error_messages = {'required': 'You must enter this item'}
+Field.default_error_messages = {
+    'required': 'You must enter this item',
+}
