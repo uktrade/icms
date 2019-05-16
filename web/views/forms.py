@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class RegistrationForm(django_forms.ModelForm):
 
+    telephone_number = django_forms.CharField(max_length=60, widget=TextInput)
     confirm_email = django_forms.CharField(
         widget=django_forms.EmailInput(), max_length=254)
     confirm_security_answer = django_forms.CharField(max_length=254)
@@ -27,7 +28,7 @@ class RegistrationForm(django_forms.ModelForm):
         model = models.User
         fields = [
             'email', 'confirm_email', 'title', 'first_name', 'last_name',
-            'phone', 'organisation', 'date_of_birth', 'security_question',
+            'organisation', 'date_of_birth', 'security_question',
             'security_answer'
         ]
         labels = {
@@ -35,7 +36,7 @@ class RegistrationForm(django_forms.ModelForm):
             'email': 'Email',
             'first_name': 'Forename',
             'last_name': 'Surname',
-            'phone': 'Telephone Number',
+            'telephone_number': 'Telephone Number',
             'date_of_birth': 'Date of Birth'
         }
 
