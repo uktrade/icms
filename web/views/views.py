@@ -114,6 +114,16 @@ def templates(request):
 
 
 @require_registered
+def outbound_emails(request):
+    filter = filters.OutboundEmailsFilter(
+        request.GET,
+        queryset=models.OutboundEmail.objects.all().prefetch_related(
+            'attachments'))
+    return render(request, 'web/portal/outbound-emails.html',
+                  {'filter': filter})
+
+
+@require_registered
 def user_details(request):
     form = forms.UserDetailsUpdateForm(
         request.POST or None, instance=request.user)

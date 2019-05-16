@@ -1,0 +1,11 @@
+{% extends "layout/sidebar.html" %}
+
+{% block content %}
+<div class="no-sidebar" id="content">
+  <div class="content-ie8-float"
+    {% block content-actions %}{%endblock%}
+    {% include "partial/mainstart.html" %}
+    {% block main-content %}{%endblock%}
+  </div>
+</div>
+{% endblock %}

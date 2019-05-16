@@ -14,4 +14,4 @@ def register(request, user, password):
         'user': user,
         'password': password
     }, request)
-    email.send(subject, user.email, message)
+    email.send(subject, user, message)

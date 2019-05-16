@@ -142,12 +142,15 @@ class OutboundEmail(models.Model):
         null=False,
         default=PENDING)
     last_requested_date = models.DateTimeField(
-        auto_now=True, blank=False, null=False)
+        auto_now_add=True, blank=False, null=False)
     format = models.CharField(
         max_length=20, blank=False, null=False, default='Email')
     to_name = models.CharField(max_length=170, null=True)
     to_email = models.CharField(max_length=254, null=False)
     subject = models.CharField(max_length=4000, null=True)
+
+    class Meta:
+        ordering = ('-last_requested_date', )
 
 
 class EmailAttachment(models.Model):

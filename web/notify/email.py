@@ -8,7 +8,7 @@ import html2text
 logger = logging.getLogger(__name__)
 
 
-def send(subject, recipient, html_message):
+def send(subject, to_user, html_message):
     """
     Sends email to a single recipient
     Message must be html, html is converted to text both formats are sent
@@ -19,21 +19,25 @@ def send(subject, recipient, html_message):
     """
 
     message_text = html2text.html2text(html_message)
-    logger.debug('Email to %s:\n subject:%s message:\n%s', recipient, subject,
-                 message_text)
-    if not settings.AWS_ACCESS_KEY_ID:
-        return
+    logger.debug('Email to %s:\n subject:%s message:\n%s', to_user.email,
+                 subject, message_text)
 
-    mail = OutboundEmail(to_email=recipient, subject=subject)
+    mail = OutboundEmail(
+        to_email=to_user.email,
+        to_name=to_user.first_name + '' + to_user.last_name,
+        subject=subject)
     mail.save()
     attachment = EmailAttachment(
-        mail=mail, filename='body', mimetype='text/html')
+        mail=mail,
+        filename='body',
+        mimetype='text/html',
+        text_attachment=html_message)
     attachment.save()
     try:
         send_mail(
             subject,
             message_text,
-            settings.EMAIL_FROM, [recipient],
+            settings.EMAIL_FROM, [to_user.email],
             html_message=html_message)
         mail.status = OutboundEmail.SENT
     except Exception:
