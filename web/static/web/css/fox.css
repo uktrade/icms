@@ -4111,6 +4111,7 @@ textarea[readonly] {
 input[type='text'],
 input[type='email'],
 input[type='password'],
+input[type='tel'],
 input[type='date'],
 select,
 textarea,

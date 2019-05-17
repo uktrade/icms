@@ -24,6 +24,8 @@ django-viewflow = "*"
 psycopg2 = "*"
 whitenoise = "*"
 django-filter = "*"
+django-phonenumber-field = "*"
+phonenumbers = "*"
 
 [requires]
 python_version = "3.7"

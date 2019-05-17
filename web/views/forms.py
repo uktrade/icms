@@ -1,6 +1,8 @@
 from django.contrib.auth import forms as auth_forms
 from django import forms as django_forms
 from captcha.fields import ReCaptchaField
+from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
+from phonenumber_field.formfields import PhoneNumberField
 from web import models
 from web.base.forms.widgets import (TextInput, PasswordInput)
 from web.base import forms
@@ -11,12 +13,32 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RegistrationForm(django_forms.ModelForm):
+class RegistrationForm(forms.ModelForm):
 
-    telephone_number = django_forms.CharField(max_length=60, widget=TextInput)
+    telephone_number = PhoneNumberField(
+        max_length=60,
+        widget=PhoneNumberInternationalFallbackWidget,
+        help_text="Customary input formats:\n\
+        \n\
+        - FOR United Kingdom:\n\
+        FORMAT: STD NUMBER\n\
+        U.Kingdom: 020 12345678\n\
+        - FOR International:\n\
+        FORMAT: +CC (NDD)STD NUMBER\n\
+        Netherlands: +31 (0)20 12345678\n\
+        Hungary: +36 (06)1 12345678\n\
+        U.Kingdom: +44 (0)20 12345678\n\
+        - FOR International without NDD:\n\
+        FORMAT: +CC STD NUMBER<br>Norway: +47 123 4568900\n\
+        Spain: +34 911 12345678\n\
+        America: +1 123 4568900")
     confirm_email = django_forms.CharField(
         widget=django_forms.EmailInput(), max_length=254)
-    confirm_security_answer = django_forms.CharField(max_length=254)
+
+    security_answer_repeat = django_forms.CharField(
+        required=True,
+        label="Confirm Security Answer",
+        widget=PasswordInput(render_value=True))
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -24,12 +46,22 @@ class RegistrationForm(django_forms.ModelForm):
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
+    def clean_security_answer_repeat(self):
+        return validators.validate_security_answer_confirmation(self)
+
+    def clean_date_of_birth(self):
+        return validators.validate_date_of_birth(self)
+
+    def clean_telephone_number(self):
+        number = self.cleaned_data.get('telephone_number')
+        logger.debug('Phone number %s', number)
+
     class Meta(django_forms.ModelForm):
         model = models.User
         fields = [
             'email', 'confirm_email', 'title', 'first_name', 'last_name',
-            'organisation', 'date_of_birth', 'security_question',
-            'security_answer'
+            'telephone_number', 'organisation', 'date_of_birth',
+            'security_question', 'security_answer'
         ]
         labels = {
             'organisation': 'Organisation Name (Employer)',
@@ -38,6 +70,10 @@ class RegistrationForm(django_forms.ModelForm):
             'last_name': 'Surname',
             'telephone_number': 'Telephone Number',
             'date_of_birth': 'Date of Birth'
+        }
+
+        widgets = {
+            'security_answer': PasswordInput(render_value=True),
         }
 
 

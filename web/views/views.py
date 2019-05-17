@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
+from django.forms import formset_factory
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered

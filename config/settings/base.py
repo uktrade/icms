@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'viewflow',
     'web',
     'captcha',
+    'phonenumber_field',
     'django_filters',
     'django.contrib.admin',
     'django.forms',
@@ -107,6 +108,10 @@ AUTH_USER_MODEL = 'web.user'
 
 # Date formats
 DATE_INPUT_FORMATS = ['%d-%b-%Y']
+
+# Phone number format
+PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
+PHONENUMBER_DEFAULT_REGION = "GB"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
