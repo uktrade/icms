@@ -1,41 +1,23 @@
 from django.contrib.auth import forms as auth_forms
-from django import forms as django_forms
 from captcha.fields import ReCaptchaField
-from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
-from phonenumber_field.formfields import PhoneNumberField
 from web import models
-from web.base.forms.widgets import (TextInput, PasswordInput)
-from web.base import forms
-from . import validators
+from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
+                                    EmailInput, Select)
+from web.base.forms.fields import (CharField, PhoneNumberField)
+from web.base.forms import (Form, ModelForm)
+from .utils import validators
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class RegistrationForm(forms.ModelForm):
+class RegistrationForm(ModelForm):
 
-    telephone_number = PhoneNumberField(
-        max_length=60,
-        widget=PhoneNumberInternationalFallbackWidget,
-        help_text="Customary input formats:\n\
-        \n\
-        - FOR United Kingdom:\n\
-        FORMAT: STD NUMBER\n\
-        U.Kingdom: 020 12345678\n\
-        - FOR International:\n\
-        FORMAT: +CC (NDD)STD NUMBER\n\
-        Netherlands: +31 (0)20 12345678\n\
-        Hungary: +36 (06)1 12345678\n\
-        U.Kingdom: +44 (0)20 12345678\n\
-        - FOR International without NDD:\n\
-        FORMAT: +CC STD NUMBER<br>Norway: +47 123 4568900\n\
-        Spain: +34 911 12345678\n\
-        America: +1 123 4568900")
-    confirm_email = django_forms.CharField(
-        widget=django_forms.EmailInput(), max_length=254)
+    telephone_number = PhoneNumberField()
+    confirm_email = CharField(widget=EmailInput(), max_length=254)
 
-    security_answer_repeat = django_forms.CharField(
+    security_answer_repeat = CharField(
         required=True,
         label="Confirm Security Answer",
         widget=PasswordInput(render_value=True))
@@ -52,11 +34,7 @@ class RegistrationForm(forms.ModelForm):
     def clean_date_of_birth(self):
         return validators.validate_date_of_birth(self)
 
-    def clean_telephone_number(self):
-        number = self.cleaned_data.get('telephone_number')
-        logger.debug('Phone number %s', number)
-
-    class Meta(django_forms.ModelForm):
+    class Meta:
         model = models.User
         fields = [
             'email', 'confirm_email', 'title', 'first_name', 'last_name',
@@ -77,19 +55,18 @@ class RegistrationForm(forms.ModelForm):
         }
 
 
-class CaptchaForm(django_forms.Form):
+class CaptchaForm(Form):
     captcha = ReCaptchaField()
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
-    new_password1 = django_forms.CharField(
+    new_password1 = CharField(
         label='New password', strip=False, widget=PasswordInput())
-    new_password2 = django_forms.CharField(
+    new_password2 = CharField(
         label='Confirm New Password', strip=False, widget=PasswordInput())
-    old_password = django_forms.CharField(strip=False, widget=PasswordInput())
-    security_question = django_forms.CharField(disabled=True)
-    security_answer = django_forms.CharField(
-        max_length=4000, widget=PasswordInput())
+    old_password = CharField(strip=False, widget=PasswordInput())
+    security_question = CharField(disabled=True)
+    security_answer = CharField(max_length=4000, widget=PasswordInput())
 
     def __init__(self, *args, **kwargs):
         super(PasswordChangeForm, self).__init__(*args, **kwargs)
@@ -101,8 +78,8 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
         return validators.validate_security_answer(self)
 
 
-class AccessRequestForm(django_forms.ModelForm):
-    class Meta(django_forms.ModelForm):
+class AccessRequestForm(ModelForm):
+    class Meta:
         model = models.AccessRequest
 
         fields = [
@@ -118,22 +95,22 @@ class AccessRequestForm(django_forms.ModelForm):
         }
 
         widgets = {
-            'organisation_address': django_forms.Textarea({'rows': 5}),
-            'description': django_forms.Textarea({'rows': 5}),
-            'agent_address': django_forms.Textarea({'rows': 5})
+            'organisation_address': Textarea({'rows': 5}),
+            'description': Textarea({'rows': 5}),
+            'agent_address': Textarea({'rows': 5})
         }
 
 
-class UserDetailsUpdateForm(forms.ModelForm):
-    address = django_forms.CharField(
+class UserDetailsUpdateForm(ModelForm):
+    address = CharField(
         required=True,
         label='Work Address',
-        widget=django_forms.Textarea({
+        widget=Textarea({
             'rows': 5,
             'readonly': 'readonly'
         }))
 
-    security_answer_repeat = django_forms.CharField(
+    security_answer_repeat = CharField(
         required=True,
         label="Re-enter Security Answer",
         widget=PasswordInput(render_value=True))
@@ -146,7 +123,7 @@ class UserDetailsUpdateForm(forms.ModelForm):
     def clean_security_answer_repeat(self):
         return validators.validate_security_answer_confirmation(self)
 
-    class Meta(django_forms.ModelForm):
+    class Meta(ModelForm):
         model = models.User
 
         fields = [
@@ -169,13 +146,10 @@ class UserDetailsUpdateForm(forms.ModelForm):
 
         widgets = {
             'share_contact_details':
-            django_forms.Select(choices=((False, 'No'), (True, 'Yes'))),
-            'security_question':
-            django_forms.Textarea({'rows': 2}),
-            'security_answer':
-            PasswordInput(render_value=True),
-            'location_at_address':
-            django_forms.Textarea({
+            Select(choices=((False, 'No'), (True, 'Yes'))),
+            'security_question': Textarea({'rows': 2}),
+            'security_answer': PasswordInput(render_value=True),
+            'location_at_address': Textarea({
                 'rows': 2,
                 'cols': 50
             })
@@ -204,4 +178,23 @@ class UserDetailsUpdateForm(forms.ModelForm):
 class LoginForm(auth_forms.AuthenticationForm):
     username = auth_forms.UsernameField(
         widget=TextInput(attrs={'autofocus': True}))
-    password = django_forms.CharField(strip=False, widget=PasswordInput)
+    password = CharField(strip=False, widget=PasswordInput)
+
+
+class PhoneNumberForm(ModelForm):
+    telephone_number = PhoneNumberField()
+
+    def __init__(self, *args, **kwargs):
+        super(PhoneNumberForm, self).__init__(*args, **kwargs)
+        self.fields['telephone_number'].initial = self.instance.phone
+
+    def clean_telephone_number(self):
+        phone = self.cleaned_data['telephone_number']
+        self.instance.phone = phone
+        return phone
+
+    class Meta:
+        model = models.PhoneNumber
+        fields = ['type', 'comment']
+
+        widgets = {'type': Select(choices=models.PhoneNumber.TYPES)}

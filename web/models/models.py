@@ -73,7 +73,7 @@ class User(AbstractUser):
         blank=False, null=False, default=False)
     work_address = models.ForeignKey(
         Address, on_delete=models.SET_NULL, blank=False, null=True)
-    phone_numbers = models.ManyToManyField(PhoneNumber)
+    phone_numbers = models.ManyToManyField(PhoneNumber, related_name='users')
     personal_emails = models.ManyToManyField(
         EmailAddress, through='PersonalEmail', related_name='users')
     alternative_emails = models.ManyToManyField(

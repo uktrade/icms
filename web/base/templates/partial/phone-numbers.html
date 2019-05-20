@@ -1,0 +1,65 @@
+<h3>
+    Telephone Number
+</h3>
+
+{{ phones_formset.management_form }}
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Telephone Number
+                <div id="hint75-content" role="tooltip" class="hint-content">Customary input formats:<br />- FOR United Kingdom:<br />FORMAT: STD NUMBER<br />U.Kingdom: 020 12345678<br />- FOR Mobiles:<br />FORMAT: STD NUMBER<br />U.Kingdom: 07654 123456<br />- FOR International:<br />FORMAT: +CC (NDD)STD NUMBER<br />Netherlands: +31 (0)20 12345678<br />Hungary: +36 (06)1 12345678<br />U.Kingdom: +44 (0)20 12345678<br />- FOR International without NDD:<br />FORMAT: +CC STD NUMBER<br />Norway: +47 123 4568900<br />Spain: +34 911 12345678<br />America: +1 123 4568900</div>
+                <div id="hint75" aria-describedby="hint75-content" class="hint icon-info"></div>
+            </th>
+            <th scope="col">Type
+            </th>
+            <th scope="col">Comment
+            </th>
+            <th scope="col">
+            </th>
+        </tr>
+    </thead>
+    {% for form in phones_formset %}
+    <tr>
+        <td>
+            {% include 'forms/field.html' with field=form.telephone_number %}
+        </td>
+        <td>
+            {% include 'forms/field.html' with field=form.type %}
+        </td>
+        <td>
+            {% include 'forms/field.html' with field=form.comment %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<div class="list-actions">
+    <button name="add_phone" type="button" class="icon-phone small-button button">
+        Add Telephone Number </button>
+    <script>
+        $('#add_phone').click(function() {
+            cloneMore('div.table:last', 'telephone_number');
+        });
+
+      /* TODO: Move all this into a minimised javascript file */
+      /* taken from https://stackoverflow.com/questions/501719/dynamically-adding-a-form-to-a-django-formset-with-ajax */
+        function cloneMore(selector, type) {
+            var newElement = $(selector).clone(true);
+            var total = $('#id_' + type + '-TOTAL_FORMS').val();
+            newElement.find(':input').each(function() {
+                var name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
+                var id = 'id_' + name;
+                $(this).attr({
+                    'name': name,
+                    'id': id
+                }).val('').removeAttr('checked');
+            });
+            newElement.find('label').each(function() {
+                var newFor = $(this).attr('for').replace('-' + (total - 1) + '-', '-' + total + '-');
+                $(this).attr('for', newFor);
+            });
+            total++;
+            $('#id_' + type + '-TOTAL_FORMS').val(total);
+            $(selector).after(newElement);
+        }
+    </script>
+</div>

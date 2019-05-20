@@ -60,41 +60,8 @@
     </div>
 
 
-    <h3>
-        Telephone Number
-    </h3>
-    <table responsiveList class="setoutList">
-        <thead>
-            <tr>
-                <th scope="col">Telephone Number
-                    <div id="hint75-content" role="tooltip" class="hint-content">Customary input formats:<br />- FOR United Kingdom:<br />FORMAT: STD NUMBER<br />U.Kingdom: 020 12345678<br />- FOR Mobiles:<br />FORMAT: STD NUMBER<br />U.Kingdom: 07654 123456<br />- FOR International:<br />FORMAT: +CC (NDD)STD NUMBER<br />Netherlands: +31 (0)20 12345678<br />Hungary: +36 (06)1 12345678<br />U.Kingdom: +44 (0)20 12345678<br />- FOR International without NDD:<br />FORMAT: +CC STD NUMBER<br />Norway: +47 123 4568900<br />Spain: +34 911 12345678<br />America: +1 123 4568900</div>
-                    <div id="hint75" aria-describedby="hint75-content" class="hint icon-info"></div>
-                </th>
-                <th scope="col">Type
-                </th>
-                <th scope="col">Comment
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-        </thead>
-        <tr data-xfid="f43">
-            <td data-title="Telephone Number" data-xfid="g44"><input id="g44" name="g44" type="text" value="+44 (0)207 1" size="30" maxlength="30" aria-required="true" aria-describedby="hint76-content" /></td>
-            <td data-title="Type" data-xfid="g45"><select id="g45" name="g45" aria-required="true">
-                    <option value="g45/0" selected="selected">Work</option>
-                    <option value="g45/1">Fax</option>
-                    <option value="g45/2">Mobile</option>
-                    <option value="g45/3">Home</option>
-                    <option value="g45/4">Minicom</option>
-                </select></td>
-            <td data-title="Comment" data-xfid="g46"><input id="g46" name="g46" type="text" value="" size="50" maxlength="50" aria-required="false" /></td>
-            <td></td>
-        </tr>
-    </table>
-    <div class="list-actions">
-        <button id="g49" name="g49" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addTelephoneNo&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-phone small-button button">
-            Add Telephone Number </button>
-    </div>
+    {% include 'partial/phone-numbers.html' %}
+
 
     <h3>
         Personal Email Addresses
