@@ -6,15 +6,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
-from django.forms import formset_factory
+from django.forms import modelformset_factory
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
 from viewflow.decorators import flow_start_view
 from web import models
+from .forms import PhoneNumberForm
 from . import filters
 
 logger = logging.getLogger(__name__)
+
+PhonesFormset = modelformset_factory(
+    models.PhoneNumber, form=PhoneNumberForm, extra=0)
 
 
 def index(request):
@@ -131,13 +135,27 @@ def outbound_emails(request):
 
 @require_registered
 def user_details(request):
+    if request.POST.get("add_phone"):
+
+
     form = forms.UserDetailsUpdateForm(
         request.POST or None, instance=request.user)
-    if form.is_valid():
+    phones_formset = PhonesFormset(
+        request.POST or None,
+        request.FILES or None,
+        queryset=models.PhoneNumber.objects.filter(users__in=[
+            request.user,
+        ]))
+
+    if form.is_valid() and phones_formset.is_valid():
         form.save()
+        phones_formset.save()
         messages.success('Central contact details have been saved.')
 
-    return render(request, 'web/user/details.html', {'form': form})
+    return render(request, 'web/user/details.html', {
+        'form': form,
+        'phones_formset': phones_formset
+    })
 
 
 class LoginView(auth_views.LoginView):

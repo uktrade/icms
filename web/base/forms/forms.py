@@ -1,32 +1,25 @@
-from django.db import models
-from django import forms
+from django.db.models import (CharField, DateField)
+from django.forms import (Form, ModelForm)
 from . import widgets
-
-
-def get_template_name(widget):
-    if isinstance(widget, forms.CharField):
-        return widgets.TextInput.template_name
-    elif isinstance(widget, forms.DateField):
-        return widgets.DateInput.template_name
-    elif isinstance(widget, forms.PasswordInput):
-        return widgets.PasswordInput.template_name
-    else:
-        return widget.template_name
 
 
 def get_field(field, **kwargs):
     widget = kwargs.pop('widget', None)
     if not widget:
-        if isinstance(field, models.CharField):
+        if isinstance(field, CharField):
             widget = widgets.TextInput()
-        elif isinstance(field, models.DateField):
+        elif isinstance(field, DateField):
             widget = widgets.DateInput
 
     return field.formfield(widget=widget, **kwargs)
 
 
-class ModelForm(forms.ModelForm):
+class ModelForm(ModelForm):
     """Model form to customise widgets and their templates"""
 
     class Meta:
         formfield_callback = get_field
+
+
+class Form(Form):
+    pass
