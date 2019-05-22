@@ -119,6 +119,8 @@ class UserDetailsUpdateForm(ModelForm):
         super(UserDetailsUpdateForm, self).__init__(*args, **kwargs)
         user = kwargs.get('instance')
         self.fields['security_answer_repeat'].initial = user.security_answer
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
 
     def clean_security_answer_repeat(self):
         return validators.validate_security_answer_confirmation(self)
@@ -200,29 +202,59 @@ class PhoneNumberForm(ModelForm):
         widgets = {'type': Select(choices=models.PhoneNumber.TYPES)}
 
 
-# class EmailAddressForm(ModelForm):
+class AlternativeEmailsForm(ModelForm):
 
-#     notifications = CharField(
-#         widget=Select(choices=(
-#             (False, 'No'),
-#             (True, 'Yes'),
-#         )))
+    notifications = CharField(
+        required=False, widget=Select(choices=((True, 'Yes'), (False, 'No'))))
 
-#     def __init__(self, *args, **kwargs):
-#         super(EmailAddressForm, self).__init__(*args, **kwargs)
-#         self.fields[
-#             'notifications'].initial = self.instance.portal_notifications
+    def __init__(self, *args, **kwargs):
+        super(AlternativeEmailsForm, self).__init__(*args, **kwargs)
+        self.fields['notifications'].initial = \
+            self.instance.portal_notifications
 
-#     def clean_portal_notifications(self):
-#         response = self.cleaned_data.get('notifications', None)
-#         self.instance.portal_notifications = True if response else False
-#         return response
+    def clean_notifications(self):
+        response = self.cleaned_data.get('notifications', None)
+        self.instance.portal_notifications = True if response else False
+        return response
 
-#     class Meta:
-#         model = models.EmailAddress
-#         fields = ['email', 'type', 'comment']
+    class Meta:
+        model = models.AlternativeEmail
+        fields = ['email', 'type', 'notifications', 'comment']
 
-#         widgets = {
-#             'email': EmailInput(),
-#             'type': Select(choices=models.EmailAddress.TYPES)
-#         }
+        widgets = {
+            'email': EmailInput(),
+            'type': Select(choices=models.Email.TYPES),
+        }
+
+
+class PersonalEmailForm(ModelForm):
+    PRIMARY = 'PRIMARY'
+    notifications = CharField(
+        required=False,
+        widget=Select(
+            choices=((PRIMARY, 'Primary'), (True, 'Yes'), (False, 'No'))))
+
+    def __init__(self, *args, **kwargs):
+        super(PersonalEmailForm, self).__init__(*args, **kwargs)
+        if self.instance.is_primary:
+            self.fields['notifications'].initial = PersonalEmailForm.PRIMARY
+        else:
+            self.fields['notifications'].initial = \
+                self.instance.portal_notifications
+
+    def clean_notifications(self):
+        response = self.cleaned_data.get('notifications', None)
+        print('Response is: %s', response)
+        self.instance.is_primary = \
+            True if response == PersonalEmailForm.PRIMARY else False
+        self.instance.portal_notifications = True if response else False
+        return response
+
+    class Meta:
+        model = models.PersonalEmail
+        fields = ['email', 'type', 'notifications', 'comment']
+
+        widgets = {
+            'email': EmailInput(),
+            'type': Select(choices=models.Email.TYPES),
+        }
