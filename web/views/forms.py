@@ -103,7 +103,7 @@ class AccessRequestForm(ModelForm):
 
 class UserDetailsUpdateForm(ModelForm):
     address = CharField(
-        required=True,
+        required=False,
         label='Work Address',
         widget=Textarea({
             'rows': 5,
@@ -171,7 +171,7 @@ class UserDetailsUpdateForm(ModelForm):
             'Job title used within direct employing organisation.',
             'location_at_address':
             'Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX',  # NOQA
-            'address': 'Edit work address',  # NOQA
+            'address': 'Edit work address',
         }
 
 
@@ -198,3 +198,31 @@ class PhoneNumberForm(ModelForm):
         fields = ['type', 'comment']
 
         widgets = {'type': Select(choices=models.PhoneNumber.TYPES)}
+
+
+# class EmailAddressForm(ModelForm):
+
+#     notifications = CharField(
+#         widget=Select(choices=(
+#             (False, 'No'),
+#             (True, 'Yes'),
+#         )))
+
+#     def __init__(self, *args, **kwargs):
+#         super(EmailAddressForm, self).__init__(*args, **kwargs)
+#         self.fields[
+#             'notifications'].initial = self.instance.portal_notifications
+
+#     def clean_portal_notifications(self):
+#         response = self.cleaned_data.get('notifications', None)
+#         self.instance.portal_notifications = True if response else False
+#         return response
+
+#     class Meta:
+#         model = models.EmailAddress
+#         fields = ['email', 'type', 'comment']
+
+#         widgets = {
+#             'email': EmailInput(),
+#             'type': Select(choices=models.EmailAddress.TYPES)
+#         }

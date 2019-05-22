@@ -2,8 +2,15 @@
     Telephone Number
 </h3>
 
-{{ phones_formset.management_form }}
-<table responsiveList class="setoutList">
+{% if formset.non_form_errors %}
+{% for error in formset.non_form_errors %}
+<div class="error-message">
+  {{error}}
+</div>
+{% endfor%}
+{% endif %}
+
+<table id="phone-numbers-table" responsiveList class="setoutList">
     <thead>
         <tr>
             <th scope="col">Telephone Number
@@ -18,9 +25,11 @@
             </th>
         </tr>
     </thead>
-    {% for form in phones_formset %}
-    <tr>
+    {% for form in formset %}
+    <tr class="item">
+        {{form.id}}
         <td>
+            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
             {% include 'forms/field.html' with field=form.telephone_number %}
         </td>
         <td>
@@ -28,38 +37,22 @@
         </td>
         <td>
             {% include 'forms/field.html' with field=form.comment %}
-        </td>
+        <td>
+          <!-- <td> -->
+          <!-- <a class="remove-phone" href="">Remove</a> -->
+          <!-- </td> -->
     </tr>
     {% endfor %}
 </table>
-<div class="list-actions">
-    <button name="add_phone" type="button" class="icon-phone small-button button">
-        Add Telephone Number </button>
-    <script>
-        $('#add_phone').click(function() {
-            cloneMore('div.table:last', 'telephone_number');
+{{ formset.management_form }}
+<script type="text/javascript">
+    $(function() {
+        $('#phone-numbers-table tbody tr').formset({
+          prefix: '{{ formset.prefix }}',
+          formCssClass: 'phones-formset',
+          addCssClass: 'icon-phone small-button button',
+          addText: 'Add Telephone Number',
+          deleteText: 'Remove',
         });
-
-      /* TODO: Move all this into a minimised javascript file */
-      /* taken from https://stackoverflow.com/questions/501719/dynamically-adding-a-form-to-a-django-formset-with-ajax */
-        function cloneMore(selector, type) {
-            var newElement = $(selector).clone(true);
-            var total = $('#id_' + type + '-TOTAL_FORMS').val();
-            newElement.find(':input').each(function() {
-                var name = $(this).attr('name').replace('-' + (total - 1) + '-', '-' + total + '-');
-                var id = 'id_' + name;
-                $(this).attr({
-                    'name': name,
-                    'id': id
-                }).val('').removeAttr('checked');
-            });
-            newElement.find('label').each(function() {
-                var newFor = $(this).attr('for').replace('-' + (total - 1) + '-', '-' + total + '-');
-                $(this).attr('for', newFor);
-            });
-            total++;
-            $('#id_' + type + '-TOTAL_FORMS').val(total);
-            $(selector).after(newElement);
-        }
-    </script>
-</div>
+    })
+</script>

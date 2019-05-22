@@ -34,37 +34,6 @@ class Migration(migrations.Migration):
                 ('created_date', models.DateField(auto_now_add=True)),
             ],
         ),
-        migrations.CreateModel(
-            name='EmailAddress',
-            fields=[
-                ('id',
-                 models.AutoField(
-                     auto_created=True,
-                     primary_key=True,
-                     serialize=False,
-                     verbose_name='ID')),
-                ('email', models.CharField(max_length=254)),
-                ('type', models.CharField(default='WORK', max_length=30)),
-                ('portal_notifications', models.BooleanField(default=False)),
-                ('comment',
-                 models.CharField(blank=True, max_length=4000, null=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='PhoneNumber',
-            fields=[
-                ('id',
-                 models.AutoField(
-                     auto_created=True,
-                     primary_key=True,
-                     serialize=False,
-                     verbose_name='ID')),
-                ('phone', models.CharField(max_length=60)),
-                ('type', models.CharField(default='WORK', max_length=30)),
-                ('comment',
-                 models.CharField(blank=True, max_length=4000, null=True)),
-            ],
-        ),
         migrations.AddField(
             model_name='user',
             name='share_contact_details',

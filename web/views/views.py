@@ -6,19 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
-from django.forms import modelformset_factory
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
 from viewflow.decorators import flow_start_view
 from web import models
-from .forms import PhoneNumberForm
 from . import filters
+from .formset import (new_user_phones_formset)
 
 logger = logging.getLogger(__name__)
-
-PhonesFormset = modelformset_factory(
-    models.PhoneNumber, form=PhoneNumberForm, extra=0)
 
 
 def index(request):
@@ -96,10 +92,10 @@ def register(request):
         user.username = user.email
         user.save()
         user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
-        email = models.EmailAddress.objects.create(
-            email=user.email, portal_notifications=True)
-        models.PersonalEmail(
-            user=user, email_address=email, is_primary=True).save()
+        # email = models.EmailAddress.objects.create(
+        #     email=user.email, portal_notifications=True)
+        # models.PersonalEmail(
+        #     user=user, email_address=email, is_primary=True).save()
         notify.register(request, user, temp_pass)
         login(request, user)
         return redirect('set-password')
@@ -135,27 +131,29 @@ def outbound_emails(request):
 
 @require_registered
 def user_details(request):
-    if request.POST.get("add_phone"):
-
-
     form = forms.UserDetailsUpdateForm(
         request.POST or None, instance=request.user)
-    phones_formset = PhonesFormset(
-        request.POST or None,
-        request.FILES or None,
-        queryset=models.PhoneNumber.objects.filter(users__in=[
-            request.user,
-        ]))
+    phones_formset = new_user_phones_formset(request)
+    # personal_emails_formset = EmailAddressFormSet(
+    #     request.POST or None,
+    #     prefix='personal_email',
+    #     queryset=models.EmailAddress.objects.filter(users__in=[
+    #         request.user,
+    #     ]))
 
     if form.is_valid() and phones_formset.is_valid():
-        form.save()
         phones_formset.save()
-        messages.success('Central contact details have been saved.')
+        form.save()
+        phones_formset = new_user_phones_formset(request)
 
-    return render(request, 'web/user/details.html', {
-        'form': form,
-        'phones_formset': phones_formset
-    })
+    return render(
+        request,
+        'web/user/details.html',
+        {
+            'form': form,
+            'phones_formset': phones_formset,
+            # 'personal_emails_formset': personal_emails_formset
+        })
 
 
 class LoginView(auth_views.LoginView):
