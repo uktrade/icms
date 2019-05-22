@@ -12,7 +12,8 @@ from web.auth.decorators import require_registered
 from viewflow.decorators import flow_start_view
 from web import models
 from . import filters
-from .formset import (new_user_phones_formset)
+from .formset import (new_user_phones_formset, new_personal_emails_formset,
+                      new_alternative_emails_formset)
 
 logger = logging.getLogger(__name__)
 
@@ -134,25 +135,26 @@ def user_details(request):
     form = forms.UserDetailsUpdateForm(
         request.POST or None, instance=request.user)
     phones_formset = new_user_phones_formset(request)
-    # personal_emails_formset = EmailAddressFormSet(
-    #     request.POST or None,
-    #     prefix='personal_email',
-    #     queryset=models.EmailAddress.objects.filter(users__in=[
-    #         request.user,
-    #     ]))
-
-    if form.is_valid() and phones_formset.is_valid():
+    alternative_emails_formset = new_alternative_emails_formset(request)
+    personal_emails_formset = new_personal_emails_formset(request)
+    if form.is_valid() and phones_formset.is_valid(
+    ) and alternative_emails_formset.is_valid(
+    ) and personal_emails_formset.is_valid():
         phones_formset.save()
+        alternative_emails_formset.save()
+        personal_emails_formset.save()
         form.save()
+        # Create fresh forms  to remove objects before sending response
         phones_formset = new_user_phones_formset(request)
+        alternative_emails_formset = new_alternative_emails_formset(request)
+        personal_emails_formset = new_personal_emails_formset(request)
 
     return render(
-        request,
-        'web/user/details.html',
-        {
+        request, 'web/user/details.html', {
             'form': form,
             'phones_formset': phones_formset,
-            # 'personal_emails_formset': personal_emails_formset
+            'alternative_emails_formset': alternative_emails_formset,
+            'personal_emails_formset': personal_emails_formset
         })
 
 

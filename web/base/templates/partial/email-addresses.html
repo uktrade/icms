@@ -1,9 +1,16 @@
 <h3>
-    Personal Email Addresses
+  {{title}}
 </h3>
 
-{{ formset.management_form }}
-<table id="personal_emails_table" responsiveList class="setoutList">
+{% if formset.non_form_errors %}
+{% for error in formset.non_form_errors %}
+<div class="error-message">
+  {{error}}
+</div>
+{% endfor%}
+{% endif %}
+
+<table id="{{id}}" responsiveList class="setoutList">
     <thead>
         <tr>
             <th scope="col">Email Address
@@ -18,86 +25,24 @@
             </th>
         </tr>
     </thead>
-    {% for form in formset %}
-   {{ form.id }}
-    <tr>
-      <td>
-        {% include 'forms/field.html' with field=form.email %}
-      </td>
-      <td >
-        {% include 'forms/field.html' with field=form.type %}
-      </td>
-      <td >
-        {% include 'forms/field.html' with field=form.notifications %}
-      </td>
-      <td>
-        {% include 'forms/field.html' with field=form.comment %}
-      </td>
-        <td>
-          <div style="display:none">
-            {{ form.DELETE }}
-          </div>
-          <a style="display:none" name="remove_email">Remove</a>
-        </td>
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for form in formset %}
+          {% include 'forms/email-form.html' with form=form %}
+        {% endfor %}
+      {% if formset.total_form_count == 0 %}
+      {% include 'forms/email-form.html' with form=formset.empty_form hide=True %}
+      {% endif %}
+    </tbody>
 </table>
-
-<div class="list-actions">
-    <button id="add_personal_email" type="button" class="icon-mail2 small-button button">
-        Add Email Address </button>
-    <script>
-        $(document).ready(function() {
-            var total= $('#id_personal_email-TOTAL_FORMS');
-            function add(selector, type) {
-                var newElement = $(selector).clone(true);
-                var count=total.val()
-                newElement.find(':input').each(function() {
-                  var name = $(this)
-                    .attr('name')
-                    .replace('-' + (count - 1) + '-', '-' + count + '-');
-                    var id = 'id_' + name;
-
-                    $(this).attr({
-                        'name': name,
-                        'id': id
-                    }).val('').prop('checked', false);
-                });
-                newElement.find('label').each(function() {
-                  var newFor = $(this)
-                    .attr('for')
-                    .replace('-' + (count - 1) + '-', '-' + count + '-');
-                    $(this).attr('for', newFor);
-                });
-                count++;
-                total.val(count);
-                $(selector).after(newElement);
-                newElement.show()
-            }
-
-            /* Hide/show remove link. Displays remove links if number of phone nubers are greater than 1 */
-            function toggle_remove_links() {
-                if (total.val() > 1) {
-                    $('a[name="remove_email"]').show()
-                } else {
-                    $('a[name="remove_email"]').hide()
-                }
-            }
-
-            toggle_remove_links()
-
-            $('#add_personal_email').click(function() {
-                add('#personal_emails_table tr:last', 'personal_email');
-                toggle_remove_links(total)
-            });
-
-            $('a[name="remove_email"]').click(function() {
-                $(this).prev().find('input[type="checkbox"]').prop('checked',true)
-              console.log($(this).prev().find('input[type="checkbox"]'))
-                $(this).closest('tr').hide();
-                total.val(total.val() -1);
-                toggle_remove_links()
-            });
+{{ formset.management_form }}
+<script type="text/javascript">
+    $(function() {
+        $('#{{id}} tbody tr').formset({
+            prefix: '{{ formset.prefix }}',
+            formCssClass: '{{ form_item_class }}',
+            addCssClass: 'icon-mail2 small-button button',
+            addText: 'Add Email Address',
+            deleteText: 'Remove',
         });
-    </script>
-</div>
+    })
+</script>

@@ -61,33 +61,8 @@
 
 
     {% include 'partial/phone-numbers.html' with formset=phones_formset %}
-
-    <h3>
-        Alternative Email Addresses
-    </h3>
-    <table responsiveList class="setoutList">
-        <thead>
-            <tr>
-                <th scope="col">Email Address
-                </th>
-                <th scope="col">Type
-                </th>
-                <th scope="col">Portal Notifications
-                </th>
-                <th scope="col">Comment
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-        </thead>
-    </table>
-    <div class="list-actions">
-        <button id="g60" name="g60" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addDistributionEmail&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-mail2 small-button button">
-            Add Email Address </button>
-    </div>
-
-
-
+    {% include 'partial/email-addresses.html' with formset=personal_emails_formset title="Personal Email Addresses" id="personal_emails" form_item_class="person_email" %}
+    {% include 'partial/email-addresses.html' with formset=alternative_emails_formset title="Alternative Email Addresses" id="alternative_emails" form_item_class="alt_email" %}
 
 
     <div class="section-break"></div>

@@ -24,19 +24,6 @@ class Address(models.Model):
     created_date = models.DateField(auto_now_add=True, blank=False, null=False)
 
 
-# class EmailAddress(models.Model):
-#     WORK = "WORK"
-#     HOME = "HOME"
-#     TYPES = ((WORK, 'Work'), (HOME, 'Home'))
-#     email = models.EmailField(max_length=254, blank=False, null=False)
-#     type = models.CharField(
-#         max_length=30, blank=False, null=False, default=WORK)
-#     is_primary = models.BooleanField(blank=False, null=False, default=False)
-#     portal_notifications = models.BooleanField(
-#         blank=False, null=False, default=False)
-#     comment = models.CharField(max_length=4000, blank=True, null=True)
-
-
 class User(AbstractUser):
     title = models.CharField(max_length=20, blank=False, null=True)
     preferred_first_name = models.CharField(
@@ -58,11 +45,6 @@ class User(AbstractUser):
         blank=False, null=False, default=False)
     work_address = models.ForeignKey(
         Address, on_delete=models.SET_NULL, blank=False, null=True)
-    # phone_numbers = models.ManyToManyField(PhoneNumber, related_name='users')
-    # personal_emails = models.ManyToManyField(
-    #     EmailAddress, through='PersonalEmail', related_name='users')
-    # alternative_emails = models.ManyToManyField(
-    #     EmailAddress, related_name='alternative_users')
 
 
 class PhoneNumber(models.Model):
@@ -81,12 +63,30 @@ class PhoneNumber(models.Model):
         User, on_delete=models.CASCADE, related_name='phone_numbers')
 
 
-# class PersonalEmail(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     email_address = models.ForeignKey(EmailAddress, on_delete=models.CASCADE)
+class Email(models.Model):
+    WORK = "WORK"
+    HOME = "HOME"
+    TYPES = ((WORK, 'Work'), (HOME, 'Home'))
+    email = models.EmailField(max_length=254, blank=False, null=False)
+    type = models.CharField(
+        max_length=30, blank=False, null=False, default=WORK)
+    portal_notifications = models.BooleanField(
+        blank=False, null=False, default=False)
+    comment = models.CharField(max_length=4000, blank=True, null=True)
 
-# class AlternativeEmail(PersonalEmail):
-#     pass
+    class Meta:
+        abstract = True
+
+
+class AlternativeEmail(Email):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='alternative_emails')
+
+
+class PersonalEmail(Email):
+    is_primary = models.BooleanField(blank=False, null=False, default=False)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='personal_emails')
 
 
 class AccessRequest(models.Model):

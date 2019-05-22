@@ -8,6 +8,10 @@ class CharField(forms.CharField):
     widget = TextInput
 
 
+class BooleanField(forms.BooleanField):
+    pass
+
+
 class EmailField(forms.EmailField):
     widget = EmailInput
 

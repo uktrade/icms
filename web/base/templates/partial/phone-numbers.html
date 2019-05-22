@@ -5,7 +5,7 @@
 {% if formset.non_form_errors %}
 {% for error in formset.non_form_errors %}
 <div class="error-message">
-  {{error}}
+    {{error}}
 </div>
 {% endfor%}
 {% endif %}
@@ -25,34 +25,30 @@
             </th>
         </tr>
     </thead>
-    {% for form in formset %}
-    <tr class="item">
-        {{form.id}}
-        <td>
-            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-            {% include 'forms/field.html' with field=form.telephone_number %}
-        </td>
-        <td>
-            {% include 'forms/field.html' with field=form.type %}
-        </td>
-        <td>
-            {% include 'forms/field.html' with field=form.comment %}
-        <td>
-          <!-- <td> -->
-          <!-- <a class="remove-phone" href="">Remove</a> -->
-          <!-- </td> -->
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for form in formset %}
+        <tr>
+            {{form.id}}
+            {% include 'forms/inline-field.html' with field=form.telephone_number %}
+            {% include 'forms/inline-field.html' with field=form.type %}
+            {% include 'forms/inline-field.html' with field=form.comment %}
+            <td class="phone-remove">
+              {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {{ formset.management_form }}
+
 <script type="text/javascript">
     $(function() {
         $('#phone-numbers-table tbody tr').formset({
-          prefix: '{{ formset.prefix }}',
-          formCssClass: 'phones-formset',
-          addCssClass: 'icon-phone small-button button',
-          addText: 'Add Telephone Number',
-          deleteText: 'Remove',
+            prefix: '{{ formset.prefix }}',
+            formCssClass: 'phone-form',
+            addCssClass: 'icon-phone small-button button',
+            addText: 'Add Telephone Number',
+            deleteText: 'Remove',
         });
     })
 </script>
