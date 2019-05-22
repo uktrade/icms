@@ -2,7 +2,7 @@ function compressTopMenu() {
   //Reset any compression performed before
   $(".overflow-menu").remove();
   $("#top-menu>li").not('#user-info').removeAttr('style');
-  
+
 
   //If the media query has collapsed the menu down anyway, don't continue
   if($('#top-nav-toggle-label').css('display') == 'block') {
@@ -25,24 +25,24 @@ function compressTopMenu() {
     $('#top-menu>li').not('.top-menu-button').not('#user-info').last().after('<li class="top-menu-dropdown overflow-menu"><a class="dropdown-label" href="#">More</a><ul></ul></li>');
     var compressedWidth = totalWidth + $('.overflow-menu').outerWidth();
 
-    $($("#top-menu>li").not('.top-menu-button').not('#user-info').not('.overflow-menu').get().reverse()).each(function() { 
+    $($("#top-menu>li").not('.top-menu-button').not('#user-info').not('.overflow-menu').get().reverse()).each(function() {
       compressedWidth -= $(this).outerWidth();
-      $(this).clone().prependTo('.overflow-menu>ul')
-      $(this).hide(0);  
+      $(this).clone().prependTo('.overflow-menu>ul');
+      $(this).hide(0);
       if(compressedWidth <= $(window).width()) {
         return false; //break out of .each()
-      }    
+      }
     });
 
     //If we're still overflowing, start collapsing the buttons too
     if(compressedWidth > $(window).width()) {
       $($("#top-menu>li.top-menu-button").get().reverse()).each(function() {
         compressedWidth -= $(this).outerWidth();
-        $(this).clone().prependTo('.overflow-menu>ul')
-        $(this).hide(0);  
+        $(this).clone().prependTo('.overflow-menu>ul');
+        $(this).hide(0);
         if(compressedWidth <= $(window).width()) {
           return false; //break out of .each()
-        }  
+        }
       });
     }
   }
@@ -81,7 +81,7 @@ var StickySidebar = {
           $('#sidebar').css('position','relative');
           $('#sidebar-substitute').hide(0);
           this.gIsFixed = false;
-        }    
+        }
       }
     }
     //We're scrolling down but the sidebar is already position: fixed, so recalculate its top
@@ -89,7 +89,7 @@ var StickySidebar = {
       var newTop = parseFloat($('#sidebar').css('top')) + (this.gPrevScrollPosition - $(window).scrollTop());
       newTop = (newTop > 0) ? 0 : newTop;
       $('#sidebar').css('top',newTop);
-    }    
+    }
     //We're scrolling down and the bottom of the sidebar is now visible
     //Switch to position:fixed so bottom of sidebar remains at bottom of viewport
     else if(this.gPrevScrollPosition < $(window).scrollTop() && $(window).height() + $(window).scrollTop() > this.gSidebarHeight + this.gOriginalTop) {
@@ -107,7 +107,7 @@ var StickySidebar = {
     else if(this.gIsFixed && this.gPrevScrollPosition > $(window).scrollTop() && $(window).scrollTop() <= this.gOriginalTop){
       $('#sidebar').css('position','relative');
       $('#sidebar-substitute').hide(0);
-      this.gIsFixed = false;     
+      this.gIsFixed = false;
     }
 
     this.gPrevScrollPosition = $(window).scrollTop();
@@ -121,9 +121,9 @@ var StickySidebar = {
     if($(window).width() < 800) {
       $('#sidebar').css('position','relative');
       $('#sidebar-substitute').hide(0);
-      this.gIsFixed = false;  
-      this.gIsMobile = true;        
-    } 
+      this.gIsFixed = false;
+      this.gIsMobile = true;
+    }
     else {
       this.gIsMobile = false;
     }
@@ -133,7 +133,7 @@ var StickySidebar = {
 
     if($('#sidebar').length > 0) {
       this.gSidebarExists = true;
-    } 
+    }
     else {
       this.gSidebarExists = false;
       return;
@@ -155,24 +155,24 @@ $(window).resize(StickySidebar.checkIfMobile);
 
 //Expand nav bar dropdown when tabbing
 //Use delegated events for .top-menu-dropdown so it works for the 'More' menu, which is created dynamically
-$('body').on('focusin','#top-menu>li',function() { 
-  $(this).children("ul").css("display", "block"); 
+$('body').on('focusin','#top-menu>li',function() {
+  $(this).children("ul").css("display", "block");
   $(this).addClass("focussed");
 });
 
-$('body').on('focusout','#top-menu>li',function() { 
-  $(this).children("ul").css("display", ""); 
+$('body').on('focusout','#top-menu>li',function() {
+  $(this).children("ul").css("display", "");
   $(this).removeClass("focussed");
 });
 
-$('body').on('focusin','.top-menu-subcategory-action',function() { 
+$('body').on('focusin','.top-menu-subcategory-action',function() {
   $(this).addClass("focussed");
 });
 
-$('body').on('focusout','.top-menu-subcategory-action',function() { 
+$('body').on('focusout','.top-menu-subcategory-action',function() {
   $(this).removeClass("focussed");
 });
 
-$('body').on('click','.dropdown-label',function(e) { 
-  return false; 
+$('body').on('click','.dropdown-label',function(e) {
+  return false;
 });

@@ -60,50 +60,7 @@
     </div>
 
 
-    {% include 'partial/phone-numbers.html' %}
-
-
-    <h3>
-        Personal Email Addresses
-    </h3>
-
-    <table responsiveList class="setoutList">
-        <thead>
-            <tr>
-                <th scope="col">Email Address
-                </th>
-                <th scope="col">Type
-                </th>
-                <th scope="col">Portal Notifications
-                </th>
-                <th scope="col">Comment
-                </th>
-                <th scope="col">
-                </th>
-            </tr>
-        </thead>
-        <tr data-xfid="f51">
-            <td data-title="Email Address" data-xfid="g52"><input id="g52" name="g52" type="text" value="admin@dit.gov.uk" size="30" maxlength="180" aria-required="true" /></td>
-            <td data-title="Type" data-xfid="g53"><select id="g53" name="g53" aria-required="true">
-                    <option value="g53/0" selected="selected">Work</option>
-                    <option value="g53/1">Home</option>
-                </select></td>
-            <td data-title="Portal Notifications" data-xfid="g54"><select id="g54" name="g54" aria-required="true">
-                    <option value="g54/0" selected="selected">Primary</option>
-                    <option value="g54/1">Yes</option>
-                    <option value="g54/2">No</option>
-                </select></td>
-            <td data-title="Comment" data-xfid="g55"><input id="g55" name="g55" type="text" value="" size="40" maxlength="40" aria-required="false" /></td>
-            <td></td>
-        </tr>
-    </table>
-
-    <div class="list-actions">
-        <button id="g58" name="g58" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-addPersonalEmail&quot;,&quot;ctxt&quot;:&quot;sIZNK_plrnqWp1W&quot;}, this);" class="icon-mail2 small-button button">
-            Add Email Address </button>
-    </div>
-
-
+    {% include 'partial/phone-numbers.html' with formset=phones_formset %}
 
     <h3>
         Alternative Email Addresses
