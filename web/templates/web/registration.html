@@ -1,6 +1,6 @@
 {% extends "layout/public.html" %}
 
-{% block main-content %}
+{% block main_content %}
 <div id="header">
     <h1>
 
@@ -19,8 +19,8 @@
 <p>All fields are mandatory.</p>
 
 
-<form method="post" name="registrationForm" action="{% url 'register' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
-    {% csrf_token %}
+<form method="post" name="registrationForm" action="{{ url('register') }}" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {{ csrf_token }}
     <div class="container setoutForm">
 
 

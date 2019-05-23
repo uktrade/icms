@@ -5,6 +5,7 @@ from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
                                     EmailInput, Select)
 from web.base.forms.fields import (CharField, PhoneNumberField)
 from web.base.forms import (Form, ModelForm)
+from .mixins import MainFormMixin
 from .utils import validators
 
 import logging
@@ -12,7 +13,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RegistrationForm(ModelForm):
+class RegistrationForm(MainFormMixin, ModelForm):
 
     telephone_number = PhoneNumberField()
     confirm_email = CharField(widget=EmailInput(), max_length=254)
@@ -78,7 +79,7 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
         return validators.validate_security_answer(self)
 
 
-class AccessRequestForm(ModelForm):
+class AccessRequestForm(MainFormMixin, ModelForm):
     class Meta:
         model = models.AccessRequest
 
@@ -101,7 +102,7 @@ class AccessRequestForm(ModelForm):
         }
 
 
-class UserDetailsUpdateForm(ModelForm):
+class UserDetailsUpdateForm(MainFormMixin, ModelForm):
     address = CharField(
         required=False,
         label='Work Address',
@@ -177,7 +178,7 @@ class UserDetailsUpdateForm(ModelForm):
         }
 
 
-class LoginForm(auth_forms.AuthenticationForm):
+class LoginForm(MainFormMixin, auth_forms.AuthenticationForm):
     username = auth_forms.UsernameField(
         widget=TextInput(attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)

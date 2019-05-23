@@ -230,6 +230,7 @@ var FOXjs = {
     // Add tooltipster hooks to elements with hints/tooltips
     $(".hint, .tooltip").each(
         function() {
+          console.log($(this));
           FOXjs.addHintToTarget(this);
         }
     );

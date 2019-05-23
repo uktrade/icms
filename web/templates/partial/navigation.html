@@ -1,7 +1,5 @@
-{% load static %}
-
 <h1>
-    <img alt="Department of International Trade" src="{% static 'web/img/dit-horizontal-white-logo.png' %}">
+    <img alt="Department of International Trade" src="{{ static('web/img/dit-horizontal-white-logo.png') }}">
 </h1>
 <input type="checkbox" id="top-nav-toggle">
 <label for="top-nav-toggle" id="top-nav-toggle-label" class="icon-menu">
@@ -11,7 +9,7 @@
 <ul class="dropdown-menu" id="top-menu">
 
     <li class="top-menu-action">
-        <a href="{% url 'workbasket' %}">Workbasket</a>
+        <a href="{{ url('workbasket') }}">Workbasket</a>
     </li>
 
     <li class="top-menu-action">
@@ -123,7 +121,7 @@
                 <ul class="top-menu-subcategory-actions">
 
                     <li class="top-menu-subcategory-action">
-                        <a href="{% url 'template-list' %}">Templates</a>
+                        <a href="{{ url('template-list') }}">Templates</a>
 
                     </li>
 
@@ -153,8 +151,8 @@
 
             <li>
                 <ul class="menu-out">
-                    <li> <a href="{% url 'user-details' %}">My details</a></li>
-                    <li> <a href="{% url 'logout' %}">Log out</a></li>
+                    <li> <a href="{{ url('user-details') }}">My details</a></li>
+                    <li> <a href="{{ url('logout') }}">Log out</a></li>
                 </ul>
             </li>
         </ul>

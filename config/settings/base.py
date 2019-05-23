@@ -27,8 +27,8 @@ INSTALLED_APPS = [
     'captcha',
     'phonenumber_field',
     'django_filters',
-    'django.contrib.admin',
     'django.forms',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -52,13 +52,21 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND':
-        'django.template.backends.django.DjangoTemplates',
+        'django.template.backends.jinja2.Jinja2',
         'DIRS': [
             os.path.join(BASE_DIR, 'web/base/templates'),
             os.path.join(BASE_DIR, 'web/templates')
         ],
         'APP_DIRS':
         True,
+        'OPTIONS': {
+            'environment': 'web.jinja2.environment',
+        },
+    },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

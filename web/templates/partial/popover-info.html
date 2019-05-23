@@ -1,0 +1,15 @@
+{% if messages %}
+<div class="modal-popover-container">
+    <div class="modal-popover small-popover modal-alert-normal">
+        <div class="modal-popover-content" role="alertdialog">
+            <div class="modal-popover-icon"></div>
+            {% for message in messages %}
+            <div class="modal-popover-text">{{message}}</div>
+            {% endfor %}
+            <ul class="modal-popover-actions">
+                <li><button class="primary-button alert-dismiss" onclick="FOXmodal.dismissTopModal(); return false;">OK</button></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
