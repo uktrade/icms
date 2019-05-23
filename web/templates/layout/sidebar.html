@@ -1,10 +1,10 @@
-{% extends "../internal.html" %}
+{% extends "internal.html" %}
 
 {% block header %}
 <header id="menu-bar">
   {% include "partial/navigation.html" %}
 </header>
-{{ block.super }}
+{{ super() }}
 {% endblock %}
 
 {% block content %}
@@ -15,9 +15,9 @@
     <div id="sidebar-background"></div>
     <div id="content">
       <div class="content-ie8-float"
-        {% block content-actions %}{%endblock%}
+        {% block content_actions %}{%endblock%}
         {% include "partial/mainstart.html" %}
-        {% block main-content %}{%endblock%}
+        {% block main_content %}{%endblock%}
       </div>
     </div>
 {% endblock %}

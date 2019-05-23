@@ -148,13 +148,17 @@ def user_details(request):
         phones_formset = new_user_phones_formset(request)
         alternative_emails_formset = new_alternative_emails_formset(request)
         personal_emails_formset = new_personal_emails_formset(request)
+        messages.success(request, 'Central contact details have been saved.')
+    else:
+        if request.POST:
+            messages.error(request, 'Please correct the highlighted errors.')
 
     return render(
         request, 'web/user/details.html', {
             'form': form,
             'phones_formset': phones_formset,
             'alternative_emails_formset': alternative_emails_formset,
-            'personal_emails_formset': personal_emails_formset
+            'personal_emails_formset': personal_emails_formset,
         })
 
 

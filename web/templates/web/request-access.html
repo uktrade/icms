@@ -1,10 +1,9 @@
 {% extends "layout/simple.html" %}
-{% load static %}
 
 {% block title %}Request Importer/Exporter Access{% endblock %}
-{% block context-header %}Request Importer/Exporter Access{% endblock %}
+{% block context_header %}Request Importer/Exporter Access{% endblock %}
 
-{% block main-content %}
+{% block main_content %}
 <div class="no-sidebar" id="content">
     <div id="content-ie8-float">
         <div class="content-actions"></div>
@@ -130,7 +129,7 @@
         </div>
         <div class="container setoutForm" data-xfid="f66">
             <form method="post" name="accessRequestForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
-              {% csrf_token %}
+              {{ csrf_token }}
 
               {{ activation.management_form }}
               {% include 'forms/form.html' with label_cols='three' input_cols='six' padding='three' %}

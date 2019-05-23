@@ -1,7 +1,8 @@
 {% extends "layout/public.html" %}
-{% load static %}
+{% import "forms/form.html" as form %}
+{% block form_action %}{{ url('login') }}{% endblock %}
 
-{% block main-content %}
+{% block main_content %}
 <div id="header">
     <h1>
 
@@ -31,35 +32,29 @@
     {% if next %}
     <div id="login-error">
         {% if user.is_authenticated %}
-        <p>Your account doesn't have access to this page. To proceed,
-            please login with an account that has access.</p>
+          <p>Your account doesn't have access to this page. To proceed,
+              please login with an account that has access.</p>
         {% else %}
-        <p>Please login to see this page.</p>
+          <p>Please login to see this page.</p>
         {% endif %}
     </div>
     {% endif %}
 
+   {{ form.form(form, label_cols='three', input_cols='nine')  }}
 
-    <form method="post" name="mainForm" action="{% url 'login' %}" autocomplete="off" accept-charset="UTF-8" novalidate>
-        {% csrf_token %}
-        <div class="container setoutForm login-form" data-xfid="f5">
+    <input type="hidden" name="next" value="{{ next }}">
 
-          {% include 'forms/form.html' with label_cols='three' input_cols='nine' %}
-          <input type="hidden" name="next" value="{{ next }}">
-
-            <div class="row">
-                <div class="three columns"></div>
-                <div class="nine columns" data-xfid="g6">
-                    <ul class="menu-out flow-across">
-                        <li> <button id="g8" name="g8" type="submit" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-login&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="primary-button button">
-                                Sign in </button></li>
-                        <li> <button id="g7" name="g7" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-forgot-password&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="link-button button">
-                                Forgot your password? </button></li>
-                    </ul>
-                </div>
-            </div>
+    <div class="row">
+        <div class="three columns"></div>
+        <div class="nine columns" data-xfid="g6">
+            <ul class="menu-out flow-across">
+                <li> <button id="g8" name="g8" type="submit" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-login&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="primary-button button">
+                        Sign in </button></li>
+                <li> <button id="g7" name="g7" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-forgot-password&quot;,&quot;ctxt&quot;:&quot;s1xnISS_plrkCVnta&quot;}, this);" class="link-button button">
+                        Forgot your password? </button></li>
+            </ul>
         </div>
-    </form>
+    </div>
 </div>
 <div class="half-width-box right-box">
     <h2 class="grey">
@@ -79,24 +74,24 @@
 <div class="half-width-box">
     <ul class="file-list">
         <li>
-            <a href="{% static 'web/docs/DoINeedAnImportLicence.pdf' %}" class="pdf" target="_blank">Do I Need an Import Licence?</a>
+            <a href="{{ static('web/docs/DoINeedAnImportLicence.pdf') }}" class="pdf" target="_blank">Do I Need an Import Licence?</a>
         </li>
         <li>
-            <a href="{% static 'web/docs/ApplicationGuidance.pdf' %}" class="pdf" target="_blank">ICMS registration and guidance on import licence and Certificates of Free Sale applications</a>
+            <a href="{{ static('web/docs/ApplicationGuidance.pdf') }}" class="pdf" target="_blank">ICMS registration and guidance on import licence and Certificates of Free Sale applications</a>
         </li>
     </ul>
 </div>
 <div class="half-width-box right-box">
     <ul class="file-list">
         <li>
-            <a href="{% static 'web/docs/UsingPopups.pdf' %}" class="pdf" target="_blank">Advice on Popups & Downloads</a>
+            <a href="{{ static('web/docs/UsingPopups.pdf') }}" class="pdf" target="_blank">Advice on Popups & Downloads</a>
         </li>
         <li>
-            <a href="{% static 'web/docs/ValidateDigSigs.pdf' %}" class="pdf" target="_blank">Validating Digital Signatures</a>
+            <a href="{{ static('web/docs/ValidateDigSigs.pdf') }}" class="pdf" target="_blank">Validating Digital Signatures</a>
         </li>
     </ul>
 </div>
 <div class="clearBoth"> </div>
-<a id="g11" href="{% url 'register' %}" class="primary-button button">
+<a id="g11" href="{{ url('register') }}" class="primary-button button">
     Register </a>
 {% endblock %}
