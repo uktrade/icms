@@ -1,3 +1,4 @@
+{% set messages=get_messages(request) %}
 {% if messages %}
 <div class="modal-popover-container">
     <div class="modal-popover small-popover modal-alert-normal">
@@ -7,7 +8,7 @@
             <div class="modal-popover-text">{{message}}</div>
             {% endfor %}
             <ul class="modal-popover-actions">
-                <li><button class="primary-button alert-dismiss" onclick="FOXmodal.dismissTopModal(); return false;">OK</button></li>
+                <li><button class="primary-button alert-dismiss" onclick="$('.modal-popover-container').hide()">OK</button></li>
             </ul>
         </div>
     </div>

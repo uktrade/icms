@@ -60,7 +60,7 @@ class CaptchaForm(Form):
     captcha = ReCaptchaField()
 
 
-class PasswordChangeForm(auth_forms.PasswordChangeForm):
+class PasswordChangeForm(MainFormMixin, auth_forms.PasswordChangeForm):
     new_password1 = CharField(
         label='New password', strip=False, widget=PasswordInput())
     new_password2 = CharField(

@@ -1,0 +1,13 @@
+{% macro formset_errors(formset) -%}
+
+{% if formset.non_form_errors() %}
+<div class="input-error">
+{% for error in formset.non_form_errors() %}
+<div class="error-message">
+  {{error}}
+</div>
+{% endfor%}
+</div>
+{% endif %}
+
+{%- endmacro %}

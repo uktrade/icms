@@ -1,6 +1,6 @@
-from django.forms import IntegerField
+from django.forms import CharField, BaseForm
 from django.forms.widgets import HiddenInput
 
 
-class MainFormMixin(object):
-    scroll_position = IntegerField(widget=HiddenInput)
+class MainFormMixin(BaseForm):
+    scroll_position = CharField(widget=HiddenInput)

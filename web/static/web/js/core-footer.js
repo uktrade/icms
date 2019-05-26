@@ -197,13 +197,22 @@ var FOXjs = {
     })
     .on('sticky_kit:unbottom', function(e) {
         $(this).parent().css('position', 'relative');
-    })
+    });
 
     // Preserve scroll position
     // var scrollPosition = parseInt(document.mainForm.scroll_position.value);
     // if (scrollPosition > 0) {
       // window.scrollTo(0, scrollPosition);
     // }
+
+
+    // Scroll to first error on the page after submit.
+    var error = $("form .input-error");
+    if(error.length > 0) {
+      $('html, body').animate({
+        scrollTop: (error.first().offset().top)
+      },0);
+    }
 
     // Prevent page presentation caching in browsers that support it
     $(window).on("unload", function () {
