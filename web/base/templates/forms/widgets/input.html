@@ -2,11 +2,11 @@
   type="{{ widget.type }}"
   name="{{ widget.name }}"
   {% if widget.required%}
-  aria-required="true"
+    aria-required="true"
   {% else %}
-  aria-required="false"
+    aria-required="false"
   {% endif %}
   {% if widget.value != None %}
-  value="{{ widget.value|stringformat:'s' }}"
+    value="{{widget.value}}"
   {% endif %}
   {% include "django/forms/widgets/attrs.html" %}>

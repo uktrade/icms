@@ -1,11 +1,11 @@
 {% extends "layout/no-sidebar.html" %}
+{% import "forms/form.html" as forms %}
 
 {% block page_title %}Portal Dashboard{% endblock %}
 
 {% block context_header %}Portal Dashboard{% endblock %}
 
 {% block main_content %}
-
 
 <ul class="tabs">
 
@@ -19,41 +19,55 @@
 <div class="section-break"></div>
 
 
-<form method="get" name="emailSearchForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
-    <div class="container setoutForm" data-xfid="f24">
 
-        {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' include='to_name to_email subject' hide_indicators=True %}
-        <div class="row">
-          <div class="three columns" data-xfid="g29">
-            <label id="pg29" for="g29" class="prompt west">Sent From </label>
-            </div>
-            <div class="six columns" data-xfid="g29">
-                <div class="container cellmates">
-                    <div class="row">
-                        {% include 'forms/input.html' with field=filter.form.sent_from input_cols='three' %}
-                        <div class="one columns" data-xfid="g30"><label id="pg30" for="g30" class="prompt west">To
-                            </label>
-                        </div>
-                        {% include 'forms/input.html' with field=filter.form.to input_cols='three' %}
-                        <div class="five columns"></div>
-                    </div>
+{% set extra_fields %}
+<div class="row">
+    <div class="three columns" data-xfid="g29">
+        <label id="pg29" for="g29" class="prompt west">Sent From </label>
+    </div>
+    <div class="six columns" data-xfid="g29">
+        <div class="container cellmates">
+            <div class="row">
+                {% with field=filter.form.sent_from, input_cols='three' %}
+                {% include 'forms/input.html' %}
+                {% endwith %}
+                <div class="one columns">
+                    <label id="pg30" for="g30" class="prompt west">To
+                    </label>
                 </div>
+                {% with field=filter.form.to, input_cols='three'  %}
+                {% include 'forms/input.html' %}
+                {% endwith %}
+                <div class="five columns"></div>
             </div>
-            <div class="three columns"></div>
-        </div>
-        {% include 'forms/row-padded.html' with field=filter.form.status label_cols='three' input_cols='six' padding='three' hide_indicators=True %}
-        <div class="row">
-            <div class="three columns"></div>
-            <div class="six columns" data-xfid="g33">
-                <ul class="menu-out flow-across">
-                    <li> <button id="g34" name="g34" type="submit" class="primary-button button">
-                            Search </button></li>
-                </ul>
-            </div>
-            <div class="three columns"></div>
         </div>
     </div>
-</form>
+    <div class="three columns"></div>
+</div>
+
+{{forms.row(
+  filter.form.status,
+  label_cols='three',
+  input_cols='six',
+  padding='three',
+  show_optional_indicator=False
+)}}
+
+{% endset %}
+
+{{forms.form(
+  filter.form,
+  method='get',
+  action='',
+  button_label='Search',
+  label_cols='three',
+  input_cols='six',
+  padding='three',
+  show_optional_indicators=False,
+  include=['to_name', 'to_email', 'subject'],
+  extra_fields=extra_fields
+)}}
+
 
 <div class="list-actions">
     <ul class="menu-out small-menu-out flow-across">
@@ -89,7 +103,7 @@
         <td><span class="text-widget ">Email</span></td>
         <td><span class="text-widget ">{{email.to_email}}</span></td>
         <td><span class="text-widget ">{{email.subject}}</span></td>
-        <td><span class="text-widget ">{{email.attachments.count}}</span></td>
+        <td><span class="text-widget ">{{email.attachments.count()}}</span></td>
         <td><label for="resend-checkbox" class="radio-label"><input id="resend-checkbox" name="resend" value="" type="checkbox" /></label></td>
         <td>
             <div class="container setoutForm" data-xfid="f49">
@@ -105,12 +119,9 @@
     {% endfor %}
 </table>
 <div class="result-count">
-    {{filter.qs.count}} emails found
+    {{filter.qs.count()}} emails found
 </div>
 
 
 <div class="content-actions"></div>
-
-
-
 {% endblock %}

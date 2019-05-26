@@ -132,7 +132,7 @@
                 addButton.parents('tr').addClass(options.formCssClass + '-add');
             } else {
                 // Otherwise, insert it immediately after the last form:
-                $$.filter(':last').after('<a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a>');
+                $$.filter(':last').after('<div class="list-actions"><a class="' + options.addCssClass + '" href="javascript:void(0)">' + options.addText + '</a></div>');
                 addButton = $$.filter(':last').next();
             }
             addButton.click(function() {
