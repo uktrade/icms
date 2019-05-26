@@ -95,7 +95,10 @@ if(!g.length)throw"failed to find stick parent";v=m=!1;(h=null!=p?p&&a.closest(p
 u=a.outerHeight(!0),r=a.css("float"),h&&h.css({width:a.outerWidth(!0),height:u,display:a.css("display"),"vertical-align":a.css("vertical-align"),"float":r}),e))return l()};x();if(u!==C)return D=void 0,c=q,z=E,l=function(){var b,l,e,k;if(!G&&(e=!1,null!=z&&(--z,0>=z&&(z=E,x(),e=!0)),e||A.height()===I||x(),e=f.scrollTop(),null!=D&&(l=e-D),D=e,m?(w&&(k=e+u+c>C+n,v&&!k&&(v=!1,a.css({position:"fixed",bottom:"",top:c}).trigger("sticky_kit:unbottom"))),e<F&&(m=!1,c=q,null==p&&("left"!==r&&"right"!==r||a.insertAfter(h),
 h.detach()),b={position:"",width:"",top:""},a.css(b).removeClass(t).trigger("sticky_kit:unstick")),B&&(b=f.height(),u+q>b&&!v&&(c-=l,c=Math.max(b-u,c),c=Math.min(q,c),m&&a.css({top:c+"px"})))):e>F&&(m=!0,b={position:"fixed",top:c},b.width="border-box"===a.css("box-sizing")?a.outerWidth()+"px":a.width()+"px",a.css(b).addClass(t),null==p&&(a.after(h),"left"!==r&&"right"!==r||h.append(a)),a.trigger("sticky_kit:stick")),m&&w&&(null==k&&(k=e+u+c>C+n),!v&&k)))return v=!0,"static"===g.css("position")&&g.css({position:"relative"}),
 a.css({position:"absolute",bottom:d,top:"auto"}).trigger("sticky_kit:bottom")},y=function(){x();return l()},H=function(){G=!0;f.off("touchmove",l);f.off("scroll",l);f.off("resize",y);b(document.body).off("sticky_kit:recalc",y);a.off("sticky_kit:detach",H);a.removeData("sticky_kit");a.css({position:"",bottom:"",top:"",width:""});g.position("position","");if(m)return null==p&&("left"!==r&&"right"!==r||a.insertAfter(h),h.remove()),a.removeClass(t)},f.on("touchmove",l),f.on("scroll",l),f.on("resize",
-y),b(document.body).on("sticky_kit:recalc",y),a.on("sticky_kit:detach",H),setTimeout(l,0)}};n=0;for(K=this.length;n<K;n++)d=this[n],J(b(d));return this}}).call(this);/*
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            y),b(document.body).on("sticky_kit:recalc",y),a.on("sticky_kit:detach",H),setTimeout(l,0)}};n=0;for(K=this.length;n<K;n++)d=this[n],J(b(d));return this}}).call(this);
+
+
+/*
  * FOX JS
  *
  * Copyright 2017, Fivium Ltd.
@@ -197,10 +200,10 @@ var FOXjs = {
     })
 
     // Preserve scroll position
-    var scrollPosition = parseInt(document.mainForm.scroll_position.value);
-    if (scrollPosition > 0) {
-      window.scrollTo(0, scrollPosition);
-    }
+    // var scrollPosition = parseInt(document.mainForm.scroll_position.value);
+    // if (scrollPosition > 0) {
+      // window.scrollTo(0, scrollPosition);
+    // }
 
     // Prevent page presentation caching in browsers that support it
     $(window).on("unload", function () {
@@ -230,7 +233,6 @@ var FOXjs = {
     // Add tooltipster hooks to elements with hints/tooltips
     $(".hint, .tooltip").each(
         function() {
-          console.log($(this));
           FOXjs.addHintToTarget(this);
         }
     );
@@ -290,20 +292,21 @@ var FOXjs = {
     FOXdropdowns.init();
 
     // Run page scripts or catch erroneous navigation
-    if (!this.isExpired()) {
-      successFunction();
+    // if (!this.isExpired()) {
+    //   successFunction();
 
-      // Trigger any blocks of code inside a $(document).on('foxReady', function(){ });
-      $(document).trigger('foxReady');
+    //   // Trigger any blocks of code inside a $(document).on('foxReady', function(){ });
+    //   $(document).trigger('foxReady');
 
-      // Okay to give 'back' nav warning again
-      this.removeCookie("backWarningGiven_" + document.mainForm.thread_id.value);
+    //   // Okay to give 'back' nav warning again
+    //   this.removeCookie("backWarningGiven_" + document.mainForm.thread_id.value);
 
-      this.allowSubmit();
-    }
-    else {
-      this.erroneousNavigation();
-    }
+    //   this.allowSubmit();
+    // }
+    // else {
+    //   this.erroneousNavigation();
+    // }
+
   },
 
   /**
@@ -861,7 +864,9 @@ var FOXtabs = {
     // Set the hidden input field to the selected key
     $("input[data-tab-group='" + pTabGroupKey + "']").val(pTabKey);
   }
-};/*
+};
+
+/*
  Adapted from accessible-modal-dialog by gdkraus: https://github.com/gdkraus/accessible-modal-dialog
 
  ============================================

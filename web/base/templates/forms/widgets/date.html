@@ -2,7 +2,7 @@
   <input
     type="text"
     name="{{ widget.name }}"
-    class="date-input hasDatepicker"
+    class="date-input"
     {% if widget.required%}
     aria-required="true"
     {% else %}
@@ -12,5 +12,5 @@
     value="{{widget.value}}"
     {% endif %}
     {% include "django/forms/widgets/attrs.html" %}>
-    <div class="date-icon icon-calendar" aria-label="Click here to pop up the date picker"></div>
+    <div class="date-icon icon-calendar" id="icon{{widget.attrs.id}}" aria-label="Click here to pop up the date picker"></div>
 </div>
