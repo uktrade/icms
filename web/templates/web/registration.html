@@ -1,4 +1,5 @@
 {% extends "layout/public.html" %}
+{% import "forms/form.html" as forms %}
 
 {% block main_content %}
 <div id="header">
@@ -19,58 +20,45 @@
 <p>All fields are mandatory.</p>
 
 
-<form method="post" name="registrationForm" action="{{ url('register') }}" autocomplete="off" accept-charset="UTF-8" novalidate>
-    {{ csrf_token }}
-    <div class="container setoutForm">
-
-
-        {% include 'forms/form.html' with label_cols='four' input_cols='six' padding='two' %}
-
+{% set security_check %}
+<p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
+<div class="row">
+    <div class="four columns" data-xfid="g20"><label id="pg20" for="g20" class="prompt west">Security check
+        </label>
     </div>
-    <p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
-
-    <div class="container setoutForm" data-xfid="f19">
-        <div class="row">
-            <div class="four columns" data-xfid="g20"><label id="pg20" for="g20" class="prompt west">Security check
-                </label>
-            </div>
-            <div class="six columns {% if form.captcha.errors %}input-error{% endif %}" data-xfid="g20">
-                {{captcha_form.captcha}}
-                <div class="clearBoth"> </div>
-                {% if captcha_form.captcha.errors %}
-                {% for error in captcha_form.captcha.errors %}
-                <div class="error-message">{{error}}</div>
-                {% endfor %}
-                {% endif %}
-            </div>
-            <div class="two columns"></div>
-        </div>
-
+    <div class="six columns {% if captcha_form.captcha.errors %}input-error{% endif %}" data-xfid="g20">
+        {{captcha_form.captcha}}
+        <div class="clearBoth"> </div>
+        {% if captcha_form.captcha.errors %}
+        {% for error in captcha_form.captcha.errors %}
+        <div class="error-message">{{error}}</div>
+        {% endfor %}
+        {% endif %}
     </div>
+    <div class="two columns"></div>
+</div>
+{% endset %}
 
-    <div class="container">
 
-        <div class="row">
+{% set extra_buttons %}
+<li>
+    <a href="{{url('login')}}" class="link-button button">
+        Cancel
+    </a>
+</li>
+{% endset %}
 
-            <div class="four columns">
+{{forms.form(
+  form,
+  action=url('register'),
+  button_label='Register',
+    label_cols='four',
+  input_cols='six',
+  padding='two',
+  extra_fields=security_check,
+  extra_buttons=extra_buttons,
+  csrf_input=csrf_input
+)}}
 
-            </div>
-            <div class="eight columns">
-
-                <ul class="menu-out flow-across">
-                    <li> <button id="g23" name="g23" type="submit" class="primary-button button">
-                            Register </button></li>
-                    <li> <a id="g24" name="g24" href="/" class="link-button button">
-                            Cancel </a></li>
-
-                </ul>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</form>
 
 {% endblock %}

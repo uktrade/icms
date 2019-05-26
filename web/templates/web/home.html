@@ -1,11 +1,16 @@
 {% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
 
-{% block form_action %}{{ url('logout') }}{% endblock %}
 {% block page_title %}Request Importer/ Exporter Access{% endblock %}
 
 {% block main_content %}
 Hi {{ request.user.username }}, you are logged in
 
-<button id="logout" name="logout" type="submit" class="primary-button button">
-    Logout </button>
+<form methods="post" action="{{url('logout')}}">
+
+    <button id="logout" name="logout" type="submit" class="primary-button button">
+        Logout </button>
+
+</form>
+
 {% endblock %}

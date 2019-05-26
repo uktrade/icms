@@ -1,13 +1,102 @@
-{% macro form(form, label_cols='four', input_cols='four', padding=None, exclude=[], include=[] ) -%}
-  {% for field in form %}
-    {% if not field.html_name in exclude_list %}
-      {% if field.html_name in include_list or not include_list %}
-        {% if padding %}
-          {% include 'forms/row-padded.html' %}
-        {% else %}
-          {% include 'forms/row.html' %}
-        {% endif %}
-      {% endif %}
+{% macro
+row(
+    field,
+    label_cols='four',
+    input_cols='four',
+    padding=None,
+    show_optional_indicator=True
+)
+-%}
+<div class="row">
+    {% include 'forms/label.html' %}
+
+    {% if field.help_text %}
+    {% include 'forms/input-with-hint.html' %}
+    {% else %}
+    {% include 'forms/input.html' %}
     {% endif %}
-  {% endfor %}
+
+    {% if padding %}
+    <div class="{{padding}} columns"> </div>
+    {% endif %}
+
+    {% block extra %}
+    {% endblock %}
+</div>
+
+{%- endmacro %}
+
+
+
+{% macro
+form(
+    form,
+    action,
+    method='post',
+    class='',
+    button_label='Submit',
+    no_buttons_padding=False,
+    label_cols='four',
+    input_cols='four',
+    padding=None,
+    exclude=[],
+    include=[],
+    extra_fields=None,
+    extra_buttons=None,
+    show_optional_indicators=True,
+    csrf_input=None
+) -%}
+
+<form method="{{method}}" name="mainForm" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+
+  {% if csrf_input %}
+      {{csrf_input}}
+  {% endif %}
+
+    <div class="container setoutForm {{class}}">
+
+        {% for field in form %}
+        {% if not field.html_name in exclude %}
+        {% if field.html_name in include or not include %}
+
+        {{row(
+          field,
+          label_cols=label_cols,
+          input_cols=input_cols,
+          padding=padding,
+          show_optional_indicator=show_optional_indicators
+        )}}
+
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+
+        {% if extra_fields %}
+        {{extra_fields}}
+        {% endif %}
+
+        <div class="section-break"></div>
+        <!-- Form buttons -->
+        <div class="container">
+            <div class="row">
+                {% if not no_buttons_padding %}
+                <div class="{{label_cols}} columns"> </div>
+                {% endif %}
+                <div class="{{input_cols}} columns">
+                    <ul class="menu-out flow-across">
+                        <li> <button type="submit" class="primary-button button">
+                                {{button_label}} </button></li>
+                        {% if extra_buttons %}
+                        {{extra_buttons}}
+                        {% endif %}
+                    </ul>
+                </div>
+                {% if padding %}
+                <div class="{{padding}} columns"> </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
 {%- endmacro %}

@@ -1,5 +1,5 @@
 {% extends "layout/simple.html" %}
-
+{% import "forms/form.html" as forms %}
 {% block title %}Request Importer/Exporter Access{% endblock %}
 {% block context_header %}Request Importer/Exporter Access{% endblock %}
 
@@ -42,11 +42,11 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in user.access_requests.importer_requests %}
+            {% for request in request.user.access_requests.importer_requests() %}
             <tr data-xfid="f30">
                 <td data-title="Reference" data-xfid="g31"><span id="g31" class="text-widget ">IAR/785</span></td>
                 <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">13-FEB-2019 17:29</span></td>
-                <td data-title="Request Type" data-xfid="g33"><span id="g33" class="text-widget ">{{request.request_type_verbose}}</span></td>
+                <td data-title="Request Type" data-xfid="g33"><span id="g33" class="text-widget ">{{request.request_type_verbose()}}</span></td>
                 <td data-title="Importer Name / Address" data-xfid="g34"><span id="g34" class="text-widget ">{{request.organisation_name}}<br><br>{{request.organisation_address}}</span></td>
                 <td data-title="Agent Name / Address" data-xfid="g35"><span id="g35" class="text-widget ">{{request.agent_name}}<br><br>{{request.agent_address}}</span></td>
                 <td data-title="Further Information Requests" data-xfid="f36">
@@ -91,11 +91,11 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in user.access_requests.exporter_requests %}
+            {% for request in request.user.access_requests.exporter_requests() %}
             <tr data-xfid="f59">
                 <td data-title="Reference" data-xfid="g60"><span id="g60" class="text-widget ">EAR/379</span></td>
                 <td data-title="Requested Date" data-xfid="g61"><span id="g61" class="text-widget ">15-APR-2019 12:53</span></td>
-                <td data-title="Request Type" data-xfid="g62"><span id="g62" class="text-widget ">{{request.request_type_verbose}}</span></td>
+                <td data-title="Request Type" data-xfid="g62"><span id="g62" class="text-widget ">{{request.request_type_verbose()}}</span></td>
                 <td data-title="Exporter Name / Address" data-xfid="g63"><span id="g63" class="text-widget ">{{request.organisation_name}}<br><br>{{request.organisation_address}}</span></td>
                 <td data-title="Agent Name / Address" data-xfid="g64"><span id="g64" class="text-widget ">{{request.agent_name}}<br><br>{{request.agent_address}}</span></td>
                 <td data-title="Further Information Requests" data-xfid="f65">
@@ -127,25 +127,24 @@
             <p>When you are requesting access as an agent, the importer/exporter will be asked to approve your access.</p>
 
         </div>
-        <div class="container setoutForm" data-xfid="f66">
-            <form method="post" name="accessRequestForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
-              {{ csrf_token }}
 
-              {{ activation.management_form }}
-              {% include 'forms/form.html' with label_cols='three' input_cols='six' padding='three' %}
 
-                <div class="row">
-                    <div class="three columns"></div>
-                    <div class="six columns" data-xfid="g72">
-                        <ul class="menu-out flow-across">
-                            <li> <button id="g73" name="g73" type="submit" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-submit-new-request-exit-on-success&quot;,&quot;ctxt&quot;:&quot;s6Jh1_plrnqWp1W&quot;}, this);" class="primary-button button">
-                                    Submit Access Request </button></li>
-                        </ul>
-                    </div>
-                    <div class="three columns"></div>
-                </div>
-        </div>
-        </form>
+        {% set extra_fields %}
+          {{ activation.management_form }}
+        {% endset %}
+
+        {{forms.form(
+          form,
+          action="",
+          button_label='Submit Access Request',
+          label_cols='three',
+          input_cols='six',
+          padding='three',
+          extra_fields=extra_fields,
+          csrf_input=csrf_input
+        )}}
+
+
         <div class="content-actions"></div>
 
     </div>

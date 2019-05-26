@@ -2,8 +2,8 @@
   {{title}}
 </h3>
 
-{% if formset.non_form_errors %}
-{% for error in formset.non_form_errors %}
+{% if formset.non_form_errors() %}
+{% for error in formset.non_form_errors() %}
 <div class="error-message">
   {{error}}
 </div>
@@ -26,11 +26,13 @@
         </tr>
     </thead>
     <tbody>
-        {% for form in formset %}
-          {% include 'forms/email-form.html' with form=form %}
-        {% endfor %}
-      {% if formset.total_form_count == 0 %}
-      {% include 'forms/email-form.html' with form=formset.empty_form hide=True %}
+      {% for form in formset %}
+        {% with form=form %}{% include 'forms/email-form.html' %}{% endwith %}
+      {% endfor %}
+      {% if formset.total_form_count() == 0 %}
+      {% with form=formset.empty_form, hide=True %}
+        {% include 'forms/email-form.html' %}
+      {% endwith %}
       {% endif %}
     </tbody>
 </table>

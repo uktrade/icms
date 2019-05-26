@@ -1,9 +1,9 @@
 <tr {% if hide %} style="display:none" {%endif%}>
   {{ form.id }}
-  {% include 'forms/inline-field.html' with field=form.email %}
-  {% include 'forms/inline-field.html' with field=form.type %}
-  {% include 'forms/inline-field.html' with field=form.notifications %}
-  {% include 'forms/inline-field.html' with field=form.comment %}
+  {% with field=form.email %}{% include 'forms/inline-field.html'%}{% endwith %}
+  {% with field=form.type %}{% include 'forms/inline-field.html'%}{% endwith %}
+  {% with field=form.notifications %}{% include 'forms/inline-field.html'%}{% endwith %}
+  {% with field=form.comment %}{% include 'forms/inline-field.html'%}{% endwith %}
   <td class="email-remove">
     {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
   </td>

@@ -9,7 +9,7 @@
     aria-required="false"
     {% endif %}
     {% if widget.value != None %}
-    value="{{ widget.value|stringformat:'s' }}"
+    value="{{widget.value}}"
     {% endif %}
     {% include "django/forms/widgets/attrs.html" %}>
     <div class="date-icon icon-calendar" aria-label="Click here to pop up the date picker"></div>

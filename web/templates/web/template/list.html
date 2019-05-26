@@ -1,32 +1,26 @@
 {% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
 
-{% block page_title %}Templates{% endblock %}
+{% block page_title %}Maintain Templates{% endblock %}
 
-{% block context_header %}Templates{% endblock %}
-
+{% block context_header %}Maintain Templates{% endblock %}
 
 {% block main_content %}
 
-<form method="get" name="templateSearchForm" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
-    <div class="container setoutForm" data-xfid="f44">
+
+{{forms.form(
+  filter.form,
+  method='get',
+  action='',
+  button_label='Search',
+  label_cols='three',
+  input_cols='six',
+  padding='three',
+  show_optional_indicators=False
+)}}
 
 
-      {% include 'forms/form.html' with form=filter.form label_cols='three' input_cols='six' padding='three' hide_indicators=True %}
 
-        <div class="row">
-            <div class="three columns"></div>
-            <div class="six columns" data-xfid="g48">
-                <ul class="menu-out flow-across">
-                    <li> <button id="g49" type="submit" class="primary-button button">
-                            Search </button></li>
-                    <li> <button id="g50" name="g50" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-exit-search&quot;,&quot;ctxt&quot;:&quot;suRcmK_plrnqVW43&quot;}, this);" class="link-button button">
-                            Cancel </button></li>
-                </ul>
-            </div>
-            <div class="three columns"></div>
-        </div>
-    </div>
-</form>
 <table responsiveList class="setoutList">
     <thead>
         <tr>
@@ -65,7 +59,7 @@
 
 </table>
 <div class="result-count">
-    {{filter.qs.count}} templates found
+    {{filter.qs.count()}} templates found
 </div>
 <div class="content-actions"></div>
 </div>

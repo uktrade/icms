@@ -96,6 +96,7 @@ class AccessRequestForm(MainFormMixin, ModelForm):
         }
 
         widgets = {
+            'request_type': Select(choices=models.AccessRequest.REQUEST_TYPES),
             'organisation_address': Textarea({'rows': 5}),
             'description': Textarea({'rows': 5}),
             'agent_address': Textarea({'rows': 5})
@@ -198,7 +199,7 @@ class PhoneNumberForm(ModelForm):
 
     class Meta:
         model = models.PhoneNumber
-        fields = ['type', 'comment']
+        fields = ['telephone_number', 'type', 'comment']
 
         widgets = {'type': Select(choices=models.PhoneNumber.TYPES)}
 
