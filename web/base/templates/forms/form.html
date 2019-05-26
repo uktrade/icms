@@ -49,9 +49,9 @@ form(
 
 <form method="{{method}}" name="mainForm" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
 
-  {% if csrf_input %}
-      {{csrf_input}}
-  {% endif %}
+    {% if csrf_input %}
+    {{csrf_input}}
+    {% endif %}
 
     <div class="container setoutForm {{class}}">
 
