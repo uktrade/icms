@@ -27,6 +27,7 @@ django-filter = "*"
 django-phonenumber-field = "*"
 phonenumbers = "*"
 jinja2 = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

@@ -6,12 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
+from viewflow.decorators import flow_start_view
+from web.errors import (ICMSException, UnknownError)
+from web.notify import address
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
-from viewflow.decorators import flow_start_view
 from web import models
 from . import filters
+from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
                       new_alternative_emails_formset)
 
@@ -130,36 +133,122 @@ def outbound_emails(request):
                   {'filter': filter})
 
 
+def init_user_details_forms(request, action):
+    # If post is not made from user details page but from search page do not
+    # try and initialise forms with POST data
+
+    data = request.POST or None
+    details_initial = None
+    phones_initial = None
+    alternative_emails_initial = None
+    personal_emails_initial = None
+    user = request.user
+
+    if request.POST:
+        if action == 'save_address':
+            data = None
+            user.work_address = request.POST.get('address')
+            #: TODO: Save changes to session before search
+            # Use new model to allow using initials
+            # with edited values before searching for address
+            # user = models.User()
+            # user.id = request.user.id
+            # user.work_address = request.POST.get('address')
+            # details_initial = form_utils.remove_from_session(
+            #     request, 'details_form')
+            # phones_initial = form_utils.remove_from_session(
+            #     request, 'phones_formset')
+            # alternative_emails_initial = form_utils.remove_from_session(
+            #     request, 'alternative_emails_formset')
+            # personal_emails_initial = form_utils.remove_from_session(
+            #     request, 'personal_emails_formset')
+
+    details_form = forms.UserDetailsUpdateForm(
+        data, initial=details_initial, instance=user)
+    phones_formset = new_user_phones_formset(
+        request, data=data, initial=phones_initial)
+    alternative_emails_formset = new_alternative_emails_formset(
+        request, data=data, initial=alternative_emails_initial)
+    personal_emails_formset = new_personal_emails_formset(
+        request, data=data, initial=personal_emails_initial)
+
+    # get details form data from session if exists and not the first page load
+    all_forms = {
+        'details_form': details_form,
+        'phones_formset': phones_formset,
+        'alternative_emails_formset': alternative_emails_formset,
+        'personal_emails_formset': personal_emails_formset
+    }
+
+    return all_forms
+
+
+def address_search(request, action):
+    if action == 'edit_address':  # Initial request
+        postcode_form = forms.PostCodeSearchForm()
+    else:
+        postcode_form = forms.PostCodeSearchForm(request.POST)
+
+    addresses = []
+    if postcode_form.is_valid():
+        try:
+            addresses = address.find(
+                postcode_form.cleaned_data.get('post_code'))
+        except UnknownError:
+            messages.warning(
+                request, 'The postcode search system is currently unavailable,\
+                please enter the address manually.')
+        except ICMSException:
+            postcode_form.add_error('post_code',
+                                    'Please enter a valid postcode')
+
+    return render(request, 'web/user/search-address.html', {
+        'postcode_form': postcode_form,
+        'addresses': addresses
+    })
+
+
+def manual_address(request, action):
+    form = forms.ManualAddressEntryForm(request.POST or None)
+
+    if form.is_valid():
+        if action == 'save_manual_address':
+            return details_update(request, 'save_address')
+
+    return render(request, 'web/user/manual-address.html', {'form': form})
+
+
+def details_update(request, action):
+    forms = init_user_details_forms(request, action)
+    if not action == 'save_address':
+        if form_utils.forms_valid(forms):
+            form_utils.save_forms(forms)
+            # Create fresh forms  to remove objects before sending response
+            forms['phones_formset'] = new_user_phones_formset(request)
+            forms[
+                'alternative_emails_formset'] = new_alternative_emails_formset(
+                    request)
+            forms['personal_emails_formset'] = new_personal_emails_formset(
+                request)
+            messages.success(request,
+                             'Central contact details have been saved.')
+        else:
+            if request.POST:
+                messages.error(request,
+                               'Please correct the highlighted errors.')
+
+    return render(request, 'web/user/details.html', forms)
+
+
 @require_registered
 def user_details(request):
-    form = forms.UserDetailsUpdateForm(
-        request.POST or None, instance=request.user)
-    phones_formset = new_user_phones_formset(request)
-    alternative_emails_formset = new_alternative_emails_formset(request)
-    personal_emails_formset = new_personal_emails_formset(request)
-    if form.is_valid() and phones_formset.is_valid(
-    ) and alternative_emails_formset.is_valid(
-    ) and personal_emails_formset.is_valid():
-        phones_formset.save()
-        alternative_emails_formset.save()
-        personal_emails_formset.save()
-        form.save()
-        # Create fresh forms  to remove objects before sending response
-        phones_formset = new_user_phones_formset(request)
-        alternative_emails_formset = new_alternative_emails_formset(request)
-        personal_emails_formset = new_personal_emails_formset(request)
-        messages.success(request, 'Central contact details have been saved.')
-    else:
-        if request.POST:
-            messages.error(request, 'Please correct the highlighted errors.')
+    action = request.POST.get('action')
+    if action in ['search_address', 'edit_address']:
+        return address_search(request, action)
+    elif action in ['manual_address', 'save_manual_address']:
+        return manual_address(request, action)
 
-    return render(
-        request, 'web/user/details.html', {
-            'form': form,
-            'phones_formset': phones_formset,
-            'alternative_emails_formset': alternative_emails_formset,
-            'personal_emails_formset': personal_emails_formset,
-        })
+    return details_update(request, action)
 
 
 class LoginView(auth_views.LoginView):

@@ -144,3 +144,9 @@ AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
 Field.default_error_messages = {
     'required': 'You must enter this item',
 }
+
+# Session configuration, use cookies as session storage
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+# getAddress.io api key
+ADDRESS_API_KEY = env.str('ICMS_ADDRESS_API_KEY')

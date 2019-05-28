@@ -27,3 +27,12 @@ def validate_date_of_birth(form):
         raise ValidationError("Date of birth can't be in the future")
 
     return date_of_birth
+
+
+def validate_manual_address(form):
+    address = form.cleaned_data.get('address', '').upper()
+    country = form.cleaned_data.get('country', '').upper()
+    if country not in address:
+        raise ValidationError("Country name must be included in the address.")
+
+    return address
