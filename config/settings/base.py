@@ -147,6 +147,3 @@ Field.default_error_messages = {
 
 # Session configuration, use cookies as session storage
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-
-# getAddress.io api key
-ADDRESS_API_KEY = env.str('ICMS_ADDRESS_API_KEY')
