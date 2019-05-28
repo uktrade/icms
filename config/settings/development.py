@@ -1,4 +1,4 @@
-from .base import *  # NOQA”
+from .non_prod_base import *  # NOQA”
 import environ
 
 env = environ.Env()
@@ -35,19 +35,6 @@ DEBUG_TOOLBAR_CONFIG = {
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('ICMS_SECRET_KEY', default='development')
 DEBUG = env.bool('ICMS_DEBUG', True)
-ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
-}
-
-#  Google recaptcha. Using test keys on localhost
-RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 # Email
 AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', '')

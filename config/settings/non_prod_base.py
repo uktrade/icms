@@ -1,28 +1,23 @@
-from .base import *  # NOQA
+from .base import *  # NOQA”
 import environ
 
 env = environ.Env()
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('ICMS_SECRET_KEY')
-DEBUG = env.bool('ICMS_DEBUG', False)
-ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-DATABASES = {'default': env.db('DATABASE_URL')}
-
-# TODO compression causes 50 error on server
-# STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+DATABASES = {
+    'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
+}
 
 #  Google recaptcha. Using test keys on localhost
-RECAPTCHA_PUBLIC_KEY = env.str('ICMS_RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = env.str('ICMS_RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_PUBLIC_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+RECAPTCHA_PRIVATE_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
-# Email
-AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
-EMAIL_FROM = env.str('ICMS_EMAIL_FROM')
+# getAddress.io api key
+ADDRESS_API_KEY = env.str('ICMS_ADDRESS_API_KEY', default='')
 
 # Loging
 LOGGING = {
@@ -52,7 +47,7 @@ LOGGING = {
         },
         'web': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
         }
     },
 }
