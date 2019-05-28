@@ -24,6 +24,15 @@
 
 {% set extra_fields %}
 
+{% set edit_address %}
+<button name="action" value="edit_address" type="submit" class="link-button inline-link-button icon-pencil button no-prompt-action tooltipstered" aria-describedby="edit-address-hint" aria-label="Click here to edit Work Address">
+</button>
+<div id="edit-address-hint" role="tooltip" class="hint-content" >Edit work address</div>
+
+{% endset %}
+
+{{forms.row(details_form.work_address, padding='four', row_actions=edit_address)}}
+
 <h3>
     Share Contact Details
 </h3>
@@ -33,7 +42,7 @@
 </div>
 
 
-{{forms.row(form.share_contact_details, padding='four')}}
+{{forms.row(details_form.share_contact_details, padding='four')}}
 
 <p>Sharing your contact details will enable non-DIT ILB users to search for you and to easily and confirm your address and contact details. If you do not share your contact details, they will have to know your email address in advance and will not have access to the address or contact telephone numbers recorded here.</p>
 
@@ -46,10 +55,10 @@
 </div>
 
 
-{{forms.row(form.date_of_birth, padding='four')}}
-{{forms.row(form.security_question, padding='four')}}
-{{forms.row(form.security_answer, padding='four')}}
-{{forms.row(form.security_answer_repeat, padding='four')}}
+{{forms.row(details_form.date_of_birth, padding='four')}}
+{{forms.row(details_form.security_question, padding='four')}}
+{{forms.row(details_form.security_answer, padding='four')}}
+{{forms.row(details_form.security_answer_repeat, padding='four')}}
 
 
 <!-- Phone numbers -->
@@ -63,7 +72,7 @@
         id="personal_emails",
         form_item_class="person_email"
 %}
-  {% include 'partial/email-addresses.html' %}
+{% include 'partial/email-addresses.html' %}
 {% endwith %}
 
 <!-- Alternative email addresses -->
@@ -72,7 +81,7 @@
         id="alternative_emails",
         form_item_class="alt_email"
 %}
-  {% include 'partial/email-addresses.html' %}
+{% include 'partial/email-addresses.html' %}
 {% endwith %}
 
 {% endset %}
@@ -87,14 +96,20 @@
 
 
 {{forms.form(
-form,
+details_form,
 action=url('user-details'),
 button_label='Save',
 no_buttons_padding=True,
 padding='four',
 extra_fields=extra_fields,
 extra_buttons=extra_buttons,
-exclude=['security_question', 'security_answer', 'security_answer_repeat', 'share_contact_details', 'date_of_birth'],
+exclude=[
+'security_question',
+'security_answer',
+'work_address',
+'security_answer_repeat',
+'share_contact_details',
+'date_of_birth'],
 csrf_input=csrf_input
 )}}
 

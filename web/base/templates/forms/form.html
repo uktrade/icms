@@ -4,6 +4,7 @@ row(
     label_cols='four',
     input_cols='four',
     padding=None,
+    row_actions=None,
     show_optional_indicator=True
 )
 -%}
@@ -16,8 +17,12 @@ row(
     {% include 'forms/input.html' %}
     {% endif %}
 
-    {% if padding %}
-    <div class="{{padding}} columns"> </div>
+    {% if padding or row_actions %}
+    <div class="{{padding | default('one')}} columns">
+      {% if row_actions %}
+        {{row_actions}}
+      {% endif %}
+    </div>
     {% endif %}
 
     {% block extra %}
@@ -35,6 +40,7 @@ form(
     method='post',
     class='',
     button_label='Submit',
+    submit_action='submit',
     no_buttons_padding=False,
     label_cols='four',
     input_cols='four',
@@ -84,8 +90,14 @@ form(
                 {% endif %}
                 <div class="{{input_cols}} columns">
                     <ul class="menu-out flow-across">
-                        <li> <button type="submit" class="primary-button button">
-                                {{button_label}} </button></li>
+                      <li>
+                        <button
+                          type="submit"
+                          name="action"
+                          value="{{submit_action}}"
+                          class="primary-button button">
+                          {{button_label}} </button>
+                      </li>
                         {% if extra_buttons %}
                         {{extra_buttons}}
                         {% endif %}

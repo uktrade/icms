@@ -38,7 +38,7 @@ class AlternativeEmailsFormset(BaseInlineFormSet):
     pass
 
 
-def new_user_phones_formset(request):
+def new_user_phones_formset(request, data=None, initial=None):
     return inlineformset_factory(
         User,
         PhoneNumber,
@@ -48,10 +48,10 @@ def new_user_phones_formset(request):
         can_delete=True,
         validate_min=True,
         min_num=1)(
-            request.POST or None, prefix='phone', instance=request.user)
+            data, prefix='phone', instance=request.user)
 
 
-def new_alternative_emails_formset(request):
+def new_alternative_emails_formset(request, data=None, initial=None):
     return inlineformset_factory(
         User,
         AlternativeEmail,
@@ -59,12 +59,10 @@ def new_alternative_emails_formset(request):
         formset=AlternativeEmailsFormset,
         extra=0,
         can_delete=True)(
-            request.POST or None,
-            prefix='alternative_email',
-            instance=request.user)
+            data, prefix='alternative_email', instance=request.user)
 
 
-def new_personal_emails_formset(request):
+def new_personal_emails_formset(request, data=None, initial=None):
     return inlineformset_factory(
         User,
         PersonalEmail,
@@ -74,6 +72,4 @@ def new_personal_emails_formset(request):
         can_delete=True,
         validate_min=True,
         min_num=1)(
-            request.POST or None,
-            prefix='personal_email',
-            instance=request.user)
+            data, prefix='personal_email', instance=request.user)

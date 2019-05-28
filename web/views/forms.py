@@ -5,15 +5,14 @@ from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
                                     EmailInput, Select)
 from web.base.forms.fields import (CharField, PhoneNumberField)
 from web.base.forms import (Form, ModelForm)
-from .mixins import MainFormMixin
-from .utils import validators
+from .utils import (validators, countries)
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-class RegistrationForm(MainFormMixin, ModelForm):
+class RegistrationForm(ModelForm):
 
     telephone_number = PhoneNumberField()
     confirm_email = CharField(widget=EmailInput(), max_length=254)
@@ -60,7 +59,7 @@ class CaptchaForm(Form):
     captcha = ReCaptchaField()
 
 
-class PasswordChangeForm(MainFormMixin, auth_forms.PasswordChangeForm):
+class PasswordChangeForm(auth_forms.PasswordChangeForm):
     new_password1 = CharField(
         label='New password', strip=False, widget=PasswordInput())
     new_password2 = CharField(
@@ -79,7 +78,7 @@ class PasswordChangeForm(MainFormMixin, auth_forms.PasswordChangeForm):
         return validators.validate_security_answer(self)
 
 
-class AccessRequestForm(MainFormMixin, ModelForm):
+class AccessRequestForm(ModelForm):
     class Meta:
         model = models.AccessRequest
 
@@ -103,14 +102,16 @@ class AccessRequestForm(MainFormMixin, ModelForm):
         }
 
 
-class UserDetailsUpdateForm(MainFormMixin, ModelForm):
-    address = CharField(
-        required=False,
-        label='Work Address',
-        widget=Textarea({
-            'rows': 5,
-            'readonly': 'readonly'
-        }))
+class UserDetailsUpdateForm(ModelForm):
+
+    # TODO: Save address to addresses table
+    # address = CharField(
+    #     required=True,
+    #     label='Work Address',
+    #     widget=Textarea({
+    #         'rows': 5,
+    #         'readonly': 'readonly'
+    #     }))
 
     security_answer_repeat = CharField(
         required=True,
@@ -119,8 +120,8 @@ class UserDetailsUpdateForm(MainFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(UserDetailsUpdateForm, self).__init__(*args, **kwargs)
-        user = kwargs.get('instance')
-        self.fields['security_answer_repeat'].initial = user.security_answer
+        self.fields[
+            'security_answer_repeat'].initial = self.instance.security_answer
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
@@ -133,7 +134,7 @@ class UserDetailsUpdateForm(MainFormMixin, ModelForm):
         fields = [
             'title', 'first_name', 'preferred_first_name', 'middle_initials',
             'last_name', 'organisation', 'department', 'job_title',
-            'location_at_address', 'address', 'share_contact_details',
+            'location_at_address', 'work_address', 'share_contact_details',
             'date_of_birth', 'security_question', 'security_answer'
         ]
 
@@ -145,7 +146,8 @@ class UserDetailsUpdateForm(MainFormMixin, ModelForm):
             'department': 'Department Name (Employer)',
             'job_title': 'Job Title (Employer)',
             'share_contact_details': 'Share Contact Deails?',
-            'location_at_address': 'Floor/Room/Bay/Location'
+            'location_at_address': 'Floor/Room/Bay/Location',
+            'work_address': 'Work Address'
         }
 
         widgets = {
@@ -156,17 +158,24 @@ class UserDetailsUpdateForm(MainFormMixin, ModelForm):
             'location_at_address': Textarea({
                 'rows': 2,
                 'cols': 50
+            }),
+            'work_address': Textarea({
+                'rows': 5,
+                'readonly': 'readonly'
             })
         }
 
         help_texts = {
             'title':
             'Preferred form of address. Examples: Mr, Ms, Miss, Mrs, Dr, Rev, etc.',  # NOQA
-            'first_name': 'Formal given name',
+            'first_name':
+            'Formal given name',
             'preferred_first_name':
             'Preferred forename can be left blank. It is not used on formal document. Example Forename(Preferred): Robert (Bob)',  # NOQA
-            'middle_initials': 'Initials of middle names (if used)',
-            'last_name': 'Family or marriage name',
+            'middle_initials':
+            'Initials of middle names (if used)',
+            'last_name':
+            'Family or marriage name',
             'organisation':
             'Organisation name of direct employer. This is not the names of organisations which work may be carried out on behalf of, as this information is recorded elsewhere on the system.',  # NOQA
             'department':
@@ -175,18 +184,17 @@ class UserDetailsUpdateForm(MainFormMixin, ModelForm):
             'Job title used within direct employing organisation.',
             'location_at_address':
             'Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX',  # NOQA
-            'address': 'Edit work address',
         }
 
 
-class LoginForm(MainFormMixin, auth_forms.AuthenticationForm):
+class LoginForm(auth_forms.AuthenticationForm):
     username = auth_forms.UsernameField(
         widget=TextInput(attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)
 
 
 class PhoneNumberForm(ModelForm):
-    telephone_number = PhoneNumberField()
+    telephone_number = CharField(validators=PhoneNumberField().validators)
 
     def __init__(self, *args, **kwargs):
         super(PhoneNumberForm, self).__init__(*args, **kwargs)
@@ -200,7 +208,6 @@ class PhoneNumberForm(ModelForm):
     class Meta:
         model = models.PhoneNumber
         fields = ['telephone_number', 'type', 'comment']
-
         widgets = {'type': Select(choices=models.PhoneNumber.TYPES)}
 
 
@@ -246,7 +253,6 @@ class PersonalEmailForm(ModelForm):
 
     def clean_notifications(self):
         response = self.cleaned_data.get('notifications', None)
-        print('Response is: %s', response)
         self.instance.is_primary = \
             True if response == PersonalEmailForm.PRIMARY else False
         self.instance.portal_notifications = True if response else False
@@ -260,3 +266,24 @@ class PersonalEmailForm(ModelForm):
             'email': EmailInput(),
             'type': Select(choices=models.Email.TYPES),
         }
+
+
+class PostCodeSearchForm(Form):
+    post_code = CharField(required=True)
+    country = CharField(required=False, widget=Select(choices=countries.get()))
+
+
+class ManualAddressEntryForm(Form):
+    country = CharField(widget=TextInput({'readonly': 'readonly'}))
+    address = CharField(
+        max_length=4000, widget=Textarea({
+            'rows': 6,
+            'cols': 50
+        }))
+
+    def clean_address(self):
+        return validators.validate_manual_address(self)
+
+    # def __init__(self, country, *args, **kwargs):
+    #     super(ManualAddressEntryForm, self).__init__(*args, **kwargs)
+    #     self.fields['country'].initial = country

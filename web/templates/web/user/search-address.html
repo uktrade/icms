@@ -1,0 +1,125 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% block page_title %}Search Addresses{% endblock %}
+{% block context_header %}Search Addresses{% endblock %}
+
+
+{% block main_content %}
+<div class="container">
+
+    <div class="row">
+
+        <div class="six columns">
+
+            <h3>
+                UK Address
+            </h3>
+
+            {% set postcode_field %}
+            <div class="row">
+                <div class="eight columns">
+                    <label class="prompt north">Postcode
+                    </label>
+                </div>
+                <div class="four columns"></div>
+            </div>
+            <div class="row">
+                <div class="eight columns">
+                    {% with field=postcode_form.post_code %}
+                    {% include 'forms/input.html' %}
+                    {% endwith %}
+                </div>
+                <div class="four columns"></div>
+            </div>
+            {% endset %}
+
+            {{forms.form(
+            postcode_form,
+            action='',
+            label_cols='eight',
+            input_cols='four',
+            button_label='Search',
+            submit_action='search_address',
+            no_buttons_padding=True,
+            csrf_input=csrf_input,
+            extra_fields=postcode_field,
+            exclude=['post_code','country'])
+            }}
+
+        </div>
+        <div class="six columns">
+            <form id="form-manual-address" method="post" action="">
+              {{csrf_input}}
+              <input type="hidden" name="action"  value="manual_address"/>
+                <h3>
+                    International/Manual Address
+                </h3>
+                <div class="container setoutForm">
+                    <div class="row">
+                        <div class="eight columns">
+                            <label id="pg28" for="g28" class="prompt north">Country
+                            </label>
+                        </div>
+                        <div class="four columns"></div>
+                    </div>
+                    <div class="row">
+                        <div class="eight columns input-group">
+                            <div class="eleven-column-input">
+                                {% with field=postcode_form.country %}
+                                {% include 'forms/input.html' %}
+                                {% endwith %}
+                            </div>
+                            <div class="input-group-addon hint-addon">
+                                <div id="hint-manual-country" role="tooltip" class="hint-content">Choose a country to begin manually entering the address</div>
+                                <div aria-describedby="hint-manual-country" class="hint icon-info"></div>
+                            </div>
+                            <div class="four columns"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="section-break"></div>
+
+    {% if addresses  %}
+    <form id="form-save-address" method="post" action="">
+        {{csrf_input}}
+        <input id="input-address" name="address" type="hidden" />
+        <input type="hidden" name="action" value="save_address" />
+        <table class="setoutList">
+            <thead>
+                <tr>
+                    <th scope="col">Address
+                    </th>
+                </tr>
+            </thead>
+            {% for address in addresses %}
+            <tr>
+                <td>
+                    <a href="" class="link-save-address">{% for line in address.formatted_address if line %}{{line}}, {% endfor %}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </form>
+
+    <div class="result-count">
+        {{addresses|length}} addresses found
+    </div>
+
+    {% else %}
+    {% if not request.POST.action == 'edit_address' and not postcode_form.errors  %}
+    <div class="info-box info-box-warning">
+        There aren't any addresses that match your search. You can turn on advanced mode for more options.
+    </div>
+    {% endif %}
+    {% endif %}
+
+
+
+    {% endblock %}
