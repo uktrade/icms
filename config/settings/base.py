@@ -115,7 +115,10 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'web.user'
 
 # Date formats
-DATE_INPUT_FORMATS = ['%d-%b-%Y']
+DATE_INPUT_FORMATS = ['%d-%b-%Y']  # input formats
+DATETIME_INPUT_FORMATS = ['%d-%b-%Y %H:%M:%S']
+DATE_FORMAT = ['d-M-Y']  # format for displaying date
+DATETIME_FORMAT = ['d-M-Y H:i:s']
 
 # Phone number format
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
@@ -147,3 +150,6 @@ Field.default_error_messages = {
 
 # Session configuration, use cookies as session storage
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+# Fixtures
+FIXTURE_DIRS = (os.path.join(BASE_DIR, 'fixtures/'))

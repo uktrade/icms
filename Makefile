@@ -24,6 +24,7 @@ debug:
 
 # Run with Gunicorn and Whitenoise serving static files
 run: test
+	DJANGO_SETTINGS_MODULE=config.settings.production \
 	ICMS_DEBUG=False \
 	docker-compose up
 
