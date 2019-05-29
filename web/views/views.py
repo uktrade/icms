@@ -64,6 +64,10 @@ def update_password(request):
     return form
 
 
+def reset_password(request):
+    return render(request, 'web/reset-password.html')
+
+
 @login_required
 def set_password(request):
     form = update_password(request)

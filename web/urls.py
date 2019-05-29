@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/', auth_view.LogoutView.as_view(), name='logout'),
     path('home/', views.home, name='home'),
     path('register/', views.register, name='register'),
+    path('reset-password/', views.reset_password, name='reset-password'),
     path('set-password/', views.set_password, name='set-password'),
     path('workbasket/', views.workbasket, name='workbasket'),
     path('user/', views.user_details, name='user-details'),

@@ -46,22 +46,22 @@
 
     {% set form_buttons %}
     <li>
-      <button type="button" class="link-button button">
+      <a href="{{url('reset-password')}}" class="button link-button">
         Forgot your password?
-      </button>
+      </a>
     </li>
     {% endset %}
 
     {{forms.form(
-    form,
-    action=url('login'),
-    button_label='Sign in',
-    class='login-form',
-    label_cols='three',
-    input_cols='nine',
-    extra_buttons=form_buttons,
-    extra_fields=next_page,
-    csrf_input=csrf_input
+      form,
+      action=url('login'),
+      button_label='Sign in',
+      class='login-form',
+      label_cols='three',
+      input_cols='nine',
+      extra_buttons=form_buttons,
+      extra_fields=next_page,
+      csrf_input=csrf_input
     )}}
 
 
