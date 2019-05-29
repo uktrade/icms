@@ -8,6 +8,7 @@
 
 <ul class="dropdown-menu" id="top-menu">
 
+    {% if not request.user.is_anonymous %}
     <li class="top-menu-action">
         <a href="{{ url('workbasket') }}">Workbasket</a>
     </li>
@@ -158,4 +159,9 @@
         </ul>
 
     </li>
+    {% else %}
+    <li class="icon-user" id="user-info">
+        <a class="dropdown-label" href="{{ url('login') }}">Log in</a>
+    </li>
+    {% endif %}
 </ul>

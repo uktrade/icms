@@ -173,6 +173,6 @@ $('body').on('focusout','.top-menu-subcategory-action',function() {
   $(this).removeClass("focussed");
 });
 
-$('body').on('click','.dropdown-label',function(e) {
-  return false;
-});
+// $('body').on('click','.dropdown-label',function(e) {
+//   return false;
+// });
