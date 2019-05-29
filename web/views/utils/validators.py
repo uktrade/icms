@@ -2,6 +2,15 @@ import datetime
 from django.forms import ValidationError
 
 
+def validate_email_confirmation(form):
+    email = form.cleaned_data.get('email', None)
+    if email != form.cleaned_data.get('confirm_email', None):
+        raise ValidationError(
+            "This email address doesn't match the one above ")
+
+    return email
+
+
 def validate_security_answer(form):
     answer = form.cleaned_data.get('security_answer', None)
     if answer != form.user.security_answer:
