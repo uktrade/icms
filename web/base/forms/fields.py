@@ -1,11 +1,15 @@
 from django import forms
-from .widgets import (TextInput, EmailInput)
+from .widgets import (TextInput, EmailInput, DateInput)
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 from phonenumber_field.formfields import PhoneNumberField
 
 
 class CharField(forms.CharField):
     widget = TextInput
+
+
+class DateField(forms.DateField):
+    widget = DateInput
 
 
 class BooleanField(forms.BooleanField):

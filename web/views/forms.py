@@ -1,9 +1,10 @@
 from django.contrib.auth import forms as auth_forms
+from django.forms import ValidationError
 from captcha.fields import ReCaptchaField
 from web import models
 from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
                                     EmailInput, Select)
-from web.base.forms.fields import (CharField, PhoneNumberField)
+from web.base.forms.fields import (CharField, PhoneNumberField, DateField)
 from web.base.forms import (Form, ModelForm)
 from .utils import (validators, countries)
 
@@ -48,7 +49,7 @@ class RegistrationForm(ModelForm):
         return validators.validate_security_answer_confirmation(self)
 
     def clean_date_of_birth(self):
-        return validators.validate_date_of_birth(self)
+        return validators.validate_date_of_birth_not_in_future(self)
 
     class Meta:
         model = models.User
@@ -93,6 +94,36 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
 
     def clean_security_answer(self):
         return validators.validate_security_answer(self)
+
+
+class ResetPasswordForm(Form):
+    login_id = CharField()
+    captcha = ReCaptchaField()
+
+
+class ResetPasswordSecondForm(Form):
+    question = CharField(widget=TextInput(attrs={'readonly': 'readonly'}))
+    security_answer = CharField(label='Answer')
+    date_of_birth = DateField()
+
+    def __init__(self, user, *args, **kwargs):
+        super(ResetPasswordSecondForm, self).__init__(*args, **kwargs)
+        self.fields['question'].initial = user.security_question
+        self.user = user
+
+    def clean_security_answer(self):
+        try:
+            return validators.validate_security_answer(self)
+        except ValidationError:
+            self.add_error(None, 'Invalid details')
+
+        return self.cleaned_data['security_answer']
+
+    def clean_date_of_birth(self):
+        try:
+            return validators.validate_date_of_birth(self)
+        except ValidationError:
+            self.add_error(None, 'Invalid details')
 
 
 class AccessRequestForm(ModelForm):

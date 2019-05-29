@@ -2,7 +2,7 @@ import random
 import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import (login_required, user_passes_test)
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.db import transaction
@@ -17,6 +17,7 @@ from . import filters
 from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
                       new_alternative_emails_formset)
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +65,46 @@ def update_password(request):
     return form
 
 
+@user_passes_test(lambda u: u.is_anonymous, login_url='home')
 def reset_password(request):
-    return render(request, 'web/reset-password.html')
+    action = request.POST.get('action') if request.POST else None
+    login_id = request.POST.get('login_id', None)
+
+    if action == 'reset_password':
+        user = models.User.objects.get(username=login_id)
+        form = forms.ResetPasswordSecondForm(user, request.POST or None)
+        if form.is_valid():
+            print('Form is valid')
+            # TODO: Update temp password generation
+            temp_pass = random.randint(1000, 1000000)
+            user.set_password(temp_pass)
+            user.register_complete = False
+            user.save()
+            notify.register(request, user, temp_pass)
+            return render(request,
+                          'web/reset-password/reset-password-success.html')
+
+        return render(request, 'web/reset-password/reset-password-2.html', {
+            'form': form,
+            'login_id': login_id
+        })
+
+    form = forms.ResetPasswordForm(request.POST or None)
+    if form.is_valid():
+        try:
+            user = models.User.objects.get(
+                username=form.cleaned_data.get('login_id', ''))
+            form = forms.ResetPasswordSecondForm(user)
+            return render(request, 'web/reset-password/reset-password-2.html',
+                          {
+                              'form': form,
+                              'login_id': user.username
+                          })
+        except ObjectDoesNotExist:
+            form.add_error(None, 'Invalid login id')
+
+    return render(request, 'web/reset-password/reset-password-1.html',
+                  {'form': form})
 
 
 @login_required
@@ -85,6 +124,8 @@ def change_password(request):
     return render(request, 'web/user/password.html', {'form': form})
 
 
+#  Redirect user to home if logged in already
+@user_passes_test(lambda u: u.is_anonymous, login_url='home')
 @transaction.atomic
 def register(request):
     """
@@ -100,11 +141,13 @@ def register(request):
     captcha_form = forms.CaptchaForm(request.POST or None)
     if form.is_valid() and captcha_form.is_valid():
         user = form.instance
+        # TODO: Update temp password generation
         temp_pass = random.randint(1000, 1000000)
         user.set_password(temp_pass)
         user.username = user.email
         user.save()
         user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
+        # TODO: Save email
         # email = models.EmailAddress.objects.create(
         #     email=user.email, portal_notifications=True)
         # models.PersonalEmail(

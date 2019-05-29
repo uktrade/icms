@@ -1,6 +1,5 @@
 (function($){
 
-
   function handle_security_question(){
     var selected=$('#id_security_question_list').val();
     var question=$('#id_security_question');
