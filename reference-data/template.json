@@ -813,7 +813,7 @@
 		"TEMPLATE_TYPE" : "CFS_TRANSLATION",
 		"APPLICATION_DOMAIN" : "CA",
 		"TEMPLATE_TITLE" : null,
-		"TEMPLATE_CONTENT" : "<TRANSLATION_BODY foxid=\"smpvkv_plp9QNeSh\">\n  <p align=\"justify\" foxid=\"smpvkw_plp9QNeSh\">Se certifica por el presente, a los efectos de la legislación de país citado precedentemente, que los productos mecionados en el anexo, que forma parte integral de este certificado, se pueden vender legalmente en el Reino Unido si satisfacen los requisitos reglamentarios.<\/p>\n<\/TRANSLATION_BODY>\n"
+		"TEMPLATE_CONTENT" : "Se certifica por el presente, a los efectos de la legislación de país citado precedentemente, que los productos mecionados en el anexo, que forma parte integral de este certificado, se pueden vender legalmente en el Reino Unido si satisfacen los requisitos reglamentarios."
 	},
 	{
 		"PK" : 73,
@@ -825,7 +825,7 @@
 		"TEMPLATE_TYPE" : "CFS_TRANSLATION",
 		"APPLICATION_DOMAIN" : "CA",
 		"TEMPLATE_TITLE" : null,
-		"TEMPLATE_CONTENT" : "<TRANSLATION_BODY foxid=\"sbtCI6_plp9QNia0\">\n  <p align=\"justify\" foxid=\"sbtCI7_plp9QNia0\">Il est certifié par les présentes, pour l&apos;application des lois du pays susnommé, que la vente des préparations mentionnées à l&apos;annexe qui fait partie intégrale de ce certificat est légalement permise au Royaume-Uni dans la mesure où les prescriptions légales sont satisfaites.<\/p>\n<\/TRANSLATION_BODY>\n"
+		"TEMPLATE_CONTENT" : "Il est certifié par les présentes, pour l&apos;application des lois du pays susnommé, que la vente des préparations mentionnées à l&apos;annexe qui fait partie intégrale de ce certificat est légalement permise au Royaume-Uni dans la mesure où les prescriptions légales sont satisfaites."
 	},
 	{
 		"PK" : 74,
@@ -837,7 +837,7 @@
 		"TEMPLATE_TYPE" : "CFS_TRANSLATION",
 		"APPLICATION_DOMAIN" : "CA",
 		"TEMPLATE_TITLE" : null,
-		"TEMPLATE_CONTENT" : "<TRANSLATION_BODY foxid=\"sbt2Oh_plp9QNia0\" xml:space=\"preserve\"><p align=\"justify\" foxid=\"sbt2Oo_plp9QNia0\">Pelo presente documento certifica-se, para os fins das leis do pais acima referido, que os preparados designados no anexo, que faz parte integrante do presente certificado, podem ser vendidos legalmente no Reino Unido desde que sejam satisfeitos os requisitos regulamentários.<\/p><\/TRANSLATION_BODY>\n"
+		"TEMPLATE_CONTENT" : "Pelo presente documento certifica-se, para os fins das leis do pais acima referido, que os preparados designados no anexo, que faz parte integrante do presente certificado, podem ser vendidos legalmente no Reino Unido desde que sejam satisfeitos os requisitos regulamentários."
 	},
 	{
 		"PK" : 75,
@@ -849,7 +849,7 @@
 		"TEMPLATE_TYPE" : "CFS_TRANSLATION",
 		"APPLICATION_DOMAIN" : "CA",
 		"TEMPLATE_TITLE" : null,
-		"TEMPLATE_CONTENT" : "<TRANSLATION_BODY foxid=\"sc9Dy4_plp9QNeSh\" xml:space=\"preserve\"><p align=\"justify\" foxid=\"sc9Dy7_plp9QNeSh\">Настоящим удостоверяется, что для целей законов вышепоименованной страны препарат, указанный в списке, который является частью настоящего сертификата, может законным образом продаваться в Соединенном Королевстве при условии удовлетворения официальных требований.<\/p><\/TRANSLATION_BODY>\n"
+		"TEMPLATE_CONTENT" : "Настоящим удостоверяется, что для целей законов вышепоименованной страны препарат, указанный в списке, который является частью настоящего сертификата, может законным образом продаваться в Соединенном Королевстве при условии удовлетворения официальных требований."
 	},
 	{
 		"PK" : 76,
@@ -861,7 +861,7 @@
 		"TEMPLATE_TYPE" : "CFS_TRANSLATION",
 		"APPLICATION_DOMAIN" : "CA",
 		"TEMPLATE_TITLE" : null,
-		"TEMPLATE_CONTENT" : "<TRANSLATION_BODY foxid=\"sbuGMR_plp9QNia0\" xml:space=\"preserve\"><p align=\"justify\" foxid=\"sbuGN0_plp9QNia0\">Bu sertifikanın bir parçası olan Listede gösterilen preparatın, mevzuatın öngördüğü şartlara uyduğu takdirde Birleşik Krallıkta yasal olarak satılabileceği yukarıda anılan ülke kanunları gereği tasdik olunur.<\/p><\/TRANSLATION_BODY>\n"
+		"TEMPLATE_CONTENT" : "Bu sertifikanın bir parçası olan Listede gösterilen preparatın, mevzuatın öngördüğü şartlara uyduğu takdirde Birleşik Krallıkta yasal olarak satılabileceği yukarıda anılan ülke kanunları gereği tasdik olunur."
 	},
 	{
 		"PK" : 77,
