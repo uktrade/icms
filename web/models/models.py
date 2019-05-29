@@ -215,3 +215,6 @@ class Template(models.Model):
 
     def application_domain_verbose(self):
         return dict(Template.DOMAINS)[self.application_domain]
+
+    class Meta:
+        ordering = ('-is_active', )
