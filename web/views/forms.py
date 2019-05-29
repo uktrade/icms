@@ -14,6 +14,16 @@ logger = logging.getLogger(__name__)
 
 class RegistrationForm(ModelForm):
 
+    # Pre-defined security question options
+    FIRST_SCHOOL = "What is the name of your first school?"
+    BEST_FRIEND = "What is the name of your childhood best friend?"
+    MAIDEN_NAME = "What is your mother's maiden name?"
+    OWN_QUESTION = "OWN_QUESTION"
+
+    QUESTIONS = (('', 'Select One'), (FIRST_SCHOOL, FIRST_SCHOOL),
+                 (BEST_FRIEND, BEST_FRIEND), (MAIDEN_NAME, MAIDEN_NAME),
+                 (OWN_QUESTION, "I want to enter my own question"))
+
     telephone_number = PhoneNumberField()
     confirm_email = CharField(widget=EmailInput(), max_length=254)
 
@@ -22,11 +32,17 @@ class RegistrationForm(ModelForm):
         label="Confirm Security Answer",
         widget=PasswordInput(render_value=True))
 
+    security_question_list = CharField(
+        label='Security Question', widget=Select(choices=QUESTIONS))
+
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+
+    def clean_confirm_email(self):
+        return validators.validate_email_confirmation(self)
 
     def clean_security_answer_repeat(self):
         return validators.validate_security_answer_confirmation(self)
@@ -39,7 +55,7 @@ class RegistrationForm(ModelForm):
         fields = [
             'email', 'confirm_email', 'title', 'first_name', 'last_name',
             'telephone_number', 'organisation', 'date_of_birth',
-            'security_question', 'security_answer'
+            'security_question_list', 'security_question', 'security_answer'
         ]
         labels = {
             'organisation': 'Organisation Name (Employer)',
@@ -47,7 +63,8 @@ class RegistrationForm(ModelForm):
             'first_name': 'Forename',
             'last_name': 'Surname',
             'telephone_number': 'Telephone Number',
-            'date_of_birth': 'Date of Birth'
+            'date_of_birth': 'Date of Birth',
+            'security_question': 'Custom Question'
         }
 
         widgets = {
@@ -283,7 +300,3 @@ class ManualAddressEntryForm(Form):
 
     def clean_address(self):
         return validators.validate_manual_address(self)
-
-    # def __init__(self, country, *args, **kwargs):
-    #     super(ManualAddressEntryForm, self).__init__(*args, **kwargs)
-    #     self.fields['country'].initial = country

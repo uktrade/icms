@@ -91,7 +91,12 @@ def register(request):
     An atomic transaction to save user information and send notifications
     When an unexpected error occurs the whole transaction is rolled back
     """
-    form = forms.RegistrationForm(request.POST or None)
+    # Handle security question
+    data = request.POST.copy() if request.POST else None
+    selected = request.POST.get('security_question_list', None)
+    if selected and selected != forms.RegistrationForm.OWN_QUESTION:
+        data['security_question'] = selected
+    form = forms.RegistrationForm(data)
     captcha_form = forms.CaptchaForm(request.POST or None)
     if form.is_valid() and captcha_form.is_valid():
         user = form.instance
