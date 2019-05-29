@@ -74,7 +74,6 @@ def reset_password(request):
         user = models.User.objects.get(username=login_id)
         form = forms.ResetPasswordSecondForm(user, request.POST or None)
         if form.is_valid():
-            print('Form is valid')
             # TODO: Update temp password generation
             temp_pass = random.randint(1000, 1000000)
             user.set_password(temp_pass)
