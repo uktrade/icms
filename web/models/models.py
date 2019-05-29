@@ -207,6 +207,8 @@ class Template(models.Model):
         max_length=20, choices=TYPES, blank=False, null=False)
     application_domain = models.CharField(
         max_length=20, choices=DOMAINS, blank=False, null=False)
+    template_title = models.CharField(max_length=4000, blank=False, null=True)
+    template_content = models.TextField(blank=False, null=True)
 
     def template_type_verbose(self):
         return dict(Template.TYPES)[self.template_type]
