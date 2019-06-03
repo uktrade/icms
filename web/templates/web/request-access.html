@@ -20,10 +20,7 @@
         </h3>
         <p>Below are any pending access requests you have made. You will receive an email notification when your request has been processed (usually within 1 working day).</p>
 
-        <h4>
-            Importer Access Requests
-        </h4>
-
+        <h4>Importer Access Requests</h4>
 
         <table responsiveList class="setoutList">
             <thead>
@@ -69,10 +66,7 @@
 
         </table>
 
-
-        <h4>
-            Exporter Access Requests
-        </h4>
+        <h4>Exporter Access Requests</h4>
 
         <table responsiveList class="setoutList">
             <thead>
@@ -117,10 +111,7 @@
             {% endfor %}
         </table>
 
-
-        <h3>
-            New Access Request
-        </h3>
+        <h3>New Access Request</h3>
         <div class="info-box info-box-info">
 
             <p>Enter the details below and submit your request to ILB. You will receive an email notification when your request has been processed (usually within 1 working day).</p>
@@ -128,22 +119,9 @@
 
         </div>
 
-
-        {% set extra_fields %}
-          {{ activation.management_form }}
-        {% endset %}
-
-        {{forms.form(
-          form,
-          action="",
-          button_label='Submit Access Request',
-          label_cols='three',
-          input_cols='six',
-          padding='three',
-          extra_fields=extra_fields,
-          csrf_input=csrf_input
-        )}}
-
+        {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+            {{activation.management_form}}
+        {% endcall %}
 
         <div class="content-actions"></div>
 

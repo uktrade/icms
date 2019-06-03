@@ -3,60 +3,21 @@
 
 {% block main_content %}
 <div id="header">
-    <h1>
-        Registration
-    </h1>
+    <h1>Registration</h1>
     <p class="subheading">Import Case Management System</p>
 </div>
 <div class="clearBoth"> </div>
 
-<h2>
-    User Details
-</h2>
+<h2>User Details</h2>
 <p>You are about to register for an Import Case Management System account. Note that after registering, you will not be able to apply for import licences until you have been granted permission to act as an importer by ILB.</p>
 <p>For further information, please refer to the guidance documents on the main login screen.</p>
 <p>All fields are mandatory.</p>
 
 
-{% set security_check %}
-<p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
-<div class="row">
-    <div class="four columns" data-xfid="g20"><label id="pg20" for="g20" class="prompt west">Security check
-        </label>
-    </div>
-    <div class="six columns {% if captcha_form.captcha.errors %}input-error{% endif %}" data-xfid="g20">
-        {{captcha_form.captcha}}
-        <div class="clearBoth"> </div>
-        {% if captcha_form.captcha.errors %}
-        {% for error in captcha_form.captcha.errors %}
-        <div class="error-message">{{error}}</div>
-        {% endfor %}
-        {% endif %}
-    </div>
-    <div class="two columns"></div>
-</div>
-{% endset %}
-
-
-{% set extra_buttons %}
-<li>
-    <a href="{{url('login')}}" class="link-button button">
-        Cancel
-    </a>
-</li>
-{% endset %}
-
-{{forms.form(
-  form,
-  action=url('register'),
-  button_label='Register',
-    label_cols='four',
-  input_cols='six',
-  padding='two',
-  extra_fields=security_check,
-  extra_buttons=extra_buttons,
-  csrf_input=csrf_input
-)}}
-
+{% call forms.form(form, fields=form.fields, action=url('register'), csrf_input=csrf_input) -%}
+    <p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
+    {{forms.field(captcha_form.captcha, opts=form.config)}}
+    <div class="section-break"></div>
+{% endcall %}
 
 {% endblock %}

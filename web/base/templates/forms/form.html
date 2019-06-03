@@ -1,114 +1,169 @@
-{% macro
-row(
-    field,
-    label_cols='four',
-    input_cols='four',
-    padding=None,
-    row_actions=None,
-    show_optional_indicator=True
-)
--%}
-<div class="row">
-    {% include 'forms/label.html' %}
-
-    {% if field.help_text %}
-    {% include 'forms/input-with-hint.html' %}
-    {% else %}
-    {% include 'forms/input.html' %}
-    {% endif %}
-
-    {% if padding or row_actions %}
-    <div class="{{padding | default('one')}} columns">
-      {% if row_actions %}
-        {{row_actions}}
-      {% endif %}
+{# Grid columns padding to be used with form rows #}
+{% macro cols() -%}
+    {% set ns = namespace(cols='') %}
+    {# Get last non-empty variable to use #}
+    {% for arg in varargs if arg %}{% set ns.cols=arg %}{% endfor %}
+    {% if ns.cols %}
+    <div class="{{ns.cols}} columns">
+        {% if caller %}{{caller()}}{% endif %}
     </div>
     {% endif %}
-
-    {% block extra %}
-    {% endblock %}
-</div>
-
 {%- endmacro %}
 
 
+{% macro button(type='submit', name='', value='', label='Submit') -%}
+<li>
+    <button type="{{type}}" name="{{name}}" value="{{value}}" class="primary-button button">
+        {{label}}
+    </button>
+</li>
+{%- endmacro %}
 
-{% macro
-form(
-    form,
-    action,
-    method='post',
-    class='',
-    button_label='Submit',
-    submit_action='submit',
-    no_buttons_padding=False,
-    label_cols='four',
-    input_cols='four',
-    padding=None,
-    exclude=[],
-    include=[],
-    extra_fields=None,
-    extra_buttons=None,
-    show_optional_indicators=True,
-    csrf_input=None
-) -%}
 
-<form method="{{method}}" name="mainForm" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+{% macro link(href='', label='link', attrs={}) -%}
+<li>
+    <a href="{{url(href) if href else ''}}"
+       class="button link-button"
+       {% for name,val in attrs.items() %}{{name}}="{{val}}"{% endfor %}>
+        {{label}}
+    </a>
+</li>
+{%- endmacro %}
 
-    {% if csrf_input %}
-    {{csrf_input}}
-    {% endif %}
 
-    <div class="container setoutForm {{class}}">
-
-        {% for field in form %}
-        {% if not field.html_name in exclude %}
-        {% if field.html_name in include or not include %}
-
-        {{row(
-          field,
-          label_cols=label_cols,
-          input_cols=input_cols,
-          padding=padding,
-          show_optional_indicator=show_optional_indicators
-        )}}
-
-        {% endif %}
-        {% endif %}
-        {% endfor %}
-
-        {% if extra_fields %}
-        {{extra_fields}}
-        {% endif %}
-
-        <div class="section-break"></div>
-        <!-- Form buttons -->
-        <div class="container">
-            <div class="row">
-                {% if not no_buttons_padding %}
-                <div class="{{label_cols}} columns"> </div>
+{% macro actions(opts) -%}
+<div class="clearBoth"></div>
+<div class="container">
+    <div class="row">
+        {{cols(opts.padding.left)}}
+        {{cols(opts.actions.padding.left)}}
+        {% call cols(opts.input.cols, opts.actions.submit.cols) -%}
+            <ul class="menu-out flow-across">
+                {% if caller %}
+                    {{caller()}}
+                {% else %}
+                    {# default #}
+                    {% set submit=opts.actions.submit %}
+                    {% set _link=opts.actions.link %}
+                    {{button(label=submit.label, name=submit.name, value=submit.value)}}
+                    {{link(href=_link.href, label=_link.label, attrs=_link.attrs)}}
                 {% endif %}
-                <div class="{{input_cols}} columns">
-                    <ul class="menu-out flow-across">
-                      <li>
-                        <button
-                          type="submit"
-                          name="action"
-                          value="{{submit_action}}"
-                          class="primary-button button">
-                          {{button_label}} </button>
-                      </li>
-                        {% if extra_buttons %}
-                        {{extra_buttons}}
-                        {% endif %}
-                    </ul>
-                </div>
-                {% if padding %}
-                <div class="{{padding}} columns"> </div>
-                {% endif %}
+            </ul>
+        {%- endcall %}
+        {{cols(opts.actions.padding.right)}}
+        {{cols(opts.padding.right)}}
+    </div>
+</div>
+{%- endmacro %}
+
+
+{# Render django form non-field-errors #}
+{% macro errors(form) -%}
+    {% if form.non_field_errors() %}
+        <div class="row">
+            <div id="login-error">
+                {% for error in form.non_field_errors() %}
+                    {{error|safe}}
+                {% endfor %}
             </div>
         </div>
+    {% endif %}
+{%- endmacro %}
+
+
+{# Renders label for given django form field #}
+{% macro label(field, opts, prompt='west') -%}
+    <div class="{{opts.label.cols}} columns">
+        <label for="{{ field.id_for_label }}"
+            class="prompt {{prompt}}">
+            {{field.label}}
+            {% if opts.label.optional_indicators and not field.field.required %}
+            <span class="mand-label">optional</span>
+            {% endif %}
+            {% if caller %}{{caller()}}{% endif %}
+        </label>
+    </div>
+{%- endmacro %}
+
+
+{# Renders input for given django form field #}
+{% macro input(field, opts=None, tooltip=None) -%}
+    {% set input_markup %}
+        {{field}}
+        {% if field.errors %}
+            {% for error in field.errors %}
+            <div class="error-message">{{error}}</div>
+            {% endfor %}
+        {% endif %}
+    {% endset %}
+    <div class="{{opts.input.cols}} columns input-group {% if field.errors %}input-error{% endif %}">
+        {% if field.help_text or tooltip %}
+            <div class="eleven-column-input">
+                {{input_markup}}
+            </div>
+            <div class="input-group-addon hint-addon">
+                {% if tooltip %}
+                    {{tooltip}}
+                {% else %}
+                    <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
+                        {{field.help_text}}
+                    </div>
+                    <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
+                {% endif %}
+            </div>
+        {% else %}
+            {{input_markup}}
+        {% endif %}
+    </div>
+{%- endmacro %}
+
+
+{# Renders a given single form field with label, input and help text as tooltip #}
+{% macro field(field, opts, tooltip=None) -%}
+<div class="row">
+    {{cols(opts.padding.left)}}
+    {{ label(field, opts=opts) }}
+    {{ input(field, opts=opts, tooltip=tooltip) }}
+    {{cols(opts.padding.right)}}
+</div>
+{% endmacro -%}
+
+
+{# Renders fields in a django form with given field names #}
+{% macro fieldset(fields=[], form=None, opts=None) -%}
+    {% for _field in fields %}
+        {% if _field is string %}
+            {{ field(form[_field], opts ) }}
+        {% else %}
+            {{ field(_field, opts) }}
+        {% endif %}
+    {% endfor %}
+{%- endmacro %}
+
+
+{# Renders a form with style classes used with majority of forms across the app #}
+{% macro form(form, fields=[], action='', method='post', container_class='', csrf_input=None) -%}
+<form method="{{method}}" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {% set opts=form.config %}
+    {% if opts.errors.non_field %}{{errors(form)}}{% endif %}
+    {% if csrf_input %}{{csrf_input}}{% endif %}
+    <div class="container setoutForm {{container_class}}">
+        {{fieldset(fields=fields, form=form, opts=form.config)}}
+        {% if caller %}{{caller()}}{% endif %}
+        {% if opts.actions.submit or opts.actions.link %}{{actions(form.config)}}{% endif %}
     </div>
 </form>
+{%- endmacro %}
 
+{# Renders a form with style classes used with all filter forms across the app #}
+{% macro filter(filter, filters=[], action='', method='get', container_class='', csrf_input=None) -%}
+<form method="{{method}}" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {% set opts=filter.config %}
+    {% if csrf_input %}{{csrf_input}}{% endif %}
+    <div class="container setoutForm {{container_class}}">
+        {{fieldset(fields=filters, form=filter.form, opts=filter.config)}}
+        {% if caller %}{{caller()}}{% endif %}
+        {% if opts.actions.submit or opts.actions.link %}{{actions(opts)}}{% endif %}
+    </div>
+</form>
 {%- endmacro %}
