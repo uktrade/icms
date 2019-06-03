@@ -8,18 +8,7 @@
 {% block main_content %}
 
 
-{{forms.form(
-  filter.form,
-  method='get',
-  action='',
-  button_label='Search',
-  label_cols='three',
-  input_cols='six',
-  padding='three',
-  show_optional_indicators=False
-)}}
-
-
+{{forms.filter(filter, filters=filter.filters)}}
 
 <table responsiveList class="setoutList">
     <thead>
@@ -39,8 +28,8 @@
     {% for template in filter.qs %}
     <tr data-xfid="f52">
         <td data-title="Template Name" data-xfid="g53"> <a href="">{{template.template_name}}</a></td>
-        <td data-title="Template Type" data-xfid="g54"><span id="g54" class="text-widget ">{{template.template_type_verbose()}}</span></td>
-        <td data-title="Application Domain" data-xfid="g55"><span id="g55" class="text-widget ">{{template.application_domain_verbose()}}</span></td>
+        <td data-title="Template Type" data-xfid="g54"><span id="g54" class="text-widget ">{{template.template_type_verbose}}</span></td>
+        <td data-title="Application Domain" data-xfid="g55"><span id="g55" class="text-widget ">{{template.application_domain_verbose}}</span></td>
         <td data-title="Template Status" data-xfid="g56"><span id="g56" class="text-widget ">{% if template.is_active %}Active{%else%}Archived{% endif %}</span></td>
         <td data-title="Actions" data-xfid="g57">
             <ul class="menu-out grouped flow-across">

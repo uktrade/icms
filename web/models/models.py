@@ -210,9 +210,11 @@ class Template(models.Model):
     template_title = models.CharField(max_length=4000, blank=False, null=True)
     template_content = models.TextField(blank=False, null=True)
 
+    @property
     def template_type_verbose(self):
         return dict(Template.TYPES)[self.template_type]
 
+    @property
     def application_domain_verbose(self):
         return dict(Template.DOMAINS)[self.application_domain]
 

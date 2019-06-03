@@ -9,20 +9,6 @@
     You can change this person's address for an existing address or input a new one.
 </div>
 
-{% set cancel_button %}
-<button type="button" onclick="window.history.back(); return false;" class="link-button button">
-  Cancel  </button>
-{% endset %}
-
-{{forms.form(
-form,
-action='',
-padding='four',
-button_label='Save Address',
-submit_action='save_manual_address',
-csrf_input=csrf_input,
-extra_buttons=cancel_button
-)}}
-
+{{forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
 
 {% endblock %}

@@ -1,11 +1,12 @@
 from django.contrib.auth import forms as auth_forms
 from django.forms import ValidationError
+from django.utils.translation import gettext_lazy as _
 from captcha.fields import ReCaptchaField
 from web import models
 from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
                                     EmailInput, Select)
 from web.base.forms.fields import (CharField, PhoneNumberField, DateField)
-from web.base.forms import (Form, ModelForm)
+from web.base.forms import (Form, ModelForm, FormConfigMetaClass)
 from .utils import (validators, countries)
 
 import logging
@@ -59,25 +60,48 @@ class RegistrationForm(ModelForm):
             'security_question_list', 'security_question', 'security_answer'
         ]
         labels = {
-            'organisation': 'Organisation Name (Employer)',
-            'email': 'Email',
-            'first_name': 'Forename',
-            'last_name': 'Surname',
-            'telephone_number': 'Telephone Number',
-            'date_of_birth': 'Date of Birth',
-            'security_question': 'Custom Question'
+            'organisation': _('Organisation Name (Employer)'),
+            'email': _('Email'),
+            'first_name': _('Forename'),
+            'last_name': _('Surname'),
+            'telephone_number': _('Telephone Number'),
+            'date_of_birth': _('Date of Birth'),
+            'security_question': _('Custom Question'),
+            'security_answer': _('Security Answer')
         }
 
         widgets = {
             'security_answer': PasswordInput(render_value=True),
         }
 
+        config = {
+            'input': {
+                'cols': 'six'
+            },
+            'label': {
+                'cols': 'four'
+            },
+            'padding': {
+                'right': 'two'
+            },
+            'actions': {
+                'submit': {
+                    'label': _('Register')
+                },
+                'link': {
+                    'label': _('Cancel'),
+                    'href': 'login'
+                }
+            },
+        }
+
 
 class CaptchaForm(Form):
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(label='Security Check')
 
 
-class PasswordChangeForm(auth_forms.PasswordChangeForm):
+class PasswordChangeForm(
+        auth_forms.PasswordChangeForm, metaclass=FormConfigMetaClass):
     new_password1 = CharField(
         label='New password', strip=False, widget=PasswordInput())
     new_password2 = CharField(
@@ -95,10 +119,16 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
     def clean_security_answer(self):
         return validators.validate_security_answer(self)
 
+    class Meta:
+        config = {'actions': {'submit': {'label': _('Set password')}}}
+
 
 class ResetPasswordForm(Form):
     login_id = CharField()
     captcha = ReCaptchaField()
+
+    class Meta:
+        config = {'actions': {'submit': {'label': 'Next'}}}
 
 
 class ResetPasswordSecondForm(Form):
@@ -124,6 +154,16 @@ class ResetPasswordSecondForm(Form):
             return validators.validate_date_of_birth(self)
         except ValidationError:
             self.add_error(None, 'Invalid details')
+
+    class Meta:
+        config = {
+            'actions': {
+                'submit': {
+                    'label': _('Reset password'),
+                    'value': 'reset_password'
+                }
+            }
+        }
 
 
 class AccessRequestForm(ModelForm):
@@ -176,7 +216,7 @@ class UserDetailsUpdateForm(ModelForm):
     def clean_security_answer_repeat(self):
         return validators.validate_security_answer_confirmation(self)
 
-    class Meta(ModelForm):
+    class Meta:
         model = models.User
 
         fields = [
@@ -231,14 +271,54 @@ class UserDetailsUpdateForm(ModelForm):
             'job_title':
             'Job title used within direct employing organisation.',
             'location_at_address':
-            'Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX',  # NOQA
+            _('Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX'  # NOQA
+              ),
+            'work_address':
+            _('Edit work address')
+        }
+
+        config = {
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+            }
         }
 
 
-class LoginForm(auth_forms.AuthenticationForm):
+class LoginForm(auth_forms.AuthenticationForm, metaclass=FormConfigMetaClass):
     username = auth_forms.UsernameField(
         widget=TextInput(attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)
+    error_messages = {
+        'invalid_login':
+        _("Invalid username or password.<br/>N.B. passwords are case sensitive"
+          ),
+        'inactive':
+        _("This account is inactive."),
+    }
+
+    class Meta:
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'eight'
+            },
+            'padding': {
+                'right': 'one'
+            },
+            'actions': {
+                'submit': {
+                    'label': 'Sign in'
+                },
+                'link': {
+                    'href': 'reset-password',
+                    'label': _('Forgot your password?')
+                }
+            },
+        }
 
 
 class PhoneNumberForm(ModelForm):
@@ -317,8 +397,29 @@ class PersonalEmailForm(ModelForm):
 
 
 class PostCodeSearchForm(Form):
-    post_code = CharField(required=True)
-    country = CharField(required=False, widget=Select(choices=countries.get()))
+    post_code = CharField(required=True, label=_('Postcode'))
+    country = CharField(
+        required=False,
+        widget=Select(choices=countries.get()),
+        help_text="Choose a country to begin manually entering the address")
+
+    class Meta:
+        config = {
+            'label': {
+                'cols': 'three',
+                'optional_indicators': False
+            },
+            'input': {
+                'cols': 'eight'
+            },
+            'actions': {
+                'submit': {
+                    'label': 'Search',
+                    'name': 'action',
+                    'value': 'search_address'
+                }
+            },
+        }
 
 
 class ManualAddressEntryForm(Form):
@@ -331,3 +432,20 @@ class ManualAddressEntryForm(Form):
 
     def clean_address(self):
         return validators.validate_manual_address(self)
+
+    class Meta:
+        config = {
+            'actions': {
+                'submit': {
+                    'label': _('Save Address'),
+                    'name': 'action',
+                    'value': 'save_manual_address'
+                },
+                'link': {
+                    'label': _('Cancel'),
+                    'attrs': {
+                        'onclick': 'window.history.back(); return false;'
+                    }
+                }
+            }
+        }

@@ -1,9 +1,33 @@
-import django_filters as filter
 from web import models
 from web.base.forms import widgets
+from web.base.forms.forms import FilterSet
+import django_filters as filter
+
+_filter_config = {
+    'label': {
+        'cols': 'three',
+        'optional_indicators': False
+    },
+    'input': {
+        'cols': 'six'
+    },
+    'padding': {
+        'right': 'three'
+    },
+    'actions': {
+        'padding': {
+            'left': 'three'
+        },
+        'submit': {
+            'name': None,
+            'value': None,
+            'label': 'Search'
+        }
+    }
+}
 
 
-class TemplatesFilter(filter.FilterSet):
+class TemplatesFilter(FilterSet):
     # Fields of the model that can be filtered
     template_name = filter.CharFilter(
         lookup_expr='icontains',
@@ -22,9 +46,10 @@ class TemplatesFilter(filter.FilterSet):
     class Meta:
         model = models.Template
         fields = []  # Django complains without fields set in the meta
+        config = _filter_config
 
 
-class OutboundEmailsFilter(filter.FilterSet):
+class OutboundEmailsFilter(FilterSet):
     # Fields of the model that can be filtered
     to_name = filter.CharFilter(
         lookup_expr='icontains', widget=widgets.TextInput, label='To Name')
@@ -50,3 +75,4 @@ class OutboundEmailsFilter(filter.FilterSet):
     class Meta:
         model = models.OutboundEmail
         fields = []
+        config = _filter_config

@@ -18,56 +18,26 @@
 </ul>
 <div class="section-break"></div>
 
-
-
-{% set extra_fields %}
-<div class="row">
-    <div class="three columns" data-xfid="g29">
-        <label id="pg29" for="g29" class="prompt west">Sent From </label>
-    </div>
-    <div class="six columns" data-xfid="g29">
-        <div class="container cellmates">
-            <div class="row">
-                {% with field=filter.form.sent_from, input_cols='three' %}
-                {% include 'forms/input.html' %}
-                {% endwith %}
-                <div class="one columns">
-                    <label id="pg30" for="g30" class="prompt west">To
-                    </label>
+{% call forms.filter(filter, filters=['to_name','to_email','subject']) -%}
+    <div class="row">
+        {{forms.label(filter.form.sent_from, opts=filter.config)}}
+        <div class="six columns" data-xfid="g29">
+            <div class="container cellmates">
+                <div class="row">
+                    {{forms.input(filter.form.sent_from, opts=dict_merge(filter.config,{'input':{'cols':'three'}}))}}
+                    <div class="one columns">
+                        <label id="pg30" for="g30" class="prompt west">To
+                        </label>
+                    </div>
+                    {{forms.input(filter.form.to, opts=filter.config)}}
+                    <div class="five columns"></div>
                 </div>
-                {% with field=filter.form.to, input_cols='three'  %}
-                {% include 'forms/input.html' %}
-                {% endwith %}
-                <div class="five columns"></div>
             </div>
         </div>
+        <div class="three columns"></div>
     </div>
-    <div class="three columns"></div>
-</div>
-
-{{forms.row(
-  filter.form.status,
-  label_cols='three',
-  input_cols='six',
-  padding='three',
-  show_optional_indicator=False
-)}}
-
-{% endset %}
-
-{{forms.form(
-  filter.form,
-  method='get',
-  action='',
-  button_label='Search',
-  label_cols='three',
-  input_cols='six',
-  padding='three',
-  show_optional_indicators=False,
-  include=['to_name', 'to_email', 'subject'],
-  extra_fields=extra_fields
-)}}
-
+    {{forms.field(filter.form.status, opts=filter.config)}}
+{%- endcall %}
 
 <div class="list-actions">
     <ul class="menu-out small-menu-out flow-across">

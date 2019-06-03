@@ -8,80 +8,43 @@
 <div class="container">
 
     <div class="row">
-
         <div class="six columns">
+            <h3>UK Address</h3>
 
-            <h3>
-                UK Address
-            </h3>
-
-            {% set postcode_field %}
-            <div class="row">
-                <div class="eight columns">
-                    <label class="prompt north">Postcode
-                    </label>
+            {% call forms.form(postcode_form, csrf_input=csrf_input) -%}
+                <div class="row">
+                    {{forms.label(postcode_form.post_code, opts=postcode_form.config, prompt='north')}}
+                    <div class="four columns"></div>
                 </div>
-                <div class="four columns"></div>
-            </div>
-            <div class="row">
-                <div class="eight columns">
-                    {% with field=postcode_form.post_code %}
-                    {% include 'forms/input.html' %}
-                    {% endwith %}
+                <div class="row">
+                    {{forms.input(postcode_form.post_code, opts=postcode_form.config)}}
+                    <div class="eight columns">
+                        {# {% with field=postcode_form.post_code %} #}
+                        {# {% include 'forms/input.html' %} #}
+                        {# {% endwith %} #}
+                    </div>
+                    <div class="four columns"></div>
                 </div>
-                <div class="four columns"></div>
-            </div>
-            {% endset %}
+            {%- endcall %}
 
-            {{forms.form(
-            postcode_form,
-            action='',
-            label_cols='eight',
-            input_cols='four',
-            button_label='Search',
-            submit_action='search_address',
-            no_buttons_padding=True,
-            csrf_input=csrf_input,
-            extra_fields=postcode_field,
-            exclude=['post_code','country'])
-            }}
 
         </div>
         <div class="six columns">
             <form id="form-manual-address" method="post" action="">
-              {{csrf_input}}
-              <input type="hidden" name="action"  value="manual_address"/>
-                <h3>
-                    International/Manual Address
-                </h3>
+                {{csrf_input}}
+                <input type="hidden" name="action" value="manual_address" />
+                <h3>International/Manual Address</h3>
                 <div class="container setoutForm">
                     <div class="row">
-                        <div class="eight columns">
-                            <label id="pg28" for="g28" class="prompt north">Country
-                            </label>
-                        </div>
+                        {{forms.label(postcode_form.country, opts=postcode_form.config, prompt='north')}}
                         <div class="four columns"></div>
                     </div>
                     <div class="row">
-                        <div class="eight columns input-group">
-                            <div class="eleven-column-input">
-                                {% with field=postcode_form.country %}
-                                {% include 'forms/input.html' %}
-                                {% endwith %}
-                            </div>
-                            <div class="input-group-addon hint-addon">
-                                <div id="hint-manual-country" role="tooltip" class="hint-content">Choose a country to begin manually entering the address</div>
-                                <div aria-describedby="hint-manual-country" class="hint icon-info"></div>
-                            </div>
-                            <div class="four columns"></div>
-                        </div>
+                        {{forms.input(postcode_form.country, opts=postcode_form.config)}}
                     </div>
-
                 </div>
             </form>
-
         </div>
-
     </div>
 
     <div class="section-break"></div>

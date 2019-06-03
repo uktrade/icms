@@ -1,0 +1,32 @@
+{% import "forms/form.html" as form %}
+{# Renders a form with style classes used with all filter forms across the app #}
+{% macro formset_inline(formset, fields=[], action='', method='post, container_class='', csrf_input=None) -%}
+    <table responsiveList class="setoutList">
+        <thead>
+            <tr>
+                <th scope="col">Telephone Number
+                <div id="hint75-content" role="tooltip" class="hint-content">
+                    Customary input formats:<br/>- FOR United Kingdom:<br />FORMAT: STD NUMBER<br />U.Kingdom: 020 12345678<br />- FOR Mobiles:<br />FORMAT: STD NUMBER<br />U.Kingdom: 07654 123456<br />- FOR International:<br />FORMAT: +CC (NDD)STD NUMBER<br />Netherlands: +31 (0)20 12345678<br />Hungary: +36 (06)1 12345678<br />U.Kingdom: +44 (0)20 12345678<br />- FOR International without NDD:<br />FORMAT: +CC STD NUMBER<br />Norway: +47 123 4568900<br />Spain: +34 911 12345678<br />America: +1 123 4568900
+                </div>
+                    <div id="hint75" aria-describedby="hint75-content" class="hint icon-info"></div>
+                </th>
+                <th scope="col">Type
+                </th>
+                <th scope="col">Comment
+                </th>
+                <th scope="col">
+                </th>
+            </tr>
+        </thead>
+    </table>
+
+<form method="{{method}}" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {% set opts=filter.config %}
+    {% if csrf_input %}{{csrf_input}}{% endif %}
+    <div class="container setoutForm {{container_class}}">
+        {{fieldset(fields=filters, form=filter.form, opts=filter.config)}}
+        {% if caller %}{{caller()}}{% endif %}
+        {% if opts.actions.submit or opts.actions.link %}{{actions(opts)}}{% endif %}
+    </div>
+</form>
+{%- endmacro %}
