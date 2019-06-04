@@ -52,6 +52,10 @@ class Team(Group):
         Group, on_delete=models.CASCADE, parent_link=True)
     description = models.CharField(max_length=4000, blank=True, null=True)
 
+    class Display:
+        display = ['name']
+        labels = ['Name']
+
 
 class PhoneNumber(models.Model):
     WORK = "WORK"
@@ -164,8 +168,22 @@ class OutboundEmail(models.Model):
     to_email = models.CharField(max_length=254, null=False)
     subject = models.CharField(max_length=4000, null=True)
 
+    @property
+    def attachments_count(self):
+        return self.attachments.count()
+
     class Meta:
         ordering = ('-last_requested_date', )
+
+    class Display:
+        display = [
+            'id', 'status', 'last_requested_date', 'format', 'to_email',
+            'subject', 'attachments_count'
+        ]
+        labels = [
+            'Mail Id', 'Status', 'Last Requested / Sent Date', 'Format',
+            'To Email', 'Subject', 'Num. of Attachments'
+        ]
 
 
 class EmailAttachment(models.Model):
@@ -217,6 +235,10 @@ class Template(models.Model):
     template_content = models.TextField(blank=False, null=True)
 
     @property
+    def template_status(self):
+        return 'Active' if self.is_active else ''
+
+    @property
     def template_type_verbose(self):
         return dict(Template.TYPES)[self.template_type]
 
@@ -226,3 +248,14 @@ class Template(models.Model):
 
     class Meta:
         ordering = ('-is_active', )
+
+    # Default display fields on the listing page of the model
+    class Display:
+        display = [
+            'template_name', 'application_domain_verbose',
+            'template_type_verbose', 'template_status'
+        ]
+        labels = [
+            'Template Name', 'Application Domain', 'Template Type',
+            'Template Status'
+        ]

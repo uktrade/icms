@@ -1,13 +1,27 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/form.html" as forms %}
 {% import "forms/list.html" as lists %}
+{% import "messages/message.html" as messages %}
 
-{% block page_title %}Maintain Templates{% endblock %}
+{% block page_title %}Search Teams{% endblock %}
+{% block context_header %}Search Teams{% endblock %}
 
-{% block context_header %}Maintain Templates{% endblock %}
+{% block sidebar %}
+<h4>Teams</h4>
+<ul class="menu-out">
+    <li> <a href="{{ url('team-list') }}">Search teams</a></li>
+</ul>
+{% endblock %}
 
 {% block main_content %}
 
+{{messages.info(
+"Users can be put into teams. Each team has a different set of roles,
+    and each user in the team can be given one or more roles.
+    Adding a user to a role may give them extra system privileges.
+    You can search all of the teams in the system below.
+    You can leave 'Name' blank to list all teams."
+)}}
 
 {{forms.filter(filter, filters=filter.filters)}}
 

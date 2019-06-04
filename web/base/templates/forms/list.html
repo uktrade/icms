@@ -1,0 +1,41 @@
+{% import "messages/message.html" as message %}
+{% macro filter_results(filter, actions=None) -%}
+{% set count =  filter.qs.count() %}
+
+{% if count > 0 %}
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            {% for header in filter.qs.model.Display.labels %}
+                <th scope="col">{{header}}</th>
+            {% endfor %}
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    {% for template in filter.qs %}
+    <tr>
+        {% for field in filter.qs.model.Display.display %}
+            {% if loop.first %}
+                <td><a href="">{{template[field]}}</a></td>
+            {% else %}
+                <td>{{template[field]}}</td>
+            {% endif %}
+        {% endfor %}
+        <td data-title="Actions">
+            {{actions or ''}}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div class="result-count">
+    {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %}
+</div>
+
+{% else %}
+
+    {{message.warning("There aren't any templates that match your search")}}
+
+{% endif %}
+
+{%- endmacro %}
