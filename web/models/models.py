@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import (AbstractUser, Group)
 from viewflow.models import Process
 from .managers import AccessRequestQuerySet, ProcessQuerySet
 
@@ -45,6 +45,12 @@ class User(AbstractUser):
         blank=False, null=False, default=False)
     # work_address = models.ForeignKey(
     #     Address, on_delete=models.SET_NULL, blank=False, null=True)
+
+
+class Team(Group):
+    group = models.OneToOneField(
+        Group, on_delete=models.CASCADE, parent_link=True)
+    description = models.CharField(max_length=4000, blank=True, null=True)
 
 
 class PhoneNumber(models.Model):

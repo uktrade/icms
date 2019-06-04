@@ -47,6 +47,10 @@ migrations:
 migrate:
 	docker-compose run web ./manage.py migrate
 
+# Load fixtures
+loaddata:
+	docker-compose run web ./manage.py loaddata --app web web/fixtures/web/*.json
+
 createsuperuser:
 	docker-compose run web ./manage.py createsuperuser
 
