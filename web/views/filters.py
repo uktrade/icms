@@ -80,9 +80,38 @@ class OutboundEmailsFilter(FilterSet):
 
 class TeamsFilter(FilterSet):
     name = filter.CharFilter(
-        lookup_expr='icontains', widget=widgets.TextInput, label='Name')
+        field_name='name',
+        lookup_expr='icontains',
+        widget=widgets.TextInput,
+        label='Name')
 
     class Meta:
         model = models.Team
+        fields = []
+        config = _filter_config
+
+
+class ConstabulariesFilter(FilterSet):
+    name = filter.CharFilter(
+        field_name='name',
+        lookup_expr='icontains',
+        widget=widgets.TextInput,
+        label='Constabulary Name')
+
+    region = filter.ChoiceFilter(
+        field_name='region',
+        choices=models.Constabulary.REGIONS,
+        lookup_expr='icontains',
+        widget=widgets.Select,
+        label='Constabulary Region')
+
+    email = filter.CharFilter(
+        field_name='email',
+        lookup_expr='icontains',
+        widget=widgets.TextInput,
+        label='Email Address')
+
+    class Meta:
+        model = models.Constabulary
         fields = []
         config = _filter_config
