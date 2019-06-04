@@ -1,0 +1,121 @@
+[
+  {
+    "pk": 1,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Advice Super Users"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Application Error Logging Users Static"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Country Super Users"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Digital Certificate Management Team"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users"
+    }
+  },
+  {
+    "pk": 6,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Admin Users"
+    }
+  },
+  {
+    "pk": 7,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Case Officers"
+    }
+  },
+  {
+    "pk": 8,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB External Users"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Search Users"
+    }
+  },
+  {
+    "pk": 10,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Support Users"
+    }
+  },
+  {
+    "pk": 11,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Mapsets Management"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Pay Admin Contacts"
+    }
+  },
+  {
+    "pk": 13,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions"
+    }
+  },
+  {
+    "pk": 14,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Payment Testers"
+    }
+  },
+  {
+    "pk": 15,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Reporting Super Users"
+    }
+  },
+  {
+    "pk": 16,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users"
+    }
+  },
+  {
+    "pk": 17,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Workbasket Viewers"
+    }
+  }
+]
