@@ -13,6 +13,7 @@ from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
 from web import models
+from django_filters.views import FilterView
 from . import filters
 from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
@@ -172,6 +173,12 @@ def templates(request):
     filter = filters.TemplatesFilter(
         request.GET, queryset=models.Template.objects.all())
     return render(request, 'web/template/list.html', {'filter': filter})
+
+
+def teams(request):
+    filter = filters.TeamsFilter(
+        request.GET, queryset=models.Team.objects.all())
+    return render(request, 'web/team/list.html', {'filter': filter})
 
 
 @require_registered

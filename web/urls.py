@@ -18,6 +18,8 @@ urlpatterns = [
 
     # Template Management
     path('template/', views.templates, name='template-list'),
+    # Teams Management
+    path('teams/', views.teams, name='team-list'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),

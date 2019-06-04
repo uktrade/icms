@@ -76,3 +76,13 @@ class OutboundEmailsFilter(FilterSet):
         model = models.OutboundEmail
         fields = []
         config = _filter_config
+
+
+class TeamsFilter(FilterSet):
+    name = filter.CharFilter(
+        lookup_expr='icontains', widget=widgets.TextInput, label='Name')
+
+    class Meta:
+        model = models.Team
+        fields = []
+        config = _filter_config

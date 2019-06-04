@@ -1,0 +1,23 @@
+{% macro info(message) -%}
+    <div class="info-box info-box-info">
+        {{message}}
+    </div>
+{% endmacro -%}
+
+{% macro success(message) -%}
+    <div class="info-box info-box-success">
+        {{message}}
+    </div>
+{% endmacro -%}
+
+{% macro warning(message) -%}
+    <div class="info-box info-box-warning">
+        {{message}}
+    </div>
+{% endmacro -%}
+
+{% macro error(message) -%}
+    <div class="info-box info-box-danger">
+        {{message}}
+    </div>
+{% endmacro -%}
