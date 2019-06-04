@@ -21,6 +21,9 @@ urlpatterns = [
     # Teams Management
     path('teams/', views.teams, name='team-list'),
 
+    # Constabularies Management
+    path('constabulary', views.constabularies, name='constabulary-list'),
+
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
 

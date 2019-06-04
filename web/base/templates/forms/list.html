@@ -1,5 +1,5 @@
 {% import "messages/message.html" as message %}
-{% macro filter_results(filter, actions=None) -%}
+{% macro filter_results(filter, actions=None, no_results_message="There aren't any records that match your search") -%}
 {% set count =  filter.qs.count() %}
 
 {% if count > 0 %}
@@ -29,12 +29,12 @@
 </table>
 
 <div class="result-count">
-    {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %}
+    {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
 </div>
 
 {% else %}
 
-    {{message.warning("There aren't any templates that match your search")}}
+    {{message.warning(no_results_message)}}
 
 {% endif %}
 

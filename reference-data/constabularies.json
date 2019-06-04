@@ -1,0 +1,555 @@
+[
+	{
+		"PK" : 1,
+		"NAME" : "Avon & Somerset",
+		"REGION" : "SW",
+		"EMAIL" : "firearms.licensing@avonandsomerset.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 2,
+		"NAME" : "Bedfordshire",
+		"REGION" : "ER",
+		"EMAIL" : "BedsandHertsFLU@herts.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 3,
+		"NAME" : "Cambridgeshire",
+		"REGION" : "ER",
+		"EMAIL" : "firearms.licensing@cambs.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 4,
+		"NAME" : "Central Scotland",
+		"REGION" : "SC",
+		"EMAIL" : "falkbsu@centralscotland.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 5,
+		"NAME" : "Cheshire",
+		"REGION" : "NW",
+		"EMAIL" : "hq.firearms.licensing@cheshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 6,
+		"NAME" : "City of London",
+		"REGION" : "LO",
+		"EMAIL" : "fetlondonall@met.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 7,
+		"NAME" : "Cleveland",
+		"REGION" : "NE",
+		"EMAIL" : "firearms.licensing@cleveland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 8,
+		"NAME" : "Cumbria",
+		"REGION" : "NW",
+		"EMAIL" : "firearmslicensing@cumbria.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 9,
+		"NAME" : "Derbyshire",
+		"REGION" : "EM",
+		"EMAIL" : "firearms.licensing@derbyshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 10,
+		"NAME" : "Devon & Cornwall",
+		"REGION" : "SW",
+		"EMAIL" : "firearms.licensing@devonandcornwall.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 11,
+		"NAME" : "Dorset",
+		"REGION" : "SW",
+		"EMAIL" : "firearmslicensing@dorset.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 12,
+		"NAME" : "Dumfries & Galloway",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@dumfriesandgalloway.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 13,
+		"NAME" : "Durham",
+		"REGION" : "NE",
+		"EMAIL" : "firearmslicensing@durham.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 14,
+		"NAME" : "Dyfed-Powys",
+		"REGION" : "SW",
+		"EMAIL" : "firearmslicensing2@dyfed-powys.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 15,
+		"NAME" : "Essex",
+		"REGION" : "ER",
+		"EMAIL" : "firearms@essex.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 65,
+		"NAME" : "Essex (ILB use only 1)",
+		"REGION" : "SE",
+		"EMAIL" : "paul.quinton@essex.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 66,
+		"NAME" : "Essex (ILB use only 2)",
+		"REGION" : "SE",
+		"EMAIL" : "denise.chaplin@essex.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 16,
+		"NAME" : "Fife",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@fife.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 17,
+		"NAME" : "Gloucestershire",
+		"REGION" : "SW",
+		"EMAIL" : "firearmslicensing@Gloucestershire.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 18,
+		"NAME" : "Grampian",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@grampian.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 19,
+		"NAME" : "Greater Manchester",
+		"REGION" : "NW",
+		"EMAIL" : "firearmsandexplosivesunit@gmp.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 67,
+		"NAME" : "Greater Manchester Police (ILB ONLY)",
+		"REGION" : "NW",
+		"EMAIL" : "roman.kiszczuk@gmp.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 20,
+		"NAME" : "Gwent",
+		"REGION" : "SW",
+		"EMAIL" : "firearmslicensing@gwent.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 21,
+		"NAME" : "Hampshire",
+		"REGION" : "SE",
+		"EMAIL" : "firearms.licensing@hampshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 22,
+		"NAME" : "Hertfordshire",
+		"REGION" : "ER",
+		"EMAIL" : "BedsandHertsFLU@herts.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 64,
+		"NAME" : "Home Office 1",
+		"REGION" : "LO",
+		"EMAIL" : "adam.lassman@homeoffice.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 73,
+		"NAME" : "Home Office 2",
+		"REGION" : "LO",
+		"EMAIL" : "andrew.arnell@homeoffice.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 74,
+		"NAME" : "Home Office 3",
+		"REGION" : "LO",
+		"EMAIL" : "jacqueline.alsford@homeoffice.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 75,
+		"NAME" : "Home Office 4 - section 58(2)",
+		"REGION" : "LO",
+		"EMAIL" : "Kim.Hands2@homeoffice.gsi.gov.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 76,
+		"NAME" : "Home Office 5 - section 58(2)",
+		"REGION" : "LO",
+		"EMAIL" : "Maureen.Young@homeoffice.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 23,
+		"NAME" : "Humberside",
+		"REGION" : "NE",
+		"EMAIL" : "Firearms.Licensing@humberside.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 79,
+		"NAME" : "Isle of Man",
+		"REGION" : "IM",
+		"EMAIL" : "FirearmsEnquires.DHA@gov.im",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 24,
+		"NAME" : "Isle of Man 1",
+		"REGION" : "IM",
+		"EMAIL" : "Dave.Wood@iom.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 77,
+		"NAME" : "Isle of Man 2",
+		"REGION" : "IM",
+		"EMAIL" : "Heather.Costain@iom.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 78,
+		"NAME" : "Isle of Man 3",
+		"REGION" : "IM",
+		"EMAIL" : "Carl.Woods@iom.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 25,
+		"NAME" : "Kent",
+		"REGION" : "SE",
+		"EMAIL" : "firearms.registration@kent.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 26,
+		"NAME" : "Lancashire",
+		"REGION" : "NW",
+		"EMAIL" : "HQ-FirearmsLicensing@Lancashire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 27,
+		"NAME" : "Leicestershire",
+		"REGION" : "EM",
+		"EMAIL" : "firearms.licensing@leicestershire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 28,
+		"NAME" : "Lincolnshire",
+		"REGION" : "EM",
+		"EMAIL" : "FAL@lincs.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 29,
+		"NAME" : "Lothian & Borders",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@lbp.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 30,
+		"NAME" : "Merseyside",
+		"REGION" : "NW",
+		"EMAIL" : "firearms.licensing@merseyside.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 31,
+		"NAME" : "Metropolitan",
+		"REGION" : "LO",
+		"EMAIL" : "FETLondonAll@met.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 69,
+		"NAME" : "Metropolitan Police (ILB use only)",
+		"REGION" : "LO",
+		"EMAIL" : "Stephen.Ring@met.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 63,
+		"NAME" : "Metropolitan Police (ILB use only) closed 30\/06\/16",
+		"REGION" : "LO",
+		"EMAIL" : "Paul.Davies4@met.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 72,
+		"NAME" : "MoD - D Walker",
+		"REGION" : "LO",
+		"EMAIL" : "David.Walker543@mod.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 70,
+		"NAME" : "MoD - P Sonnex",
+		"REGION" : "LO",
+		"EMAIL" : "acp-ch-ihl@mod.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 32,
+		"NAME" : "Norfolk",
+		"REGION" : "ER",
+		"EMAIL" : "firearmslicensing@norfolk.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 33,
+		"NAME" : "North Wales",
+		"REGION" : "NW",
+		"EMAIL" : "ajdfirearmsregistry@nthwales.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 34,
+		"NAME" : "North Yorkshire",
+		"REGION" : "NE",
+		"EMAIL" : "firearmslicensing@northyorkshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 35,
+		"NAME" : "Northamptonshire",
+		"REGION" : "EM",
+		"EMAIL" : "firearms.licensing@northants.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 36,
+		"NAME" : "Northern",
+		"REGION" : "SC",
+		"EMAIL" : "firearmslicensing@northern.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 37,
+		"NAME" : "Northumbria",
+		"REGION" : "NE",
+		"EMAIL" : "firearmslicensing@northumbria.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 38,
+		"NAME" : "Nottingham",
+		"REGION" : "EM",
+		"EMAIL" : "hqcj.firearms@nottinghamshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 39,
+		"NAME" : "Police Service of Northern Ireland",
+		"REGION" : "RU",
+		"EMAIL" : "FEBInspectorate@psni.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 71,
+		"NAME" : "Proof House - Birmingham (ILB USE ONLY)",
+		"REGION" : "WM",
+		"EMAIL" : "Karen@gunproof.com",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 54,
+		"NAME" : "Scotland (Aberdeen)",
+		"REGION" : "SC",
+		"EMAIL" : "northeastfirearmslicensing@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 55,
+		"NAME" : "Scotland (Dumfries)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingdumfries@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 56,
+		"NAME" : "Scotland (Dundee)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingdundee@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 57,
+		"NAME" : "Scotland (Edinburgh)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingedinburgh@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 58,
+		"NAME" : "Scotland (Glasgow)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingglasgow@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 59,
+		"NAME" : "Scotland (Glenrothes)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingglenrothes@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 60,
+		"NAME" : "Scotland (Inverness)",
+		"REGION" : "SC",
+		"EMAIL" : "firearmslicensinginverness@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 62,
+		"NAME" : "Scotland (Scottish Executive)",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.enquiries@scotland.gsi.gov.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 61,
+		"NAME" : "Scotland (Stirling)",
+		"REGION" : "SC",
+		"EMAIL" : "Firearmslicensingstirling@scotland.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 40,
+		"NAME" : "South Wales",
+		"REGION" : "SW",
+		"EMAIL" : "firearms.licensing@south-wales.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 41,
+		"NAME" : "South Yorkshire",
+		"REGION" : "NE",
+		"EMAIL" : "firearms.licensing@southyorks.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 42,
+		"NAME" : "Staffordshire",
+		"REGION" : "WM",
+		"EMAIL" : "firearms.licensing@staffordshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 43,
+		"NAME" : "Strathclyde",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@strathclyde.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 44,
+		"NAME" : "Suffolk",
+		"REGION" : "ER",
+		"EMAIL" : "firearms.licensing@suffolk.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 45,
+		"NAME" : "Surrey",
+		"REGION" : "SE",
+		"EMAIL" : "firearmslic@surrey.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 46,
+		"NAME" : "Sussex",
+		"REGION" : "SE",
+		"EMAIL" : "firearms.licensing@sussex.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 47,
+		"NAME" : "Tayside",
+		"REGION" : "SC",
+		"EMAIL" : "firearms.licensing@tayside.pnn.police.uk",
+		"IS_ACTIVE" : "False"
+	},
+	{
+		"PK" : 48,
+		"NAME" : "Thames Valley",
+		"REGION" : "SE",
+		"EMAIL" : "firearmslicensing@thamesvalley.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 49,
+		"NAME" : "Warwickshire",
+		"REGION" : "WM",
+		"EMAIL" : "firearmslicensing.cjsd.hq@westmercia.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 50,
+		"NAME" : "West Mercia",
+		"REGION" : "WM",
+		"EMAIL" : "firearmslicensing.cjsd.hq@westmercia.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 68,
+		"NAME" : "West Mercia (ILB Use Only)",
+		"REGION" : "WM",
+		"EMAIL" : "clive.williams@westmercia.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 51,
+		"NAME" : "West Midlands",
+		"REGION" : "WM",
+		"EMAIL" : "firearms.licensing@staffordshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 52,
+		"NAME" : "West Yorkshire",
+		"REGION" : "NE",
+		"EMAIL" : "firelic@westyorkshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	},
+	{
+		"PK" : 53,
+		"NAME" : "Wiltshire",
+		"REGION" : "SW",
+		"EMAIL" : "fal@wiltshire.pnn.police.uk",
+		"IS_ACTIVE" : "True"
+	}
+]

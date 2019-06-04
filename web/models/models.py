@@ -57,6 +57,44 @@ class Team(Group):
         labels = ['Name']
 
 
+class Constabulary(models.Model):
+    EAST_MIDLANDS = 'EM'
+    EASTERN = 'ER'
+    ISLE_OF_MAN = 'IM'
+    LONDON = 'LO'
+    NORTH_EAST = 'NE'
+    NORTH_WEST = 'NW'
+    ROYAL_ULSTER = 'RU'
+    SCOTLAND = 'SC'
+    SOUTH_EAST = 'SE'
+    SOUTH_WEST = 'SW'
+    WEST_MIDLANDS = 'WM'
+
+    REGIONS = ((EAST_MIDLANDS, 'East Midlands'), (EASTERN, 'Eastern'),
+               (ISLE_OF_MAN, 'Isle of Man'), (
+                   LONDON,
+                   'London',
+               ), (NORTH_EAST, 'North East'), (NORTH_WEST, 'North WEST'),
+               (ROYAL_ULSTER, 'Royal Ulster'), (SCOTLAND, 'Scotland'),
+               (SOUTH_EAST, 'South East'), (SOUTH_WEST,
+                                            'South West'), (WEST_MIDLANDS,
+                                                            'West Midlands'))
+
+    name = models.CharField(max_length=50, blank=False, null=False)
+    region = models.CharField(
+        max_length=3, choices=REGIONS, blank=False, null=False)
+    email = models.EmailField(max_length=254, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=False)
+
+    @property
+    def region_verbose(self):
+        return dict(Constabulary.REGIONS)[self.region]
+
+    class Display:
+        display = ['name', 'region_verbose', 'email']
+        labels = ['Constabulary Name', 'Constabulary Region', 'Email Address']
+
+
 class PhoneNumber(models.Model):
     WORK = "WORK"
     FAX = "FAX"
@@ -67,7 +105,7 @@ class PhoneNumber(models.Model):
              (MINICOM, 'Minicom'))
     phone = models.CharField(max_length=60, blank=False, null=False)
     type = models.CharField(
-        max_length=30, blank=False, null=False, default=WORK)
+        max_length=30, choices=TYPES, blank=False, null=False, default=WORK)
     comment = models.CharField(max_length=4000, blank=True, null=True)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='phone_numbers')
@@ -79,7 +117,7 @@ class Email(models.Model):
     TYPES = ((WORK, 'Work'), (HOME, 'Home'))
     email = models.EmailField(max_length=254, blank=False, null=False)
     type = models.CharField(
-        max_length=30, blank=False, null=False, default=WORK)
+        max_length=30, choices=TYPES, blank=False, null=False, default=WORK)
     portal_notifications = models.BooleanField(
         blank=False, null=False, default=False)
     comment = models.CharField(max_length=4000, blank=True, null=True)

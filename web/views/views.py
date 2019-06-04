@@ -175,10 +175,18 @@ def templates(request):
     return render(request, 'web/template/list.html', {'filter': filter})
 
 
+@require_registered
 def teams(request):
     filter = filters.TeamsFilter(
         request.GET, queryset=models.Team.objects.all())
     return render(request, 'web/team/list.html', {'filter': filter})
+
+
+@require_registered
+def constabularies(request):
+    filter = filters.ConstabulariesFilter(
+        request.GET, queryset=models.Constabulary.objects.all())
+    return render(request, 'web/constabulary/list.html', {'filter': filter})
 
 
 @require_registered
