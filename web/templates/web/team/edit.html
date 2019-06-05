@@ -1,0 +1,122 @@
+{% extends "layout/no-sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+{% import "messages/message.html" as messages %}
+
+{% block page_title %}Editing ....{% endblock %}
+{% block context_header %}Editing {% endblock %}
+
+{% block main_content %}
+
+{% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
+<ul class="tabs -tabs big-tabs" data-tab-group="sS0Ri8_plrnqVW43/tabs-DEC043L-grid-list-switch" role="tablist">
+
+    <li id="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="current-tab" aria-selected="true" data-tab-key="GRID" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID"><a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA6_plrnqVW43'})">Grid view</a></li>
+
+    <li id="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST" class="" aria-selected="false" data-tab-key="LIST" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST"><a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA7_plrnqVW43'})">List view</a></li>
+
+</ul>
+<div id="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" arial-labelledby="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="tab-content big-tabs" style="" data-tab-group="sS0Ri8_plrnqVW43/tabs-DEC043L-grid-list-switch" data-tab-key="GRID" aria-hidden="false">
+    <table class="setoutList">
+        <thead>
+            <tr>
+                <th>Central Contact Details</th>
+                <th>
+                    <div class="individual-input input-group" data-xfid="g48">
+                        <div class="eleven-column-input"><span id="g48" class="text-widget tight-field" aria-describedby="hint171-content">Team Coordinator</span></div>
+                        <div class="input-group-addon hint-addon">
+                            <div id="hint171-content" role="tooltip" class="hint-content">Only users in this list may change entries to this contact-list/team.</div>
+                            <div id="hint171" aria-describedby="hint171-content" class="hint icon-info"></div>
+                        </div>
+                    </div>
+                </th>
+                <th>
+                    <div class="individual-input input-group" data-xfid="g49">
+                        <div class="eleven-column-input"><span id="g49" class="text-widget tight-field" aria-describedby="hint172-content">Country Set Super User</span></div>
+                        <div class="input-group-addon hint-addon">
+                            <div id="hint172-content" role="tooltip" class="hint-content">Users in this list are able to create online forms applications.</div>
+                            <div id="hint172" aria-describedby="hint172-content" class="hint icon-info"></div>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td style="white-space: nowrap">
+                    <div class="container setoutForm" data-xfid="f151">
+                        <div class="row">
+                            <div class="twelve columns bold" data-xfid="g152"><span id="g152" class="text-widget ">Roy Smiles</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns" data-xfid="g153"><span id="g153" class="text-widget ">roy.smiles@bis.gsi.gov.uk<br>IMPORT LICENSING BRANCH<br>BIS<br>ETID<br>+44 (0)1642 364 312</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns" data-xfid="g154"><span id="g154" class="text-widget "></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns" data-xfid="g155"><span id="g155" class="text-widget "></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns" data-xfid="g156"> <button id="g156" name="g156" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-remove-member&quot;,&quot;ctxt&quot;:&quot;sS0QXC_plrnqVW43&quot;}, this);" class="icon-user-minus link-button inline-link-button button no-prompt-action" aria-describedby="hint184-content" aria-label="Remove">
+                                </button>
+                                <div id="hint184-content" role="tooltip" class="hint-content">Remove from this team</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+                <td>
+                    <div class="individual-input" data-xfid="g157"><label id="pg157/0" for="g157/0" class="radio-label"><input id="g157/0" name="g157" value="g157/0" type="checkbox" checked="checked" /></label></div>
+                </td>
+                <td>
+                    <div class="individual-input" data-xfid="g159"><label id="pg159/0" for="g159/0" class="radio-label"><input id="g159/0" name="g159" value="g159/0" type="checkbox" checked="checked" /></label></div>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
+
+
+
+
+
+
+
+    <div class="list-actions">
+
+        <ul class="menu-out flow-across">
+
+            <li> <button id="g162" name="g162" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-add-person&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="small-button icon-user-plus button">
+
+                    Add someone to this team </button></li>
+
+        </ul>
+
+    </div>
+</div>
+
+
+{%- endcall %}
+
+
+
+{# <ul class="menu-out flow-across"> #}
+
+{#     <li> <button id="g165" name="g165" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-save-resource&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="primary-button button"> #}
+
+{#             Save team </button></li> #}
+
+{#     <li> <button id="g164" name="g164" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-cancel-contacts&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="link-button button"> #}
+
+{#             Cancel changes </button></li> #}
+
+{# </ul> #}
+
+<div class="content-actions">
+    <ul class="menu-out flow-across">
+        <li> <a href="{{url('team-list')}}" class="prev-link">Maintain Teams</a></li>
+    </ul>
+</div>
+{% endblock %}

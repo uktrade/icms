@@ -5,6 +5,7 @@ from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import (login_required, user_passes_test)
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
+from django.views.generic.edit import UpdateView
 from django.db import transaction
 from viewflow.decorators import flow_start_view
 from web.errors import (ICMSException, UnknownError)
@@ -321,3 +322,13 @@ class LoginView(auth_views.LoginView):
     form_class = forms.LoginForm
     template_name = 'web/login.html'
     redirect_authenticated_user = True
+
+
+class TeamEditView(UpdateView):
+    template_name = 'web/team/edit.html'
+    form_class = forms.TeamEditForm
+    model = models.Team
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('team-list')
