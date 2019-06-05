@@ -467,7 +467,9 @@ class TeamEditForm(ModelForm):
         }
         help_texts = {
             'name':
-            "The team's name is visible to other people. You should make sure that it clearly identifies this team, so it can't be confused with other teams.",
+            "The team's name is visible to other people. You should make sure \
+            that it clearly identifies this team, so it can't be confused with \
+            other teams.",
             'description': "May be used to record information about the team"
         }
         config = {
@@ -490,6 +492,65 @@ class TeamEditForm(ModelForm):
                 'link': {
                     'label': 'Cancel changes',
                     'href': 'team-list'
+                }
+            }
+        }
+
+
+class ConstabularyEditForm(ModelForm):
+    class Meta:
+        model = models.Constabulary
+        fields = ['name', 'region', 'email']
+        labels = {
+            'name': 'Constabulary Name',
+            'region': 'Constabulary Region',
+            'email': 'Email Address'
+        }
+        widgets = {'region': Select(choices=models.Constabulary.REGIONS)}
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'link': {
+                    'label': 'Cancel',
+                    'href': 'constabulary-list'
+                }
+            }
+        }
+
+
+class ConstabularyCreateForm(ConstabularyEditForm):
+    class Meta(ConstabularyEditForm.Meta):
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'link': {
+                    'label': 'Cancel',
+                    'href': 'constabulary-list'
+                },
+                'submit': {
+                    'label': 'Create'
                 }
             }
         }

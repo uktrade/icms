@@ -1,5 +1,4 @@
 import logging
-from django.db.models import Manager
 from django.db.models.query import QuerySet
 from viewflow.models import Task
 

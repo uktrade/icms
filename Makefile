@@ -51,6 +51,9 @@ migrate:
 loaddata:
 	docker-compose run web ./manage.py loaddata --app web web/fixtures/web/*.json
 
+sqlsequencereset:
+	docker-compose run web ./manage.py sqlsequencereset web
+
 createsuperuser:
 	docker-compose run web ./manage.py createsuperuser
 
