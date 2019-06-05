@@ -4,8 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from captcha.fields import ReCaptchaField
 from web import models
 from web.base.forms.widgets import (TextInput, Textarea, PasswordInput,
-                                    EmailInput, Select)
-from web.base.forms.fields import (CharField, PhoneNumberField, DateField)
+                                    EmailInput, Select, Display)
+from web.base.forms.fields import (CharField, PhoneNumberField, DateField,
+                                   DisplayField)
 from web.base.forms import (Form, ModelForm, FormConfigMetaClass)
 from .utils import (validators, countries)
 
@@ -446,6 +447,49 @@ class ManualAddressEntryForm(Form):
                     'attrs': {
                         'onclick': 'window.history.back(); return false;'
                     }
+                }
+            }
+        }
+
+
+class TeamEditForm(ModelForm):
+    name = DisplayField()
+
+    class Meta:
+        model = models.Team
+        fields = ['name', 'description']
+        widgets = {
+            'name': Display,
+            'description': Textarea({
+                'rows': 2,
+                'cols': 40
+            })
+        }
+        help_texts = {
+            'name':
+            "The team's name is visible to other people. You should make sure that it clearly identifies this team, so it can't be confused with other teams.",
+            'description': "May be used to record information about the team"
+        }
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'submit': {
+                    'label': 'Save team'
+                },
+                'link': {
+                    'label': 'Cancel changes',
+                    'href': 'team-list'
                 }
             }
         }

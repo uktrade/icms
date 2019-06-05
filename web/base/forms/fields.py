@@ -1,5 +1,5 @@
 from django import forms
-from .widgets import (TextInput, EmailInput, DateInput)
+from .widgets import (TextInput, EmailInput, DateInput, Display)
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -18,6 +18,10 @@ class BooleanField(forms.BooleanField):
 
 class EmailField(forms.EmailField):
     widget = EmailInput
+
+
+class DisplayField(forms.HiddenInput):
+    widget = Display
 
 
 class PhoneNumberField(PhoneNumberField):

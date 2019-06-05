@@ -12,13 +12,13 @@
             <th scope="col">Actions</th>
         </tr>
     </thead>
-    {% for template in filter.qs %}
+    {% for item in filter.qs %}
     <tr>
         {% for field in filter.qs.model.Display.display %}
             {% if loop.first %}
-                <td><a href="">{{template[field]}}</a></td>
+                <td><a href="">{{item[field]}}</a></td>
             {% else %}
-                <td>{{template[field]}}</td>
+                <td>{{item[field]}}</td>
             {% endif %}
         {% endfor %}
         <td data-title="Actions">

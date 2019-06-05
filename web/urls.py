@@ -20,6 +20,8 @@ urlpatterns = [
     path('template/', views.templates, name='template-list'),
     # Teams Management
     path('teams/', views.teams, name='team-list'),
+    path(
+        'teams/<int:pk>/edit', views.TeamEditView.as_view(), name='team-edit'),
 
     # Constabularies Management
     path('constabulary', views.constabularies, name='constabulary-list'),
