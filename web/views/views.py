@@ -5,7 +5,7 @@ from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import (login_required, user_passes_test)
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import (UpdateView, CreateView)
 from django.db import transaction
 from viewflow.decorators import flow_start_view
 from web.errors import (ICMSException, UnknownError)
@@ -14,7 +14,6 @@ from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
 from web import models
-from django_filters.views import FilterView
 from . import filters
 from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
@@ -332,3 +331,23 @@ class TeamEditView(UpdateView):
     def form_valid(self, form):
         form.save()
         return redirect('team-list')
+
+
+class ConstabularyEditView(UpdateView):
+    template_name = 'web/constabulary/edit.html'
+    form_class = forms.ConstabularyEditForm
+    model = models.Constabulary
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('constabulary-list')
+
+
+class ConstabularyCreateView(CreateView):
+    template_name = 'web/constabulary/create.html'
+    form_class = forms.ConstabularyCreateForm
+    model = models.Constabulary
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('constabulary-list')

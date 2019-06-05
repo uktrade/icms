@@ -25,6 +25,14 @@ urlpatterns = [
 
     # Constabularies Management
     path('constabulary', views.constabularies, name='constabulary-list'),
+    path(
+        'constabulary/<int:pk>/edit',
+        views.ConstabularyEditView.as_view(),
+        name='constabulary-edit'),
+    path(
+        'constabulary/new',
+        views.ConstabularyCreateView.as_view(),
+        name='constabulary-new'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
