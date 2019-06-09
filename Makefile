@@ -51,6 +51,9 @@ migrate:
 loaddata:
 	docker-compose run web ./manage.py loaddata --app web web/fixtures/web/*.json
 
+dumpdata:
+	docker-compose run web ./manage.py dumpdata --format=json web  > test.json
+
 sqlsequencereset:
 	docker-compose run web ./manage.py sqlsequencereset web
 

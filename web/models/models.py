@@ -49,12 +49,26 @@ class User(AbstractUser):
 
 class Team(Group):
     group = models.OneToOneField(
-        Group, on_delete=models.CASCADE, parent_link=True)
+        Group,
+        on_delete=models.CASCADE,
+        parent_link=True,
+        related_name='teams')
     description = models.CharField(max_length=4000, blank=True, null=True)
 
     class Display:
         display = ['name']
         labels = ['Name']
+
+
+class Role(Group):
+    group = models.OneToOneField(
+        Group,
+        on_delete=models.CASCADE,
+        parent_link=True,
+        related_name='roles')
+    team = models.ForeignKey(
+        Team, on_delete=models.CASCADE, related_name='roles')
+    description = models.CharField(max_length=4000, blank=True, null=True)
 
 
 class Constabulary(models.Model):
@@ -274,7 +288,7 @@ class Template(models.Model):
 
     @property
     def template_status(self):
-        return 'Active' if self.is_active else ''
+        return 'Active' if self.is_active else 'Archived'
 
     @property
     def template_type_verbose(self):

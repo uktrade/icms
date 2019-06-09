@@ -19,8 +19,8 @@ _filter_config = {
             'left': 'three'
         },
         'submit': {
-            'name': None,
-            'value': None,
+            'name': '',
+            'value': '',
             'label': 'Search'
         }
     }
