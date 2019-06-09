@@ -34,6 +34,9 @@ urlpatterns = [
         views.ConstabularyCreateView.as_view(),
         name='constabulary-new'),
 
+    # Commodities Management
+    path('commodities', views.commodities, name='commodity-list'),
+
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
 

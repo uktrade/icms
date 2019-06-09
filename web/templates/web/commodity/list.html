@@ -1,0 +1,33 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block page_title %}Maintain Commodities{% endblock %}
+{% block context_header %}Maintain Commodities{% endblock %}
+
+{% block main_content %}
+
+{{forms.filter(filter, filters=filter.filters)}}
+
+{% set actions %}
+<ul class="menu-out grouped flow-across">
+    <li>
+        <button name="g59" type="button" class="link-button icon-pencil button no-prompt-action" aria-describedby="hint632-content" aria-label="Edit">
+        </button>
+        <div id="hint632-content" role="tooltip" class="hint-content">Edit</div>
+    </li>
+    <li>
+        <button name="g58" type="button" class="link-button icon-bin button no-prompt-action" aria-describedby="hint633-content" aria-label="Archive">
+        </button>
+        <div id="hint633-content" role="tooltip" class="hint-content">Archive</div>
+    </li>
+</ul>
+{% endset %}
+
+{{lists.filter_results(filter, actions=actions, no_results_message="There aren't any commodities that match your search")}}
+
+<div class="content-actions"></div>
+</div>
+</div>
+
+{% endblock %}
