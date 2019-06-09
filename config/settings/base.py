@@ -150,6 +150,3 @@ Field.default_error_messages = {
 
 # Session configuration, use cookies as session storage
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-
-# Fixtures
-# FIXTURE_DIRS = (os.path.join(BASE_DIR, 'web/fixtures/'))

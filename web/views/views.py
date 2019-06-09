@@ -1,6 +1,7 @@
 import random
 import logging
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.contrib.auth import update_session_auth_hash, login
 from django.contrib.auth.decorators import (login_required, user_passes_test)
 from django.contrib.auth import views as auth_views
@@ -326,11 +327,11 @@ class LoginView(auth_views.LoginView):
 class TeamEditView(UpdateView):
     template_name = 'web/team/edit.html'
     form_class = forms.TeamEditForm
-    model = models.Team
+    success_url = reverse_lazy('team-list')
 
-    def form_valid(self, form):
-        form.save()
-        return redirect('team-list')
+    def get_queryset(self):
+        return models.Team.objects.filter(
+            pk=self.kwargs.get('pk')).prefetch_related('roles')
 
 
 class ConstabularyEditView(UpdateView):

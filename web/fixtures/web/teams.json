@@ -3,6 +3,8 @@
     "pk": 1,
     "model": "web.Team",
     "fields": {
+      "group_id": "1",
+      "name": "Advice Super Users",
       "description": "Advice Super Users"
     }
   },
@@ -10,6 +12,8 @@
     "pk": 2,
     "model": "web.Team",
     "fields": {
+      "group_id": "2",
+      "name": "Application Error Logging Users Static",
       "description": "People who use error logging system, focuses on what errors they can access"
     }
   },
@@ -17,6 +21,8 @@
     "pk": 3,
     "model": "web.Team",
     "fields": {
+      "group_id": "3",
+      "name": "Country Super Users",
       "description": "Users in this list have access to carry out the country maintenance"
     }
   },
@@ -24,6 +30,8 @@
     "pk": 4,
     "model": "web.Team",
     "fields": {
+      "group_id": "4",
+      "name": "Digital Certificate Management Team",
       "description": "People in this team manage digital certificates"
     }
   },
@@ -31,6 +39,8 @@
     "pk": 5,
     "model": "web.Team",
     "fields": {
+      "group_id": "5",
+      "name": "Directory Super Users",
       "description": "This team defines who is allowed to maintain central Portal Directory details such as Organisations, People and Login User Accounts. These functions should only be given to internal DECC staff."
     }
   },
@@ -38,6 +48,8 @@
     "pk": 6,
     "model": "web.Team",
     "fields": {
+      "group_id": "6",
+      "name": "ILB Admin Users",
       "description": "People who maintain reference data for the system."
     }
   },
@@ -45,6 +57,8 @@
     "pk": 7,
     "model": "web.Team",
     "fields": {
+      "group_id": "7",
+      "name": "ILB Case Officers",
       "description": "Case Officers of ILB."
     }
   },
@@ -52,6 +66,8 @@
     "pk": 8,
     "model": "web.Team",
     "fields": {
+      "group_id": "8",
+      "name": "ILB External Users",
       "description": "External Users"
     }
   },
@@ -59,6 +75,8 @@
     "pk": 9,
     "model": "web.Team",
     "fields": {
+      "group_id": "9",
+      "name": "ILB Search Users",
       "description": "ILB users who can search cases."
     }
   },
@@ -66,6 +84,8 @@
     "pk": 10,
     "model": "web.Team",
     "fields": {
+      "group_id": "10",
+      "name": "ILB Support Users",
       "description": "Support Users"
     }
   },
@@ -73,6 +93,8 @@
     "pk": 11,
     "model": "web.Team",
     "fields": {
+      "group_id": "11",
+      "name": "Mapsets Management",
       "description": "Mapsets Management"
     }
   },
@@ -80,6 +102,8 @@
     "pk": 12,
     "model": "web.Team",
     "fields": {
+      "group_id": "12",
+      "name": "Pay Admin Contacts",
       "description": "Payments Admin Team"
     }
   },
@@ -87,6 +111,8 @@
     "pk": 13,
     "model": "web.Team",
     "fields": {
+      "group_id": "13",
+      "name": "Portal Dashboard Permissions",
       "description": "Permissions for Portal Dashboard"
     }
   },
@@ -94,6 +120,8 @@
     "pk": 14,
     "model": "web.Team",
     "fields": {
+      "group_id": "14",
+      "name": "Portal Payment Testers",
       "description": "Portal Payment Testers"
     }
   },
@@ -101,6 +129,8 @@
     "pk": 15,
     "model": "web.Team",
     "fields": {
+      "group_id": "15",
+      "name": "Reporting Super Users",
       "description": "This team provides roles for performing report related activities."
     }
   },
@@ -108,6 +138,8 @@
     "pk": 16,
     "model": "web.Team",
     "fields": {
+      "group_id": "16",
+      "name": "Super Users",
       "description": "Super Users"
     }
   },
@@ -115,6 +147,8 @@
     "pk": 17,
     "model": "web.Team",
     "fields": {
+      "group_id": "17",
+      "name": "Workbasket Viewers",
       "description": "Team for configuring access privileges to view other people's workbaskets"
     }
   }

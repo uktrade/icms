@@ -3,11 +3,10 @@
 {% import "forms/list.html" as lists %}
 {% import "messages/message.html" as messages %}
 
-{% block page_title %}Editing ....{% endblock %}
-{% block context_header %}Editing {% endblock %}
+{% block page_title %}Editing {{form.instance.name}}{% endblock %}
+{% block context_header %}Editing {{form.instance.name}}{% endblock %}
 
 {% block main_content %}
-
 {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
 <ul class="tabs -tabs big-tabs" data-tab-group="sS0Ri8_plrnqVW43/tabs-DEC043L-grid-list-switch" role="tablist">
 
@@ -75,28 +74,15 @@
                 </td>
             </tr>
         </tbody>
-
     </table>
 
-
-
-
-
-
-
     <div class="list-actions">
-
         <ul class="menu-out flow-across">
-
             <li> <button id="g162" name="g162" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-add-person&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="small-button icon-user-plus button">
-
                     Add someone to this team </button></li>
-
         </ul>
-
     </div>
 </div>
-
 
 {%- endcall %}
 
