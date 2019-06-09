@@ -1,5 +1,6 @@
 from django.forms.widgets import (TextInput, Textarea, PasswordInput,
-                                  DateInput, EmailInput, Select, HiddenInput)
+                                  DateInput, EmailInput, Select, HiddenInput,
+                                  CheckboxInput)
 
 
 class TextInput(TextInput):
@@ -29,3 +30,7 @@ class Select(Select):
 class Display(HiddenInput):
     """ Widget to display the field as text"""
     template_name = 'forms/widgets/display.html'
+
+
+class CheckboxInput(CheckboxInput):
+    pass

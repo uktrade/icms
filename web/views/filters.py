@@ -115,3 +115,41 @@ class ConstabulariesFilter(FilterSet):
         model = models.Constabulary
         fields = []
         config = _filter_config
+
+
+class CommoditiesFilter(FilterSet):
+    commodity_code = filter.CharFilter(
+        field_name='commotidy_code',
+        lookup_expr='icontains',
+        widget=widgets.TextInput,
+        label='Commodity Code')
+
+    commodity_type = filter.ChoiceFilter(
+        field_name='type',
+        choices=models.Commodity.TYPES,
+        lookup_expr='icontains',
+        widget=widgets.Select,
+        label='Commodity Type')
+
+    valid_start = filter.DateFilter(
+        field_name='validity_start_date',
+        widget=widgets.DateInput,
+        lookup_expr='gte',
+        label='Valid between')
+
+    valid_end = filter.DateFilter(
+        field_name='validity_end_date',
+        widget=widgets.DateInput,
+        lookup_expr='lte',
+        label='and')
+
+    is_archived = filter.BooleanFilter(
+        field_name='is_active',
+        widget=widgets.CheckboxInput,
+        lookup_expr='exact',
+        label='Search Archived')
+
+    class Meta:
+        model = models.Commodity
+        fields = []
+        config = _filter_config

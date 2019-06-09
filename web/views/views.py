@@ -318,6 +318,13 @@ def user_details(request):
     return details_update(request, action)
 
 
+@require_registered
+def commodities(request):
+    filter = filters.CommoditiesFilter(
+        request.GET, queryset=models.Commodity.objects.all())
+    return render(request, 'web/commodity/list.html', {'filter': filter})
+
+
 class LoginView(auth_views.LoginView):
     form_class = forms.LoginForm
     template_name = 'web/login.html'

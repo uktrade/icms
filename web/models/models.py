@@ -311,3 +311,41 @@ class Template(models.Model):
             'Template Name', 'Application Domain', 'Template Type',
             'Template Status'
         ]
+
+
+class Commodity(models.Model):
+    TEXTILES = 'TEXTILES'
+    IRON_STEEL = 'IRON_STEEL'
+    FIREARMS_AMMO = 'FIREARMS_AMMO'
+    WOOD = 'WOOD'
+    VEHICLES = 'VEHICLES'
+    WOOD_CHARCOAL = 'WOOD_CHARCOAL'
+    PRECIOUS_METAL_STONE = 'PRECIOUS_METAL_STONE'
+    OIL_PETROCHEMICALS = 'OIL_PETROCHEMICALS'
+
+    TYPES = ((TEXTILES, 'Textiles'), (IRON_STEEL, 'Iron, Steel and Aluminium'),
+             (FIREARMS_AMMO, 'Firearms and Ammunition'), (WOOD, 'Wood'),
+             (VEHICLES, 'Vehicles'), (WOOD_CHARCOAL, 'Wood Charcoal'),
+             (PRECIOUS_METAL_STONE,
+              'Precious Metals and Stones'), (OIL_PETROCHEMICALS,
+                                              'Oil and Petrochemicals'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=False)
+    start_datetime = models.DateTimeField(blank=False, null=False)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    commodity_code = models.CharField(max_length=10, blank=False, null=False)
+    commodity_type = models.CharField(
+        max_length=20, choices=TYPES, blank=False, null=False)
+    validity_start_date = models.DateField(blank=True, null=True)
+    validity_end_date = models.DateField(blank=True, null=True)
+    quantity_threshold = models.IntegerField(blank=True, null=True)
+
+    @property
+    def commodity_type_verbose(self):
+        return dict(Commodity.TYPES)[self.commodity_type]
+
+    class Display:
+        display = [
+            'commodity_code', 'commodity_type_verbose', 'validity_start_date'
+        ]
+        labels = ['Commodity Code', 'Commodity Type', 'Validity']
