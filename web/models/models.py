@@ -336,9 +336,10 @@ class Commodity(models.Model):
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
     commodity_type = models.CharField(
         max_length=20, choices=TYPES, blank=False, null=False)
-    validity_start_date = models.DateField(blank=True, null=True)
+    validity_start_date = models.DateField(blank=False, null=True)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
+    sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
 
     @property
     def commodity_type_verbose(self):
@@ -349,3 +350,7 @@ class Commodity(models.Model):
             'commodity_code', 'commodity_type_verbose', 'validity_start_date'
         ]
         labels = ['Commodity Code', 'Commodity Type', 'Validity']
+
+
+
+class CommodityGroup(models.Model):

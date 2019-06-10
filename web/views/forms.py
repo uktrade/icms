@@ -554,3 +554,81 @@ class ConstabularyCreateForm(ConstabularyEditForm):
                 }
             }
         }
+
+
+class CommodityEditForm(ModelForm):
+    commodity_code = DisplayField(label='Commodity Code')
+
+    class Meta:
+        model = models.Commodity
+        fields = [
+            'commodity_code', 'validity_start_date', 'validity_end_date',
+            'sigl_product_type'
+        ]
+        labels = {
+            'validity_start_date': 'First day of validity',
+            'validity_end_date': 'Last day of validity',
+            'sigl_product_type': 'SIGL Product Type'
+        }
+        help_texts = {
+            'validity_start_date':
+            'The commodity code will be available for applications to choose \
+            on applications forms, starting on this date',
+            'validity_end_date':
+            'After this date, the commodity will no \
+            longer be available for applications to choose on application \
+            forms. Leave blank for indefinitely continuing validity',
+            'sigl_product_type':
+            'Mandatory for Iron, Steel, Aluminium and \
+            Textile commodities'
+        }
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'link': {
+                    'label': 'Cancel',
+                    'href': 'commodity-list'
+                },
+                'submit': {
+                    'label': 'Save'
+                }
+            }
+        }
+
+
+class CommodityCreateForm(CommodityEditForm):
+    class Meta(CommodityEditForm.Meta):
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'link': {
+                    'label': 'Cancel',
+                    'href': 'constabulary-list'
+                },
+                'submit': {
+                    'label': 'Create'
+                }
+            }
+        }
