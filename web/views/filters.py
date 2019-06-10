@@ -153,3 +153,27 @@ class CommoditiesFilter(FilterSet):
         model = models.Commodity
         fields = []
         config = _filter_config
+
+
+class CommodityGroupsFilter(FilterSet):
+    group_type = filter.ChoiceFilter(
+        field_name='group_type',
+        choices=models.CommodityGroup.TYPES,
+        label='Group Type')
+    commodity_types = filter.ChoiceFilter(
+        field_name='commodity_type',
+        choices=models.Commodity.TYPES,
+        label='Commodity Types')
+
+    group_code = filter.CharFilter(field_name='group_code', label='Group Code')
+    group_name = filter.CharFilter(field_name='group_name', label='Group Name')
+
+    is_archived = filter.BooleanFilter(
+        field_name='is_active',
+        widget=widgets.CheckboxInput,
+        lookup_expr='exact',
+        label='Search Archived')
+
+    class Meta:
+        models.CommodityGroup
+        config = _filter_config
