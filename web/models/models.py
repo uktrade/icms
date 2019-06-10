@@ -313,6 +313,14 @@ class Template(models.Model):
         ]
 
 
+class Unit(models.Model):
+    unit_type = models.CharField(max_length=20, blank=False, null=False)
+    description = models.CharField(max_length=100, blank=False, null=False)
+    short_description = models.CharField(
+        max_length=30, blank=False, null=False)
+    hmrc_code = models.IntegerField(blank=False, null=False)
+
+
 class Commodity(models.Model):
     TEXTILES = 'TEXTILES'
     IRON_STEEL = 'IRON_STEEL'
@@ -353,4 +361,19 @@ class Commodity(models.Model):
 
 
 class CommodityGroup(models.Model):
-    pass
+    AUTO = 'AUTO'
+    CATEGORY = 'CATEGORY'
+
+    TYPES = ((AUTO, 'Auto'), (CATEGORY, ('Category')))
+
+    is_active = models.BooleanField(blank=False, null=False, default=False)
+    start_datetime = models.DateTimeField(blank=False, null=False)
+    end_datetime = models.DateTimeField(blank=True, null=True)
+    group_type = models.CharField(
+        max_length=20, choices=TYPES, blank=False, null=False, default=AUTO)
+    group_name = models.CharField(max_length=100, blank=True, null=True)
+    group_description = models.CharField(
+        max_length=4000, blank=True, null=True)
+    unit = models.ForeignKey(
+        Unit, on_delete=models.SET_NULL, blank=True, null=True)
+    commodities = models.ManyToManyField(Commodity, blank=True)
