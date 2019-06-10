@@ -352,5 +352,5 @@ class Commodity(models.Model):
         labels = ['Commodity Code', 'Commodity Type', 'Validity']
 
 
-
 class CommodityGroup(models.Model):
+    pass
