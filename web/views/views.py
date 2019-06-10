@@ -335,10 +335,13 @@ class TeamEditView(UpdateView):
     template_name = 'web/team/edit.html'
     form_class = forms.TeamEditForm
     success_url = reverse_lazy('team-list')
+    model = models.Team
 
-    def get_queryset(self):
-        return models.Team.objects.filter(
-            pk=self.kwargs.get('pk')).prefetch_related('roles')
+    def get_context_data(self, **kwargs):
+        roles = models.Role.objects.filter(team=self.object)
+        context = super().get_context_data(**kwargs)
+        context['roles'] = roles
+        return context
 
 
 class ConstabularyEditView(UpdateView):

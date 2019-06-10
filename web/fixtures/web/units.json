@@ -1,0 +1,92 @@
+[
+  {
+    "pk": 1,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "BARRELS",
+      "description": "Barrels",
+      "short_description": "Barrels",
+      "hmrc_code": 30
+    }
+  },
+  {
+    "pk": 2,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "EUROCIF",
+      "description": "euro CIF",
+      "short_description": "euro",
+      "hmrc_code": 30
+    }
+  },
+  {
+    "pk": 3,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "KGS",
+      "description": "kilos",
+      "short_description": "Kgs",
+      "hmrc_code": 23
+    }
+  },
+  {
+    "pk": 4,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "M2",
+      "description": "sq.metres",
+      "short_description": "sq.m.",
+      "hmrc_code": 45
+    }
+  },
+  {
+    "pk": 5,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "M3",
+      "description": "cubic metres",
+      "short_description": "c.m.",
+      "hmrc_code": 87
+    }
+  },
+  {
+    "pk": 6,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "METCAR",
+      "description": "metric carats",
+      "short_description": "M.Car.",
+      "hmrc_code": 30
+    }
+  },
+  {
+    "pk": 7,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "PCS",
+      "description": "pieces",
+      "short_description": "Pcs",
+      "hmrc_code": 30
+    }
+  },
+  {
+    "pk": 8,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "PRS",
+      "description": "pairs",
+      "short_description": "Prs",
+      "hmrc_code": 31
+    }
+  },
+  {
+    "pk": 9,
+    "model": "web.Unit",
+    "fields": {
+      "unit_type": "UNITS",
+      "description": "units",
+      "short_description": "Units",
+      "hmrc_code": 30
+    }
+  }
+]

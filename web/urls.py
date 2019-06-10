@@ -45,6 +45,8 @@ urlpatterns = [
         views.CommodityCreateView.as_view(),
         name='commodity-new'),
 
+    # Commodity Groups Management
+
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
 
