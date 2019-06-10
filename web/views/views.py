@@ -359,3 +359,23 @@ class ConstabularyCreateView(CreateView):
     def form_valid(self, form):
         form.save()
         return redirect('constabulary-list')
+
+
+class CommodityEditView(UpdateView):
+    template_name = 'web/commodity/edit.html'
+    form_class = forms.CommodityEditForm
+    model = models.Commodity
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('commodity-list')
+
+
+class CommodityCreateView(CreateView):
+    template_name = 'web/commodity/create.html'
+    form_class = forms.CommodityCreateForm
+    model = models.Commodity
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('commodity-list')

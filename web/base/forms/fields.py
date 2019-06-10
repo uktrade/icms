@@ -20,7 +20,7 @@ class EmailField(forms.EmailField):
     widget = EmailInput
 
 
-class DisplayField(forms.HiddenInput):
+class DisplayField(forms.Field):
     widget = Display
 
 

@@ -36,6 +36,14 @@ urlpatterns = [
 
     # Commodities Management
     path('commodities', views.commodities, name='commodity-list'),
+    path(
+        'commodities/<int:pk>/edit',
+        views.CommodityEditView.as_view(),
+        name='commodity-edit'),
+    path(
+        'commodities/new',
+        views.CommodityCreateView.as_view(),
+        name='commodity-new'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
