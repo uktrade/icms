@@ -325,6 +325,13 @@ def commodities(request):
     return render(request, 'web/commodity/list.html', {'filter': filter})
 
 
+@require_registered
+def commodity_groups(request):
+    filter = filters.CommodityGroupsFilter(
+        request.GET, queryset=models.CommodityGroup.objects.all())
+    return render(request, 'web/commodity-group/list.html', {'filter': filter})
+
+
 class LoginView(auth_views.LoginView):
     form_class = forms.LoginForm
     template_name = 'web/login.html'

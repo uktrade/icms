@@ -46,6 +46,7 @@ urlpatterns = [
         name='commodity-new'),
 
     # Commodity Groups Management
+    path('commodity-groups', views.commodity_groups, name='commodity-groups'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard', views.outbound_emails, name='outbound-emails'),

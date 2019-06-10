@@ -371,9 +371,30 @@ class CommodityGroup(models.Model):
     end_datetime = models.DateTimeField(blank=True, null=True)
     group_type = models.CharField(
         max_length=20, choices=TYPES, blank=False, null=False, default=AUTO)
+    group_code = models.CharField(max_length=25, blank=False, null=False)
     group_name = models.CharField(max_length=100, blank=True, null=True)
     group_description = models.CharField(
         max_length=4000, blank=True, null=True)
+    commodity_type = models.CharField(
+        max_length=20, choices=Commodity.TYPES, blank=True, null=True)
     unit = models.ForeignKey(
         Unit, on_delete=models.SET_NULL, blank=True, null=True)
     commodities = models.ManyToManyField(Commodity, blank=True)
+
+    @property
+    def group_type_verbose(self):
+        return dict(CommodityGroup.TYPES)[self.group_type]
+
+    @property
+    def commodity_type_verbose(self):
+        return dict(Commodity.TYPES)[self.commodity_type]
+
+    class Display:
+        display = [
+            'group_type_verbose', 'commodity_type_verbose', 'group_code',
+            'group_description'
+        ]
+        labels = [
+            'Commodity Code', 'Commodity Type', 'Group Code/ Group Name',
+            'Descripption/ Commodities'
+        ]
