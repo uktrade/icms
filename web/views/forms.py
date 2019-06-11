@@ -625,7 +625,7 @@ class CommodityCreateForm(CommodityEditForm):
                 },
                 'link': {
                     'label': 'Cancel',
-                    'href': 'constabulary-list'
+                    'href': 'commodity-list'
                 },
                 'submit': {
                     'label': 'Create'
@@ -662,6 +662,12 @@ class CommodityGroupEditForm(ModelForm):
             For Caegory Groups: enter the code that will identify this \
             category. This can be override by the Group Name below.'
         }
+        widgets = {
+            'group_description': Textarea(attrs={
+                'rows': 5,
+                'cols': 20
+            })
+        }
         config = {
             'label': {
                 'cols': 'three'
@@ -688,5 +694,5 @@ class CommodityGroupEditForm(ModelForm):
 
 
 class CommodityGroupCreateForm(CommodityGroupEditForm):
-    class Meta(CommodityEditForm.Meta):
+    class Meta(CommodityGroupEditForm.Meta):
         pass
