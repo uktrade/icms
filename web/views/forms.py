@@ -632,3 +632,61 @@ class CommodityCreateForm(CommodityEditForm):
                 }
             }
         }
+
+
+class CommodityGroupEditForm(ModelForm):
+    group_type_verbose = DisplayField(label='Group Type')
+    commodity_type_verbose = DisplayField(label='Commodity Types')
+
+    class Meta:
+        model = models.CommodityGroup
+        fields = [
+            'group_type_verbose', 'commodity_type_verbose', 'group_code',
+            'group_description'
+        ]
+        labels = {
+            'commodity_type': 'Commodity Types',
+            'group_code': 'Group Code',
+            'group_description': 'Group Description'
+        }
+        help_texts = {
+            'group_type_verbose':
+            'Auto groups will include all commodities beginning with the \
+            Group Code. Category groups will allow you manually include \
+            commodities',
+            'commodity_type':
+            'Please choose what type of commodities this group should contain',
+            'group_code':
+            'For Auto Groups: please enter the first four digits \
+            of the commodity code you want to include in this group.\
+            For Caegory Groups: enter the code that will identify this \
+            category. This can be override by the Group Name below.'
+        }
+        config = {
+            'label': {
+                'cols': 'three'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'right': 'three'
+            },
+            'actions': {
+                'padding': {
+                    'left': None
+                },
+                'link': {
+                    'label': 'Cancel',
+                    'href': 'commodity-list'
+                },
+                'submit': {
+                    'label': 'Save'
+                }
+            }
+        }
+
+
+class CommodityGroupCreateForm(CommodityGroupEditForm):
+    class Meta(CommodityEditForm.Meta):
+        pass

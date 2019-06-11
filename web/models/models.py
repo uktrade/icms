@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (AbstractUser, Group)
 from viewflow.models import Process
 from .managers import AccessRequestQuerySet, ProcessQuerySet
+from .mixins import Archivable
 
 
 class Address(models.Model):
@@ -246,7 +247,7 @@ class EmailAttachment(models.Model):
     text_attachment = models.TextField(null=True)
 
 
-class Template(models.Model):
+class Template(Archivable, models.Model):
 
     # Template types
     ENDORSEMENT = 'ENDORSEMENT'
@@ -311,6 +312,10 @@ class Template(models.Model):
             'Template Name', 'Application Domain', 'Template Type',
             'Template Status'
         ]
+        #  Display actions
+        edit = True
+        view = True
+        archive = True
 
 
 class Unit(models.Model):
@@ -353,11 +358,16 @@ class Commodity(models.Model):
     def commodity_type_verbose(self):
         return dict(Commodity.TYPES)[self.commodity_type]
 
+    class Meta:
+        ordering = ('commodity_code', )
+
     class Display:
         display = [
-            'commodity_code', 'commodity_type_verbose', 'validity_start_date'
+            'commodity_code', 'commodity_type_verbose',
+            ('validity_start_date', 'validity_end_date')
         ]
         labels = ['Commodity Code', 'Commodity Type', 'Validity']
+        viewable = False
 
 
 class CommodityGroup(models.Model):
