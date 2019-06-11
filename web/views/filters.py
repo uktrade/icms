@@ -119,7 +119,7 @@ class ConstabulariesFilter(FilterSet):
 
 class CommoditiesFilter(FilterSet):
     commodity_code = filter.CharFilter(
-        field_name='commotidy_code',
+        field_name='commodity_code',
         lookup_expr='icontains',
         widget=widgets.TextInput,
         label='Commodity Code')

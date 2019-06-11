@@ -678,7 +678,7 @@ class CommodityGroupEditForm(ModelForm):
                 },
                 'link': {
                     'label': 'Cancel',
-                    'href': 'commodity-list'
+                    'href': 'commodity-groups'
                 },
                 'submit': {
                     'label': 'Save'

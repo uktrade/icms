@@ -21,43 +21,44 @@ urlpatterns = [
     # Teams Management
     path('teams/', views.teams, name='team-list'),
     path(
-        'teams/<int:pk>/edit', views.TeamEditView.as_view(), name='team-edit'),
+        'teams/<int:pk>/edit/', views.TeamEditView.as_view(),
+        name='team-edit'),
 
     # Constabularies Management
-    path('constabulary', views.constabularies, name='constabulary-list'),
+    path('constabulary/', views.constabularies, name='constabulary-list'),
     path(
-        'constabulary/<int:pk>/edit',
+        'constabulary/<int:pk>/edit/',
         views.ConstabularyEditView.as_view(),
         name='constabulary-edit'),
     path(
-        'constabulary/new',
+        'constabulary/new/',
         views.ConstabularyCreateView.as_view(),
         name='constabulary-new'),
 
     # Commodities Management
-    path('commodities', views.commodities, name='commodity-list'),
+    path('commodities/', views.commodities, name='commodity-list'),
     path(
-        'commodities/<int:pk>/edit',
+        'commodities/<int:pk>/edit/',
         views.CommodityEditView.as_view(),
         name='commodity-edit'),
     path(
-        'commodities/new',
+        'commodities/new/',
         views.CommodityCreateView.as_view(),
         name='commodity-new'),
 
     # Commodity Groups Management
-    path('commodity-groups', views.commodity_groups, name='commodity-groups'),
+    path('commodity-groups/', views.commodity_groups, name='commodity-groups'),
     path(
-        'commodity-groups/<int:pk>/edit',
+        'commodity-groups/<int:pk>/edit/',
         views.CommodityGroupEditView.as_view(),
         name='commodity-group-edit'),
     path(
-        'commodity-groups/new',
+        'commodity-groups/new/',
         views.CommodityGroupCreateView.as_view(),
         name='commodity-group-new'),
 
     # Portal Dashboard for outbound emails
-    path('portal/dashboard', views.outbound_emails, name='outbound-emails'),
+    path('portal/dashboard/', views.outbound_emails, name='outbound-emails'),
 
     # Access Request
     path(
