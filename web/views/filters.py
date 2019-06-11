@@ -166,8 +166,19 @@ class CommodityGroupsFilter(FilterSet):
         choices=models.Commodity.TYPES,
         label='Commodity Types')
 
-    group_code = filter.CharFilter(field_name='group_code', label='Group Code')
-    group_name = filter.CharFilter(field_name='group_name', label='Group Name')
+    group_code = filter.CharFilter(
+        field_name='group_code', lookup_expr='icontains', label='Group Code')
+    group_name = filter.CharFilter(
+        field_name='group_name', lookup_expr='icontains', label='Group Name')
+    group_description = filter.CharFilter(
+        field_name='group_description',
+        lookup_expr='icontains',
+        label='Group Description')
+    commodity_code = filter.CharFilter(
+        field_name='commodities__commodity_code',
+        lookup_expr='icontains',
+        label='Commodity Code')
+    unit = filter.ModelChoiceFilter(queryset=models.Unit.objects.all())
 
     is_archived = filter.BooleanFilter(
         field_name='is_active',
