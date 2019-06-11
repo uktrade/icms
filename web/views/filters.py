@@ -147,6 +147,7 @@ class CommoditiesFilter(FilterSet):
         field_name='is_active',
         widget=widgets.CheckboxInput,
         lookup_expr='exact',
+        exclude=True,
         label='Search Archived')
 
     class Meta:
@@ -172,6 +173,7 @@ class CommodityGroupsFilter(FilterSet):
         field_name='is_active',
         widget=widgets.CheckboxInput,
         lookup_expr='exact',
+        exclude=True,
         label='Search Archived')
 
     class Meta:

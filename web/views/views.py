@@ -16,7 +16,7 @@ from web.notify import notify
 from web.auth.decorators import require_registered
 from web import models
 from . import filters
-from .utils import form_utils
+from .utils import (form_utils, model_utils)
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
                       new_alternative_emails_formset)
 from django.core.exceptions import ObjectDoesNotExist
@@ -171,6 +171,7 @@ def workbasket(request):
 
 @require_registered
 def templates(request):
+    model_utils.handle_actions(request, models.Template)
     filter = filters.TemplatesFilter(
         request.GET, queryset=models.Template.objects.all())
     return render(request, 'web/template/list.html', {'filter': filter})
@@ -389,3 +390,23 @@ class CommodityCreateView(CreateView):
     def form_valid(self, form):
         form.save()
         return redirect('commodity-list')
+
+
+class CommodityGroupEditView(UpdateView):
+    template_name = 'web/commodity-group/edit.html'
+    form_class = forms.CommodityGroupEditForm
+    model = models.CommodityGroup
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('commodity-groups')
+
+
+class CommodityGroupCreateView(CreateView):
+    template_name = 'web/commodity-group/create.html'
+    form_class = forms.CommodityGroupCreateForm
+    model = models.CommodityGroup
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('commodity-groups')

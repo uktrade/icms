@@ -1,12 +1,13 @@
 {% import "messages/message.html" as message %}
-{% macro filter_results(filter, actions=None, no_results_message="There aren't any records that match your search") -%}
+{% macro filter_results(filter, actions=None, csrf_input=None, no_results_message="There aren't any records that match your search") -%}
 {% set count =  filter.qs.count() %}
 
 {% if count > 0 %}
+{% set conf=filter.qs.model.Display %}
 <table responsiveList class="setoutList">
     <thead>
         <tr>
-            {% for header in filter.qs.model.Display.labels %}
+            {% for header in conf.labels %}
                 <th scope="col">{{header}}</th>
             {% endfor %}
             <th scope="col">Actions</th>
@@ -14,15 +15,78 @@
     </thead>
     {% for item in filter.qs %}
     <tr>
-        {% for field in filter.qs.model.Display.display %}
+        {% for field in conf.display %}
+            <td>
             {% if loop.first %}
-                <td><a href="">{{item[field]}}</a></td>
+                {% if conf.view %}
+                    <a href="{{item.id}}">{{item[field]}}</a>
+                {% else %}
+                    {{item[field]}}
+                {% endif %}
+                {% if not item['is_active'] %}
+                    <br/>
+                    <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
+                {% endif %}
             {% else %}
-                <td>{{item[field]}}</td>
+                {% if field is not string %}
+                    {% for f in field  %}
+                        {{item[f] or ''}}
+                        <br/>
+                    {% endfor %}
+                {% else %}
+                        {{item[field]}}
+                {% endif %}
             {% endif %}
+            </td>
         {% endfor %}
         <td data-title="Actions">
-            {{actions or ''}}
+            <ul class="menu-out grouped flow-across">
+                {% if item.is_active %}
+                    {% if conf.edit %}
+                        <li>
+                            <a href="{{item.id}}/edit"
+                            class="link-button icon-pencil button no-prompt-action tooltipstered"
+                            aria-describedby="edit-hint"
+                            aria-label="Edit">
+                            </a>
+                            <div id="edit-hint" role="tooltip" class="hint-content" aria-hidden="true">Edit</div>
+                        </li>
+                    {% endif %}
+                    {% if conf.archive %}
+                        <li>
+                            <form method="post" action="">
+                                <button type="submit"
+                                        name="action"
+                                        value="archive"
+                                        class="link-button icon-bin button no-prompt-action tooltipstered"
+                                        aria-describedby="archive-hint"
+                                        aria-label="Archive">
+                                    {{csrf_input}}
+                                    <input type="hidden" name="item" value="{{item.id}}" />
+                                </button>
+                                <div id="archive-hint" role="tooltip" class="hint-content">Archive</div>
+                            </form>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    {% if conf.archive %}
+                        <li>
+                            <form method="post" action="">
+                                <button type="submit"
+                                        name="action"
+                                        value="unarchive"
+                                        class="link-button icon-undo2 button no-prompt-action tooltipstered"
+                                        aria-describedby="unarchive-hint"
+                                        aria-label="Unarchive">
+                                    {{csrf_input}}
+                                    <input type="hidden" name="item" value="{{item.id}}" />
+                                </button>
+                                <div id="unarchive-hint" role="tooltip" class="hint-content">Unarchive</div>
+                            </form>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
         </td>
     </tr>
     {% endfor %}
@@ -33,9 +97,7 @@
 </div>
 
 {% else %}
-
     {{message.warning(no_results_message)}}
-
 {% endif %}
 
 {%- endmacro %}
