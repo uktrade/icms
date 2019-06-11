@@ -327,6 +327,9 @@ class Unit(models.Model):
         max_length=30, blank=False, null=False)
     hmrc_code = models.IntegerField(blank=False, null=False)
 
+    def __str__(self):
+        return self.description
+
 
 class Commodity(Archivable, models.Model):
     TEXTILES = 'TEXTILES'
