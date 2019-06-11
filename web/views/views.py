@@ -186,6 +186,7 @@ def teams(request):
 
 @require_registered
 def constabularies(request):
+    model_utils.handle_actions(request, models.Constabulary)
     filter = filters.ConstabulariesFilter(
         request.GET, queryset=models.Constabulary.objects.all())
     return render(request, 'web/constabulary/list.html', {'filter': filter})
@@ -321,6 +322,7 @@ def user_details(request):
 
 @require_registered
 def commodities(request):
+    model_utils.handle_actions(request, models.Commodity)
     filter = filters.CommoditiesFilter(
         request.GET, queryset=models.Commodity.objects.all())
     return render(request, 'web/commodity/list.html', {'filter': filter})
@@ -328,6 +330,7 @@ def commodities(request):
 
 @require_registered
 def commodity_groups(request):
+    model_utils.handle_actions(request, models.CommodityGroup)
     filter = filters.CommodityGroupsFilter(
         request.GET, queryset=models.CommodityGroup.objects.all())
     return render(request, 'web/commodity-group/list.html', {'filter': filter})

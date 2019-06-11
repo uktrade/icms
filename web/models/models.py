@@ -72,7 +72,7 @@ class Role(Group):
     description = models.CharField(max_length=4000, blank=True, null=True)
 
 
-class Constabulary(models.Model):
+class Constabulary(Archivable, models.Model):
     EAST_MIDLANDS = 'EM'
     EASTERN = 'ER'
     ISLE_OF_MAN = 'IM'
@@ -108,6 +108,8 @@ class Constabulary(models.Model):
     class Display:
         display = ['name', 'region_verbose', 'email']
         labels = ['Constabulary Name', 'Constabulary Region', 'Email Address']
+        edit = True
+        archive = True
 
 
 class PhoneNumber(models.Model):
@@ -326,7 +328,7 @@ class Unit(models.Model):
     hmrc_code = models.IntegerField(blank=False, null=False)
 
 
-class Commodity(models.Model):
+class Commodity(Archivable, models.Model):
     TEXTILES = 'TEXTILES'
     IRON_STEEL = 'IRON_STEEL'
     FIREARMS_AMMO = 'FIREARMS_AMMO'
@@ -367,10 +369,12 @@ class Commodity(models.Model):
             ('validity_start_date', 'validity_end_date')
         ]
         labels = ['Commodity Code', 'Commodity Type', 'Validity']
-        viewable = False
+        view = False
+        edit = True
+        archive = True
 
 
-class CommodityGroup(models.Model):
+class CommodityGroup(Archivable, models.Model):
     AUTO = 'AUTO'
     CATEGORY = 'CATEGORY'
 
@@ -408,3 +412,6 @@ class CommodityGroup(models.Model):
             'Commodity Code', 'Commodity Type', 'Group Code/ Group Name',
             'Descripption/ Commodities'
         ]
+        view = False
+        edit = True
+        archive = True

@@ -23,7 +23,7 @@
                 {% else %}
                     {{item[field]}}
                 {% endif %}
-                {% if not item['is_active'] %}
+                {% if conf.archive and  not item.is_active %}
                     <br/>
                     <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
                 {% endif %}
@@ -44,7 +44,7 @@
                 {% if item.is_active %}
                     {% if conf.edit %}
                         <li>
-                            <a href="{{item.id}}/edit"
+                            <a href="{{item.id}}/edit/"
                             class="link-button icon-pencil button no-prompt-action tooltipstered"
                             aria-describedby="edit-hint"
                             aria-label="Edit">
