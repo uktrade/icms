@@ -42,6 +42,7 @@
         </thead>
 
         <tbody>
+            {% for user in form.instance.users %}
             <tr>
                 <td style="white-space: nowrap">
                     <div class="container setoutForm" data-xfid="f151">
@@ -73,32 +74,22 @@
                     <div class="individual-input" data-xfid="g159"><label id="pg159/0" for="g159/0" class="radio-label"><input id="g159/0" name="g159" value="g159/0" type="checkbox" checked="checked" /></label></div>
                 </td>
             </tr>
+            {% endfor %}
         </tbody>
     </table>
 
     <div class="list-actions">
         <ul class="menu-out flow-across">
-            <li> <button id="g162" name="g162" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-add-person&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="small-button icon-user-plus button">
-                    Add someone to this team </button></li>
+            <li>
+                <button name="action" type="submit" value="add_member" class="small-button icon-user-plus button">
+                    Add someone to this team </button>
+            </li>
         </ul>
     </div>
 </div>
 
 {%- endcall %}
 
-
-
-{# <ul class="menu-out flow-across"> #}
-
-{#     <li> <button id="g165" name="g165" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-save-resource&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="primary-button button"> #}
-
-{#             Save team </button></li> #}
-
-{#     <li> <button id="g164" name="g164" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-cancel-contacts&quot;,&quot;ctxt&quot;:&quot;sS0Ri8_plrnqVW43&quot;}, this);" class="link-button button"> #}
-
-{#             Cancel changes </button></li> #}
-
-{# </ul> #}
 
 <div class="content-actions">
     <ul class="menu-out flow-across">

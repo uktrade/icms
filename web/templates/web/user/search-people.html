@@ -1,0 +1,16 @@
+{% extends "layout/search-list.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+{% import "messages/message.html" as message %}
+
+{% block page_title %}Search People{% endblock %}
+{% block context_header %}Search People{% endblock %}
+{% block empty_message %}
+    There aren't any people that match your search. You can change your search terms and try again, or <a href="">create a new person</a>
+{% endblock %}
+
+{% block main_content %}
+    {{message.info('To search for a person, please fill in at least one field below.')}}
+
+    {{super()}}
+{% endblock %}

@@ -1,25 +1,23 @@
 import random
 import logging
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.contrib.auth import update_session_auth_hash, login
+from django.contrib.auth import (update_session_auth_hash, login, views as
+                                 auth_views)
 from django.contrib.auth.decorators import (login_required, user_passes_test)
-from django.contrib.auth import views as auth_views
 from django.contrib import messages
-from django.views.generic.edit import (UpdateView, CreateView)
 from django.db import transaction
-from viewflow.decorators import flow_start_view
+
 from web.errors import (ICMSException, UnknownError)
 from web.notify import address
 from web.views import forms
 from web.notify import notify
 from web.auth.decorators import require_registered
 from web import models
-from . import filters
-from .utils import (form_utils, model_utils)
+from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
                       new_alternative_emails_formset)
-from django.core.exceptions import ObjectDoesNotExist
+from .user import UserFilter
 
 logger = logging.getLogger(__name__)
 
@@ -31,25 +29,6 @@ def index(request):
 @require_registered
 def home(request):
     return render(request, 'web/home.html')
-
-
-@require_registered
-@flow_start_view
-def request_access(request):
-    request.activation.prepare(request.POST or None, user=request.user)
-    form = forms.AccessRequestForm(request.POST or None)
-    if form.is_valid():
-        access_request = form.instance
-        access_request.user = request.user
-        access_request.save()
-        request.activation.process.access_request = access_request
-        request.activation.done()
-        return render(request, 'web/request-access-success.html')
-
-    return render(request, 'web/request-access.html', {
-        'form': form,
-        'activation': request.activation
-    })
 
 
 def update_password(request):
@@ -170,36 +149,13 @@ def workbasket(request):
 
 
 @require_registered
-def templates(request):
-    model_utils.handle_actions(request, models.Template)
-    filter = filters.TemplatesFilter(
-        request.GET, queryset=models.Template.objects.all())
-    return render(request, 'web/template/list.html', {'filter': filter})
+def search_people(request):
+    if not request.POST:  # first page load
+        filter = UserFilter(queryset=models.User.objects.none())
+    else:
+        filter = UserFilter(request.POST, queryset=models.User.objects.all())
 
-
-@require_registered
-def teams(request):
-    filter = filters.TeamsFilter(
-        request.GET, queryset=models.Team.objects.all())
-    return render(request, 'web/team/list.html', {'filter': filter})
-
-
-@require_registered
-def constabularies(request):
-    model_utils.handle_actions(request, models.Constabulary)
-    filter = filters.ConstabulariesFilter(
-        request.GET, queryset=models.Constabulary.objects.all())
-    return render(request, 'web/constabulary/list.html', {'filter': filter})
-
-
-@require_registered
-def outbound_emails(request):
-    filter = filters.OutboundEmailsFilter(
-        request.GET,
-        queryset=models.OutboundEmail.objects.all().prefetch_related(
-            'attachments'))
-    return render(request, 'web/portal/outbound-emails.html',
-                  {'filter': filter})
+    return render(request, 'web/user/search-people.html', {'filter': filter})
 
 
 def init_user_details_forms(request, action):
@@ -320,96 +276,7 @@ def user_details(request):
     return details_update(request, action)
 
 
-@require_registered
-def commodities(request):
-    model_utils.handle_actions(request, models.Commodity)
-    filter = filters.CommoditiesFilter(
-        request.GET, queryset=models.Commodity.objects.all())
-    return render(request, 'web/commodity/list.html', {'filter': filter})
-
-
-@require_registered
-def commodity_groups(request):
-    model_utils.handle_actions(request, models.CommodityGroup)
-    filter = filters.CommodityGroupsFilter(
-        request.GET, queryset=models.CommodityGroup.objects.all())
-    return render(request, 'web/commodity-group/list.html', {'filter': filter})
-
-
 class LoginView(auth_views.LoginView):
     form_class = forms.LoginForm
     template_name = 'web/login.html'
     redirect_authenticated_user = True
-
-
-class TeamEditView(UpdateView):
-    template_name = 'web/team/edit.html'
-    form_class = forms.TeamEditForm
-    success_url = reverse_lazy('team-list')
-    model = models.Team
-
-    def get_context_data(self, **kwargs):
-        roles = models.Role.objects.filter(team=self.object)
-        context = super().get_context_data(**kwargs)
-        context['roles'] = roles
-        return context
-
-
-class ConstabularyEditView(UpdateView):
-    template_name = 'web/constabulary/edit.html'
-    form_class = forms.ConstabularyEditForm
-    model = models.Constabulary
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('constabulary-list')
-
-
-class ConstabularyCreateView(CreateView):
-    template_name = 'web/constabulary/create.html'
-    form_class = forms.ConstabularyCreateForm
-    model = models.Constabulary
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('constabulary-list')
-
-
-class CommodityEditView(UpdateView):
-    template_name = 'web/commodity/edit.html'
-    form_class = forms.CommodityEditForm
-    model = models.Commodity
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-list')
-
-
-class CommodityCreateView(CreateView):
-    template_name = 'web/commodity/create.html'
-    form_class = forms.CommodityCreateForm
-    model = models.Commodity
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-list')
-
-
-class CommodityGroupEditView(UpdateView):
-    template_name = 'web/commodity-group/edit.html'
-    form_class = forms.CommodityGroupEditForm
-    model = models.CommodityGroup
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-groups')
-
-
-class CommodityGroupCreateView(CreateView):
-    template_name = 'web/commodity-group/create.html'
-    form_class = forms.CommodityGroupCreateForm
-    model = models.CommodityGroup
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-groups')

@@ -1,0 +1,21 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block main_content %}
+
+    {% set empty_message %}
+      {% block empty_message %}
+        There aren't any records that match your search
+      {% endblock %}
+    {% endset %}
+
+    {{forms.filter(filter, filters=filter.filters)}}
+    {{lists.filter_results(
+        filter,
+        csrf_input=csrf_input,
+        hide_empty_message=first_load,
+        empty_message=empty_message
+    )}}
+    <div class=content-actions></div>
+{% endblock %}

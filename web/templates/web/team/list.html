@@ -1,10 +1,9 @@
-{% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
+{% extends "layout/search-list.html" %}
 {% import "messages/message.html" as messages %}
 
 {% block page_title %}Search Teams{% endblock %}
 {% block context_header %}Search Teams{% endblock %}
+{% block empty_message %}There aren't any teams that match your search{% endblock %}
 
 {% block sidebar %}
 <h4>Teams</h4>
@@ -16,34 +15,13 @@
 {% block main_content %}
 
 {{messages.info(
-"Users can be put into teams. Each team has a different set of roles,
+    "Users can be put into teams. Each team has a different set of roles,
     and each user in the team can be given one or more roles.
     Adding a user to a role may give them extra system privileges.
     You can search all of the teams in the system below.
     You can leave 'Name' blank to list all teams."
 )}}
 
-{{forms.filter(filter, filters=filter.filters)}}
-
-{% set actions %}
-<ul class="menu-out grouped flow-across">
-    <li>
-        <button name="g59" type="button" class="link-button icon-pencil button no-prompt-action" aria-describedby="hint632-content" aria-label="Edit">
-        </button>
-        <div id="hint632-content" role="tooltip" class="hint-content">Edit</div>
-    </li>
-    <li>
-        <button name="g58" type="button" class="link-button icon-bin button no-prompt-action" aria-describedby="hint633-content" aria-label="Archive">
-        </button>
-        <div id="hint633-content" role="tooltip" class="hint-content">Archive</div>
-    </li>
-</ul>
-{% endset %}
-
-{{lists.filter_results(filter, actions=actions, no_results_message="There aren't any teams that match your search" )}}
-
-<div class="content-actions"></div>
-</div>
-</div>
+{{super()}}
 
 {% endblock %}

@@ -1,10 +1,6 @@
-{% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
-
+{% extends "layout/search-list.html" %}
 {% block page_title %}Maintain Commodities{% endblock %}
 {% block context_header %}Maintain Commodities{% endblock %}
-
 
 {% block sidebar %}
 <ul class="menu-out">
@@ -15,11 +11,4 @@
 </ul>
 {% endblock %}
 
-{% block main_content %}
-
-{{forms.filter(filter, filters=filter.filters)}}
-{{lists.filter_results(filter, csrf_input=csrf_input,  no_results_message="There aren't any commodities that match your search")}}
-
-<div class="content-actions"></div>
-
-{% endblock %}
+{% block empty_message %}There aren't any commodities that match your search{% endblock %}

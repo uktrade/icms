@@ -1,103 +1,110 @@
 {% import "messages/message.html" as message %}
-{% macro filter_results(filter, actions=None, csrf_input=None, no_results_message="There aren't any records that match your search") -%}
-{% set count =  filter.qs.count() %}
+{% macro filter_results(
+    filter,
+    actions=None,
+    csrf_input=None,
+    hide_empty_message=False,
+    empty_message="There aren't any records that match your search") -%}
 
-{% if count > 0 %}
-{% set conf=filter.qs.model.Display %}
-<table responsiveList class="setoutList">
-    <thead>
+    {% set count =  filter.qs.count() %}
+
+    {% if count > 0 %}
+    {% set conf=filter.qs.model.Display %}
+    <table responsiveList class="setoutList">
+        <thead>
+            <tr>
+                {% for header in conf.labels %}
+                    <th scope="col">{{header}}</th>
+                {% endfor %}
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        {% for item in filter.qs %}
         <tr>
-            {% for header in conf.labels %}
-                <th scope="col">{{header}}</th>
-            {% endfor %}
-            <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    {% for item in filter.qs %}
-    <tr>
-        {% for field in conf.display %}
-            <td>
-            {% if loop.first %}
-                {% if conf.view %}
-                    <a href="{{item.id}}">{{item[field]}}</a>
-                {% else %}
-                    {{item[field]}}
-                {% endif %}
-                {% if conf.archive and  not item.is_active %}
-                    <br/>
-                    <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
-                {% endif %}
-            {% else %}
-                {% if field is not string %}
-                    {% for f in field  %}
-                        {{item[f] or ''}}
-                        <br/>
-                    {% endfor %}
-                {% else %}
+            {% for field in conf.display %}
+                <td>
+                {% if loop.first %}
+                    {% if conf.view %}
+                        <a href="{{item.id}}">{{item[field]}}</a>
+                    {% else %}
                         {{item[field]}}
-                {% endif %}
-            {% endif %}
-            </td>
-        {% endfor %}
-        <td data-title="Actions">
-            <ul class="menu-out grouped flow-across">
-                {% if item.is_active %}
-                    {% if conf.edit %}
-                        <li>
-                            <a href="{{item.id}}/edit/"
-                            class="link-button icon-pencil button no-prompt-action tooltipstered"
-                            aria-describedby="edit-hint"
-                            aria-label="Edit">
-                            </a>
-                            <div id="edit-hint" role="tooltip" class="hint-content" aria-hidden="true">Edit</div>
-                        </li>
                     {% endif %}
-                    {% if conf.archive %}
-                        <li>
-                            <form method="post" action="">
-                                <button type="submit"
-                                        name="action"
-                                        value="archive"
-                                        class="link-button icon-bin button no-prompt-action tooltipstered"
-                                        aria-describedby="archive-hint"
-                                        aria-label="Archive">
-                                    {{csrf_input}}
-                                    <input type="hidden" name="item" value="{{item.id}}" />
-                                </button>
-                                <div id="archive-hint" role="tooltip" class="hint-content">Archive</div>
-                            </form>
-                        </li>
+                    {% if conf.archive and  not item.is_active %}
+                        <br/>
+                        <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
                     {% endif %}
                 {% else %}
-                    {% if conf.archive %}
-                        <li>
-                            <form method="post" action="">
-                                <button type="submit"
-                                        name="action"
-                                        value="unarchive"
-                                        class="link-button icon-undo2 button no-prompt-action tooltipstered"
-                                        aria-describedby="unarchive-hint"
-                                        aria-label="Unarchive">
-                                    {{csrf_input}}
-                                    <input type="hidden" name="item" value="{{item.id}}" />
-                                </button>
-                                <div id="unarchive-hint" role="tooltip" class="hint-content">Unarchive</div>
-                            </form>
-                        </li>
+                    {% if field is not string %}
+                        {% for f in field  %}
+                            {{item[f] or ''}}
+                            <br/>
+                        {% endfor %}
+                    {% else %}
+                            {{item[field]}}
                     {% endif %}
                 {% endif %}
-            </ul>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+                </td>
+            {% endfor %}
+            <td data-title="Actions">
+                <ul class="menu-out grouped flow-across">
+                    {% if item.is_active %}
+                        {% if conf.edit %}
+                            <li>
+                                <a href="{{item.id}}/edit/"
+                                class="link-button icon-pencil button no-prompt-action tooltipstered"
+                                aria-describedby="edit-hint"
+                                aria-label="Edit">
+                                </a>
+                                <div id="edit-hint" role="tooltip" class="hint-content" aria-hidden="true">Edit</div>
+                            </li>
+                        {% endif %}
+                        {% if conf.archive %}
+                            <li>
+                                <form method="post" action="">
+                                    <button type="submit"
+                                            name="action"
+                                            value="archive"
+                                            class="link-button icon-bin button no-prompt-action tooltipstered"
+                                            aria-describedby="archive-hint"
+                                            aria-label="Archive">
+                                        {{csrf_input}}
+                                        <input type="hidden" name="item" value="{{item.id}}" />
+                                    </button>
+                                    <div id="archive-hint" role="tooltip" class="hint-content">Archive</div>
+                                </form>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        {% if conf.archive %}
+                            <li>
+                                <form method="post" action="">
+                                    <button type="submit"
+                                            name="action"
+                                            value="unarchive"
+                                            class="link-button icon-undo2 button no-prompt-action tooltipstered"
+                                            aria-describedby="unarchive-hint"
+                                            aria-label="Unarchive">
+                                        {{csrf_input}}
+                                        <input type="hidden" name="item" value="{{item.id}}" />
+                                    </button>
+                                    <div id="unarchive-hint" role="tooltip" class="hint-content">Unarchive</div>
+                                </form>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 
-<div class="result-count">
-    {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
-</div>
-
-{% else %}
-    {{message.warning(no_results_message)}}
-{% endif %}
+    <div class="result-count">
+        {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
+    </div>
+    {% else %}    {# count=0, no results #}
+        {% if not hide_empty_message %}
+            {{message.warning(empty_message)}}
+        {% endif %}
+    {% endif %}
 
 {%- endmacro %}

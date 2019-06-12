@@ -1,5 +1,11 @@
 from .views import views
-from .flows import flows
+from .views import (TemplateListView, ConstabularyListView,
+                    ConstabularyEditView, ConstabularyCreateView,
+                    CommodityListView, CommodityEditView, CommodityCreateView,
+                    CommodityGroupListView, CommodityGroupEditView,
+                    CommodityGroupCreateView, TeamListView, TeamEditView)
+from .views.dashboard import outbound_emails
+from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
 from django.views import generic
 from django.contrib.auth import views as auth_view
@@ -17,53 +23,58 @@ urlpatterns = [
     path('user/password/', views.change_password, name='change-password'),
 
     # Template Management
-    path('template/', views.templates, name='template-list'),
+    path('template/', TemplateListView.as_view(), name='template-list'),
     # Teams Management
-    path('teams/', views.teams, name='team-list'),
-    path(
-        'teams/<int:pk>/edit/', views.TeamEditView.as_view(),
-        name='team-edit'),
+    path('teams/', TeamListView.as_view(), name='team-list'),
+    path('teams/<int:pk>/edit/', TeamEditView.as_view(), name='team-edit'),
 
     # Constabularies Management
-    path('constabulary/', views.constabularies, name='constabulary-list'),
+    path(
+        'constabulary/',
+        ConstabularyListView.as_view(),
+        name='constabulary-list'),
     path(
         'constabulary/<int:pk>/edit/',
-        views.ConstabularyEditView.as_view(),
+        ConstabularyEditView.as_view(),
         name='constabulary-edit'),
     path(
         'constabulary/new/',
-        views.ConstabularyCreateView.as_view(),
+        ConstabularyCreateView.as_view(),
         name='constabulary-new'),
 
     # Commodities Management
-    path('commodities/', views.commodities, name='commodity-list'),
+    path('commodities/', CommodityListView.as_view(), name='commodity-list'),
     path(
         'commodities/<int:pk>/edit/',
-        views.CommodityEditView.as_view(),
+        CommodityEditView.as_view(),
         name='commodity-edit'),
     path(
         'commodities/new/',
-        views.CommodityCreateView.as_view(),
+        CommodityCreateView.as_view(),
         name='commodity-new'),
 
     # Commodity Groups Management
-    path('commodity-groups/', views.commodity_groups, name='commodity-groups'),
+    path(
+        'commodity-groups/',
+        CommodityGroupListView.as_view(),
+        name='commodity-groups'),
     path(
         'commodity-groups/<int:pk>/edit/',
-        views.CommodityGroupEditView.as_view(),
+        CommodityGroupEditView.as_view(),
         name='commodity-group-edit'),
     path(
         'commodity-groups/new/',
-        views.CommodityGroupCreateView.as_view(),
+        CommodityGroupCreateView.as_view(),
         name='commodity-group-new'),
+    path('people/', views.search_people, name='search_people'),
 
     # Portal Dashboard for outbound emails
-    path('portal/dashboard/', views.outbound_emails, name='outbound-emails'),
+    path('portal/dashboard/', outbound_emails, name='outbound-emails'),
 
     # Access Request
     path(
         'access/',
         generic.RedirectView.as_view(url='request', permanent=False),
         name='request-access'),
-    re_path(r'^access/', include(FlowViewSet(flows.AccessRequestFlow).urls)),
+    re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
 ]
