@@ -1,7 +1,4 @@
-{% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
-{% import "messages/message.html" as messages %}
+{% extends "layout/search-list.html" %}
 
 {% block page_title %}Maintain Constabularies{% endblock %}
 {% block context_header %}Maintain Constabularies{% endblock %}
@@ -12,13 +9,6 @@
 </ul>
 {% endblock %}
 
-{% block main_content %}
-
-{{forms.filter(filter, filters=filter.filters)}}
-{{lists.filter_results(filter, csrf_input=csrf_input, no_results_message="There aren't any constabularies that match your search")}}
-
-<div class="content-actions"></div>
-</div>
-</div>
-
+{% block empty_message %}
+        There aren't any constabularies that match your search
 {% endblock %}

@@ -44,8 +44,13 @@ class User(AbstractUser):
         blank=False, null=False, default=False)
     share_contact_details = models.BooleanField(
         blank=False, null=False, default=False)
+
     # work_address = models.ForeignKey(
     #     Address, on_delete=models.SET_NULL, blank=False, null=True)
+
+    class Display:
+        display = ['title']
+        labels = ['title']
 
 
 class Team(Group):
