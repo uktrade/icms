@@ -10,12 +10,18 @@
       {% endblock %}
     {% endset %}
 
-    {{forms.filter(filter, filters=filter.filters)}}
+
+    {% block filters %}
+        {{forms.filter(filter, filters=filter.filters)}}
+    {% endblock %}
+
+    {% block results %}
     {{lists.filter_results(
         filter,
         csrf_input=csrf_input,
         hide_empty_message=first_load,
         empty_message=empty_message
     )}}
+    {% endblock %}
     <div class=content-actions></div>
 {% endblock %}

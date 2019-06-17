@@ -23,6 +23,10 @@ class EmailField(forms.EmailField):
 class DisplayField(forms.Field):
     widget = Display
 
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('disabled', None)
+        super(DisplayField, self).__init__(*args, disabled=True, **kwargs)
+
 
 class PhoneNumberField(PhoneNumberField):
     widget = PhoneNumberInternationalFallbackWidget

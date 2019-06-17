@@ -27,9 +27,9 @@ class Select(Select):
     template_name = 'forms/widgets/select.html'
 
 
-class Display(HiddenInput):
+class Display(TextInput):
     """ Widget to display the field as text"""
-    template_name = 'forms/widgets/display.html'
+    template_name = 'forms/widgets/input.html'
 
 
 class CheckboxInput(CheckboxInput):

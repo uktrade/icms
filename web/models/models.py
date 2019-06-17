@@ -49,8 +49,10 @@ class User(AbstractUser):
     #     Address, on_delete=models.SET_NULL, blank=False, null=True)
 
     class Display:
-        display = ['title']
-        labels = ['title']
+        display = [('title', 'first_name', 'last_name'),
+                   ('organisation', 'email'), 'work_address']
+        labels = ['Name', 'Job Details', 'Oragnisation Address']
+        select = True
 
 
 class Team(Group):
@@ -64,6 +66,7 @@ class Team(Group):
     class Display:
         display = ['name']
         labels = ['Name']
+        edit = True
 
 
 class Role(Group):

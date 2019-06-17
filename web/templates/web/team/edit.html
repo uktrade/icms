@@ -9,11 +9,12 @@
 {% block main_content %}
 {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
 <ul class="tabs -tabs big-tabs" data-tab-group="sS0Ri8_plrnqVW43/tabs-DEC043L-grid-list-switch" role="tablist">
-
-    <li id="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="current-tab" aria-selected="true" data-tab-key="GRID" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID"><a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA6_plrnqVW43'})">Grid view</a></li>
-
-    <li id="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST" class="" aria-selected="false" data-tab-key="LIST" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST"><a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA7_plrnqVW43'})">List view</a></li>
-
+    <li class="current-tab" aria-selected="true" data-tab-key="GRID" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID">
+        <a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA6_plrnqVW43'})">Grid view</a>
+    </li>
+    <li id="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST" class="" aria-selected="false" data-tab-key="LIST" role="tab" aria-controls="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchLIST">
+        <a href="javascript:FOXjs.action({ref:'fssS0nz8_plrnqVW43/sS0nA7_plrnqVW43'})">List view</a>
+    </li>
 </ul>
 <div id="tcsS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" arial-labelledby="tksS0Ri8_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="tab-content big-tabs" style="" data-tab-group="sS0Ri8_plrnqVW43/tabs-DEC043L-grid-list-switch" data-tab-key="GRID" aria-hidden="false">
     <table class="setoutList">
@@ -42,37 +43,55 @@
         </thead>
 
         <tbody>
-            {% for user in form.instance.users %}
+            {% for user in members %}
             <tr>
+                <input type="hidden" name="team_members" value="{{user.id}}"/>
                 <td style="white-space: nowrap">
-                    <div class="container setoutForm" data-xfid="f151">
+                    <div class="container setoutForm">
                         <div class="row">
-                            <div class="twelve columns bold" data-xfid="g152"><span id="g152" class="text-widget ">Roy Smiles</span></div>
+                            <div class="twelve columns bold">
+                                <span class="text-widget ">{{user.first_name}} {{user.last_name}}</span>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="twelve columns" data-xfid="g153"><span id="g153" class="text-widget ">roy.smiles@bis.gsi.gov.uk<br>IMPORT LICENSING BRANCH<br>BIS<br>ETID<br>+44 (0)1642 364 312</span></div>
+                            <div class="twelve columns">
+                                <span id="g153" class="text-widget ">{{user.email or ''}}
+                                    <br/>
+                                    {{user.organisation}}
+                                    <br/>
+                                    {{user.department or ''}}
+                                    <br>
+                                    {{user.job_title or ''}}
+                                    <br>
+                                    {{user.phone_number or ''}}
+                                </span>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="twelve columns" data-xfid="g154"><span id="g154" class="text-widget "></span></div>
+                            <div class="twelve columns"><span class="text-widget "></span></div>
                         </div>
                         <div class="row">
-                            <div class="twelve columns" data-xfid="g155"><span id="g155" class="text-widget "></span></div>
+                            <div class="twelve columns">
+                                <span id="g155" class="text-widget ">
+                                </span>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="twelve columns" data-xfid="g156"> <button id="g156" name="g156" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-remove-member&quot;,&quot;ctxt&quot;:&quot;sS0QXC_plrnqVW43&quot;}, this);" class="icon-user-minus link-button inline-link-button button no-prompt-action" aria-describedby="hint184-content" aria-label="Remove">
+                            <div class="twelve columns">
+                                <button type="button" class="icon-user-minus link-button inline-link-button button no-prompt-action" aria-describedby="remove_from_team_hint" aria-label="Remove">
                                 </button>
-                                <div id="hint184-content" role="tooltip" class="hint-content">Remove from this team</div>
+                                <div id="remove_from_team_hint" role="tooltip" class="hint-content">Remove from this team</div>
                             </div>
                         </div>
                     </div>
 
                 </td>
-                <td>
-                    <div class="individual-input" data-xfid="g157"><label id="pg157/0" for="g157/0" class="radio-label"><input id="g157/0" name="g157" value="g157/0" type="checkbox" checked="checked" /></label></div>
-                </td>
-                <td>
-                    <div class="individual-input" data-xfid="g159"><label id="pg159/0" for="g159/0" class="radio-label"><input id="g159/0" name="g159" value="g159/0" type="checkbox" checked="checked" /></label></div>
-                </td>
+                {# <td> #}
+                {#     <div class="individual-input" data-xfid="g157"><label id="pg157/0" for="g157/0" class="radio-label"><input id="g157/0" name="g157" value="g157/0" type="checkbox" checked="checked" /></label></div> #}
+                {# </td> #}
+                {# <td> #}
+                {#     <div class="individual-input" data-xfid="g159"><label id="pg159/0" for="g159/0" class="radio-label"><input id="g159/0" name="g159" value="g159/0" type="checkbox" checked="checked" /></label></div> #}
+                {# </td> #}
             </tr>
             {% endfor %}
         </tbody>

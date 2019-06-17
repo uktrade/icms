@@ -1,5 +1,5 @@
-# import json
-# from django.core.serializers.json import DjangoJSONEncoder
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import (CharField, DateField)
 from django import forms
 from django.forms.forms import DeclarativeFieldsMetaclass
@@ -8,6 +8,22 @@ from django_filters.filterset import FilterSetMetaclass
 from web.base.utils import dict_merge
 from . import widgets
 import django_filters as filter
+
+
+class FormSerializeMixin(object):
+    def data_dict(self):
+        data = {}
+        fields = self.Meta.serialize if hasattr(
+            self.Meta, 'serialize') else self.Meta.fields
+        for field in fields:
+            value = self.cleaned_data.get(field, None)
+            if value:
+                data[field] = self.cleaned_data.get(field, None)
+        return data
+
+    def serialize(self):
+        self.is_valid()  # populate cleaned_data
+        return json.dumps(self.data_dict(), cls=DjangoJSONEncoder)
 
 
 class DefaultFormConfig(object):
@@ -97,7 +113,9 @@ def get_field(field, **kwargs):
     return field.formfield(widget=widget, **kwargs)
 
 
-class ModelForm(forms.ModelForm, metaclass=ModelFormConfigMetaClass):
+class ModelForm(
+        FormSerializeMixin, forms.ModelForm,
+        metaclass=ModelFormConfigMetaClass):
     """Model form to customise widgets and their templates"""
 
     class Meta:
@@ -110,18 +128,3 @@ class Form(forms.Form, metaclass=FormConfigMetaClass):
 
 class FilterSet(filter.FilterSet, metaclass=FilterFormConfigMetaClass):
     pass
-
-
-# class FormSerializeMixin(object):
-#     def data_dict(self):
-#         data = {}
-#         fields = self.Meta.serialize if hasattr(
-#             self.Meta, 'serialize') else self.Meta.fields
-#         for field in fields:
-#             value = self.cleaned_data.get(field, None)
-#             if value:
-#                 data[field] = self.cleaned_data.get(field, None)
-#         return data
-
-#     def serialize(self):
-#         return json.dumps(self.data_dict(), cls=DjangoJSONEncoder)

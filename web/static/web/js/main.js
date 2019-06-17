@@ -30,6 +30,27 @@
       return false;
     });
 
+
+    $('#id_select_all').click(function(){
+        $('.item_selector').each(function(){
+            selector=$(this);
+            selector.prop('checked', true);
+        });
+    });
+
+    $('#id_select_none').click(function(){
+          $('.item_selector').each(function(){
+              selector=$(this);
+              selector.prop('checked', false);
+          });
+     });
+
+     $('.icon-user-minus').click(function(){
+         $(this).closest('tr').remove();
+     });
+
+
+
     if(path=='/register/') {
       handle_security_question();
       $('#id_security_question_list').change(handle_security_question);
