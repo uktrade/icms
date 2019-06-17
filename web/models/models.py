@@ -55,29 +55,27 @@ class User(AbstractUser):
         select = True
 
 
-class Team(Group):
-    group = models.OneToOneField(
-        Group,
-        on_delete=models.CASCADE,
-        parent_link=True,
-        related_name='teams')
-    description = models.CharField(max_length=4000, blank=True, null=True)
-
-    class Display:
-        display = ['name']
-        labels = ['Name']
-        edit = True
-
-
 class Role(Group):
     group = models.OneToOneField(
         Group,
         on_delete=models.CASCADE,
         parent_link=True,
         related_name='roles')
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, related_name='roles')
     description = models.CharField(max_length=4000, blank=True, null=True)
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=1000, blank=False, null=False)
+    description = models.CharField(max_length=4000, blank=True, null=True)
+    roles = models.ManyToManyField(Role)
+
+    class Meta:
+        ordering = ('name', )
+
+    class Display:
+        display = ['name']
+        labels = ['Name']
+        edit = True
 
 
 class Constabulary(Archivable, models.Model):
