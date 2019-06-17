@@ -167,7 +167,6 @@ class ResetPasswordSecondForm(Form):
 
 
 class UserDetailsUpdateForm(ModelForm):
-
     # TODO: Save address to addresses table
     # address = CharField(
     #     required=True,

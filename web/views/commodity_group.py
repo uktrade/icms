@@ -5,7 +5,7 @@ from django.views.generic.edit import (UpdateView, CreateView)
 from web.base.views import ModelListActionView
 from web.base.forms import FilterSet, widgets, ModelForm
 from web.models import (CommodityGroup, Commodity, Unit)
-from web.base.forms.fields import DisplayField
+from web.base.forms.fields import (DisplayField, CharField)
 from web.base.forms.widgets import Textarea
 from .filters import _filter_config
 
@@ -47,14 +47,20 @@ class CommodityGroupFilter(FilterSet):
 
 
 class CommodityGroupEditForm(ModelForm):
-    group_type_verbose = DisplayField(label='Group Type')
-    commodity_type_verbose = DisplayField(label='Commodity Types')
+    group_type = DisplayField(
+        label='Group Type',
+        help_text='Auto groups will include all commodities beginning with the \
+            Group Code. Category groups will allow you manually include \
+            commodities')
+    commodity_type = DisplayField(
+        label='Commodity Types',
+        help_text='Please choose what type of commodities this group should \
+        contain')
 
     class Meta:
         model = CommodityGroup
         fields = [
-            'group_type_verbose', 'commodity_type_verbose', 'group_code',
-            'group_description'
+            'group_type', 'commodity_type', 'group_code', 'group_description'
         ]
         labels = {
             'commodity_type': 'Commodity Types',
@@ -62,12 +68,6 @@ class CommodityGroupEditForm(ModelForm):
             'group_description': 'Group Description'
         }
         help_texts = {
-            'group_type_verbose':
-            'Auto groups will include all commodities beginning with the \
-            Group Code. Category groups will allow you manually include \
-            commodities',
-            'commodity_type':
-            'Please choose what type of commodities this group should contain',
             'group_code':
             'For Auto Groups: please enter the first four digits \
             of the commodity code you want to include in this group.\
@@ -105,7 +105,19 @@ class CommodityGroupEditForm(ModelForm):
         }
 
 
-class CommodityGroupCreateForm(CommodityGroupEditForm):
+class CommodityGroupCreateForm(ModelForm):
+    group_type = CharField(
+        widget=widgets.Select(choices=CommodityGroup.TYPES),
+        help_text='Auto groups will include all commodities beginning with the \
+            Group Code. Category groups will allow you manually include \
+            commodities')
+
+    commodity_type = CharField(
+        widget=widgets.Select(choices=Commodity.TYPES),
+        label='Commodity Types',
+        help_text='Please choose what type of commodities this group should \
+        contain')
+
     class Meta(CommodityGroupEditForm.Meta):
         pass
 

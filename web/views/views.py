@@ -17,7 +17,6 @@ from web import models
 from .utils import form_utils
 from .formset import (new_user_phones_formset, new_personal_emails_formset,
                       new_alternative_emails_formset)
-from .user import UserFilter
 
 logger = logging.getLogger(__name__)
 
@@ -146,16 +145,6 @@ def register(request):
 def workbasket(request):
     process = models.AccessRequestProcess.objects.owned_process(request.user)
     return render(request, 'web/workbasket.html', {'process_list': process})
-
-
-@require_registered
-def search_people(request):
-    if not request.POST:  # first page load
-        filter = UserFilter(queryset=models.User.objects.none())
-    else:
-        filter = UserFilter(request.POST, queryset=models.User.objects.all())
-
-    return render(request, 'web/user/search-people.html', {'filter': filter})
 
 
 def init_user_details_forms(request, action):

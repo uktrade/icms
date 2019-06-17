@@ -1,16 +1,42 @@
-{% extends "layout/search-list.html" %}
+{% extends "layout/sidebar.html" %}
 {% import "forms/form.html" as forms %}
 {% import "forms/list.html" as lists %}
 {% import "messages/message.html" as message %}
 
 {% block page_title %}Search People{% endblock %}
 {% block context_header %}Search People{% endblock %}
-{% block empty_message %}
-    There aren't any people that match your search. You can change your search terms and try again, or <a href="">create a new person</a>
-{% endblock %}
 
 {% block main_content %}
-    {{message.info('To search for a person, please fill in at least one field below.')}}
 
-    {{super()}}
+    {% set empty_message %}
+       There aren't any people that match your search. You can change your search terms and try again, or <a href="">create a new person</a>
+    {% endset %}
+
+    {{message.info('To search for a person, please fill in at least one field below.')}}
+    {{forms.filter(filter, filters=filter.filters, method='post', csrf_input=csrf_input) }}
+    <form method="post" action="">
+        {{csrf_input}}
+        {% if filter.qs.count() > 0 %}
+            <div class="list-actions">
+                <ul class="menu-out small-menu-out flow-across">
+                    <li>
+                        <button id="id_add_people" name="action" value="add_people" type="submit" class="primary-button icon-user-plus button">
+                            Add Selected People
+                        </button>
+                    </li>
+                    <li>
+                        <button id="id_select_none" type="button" class="icon-checkbox-unchecked button">
+                            Select None
+                        </button>
+                    </li>
+                    <li>
+                        <button id="id_select_all" type="button" class="icon-checkbox-checked button">
+                            Select All
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+        {{lists.filter_results(filter, csrf_input=csrf_input, hide_empty_message=first_load,  empty_message=empty_message)}}
+    </form>
 {% endblock %}

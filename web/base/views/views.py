@@ -1,11 +1,10 @@
 from django.views.generic.base import View
 from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest
 from django.core.exceptions import SuspiciousOperation
 
 
-def raise_suspicious():
-    raise SuspiciousOperation('Invalid request')
+def raise_suspicious(message='Invalid request'):
+    raise SuspiciousOperation(message)
 
 
 class ActionView(View):
@@ -17,7 +16,7 @@ class ActionView(View):
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
         if not action:
-            raise HttpResponseBadRequest('Invalid action')
+            raise_suspicious('Invalid action')
 
         return getattr(self, action)(request, *args, **kwargs)
 
@@ -35,17 +34,18 @@ class ModelEditActionView(ActionView):
     See web/views/views.py for all usage examples
     """
 
-    def get_form(self, request, pk):
-        if pk:
-            instance = self.model.objects.get(pk=pk)
-        else:
-            instance = None
-        return self.form_class(request.POST or None, instance=instance)
+    def get_instance(self, pk):
+        return self.model.objects.get(pk=pk)
 
-    def render_response(self, form):
-        return render(self.request, self.template_name, {'form': form})
+    def get_form(self, request, pk, data=None):
+        return self.form_class(
+            data or request.POST or None, instance=self.get_instance(pk))
 
-    def save(self, request, pk=None):
+    def render_response(self, form, context={}):
+        context['form'] = form
+        return render(self.request, self.template_name, context)
+
+    def save(self, request, pk):
         form = self.get_form(request, pk)
         if form.is_valid():
             form.save()
@@ -53,7 +53,7 @@ class ModelEditActionView(ActionView):
 
         return self.render_response(form)
 
-    def get(self, request, pk=None):
+    def get(self, request, pk):
         return self.render_response(self.get_form(request, pk))
 
 

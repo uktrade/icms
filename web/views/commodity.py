@@ -61,7 +61,9 @@ class CommodityEditForm(ModelForm):
         }
 
 
-class CommodityCreateForm(CommodityEditForm):
+class CommodityCreateForm(ModelForm):
+    commodity_code = CharFilter(label='Commodity Code')
+
     class Meta(CommodityEditForm.Meta):
         config = {
             'label': {
