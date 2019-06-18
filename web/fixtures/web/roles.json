@@ -1,691 +1,1310 @@
 [
   {
     "pk": 1,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Advice Super Users:Advice Super Admin",
+      "permissions": [
+        101,
+        102,
+        103
+      ]
+    }
+  },
+  {
+    "pk": 1,
     "model": "web.Role",
     "fields": {
-      "group_id": "18",
-      "team_id": "1",
-      "name": "Advice Super Users:Advice Super Admin",
+      "group_id": "1",
       "description": "Users listed here can control all review advice teams"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Advice Super Users:Team Coordinator",
+      "permissions": [
+        104
+      ]
     }
   },
   {
     "pk": 2,
     "model": "web.Role",
     "fields": {
-      "group_id": "19",
-      "team_id": "1",
-      "name": "Advice Super Users:Team Coordinator",
+      "group_id": "2",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 3,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Application Error Logging Users Static:Recipient of SMS and e-mail for domains with no recipients",
+      "permissions": [
+        108
+      ]
     }
   },
   {
     "pk": 3,
     "model": "web.Role",
     "fields": {
-      "group_id": "20",
-      "team_id": "2",
-      "name": "Application Error Logging Users Static:Recipient of SMS and e-mail for domains with no recipients",
+      "group_id": "3",
       "description": "Make sure this person has an Email and a mobile number!"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Application Error Logging Users Static:ERROR_ADMIN",
+      "permissions": [
+        105,
+        107
+      ]
     }
   },
   {
     "pk": 4,
     "model": "web.Role",
     "fields": {
-      "group_id": "21",
-      "team_id": "2",
-      "name": "Application Error Logging Users Static:ERROR_ADMIN",
+      "group_id": "4",
       "description": "User's who can view errors from all domains."
+    }
+  },
+  {
+    "pk": 5,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Application Error Logging Users Static:Resource Co-ordinator",
+      "permissions": [
+        106
+      ]
     }
   },
   {
     "pk": 5,
     "model": "web.Role",
     "fields": {
-      "group_id": "22",
-      "team_id": "2",
-      "name": "Application Error Logging Users Static:Resource Co-ordinator",
+      "group_id": "5",
       "description": "Can edit error logging admin users."
+    }
+  },
+  {
+    "pk": 6,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Country Super Users:Country Set Super User",
+      "permissions": [
+        109,
+        110,
+        111,
+        112
+      ]
     }
   },
   {
     "pk": 6,
     "model": "web.Role",
     "fields": {
-      "group_id": "23",
-      "team_id": "3",
-      "name": "Country Super Users:Country Set Super User",
+      "group_id": "6",
       "description": "Users in this list are able to create online forms applications."
+    }
+  },
+  {
+    "pk": 7,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Country Super Users:Team Coordinator",
+      "permissions": [
+        113
+      ]
     }
   },
   {
     "pk": 7,
     "model": "web.Role",
     "fields": {
-      "group_id": "24",
-      "team_id": "3",
-      "name": "Country Super Users:Team Coordinator",
+      "group_id": "7",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 8,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Digital Certificate Management Team:Digital Certificate Manager",
+      "permissions": [
+        115
+      ]
     }
   },
   {
     "pk": 8,
     "model": "web.Role",
     "fields": {
-      "group_id": "25",
-      "team_id": "4",
-      "name": "Digital Certificate Management Team:Digital Certificate Manager",
+      "group_id": "8",
       "description": "People who manage digital certificates"
+    }
+  },
+  {
+    "pk": 9,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Digital Certificate Management Team:Team Coordinator",
+      "permissions": [
+        114
+      ]
     }
   },
   {
     "pk": 9,
     "model": "web.Role",
     "fields": {
-      "group_id": "26",
-      "team_id": "4",
-      "name": "Digital Certificate Management Team:Team Coordinator",
+      "group_id": "9",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 10,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Address Administrator with Q.A. Function",
+      "permissions": [
+        116
+      ]
     }
   },
   {
     "pk": 10,
     "model": "web.Role",
     "fields": {
-      "group_id": "27",
-      "team_id": "5",
-      "name": "Directory Super Users:Address Administrator with Q.A. Function",
+      "group_id": "10",
       "description": "Users in this list are required to check addresses input on the system by other users. When poorly input addresses are found these should be rejected so they do not appear on the search addresses screen."
+    }
+  },
+  {
+    "pk": 11,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Admin Console",
+      "permissions": [
+        117,
+        138
+      ]
     }
   },
   {
     "pk": 11,
     "model": "web.Role",
     "fields": {
-      "group_id": "28",
-      "team_id": "5",
-      "name": "Directory Super Users:Admin Console",
+      "group_id": "11",
       "description": "Users can view the admin console"
+    }
+  },
+  {
+    "pk": 12,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:People and User Login Administrator with Q.A. Function",
+      "permissions": [
+        118,
+        131,
+        132,
+        133,
+        134,
+        135,
+        141
+      ]
     }
   },
   {
     "pk": 12,
     "model": "web.Role",
     "fields": {
-      "group_id": "29",
-      "team_id": "5",
-      "name": "Directory Super Users:People and User Login Administrator with Q.A. Function",
+      "group_id": "12",
       "description": "Users in this list may correct existing person details (usually only changeable by the person in question). Users here can also maintain Portal Login User Accounts."
+    }
+  },
+  {
+    "pk": 13,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Matrix Folder Administrator",
+      "permissions": [
+        122
+      ]
     }
   },
   {
     "pk": 13,
     "model": "web.Role",
     "fields": {
-      "group_id": "30",
-      "team_id": "5",
-      "name": "Directory Super Users:Matrix Folder Administrator",
+      "group_id": "13",
       "description": "Users in this list can create and maintain matrix folders."
+    }
+  },
+  {
+    "pk": 14,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Importer",
+      "permissions": [
+        123,
+        128,
+        130
+      ]
     }
   },
   {
     "pk": 14,
     "model": "web.Role",
     "fields": {
-      "group_id": "31",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Importer",
+      "group_id": "14",
       "description": "Users in this list can import organisations details from Companies House. \n           They cannot create organsations that are not registered at Companies House \n           (i.e. partnerships or companies recorded at overseas registries only). \n           This exceptions need to be input by the \"Organisation Exceptions Manager\". \n           Note that overseas companies that have an Established Office in the UK \n           (e.g. a registered branch at C.H.) can still be imported from Companies House."
+    }
+  },
+  {
+    "pk": 15,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Manual Creator",
+      "permissions": [
+        124,
+        126,
+        128,
+        130
+      ]
     }
   },
   {
     "pk": 15,
     "model": "web.Role",
     "fields": {
-      "group_id": "32",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Manual Creator",
+      "group_id": "15",
       "description": "Users in this list can import \n                  organisations details from Companies House and update/maintain \n                  existing organisation records. They can also create organisation \n                  records manually  (i.e. partnerships or companies recorded at overseas \n                  registries only). Only experienced/trained users should be added to this role."
+    }
+  },
+  {
+    "pk": 16,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation QA and Updater",
+      "permissions": [
+        125,
+        126,
+        128,
+        130
+      ]
     }
   },
   {
     "pk": 16,
     "model": "web.Role",
     "fields": {
-      "group_id": "33",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation QA and Updater",
+      "group_id": "16",
       "description": "Users in this list can import organisations details from Companies House and \n          update/maintain existing organisation records. Only experienced/trained \n          users should be added to this role. Users here cannot create organsations \n          that are not registered at Companies House (i.e. partnerships or companies \n          recorded at overseas registries only). This exceptions need to be input by the \n          \"Organisation Exceptions Manager\". Note that overseas companies that have an \n          Established Office in the UK (e.g. a registered branch at C.H.) can still be imported from Companies House."
+    }
+  },
+  {
+    "pk": 17,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Standard Editor",
+      "permissions": [
+        126,
+        128,
+        130
+      ]
     }
   },
   {
     "pk": 17,
     "model": "web.Role",
     "fields": {
-      "group_id": "34",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Standard Editor",
+      "group_id": "17",
       "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  are not able to change name history or create new organisations."
+    }
+  },
+  {
+    "pk": 18,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Group Editor",
+      "permissions": [
+        127,
+        128,
+        133
+      ]
     }
   },
   {
     "pk": 18,
     "model": "web.Role",
     "fields": {
-      "group_id": "35",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Group Editor",
+      "group_id": "18",
       "description": "Users in this list can view and maintain organisation group details."
+    }
+  },
+  {
+    "pk": 19,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Automatic Updater",
+      "permissions": [
+        125,
+        126,
+        128,
+        129,
+        130
+      ]
     }
   },
   {
     "pk": 19,
     "model": "web.Role",
     "fields": {
-      "group_id": "36",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Automatic Updater",
+      "group_id": "19",
       "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  may also change name history and previous details of an \n                  organisations. Observations of an organisation may also be \n                  viewed, and may be automatically corrected by this user."
+    }
+  },
+  {
+    "pk": 20,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Organisation Viewer",
+      "permissions": [
+        128,
+        130
+      ]
     }
   },
   {
     "pk": 20,
     "model": "web.Role",
     "fields": {
-      "group_id": "37",
-      "team_id": "5",
-      "name": "Directory Super Users:Organisation Viewer",
+      "group_id": "20",
       "description": "Users in this list can only view organisation details"
+    }
+  },
+  {
+    "pk": 21,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Email Domain Administrator",
+      "permissions": [
+        119,
+        120,
+        121
+      ]
     }
   },
   {
     "pk": 21,
     "model": "web.Role",
     "fields": {
-      "group_id": "38",
-      "team_id": "5",
-      "name": "Directory Super Users:Email Domain Administrator",
+      "group_id": "21",
       "description": "Users in this list can maintain a list of rules that allow accounts to be automatically issued and approved dependent on email domain."
+    }
+  },
+  {
+    "pk": 22,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Portal Folder Type Administrator",
+      "permissions": [
+        136
+      ]
     }
   },
   {
     "pk": 22,
     "model": "web.Role",
     "fields": {
-      "group_id": "39",
-      "team_id": "5",
-      "name": "Directory Super Users:Portal Folder Type Administrator",
+      "group_id": "22",
       "description": "Users in this list can create and maintain portal folder types."
+    }
+  },
+  {
+    "pk": 23,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Team Coordinator",
+      "permissions": [
+        118
+      ]
     }
   },
   {
     "pk": 23,
     "model": "web.Role",
     "fields": {
-      "group_id": "40",
-      "team_id": "5",
-      "name": "Directory Super Users:Team Coordinator",
+      "group_id": "23",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 24,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Role Control Administrator",
+      "permissions": [
+        137
+      ]
     }
   },
   {
     "pk": 24,
     "model": "web.Role",
     "fields": {
-      "group_id": "41",
-      "team_id": "5",
-      "name": "Directory Super Users:Role Control Administrator",
+      "group_id": "24",
       "description": "Users can manager the wua control flag for different roles"
+    }
+  },
+  {
+    "pk": 25,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Web Organisation Admin (Legacy)",
+      "permissions": [
+        139,
+        140
+      ]
     }
   },
   {
     "pk": 25,
     "model": "web.Role",
     "fields": {
-      "group_id": "42",
-      "team_id": "5",
-      "name": "Directory Super Users:Web Organisation Admin (Legacy)",
+      "group_id": "25",
       "description": "Ability to maintain web organisation teams"
+    }
+  },
+  {
+    "pk": 26,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Directory Super Users:Web User Accounts Admin",
+      "permissions": [
+        141
+      ]
     }
   },
   {
     "pk": 26,
     "model": "web.Role",
     "fields": {
-      "group_id": "43",
-      "team_id": "5",
-      "name": "Directory Super Users:Web User Accounts Admin",
+      "group_id": "26",
       "description": "Users in this list may block, cancel, and re-issue the passwords of web user accounts. Users with the 'People and User Login Administrator with Q.A. Function' role automatically gain this role."
+    }
+  },
+  {
+    "pk": 27,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users:Edit any Template Clause Set within any Template Clause Type",
+      "permissions": [
+        143,
+        145
+      ]
     }
   },
   {
     "pk": 27,
     "model": "web.Role",
     "fields": {
-      "group_id": "44",
-      "team_id": "16",
-      "name": "Super Users:Edit any Template Clause Set within any Template Clause Type",
+      "group_id": "27",
       "description": "Users in this list can Edit any Template Clause Set within any Template Clause Type"
+    }
+  },
+  {
+    "pk": 28,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users:Edit Any Team",
+      "permissions": [
+        142
+      ]
     }
   },
   {
     "pk": 28,
     "model": "web.Role",
     "fields": {
-      "group_id": "45",
-      "team_id": "16",
-      "name": "Super Users:Edit Any Team",
+      "group_id": "28",
       "description": "User can edit any team"
+    }
+  },
+  {
+    "pk": 29,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users:Team Coordinator",
+      "permissions": [
+        142
+      ]
     }
   },
   {
     "pk": 29,
     "model": "web.Role",
     "fields": {
-      "group_id": "46",
-      "team_id": "16",
-      "name": "Super Users:Team Coordinator",
+      "group_id": "29",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 30,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users:Send Emails to Selected Members of Selected Resource Types from the Portal Administration Screen",
+      "permissions": [
+        144
+      ]
     }
   },
   {
     "pk": 30,
     "model": "web.Role",
     "fields": {
-      "group_id": "47",
-      "team_id": "16",
-      "name": "Super Users:Send Emails to Selected Members of Selected Resource Types from the Portal Administration Screen",
+      "group_id": "30",
       "description": "Users can send Emails to all members of selected resource type from the portal administration screen"
+    }
+  },
+  {
+    "pk": 31,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Super Users:Super User Proxy Login",
+      "permissions": [
+        146,
+        147
+      ]
     }
   },
   {
     "pk": 31,
     "model": "web.Role",
     "fields": {
-      "group_id": "48",
-      "team_id": "16",
-      "name": "Super Users:Super User Proxy Login",
+      "group_id": "31",
       "description": "Users in this list can proxy login as other portal users."
+    }
+  },
+  {
+    "pk": 32,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Admin Users:Dashboard User",
+      "permissions": [
+        149,
+        151,
+        153
+      ]
     }
   },
   {
     "pk": 32,
     "model": "web.Role",
     "fields": {
-      "group_id": "49",
-      "team_id": "6",
-      "name": "ILB Admin Users:Dashboard User",
+      "group_id": "32",
       "description": "Users can access the ICMS data dashboard."
+    }
+  },
+  {
+    "pk": 33,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Admin Users:Maintain All",
+      "permissions": [
+        150,
+        151,
+        152,
+        153
+      ]
     }
   },
   {
     "pk": 33,
     "model": "web.Role",
     "fields": {
-      "group_id": "50",
-      "team_id": "6",
-      "name": "ILB Admin Users:Maintain All",
+      "group_id": "33",
       "description": "Users can maintain all reference data for the system (importers, exporters, commodities, countries, categories etc)."
+    }
+  },
+  {
+    "pk": 34,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Admin Users:Resource Co-ordinator",
+      "permissions": [
+        148,
+        151
+      ]
     }
   },
   {
     "pk": 34,
     "model": "web.Role",
     "fields": {
-      "group_id": "51",
-      "team_id": "6",
-      "name": "ILB Admin Users:Resource Co-ordinator",
+      "group_id": "34",
       "description": "Has all permissions and can edit members of the team."
+    }
+  },
+  {
+    "pk": 35,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Search Users:Resource Co-ordinator",
+      "permissions": [
+        154,
+        157
+      ]
     }
   },
   {
     "pk": 35,
     "model": "web.Role",
     "fields": {
-      "group_id": "52",
-      "team_id": "9",
-      "name": "ILB Search Users:Resource Co-ordinator",
+      "group_id": "35",
       "description": "Has all permissions and can edit members of the team."
+    }
+  },
+  {
+    "pk": 36,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Search Users:Search Cases",
+      "permissions": [
+        155,
+        156,
+        157,
+        158,
+        159
+      ]
     }
   },
   {
     "pk": 36,
     "model": "web.Role",
     "fields": {
-      "group_id": "53",
-      "team_id": "9",
-      "name": "ILB Search Users:Search Cases",
+      "group_id": "36",
       "description": "Users can search across all cases."
+    }
+  },
+  {
+    "pk": 37,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Case Officers:Import Application Case Officer",
+      "permissions": [
+        161,
+        165,
+        166,
+        167
+      ]
     }
   },
   {
     "pk": 37,
     "model": "web.Role",
     "fields": {
-      "group_id": "54",
-      "team_id": "7",
-      "name": "ILB Case Officers:Import Application Case Officer",
+      "group_id": "37",
       "description": "Users in this role have the ability to process import application cases through the system."
+    }
+  },
+  {
+    "pk": 38,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Case Officers:Certificate Application Case Officer",
+      "permissions": [
+        162,
+        163,
+        164,
+        165
+      ]
     }
   },
   {
     "pk": 38,
     "model": "web.Role",
     "fields": {
-      "group_id": "55",
-      "team_id": "7",
-      "name": "ILB Case Officers:Certificate Application Case Officer",
+      "group_id": "38",
       "description": "Users in this role have the ability to process certificate application cases through the system."
+    }
+  },
+  {
+    "pk": 39,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Case Officers:Resource Co-ordinator",
+      "permissions": [
+        160,
+        165,
+        168
+      ]
     }
   },
   {
     "pk": 39,
     "model": "web.Role",
     "fields": {
-      "group_id": "56",
-      "team_id": "7",
-      "name": "ILB Case Officers:Resource Co-ordinator",
+      "group_id": "39",
       "description": "Has all permissions and can edit members of the team."
+    }
+  },
+  {
+    "pk": 40,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB External Users:Resource Co-ordinator",
+      "permissions": [
+        169
+      ]
     }
   },
   {
     "pk": 40,
     "model": "web.Role",
     "fields": {
-      "group_id": "57",
-      "team_id": "8",
-      "name": "ILB External Users:Resource Co-ordinator",
+      "group_id": "40",
       "description": "Has all permissions and can edit members of the team."
+    }
+  },
+  {
+    "pk": 41,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB External Users:Verified Section 5 Authority Editor",
+      "permissions": [
+        170,
+        171
+      ]
     }
   },
   {
     "pk": 41,
     "model": "web.Role",
     "fields": {
-      "group_id": "58",
-      "team_id": "8",
-      "name": "ILB External Users:Verified Section 5 Authority Editor",
+      "group_id": "41",
       "description": "Users in this role have privileges to view and edit importer verified section 5 authorities."
+    }
+  },
+  {
+    "pk": 42,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Support Users:Resource Co-ordinator",
+      "permissions": [
+        172
+      ]
     }
   },
   {
     "pk": 42,
     "model": "web.Role",
     "fields": {
-      "group_id": "59",
-      "team_id": "10",
-      "name": "ILB Support Users:Resource Co-ordinator",
+      "group_id": "42",
       "description": "Has all permissions and can edit members of the team."
+    }
+  },
+  {
+    "pk": 43,
+    "model": "auth.Group",
+    "fields": {
+      "name": "ILB Support Users:Support User",
+      "permissions": [
+        173,
+        174,
+        175,
+        176,
+        177,
+        178,
+        179,
+        180,
+        181,
+        182
+      ]
     }
   },
   {
     "pk": 43,
     "model": "web.Role",
     "fields": {
-      "group_id": "60",
-      "team_id": "10",
-      "name": "ILB Support Users:Support User",
+      "group_id": "43",
       "description": "Users in this role have all ICMS system privileges."
+    }
+  },
+  {
+    "pk": 44,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Pay Admin Contacts:Administer Payments Manually",
+      "permissions": [
+        183,
+        185,
+        186
+      ]
     }
   },
   {
     "pk": 44,
     "model": "web.Role",
     "fields": {
-      "group_id": "61",
-      "team_id": "12",
-      "name": "Pay Admin Contacts:Administer Payments Manually",
+      "group_id": "44",
       "description": "Users listed here are allowed to record/cancel payments to BERR in the event of a problem with epayment.  They may also view Statements."
+    }
+  },
+  {
+    "pk": 45,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Pay Admin Contacts:Team Coordinators",
+      "permissions": [
+        184
+      ]
     }
   },
   {
     "pk": 45,
     "model": "web.Role",
     "fields": {
-      "group_id": "62",
-      "team_id": "12",
-      "name": "Pay Admin Contacts:Team Coordinators",
+      "group_id": "45",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 46,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Pay Admin Contacts:Statement Search and View",
+      "permissions": [
+        185,
+        186
+      ]
     }
   },
   {
     "pk": 46,
     "model": "web.Role",
     "fields": {
-      "group_id": "63",
-      "team_id": "12",
-      "name": "Pay Admin Contacts:Statement Search and View",
+      "group_id": "46",
       "description": "Users listed here are allowed to search and view previous Statements relating to Payments made through the Portal."
+    }
+  },
+  {
+    "pk": 47,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Payment Testers:Payment Tester",
+      "permissions": [
+        187
+      ]
     }
   },
   {
     "pk": 47,
     "model": "web.Role",
     "fields": {
-      "group_id": "64",
-      "team_id": "14",
-      "name": "Portal Payment Testers:Payment Tester",
+      "group_id": "47",
       "description": "Users listed here have access to the Payment Test Harness system LHS."
+    }
+  },
+  {
+    "pk": 48,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Payment Testers:Team Coordinators",
+      "permissions": [
+        187
+      ]
     }
   },
   {
     "pk": 48,
     "model": "web.Role",
     "fields": {
-      "group_id": "65",
-      "team_id": "14",
-      "name": "Portal Payment Testers:Team Coordinators",
+      "group_id": "48",
       "description": "Only users in this list may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 49,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Access Dashboard",
+      "permissions": [
+        189
+      ]
     }
   },
   {
     "pk": 49,
     "model": "web.Role",
     "fields": {
-      "group_id": "66",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Access Dashboard",
+      "group_id": "49",
       "description": "Only users in this role may access the dashboard"
+    }
+  },
+  {
+    "pk": 50,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:FOX Errors View",
+      "permissions": [
+        201
+      ]
     }
   },
   {
     "pk": 50,
     "model": "web.Role",
     "fields": {
-      "group_id": "67",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:FOX Errors View",
+      "group_id": "50",
       "description": "Users in this role may view FOX errors."
+    }
+  },
+  {
+    "pk": 51,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Inbound Emails View",
+      "permissions": [
+        190
+      ]
     }
   },
   {
     "pk": 51,
     "model": "web.Role",
     "fields": {
-      "group_id": "68",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Inbound Emails View",
+      "group_id": "51",
       "description": "Only users in this role may view the dashboard inbound emails page."
+    }
+  },
+  {
+    "pk": 52,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Intruder Alerts View",
+      "permissions": [
+        191
+      ]
     }
   },
   {
     "pk": 52,
     "model": "web.Role",
     "fields": {
-      "group_id": "69",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Intruder Alerts View",
+      "group_id": "52",
       "description": "Only users in this role may view the dashboard intruder alerts page."
+    }
+  },
+  {
+    "pk": 53,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Login Audit View",
+      "permissions": [
+        192
+      ]
     }
   },
   {
     "pk": 53,
     "model": "web.Role",
     "fields": {
-      "group_id": "70",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Login Audit View",
+      "group_id": "53",
       "description": "Only users in this role may view the dashboard login audit page."
+    }
+  },
+  {
+    "pk": 54,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Outbound Emails View and Resend",
+      "permissions": [
+        200
+      ]
     }
   },
   {
     "pk": 54,
     "model": "web.Role",
     "fields": {
-      "group_id": "71",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Outbound Emails View and Resend",
+      "group_id": "54",
       "description": "Users in this role may view and resend outbound emails."
+    }
+  },
+  {
+    "pk": 55,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Portal Parameters View",
+      "permissions": [
+        193
+      ]
     }
   },
   {
     "pk": 55,
     "model": "web.Role",
     "fields": {
-      "group_id": "72",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Portal Parameters View",
+      "group_id": "55",
       "description": "Only users in this role may view dashboard portal parameters."
+    }
+  },
+  {
+    "pk": 56,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:PL/SQL Errors View",
+      "permissions": [
+        194
+      ]
     }
   },
   {
     "pk": 56,
     "model": "web.Role",
     "fields": {
-      "group_id": "73",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:PL/SQL Errors View",
+      "group_id": "56",
       "description": "Only users in this role may view PL/SQL errors."
+    }
+  },
+  {
+    "pk": 57,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Proxy Viewer",
+      "permissions": [
+        195
+      ]
     }
   },
   {
     "pk": 57,
     "model": "web.Role",
     "fields": {
-      "group_id": "74",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Proxy Viewer",
+      "group_id": "57",
       "description": "Only users in this role may view proxy details within the web user sessions page."
+    }
+  },
+  {
+    "pk": 58,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Team Coordinator",
+      "permissions": [
+        188
+      ]
     }
   },
   {
     "pk": 58,
     "model": "web.Role",
     "fields": {
-      "group_id": "75",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Team Coordinator",
+      "group_id": "58",
       "description": "Only users in this role may change entries to this contact-list/team."
+    }
+  },
+  {
+    "pk": 59,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Roles View",
+      "permissions": [
+        196
+      ]
     }
   },
   {
     "pk": 59,
     "model": "web.Role",
     "fields": {
-      "group_id": "76",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Roles View",
+      "group_id": "59",
       "description": "Only users in this role may view the dashboard roles page."
+    }
+  },
+  {
+    "pk": 60,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Search Users View",
+      "permissions": [
+        199
+      ]
     }
   },
   {
     "pk": 60,
     "model": "web.Role",
     "fields": {
-      "group_id": "77",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Search Users View",
+      "group_id": "60",
       "description": "Only users in this role may view dashboard search users."
+    }
+  },
+  {
+    "pk": 61,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Session Viewer",
+      "permissions": [
+        197
+      ]
     }
   },
   {
     "pk": 61,
     "model": "web.Role",
     "fields": {
-      "group_id": "78",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Session Viewer",
+      "group_id": "61",
       "description": "Only users in this role may view web user sessions."
+    }
+  },
+  {
+    "pk": 62,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Portal Dashboard Permissions:Statistics View",
+      "permissions": [
+        198
+      ]
     }
   },
   {
     "pk": 62,
     "model": "web.Role",
     "fields": {
-      "group_id": "79",
-      "team_id": "13",
-      "name": "Portal Dashboard Permissions:Statistics View",
+      "group_id": "62",
       "description": "Only users in this role may view dashboard statistics."
+    }
+  },
+  {
+    "pk": 63,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Reporting Super Users:Report Administrator",
+      "permissions": [
+        202
+      ]
     }
   },
   {
     "pk": 63,
     "model": "web.Role",
     "fields": {
-      "group_id": "80",
-      "team_id": "15",
-      "name": "Reporting Super Users:Report Administrator",
+      "group_id": "63",
       "description": "Users in this role can access the reports system using the left hand side of the workbasket both to search reporting teams and view/schedule reports."
+    }
+  },
+  {
+    "pk": 64,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Reporting Super Users:Team Coordinator",
+      "permissions": [
+        203
+      ]
     }
   },
   {
     "pk": 64,
     "model": "web.Role",
     "fields": {
-      "group_id": "81",
-      "team_id": "15",
-      "name": "Reporting Super Users:Team Coordinator",
+      "group_id": "64",
       "description": "Administer this team."
+    }
+  },
+  {
+    "pk": 65,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Mapsets Management:Mapset Superuser",
+      "permissions": [
+        204
+      ]
     }
   },
   {
     "pk": 65,
     "model": "web.Role",
     "fields": {
-      "group_id": "82",
-      "team_id": "11",
-      "name": "Mapsets Management:Mapset Superuser",
+      "group_id": "65",
       "description": "Mapset Superusers can administer editing privileges on mapsets"
+    }
+  },
+  {
+    "pk": 66,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Mapsets Management:Resource Coordinator",
+      "permissions": [
+        205
+      ]
     }
   },
   {
     "pk": 66,
     "model": "web.Role",
     "fields": {
-      "group_id": "83",
-      "team_id": "11",
-      "name": "Mapsets Management:Resource Coordinator",
+      "group_id": "66",
       "description": "Resource Coordinator for the SPIRE Mapsets Management system"
+    }
+  },
+  {
+    "pk": 67,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Workbasket Viewers:Team Coordinator",
+      "permissions": [
+        207
+      ]
     }
   },
   {
     "pk": 67,
     "model": "web.Role",
     "fields": {
-      "group_id": "84",
-      "team_id": "17",
-      "name": "Workbasket Viewers:Team Coordinator",
+      "group_id": "67",
       "description": "People in this role can edit this team.\n      Warning... team coordinators will be able to add anyone to the team to view their workbasket."
+    }
+  },
+  {
+    "pk": 68,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Workbasket Viewers:Workbasket Viewee",
+      "permissions": [
+        207
+      ]
     }
   },
   {
     "pk": 68,
     "model": "web.Role",
     "fields": {
-      "group_id": "85",
-      "team_id": "17",
-      "name": "Workbasket Viewers:Workbasket Viewee",
+      "group_id": "68",
       "description": "People in this role can have their workbaskets viewed by people in the viewers role."
+    }
+  },
+  {
+    "pk": 69,
+    "model": "auth.Group",
+    "fields": {
+      "name": "Workbasket Viewers:Workbasket Viewer",
+      "permissions": [
+        206
+      ]
     }
   },
   {
     "pk": 69,
     "model": "web.Role",
     "fields": {
-      "group_id": "86",
-      "team_id": "17",
-      "name": "Workbasket Viewers:Workbasket Viewer",
+      "group_id": "69",
       "description": "People in this role can view the workbasket of all people in the Workbasket Viewee role."
     }
   }

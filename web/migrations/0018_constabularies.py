@@ -22,7 +22,7 @@ def save_constabularies(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0017_auto_20190604_1644'),
+        ('web', '0017_permissions_data'),
     ]
 
     operations = [migrations.RunPython(save_constabularies)]
