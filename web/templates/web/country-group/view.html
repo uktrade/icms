@@ -1,0 +1,896 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% block page_title %}Editing ...{% endblock %}
+{% block context_header %}Editing ...{% endblock %}
+
+
+{% block  main_content %}
+<div class="filter-bar">
+    <div class="container setoutForm noBottomMargin" data-xfid="f47">
+        <div class="row">
+            <div class="two columns" style="white-space:nowrap;" data-xfid="g48"><label id="pg48" for="g48" class="prompt west">Country Set
+                </label>
+            </div>
+            <div class="three columns setoutForm" data-xfid="g48"><select id="g48" name="g48" aria-required="true" onchange="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-changeGroupCountrySet&quot;,&quot;ctxt&quot;:&quot;s159Da0_plrnqVW43&quot;}, this);">
+                    <option value="g48/0" selected="selected">All Countries</option>
+                </select></div>
+            <div class="two columns" data-xfid="g49"><label id="pg49" for="g49" class="prompt west">Country Group
+                </label>
+            </div>
+            <div class="three columns setoutForm" data-xfid="g49"><select id="g49" name="g49" aria-required="true" onchange="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-changeCountryGroup&quot;,&quot;ctxt&quot;:&quot;s159Da0_plrnqVW43&quot;}, this);">
+                    <option value="g49/0">Certificate of Free Sale Countries</option>
+                    <option value="g49/1" selected="selected">Certificate of Free Sale Country of Manufacture Countriess</option>
+                    <option value="g49/2">Certificate of Manufacture Countries</option>
+                    <option value="g49/3">Derogation from Sanctions COOs</option>
+                    <option value="g49/4">Firearms and Ammunition (Deactivated) Issuing Countries</option>
+                    <option value="g49/5">Firearms and Ammunition (OIL) COCs</option>
+                    <option value="g49/6">Firearms and Ammunition (OIL) COOs</option>
+                    <option value="g49/7">Firearms and Ammunition (SIL) COCs</option>
+                    <option value="g49/8">Firearms and Ammunition (SIL) COOs</option>
+                    <option value="g49/9">Iron and Steel (Quota) COOs</option>
+                    <option value="g49/10">Non EU Single Countries</option>
+                    <option value="g49/11">OPT COOs</option>
+                    <option value="g49/12">OPT Temp Export COOs</option>
+                    <option value="g49/13">Textile COOs</option>
+                    <option value="g49/14">Wood (Quota) COOs</option>
+                </select></div>
+            <div class="two columns"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container setoutForm" data-xfid="f50">
+    <div class="row">
+        <div class="four columns" data-xfid="g51"><label id="pg51" for="g51" class="prompt west">Group Name
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g51"><span id="g51" class="text-widget ">Certificate of Free Sale Country of Manufacture Countriess</span></div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns" data-xfid="g52"><label id="pg52" for="g52" class="prompt west">Group Comments
+            </label>
+        </div>
+        <div class="four columns" data-xfid="g52"><span id="g52" class="text-widget "></span></div>
+        <div class="four columns"></div>
+    </div>
+</div>
+
+<div class="list-actions">
+    <ul class="menu-out flow-across">
+        <li> <button id="g376" name="g376" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-countries-in-group&quot;,&quot;ctxt&quot;:&quot;s159DGg_plrnqVW43&quot;}, this);" class="small-button icon-pencil button">
+                Edit Group </button></li>
+    </ul>
+</div>
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="three columns">
+
+            <div class="container setoutForm" data-xfid="f54">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g377"><label id="pg377/0" for="g377/0" class="radio-label"><input id="g377/0" name="g377" value="g377/0" type="checkbox" disabled="disabled" />Afghanistan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f56">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g378"><label id="pg378/0" for="g378/0" class="radio-label"><input id="g378/0" name="g378" value="g378/0" type="checkbox" disabled="disabled" />Albania</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f58">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g379"><label id="pg379/0" for="g379/0" class="radio-label"><input id="g379/0" name="g379" value="g379/0" type="checkbox" disabled="disabled" />Algeria</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f60">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g380"><label id="pg380/0" for="g380/0" class="radio-label"><input id="g380/0" name="g380" value="g380/0" type="checkbox" disabled="disabled" />Angola</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f62">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g381"><label id="pg381/0" for="g381/0" class="radio-label"><input id="g381/0" name="g381" value="g381/0" type="checkbox" disabled="disabled" />Argentina</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f64">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g382"><label id="pg382/0" for="g382/0" class="radio-label"><input id="g382/0" name="g382" value="g382/0" type="checkbox" disabled="disabled" />Armenia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f66">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g383"><label id="pg383/0" for="g383/0" class="radio-label"><input id="g383/0" name="g383" value="g383/0" type="checkbox" disabled="disabled" />Australia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f68">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g384"><label id="pg384/0" for="g384/0" class="radio-label"><input id="g384/0" name="g384" value="g384/0" type="checkbox" disabled="disabled" />Austria</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f70">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g385"><label id="pg385/0" for="g385/0" class="radio-label"><input id="g385/0" name="g385" value="g385/0" type="checkbox" disabled="disabled" />Azerbaijan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f72">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g386"><label id="pg386/0" for="g386/0" class="radio-label"><input id="g386/0" name="g386" value="g386/0" type="checkbox" disabled="disabled" />Bahamas</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f74">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g387"><label id="pg387/0" for="g387/0" class="radio-label"><input id="g387/0" name="g387" value="g387/0" type="checkbox" disabled="disabled" />Bahrain</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f76">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g388"><label id="pg388/0" for="g388/0" class="radio-label"><input id="g388/0" name="g388" value="g388/0" type="checkbox" disabled="disabled" />Bangladesh</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f78">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g389"><label id="pg389/0" for="g389/0" class="radio-label"><input id="g389/0" name="g389" value="g389/0" type="checkbox" disabled="disabled" />Barbados</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f80">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g390"><label id="pg390/0" for="g390/0" class="radio-label"><input id="g390/0" name="g390" value="g390/0" type="checkbox" disabled="disabled" />Belarus</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f82">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g391"><label id="pg391/0" for="g391/0" class="radio-label"><input id="g391/0" name="g391" value="g391/0" type="checkbox" disabled="disabled" />Belgium</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f84">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g392"><label id="pg392/0" for="g392/0" class="radio-label"><input id="g392/0" name="g392" value="g392/0" type="checkbox" disabled="disabled" />Bermuda</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f86">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g393"><label id="pg393/0" for="g393/0" class="radio-label"><input id="g393/0" name="g393" value="g393/0" type="checkbox" disabled="disabled" />Bhutan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f88">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g394"><label id="pg394/0" for="g394/0" class="radio-label"><input id="g394/0" name="g394" value="g394/0" type="checkbox" disabled="disabled" />Bolivia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f90">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g395"><label id="pg395/0" for="g395/0" class="radio-label"><input id="g395/0" name="g395" value="g395/0" type="checkbox" disabled="disabled" />Bosnia and Herzegovina</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f92">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g396"><label id="pg396/0" for="g396/0" class="radio-label"><input id="g396/0" name="g396" value="g396/0" type="checkbox" disabled="disabled" />Botswana</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f94">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g397"><label id="pg397/0" for="g397/0" class="radio-label"><input id="g397/0" name="g397" value="g397/0" type="checkbox" disabled="disabled" />Brazil</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f96">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g398"><label id="pg398/0" for="g398/0" class="radio-label"><input id="g398/0" name="g398" value="g398/0" type="checkbox" disabled="disabled" />British Virgin Islands</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f98">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g399"><label id="pg399/0" for="g399/0" class="radio-label"><input id="g399/0" name="g399" value="g399/0" type="checkbox" disabled="disabled" />Brunei</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f100">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g400"><label id="pg400/0" for="g400/0" class="radio-label"><input id="g400/0" name="g400" value="g400/0" type="checkbox" disabled="disabled" />Bulgaria</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f102">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g401"><label id="pg401/0" for="g401/0" class="radio-label"><input id="g401/0" name="g401" value="g401/0" type="checkbox" disabled="disabled" />Burma (Myanamar)</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f104">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g402"><label id="pg402/0" for="g402/0" class="radio-label"><input id="g402/0" name="g402" value="g402/0" type="checkbox" disabled="disabled" />Cambodia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f106">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g403"><label id="pg403/0" for="g403/0" class="radio-label"><input id="g403/0" name="g403" value="g403/0" type="checkbox" disabled="disabled" />Canada</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f108">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g404"><label id="pg404/0" for="g404/0" class="radio-label"><input id="g404/0" name="g404" value="g404/0" type="checkbox" disabled="disabled" />Chile</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f110">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g405"><label id="pg405/0" for="g405/0" class="radio-label"><input id="g405/0" name="g405" value="g405/0" type="checkbox" disabled="disabled" />China</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f112">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g406"><label id="pg406/0" for="g406/0" class="radio-label"><input id="g406/0" name="g406" value="g406/0" type="checkbox" disabled="disabled" />Colombia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f114">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g407"><label id="pg407/0" for="g407/0" class="radio-label"><input id="g407/0" name="g407" value="g407/0" type="checkbox" disabled="disabled" />Congo</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f116">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g408"><label id="pg408/0" for="g408/0" class="radio-label"><input id="g408/0" name="g408" value="g408/0" type="checkbox" disabled="disabled" />Congo (Dem. Republic)</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f118">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g409"><label id="pg409/0" for="g409/0" class="radio-label"><input id="g409/0" name="g409" value="g409/0" type="checkbox" disabled="disabled" />Costa Rica</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f120">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g410"><label id="pg410/0" for="g410/0" class="radio-label"><input id="g410/0" name="g410" value="g410/0" type="checkbox" disabled="disabled" />Cote d&#39;Ivoire</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f122">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g411"><label id="pg411/0" for="g411/0" class="radio-label"><input id="g411/0" name="g411" value="g411/0" type="checkbox" disabled="disabled" />Croatia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f124">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g412"><label id="pg412/0" for="g412/0" class="radio-label"><input id="g412/0" name="g412" value="g412/0" type="checkbox" disabled="disabled" />Cuba</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f126">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g413"><label id="pg413/0" for="g413/0" class="radio-label"><input id="g413/0" name="g413" value="g413/0" type="checkbox" disabled="disabled" />Cyprus</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f128">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g414"><label id="pg414/0" for="g414/0" class="radio-label"><input id="g414/0" name="g414" value="g414/0" type="checkbox" disabled="disabled" />Denmark</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f130">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g415"><label id="pg415/0" for="g415/0" class="radio-label"><input id="g415/0" name="g415" value="g415/0" type="checkbox" disabled="disabled" />Dominica</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f132">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g416"><label id="pg416/0" for="g416/0" class="radio-label"><input id="g416/0" name="g416" value="g416/0" type="checkbox" disabled="disabled" />Dominican Republic</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f134">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g417"><label id="pg417/0" for="g417/0" class="radio-label"><input id="g417/0" name="g417" value="g417/0" type="checkbox" disabled="disabled" />Ecuador</label></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="three columns">
+
+            <div class="container setoutForm" data-xfid="f136">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g418"><label id="pg418/0" for="g418/0" class="radio-label"><input id="g418/0" name="g418" value="g418/0" type="checkbox" disabled="disabled" />Egypt</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f138">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g419"><label id="pg419/0" for="g419/0" class="radio-label"><input id="g419/0" name="g419" value="g419/0" type="checkbox" disabled="disabled" />El Salvador</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f140">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g420"><label id="pg420/0" for="g420/0" class="radio-label"><input id="g420/0" name="g420" value="g420/0" type="checkbox" disabled="disabled" />Equatorial Guinea</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f142">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g421"><label id="pg421/0" for="g421/0" class="radio-label"><input id="g421/0" name="g421" value="g421/0" type="checkbox" disabled="disabled" />Estonia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f144">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g422"><label id="pg422/0" for="g422/0" class="radio-label"><input id="g422/0" name="g422" value="g422/0" type="checkbox" disabled="disabled" />Ethiopia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f146">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g423"><label id="pg423/0" for="g423/0" class="radio-label"><input id="g423/0" name="g423" value="g423/0" type="checkbox" disabled="disabled" />European Union</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f148">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g424"><label id="pg424/0" for="g424/0" class="radio-label"><input id="g424/0" name="g424" value="g424/0" type="checkbox" disabled="disabled" />Falkland Islands</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f150">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g425"><label id="pg425/0" for="g425/0" class="radio-label"><input id="g425/0" name="g425" value="g425/0" type="checkbox" disabled="disabled" />Faroe Islands</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f152">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g426"><label id="pg426/0" for="g426/0" class="radio-label"><input id="g426/0" name="g426" value="g426/0" type="checkbox" disabled="disabled" />Finland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f154">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g427"><label id="pg427/0" for="g427/0" class="radio-label"><input id="g427/0" name="g427" value="g427/0" type="checkbox" disabled="disabled" />France</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f156">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g428"><label id="pg428/0" for="g428/0" class="radio-label"><input id="g428/0" name="g428" value="g428/0" type="checkbox" disabled="disabled" />Gabon</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f158">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g429"><label id="pg429/0" for="g429/0" class="radio-label"><input id="g429/0" name="g429" value="g429/0" type="checkbox" disabled="disabled" />Gambia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f160">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g430"><label id="pg430/0" for="g430/0" class="radio-label"><input id="g430/0" name="g430" value="g430/0" type="checkbox" disabled="disabled" />Georgia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f162">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g431"><label id="pg431/0" for="g431/0" class="radio-label"><input id="g431/0" name="g431" value="g431/0" type="checkbox" disabled="disabled" />Germany</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f164">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g432"><label id="pg432/0" for="g432/0" class="radio-label"><input id="g432/0" name="g432" value="g432/0" type="checkbox" disabled="disabled" />Ghana</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f166">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g433"><label id="pg433/0" for="g433/0" class="radio-label"><input id="g433/0" name="g433" value="g433/0" type="checkbox" disabled="disabled" />Gibraltar</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f168">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g434"><label id="pg434/0" for="g434/0" class="radio-label"><input id="g434/0" name="g434" value="g434/0" type="checkbox" disabled="disabled" />Greece</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f170">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g435"><label id="pg435/0" for="g435/0" class="radio-label"><input id="g435/0" name="g435" value="g435/0" type="checkbox" disabled="disabled" />Greenland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f172">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g436"><label id="pg436/0" for="g436/0" class="radio-label"><input id="g436/0" name="g436" value="g436/0" type="checkbox" disabled="disabled" />Guatemala</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f174">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g437"><label id="pg437/0" for="g437/0" class="radio-label"><input id="g437/0" name="g437" value="g437/0" type="checkbox" disabled="disabled" />Guernsey</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f176">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g438"><label id="pg438/0" for="g438/0" class="radio-label"><input id="g438/0" name="g438" value="g438/0" type="checkbox" disabled="disabled" />Guinea</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f178">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g439"><label id="pg439/0" for="g439/0" class="radio-label"><input id="g439/0" name="g439" value="g439/0" type="checkbox" disabled="disabled" />Haiti</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f180">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g440"><label id="pg440/0" for="g440/0" class="radio-label"><input id="g440/0" name="g440" value="g440/0" type="checkbox" disabled="disabled" />Honduras</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f182">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g441"><label id="pg441/0" for="g441/0" class="radio-label"><input id="g441/0" name="g441" value="g441/0" type="checkbox" disabled="disabled" />Hong Kong</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f184">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g442"><label id="pg442/0" for="g442/0" class="radio-label"><input id="g442/0" name="g442" value="g442/0" type="checkbox" disabled="disabled" />Hungary</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f186">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g443"><label id="pg443/0" for="g443/0" class="radio-label"><input id="g443/0" name="g443" value="g443/0" type="checkbox" disabled="disabled" />Iceland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f188">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g444"><label id="pg444/0" for="g444/0" class="radio-label"><input id="g444/0" name="g444" value="g444/0" type="checkbox" disabled="disabled" />India</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f190">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g445"><label id="pg445/0" for="g445/0" class="radio-label"><input id="g445/0" name="g445" value="g445/0" type="checkbox" disabled="disabled" />Indonesia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f192">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g446"><label id="pg446/0" for="g446/0" class="radio-label"><input id="g446/0" name="g446" value="g446/0" type="checkbox" disabled="disabled" />Iran</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f194">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g447"><label id="pg447/0" for="g447/0" class="radio-label"><input id="g447/0" name="g447" value="g447/0" type="checkbox" disabled="disabled" />Iraq</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f196">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g448"><label id="pg448/0" for="g448/0" class="radio-label"><input id="g448/0" name="g448" value="g448/0" type="checkbox" disabled="disabled" />Irish Republic</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f198">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g449"><label id="pg449/0" for="g449/0" class="radio-label"><input id="g449/0" name="g449" value="g449/0" type="checkbox" disabled="disabled" />Israel</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f200">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g450"><label id="pg450/0" for="g450/0" class="radio-label"><input id="g450/0" name="g450" value="g450/0" type="checkbox" disabled="disabled" />Italy</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f202">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g451"><label id="pg451/0" for="g451/0" class="radio-label"><input id="g451/0" name="g451" value="g451/0" type="checkbox" disabled="disabled" />Jamaica</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f204">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g452"><label id="pg452/0" for="g452/0" class="radio-label"><input id="g452/0" name="g452" value="g452/0" type="checkbox" disabled="disabled" />Japan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f206">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g453"><label id="pg453/0" for="g453/0" class="radio-label"><input id="g453/0" name="g453" value="g453/0" type="checkbox" disabled="disabled" />Jersey</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f208">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g454"><label id="pg454/0" for="g454/0" class="radio-label"><input id="g454/0" name="g454" value="g454/0" type="checkbox" disabled="disabled" />Jordan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f210">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g455"><label id="pg455/0" for="g455/0" class="radio-label"><input id="g455/0" name="g455" value="g455/0" type="checkbox" disabled="disabled" />Kazakhstan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f212">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g456"><label id="pg456/0" for="g456/0" class="radio-label"><input id="g456/0" name="g456" value="g456/0" type="checkbox" disabled="disabled" />Kenya</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f214">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g457"><label id="pg457/0" for="g457/0" class="radio-label"><input id="g457/0" name="g457" value="g457/0" type="checkbox" disabled="disabled" />Korea (North)</label></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="three columns">
+
+            <div class="container setoutForm" data-xfid="f216">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g458"><label id="pg458/0" for="g458/0" class="radio-label"><input id="g458/0" name="g458" value="g458/0" type="checkbox" disabled="disabled" />Korea (South)</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f218">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g459"><label id="pg459/0" for="g459/0" class="radio-label"><input id="g459/0" name="g459" value="g459/0" type="checkbox" disabled="disabled" />Kosovo</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f220">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g460"><label id="pg460/0" for="g460/0" class="radio-label"><input id="g460/0" name="g460" value="g460/0" type="checkbox" disabled="disabled" />Kuwait</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f222">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g461"><label id="pg461/0" for="g461/0" class="radio-label"><input id="g461/0" name="g461" value="g461/0" type="checkbox" disabled="disabled" />Kyrgyzstan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f224">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g462"><label id="pg462/0" for="g462/0" class="radio-label"><input id="g462/0" name="g462" value="g462/0" type="checkbox" disabled="disabled" />Laos</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f226">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g463"><label id="pg463/0" for="g463/0" class="radio-label"><input id="g463/0" name="g463" value="g463/0" type="checkbox" disabled="disabled" />Latvia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f228">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g464"><label id="pg464/0" for="g464/0" class="radio-label"><input id="g464/0" name="g464" value="g464/0" type="checkbox" disabled="disabled" />Lebanon</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f230">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g465"><label id="pg465/0" for="g465/0" class="radio-label"><input id="g465/0" name="g465" value="g465/0" type="checkbox" disabled="disabled" />Libya</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f232">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g466"><label id="pg466/0" for="g466/0" class="radio-label"><input id="g466/0" name="g466" value="g466/0" type="checkbox" disabled="disabled" />Liechtenstein</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f234">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g467"><label id="pg467/0" for="g467/0" class="radio-label"><input id="g467/0" name="g467" value="g467/0" type="checkbox" disabled="disabled" />Lithuania</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f236">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g468"><label id="pg468/0" for="g468/0" class="radio-label"><input id="g468/0" name="g468" value="g468/0" type="checkbox" disabled="disabled" />Luxembourg</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f238">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g469"><label id="pg469/0" for="g469/0" class="radio-label"><input id="g469/0" name="g469" value="g469/0" type="checkbox" disabled="disabled" />Macao</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f240">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g470"><label id="pg470/0" for="g470/0" class="radio-label"><input id="g470/0" name="g470" value="g470/0" type="checkbox" disabled="disabled" />Macedonia, Former Yugoslav Republic of</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f242">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g471"><label id="pg471/0" for="g471/0" class="radio-label"><input id="g471/0" name="g471" value="g471/0" type="checkbox" disabled="disabled" />Madagascar</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f244">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g472"><label id="pg472/0" for="g472/0" class="radio-label"><input id="g472/0" name="g472" value="g472/0" type="checkbox" disabled="disabled" />Malaysia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f246">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g473"><label id="pg473/0" for="g473/0" class="radio-label"><input id="g473/0" name="g473" value="g473/0" type="checkbox" disabled="disabled" />Malta</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f248">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g474"><label id="pg474/0" for="g474/0" class="radio-label"><input id="g474/0" name="g474" value="g474/0" type="checkbox" disabled="disabled" />Mauritania</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f250">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g475"><label id="pg475/0" for="g475/0" class="radio-label"><input id="g475/0" name="g475" value="g475/0" type="checkbox" disabled="disabled" />Mauritius</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f252">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g476"><label id="pg476/0" for="g476/0" class="radio-label"><input id="g476/0" name="g476" value="g476/0" type="checkbox" disabled="disabled" />Mexico</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f254">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g477"><label id="pg477/0" for="g477/0" class="radio-label"><input id="g477/0" name="g477" value="g477/0" type="checkbox" disabled="disabled" />Micronesia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f256">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g478"><label id="pg478/0" for="g478/0" class="radio-label"><input id="g478/0" name="g478" value="g478/0" type="checkbox" disabled="disabled" />Moldova</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f258">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g479"><label id="pg479/0" for="g479/0" class="radio-label"><input id="g479/0" name="g479" value="g479/0" type="checkbox" disabled="disabled" />Mongolia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f260">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g480"><label id="pg480/0" for="g480/0" class="radio-label"><input id="g480/0" name="g480" value="g480/0" type="checkbox" disabled="disabled" />Montenegro</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f262">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g481"><label id="pg481/0" for="g481/0" class="radio-label"><input id="g481/0" name="g481" value="g481/0" type="checkbox" disabled="disabled" />Morocco</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f264">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g482"><label id="pg482/0" for="g482/0" class="radio-label"><input id="g482/0" name="g482" value="g482/0" type="checkbox" disabled="disabled" />Mozambique</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f266">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g483"><label id="pg483/0" for="g483/0" class="radio-label"><input id="g483/0" name="g483" value="g483/0" type="checkbox" disabled="disabled" />Namibia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f268">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g484"><label id="pg484/0" for="g484/0" class="radio-label"><input id="g484/0" name="g484" value="g484/0" type="checkbox" disabled="disabled" />Nauru</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f270">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g485"><label id="pg485/0" for="g485/0" class="radio-label"><input id="g485/0" name="g485" value="g485/0" type="checkbox" disabled="disabled" />Nepal</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f272">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g486"><label id="pg486/0" for="g486/0" class="radio-label"><input id="g486/0" name="g486" value="g486/0" type="checkbox" disabled="disabled" />Netherlands</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f274">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g487"><label id="pg487/0" for="g487/0" class="radio-label"><input id="g487/0" name="g487" value="g487/0" type="checkbox" disabled="disabled" />New Zealand</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f276">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g488"><label id="pg488/0" for="g488/0" class="radio-label"><input id="g488/0" name="g488" value="g488/0" type="checkbox" disabled="disabled" />Nicaragua</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f278">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g489"><label id="pg489/0" for="g489/0" class="radio-label"><input id="g489/0" name="g489" value="g489/0" type="checkbox" disabled="disabled" />Nigeria</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f280">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g490"><label id="pg490/0" for="g490/0" class="radio-label"><input id="g490/0" name="g490" value="g490/0" type="checkbox" disabled="disabled" />Norway</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f282">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g491"><label id="pg491/0" for="g491/0" class="radio-label"><input id="g491/0" name="g491" value="g491/0" type="checkbox" disabled="disabled" />Occupied Palestinian Territories</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f284">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g492"><label id="pg492/0" for="g492/0" class="radio-label"><input id="g492/0" name="g492" value="g492/0" type="checkbox" disabled="disabled" />Oman</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f286">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g493"><label id="pg493/0" for="g493/0" class="radio-label"><input id="g493/0" name="g493" value="g493/0" type="checkbox" disabled="disabled" />Pakistan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f288">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g494"><label id="pg494/0" for="g494/0" class="radio-label"><input id="g494/0" name="g494" value="g494/0" type="checkbox" disabled="disabled" />Panama</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f290">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g495"><label id="pg495/0" for="g495/0" class="radio-label"><input id="g495/0" name="g495" value="g495/0" type="checkbox" disabled="disabled" />Paraguay</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f292">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g496"><label id="pg496/0" for="g496/0" class="radio-label"><input id="g496/0" name="g496" value="g496/0" type="checkbox" disabled="disabled" />Peru</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f294">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g497"><label id="pg497/0" for="g497/0" class="radio-label"><input id="g497/0" name="g497" value="g497/0" type="checkbox" disabled="disabled" />Philippines</label></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="three columns">
+
+            <div class="container setoutForm" data-xfid="f296">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g498"><label id="pg498/0" for="g498/0" class="radio-label"><input id="g498/0" name="g498" value="g498/0" type="checkbox" disabled="disabled" />Poland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f298">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g499"><label id="pg499/0" for="g499/0" class="radio-label"><input id="g499/0" name="g499" value="g499/0" type="checkbox" disabled="disabled" />Portugal</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f300">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g500"><label id="pg500/0" for="g500/0" class="radio-label"><input id="g500/0" name="g500" value="g500/0" type="checkbox" disabled="disabled" />Puerto Rico</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f302">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g501"><label id="pg501/0" for="g501/0" class="radio-label"><input id="g501/0" name="g501" value="g501/0" type="checkbox" disabled="disabled" />Qatar</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f304">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g502"><label id="pg502/0" for="g502/0" class="radio-label"><input id="g502/0" name="g502" value="g502/0" type="checkbox" disabled="disabled" />Romania</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f306">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g503"><label id="pg503/0" for="g503/0" class="radio-label"><input id="g503/0" name="g503" value="g503/0" type="checkbox" disabled="disabled" />Russian Federation</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f308">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g504"><label id="pg504/0" for="g504/0" class="radio-label"><input id="g504/0" name="g504" value="g504/0" type="checkbox" disabled="disabled" />Saint Helena</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f310">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g505"><label id="pg505/0" for="g505/0" class="radio-label"><input id="g505/0" name="g505" value="g505/0" type="checkbox" disabled="disabled" />Saudi Arabia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f312">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g506"><label id="pg506/0" for="g506/0" class="radio-label"><input id="g506/0" name="g506" value="g506/0" type="checkbox" disabled="disabled" />Serbia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f314">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g507"><label id="pg507/0" for="g507/0" class="radio-label"><input id="g507/0" name="g507" value="g507/0" type="checkbox" disabled="disabled" />Singapore</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f316">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g508"><label id="pg508/0" for="g508/0" class="radio-label"><input id="g508/0" name="g508" value="g508/0" type="checkbox" disabled="disabled" />Slovenia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f318">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g509"><label id="pg509/0" for="g509/0" class="radio-label"><input id="g509/0" name="g509" value="g509/0" type="checkbox" disabled="disabled" />Soloman Islands</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f320">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g510"><label id="pg510/0" for="g510/0" class="radio-label"><input id="g510/0" name="g510" value="g510/0" type="checkbox" disabled="disabled" />Somalia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f322">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g511"><label id="pg511/0" for="g511/0" class="radio-label"><input id="g511/0" name="g511" value="g511/0" type="checkbox" disabled="disabled" />South Africa</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f324">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g512"><label id="pg512/0" for="g512/0" class="radio-label"><input id="g512/0" name="g512" value="g512/0" type="checkbox" disabled="disabled" />Spain</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f326">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g513"><label id="pg513/0" for="g513/0" class="radio-label"><input id="g513/0" name="g513" value="g513/0" type="checkbox" disabled="disabled" />Sri Lanka</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f328">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g514"><label id="pg514/0" for="g514/0" class="radio-label"><input id="g514/0" name="g514" value="g514/0" type="checkbox" disabled="disabled" />Swaziland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f330">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g515"><label id="pg515/0" for="g515/0" class="radio-label"><input id="g515/0" name="g515" value="g515/0" type="checkbox" disabled="disabled" />Sweden</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f332">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g516"><label id="pg516/0" for="g516/0" class="radio-label"><input id="g516/0" name="g516" value="g516/0" type="checkbox" disabled="disabled" />Switzerland</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f334">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g517"><label id="pg517/0" for="g517/0" class="radio-label"><input id="g517/0" name="g517" value="g517/0" type="checkbox" disabled="disabled" />Syria</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f336">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g518"><label id="pg518/0" for="g518/0" class="radio-label"><input id="g518/0" name="g518" value="g518/0" type="checkbox" disabled="disabled" />Taiwan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f338">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g519"><label id="pg519/0" for="g519/0" class="radio-label"><input id="g519/0" name="g519" value="g519/0" type="checkbox" disabled="disabled" />Tajikistan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f340">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g520"><label id="pg520/0" for="g520/0" class="radio-label"><input id="g520/0" name="g520" value="g520/0" type="checkbox" disabled="disabled" />Tanzania</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f342">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g521"><label id="pg521/0" for="g521/0" class="radio-label"><input id="g521/0" name="g521" value="g521/0" type="checkbox" disabled="disabled" />Thailand</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f344">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g522"><label id="pg522/0" for="g522/0" class="radio-label"><input id="g522/0" name="g522" value="g522/0" type="checkbox" disabled="disabled" />Trinidad &amp; Tobago</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f346">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g523"><label id="pg523/0" for="g523/0" class="radio-label"><input id="g523/0" name="g523" value="g523/0" type="checkbox" disabled="disabled" />Tunisia</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f348">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g524"><label id="pg524/0" for="g524/0" class="radio-label"><input id="g524/0" name="g524" value="g524/0" type="checkbox" disabled="disabled" />Turkey</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f350">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g525"><label id="pg525/0" for="g525/0" class="radio-label"><input id="g525/0" name="g525" value="g525/0" type="checkbox" disabled="disabled" />Turkmenistan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f352">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g526"><label id="pg526/0" for="g526/0" class="radio-label"><input id="g526/0" name="g526" value="g526/0" type="checkbox" disabled="disabled" />USA</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f354">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g527"><label id="pg527/0" for="g527/0" class="radio-label"><input id="g527/0" name="g527" value="g527/0" type="checkbox" disabled="disabled" />Ukraine</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f356">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g528"><label id="pg528/0" for="g528/0" class="radio-label"><input id="g528/0" name="g528" value="g528/0" type="checkbox" disabled="disabled" />United Arab Emirates</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f358">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g529"><label id="pg529/0" for="g529/0" class="radio-label"><input id="g529/0" name="g529" value="g529/0" type="checkbox" disabled="disabled" />United Kingdom</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f360">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g530"><label id="pg530/0" for="g530/0" class="radio-label"><input id="g530/0" name="g530" value="g530/0" type="checkbox" disabled="disabled" />Uruguay</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f362">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g531"><label id="pg531/0" for="g531/0" class="radio-label"><input id="g531/0" name="g531" value="g531/0" type="checkbox" disabled="disabled" />Uzbekistan</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f364">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g532"><label id="pg532/0" for="g532/0" class="radio-label"><input id="g532/0" name="g532" value="g532/0" type="checkbox" disabled="disabled" />Venezuela</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f366">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g533"><label id="pg533/0" for="g533/0" class="radio-label"><input id="g533/0" name="g533" value="g533/0" type="checkbox" disabled="disabled" />Vietnam</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f368">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g534"><label id="pg534/0" for="g534/0" class="radio-label"><input id="g534/0" name="g534" value="g534/0" type="checkbox" disabled="disabled" />Yemen</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f370">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g535"><label id="pg535/0" for="g535/0" class="radio-label"><input id="g535/0" name="g535" value="g535/0" type="checkbox" disabled="disabled" />Zimbabwe</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f372">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g536"><label id="pg536/0" for="g536/0" class="radio-label"><input id="g536/0" name="g536" value="g536/0" type="checkbox" disabled="disabled" />the Czech Republic</label></div>
+                </div>
+            </div>
+            <div class="container setoutForm" data-xfid="f374">
+                <div class="row">
+                    <div class="twelve columns radio-or-tickbox-group" data-xfid="g537"><label id="pg537/0" for="g537/0" class="radio-label"><input id="g537/0" name="g537" value="g537/0" type="checkbox" disabled="disabled" />the Slovak Republic</label></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

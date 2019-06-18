@@ -3,7 +3,8 @@ from .views import (TemplateListView, ConstabularyListView,
                     ConstabularyEditView, ConstabularyCreateView,
                     CommodityListView, CommodityEditView, CommodityCreateView,
                     CommodityGroupListView, CommodityGroupEditView,
-                    CommodityGroupCreateView, TeamListView, TeamEditView)
+                    CommodityGroupCreateView, TeamListView, TeamEditView,
+                    CountryListView, CountryGroupView)
 from .views.dashboard import outbound_emails
 from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
@@ -66,6 +67,12 @@ urlpatterns = [
         'commodity-groups/new/',
         CommodityGroupCreateView.as_view(),
         name='commodity-group-new'),
+
+    # Countries management
+    path('country/', CountryListView.as_view(), name='country-list'),
+
+    # Country Groups Management
+    path('country-group/', CountryGroupView.as_view(), name='country-group'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard/', outbound_emails, name='outbound-emails'),

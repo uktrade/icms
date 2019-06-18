@@ -30,16 +30,36 @@ WITH team_role_privs as (
 
 )
 
--- Permissions
-SELECT '[' || LISTAGG(json, ',') WITHIN GROUP( ORDER BY id) || ']' FROM (
-	SELECT
-			 id,
-			'{' || '"pk":' || id
-					|| '"name":"' || name || '"'
-					|| ',"codename":"'|| name || '"'
-			 || '}' AS json
 
-	from (
-		SELECT  DISTINCT PRIV_ID AS id, PRIVILEGE AS name FROM team_role_privs
+
+-- Roles
+SELECT
+	'[' || LISTAGG(json, ',') WITHIN GROUP( ORDER BY id) || ']' FROM (
+	SELECT
+		 id,
+		'{' || '"pk":' || id
+			|| ',"model":"auth.Group"'
+			|| ',"fields": {'
+				|| '"name":"' || name || '"'
+				|| ',"permissions":' || permissions
+			 || '}'
+		 || '},'
+		 || '{' || '"pk":' || id
+				|| ',"model":"web.Role"'
+				|| ',"fields": {'
+					|| '"group_id":"' || id || '"'
+					|| ',"description":"' || DESCRIPTION || '"'
+				|| '}'
+		|| '}'
+
+		 AS json
+	FROM (
+		SELECT
+			role_id AS id,
+			role_name AS name,
+			role_description AS description,
+			'[' || LISTAGG(priv_id,',') WITHIN GROUP (ORDER BY priv_id)  || ']' AS permissions
+		FROM team_role_privs
+		GROUP BY  role_id, role_name, role_description
 	)
 )

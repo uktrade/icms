@@ -40,7 +40,7 @@ def save_commodity_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0022_auto_20190610_1228'),
+        ('web', '0019_commodity_data'),
     ]
 
     operations = [migrations.RunPython(save_commodity_groups)]

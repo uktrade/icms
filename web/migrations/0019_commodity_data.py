@@ -32,7 +32,7 @@ def save_commodities(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0020_commodity'),
+        ('web', '0018_constabularies'),
     ]
 
     operations = [migrations.RunPython(save_commodities)]
