@@ -9,45 +9,10 @@
 {% block main_content %}
 
 {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
-<h3>Contacts</h3>
-
-<ul class="tabs -tabs big-tabs" data-tab-group="sRZVhm_plrnqVW43/tabs-DEC043L-
-grid-list-switch" role="tablist">
-
-    <li id="tksRZVhm_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="current-tab" aria-selected="true" data-tab-key="GRID" role="tab" aria- controls="tcsRZVhm_plrnqVW43-tabs-DEC043L-grid-list-switchGRID"><a href="javascript:FOXjs.action({ref:'fssRJZQf_plrnqVW43/sRJZQm_plrnqVW43'})">Grid
-            view</a></li>
-
-    <li id="tksRZVhm_plrnqVW43-tabs-DEC043L-grid-list-switchLIST" class="" aria- selected="false" data-tab-key="LIST" role="tab" aria-controls="tcsRZVhm_plrnqVW43-
-
-tabs-DEC043L-grid-list-switchLIST"><a href="javascript:FOXjs.action({ref:'fssRJZQf_plrnqVW43/sRJZQn_plrnqVW43'})">List
-            view</a></li>
-
-</ul>
-<div id="tcsRZVhm_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" arial- labelledby="tksRZVhm_plrnqVW43-tabs-DEC043L-grid-list-switchGRID" class="tab-
-content big-tabs" style="" data-tab-group="sRZVhm_plrnqVW43/tabs-DEC043L-grid-
-list-switch" data-tab-key="GRID" aria-hidden="false">
-
-    <div class="info-box info-box-info">
-        There isn't anyone in this team
+    <h3>Contacts</h3>
+    {% include "web/contacts/tabs.html" %}
+    <div class="content-actions"></div>
     </div>
-
-    <div class="list-actions">
-        <ul class="menu-out flow-across">
-            <li> <button id="g51" name="g51" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-grid-add-
-person&quot;,&quot;ctxt&quot;:&quot;sRZVhm_plrnqVW43&quot;}, this);" class="small-button icon-user-plus button">
-                    Add someone to this team </button></li>
-        </ul>
-    </div>
-
-</div>
-
-<div class="content-actions"></div>
-</div>
-</div>
-
-
 {%- endcall %}
-
-
 
 {% endblock %}

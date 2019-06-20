@@ -5,9 +5,9 @@
     "fields": {
       "name": "Advice Super Users:Advice Super Admin",
       "permissions": [
-        101,
-        102,
-        103
+        1001,
+        1002,
+        1003
       ]
     }
   },
@@ -16,7 +16,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "1",
-      "description": "Users listed here can control all review advice teams"
+      "description": "Users listed here can control all review advice teams",
+      "role_order": "20"
     }
   },
   {
@@ -25,7 +26,7 @@
     "fields": {
       "name": "Advice Super Users:Team Coordinator",
       "permissions": [
-        104
+        1004
       ]
     }
   },
@@ -34,7 +35,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "2",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -43,7 +45,7 @@
     "fields": {
       "name": "Application Error Logging Users Static:Recipient of SMS and e-mail for domains with no recipients",
       "permissions": [
-        108
+        1008
       ]
     }
   },
@@ -52,7 +54,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "3",
-      "description": "Make sure this person has an Email and a mobile number!"
+      "description": "Make sure this person has an Email and a mobile number!",
+      "role_order": "30"
     }
   },
   {
@@ -61,8 +64,8 @@
     "fields": {
       "name": "Application Error Logging Users Static:ERROR_ADMIN",
       "permissions": [
-        105,
-        107
+        1005,
+        1007
       ]
     }
   },
@@ -71,7 +74,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "4",
-      "description": "User's who can view errors from all domains."
+      "description": "User's who can view errors from all domains.",
+      "role_order": "10"
     }
   },
   {
@@ -80,7 +84,7 @@
     "fields": {
       "name": "Application Error Logging Users Static:Resource Co-ordinator",
       "permissions": [
-        106
+        1006
       ]
     }
   },
@@ -89,7 +93,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "5",
-      "description": "Can edit error logging admin users."
+      "description": "Can edit error logging admin users.",
+      "role_order": "20"
     }
   },
   {
@@ -98,10 +103,10 @@
     "fields": {
       "name": "Country Super Users:Country Set Super User",
       "permissions": [
-        109,
-        110,
-        111,
-        112
+        1009,
+        1010,
+        1011,
+        1012
       ]
     }
   },
@@ -110,7 +115,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "6",
-      "description": "Users in this list are able to create online forms applications."
+      "description": "Users in this list are able to create online forms applications.",
+      "role_order": "20"
     }
   },
   {
@@ -119,7 +125,7 @@
     "fields": {
       "name": "Country Super Users:Team Coordinator",
       "permissions": [
-        113
+        1013
       ]
     }
   },
@@ -128,7 +134,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "7",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -137,7 +144,7 @@
     "fields": {
       "name": "Digital Certificate Management Team:Digital Certificate Manager",
       "permissions": [
-        115
+        1015
       ]
     }
   },
@@ -146,7 +153,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "8",
-      "description": "People who manage digital certificates"
+      "description": "People who manage digital certificates",
+      "role_order": "20"
     }
   },
   {
@@ -155,7 +163,7 @@
     "fields": {
       "name": "Digital Certificate Management Team:Team Coordinator",
       "permissions": [
-        114
+        1014
       ]
     }
   },
@@ -164,7 +172,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "9",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -173,7 +182,7 @@
     "fields": {
       "name": "Directory Super Users:Address Administrator with Q.A. Function",
       "permissions": [
-        116
+        1016
       ]
     }
   },
@@ -182,7 +191,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "10",
-      "description": "Users in this list are required to check addresses input on the system by other users. When poorly input addresses are found these should be rejected so they do not appear on the search addresses screen."
+      "description": "Users in this list are required to check addresses input on the system by other users. When poorly input addresses are found these should be rejected so they do not appear on the search addresses screen.",
+      "role_order": "60"
     }
   },
   {
@@ -191,8 +201,8 @@
     "fields": {
       "name": "Directory Super Users:Admin Console",
       "permissions": [
-        117,
-        138
+        1017,
+        1038
       ]
     }
   },
@@ -201,7 +211,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "11",
-      "description": "Users can view the admin console"
+      "description": "Users can view the admin console",
+      "role_order": "90"
     }
   },
   {
@@ -210,13 +221,13 @@
     "fields": {
       "name": "Directory Super Users:People and User Login Administrator with Q.A. Function",
       "permissions": [
-        118,
-        131,
-        132,
-        133,
-        134,
-        135,
-        141
+        1018,
+        1031,
+        1032,
+        1033,
+        1034,
+        1035,
+        1041
       ]
     }
   },
@@ -225,7 +236,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "12",
-      "description": "Users in this list may correct existing person details (usually only changeable by the person in question). Users here can also maintain Portal Login User Accounts."
+      "description": "Users in this list may correct existing person details (usually only changeable by the person in question). Users here can also maintain Portal Login User Accounts.",
+      "role_order": "40"
     }
   },
   {
@@ -234,7 +246,7 @@
     "fields": {
       "name": "Directory Super Users:Matrix Folder Administrator",
       "permissions": [
-        122
+        1022
       ]
     }
   },
@@ -243,7 +255,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "13",
-      "description": "Users in this list can create and maintain matrix folders."
+      "description": "Users in this list can create and maintain matrix folders.",
+      "role_order": "70"
     }
   },
   {
@@ -252,9 +265,9 @@
     "fields": {
       "name": "Directory Super Users:Organisation Importer",
       "permissions": [
-        123,
-        128,
-        130
+        1023,
+        1028,
+        1030
       ]
     }
   },
@@ -263,7 +276,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "14",
-      "description": "Users in this list can import organisations details from Companies House. \n           They cannot create organsations that are not registered at Companies House \n           (i.e. partnerships or companies recorded at overseas registries only). \n           This exceptions need to be input by the \"Organisation Exceptions Manager\". \n           Note that overseas companies that have an Established Office in the UK \n           (e.g. a registered branch at C.H.) can still be imported from Companies House."
+      "description": "Users in this list can import organisations details from Companies House. \n           They cannot create organsations that are not registered at Companies House \n           (i.e. partnerships or companies recorded at overseas registries only). \n           This exceptions need to be input by the \"Organisation Exceptions Manager\". \n           Note that overseas companies that have an Established Office in the UK \n           (e.g. a registered branch at C.H.) can still be imported from Companies House.",
+      "role_order": "30"
     }
   },
   {
@@ -272,10 +286,10 @@
     "fields": {
       "name": "Directory Super Users:Organisation Manual Creator",
       "permissions": [
-        124,
-        126,
-        128,
-        130
+        1024,
+        1026,
+        1028,
+        1030
       ]
     }
   },
@@ -284,7 +298,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "15",
-      "description": "Users in this list can import \n                  organisations details from Companies House and update/maintain \n                  existing organisation records. They can also create organisation \n                  records manually  (i.e. partnerships or companies recorded at overseas \n                  registries only). Only experienced/trained users should be added to this role."
+      "description": "Users in this list can import \n                  organisations details from Companies House and update/maintain \n                  existing organisation records. They can also create organisation \n                  records manually  (i.e. partnerships or companies recorded at overseas \n                  registries only). Only experienced/trained users should be added to this role.",
+      "role_order": "27"
     }
   },
   {
@@ -293,10 +308,10 @@
     "fields": {
       "name": "Directory Super Users:Organisation QA and Updater",
       "permissions": [
-        125,
-        126,
-        128,
-        130
+        1025,
+        1026,
+        1028,
+        1030
       ]
     }
   },
@@ -305,7 +320,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "16",
-      "description": "Users in this list can import organisations details from Companies House and \n          update/maintain existing organisation records. Only experienced/trained \n          users should be added to this role. Users here cannot create organsations \n          that are not registered at Companies House (i.e. partnerships or companies \n          recorded at overseas registries only). This exceptions need to be input by the \n          \"Organisation Exceptions Manager\". Note that overseas companies that have an \n          Established Office in the UK (e.g. a registered branch at C.H.) can still be imported from Companies House."
+      "description": "Users in this list can import organisations details from Companies House and \n          update/maintain existing organisation records. Only experienced/trained \n          users should be added to this role. Users here cannot create organsations \n          that are not registered at Companies House (i.e. partnerships or companies \n          recorded at overseas registries only). This exceptions need to be input by the \n          \"Organisation Exceptions Manager\". Note that overseas companies that have an \n          Established Office in the UK (e.g. a registered branch at C.H.) can still be imported from Companies House.",
+      "role_order": "20"
     }
   },
   {
@@ -314,9 +330,9 @@
     "fields": {
       "name": "Directory Super Users:Organisation Standard Editor",
       "permissions": [
-        126,
-        128,
-        130
+        1026,
+        1028,
+        1030
       ]
     }
   },
@@ -325,7 +341,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "17",
-      "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  are not able to change name history or create new organisations."
+      "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  are not able to change name history or create new organisations.",
+      "role_order": "28"
     }
   },
   {
@@ -334,9 +351,9 @@
     "fields": {
       "name": "Directory Super Users:Organisation Group Editor",
       "permissions": [
-        127,
-        128,
-        133
+        1027,
+        1028,
+        1033
       ]
     }
   },
@@ -345,7 +362,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "18",
-      "description": "Users in this list can view and maintain organisation group details."
+      "description": "Users in this list can view and maintain organisation group details.",
+      "role_order": "25"
     }
   },
   {
@@ -354,11 +372,11 @@
     "fields": {
       "name": "Directory Super Users:Organisation Automatic Updater",
       "permissions": [
-        125,
-        126,
-        128,
-        129,
-        130
+        1025,
+        1026,
+        1028,
+        1029,
+        1030
       ]
     }
   },
@@ -367,7 +385,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "19",
-      "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  may also change name history and previous details of an \n                  organisations. Observations of an organisation may also be \n                  viewed, and may be automatically corrected by this user."
+      "description": "Users in this list are able \n                  to view organisation detail and edit current details. They \n                  may also change name history and previous details of an \n                  organisations. Observations of an organisation may also be \n                  viewed, and may be automatically corrected by this user.",
+      "role_order": "29"
     }
   },
   {
@@ -376,8 +395,8 @@
     "fields": {
       "name": "Directory Super Users:Organisation Viewer",
       "permissions": [
-        128,
-        130
+        1028,
+        1030
       ]
     }
   },
@@ -386,7 +405,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "20",
-      "description": "Users in this list can only view organisation details"
+      "description": "Users in this list can only view organisation details",
+      "role_order": "26"
     }
   },
   {
@@ -395,9 +415,9 @@
     "fields": {
       "name": "Directory Super Users:Email Domain Administrator",
       "permissions": [
-        119,
-        120,
-        121
+        1019,
+        1020,
+        1021
       ]
     }
   },
@@ -406,7 +426,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "21",
-      "description": "Users in this list can maintain a list of rules that allow accounts to be automatically issued and approved dependent on email domain."
+      "description": "Users in this list can maintain a list of rules that allow accounts to be automatically issued and approved dependent on email domain.",
+      "role_order": "80"
     }
   },
   {
@@ -415,7 +436,7 @@
     "fields": {
       "name": "Directory Super Users:Portal Folder Type Administrator",
       "permissions": [
-        136
+        1036
       ]
     }
   },
@@ -424,7 +445,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "22",
-      "description": "Users in this list can create and maintain portal folder types."
+      "description": "Users in this list can create and maintain portal folder types.",
+      "role_order": "75"
     }
   },
   {
@@ -433,7 +455,7 @@
     "fields": {
       "name": "Directory Super Users:Team Coordinator",
       "permissions": [
-        118
+        1018
       ]
     }
   },
@@ -442,7 +464,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "23",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -451,7 +474,7 @@
     "fields": {
       "name": "Directory Super Users:Role Control Administrator",
       "permissions": [
-        137
+        1037
       ]
     }
   },
@@ -460,7 +483,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "24",
-      "description": "Users can manager the wua control flag for different roles"
+      "description": "Users can manager the wua control flag for different roles",
+      "role_order": "100"
     }
   },
   {
@@ -469,8 +493,8 @@
     "fields": {
       "name": "Directory Super Users:Web Organisation Admin (Legacy)",
       "permissions": [
-        139,
-        140
+        1039,
+        1040
       ]
     }
   },
@@ -479,7 +503,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "25",
-      "description": "Ability to maintain web organisation teams"
+      "description": "Ability to maintain web organisation teams",
+      "role_order": "50"
     }
   },
   {
@@ -488,7 +513,7 @@
     "fields": {
       "name": "Directory Super Users:Web User Accounts Admin",
       "permissions": [
-        141
+        1041
       ]
     }
   },
@@ -497,7 +522,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "26",
-      "description": "Users in this list may block, cancel, and re-issue the passwords of web user accounts. Users with the 'People and User Login Administrator with Q.A. Function' role automatically gain this role."
+      "description": "Users in this list may block, cancel, and re-issue the passwords of web user accounts. Users with the 'People and User Login Administrator with Q.A. Function' role automatically gain this role.",
+      "role_order": "45"
     }
   },
   {
@@ -506,8 +532,8 @@
     "fields": {
       "name": "Super Users:Edit any Template Clause Set within any Template Clause Type",
       "permissions": [
-        143,
-        145
+        1043,
+        1045
       ]
     }
   },
@@ -516,7 +542,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "27",
-      "description": "Users in this list can Edit any Template Clause Set within any Template Clause Type"
+      "description": "Users in this list can Edit any Template Clause Set within any Template Clause Type",
+      "role_order": "40"
     }
   },
   {
@@ -525,7 +552,7 @@
     "fields": {
       "name": "Super Users:Edit Any Team",
       "permissions": [
-        142
+        1042
       ]
     }
   },
@@ -534,7 +561,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "28",
-      "description": "User can edit any team"
+      "description": "User can edit any team",
+      "role_order": "20"
     }
   },
   {
@@ -543,7 +571,7 @@
     "fields": {
       "name": "Super Users:Team Coordinator",
       "permissions": [
-        142
+        1042
       ]
     }
   },
@@ -552,7 +580,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "29",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -561,7 +590,7 @@
     "fields": {
       "name": "Super Users:Send Emails to Selected Members of Selected Resource Types from the Portal Administration Screen",
       "permissions": [
-        144
+        1044
       ]
     }
   },
@@ -570,7 +599,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "30",
-      "description": "Users can send Emails to all members of selected resource type from the portal administration screen"
+      "description": "Users can send Emails to all members of selected resource type from the portal administration screen",
+      "role_order": "50"
     }
   },
   {
@@ -579,8 +609,8 @@
     "fields": {
       "name": "Super Users:Super User Proxy Login",
       "permissions": [
-        146,
-        147
+        1046,
+        1047
       ]
     }
   },
@@ -589,7 +619,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "31",
-      "description": "Users in this list can proxy login as other portal users."
+      "description": "Users in this list can proxy login as other portal users.",
+      "role_order": "30"
     }
   },
   {
@@ -598,9 +629,9 @@
     "fields": {
       "name": "ILB Admin Users:Dashboard User",
       "permissions": [
-        149,
-        151,
-        153
+        1049,
+        1051,
+        1053
       ]
     }
   },
@@ -609,7 +640,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "32",
-      "description": "Users can access the ICMS data dashboard."
+      "description": "Users can access the ICMS data dashboard.",
+      "role_order": "30"
     }
   },
   {
@@ -618,10 +650,10 @@
     "fields": {
       "name": "ILB Admin Users:Maintain All",
       "permissions": [
-        150,
-        151,
-        152,
-        153
+        1050,
+        1051,
+        1052,
+        1053
       ]
     }
   },
@@ -630,7 +662,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "33",
-      "description": "Users can maintain all reference data for the system (importers, exporters, commodities, countries, categories etc)."
+      "description": "Users can maintain all reference data for the system (importers, exporters, commodities, countries, categories etc).",
+      "role_order": "20"
     }
   },
   {
@@ -639,8 +672,8 @@
     "fields": {
       "name": "ILB Admin Users:Resource Co-ordinator",
       "permissions": [
-        148,
-        151
+        1048,
+        1051
       ]
     }
   },
@@ -649,7 +682,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "34",
-      "description": "Has all permissions and can edit members of the team."
+      "description": "Has all permissions and can edit members of the team.",
+      "role_order": "10"
     }
   },
   {
@@ -658,8 +692,8 @@
     "fields": {
       "name": "ILB Search Users:Resource Co-ordinator",
       "permissions": [
-        154,
-        157
+        1054,
+        1057
       ]
     }
   },
@@ -668,7 +702,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "35",
-      "description": "Has all permissions and can edit members of the team."
+      "description": "Has all permissions and can edit members of the team.",
+      "role_order": "10"
     }
   },
   {
@@ -677,11 +712,11 @@
     "fields": {
       "name": "ILB Search Users:Search Cases",
       "permissions": [
-        155,
-        156,
-        157,
-        158,
-        159
+        1055,
+        1056,
+        1057,
+        1058,
+        1059
       ]
     }
   },
@@ -690,7 +725,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "36",
-      "description": "Users can search across all cases."
+      "description": "Users can search across all cases.",
+      "role_order": "20"
     }
   },
   {
@@ -699,10 +735,10 @@
     "fields": {
       "name": "ILB Case Officers:Import Application Case Officer",
       "permissions": [
-        161,
-        165,
-        166,
-        167
+        1061,
+        1065,
+        1066,
+        1067
       ]
     }
   },
@@ -711,7 +747,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "37",
-      "description": "Users in this role have the ability to process import application cases through the system."
+      "description": "Users in this role have the ability to process import application cases through the system.",
+      "role_order": "20"
     }
   },
   {
@@ -720,10 +757,10 @@
     "fields": {
       "name": "ILB Case Officers:Certificate Application Case Officer",
       "permissions": [
-        162,
-        163,
-        164,
-        165
+        1062,
+        1063,
+        1064,
+        1065
       ]
     }
   },
@@ -732,7 +769,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "38",
-      "description": "Users in this role have the ability to process certificate application cases through the system."
+      "description": "Users in this role have the ability to process certificate application cases through the system.",
+      "role_order": "30"
     }
   },
   {
@@ -741,9 +779,9 @@
     "fields": {
       "name": "ILB Case Officers:Resource Co-ordinator",
       "permissions": [
-        160,
-        165,
-        168
+        1060,
+        1065,
+        1068
       ]
     }
   },
@@ -752,7 +790,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "39",
-      "description": "Has all permissions and can edit members of the team."
+      "description": "Has all permissions and can edit members of the team.",
+      "role_order": "10"
     }
   },
   {
@@ -761,7 +800,7 @@
     "fields": {
       "name": "ILB External Users:Resource Co-ordinator",
       "permissions": [
-        169
+        1069
       ]
     }
   },
@@ -770,7 +809,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "40",
-      "description": "Has all permissions and can edit members of the team."
+      "description": "Has all permissions and can edit members of the team.",
+      "role_order": "10"
     }
   },
   {
@@ -779,8 +819,8 @@
     "fields": {
       "name": "ILB External Users:Verified Section 5 Authority Editor",
       "permissions": [
-        170,
-        171
+        1070,
+        1071
       ]
     }
   },
@@ -789,7 +829,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "41",
-      "description": "Users in this role have privileges to view and edit importer verified section 5 authorities."
+      "description": "Users in this role have privileges to view and edit importer verified section 5 authorities.",
+      "role_order": "20"
     }
   },
   {
@@ -798,7 +839,7 @@
     "fields": {
       "name": "ILB Support Users:Resource Co-ordinator",
       "permissions": [
-        172
+        1072
       ]
     }
   },
@@ -807,7 +848,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "42",
-      "description": "Has all permissions and can edit members of the team."
+      "description": "Has all permissions and can edit members of the team.",
+      "role_order": "10"
     }
   },
   {
@@ -816,16 +858,16 @@
     "fields": {
       "name": "ILB Support Users:Support User",
       "permissions": [
-        173,
-        174,
-        175,
-        176,
-        177,
-        178,
-        179,
-        180,
-        181,
-        182
+        1073,
+        1074,
+        1075,
+        1076,
+        1077,
+        1078,
+        1079,
+        1080,
+        1081,
+        1082
       ]
     }
   },
@@ -834,7 +876,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "43",
-      "description": "Users in this role have all ICMS system privileges."
+      "description": "Users in this role have all ICMS system privileges.",
+      "role_order": "20"
     }
   },
   {
@@ -843,9 +886,9 @@
     "fields": {
       "name": "Pay Admin Contacts:Administer Payments Manually",
       "permissions": [
-        183,
-        185,
-        186
+        1083,
+        1085,
+        1086
       ]
     }
   },
@@ -854,7 +897,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "44",
-      "description": "Users listed here are allowed to record/cancel payments to BERR in the event of a problem with epayment.  They may also view Statements."
+      "description": "Users listed here are allowed to record/cancel payments to BERR in the event of a problem with epayment.  They may also view Statements.",
+      "role_order": "30"
     }
   },
   {
@@ -863,7 +907,7 @@
     "fields": {
       "name": "Pay Admin Contacts:Team Coordinators",
       "permissions": [
-        184
+        1084
       ]
     }
   },
@@ -872,7 +916,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "45",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -881,8 +926,8 @@
     "fields": {
       "name": "Pay Admin Contacts:Statement Search and View",
       "permissions": [
-        185,
-        186
+        1085,
+        1086
       ]
     }
   },
@@ -891,7 +936,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "46",
-      "description": "Users listed here are allowed to search and view previous Statements relating to Payments made through the Portal."
+      "description": "Users listed here are allowed to search and view previous Statements relating to Payments made through the Portal.",
+      "role_order": "20"
     }
   },
   {
@@ -900,7 +946,7 @@
     "fields": {
       "name": "Portal Payment Testers:Payment Tester",
       "permissions": [
-        187
+        1087
       ]
     }
   },
@@ -909,7 +955,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "47",
-      "description": "Users listed here have access to the Payment Test Harness system LHS."
+      "description": "Users listed here have access to the Payment Test Harness system LHS.",
+      "role_order": "20"
     }
   },
   {
@@ -918,7 +965,7 @@
     "fields": {
       "name": "Portal Payment Testers:Team Coordinators",
       "permissions": [
-        187
+        1087
       ]
     }
   },
@@ -927,7 +974,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "48",
-      "description": "Only users in this list may change entries to this contact-list/team."
+      "description": "Only users in this list may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -936,7 +984,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Access Dashboard",
       "permissions": [
-        189
+        1089
       ]
     }
   },
@@ -945,7 +993,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "49",
-      "description": "Only users in this role may access the dashboard"
+      "description": "Only users in this role may access the dashboard",
+      "role_order": "11"
     }
   },
   {
@@ -954,7 +1003,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:FOX Errors View",
       "permissions": [
-        201
+        1101
       ]
     }
   },
@@ -963,7 +1012,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "50",
-      "description": "Users in this role may view FOX errors."
+      "description": "Users in this role may view FOX errors.",
+      "role_order": "30"
     }
   },
   {
@@ -972,7 +1022,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Inbound Emails View",
       "permissions": [
-        190
+        1090
       ]
     }
   },
@@ -981,7 +1031,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "51",
-      "description": "Only users in this role may view the dashboard inbound emails page."
+      "description": "Only users in this role may view the dashboard inbound emails page.",
+      "role_order": "60"
     }
   },
   {
@@ -990,7 +1041,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Intruder Alerts View",
       "permissions": [
-        191
+        1091
       ]
     }
   },
@@ -999,7 +1050,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "52",
-      "description": "Only users in this role may view the dashboard intruder alerts page."
+      "description": "Only users in this role may view the dashboard intruder alerts page.",
+      "role_order": "85"
     }
   },
   {
@@ -1008,7 +1060,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Login Audit View",
       "permissions": [
-        192
+        1092
       ]
     }
   },
@@ -1017,7 +1069,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "53",
-      "description": "Only users in this role may view the dashboard login audit page."
+      "description": "Only users in this role may view the dashboard login audit page.",
+      "role_order": "80"
     }
   },
   {
@@ -1026,7 +1079,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Outbound Emails View and Resend",
       "permissions": [
-        200
+        1100
       ]
     }
   },
@@ -1035,7 +1088,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "54",
-      "description": "Users in this role may view and resend outbound emails."
+      "description": "Users in this role may view and resend outbound emails.",
+      "role_order": "55"
     }
   },
   {
@@ -1044,7 +1098,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Portal Parameters View",
       "permissions": [
-        193
+        1093
       ]
     }
   },
@@ -1053,7 +1107,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "55",
-      "description": "Only users in this role may view dashboard portal parameters."
+      "description": "Only users in this role may view dashboard portal parameters.",
+      "role_order": "65"
     }
   },
   {
@@ -1062,7 +1117,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:PL/SQL Errors View",
       "permissions": [
-        194
+        1094
       ]
     }
   },
@@ -1071,7 +1126,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "56",
-      "description": "Only users in this role may view PL/SQL errors."
+      "description": "Only users in this role may view PL/SQL errors.",
+      "role_order": "25"
     }
   },
   {
@@ -1080,7 +1136,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Proxy Viewer",
       "permissions": [
-        195
+        1095
       ]
     }
   },
@@ -1089,7 +1145,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "57",
-      "description": "Only users in this role may view proxy details within the web user sessions page."
+      "description": "Only users in this role may view proxy details within the web user sessions page.",
+      "role_order": "20"
     }
   },
   {
@@ -1098,7 +1155,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Team Coordinator",
       "permissions": [
-        188
+        1088
       ]
     }
   },
@@ -1107,7 +1164,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "58",
-      "description": "Only users in this role may change entries to this contact-list/team."
+      "description": "Only users in this role may change entries to this contact-list/team.",
+      "role_order": "10"
     }
   },
   {
@@ -1116,7 +1174,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Roles View",
       "permissions": [
-        196
+        1096
       ]
     }
   },
@@ -1125,7 +1183,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "59",
-      "description": "Only users in this role may view the dashboard roles page."
+      "description": "Only users in this role may view the dashboard roles page.",
+      "role_order": "75"
     }
   },
   {
@@ -1134,7 +1193,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Search Users View",
       "permissions": [
-        199
+        1099
       ]
     }
   },
@@ -1143,7 +1202,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "60",
-      "description": "Only users in this role may view dashboard search users."
+      "description": "Only users in this role may view dashboard search users.",
+      "role_order": "70"
     }
   },
   {
@@ -1152,7 +1212,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Session Viewer",
       "permissions": [
-        197
+        1097
       ]
     }
   },
@@ -1161,7 +1221,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "61",
-      "description": "Only users in this role may view web user sessions."
+      "description": "Only users in this role may view web user sessions.",
+      "role_order": "15"
     }
   },
   {
@@ -1170,7 +1231,7 @@
     "fields": {
       "name": "Portal Dashboard Permissions:Statistics View",
       "permissions": [
-        198
+        1098
       ]
     }
   },
@@ -1179,7 +1240,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "62",
-      "description": "Only users in this role may view dashboard statistics."
+      "description": "Only users in this role may view dashboard statistics.",
+      "role_order": "90"
     }
   },
   {
@@ -1188,7 +1250,7 @@
     "fields": {
       "name": "Reporting Super Users:Report Administrator",
       "permissions": [
-        202
+        1102
       ]
     }
   },
@@ -1197,7 +1259,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "63",
-      "description": "Users in this role can access the reports system using the left hand side of the workbasket both to search reporting teams and view/schedule reports."
+      "description": "Users in this role can access the reports system using the left hand side of the workbasket both to search reporting teams and view/schedule reports.",
+      "role_order": "20"
     }
   },
   {
@@ -1206,7 +1269,7 @@
     "fields": {
       "name": "Reporting Super Users:Team Coordinator",
       "permissions": [
-        203
+        1103
       ]
     }
   },
@@ -1215,7 +1278,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "64",
-      "description": "Administer this team."
+      "description": "Administer this team.",
+      "role_order": "10"
     }
   },
   {
@@ -1224,7 +1288,7 @@
     "fields": {
       "name": "Mapsets Management:Mapset Superuser",
       "permissions": [
-        204
+        1104
       ]
     }
   },
@@ -1233,7 +1297,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "65",
-      "description": "Mapset Superusers can administer editing privileges on mapsets"
+      "description": "Mapset Superusers can administer editing privileges on mapsets",
+      "role_order": "20"
     }
   },
   {
@@ -1242,7 +1307,7 @@
     "fields": {
       "name": "Mapsets Management:Resource Coordinator",
       "permissions": [
-        205
+        1105
       ]
     }
   },
@@ -1251,7 +1316,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "66",
-      "description": "Resource Coordinator for the SPIRE Mapsets Management system"
+      "description": "Resource Coordinator for the SPIRE Mapsets Management system",
+      "role_order": "10"
     }
   },
   {
@@ -1260,7 +1326,7 @@
     "fields": {
       "name": "Workbasket Viewers:Team Coordinator",
       "permissions": [
-        207
+        1107
       ]
     }
   },
@@ -1269,7 +1335,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "67",
-      "description": "People in this role can edit this team.\n      Warning... team coordinators will be able to add anyone to the team to view their workbasket."
+      "description": "People in this role can edit this team.\n      Warning... team coordinators will be able to add anyone to the team to view their workbasket.",
+      "role_order": "10"
     }
   },
   {
@@ -1278,7 +1345,7 @@
     "fields": {
       "name": "Workbasket Viewers:Workbasket Viewee",
       "permissions": [
-        207
+        1107
       ]
     }
   },
@@ -1287,7 +1354,8 @@
     "model": "web.Role",
     "fields": {
       "group_id": "68",
-      "description": "People in this role can have their workbaskets viewed by people in the viewers role."
+      "description": "People in this role can have their workbaskets viewed by people in the viewers role.",
+      "role_order": "30"
     }
   },
   {
@@ -1296,7 +1364,7 @@
     "fields": {
       "name": "Workbasket Viewers:Workbasket Viewer",
       "permissions": [
-        206
+        1106
       ]
     }
   },
@@ -1305,7 +1373,314 @@
     "model": "web.Role",
     "fields": {
       "group_id": "69",
-      "description": "People in this role can view the workbasket of all people in the Workbasket Viewee role."
+      "description": "People in this role can view the workbasket of all people in the Workbasket Viewee role.",
+      "role_order": "20"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "web.Team",
+    "fields": {
+      "name": "Advice Super Users",
+      "description": "Advice Super Users",
+      "roles": [
+        1,
+        1,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "pk": 2,
+    "model": "web.Team",
+    "fields": {
+      "name": "Application Error Logging Users Static",
+      "description": "People who use error logging system, focuses on what errors they can access",
+      "roles": [
+        3,
+        4,
+        4,
+        5
+      ]
+    }
+  },
+  {
+    "pk": 3,
+    "model": "web.Team",
+    "fields": {
+      "name": "Country Super Users",
+      "description": "Users in this list have access to carry out the country maintenance",
+      "roles": [
+        6,
+        6,
+        6,
+        6,
+        7
+      ]
+    }
+  },
+  {
+    "pk": 4,
+    "model": "web.Team",
+    "fields": {
+      "name": "Digital Certificate Management Team",
+      "description": "People in this team manage digital certificates",
+      "roles": [
+        8,
+        9
+      ]
+    }
+  },
+  {
+    "pk": 5,
+    "model": "web.Team",
+    "fields": {
+      "name": "Directory Super Users",
+      "description": "This team defines who is allowed to maintain central Portal Directory details such as Organisations, People and Login User Accounts. These functions should only be given to internal DECC staff.",
+      "roles": [
+        10,
+        11,
+        11,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        13,
+        14,
+        14,
+        14,
+        15,
+        15,
+        15,
+        15,
+        16,
+        16,
+        16,
+        16,
+        17,
+        17,
+        17,
+        18,
+        18,
+        18,
+        19,
+        19,
+        19,
+        19,
+        19,
+        20,
+        20,
+        21,
+        21,
+        21,
+        22,
+        23,
+        24,
+        25,
+        25,
+        26
+      ]
+    }
+  },
+  {
+    "pk": 6,
+    "model": "web.Team",
+    "fields": {
+      "name": "ILB Admin Users",
+      "description": "People who maintain reference data for the system.",
+      "roles": [
+        32,
+        32,
+        32,
+        33,
+        33,
+        33,
+        33,
+        34,
+        34
+      ]
+    }
+  },
+  {
+    "pk": 7,
+    "model": "web.Team",
+    "fields": {
+      "name": "ILB Case Officers",
+      "description": "Case Officers of ILB.",
+      "roles": [
+        37,
+        37,
+        37,
+        37,
+        38,
+        38,
+        38,
+        38,
+        39,
+        39,
+        39
+      ]
+    }
+  },
+  {
+    "pk": 8,
+    "model": "web.Team",
+    "fields": {
+      "name": "ILB External Users",
+      "description": "External Users",
+      "roles": [
+        40,
+        41,
+        41
+      ]
+    }
+  },
+  {
+    "pk": 9,
+    "model": "web.Team",
+    "fields": {
+      "name": "ILB Search Users",
+      "description": "ILB users who can search cases.",
+      "roles": [
+        35,
+        35,
+        36,
+        36,
+        36,
+        36,
+        36
+      ]
+    }
+  },
+  {
+    "pk": 10,
+    "model": "web.Team",
+    "fields": {
+      "name": "ILB Support Users",
+      "description": "Support Users",
+      "roles": [
+        42,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43
+      ]
+    }
+  },
+  {
+    "pk": 11,
+    "model": "web.Team",
+    "fields": {
+      "name": "Mapsets Management",
+      "description": "Mapsets Management",
+      "roles": [
+        65,
+        66
+      ]
+    }
+  },
+  {
+    "pk": 12,
+    "model": "web.Team",
+    "fields": {
+      "name": "Pay Admin Contacts",
+      "description": "Payments Admin Team",
+      "roles": [
+        44,
+        44,
+        44,
+        45,
+        46,
+        46
+      ]
+    }
+  },
+  {
+    "pk": 13,
+    "model": "web.Team",
+    "fields": {
+      "name": "Portal Dashboard Permissions",
+      "description": "Permissions for Portal Dashboard",
+      "roles": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62
+      ]
+    }
+  },
+  {
+    "pk": 14,
+    "model": "web.Team",
+    "fields": {
+      "name": "Portal Payment Testers",
+      "description": "Portal Payment Testers",
+      "roles": [
+        47,
+        48
+      ]
+    }
+  },
+  {
+    "pk": 15,
+    "model": "web.Team",
+    "fields": {
+      "name": "Reporting Super Users",
+      "description": "This team provides roles for performing report related activities.",
+      "roles": [
+        63,
+        64
+      ]
+    }
+  },
+  {
+    "pk": 16,
+    "model": "web.Team",
+    "fields": {
+      "name": "Super Users",
+      "description": "Super Users",
+      "roles": [
+        27,
+        27,
+        28,
+        29,
+        30,
+        31,
+        31
+      ]
+    }
+  },
+  {
+    "pk": 17,
+    "model": "web.Team",
+    "fields": {
+      "name": "Workbasket Viewers",
+      "description": "Team for configuring access privileges to view other people's workbaskets",
+      "roles": [
+        67,
+        68,
+        69
+      ]
     }
   }
 ]

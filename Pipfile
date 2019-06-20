@@ -14,7 +14,7 @@ pytest-xdist = "*"
 pytest-mock = "*"
 
 [packages]
-django = "==2.2.*"
+django = "==2.2.2"
 django-environ = "*"
 django-recaptcha = "*"
 django-ses = "*"

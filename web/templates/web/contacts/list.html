@@ -1,0 +1,89 @@
+{% for role in roles %}
+<h3>{{role.short_name}}</h3>
+<div class="container setoutForm">
+    <div class="row">
+        <div class="twelve columns">
+            <span class="text-widget ">Has all permissions and can edit members of the team.</span>
+        </div>
+    </div>
+</div>
+
+<table class="setoutList">
+    <thead>
+        <tr>
+            <th>
+                Central Contact Details
+            </th>
+            <th>
+                Qualifying Comment
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in members %}
+        <tr>
+            <td>
+                <div class="individual-input">
+                    <a href="">***REMOVED***</a>
+                </div>
+                <div class="individual-input">
+                    <span id="g51" class="text-widget ">
+                        ***REMOVED***<br>IMPORT LICENSING BRANCH<br>BIS<br>ETID<br>+44 (0)1642 364 312
+                    </span>
+                </div>
+                <div class="individual-input"><span id="g52" class="text-widget "></span></div>
+                <div class="individual-input" data-xfid="g53"><span id="g53" class="text-widget "></span></div>
+
+                <div class="container setoutForm">
+                    <div class="row">
+                        <div class="twelve columns">
+                            <ul class="menu-out grouped big-menu-out flow-across">
+                                <li>
+                                    <button name="g56" type="button" class="icon-user-minus link-button button no-prompt-action" aria-label="Remove from this role">
+                                    </button>
+                                </li>
+                                <li>
+                                    <button name="g57" type="button" class="icon-copy link-button button no-prompt-action" aria-describedby="hint189-content" aria-label="Copy to another role">
+                                    </button>
+                                    <div id="hint189-content" role="tooltip" class="hint-content">Copy to another role</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="container setoutForm" data-xfid="f58">
+                    <div class="row">
+                        <div class="twelve columns" data-xfid="g59"> <button id="g59" name="g59" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-add-qual-comment&quot;,&quot;ctxt&quot;:&quot;s16dZTf_plrnqVW43&quot;}, this);" class="icon-bubble link-button inline-link-button button">
+                                Add qualifying comment </button></div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="list-actions">
+    <div class="container setoutForm noBottomMargin">
+        <div class="row">
+            <div class="twelve columns">
+                <ul class="menu-out small-menu-out noBottomMargin flow-across">
+                    <li>
+                        <button id="g100" name="g100" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-add-person&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-user-plus button">
+                            Add person </button>
+                    </li>
+                    <li>
+                        <button id="g102" name="g102" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-add-address&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-office button">
+                            Add address </button>
+                    </li>
+                    <li>
+                        <button id="g101" name="g101" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-paste-member&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-paste button">
+                            Paste person </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

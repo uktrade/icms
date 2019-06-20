@@ -1,0 +1,24 @@
+{% set is_list= request.GET.view == 'list' %}
+<ul class="tabs -tabs big-tabs" role="tablist">
+    <li
+        {% if not is_list %}class="current-tab"{% endif %}
+        aria-selected="{{'true' if not is_list else 'false'}}"
+        aria-hidden="{{'true' if is_list else 'false'}}"
+        role="tab">
+        <a href="?view=grid">Grid view</a>
+    </li>
+    <li
+        {% if is_list %}class="current-tab"{% endif %}
+        aria-selected="{{ 'true' if is_list  else 'false'}}"
+        aria-hidden="{{ 'true' if not is_list  else 'false'}}"
+        role="tab">
+        <a href="?view=list">List view</a>
+    </li>
+</ul>
+
+
+{% if is_list %}
+    {% include "web/contacts/list.html" %}
+{% else %}
+    {% include "web/contacts/grid.html" %}
+{% endif %}

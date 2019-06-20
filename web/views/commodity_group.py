@@ -1,12 +1,12 @@
-from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic.edit import (UpdateView, CreateView)
 from django_filters import (CharFilter, ChoiceFilter, ModelChoiceFilter,
                             BooleanFilter)
-from django.views.generic.edit import (UpdateView, CreateView)
-from web.base.views import ModelListActionView
 from web.base.forms import FilterSet, widgets, ModelForm
-from web.models import (CommodityGroup, Commodity, Unit)
 from web.base.forms.fields import (DisplayField, CharField)
 from web.base.forms.widgets import Textarea
+from web.base.views import FilteredListView
+from web.models import (CommodityGroup, Commodity, Unit)
 from .filters import _filter_config
 
 
@@ -42,7 +42,8 @@ class CommodityGroupFilter(FilterSet):
         label='Search Archived')
 
     class Meta:
-        CommodityGroup
+        model = CommodityGroup
+        fields = []
         config = _filter_config
 
 
@@ -126,23 +127,16 @@ class CommodityGroupEditView(UpdateView):
     template_name = 'web/commodity-group/edit.html'
     form_class = CommodityGroupEditForm
     model = CommodityGroup
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-groups')
+    success_url = reverse_lazy('commodity-groups')
 
 
 class CommodityGroupCreateView(CreateView):
     template_name = 'web/commodity-group/create.html'
     form_class = CommodityGroupCreateForm
     model = CommodityGroup
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-groups')
+    success_url = reverse_lazy('commodity-groups')
 
 
-class CommodityGroupListView(ModelListActionView):
+class CommodityGroupListView(FilteredListView):
     template_name = 'web/commodity-group/list.html'
-    model = CommodityGroup
-    filter_class = CommodityGroupFilter
+    filterset_class = CommodityGroupFilter
