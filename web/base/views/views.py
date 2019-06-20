@@ -1,16 +1,15 @@
-from django.views.generic.base import View
-from django.shortcuts import render, redirect
 from django.core.exceptions import SuspiciousOperation
+from django.views.generic.list import ListView
 
 
 def raise_suspicious(message='Invalid request'):
     raise SuspiciousOperation(message)
 
 
-class ActionView(View):
+class PostActionMixin(object):
     """
-    Used for creating a view with multiple actions that renders multiple
-    templates on single url depending on post parameter 'action'.
+    Handle post requests with action variable: Calls method with the same name
+    as action variable to handle action
     """
 
     def post(self, request, *args, **kwargs):
@@ -21,85 +20,33 @@ class ActionView(View):
         return getattr(self, action)(request, *args, **kwargs)
 
 
-class ModelEditActionView(ActionView):
-    """
-    Allows editing model object with given pk. Apart from saving other actions
-    can be performed using POST parameter 'action' and defining methods with
-    the action name. All through same path.
-
-    e.g. Adding people to team before saving is possible by passing
-    action=add_member which will render people search view, and in turn
-    action=search_people will perform the search and render search results page
-
-    See web/views/views.py for all usage examples
-    """
-
-    def get_instance(self, pk):
-        return self.model.objects.get(pk=pk)
-
-    def get_form(self, request, pk, data=None):
-        return self.form_class(
-            data or request.POST or None, instance=self.get_instance(pk))
-
-    def render_response(self, form, context={}):
-        context['form'] = form
-        return render(self.request, self.template_name, context)
-
-    def save(self, request, pk):
-        form = self.get_form(request, pk)
-        if form.is_valid():
-            form.save()
-            return redirect(self.success_url)
-
-        return self.render_response(form)
-
-    def get(self, request, pk):
-        return self.render_response(self.get_form(request, pk))
-
-
-class ModelCreateActionView(ModelEditActionView):
-    pass
-
-
-class ModelListActionView(ActionView):
-    """
-    Model list view with filters for searching and item actions
-    """
-
-    def get_filter(self, request):
-        filter_data = request.GET or request.POST or None
-        return self.filter_class(
-            filter_data, queryset=self.model.objects.all())
-
-    def render_response(self, filter, context={}):
-        context['filter'] = filter
-        return render(self.request, self.template_name, context)
-
-    def search(self, request):
-        return self.render_response(self.get_filter(request))
-
-    def get(self, request, pk=None):
-        if not request.GET:
-            filter = self.filter_class(queryset=self.model.objects.none())
-            return self.render_response(filter, {'first_load': True})
-
-        return self.search(request)
-
-    def get_item(self, request):
+class FilteredListView(PostActionMixin, ListView):
+    def _get_item(self, request):
         if not (request.POST or request.POST.get('item')):
             raise_suspicious()
-
         id = request.POST.get('item')
-        return self.model.objects.get(pk=id)
+        return self.filterset_class.Meta.model.objects.get(pk=id)
+
+    def get_queryset(self):
+        if self.request.GET or self.request.POST:
+            return self.filterset_class.Meta.model.objects.all()
+        else:
+            return self.filterset_class.Meta.model.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['filter'] = self.filterset_class(
+            self.request.GET or None, queryset=self.get_queryset())
+        return context
 
     def archive(self, request):
-        if not self.model.Display.archive:
+        if not self.filterset_class.Meta.model.Display.archive:
             raise_suspicious()
-        self.get_item(request).archive()
-        return self.render_response(self.get_filter(request))
+        self._get_item(request).archive()
+        return super().get(request)
 
     def unarchive(self, request):
-        if not self.model.Display.archive:
+        if not self.filterset_class.Meta.model.Display.archive:
             raise_suspicious()
-        self.get_item(request).unarchive()
-        return self.render_response(self.get_filter(request))
+        self._get_item(request).unarchive()
+        return super().get(request)

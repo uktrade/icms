@@ -1,6 +1,6 @@
 from django_filters import (CharFilter, ChoiceFilter)
-from web.base.views import ModelListActionView
 from web.base.forms import FilterSet, widgets
+from web.base.views import FilteredListView
 from web.models import Template
 from .filters import _filter_config
 
@@ -25,7 +25,6 @@ class TemplatesFilter(FilterSet):
         config = _filter_config
 
 
-class TemplateListView(ModelListActionView):
+class TemplateListView(FilteredListView):
     template_name = 'web/template/list.html'
-    model = Template
-    filter_class = TemplatesFilter
+    filterset_class = TemplatesFilter

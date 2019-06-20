@@ -1,3 +1,5 @@
+from django.core import management
+from django.core.management.commands import loaddata
 from django.db import migrations, transaction
 from django.utils.timezone import make_aware
 from datetime import datetime
@@ -5,6 +7,10 @@ from web.models import CommodityGroup, Unit
 from django.conf import settings
 import os
 import json
+
+
+def load_units(apps, schema_editor):
+    management.call_command(loaddata.Command(), 'web/fixtures/web/units.json')
 
 
 def save_commodity_groups(apps, schema_editor):
@@ -43,4 +49,7 @@ class Migration(migrations.Migration):
         ('web', '0019_commodity_data'),
     ]
 
-    operations = [migrations.RunPython(save_commodity_groups)]
+    operations = [
+        migrations.RunPython(load_units),
+        migrations.RunPython(save_commodity_groups)
+    ]

@@ -62,12 +62,32 @@ class Role(Group):
         parent_link=True,
         related_name='roles')
     description = models.CharField(max_length=4000, blank=True, null=True)
+    # Display order on the screen
+    role_order = models.IntegerField(blank=False, null=False)
+
+    def has_member(self, user):
+        return user in self.user_set.all()
+
+    @property
+    def short_name(self):
+        return self.name.split(':')[1]
+
+    class Meta:
+        ordering = ('role_order', )
 
 
-class Team(models.Model):
+class BaseTeam(models.Model):
+    roles = models.ManyToManyField(Role)
+    members = models.ManyToManyField(User)
+    addresses = models.ManyToManyField(Address)
+
+    class Meta:
+        abstract = True
+
+
+class Team(BaseTeam):
     name = models.CharField(max_length=1000, blank=False, null=False)
     description = models.CharField(max_length=4000, blank=True, null=True)
-    roles = models.ManyToManyField(Role)
 
     class Meta:
         ordering = ('name', )
@@ -78,7 +98,7 @@ class Team(models.Model):
         edit = True
 
 
-class Constabulary(Archivable, models.Model):
+class Constabulary(Archivable, BaseTeam):
     EAST_MIDLANDS = 'EM'
     EASTERN = 'ER'
     ISLE_OF_MAN = 'IM'
@@ -106,7 +126,6 @@ class Constabulary(Archivable, models.Model):
         max_length=3, choices=REGIONS, blank=False, null=False)
     email = models.EmailField(max_length=254, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=False)
-    contacts = models.ManyToManyField(User, blank=True)
 
     @property
     def region_verbose(self):
@@ -425,3 +444,15 @@ class CommodityGroup(Archivable, models.Model):
         view = False
         edit = True
         archive = True
+
+
+class Country(models.Model):
+    SOVEREIGN_TERRITORY = 'SOVEREIGN_TERRITORY'
+    SYSTEM = 'SYSTEM'
+
+    TYPES = ((SOVEREIGN_TERRITORY, 'Sovereign Territory'), (SYSTEM, 'System'))
+
+    name = models.CharField(max_length=4000, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=False)
+    type = models.CharField(
+        max_length=30, choices=TYPES, blank=False, null=False)

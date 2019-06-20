@@ -1,11 +1,11 @@
-from django.shortcuts import redirect
 from django.views.generic.edit import (CreateView, UpdateView)
 from django_filters import (CharFilter, ChoiceFilter)
-from web.base.views import ModelListActionView
 from web.base.forms import FilterSet, ModelForm
 from web.base.forms.widgets import (TextInput, Select)
+from web.base.views import FilteredListView
 from web.models import Constabulary
 from .filters import _filter_config
+from .contacts import ContactsManagementMixin
 
 
 class ConstabularyEditForm(ModelForm):
@@ -93,27 +93,19 @@ class ConstabulariesFilter(FilterSet):
         config = _filter_config
 
 
-class ConstabularyListView(ModelListActionView):
+class ConstabularyListView(FilteredListView):
     template_name = 'web/constabulary/list.html'
     model = Constabulary
-    filter_class = ConstabulariesFilter
+    filterset_class = ConstabulariesFilter
 
 
-class ConstabularyEditView(UpdateView):
+class ConstabularyEditView(ContactsManagementMixin, UpdateView):
     template_name = 'web/constabulary/edit.html'
     form_class = ConstabularyEditForm
     model = Constabulary
 
-    def form_valid(self, form):
-        form.save()
-        return redirect('constabulary-list')
 
-
-class ConstabularyCreateView(CreateView):
+class ConstabularyCreateView(ContactsManagementMixin, CreateView):
     template_name = 'web/constabulary/create.html'
     form_class = ConstabularyCreateForm
     model = Constabulary
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('constabulary-list')

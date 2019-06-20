@@ -1,11 +1,11 @@
-from django.shortcuts import redirect
-from django.views.generic.edit import (UpdateView, CreateView)
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
 from django_filters import (CharFilter, ChoiceFilter, DateFilter,
                             BooleanFilter)
 from web.base.forms import ModelForm
 from web.base.forms.fields import DisplayField
-from web.base.views import ModelListActionView
 from web.base.forms import FilterSet, widgets
+from web.base.views import (FilteredListView)
 from web.models import Commodity
 from .filters import _filter_config
 
@@ -129,27 +129,19 @@ class CommodityFilter(FilterSet):
         config = _filter_config
 
 
-class CommodityListView(ModelListActionView):
+class CommodityListView(FilteredListView):
     template_name = 'web/commodity/list.html'
-    model = Commodity
-    filter_class = CommodityFilter
+    filterset_class = CommodityFilter
+    paginate_by = 100
 
 
 class CommodityEditView(UpdateView):
     template_name = 'web/commodity/edit.html'
     form_class = CommodityEditForm
-    model = Commodity
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-list')
+    success_url = reverse_lazy('commodity-list')
 
 
 class CommodityCreateView(CreateView):
     template_name = 'web/commodity/create.html'
     form_class = CommodityCreateForm
-    model = Commodity
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('commodity-list')
+    success_url = reverse_lazy('commodity-list')

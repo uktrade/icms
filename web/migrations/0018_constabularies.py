@@ -1,8 +1,19 @@
-from django.db import migrations, transaction
+from django.core.management.color import no_style
+from django.db import migrations, transaction, connection
 from web.models import Constabulary
 from django.conf import settings
 import os
 import json
+
+
+def reset_constabularies_sequence(apps, schema_editor):
+    sequence_reset_sql = connection.ops.sequence_reset_sql(
+        no_style(), [
+            Constabulary,
+        ])
+    with connection.cursor() as cursor:
+        for sql in sequence_reset_sql:
+            cursor.execute(sql)
 
 
 def save_constabularies(apps, schema_editor):

@@ -36,7 +36,7 @@ def save_permissions(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0016_auto_20190618_0918'),
+        ('web', '0016_auto_20190619_1055'),
     ]
 
     operations = [
