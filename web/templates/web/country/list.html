@@ -3,28 +3,11 @@
 {% block context_header %}Editing All Countries{% endblock %}
 
 
-
 {% block sidebar %}
-<h4>Countries</h4>
-<ul class="menu-out">
-    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;add-country-lhs-nav-action&quot;,&quot;ctxt&quot;:&quot;s153J8s_plrnqVW43&quot;}, this);">New Country</a></li>
-    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;manage-countries-lhs-nav-action&quot;,&quot;ctxt&quot;:&quot;s153J8s_plrnqVW43&quot;}, this);">Manage Countries</a></li>
-</ul>
-<h4>Country Groups</h4>
-<ul class="menu-out">
-    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-toogle-new-exiting-groups&quot;,&quot;ctxt&quot;:&quot;s153J8s_plrnqVW43&quot;}, this);">New Country Group</a></li>
-    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;manage-groups-lhs-nav-action&quot;,&quot;ctxt&quot;:&quot;s153J8s_plrnqVW43&quot;}, this);">Manage Country Groups</a></li>
-</ul>
-<h4>Country Translations</h4>
-<ul class="menu-out">
-    <li> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-lhs-manage-translation-sets&quot;,&quot;ctxt&quot;:&quot;s153J8s_plrnqVW43&quot;}, this);">Manage Country Translation Sets</a></li>
-</ul>
-
+    {% include "web/country/sidebar.html" %}
 {% endblock %}
 
-
 {% block main_content %}
-
 
 <div class="filter-bar">
     <div class="container setoutForm noBottomMargin" data-xfid="f47">

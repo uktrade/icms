@@ -3,6 +3,9 @@ from django.shortcuts import (render, redirect)
 from web.base.views import PostActionMixin
 from web.models import User, Role
 from .user import search_people
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ContactsManagementMixin(PostActionMixin):
@@ -18,6 +21,7 @@ class ContactsManagementMixin(PostActionMixin):
 
     def _add_to_session(self, name, value):
         "Add data to session"
+        logger.debug('Saving to session: {name=%s, value=%s} ', name, value)
         self.request.session[name] = value
 
     def _get_role_members(self, roles):
@@ -72,19 +76,19 @@ class ContactsManagementMixin(PostActionMixin):
             'role_members': self._get_role_members(roles)
         }
 
-    def _save_to_session(self):
+    def _save_to_session(self, pk=None):
         put = self._add_to_session
         param = self._get_post_parameter_as_list
-        form_data = self.get_form(self.request.POST).data
+        form_data = self.get_form(self.request.POST, pk).data
         put('form', form_data)
         put('members', param('members'))
         put('addresses', param('addresses'))
         put('role_members', self._extract_role_members())
 
-    def _restore_from_session(self, request, new_members=[]):
+    def _restore_from_session(self, request, new_members=[], pk=None):
         _pop = self._remove_from_session
         form_data = _pop('form')
-        form = self.get_form(data=form_data)
+        form = self.get_form(data=form_data, pk=pk)
         users = self._get_users_by_ids(_pop('members', []))
         for user in users:
             if user not in new_members:
@@ -103,6 +107,7 @@ class ContactsManagementMixin(PostActionMixin):
         return render(self.request, self.template_name, context)
 
     def get_form(self, data=None, pk=None):
+        logger.debug('Getting contacts for object pk: %s', pk)
         instance = None
         if pk:
             instance = super().get_object()
@@ -119,14 +124,15 @@ class ContactsManagementMixin(PostActionMixin):
         })
 
     def add_member(self, request, pk=None):
-        self._save_to_session()
+        self._save_to_session(pk)
         return search_people(request)
 
     def add_people(self, request, pk=None):
         # Handles new members added on search users
         selected_users = self._get_post_parameter_as_list('selected_items')
         new_members = self._get_users_by_ids(selected_users)
-        data = self._restore_from_session(request, new_members)
+        data = self._restore_from_session(request, new_members, pk=pk)
+        logger.debug('Members added to object pk: %s', pk)
         return self._render(data)
 
     def _save_members(self, object):
@@ -145,7 +151,8 @@ class ContactsManagementMixin(PostActionMixin):
 
     @transaction.atomic
     def save(self, request, pk=None):
-        form = self.get_form(request.POST)
+        logger.debug('Save: %s', pk)
+        form = self.get_form(request.POST, pk)
         if not form.is_valid():  # render back to display errors
             return self._render({
                 'contacts': self._get_data(form.instance),

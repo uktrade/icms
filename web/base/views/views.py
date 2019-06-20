@@ -1,5 +1,8 @@
 from django.core.exceptions import SuspiciousOperation
 from django.views.generic.list import ListView
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def raise_suspicious(message='Invalid request'):
@@ -16,6 +19,8 @@ class PostActionMixin(object):
         action = request.POST.get('action')
         if not action:
             raise_suspicious('Invalid action')
+
+        logger.debug('Form action: "%s", Arguments:[%s]', action, kwargs)
 
         return getattr(self, action)(request, *args, **kwargs)
 
