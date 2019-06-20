@@ -375,7 +375,8 @@ class Commodity(Archivable, models.Model):
                                               'Oil and Petrochemicals'))
 
     is_active = models.BooleanField(blank=False, null=False, default=False)
-    start_datetime = models.DateTimeField(blank=False, null=False)
+    start_datetime = models.DateTimeField(
+        auto_now_add=True, blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
     commodity_type = models.CharField(

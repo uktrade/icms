@@ -1,0 +1,11 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "messages/message.html" as messages %}
+
+{% block page_title %}New Country{% endblock %}
+{% block context_header %}New Country{% endblock %}
+
+
+{% block main_content %}
+    {{ forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block page_title %}Editing {{object.name}}{% endblock %}
+{% block context_header %}Edit {{object.name}}{% endblock %}
+
+{% block main_content %}
+
+{% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
+
+{%- endcall %}
+
+
+
+{% endblock %}
