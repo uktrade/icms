@@ -9,7 +9,7 @@ services:
   web:
     restart: always
     build: .
-    user: ${UID}
+    # user: ${UID}
     entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
     command: scripts/entry.sh
     environment:

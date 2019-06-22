@@ -49,6 +49,18 @@
          $(this).closest('tr').remove();
      });
 
+      $('.add-person').click(function(e){
+          console.log('Adding input');
+          role_id=$(this).attr('data-role');
+          $(this).append(
+              '<input type="hidden" name="add_to_role" value="'
+                  + role_id
+                  + '" />'
+          );
+      });
+
+
+
 
 
     if(path=='/register/') {

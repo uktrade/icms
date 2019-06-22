@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.shortcuts import (render, redirect)
+from django.shortcuts import render
 from web.base.views import PostActionMixin
 from web.models import User, Role
 from .user import search_people
@@ -11,7 +11,9 @@ logger = logging.getLogger(__name__)
 class ContactsManagementMixin(PostActionMixin):
     def _remove_from_session(self, name, default=None):
         "Remvove data from session and return"
-        return self.request.session.pop(name, default)
+        value = self.request.session.pop(name, default)
+        logger.debug('Removed from session: {name=%s, value=%s} ', name, value)
+        return value
 
     def _get_post_parameter(self, name):
         return self.request.POST.get(name)
@@ -21,15 +23,18 @@ class ContactsManagementMixin(PostActionMixin):
 
     def _add_to_session(self, name, value):
         "Add data to session"
-        logger.debug('Saving to session: {name=%s, value=%s} ', name, value)
         self.request.session[name] = value
+        logger.debug('Saved to session: {name=%s, value=%s} ', name, value)
+
+    def _get_users_by_ids(self, id_list=[]):
+        return list(User.objects.filter(pk__in=id_list))
 
     def _get_role_members(self, roles):
         role_members = {}
         for role in roles:
             members = []
-            for user in list(role.user_set.all().only('id')):
-                members.append(str(user.id))
+            for user in list(role.user_set.all()):
+                members.append(user)
             role_members[str(role.id)] = members
 
         return role_members
@@ -43,8 +48,15 @@ class ContactsManagementMixin(PostActionMixin):
                 role_members[role_id] = members
         return role_members
 
-    def _get_users_by_ids(self, id_list=[]):
-        return list(User.objects.filter(pk__in=id_list))
+    def _fetch_role_members(self, role_members=None):
+        "Read role members from database"
+        result = {}
+        members = role_members or self._extract_role_members()
+        for role_id, user_ids in members.items():
+            logger.debug('Role: %s, Members: %s', role_id, user_ids)
+            result[role_id] = self._get_users_by_ids(user_ids)
+        logger.debug('Fetched role members: %s', result)
+        return result
 
     def _get_roles(self, object):
         if not object.id:  # New object
@@ -56,11 +68,12 @@ class ContactsManagementMixin(PostActionMixin):
         param = self._get_post_parameter_as_list
         roles = self._get_roles(object)
         members = self._get_users_by_ids(param('members'))
+        role_members = self._fetch_role_members()
         return {
             'members': members,
             'addresses': param('addresses'),
             'roles': roles,
-            'role_members': self._extract_role_members()
+            'role_members': role_members
         }
 
     def _get_initial_data(self, object):
@@ -76,7 +89,7 @@ class ContactsManagementMixin(PostActionMixin):
             'role_members': self._get_role_members(roles)
         }
 
-    def _save_to_session(self, pk=None):
+    def _save_to_session(self, role_id=None, pk=None):
         put = self._add_to_session
         param = self._get_post_parameter_as_list
         form_data = self.get_form(self.request.POST, pk).data
@@ -84,12 +97,23 @@ class ContactsManagementMixin(PostActionMixin):
         put('members', param('members'))
         put('addresses', param('addresses'))
         put('role_members', self._extract_role_members())
+        if role_id:
+            put('add_to_role', role_id)
 
-    def _restore_from_session(self, request, new_members=[], pk=None):
+    def _restore_from_session(self, new_members=[], pk=None):
         _pop = self._remove_from_session
         form_data = _pop('form')
         form = self.get_form(data=form_data, pk=pk)
         users = self._get_users_by_ids(_pop('members', []))
+        role_members = _pop('role_members', {})
+        role_id = _pop('add_to_role')
+        if role_id:
+            members = role_members.get(str(role_id)) or []
+            new_members.extend(members)
+            role_members[str(role_id)] = new_members
+            logger.debug('Role members: %s', role_members)
+        role_members = self._fetch_role_members(role_members)
+        new_members = self._get_users_by_ids(new_members)
         for user in users:
             if user not in new_members:
                 new_members.append(user)
@@ -99,7 +123,7 @@ class ContactsManagementMixin(PostActionMixin):
                 'members': new_members,
                 'addresses': _pop('addresses'),
                 'roles': self._get_roles(form.instance),
-                'role_members': _pop('role_members')
+                'role_members': role_members
             }
         }
 
@@ -124,19 +148,19 @@ class ContactsManagementMixin(PostActionMixin):
         })
 
     def add_member(self, request, pk=None):
-        self._save_to_session(pk)
+        add_to_role = request.POST.get('add_to_role', None)
+        self._save_to_session(add_to_role, pk)
         return search_people(request)
 
     def add_people(self, request, pk=None):
         # Handles new members added on search users
         selected_users = self._get_post_parameter_as_list('selected_items')
-        new_members = self._get_users_by_ids(selected_users)
-        data = self._restore_from_session(request, new_members, pk=pk)
+        data = self._restore_from_session(selected_users, pk=pk)
         logger.debug('Members added to object pk: %s', pk)
         return self._render(data)
 
     def _save_members(self, object):
-        members = self._get_post_parameter_as_list('members')
+        members = set(self._get_post_parameter_as_list('members'))
         object.members.clear()
         for member_id in members:
             object.members.add(member_id)
@@ -146,8 +170,8 @@ class ContactsManagementMixin(PostActionMixin):
         for role in self._get_roles(object):
             members = role_members.get(str(role.id), [])
             role.user_set.clear()
-            for member_id in members:
-                role.user_set.add(member_id)
+            for user_id in members:
+                role.user_set.add(user_id)
 
     @transaction.atomic
     def save(self, request, pk=None):
