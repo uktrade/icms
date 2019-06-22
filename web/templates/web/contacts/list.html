@@ -1,34 +1,47 @@
-{% for role in roles %}
+{% for role in contacts.roles %}
 <h3>{{role.short_name}}</h3>
 <div class="container setoutForm">
     <div class="row">
         <div class="twelve columns">
-            <span class="text-widget ">Has all permissions and can edit members of the team.</span>
+            <span class="text-widget ">{{role.description}}</span>
         </div>
     </div>
 </div>
-
 <table class="setoutList">
     <thead>
         <tr>
-            <th>
-                Central Contact Details
-            </th>
-            <th>
-                Qualifying Comment
-            </th>
+            <th>Central Contact Details</th>
+            <th>Qualifying Comment</th>
         </tr>
     </thead>
     <tbody>
-        {% for user in members %}
+        {% set role_id=role.id|string %}
+        {% for user in contacts.role_members[role_id] %}
         <tr>
             <td>
+                <input type="hidden" name="members" value="{{user.id}}" />
+                <input
+                    id="role{{role.id}}-input"
+                    name="role_members_{{role.id}}"
+                    value="{{user.id}}"
+                    type="checkbox"
+                    checked="checked"
+                   style="visibility:hidden"
+                />
                 <div class="individual-input">
-                    <a href="">***REMOVED***</a>
+                    <a href="">{{user.first_name}} {{user.last_name}}</a>
                 </div>
                 <div class="individual-input">
                     <span id="g51" class="text-widget ">
-                        ***REMOVED***<br>IMPORT LICENSING BRANCH<br>BIS<br>ETID<br>+44 (0)1642 364 312
+                        {{user.email or ''}}
+                        <br />
+                        {{user.organisation}}
+                        <br />
+                        {{user.department or ''}}
+                        <br>
+                        {{user.job_title or ''}}
+                        <br>
+                        {{user.phone_number or ''}}
                     </span>
                 </div>
                 <div class="individual-input"><span id="g52" class="text-widget "></span></div>
@@ -70,15 +83,16 @@
             <div class="twelve columns">
                 <ul class="menu-out small-menu-out noBottomMargin flow-across">
                     <li>
-                        <button id="g100" name="g100" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-add-person&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-user-plus button">
-                            Add person </button>
+                        <button name="action" type="submit" data-role="{{role.id}}" value="add_member" class="small-button icon-user-plus button add-person">
+                            Add  person
+                        </button>
                     </li>
                     <li>
-                        <button id="g102" name="g102" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-add-address&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-office button">
+                        <button id="g102" name="g102" type="button" onclick="" class="icon-office button">
                             Add address </button>
                     </li>
                     <li>
-                        <button id="g101" name="g101" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-list-paste-member&quot;,&quot;ctxt&quot;:&quot;s16dZW0_plrnqVW43&quot;}, this);" class="icon-paste button">
+                        <button id="g101" name="g101" type="button" onclick="" class="icon-paste button">
                             Paste person </button>
                     </li>
                 </ul>

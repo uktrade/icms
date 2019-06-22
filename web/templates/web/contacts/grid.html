@@ -68,9 +68,8 @@
 
                 </td>
                 {% for role in contacts.roles %}
-                {% set user_id=user.id|string %}
                 {% set role_id=role.id|string %}
-                {% set has_role=True if user_id in contacts.role_members[role_id] else False %}
+                {% set has_role=True if user in contacts.role_members[role_id] else False %}
                 <td>
                     <div class="individual-input">
                         <label for="role{{role.id}}-input" class="radio-label">
