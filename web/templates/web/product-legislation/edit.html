@@ -1,0 +1,10 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block page_title %}Edit Product Legislation{% endblock %}
+{% block context_header %}Edit Product Legislation{% endblock %}
+
+{% block main_content %}
+    {{forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
+{% endblock %}

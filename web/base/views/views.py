@@ -33,7 +33,7 @@ class FilteredListView(PostActionMixin, ListView):
         return self.filterset_class.Meta.model.objects.get(pk=id)
 
     def get_queryset(self):
-        if self.request.GET or self.request.POST:
+        if self.request.GET or self.request.POST or self.load_immediate:
             return self.filterset_class.Meta.model.objects.all()
         else:
             return self.filterset_class.Meta.model.objects.none()

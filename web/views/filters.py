@@ -1,7 +1,8 @@
 _filter_config = {
     'label': {
         'cols': 'three',
-        'optional_indicators': False
+        'optional_indicators': False,
+        'prompt': 'west'
     },
     'input': {
         'cols': 'six'
