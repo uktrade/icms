@@ -1,4 +1,3 @@
-
 from django.core.management.color import no_style
 from django.db import migrations, transaction, connection
 from web.models import CountryGroup

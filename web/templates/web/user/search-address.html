@@ -13,7 +13,7 @@
 
             {% call forms.form(postcode_form, csrf_input=csrf_input) -%}
                 <div class="row">
-                    {{forms.label(postcode_form.post_code, opts=postcode_form.config, prompt='north')}}
+                    {{forms.label(postcode_form.post_code, opts=postcode_form.config)}}
                     <div class="four columns"></div>
                 </div>
                 <div class="row">
@@ -31,7 +31,7 @@
                 <h3>International/Manual Address</h3>
                 <div class="container setoutForm">
                     <div class="row">
-                        {{forms.label(postcode_form.country, opts=postcode_form.config, prompt='north')}}
+                        {{forms.label(postcode_form.country, opts=postcode_form.config)}}
                         <div class="four columns"></div>
                     </div>
                     <div class="row">

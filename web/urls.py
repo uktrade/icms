@@ -6,7 +6,9 @@ from .views import (TemplateListView, ConstabularyListView,
                     CommodityGroupCreateView, TeamListView, TeamEditView,
                     CountryListView, CountryEditView, CountryCreateView,
                     CountryTranslationListView, CountryGroupView,
-                    CountryGroupEditView, CountryGroupCreateView)
+                    CountryGroupEditView, CountryGroupCreateView,
+                    ProductLegislationListView, ProductLegislationEditView,
+                    ProductLegislationCreateView)
 from .views.dashboard import outbound_emails
 from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
@@ -90,21 +92,37 @@ urlpatterns = [
         name='country-group-view'
     ),
     path(
-        'country/groups/<int:pk>/edit',
+        'country/groups/<int:pk>/edit/',
         CountryGroupEditView.as_view(),
         name='country-group-edit'
     ),
     path(
-        'country/groups/new',
+        'country/groups/new/',
         CountryGroupCreateView.as_view(),
         name='country-group-view'
     ),
 
     # Coutry translation sets
     path(
-        'country/translations',
+        'country/translations/',
         CountryTranslationListView.as_view(),
         name='country-translation-list'),
+
+    # Product legislation
+    path(
+        'product-legislation/',
+        ProductLegislationListView.as_view(),
+        name='product-legislation-list'),
+
+    path(
+        'product-legislation/<int:pk>/edit/',
+        ProductLegislationEditView.as_view(),
+        name='product-legislation-edit'),
+
+    path(
+        'product-legislation/new/',
+        ProductLegislationCreateView.as_view(),
+        name='product-legislation-new'),
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard/', outbound_emails, name='outbound-emails'),

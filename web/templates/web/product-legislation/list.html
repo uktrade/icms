@@ -1,0 +1,17 @@
+{% extends "layout/filtered-list.html" %}
+{% block page_title %}Maintain Product Legislation{% endblock %}
+{% block context_header %}Maintain Product Legislation{% endblock %}
+{% block empty_message %}There isn't any product legislation that matches your current filters.{% endblock %}
+
+{% block sidebar %}
+    <ul class="menu-out flow-across">
+        <li> <a href="{{url('product-legislation-new')}}">Create Product Legislation</a></li>
+    </ul>
+    <div class="section-break"></div>
+    <h4> Filter </h4>
+    {{forms.filter(filter, filters=filter.filters)}}
+{% endblock %}
+
+{% block filters %}
+{# Left empty, filter is on the sidebar unlike other pages #}
+{% endblock %}

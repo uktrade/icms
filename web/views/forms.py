@@ -382,7 +382,8 @@ class PostCodeSearchForm(Form):
         config = {
             'label': {
                 'cols': 'three',
-                'optional_indicators': False
+                'optional_indicators': False,
+                'prompt': 'north'
             },
             'input': {
                 'cols': 'eight'

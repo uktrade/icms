@@ -125,7 +125,7 @@ class Constabulary(Archivable, BaseTeam):
     region = models.CharField(
         max_length=3, choices=REGIONS, blank=False, null=False)
     email = models.EmailField(max_length=254, blank=False, null=False)
-    is_active = models.BooleanField(blank=False, null=False, default=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
 
     @property
     def region_verbose(self):
@@ -305,7 +305,7 @@ class Template(Archivable, models.Model):
 
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
-    is_active = models.BooleanField(blank=False, null=False, default=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
     template_name = models.CharField(max_length=100, blank=False, null=False)
     template_code = models.CharField(max_length=50, blank=True, null=True)
     template_type = models.CharField(
@@ -374,7 +374,7 @@ class Commodity(Archivable, models.Model):
               'Precious Metals and Stones'), (OIL_PETROCHEMICALS,
                                               'Oil and Petrochemicals'))
 
-    is_active = models.BooleanField(blank=False, null=False, default=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
     start_datetime = models.DateTimeField(
         auto_now_add=True, blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
@@ -410,7 +410,7 @@ class CommodityGroup(Archivable, models.Model):
 
     TYPES = ((AUTO, 'Auto'), (CATEGORY, ('Category')))
 
-    is_active = models.BooleanField(blank=False, null=False, default=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     group_type = models.CharField(
@@ -454,7 +454,7 @@ class Country(models.Model):
     TYPES = ((SOVEREIGN_TERRITORY, 'Sovereign Territory'), (SYSTEM, 'System'))
 
     name = models.CharField(max_length=4000, blank=False, null=False)
-    is_active = models.BooleanField(blank=False, null=False, default=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
     type = models.CharField(
         max_length=30, choices=TYPES, blank=False, null=False)
     commission_code = models.CharField(max_length=20, blank=False, null=False)
@@ -472,3 +472,41 @@ class CountryGroup(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+
+class ProductLegislation(models.Model):
+    name = models.CharField(max_length=500, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    is_biocidal = models.BooleanField(blank=False, null=False, default=False)
+    is_eu_cosmetics_regulation = models.BooleanField(blank=False, null=False,
+                                                     default=False)
+    is_biocidal_claim = models.BooleanField(blank=False, null=False,
+                                            default=False)
+
+    @property
+    def is_biocidal_yes_no(self):
+        return 'Yes' if self.is_biocidal else 'No'
+
+    @property
+    def is_biocidal_claim_yes_no(self):
+        return 'Yes' if self.is_biocidal_claim else 'No'
+
+    @property
+    def is_eu_cosmetics_regulation_yes_no(self):
+        return 'Yes' if self.is_eu_cosmetics_regulation else 'No'
+
+    class Meta:
+        ordering = ('name',)
+
+    class Display:
+        display = [
+            'name', 'is_biocidal_yes_no', 'is_biocidal_claim_yes_no',
+            'is_eu_cosmetics_regulation_yes_no'
+        ]
+        labels = [
+            'legislation Name', 'Is Biocidal', 'Is Biocidal Claim',
+            'Is EU Cosmetics Regulation'
+        ]
+        view = True
+        edit = True
+        archive = True
