@@ -1,9 +1,11 @@
 from django.urls import reverse_lazy
 from django.views.generic.edit import (CreateView, UpdateView)
-from web.base.forms import FilterSet, ModelForm, widgets
+from django.views.generic.detail import DetailView
+from web.base.forms import FilterSet, ModelForm, widgets, ReadOnlyFormMixin
 from web.base.views import (FilteredListView)
 from web.models import ProductLegislation
-from django_filters import (CharFilter, ChoiceFilter, BooleanFilter)
+from web.base.utils import dict_merge
+from django_filters import (CharFilter, ChoiceFilter)
 
 
 class ProductLegislationFilter(FilterSet):
@@ -98,7 +100,7 @@ class ProductLegislationEditForm(ModelForm):
                 },
                 'link': {
                     'label': 'Cancel',
-                    'href': 'constabulary-list'
+                    'href': 'product-legislation-list'
                 }
             }
         }
@@ -107,6 +109,13 @@ class ProductLegislationEditForm(ModelForm):
 class ProductLegislationCreateForm(ModelForm):
     class Meta(ProductLegislationEditForm.Meta):
         pass
+
+
+class ProductLegislationDisplayForm(ReadOnlyFormMixin, ModelForm):
+    class Meta(ProductLegislationEditForm.Meta):
+        config = dict_merge(ProductLegislationEditForm.Meta.config, {
+            'actions': {'submit': None},
+        })
 
 
 class ProductLegislationListView(FilteredListView):
@@ -122,6 +131,15 @@ class ProductLegislationEditView(UpdateView):
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
 
+
+class ProductLegislationDetailView(DetailView):
+    template_name = 'web/product-legislation/view.html'
+    model = ProductLegislation
+
+    def get_context_data(self, object):
+        context = super().get_context_data()
+        context['form'] = ProductLegislationDisplayForm(instance=object)
+        return context
 
 class ProductLegislationCreateView(CreateView):
     template_name = 'web/product-legislation/edit.html'

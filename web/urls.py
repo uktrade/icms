@@ -8,7 +8,7 @@ from .views import (TemplateListView, ConstabularyListView,
                     CountryTranslationListView, CountryGroupView,
                     CountryGroupEditView, CountryGroupCreateView,
                     ProductLegislationListView, ProductLegislationEditView,
-                    ProductLegislationCreateView)
+                    ProductLegislationCreateView, ProductLegislationDetailView)
 from .views.dashboard import outbound_emails
 from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
@@ -29,6 +29,7 @@ urlpatterns = [
 
     # Template Management
     path('template/', TemplateListView.as_view(), name='template-list'),
+    path('template/<int:pk>', TemplateListView.as_view(), name='template-list'),
     # Teams Management
     path('teams/', TeamListView.as_view(), name='team-list'),
     path('teams/<int:pk>/edit/', TeamEditView.as_view(), name='team-edit'),
@@ -113,6 +114,11 @@ urlpatterns = [
         'product-legislation/',
         ProductLegislationListView.as_view(),
         name='product-legislation-list'),
+
+    path(
+        'product-legislation/<int:pk>/',
+        ProductLegislationDetailView.as_view(),
+        name='product-legislation-detail'),
 
     path(
         'product-legislation/<int:pk>/edit/',
