@@ -10,6 +10,16 @@ from . import widgets
 import django_filters as filter
 
 
+class ReadOnlyFormMixin(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ReadOnlyFormMixin, self).__init__(*args, **kwargs)
+        for key in self.fields.keys():
+            self.fields[key].disabled = True
+
+    def save(self, *args, **kwargs):
+        pass
+
+
 class FormSerializeMixin(object):
     def data_dict(self):
         data = {}

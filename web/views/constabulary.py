@@ -20,7 +20,8 @@ class ConstabularyEditForm(ModelForm):
         widgets = {'region': Select(choices=Constabulary.REGIONS)}
         config = {
             'label': {
-                'cols': 'three'
+                'cols': 'three',
+                'prompt': 'west'
             },
             'input': {
                 'cols': 'six'
@@ -44,7 +45,8 @@ class ConstabularyCreateForm(ConstabularyEditForm):
     class Meta(ConstabularyEditForm.Meta):
         config = {
             'label': {
-                'cols': 'three'
+                'cols': 'three',
+                'prompt': 'west'
             },
             'input': {
                 'cols': 'six'

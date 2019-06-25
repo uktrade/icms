@@ -45,8 +45,8 @@
                     {# default #}
                     {% set submit=opts.actions.submit %}
                     {% set _link=opts.actions.link %}
-                    {{button(label=submit.label, name=submit.name, value=submit.value)}}
-                    {{link(href=_link.href, label=_link.label, attrs=_link.attrs)}}
+                    {% if submit %}{{button(label=submit.label, name=submit.name, value=submit.value)}}{% endif %}
+                    {% if _link %}{{link(href=_link.href, label=_link.label, attrs=_link.attrs)}}{% endif %}
                 {% endif %}
             </ul>
         {%- endcall %}
