@@ -457,3 +457,18 @@ class Country(models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=False)
     type = models.CharField(
         max_length=30, choices=TYPES, blank=False, null=False)
+    commission_code = models.CharField(max_length=20, blank=False, null=False)
+    hmrc_code = models.CharField(max_length=20, blank=False, null=False)
+
+    class Meta:
+        ordering = ('name',)
+
+
+class CountryGroup(models.Model):
+    name = models.CharField(max_length=4000, blank=False, null=False)
+    comments = models.CharField(max_length=4000, blank=True, null=True)
+    countries = models.ManyToManyField(Country, blank=True,
+                                       related_name='country_groups')
+
+    class Meta:
+        ordering = ('name',)

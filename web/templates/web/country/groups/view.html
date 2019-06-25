@@ -1,0 +1,41 @@
+{% extends "web/country/country-base.html" %}
+{% from "web/country/country-selections.html" import country_selector %}
+{% block page_title %}Editing {{object.name}}{% endblock %}
+{% block context_header %}Editing {{object.name}}{% endblock %}
+
+{% block  main_content %}
+
+{% include "web/country/groups/filter-bar.html" %}
+<div class="container setoutForm">
+    <div class="row">
+        <div class="four columns">
+            <label for="group-name-span" class="prompt west">Group Name</label>
+        </div>
+        <div class="four columns">
+            <span id="group-name-span" class="text-widget">{{object.name}}</span>
+        </div>
+        <div class="four columns"></div>
+    </div>
+    <div class="row">
+        <div class="four columns">
+            <label for="group-commens-span" class="prompt west">Group Comments
+            </label>
+        </div>
+        <div class="four columns">
+            <span id="group-comments-span" class="text-widget "></span>
+        </div>
+        <div class="four columns"></div>
+    </div>
+</div>
+
+<div class="list-actions">
+    <ul class="menu-out flow-across">
+        <li>
+            <a id="edit-group" href="{{url('country-group-edit', args=[object.id])}}" class="small-button icon-pencil button">
+                Edit Group
+            </a>
+        </li>
+    </ul>
+</div>
+{{country_selector(object.countries.all(), readonly=True)}}
+{% endblock %}

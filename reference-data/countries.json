@@ -1,0 +1,1426 @@
+[
+	{
+		"PK" : 1,
+		"NAME" : "Afghanistan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "660",
+		"HMRC_CODE" : "AF"
+	},
+	{
+		"PK" : 22,
+		"NAME" : "Brazil",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "508",
+		"HMRC_CODE" : "BR"
+	},
+	{
+		"PK" : 25,
+		"NAME" : "Bulgaria",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "68",
+		"HMRC_CODE" : "BG"
+	},
+	{
+		"PK" : 30,
+		"NAME" : "China",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "720",
+		"HMRC_CODE" : "CN"
+	},
+	{
+		"PK" : 34,
+		"NAME" : "Congo (Dem. Republic)",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "322",
+		"HMRC_CODE" : "CD"
+	},
+	{
+		"PK" : 123,
+		"NAME" : "Saint Helena",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "329",
+		"HMRC_CODE" : "SH"
+	},
+	{
+		"PK" : 129,
+		"NAME" : "Somalia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "342",
+		"HMRC_CODE" : "SO"
+	},
+	{
+		"PK" : 138,
+		"NAME" : "Tajikistan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "82",
+		"HMRC_CODE" : "TJ"
+	},
+	{
+		"PK" : 151,
+		"NAME" : "Venezuela",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "484",
+		"HMRC_CODE" : "VE"
+	},
+	{
+		"PK" : 152,
+		"NAME" : "Vietnam",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "690",
+		"HMRC_CODE" : "VN"
+	},
+	{
+		"PK" : 153,
+		"NAME" : "Yemen",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "653",
+		"HMRC_CODE" : "YE"
+	},
+	{
+		"PK" : 167,
+		"NAME" : "Benin",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "284",
+		"HMRC_CODE" : "BJ"
+	},
+	{
+		"PK" : 168,
+		"NAME" : "Suriname",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "492",
+		"HMRC_CODE" : "SR"
+	},
+	{
+		"PK" : 173,
+		"NAME" : "Liberia",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "268",
+		"HMRC_CODE" : "LR"
+	},
+	{
+		"PK" : 42,
+		"NAME" : "Ecuador",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "500",
+		"HMRC_CODE" : "EC"
+	},
+	{
+		"PK" : 43,
+		"NAME" : "Egypt",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "220",
+		"HMRC_CODE" : "EG"
+	},
+	{
+		"PK" : 51,
+		"NAME" : "Gabon",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "314",
+		"HMRC_CODE" : "GA"
+	},
+	{
+		"PK" : 54,
+		"NAME" : "Ghana",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "276",
+		"HMRC_CODE" : "GH"
+	},
+	{
+		"PK" : 57,
+		"NAME" : "Greenland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "406",
+		"HMRC_CODE" : "GL"
+	},
+	{
+		"PK" : 78,
+		"NAME" : "Kenya",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "346",
+		"HMRC_CODE" : "KE"
+	},
+	{
+		"PK" : 83,
+		"NAME" : "Kyrgyzstan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "83",
+		"HMRC_CODE" : "KG"
+	},
+	{
+		"PK" : 87,
+		"NAME" : "Libya",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "216",
+		"HMRC_CODE" : "LY"
+	},
+	{
+		"PK" : 91,
+		"NAME" : "Macao",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "743",
+		"HMRC_CODE" : "MO"
+	},
+	{
+		"PK" : 100,
+		"NAME" : "Moldova",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "74",
+		"HMRC_CODE" : "MD"
+	},
+	{
+		"PK" : 179,
+		"NAME" : "Rwanda",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "324",
+		"HMRC_CODE" : "RW"
+	},
+	{
+		"PK" : 6,
+		"NAME" : "Any Non EU Country",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "n\/a",
+		"HMRC_CODE" : "G012"
+	},
+	{
+		"PK" : 11,
+		"NAME" : "Azerbaijan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "78",
+		"HMRC_CODE" : "AZ"
+	},
+	{
+		"PK" : 13,
+		"NAME" : "Bahrain",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "640",
+		"HMRC_CODE" : "BH"
+	},
+	{
+		"PK" : 28,
+		"NAME" : "Canada",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "404",
+		"HMRC_CODE" : "CA"
+	},
+	{
+		"PK" : 29,
+		"NAME" : "Chile",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "512",
+		"HMRC_CODE" : "CL"
+	},
+	{
+		"PK" : 120,
+		"NAME" : "Qatar",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "644",
+		"HMRC_CODE" : "QA"
+	},
+	{
+		"PK" : 121,
+		"NAME" : "Romania",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "66",
+		"HMRC_CODE" : "RO"
+	},
+	{
+		"PK" : 128,
+		"NAME" : "Soloman Islands",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "806",
+		"HMRC_CODE" : "SB"
+	},
+	{
+		"PK" : 134,
+		"NAME" : "Sweden",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "30",
+		"HMRC_CODE" : "SE"
+	},
+	{
+		"PK" : 144,
+		"NAME" : "Turkmenistan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "80",
+		"HMRC_CODE" : "TM"
+	},
+	{
+		"PK" : 147,
+		"NAME" : "United Arab Emirates",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "647",
+		"HMRC_CODE" : "AE"
+	},
+	{
+		"PK" : 157,
+		"NAME" : "the Slovak Republic",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "63",
+		"HMRC_CODE" : "SK"
+	},
+	{
+		"PK" : 44,
+		"NAME" : "Equatorial Guinea",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "310",
+		"HMRC_CODE" : "GQ"
+	},
+	{
+		"PK" : 47,
+		"NAME" : "Falkland Islands",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "529",
+		"HMRC_CODE" : "FK"
+	},
+	{
+		"PK" : 59,
+		"NAME" : "Guernsey",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "6",
+		"HMRC_CODE" : "GG"
+	},
+	{
+		"PK" : 76,
+		"NAME" : "Jordan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "628",
+		"HMRC_CODE" : "JO"
+	},
+	{
+		"PK" : 77,
+		"NAME" : "Kazakhstan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "79",
+		"HMRC_CODE" : "KZ"
+	},
+	{
+		"PK" : 113,
+		"NAME" : "Pakistan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "662",
+		"HMRC_CODE" : "PK"
+	},
+	{
+		"PK" : 116,
+		"NAME" : "Philippines",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "708",
+		"HMRC_CODE" : "PH"
+	},
+	{
+		"PK" : 2,
+		"NAME" : "Albania",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "70",
+		"HMRC_CODE" : "AL"
+	},
+	{
+		"PK" : 14,
+		"NAME" : "Bangladesh",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "666",
+		"HMRC_CODE" : "BD"
+	},
+	{
+		"PK" : 20,
+		"NAME" : "Bosnia and Herzegovina",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "93",
+		"HMRC_CODE" : "BA"
+	},
+	{
+		"PK" : 21,
+		"NAME" : "Botswana",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "391",
+		"HMRC_CODE" : "BW"
+	},
+	{
+		"PK" : 31,
+		"NAME" : "Colombia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "480",
+		"HMRC_CODE" : "CO"
+	},
+	{
+		"PK" : 132,
+		"NAME" : "Sri Lanka",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "669",
+		"HMRC_CODE" : "LK"
+	},
+	{
+		"PK" : 141,
+		"NAME" : "Trinidad & Tobago",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "472",
+		"HMRC_CODE" : "TT"
+	},
+	{
+		"PK" : 148,
+		"NAME" : "United Kingdom",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "6",
+		"HMRC_CODE" : "GB"
+	},
+	{
+		"PK" : 149,
+		"NAME" : "Uruguay",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "524",
+		"HMRC_CODE" : "UY"
+	},
+	{
+		"PK" : 26,
+		"NAME" : "Burma",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "676",
+		"HMRC_CODE" : "MM"
+	},
+	{
+		"PK" : 177,
+		"NAME" : "Papua New Guinea",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "801",
+		"HMRC_CODE" : "PG"
+	},
+	{
+		"PK" : 66,
+		"NAME" : "India",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "664",
+		"HMRC_CODE" : "IN"
+	},
+	{
+		"PK" : 70,
+		"NAME" : "Irish Republic",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "7",
+		"HMRC_CODE" : "IE"
+	},
+	{
+		"PK" : 72,
+		"NAME" : "Italy",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "5",
+		"HMRC_CODE" : "IT"
+	},
+	{
+		"PK" : 84,
+		"NAME" : "Laos",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "684",
+		"HMRC_CODE" : "LA"
+	},
+	{
+		"PK" : 86,
+		"NAME" : "Lebanon",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "604",
+		"HMRC_CODE" : "LB"
+	},
+	{
+		"PK" : 88,
+		"NAME" : "Liechtenstein",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "37",
+		"HMRC_CODE" : "LI"
+	},
+	{
+		"PK" : 90,
+		"NAME" : "Luxembourg",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "18",
+		"HMRC_CODE" : "LU"
+	},
+	{
+		"PK" : 95,
+		"NAME" : "Malta",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "46",
+		"HMRC_CODE" : "MT"
+	},
+	{
+		"PK" : 108,
+		"NAME" : "Netherlands",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "3",
+		"HMRC_CODE" : "NL"
+	},
+	{
+		"PK" : 112,
+		"NAME" : "Oman",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "649",
+		"HMRC_CODE" : "OM"
+	},
+	{
+		"PK" : 4,
+		"NAME" : "Angola",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "330",
+		"HMRC_CODE" : "AO"
+	},
+	{
+		"PK" : 5,
+		"NAME" : "Any Country",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "958",
+		"HMRC_CODE" : "G001"
+	},
+	{
+		"PK" : 24,
+		"NAME" : "Brunei",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "703",
+		"HMRC_CODE" : "BN"
+	},
+	{
+		"PK" : 117,
+		"NAME" : "Poland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "60",
+		"HMRC_CODE" : "PL"
+	},
+	{
+		"PK" : 119,
+		"NAME" : "Puerto Rico",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "400",
+		"HMRC_CODE" : "PR"
+	},
+	{
+		"PK" : 133,
+		"NAME" : "Swaziland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "393",
+		"HMRC_CODE" : "SZ"
+	},
+	{
+		"PK" : 137,
+		"NAME" : "Taiwan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "736",
+		"HMRC_CODE" : "TW"
+	},
+	{
+		"PK" : 143,
+		"NAME" : "Turkey",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "52",
+		"HMRC_CODE" : "TR"
+	},
+	{
+		"PK" : 161,
+		"NAME" : "Paraguay",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "PY",
+		"HMRC_CODE" : "PY"
+	},
+	{
+		"PK" : 162,
+		"NAME" : "Costa Rica",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "436",
+		"HMRC_CODE" : "CR"
+	},
+	{
+		"PK" : 163,
+		"NAME" : "El Salvador",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "428",
+		"HMRC_CODE" : "SV"
+	},
+	{
+		"PK" : 164,
+		"NAME" : "Nicaragua",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "432",
+		"HMRC_CODE" : "NI"
+	},
+	{
+		"PK" : 32,
+		"NAME" : "Any EU Country",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "959",
+		"HMRC_CODE" : "EU"
+	},
+	{
+		"PK" : 46,
+		"NAME" : "Ethiopia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "334",
+		"HMRC_CODE" : "ET"
+	},
+	{
+		"PK" : 53,
+		"NAME" : "Germany",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "4",
+		"HMRC_CODE" : "DE"
+	},
+	{
+		"PK" : 68,
+		"NAME" : "Iran",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "616",
+		"HMRC_CODE" : "IR"
+	},
+	{
+		"PK" : 81,
+		"NAME" : "Kosovo",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "95",
+		"HMRC_CODE" : "XK"
+	},
+	{
+		"PK" : 85,
+		"NAME" : "Latvia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "54",
+		"HMRC_CODE" : "LV"
+	},
+	{
+		"PK" : 94,
+		"NAME" : "Malaysia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "701",
+		"HMRC_CODE" : "MY"
+	},
+	{
+		"PK" : 96,
+		"NAME" : "Mauritania",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "228",
+		"HMRC_CODE" : "MR"
+	},
+	{
+		"PK" : 102,
+		"NAME" : "Montenegro",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "97",
+		"HMRC_CODE" : "ME"
+	},
+	{
+		"PK" : 8,
+		"NAME" : "Armenia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "77",
+		"HMRC_CODE" : "AM"
+	},
+	{
+		"PK" : 17,
+		"NAME" : "Belgium",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "17",
+		"HMRC_CODE" : "BE"
+	},
+	{
+		"PK" : 23,
+		"NAME" : "British Virgin Islands",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "468",
+		"HMRC_CODE" : "VG"
+	},
+	{
+		"PK" : 37,
+		"NAME" : "Cuba",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "448",
+		"HMRC_CODE" : "CU"
+	},
+	{
+		"PK" : 38,
+		"NAME" : "Cyprus",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "600",
+		"HMRC_CODE" : "CY"
+	},
+	{
+		"PK" : 125,
+		"NAME" : "Serbia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "98",
+		"HMRC_CODE" : "RS"
+	},
+	{
+		"PK" : 135,
+		"NAME" : "Switzerland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "39",
+		"HMRC_CODE" : "CH"
+	},
+	{
+		"PK" : 175,
+		"NAME" : "Zambia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "378",
+		"HMRC_CODE" : "ZM"
+	},
+	{
+		"PK" : 35,
+		"NAME" : "Cote d'Ivoire",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "272",
+		"HMRC_CODE" : "CI"
+	},
+	{
+		"PK" : 48,
+		"NAME" : "Faroe Islands",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "41",
+		"HMRC_CODE" : "FO"
+	},
+	{
+		"PK" : 55,
+		"NAME" : "Gibraltar",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "44",
+		"HMRC_CODE" : "GI"
+	},
+	{
+		"PK" : 61,
+		"NAME" : "Haiti",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "452",
+		"HMRC_CODE" : "HT"
+	},
+	{
+		"PK" : 63,
+		"NAME" : "Hong Kong",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "740",
+		"HMRC_CODE" : "HK"
+	},
+	{
+		"PK" : 69,
+		"NAME" : "Iraq",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "612",
+		"HMRC_CODE" : "IQ"
+	},
+	{
+		"PK" : 74,
+		"NAME" : "Japan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "732",
+		"HMRC_CODE" : "JP"
+	},
+	{
+		"PK" : 75,
+		"NAME" : "Jersey",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "6",
+		"HMRC_CODE" : "JE"
+	},
+	{
+		"PK" : 110,
+		"NAME" : "Nigeria",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "288",
+		"HMRC_CODE" : "NG"
+	},
+	{
+		"PK" : 33,
+		"NAME" : "Congo",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "318",
+		"HMRC_CODE" : "CG"
+	},
+	{
+		"PK" : 130,
+		"NAME" : "South Africa",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "388",
+		"HMRC_CODE" : "ZA"
+	},
+	{
+		"PK" : 131,
+		"NAME" : "Spain",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "11",
+		"HMRC_CODE" : "ES"
+	},
+	{
+		"PK" : 136,
+		"NAME" : "Syria",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "608",
+		"HMRC_CODE" : "SY"
+	},
+	{
+		"PK" : 140,
+		"NAME" : "Thailand",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "680",
+		"HMRC_CODE" : "TH"
+	},
+	{
+		"PK" : 165,
+		"NAME" : "Occupied Palestinian Territories",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "625",
+		"HMRC_CODE" : "PS"
+	},
+	{
+		"PK" : 40,
+		"NAME" : "Dominica",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "460",
+		"HMRC_CODE" : "DM"
+	},
+	{
+		"PK" : 41,
+		"NAME" : "Dominican Republic",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "456",
+		"HMRC_CODE" : "DO"
+	},
+	{
+		"PK" : 45,
+		"NAME" : "Estonia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "53",
+		"HMRC_CODE" : "EE"
+	},
+	{
+		"PK" : 50,
+		"NAME" : "France",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "1",
+		"HMRC_CODE" : "FR"
+	},
+	{
+		"PK" : 52,
+		"NAME" : "Georgia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "76",
+		"HMRC_CODE" : "GE"
+	},
+	{
+		"PK" : 56,
+		"NAME" : "Greece",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "9",
+		"HMRC_CODE" : "GR"
+	},
+	{
+		"PK" : 71,
+		"NAME" : "Israel",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "624",
+		"HMRC_CODE" : "IL"
+	},
+	{
+		"PK" : 80,
+		"NAME" : "Korea (South)",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "728",
+		"HMRC_CODE" : "KR"
+	},
+	{
+		"PK" : 93,
+		"NAME" : "Madagascar",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "370",
+		"HMRC_CODE" : "MG"
+	},
+	{
+		"PK" : 99,
+		"NAME" : "Micronesia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "823",
+		"HMRC_CODE" : "FM"
+	},
+	{
+		"PK" : 101,
+		"NAME" : "Mongolia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "716",
+		"HMRC_CODE" : "MN"
+	},
+	{
+		"PK" : 107,
+		"NAME" : "Nepal",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "672",
+		"HMRC_CODE" : "NP"
+	},
+	{
+		"PK" : 114,
+		"NAME" : "Panama",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "442",
+		"HMRC_CODE" : "PA"
+	},
+	{
+		"PK" : 178,
+		"NAME" : "Mali",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "232",
+		"HMRC_CODE" : "232"
+	},
+	{
+		"PK" : 3,
+		"NAME" : "Algeria",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "208",
+		"HMRC_CODE" : "DZ"
+	},
+	{
+		"PK" : 7,
+		"NAME" : "Argentina",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "528",
+		"HMRC_CODE" : "AR"
+	},
+	{
+		"PK" : 18,
+		"NAME" : "Bermuda",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "413",
+		"HMRC_CODE" : "BM"
+	},
+	{
+		"PK" : 27,
+		"NAME" : "Cambodia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "696",
+		"HMRC_CODE" : "KH"
+	},
+	{
+		"PK" : 36,
+		"NAME" : "Croatia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "92",
+		"HMRC_CODE" : "HR"
+	},
+	{
+		"PK" : 124,
+		"NAME" : "Saudi Arabia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "632",
+		"HMRC_CODE" : "SA"
+	},
+	{
+		"PK" : 142,
+		"NAME" : "Tunisia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "212",
+		"HMRC_CODE" : "TN"
+	},
+	{
+		"PK" : 145,
+		"NAME" : "USA",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "400",
+		"HMRC_CODE" : "US"
+	},
+	{
+		"PK" : 146,
+		"NAME" : "Ukraine",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "72",
+		"HMRC_CODE" : "UA"
+	},
+	{
+		"PK" : 154,
+		"NAME" : "Zimbabwe",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "382",
+		"HMRC_CODE" : "ZW"
+	},
+	{
+		"PK" : 158,
+		"NAME" : "European Union",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "N\/A",
+		"HMRC_CODE" : "EUNI"
+	},
+	{
+		"PK" : 169,
+		"NAME" : "Belize",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "421",
+		"HMRC_CODE" : "BZ"
+	},
+	{
+		"PK" : 171,
+		"NAME" : "Senegal",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "248",
+		"HMRC_CODE" : "SN"
+	},
+	{
+		"PK" : 172,
+		"NAME" : "Seychelles",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "355",
+		"HMRC_CODE" : "355"
+	},
+	{
+		"PK" : 176,
+		"NAME" : "Aruba",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "474",
+		"HMRC_CODE" : "AW"
+	},
+	{
+		"PK" : 49,
+		"NAME" : "Finland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "32",
+		"HMRC_CODE" : "FI"
+	},
+	{
+		"PK" : 58,
+		"NAME" : "Guatemala",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "416",
+		"HMRC_CODE" : "GT"
+	},
+	{
+		"PK" : 64,
+		"NAME" : "Hungary",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "64",
+		"HMRC_CODE" : "HU"
+	},
+	{
+		"PK" : 89,
+		"NAME" : "Lithuania",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "55",
+		"HMRC_CODE" : "LT"
+	},
+	{
+		"PK" : 97,
+		"NAME" : "Mauritius",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "373",
+		"HMRC_CODE" : "MU"
+	},
+	{
+		"PK" : 104,
+		"NAME" : "Mozambique",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "366",
+		"HMRC_CODE" : "MZ"
+	},
+	{
+		"PK" : 105,
+		"NAME" : "Namibia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "389",
+		"HMRC_CODE" : "NA"
+	},
+	{
+		"PK" : 109,
+		"NAME" : "New Zealand",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "804",
+		"HMRC_CODE" : "NZ"
+	},
+	{
+		"PK" : 115,
+		"NAME" : "Peru",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "504",
+		"HMRC_CODE" : "PE"
+	},
+	{
+		"PK" : 9,
+		"NAME" : "Australia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "800",
+		"HMRC_CODE" : "AU"
+	},
+	{
+		"PK" : 10,
+		"NAME" : "Austria",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "38",
+		"HMRC_CODE" : "AT"
+	},
+	{
+		"PK" : 12,
+		"NAME" : "Bahamas",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "453",
+		"HMRC_CODE" : "BS"
+	},
+	{
+		"PK" : 15,
+		"NAME" : "Barbados",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "469",
+		"HMRC_CODE" : "BB"
+	},
+	{
+		"PK" : 16,
+		"NAME" : "Belarus",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "73",
+		"HMRC_CODE" : "BY"
+	},
+	{
+		"PK" : 19,
+		"NAME" : "Bhutan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "675",
+		"HMRC_CODE" : "BT"
+	},
+	{
+		"PK" : 39,
+		"NAME" : "Denmark",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "8",
+		"HMRC_CODE" : "DK"
+	},
+	{
+		"PK" : 118,
+		"NAME" : "Portugal",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "10",
+		"HMRC_CODE" : "PT"
+	},
+	{
+		"PK" : 122,
+		"NAME" : "Russian Federation",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "75",
+		"HMRC_CODE" : "RU"
+	},
+	{
+		"PK" : 126,
+		"NAME" : "Singapore",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "706",
+		"HMRC_CODE" : "SG"
+	},
+	{
+		"PK" : 127,
+		"NAME" : "Slovenia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "91",
+		"HMRC_CODE" : "SI"
+	},
+	{
+		"PK" : 139,
+		"NAME" : "Tanzania",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "352",
+		"HMRC_CODE" : "TZ"
+	},
+	{
+		"PK" : 150,
+		"NAME" : "Uzbekistan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "81",
+		"HMRC_CODE" : "UZ"
+	},
+	{
+		"PK" : 156,
+		"NAME" : "the Czech Republic",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "61",
+		"HMRC_CODE" : "CZ"
+	},
+	{
+		"PK" : 159,
+		"NAME" : "Gambia",
+		"TYPE" : "SYSTEM",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "GMB",
+		"HMRC_CODE" : "GM"
+	},
+	{
+		"PK" : 160,
+		"NAME" : "Bolivia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "BO",
+		"HMRC_CODE" : "BO"
+	},
+	{
+		"PK" : 166,
+		"NAME" : "Sudan",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "224",
+		"HMRC_CODE" : "SD"
+	},
+	{
+		"PK" : 170,
+		"NAME" : "Guyana",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "488",
+		"HMRC_CODE" : "GY"
+	},
+	{
+		"PK" : 174,
+		"NAME" : "Maldives",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "667",
+		"HMRC_CODE" : "MV"
+	},
+	{
+		"PK" : 60,
+		"NAME" : "Guinea",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "260",
+		"HMRC_CODE" : "GN"
+	},
+	{
+		"PK" : 62,
+		"NAME" : "Honduras",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "424",
+		"HMRC_CODE" : "HN"
+	},
+	{
+		"PK" : 65,
+		"NAME" : "Iceland",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "24",
+		"HMRC_CODE" : "IS"
+	},
+	{
+		"PK" : 67,
+		"NAME" : "Indonesia",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "700",
+		"HMRC_CODE" : "ID"
+	},
+	{
+		"PK" : 73,
+		"NAME" : "Jamaica",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "464",
+		"HMRC_CODE" : "JM"
+	},
+	{
+		"PK" : 79,
+		"NAME" : "Korea (North)",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "724",
+		"HMRC_CODE" : "KP"
+	},
+	{
+		"PK" : 82,
+		"NAME" : "Kuwait",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "636",
+		"HMRC_CODE" : "KW"
+	},
+	{
+		"PK" : 92,
+		"NAME" : "Macedonia, Former Yugoslav Republic of",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "96",
+		"HMRC_CODE" : "MK"
+	},
+	{
+		"PK" : 98,
+		"NAME" : "Mexico",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "412",
+		"HMRC_CODE" : "MX"
+	},
+	{
+		"PK" : 103,
+		"NAME" : "Morocco",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "204",
+		"HMRC_CODE" : "MA"
+	},
+	{
+		"PK" : 106,
+		"NAME" : "Nauru",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "803",
+		"HMRC_CODE" : "NR"
+	},
+	{
+		"PK" : 111,
+		"NAME" : "Norway",
+		"TYPE" : "SOVEREIGN_TERRITORY",
+		"IS_ACTIVE" : "True",
+		"COMMISSION_CODE" : "28",
+		"HMRC_CODE" : "NO"
+	}
+]

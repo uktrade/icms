@@ -5,7 +5,8 @@ from .views import (TemplateListView, ConstabularyListView,
                     CommodityGroupListView, CommodityGroupEditView,
                     CommodityGroupCreateView, TeamListView, TeamEditView,
                     CountryListView, CountryEditView, CountryCreateView,
-                    CountryTranslationListView, CountryGroupView)
+                    CountryTranslationListView, CountryGroupView,
+                    CountryGroupEditView, CountryGroupCreateView)
 from .views.dashboard import outbound_emails
 from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
@@ -78,7 +79,26 @@ urlpatterns = [
     path('country/new/', CountryCreateView.as_view(), name='country-new'),
 
     # Country Groups Management
-    path('country/groups', CountryGroupView.as_view(), name='country-group'),
+    path(
+        'country/groups/',
+        CountryGroupView.as_view(),
+        name='country-group-view'
+    ),
+    path(
+        'country/groups/<int:pk>/',
+        CountryGroupView.as_view(),
+        name='country-group-view'
+    ),
+    path(
+        'country/groups/<int:pk>/edit',
+        CountryGroupEditView.as_view(),
+        name='country-group-edit'
+    ),
+    path(
+        'country/groups/new',
+        CountryGroupCreateView.as_view(),
+        name='country-group-view'
+    ),
 
     # Coutry translation sets
     path(
