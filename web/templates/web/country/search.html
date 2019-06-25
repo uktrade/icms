@@ -1,0 +1,52 @@
+{% extends "layout/filtered-list.html" %}
+{% import "forms/form.html" as forms %}
+{% from "web/country/country-selections.html" import country_selector %}
+
+{% block page_title %}Country Search{% endblock %}
+{% block context_header %}Country Search{% endblock %}
+
+{% block main_content %}
+    {%- call forms.filter(filter, filters=filter.filters, method='post', csrf_input=csrf_input) %}
+        <div class="container">
+            <div class="row">
+                <div class="three columns"> </div>
+                <div class="six columns">
+                    <ul class="menu-out flow-across">
+                            <li>
+                                <button type="submit" name="action" value="filter_countries" class="primary-button button">
+                                    Search
+                                </button>
+                            </li>
+                    </ul>
+                </div>
+                <div class="three columns"> </div>
+            </div>
+        </div>
+
+        <div class="list-actions">
+            <ul class="menu-out small-menu-out flow-across">
+                <li>
+                    <button id="id_accept_selection" name="action" value="accept_countries" type="submit" class="primary-button button">
+                        Accept Selection
+                    </button>
+                </li>
+                <li>
+                    <button id="id_country_select_all" type="button" class="icon-checkbox-checked button">
+                        Select All
+                    </button>
+                </li>
+                <li>
+                    <button id="id_country_select_none" type="button" class="icon-checkbox-unchecked button">
+                        Select None
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        {# Countries that are not associated with object #}
+        {{country_selector(filter.qs, exclude=selected_countries, add_to_form=False)}}
+        <h3>Selected Countries</h3>
+        {# Countries already associated with object #}
+        {{country_selector(selected_countries, readonly=True, select_all=True)}}
+    {% endcall -%}
+{% endblock %}

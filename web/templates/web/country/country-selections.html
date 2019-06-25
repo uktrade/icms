@@ -1,0 +1,41 @@
+{%- macro country_selector(countries, exclude=[], readonly=False, select_all=False, add_to_form=True) %}
+<div class="container">
+    <div class="row">
+        {% set batch_size=((countries|length)/4)|round(0, 'ceil') %}
+        {%- for countries in countries|batch(batch_size) %}
+        <div class="three columns">
+            {% for country in countries if not country in exclude %}
+                <div class="container setoutForm country">
+                    {% if add_to_form %}
+                        <input type="hidden" name="countries" value="{{country.id}}" />
+                    {% endif %}
+                    <div class="row">
+                        <div class="twelve columns radio-or-tickbox-group">
+                            <label for="country-checkbox{{country.id}}" class="radio-label">
+                                <input
+                                    id="country-checkbox{{country.id}}"
+                                    name="country-selection"
+                                    value="{{country.id}}"
+                                    type="checkbox"
+                                    class="country_selector"
+                                    {% if select_all %}
+                                    checked="checked"
+                                    {% endif %}
+                                    {% if readonly %}
+                                    disabled="disabled"
+                                    {% endif %}
+                                    />
+                                    {% if readonly %}
+                                        <input type="hidden" name="country-selection" value="{{country.id}}" />
+                                    {%  endif %}
+                                {{country.name}}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endfor -%}
+    </div>
+</div>
+{% endmacro -%}

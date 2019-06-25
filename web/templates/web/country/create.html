@@ -1,4 +1,4 @@
-{% extends "layout/sidebar.html" %}
+{% extends "web/country/country-base.html" %}
 {% import "forms/form.html" as forms %}
 {% import "messages/message.html" as messages %}
 
@@ -7,5 +7,22 @@
 
 
 {% block main_content %}
-    {{ forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
+    {% call forms.form(form, fields=['name', 'type'], csrf_input=csrf_input) %}
+
+        <div class="container">
+            <div class="row">
+                <div class="four columns"> </div>
+                <div class="eight columns">
+                    <h3>Attributes</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="container setoutForm noBottomMargin">
+            <div class="row">
+                {{forms.fieldset(fields=['commission_code','hmrc_code'], form=form, opts=form.config)}}
+            </div>
+        </div>
+
+    {% endcall %}
 {% endblock %}

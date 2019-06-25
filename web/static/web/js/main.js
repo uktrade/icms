@@ -59,6 +59,33 @@
           );
       });
 
+      $('#remove-countries').click(function(){
+          $('input.country_selector:checked').each(function(){
+              console.log('hello');
+              $(this).closest('.country').remove();
+          });
+      });
+
+      // Go to country group selected in dropdown list
+      $('#country-group-select').change(function(){
+          selected=$(this).val();
+          window.location.href= '/country/groups/' + selected + '/';
+      });
+
+      $('#id_country_select_all').click(function(){
+          $('.country_selector').each(function(){
+              selector=$(this);
+              selector.prop('checked', true);
+          });
+      });
+
+      $('#id_country_select_none').click(function(){
+          $('.country_selector').each(function(){
+              selector=$(this);
+              selector.prop('checked', false);
+          });
+      });
+
 
 
 
