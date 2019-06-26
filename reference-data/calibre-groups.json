@@ -1,0 +1,152 @@
+[
+	{
+		"PK" : 1,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".22 - .29",
+		"ORDER" : 1
+	},
+	{
+		"PK" : 18,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".30 - .35",
+		"ORDER" : 2
+	},
+	{
+		"PK" : 41,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".36 - .38",
+		"ORDER" : 3
+	},
+	{
+		"PK" : 63,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".40",
+		"ORDER" : 4
+	},
+	{
+		"PK" : 93,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".42 - .43",
+		"ORDER" : 6
+	},
+	{
+		"PK" : 149,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".46 - .49",
+		"ORDER" : 9
+	},
+	{
+		"PK" : 156,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".50",
+		"ORDER" : 10
+	},
+	{
+		"PK" : 213,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".60 - 4.9mm",
+		"ORDER" : 12
+	},
+	{
+		"PK" : 225,
+		"IS_ACTIVE" : "True",
+		"NAME" : "5mm - 5.9mm",
+		"ORDER" : 13
+	},
+	{
+		"PK" : 239,
+		"IS_ACTIVE" : "True",
+		"NAME" : "6mm - 6.99mm",
+		"ORDER" : 14
+	},
+	{
+		"PK" : 258,
+		"IS_ACTIVE" : "True",
+		"NAME" : "7mm - 7.99mm",
+		"ORDER" : 15
+	},
+	{
+		"PK" : 278,
+		"IS_ACTIVE" : "True",
+		"NAME" : "8mm - 8.5mm",
+		"ORDER" : 16
+	},
+	{
+		"PK" : 304,
+		"IS_ACTIVE" : "True",
+		"NAME" : "9mm - 9.5mm",
+		"ORDER" : 17
+	},
+	{
+		"PK" : 324,
+		"IS_ACTIVE" : "True",
+		"NAME" : "10.0mm - 10.3mm",
+		"ORDER" : 18
+	},
+	{
+		"PK" : 339,
+		"IS_ACTIVE" : "True",
+		"NAME" : "10.4mm - 10.8mm",
+		"ORDER" : 19
+	},
+	{
+		"PK" : 351,
+		"IS_ACTIVE" : "True",
+		"NAME" : "11.0mm",
+		"ORDER" : 20
+	},
+	{
+		"PK" : 368,
+		"IS_ACTIVE" : "True",
+		"NAME" : "11.1mm",
+		"ORDER" : 21
+	},
+	{
+		"PK" : 381,
+		"IS_ACTIVE" : "True",
+		"NAME" : "11.2mm - 11.4mm",
+		"ORDER" : 22
+	},
+	{
+		"PK" : 394,
+		"IS_ACTIVE" : "True",
+		"NAME" : "11.5mm - 11.9mm",
+		"ORDER" : 23
+	},
+	{
+		"PK" : 422,
+		"IS_ACTIVE" : "True",
+		"NAME" : "15mm or more",
+		"ORDER" : 25
+	},
+	{
+		"PK" : 433,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".41",
+		"ORDER" : 5
+	},
+	{
+		"PK" : 99,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".44",
+		"ORDER" : 7
+	},
+	{
+		"PK" : 190,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".52 - .58",
+		"ORDER" : 11
+	},
+	{
+		"PK" : 125,
+		"IS_ACTIVE" : "True",
+		"NAME" : ".45",
+		"ORDER" : 8
+	},
+	{
+		"PK" : 404,
+		"IS_ACTIVE" : "True",
+		"NAME" : "12mm - 14mm",
+		"ORDER" : 24
+	}
+]
