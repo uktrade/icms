@@ -141,6 +141,7 @@ class ProductLegislationDetailView(DetailView):
         context['form'] = ProductLegislationDisplayForm(instance=object)
         return context
 
+
 class ProductLegislationCreateView(CreateView):
     template_name = 'web/product-legislation/edit.html'
     form_class = ProductLegislationCreateForm

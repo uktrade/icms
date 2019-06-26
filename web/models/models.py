@@ -474,7 +474,7 @@ class CountryGroup(models.Model):
         ordering = ('name',)
 
 
-class ProductLegislation(models.Model):
+class ProductLegislation(Archivable, models.Model):
     name = models.CharField(max_length=500, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     is_biocidal = models.BooleanField(blank=False, null=False, default=False)
@@ -510,3 +510,17 @@ class ProductLegislation(models.Model):
         view = True
         edit = True
         archive = True
+
+
+class ObsoleteCalibreGroup(Archivable, models.Model):
+    name = models.CharField(max_length=200, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    order = models.IntegerField(blank=False, null=False)
+
+
+class ObsoleteCalibre(Archivable, models.Model):
+    calibre_group = models.ForeignKey(
+        ObsoleteCalibreGroup, on_delete=models.CASCADE, blank=False, null=False)
+    name = models.CharField(max_length=200, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    order = models.IntegerField(blank=False, null=False)
