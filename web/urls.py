@@ -1,14 +1,5 @@
+from . import views as view
 from .views import views
-from .views import (TemplateListView, ConstabularyListView,
-                    ConstabularyEditView, ConstabularyCreateView,
-                    CommodityListView, CommodityEditView, CommodityCreateView,
-                    CommodityGroupListView, CommodityGroupEditView,
-                    CommodityGroupCreateView, TeamListView, TeamEditView,
-                    CountryListView, CountryEditView, CountryCreateView,
-                    CountryTranslationListView, CountryGroupView,
-                    CountryGroupEditView, CountryGroupCreateView,
-                    ProductLegislationListView, ProductLegislationEditView,
-                    ProductLegislationCreateView, ProductLegislationDetailView)
 from .views.dashboard import outbound_emails
 from .views.access_request import AccessRequestFlow
 from django.urls import path, re_path, include
@@ -28,107 +19,114 @@ urlpatterns = [
     path('user/password/', views.change_password, name='change-password'),
 
     # Template Management
-    path('template/', TemplateListView.as_view(), name='template-list'),
-    path('template/<int:pk>', TemplateListView.as_view(), name='template-list'),
+    path('template/', view.TemplateListView.as_view(), name='template-list'),
+    path('template/<int:pk>', view.TemplateListView.as_view(), name='template-list'),
     # Teams Management
-    path('teams/', TeamListView.as_view(), name='team-list'),
-    path('teams/<int:pk>/edit/', TeamEditView.as_view(), name='team-edit'),
+    path('teams/', view.TeamListView.as_view(), name='team-list'),
+    path('teams/<int:pk>/edit/', view.TeamEditView.as_view(), name='team-edit'),
 
     # Constabularies Management
     path(
         'constabulary/',
-        ConstabularyListView.as_view(),
+        view.ConstabularyListView.as_view(),
         name='constabulary-list'),
     path(
         'constabulary/<int:pk>/edit/',
-        ConstabularyEditView.as_view(),
+        view.ConstabularyEditView.as_view(),
         name='constabulary-edit'),
     path(
         'constabulary/new/',
-        ConstabularyCreateView.as_view(),
+        view.ConstabularyCreateView.as_view(),
         name='constabulary-new'),
 
     # Commodities Management
-    path('commodities/', CommodityListView.as_view(), name='commodity-list'),
+    path('commodities/', view.CommodityListView.as_view(), name='commodity-list'),
     path(
         'commodities/<int:pk>/edit/',
-        CommodityEditView.as_view(),
+        view.CommodityEditView.as_view(),
         name='commodity-edit'),
     path(
         'commodities/new/',
-        CommodityCreateView.as_view(),
+        view.CommodityCreateView.as_view(),
         name='commodity-new'),
 
     # Commodity Groups Management
     path(
         'commodity-groups/',
-        CommodityGroupListView.as_view(),
+        view.CommodityGroupListView.as_view(),
         name='commodity-groups'),
     path(
         'commodity-groups/<int:pk>/edit/',
-        CommodityGroupEditView.as_view(),
+        view.CommodityGroupEditView.as_view(),
         name='commodity-group-edit'),
     path(
         'commodity-groups/new/',
-        CommodityGroupCreateView.as_view(),
+        view.CommodityGroupCreateView.as_view(),
         name='commodity-group-new'),
 
     # Countries management
-    path('country/', CountryListView.as_view(), name='country-list'),
+    path('country/', view.CountryListView.as_view(), name='country-list'),
     path(
         'country/<int:pk>/edit/',
-        CountryEditView.as_view(),
+        view.CountryEditView.as_view(),
         name='country-edit'),
-    path('country/new/', CountryCreateView.as_view(), name='country-new'),
+    path('country/new/', view.CountryCreateView.as_view(), name='country-new'),
 
     # Country Groups Management
     path(
         'country/groups/',
-        CountryGroupView.as_view(),
+        view.CountryGroupView.as_view(),
         name='country-group-view'
     ),
     path(
         'country/groups/<int:pk>/',
-        CountryGroupView.as_view(),
+        view.CountryGroupView.as_view(),
         name='country-group-view'
     ),
     path(
         'country/groups/<int:pk>/edit/',
-        CountryGroupEditView.as_view(),
+        view.CountryGroupEditView.as_view(),
         name='country-group-edit'
     ),
     path(
         'country/groups/new/',
-        CountryGroupCreateView.as_view(),
+        view.CountryGroupCreateView.as_view(),
         name='country-group-view'
     ),
 
     # Coutry translation sets
     path(
         'country/translations/',
-        CountryTranslationListView.as_view(),
+        view.CountryTranslationListView.as_view(),
         name='country-translation-list'),
 
     # Product legislation
     path(
         'product-legislation/',
-        ProductLegislationListView.as_view(),
+        view.ProductLegislationListView.as_view(),
         name='product-legislation-list'),
 
     path(
         'product-legislation/<int:pk>/',
-        ProductLegislationDetailView.as_view(),
+        view.ProductLegislationDetailView.as_view(),
         name='product-legislation-detail'),
 
     path(
         'product-legislation/<int:pk>/edit/',
-        ProductLegislationEditView.as_view(),
+        view.ProductLegislationEditView.as_view(),
         name='product-legislation-edit'),
 
     path(
         'product-legislation/new/',
-        ProductLegislationCreateView.as_view(),
+        view.ProductLegislationCreateView.as_view(),
         name='product-legislation-new'),
+
+    #  Obsolete Calibres Management
+    path(
+        'obsolete-calibre/',
+        view.ObsoleteCalibreListView.as_view(),
+        name='obsolete-calibre-list'),
+
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard/', outbound_emails, name='outbound-emails'),
