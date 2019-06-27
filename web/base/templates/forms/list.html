@@ -6,10 +6,13 @@
     hide_empty_message=False,
     empty_message="There aren't any records that match your search") -%}
 
-    {% set count =  filter.qs.count() %}
+
+    {% set qs=filter.qs %}  {# avoid reading qs multiple times as it will query the db earch time #}
+
+    {% set count =  qs.count() %}
 
     {% if count > 0 %}
-    {% set conf=filter.qs.model.Display %}
+    {% set conf=qs.model.Display %}
     {% set has_actions = conf.edit or conf.view or conf.archive %}
     <table responsiveList class="setoutList">
         <thead>
@@ -18,14 +21,25 @@
                     <th scope="col">Select</th>
                 {% endif %}
                 {% for header in conf.labels %}
-                    <th scope="col">{{header}}</th>
+                    <th scope="col">
+                        {% set tooltip = conf.help_texts and conf.help_texts[header] %}
+                        {% set header_id = (header|replace(" ","-")) %}
+                        {{header}}
+                        {% if tooltip %}
+                        <div id="hint{{header_id}}-content"  class="hint-content" role="tooltup" aria-hidden="true">
+                            {{tooltip}}
+                        </div>
+                        <div id="hint{{header_id}}" aria_describedby="hint{{header_id}}-content" class="hint icon-info tooltipstered"></div>
+                        {% endif %}
+
+                    </th>
                 {% endfor %}
                 {% if has_actions %}
                     <th scope="col">Actions</th>
                 {% endif %}
             </tr>
         </thead>
-        {% for item in filter.qs %}
+        {% for item in qs %}
         <tr>
             {% if conf.select %}
                 <td>
@@ -112,7 +126,7 @@
     </table>
 
     <div class="result-count">
-        {{count}} {{filter.qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
+        {{count}} {{qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
     </div>
     {% else %}    {# count=0, no results #}
         {% if not hide_empty_message %}
