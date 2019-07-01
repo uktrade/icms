@@ -40,7 +40,9 @@ urlpatterns = [
         name='constabulary-new'),
 
     # Commodities Management
-    path('commodities/', view.CommodityListView.as_view(), name='commodity-list'),
+    path('commodities/',
+         view.CommodityListView.as_view(),
+         name='commodity-list'),
     path(
         'commodities/<int:pk>/edit/',
         view.CommodityEditView.as_view(),
@@ -97,8 +99,18 @@ urlpatterns = [
     # Coutry translation sets
     path(
         'country/translations/',
-        view.CountryTranslationListView.as_view(),
-        name='country-translation-list'),
+        view.CountryTranslationSetListView.as_view(),
+        name='country-translation-set-list'),
+    path(
+        'country/translations/<int:pk>/edit/',
+        view.CountryTranslationSetEditView.as_view(),
+        name='country-translation-set-edit'
+    ),
+    path(
+        'country/translations/<int:set_pk>/edit/<int:country_pk>',
+        view.CountryTranslationCreateUpdateView.as_view(),
+        name='country-translation-edit'
+    ),
 
     # Product legislation
     path(

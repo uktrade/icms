@@ -460,6 +460,10 @@ class Country(models.Model):
     commission_code = models.CharField(max_length=20, blank=False, null=False)
     hmrc_code = models.CharField(max_length=20, blank=False, null=False)
 
+    @property
+    def name_slug(self):
+        return self.name.lower().replace(' ', '_')
+
     class Meta:
         ordering = ('name',)
 
@@ -472,6 +476,33 @@ class CountryGroup(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+
+class CountryTranslationSet(Archivable, models.Model):
+    name = models.CharField(max_length=100, blank=False, null=False)
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+
+    class Display:
+        archive = True
+
+
+class CountryTranslation(models.Model):
+    translation = models.CharField(max_length=150, blank=False, null=False)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False
+    )
+    translation_set = models.ForeignKey(
+        CountryTranslationSet,
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False
+    )
+
+    class Display:
+        archive = True
 
 
 class ProductLegislation(Archivable, models.Model):

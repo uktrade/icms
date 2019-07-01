@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
@@ -6,9 +7,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, CreateView
 from web.base.forms import ModelForm, FilterSet
 from web.base.forms.widgets import Select, Textarea
-from web.base.views import PostActionMixin
+from web.base.views import PostActionMixin, PostActionView
 from web.base.utils import dict_merge
-from web.models import Country, CountryGroup
+from web.models import (Country, CountryGroup,
+                        CountryTranslationSet, CountryTranslation)
 from .filters import _filter_config
 import django_filters as filter
 
@@ -91,7 +93,7 @@ class CountryGroupEditForm(ModelForm):
             },
             'padding': {
                 'cols': 'four'
-            }
+            },
         }
 
         labels = {'name': 'Group Name', 'comments': 'Group Comments'}
@@ -108,6 +110,43 @@ class CountryCreateForm(ModelForm):
         config = CountryEditForm.Meta.config
         widgets = {
             'type': Select(choices=Country.TYPES),
+        }
+
+
+class CountryTranslationSetEditForm(ModelForm):
+    class Meta:
+        model = CountryTranslationSet
+        fields = ['name']
+        config = {
+            'label': {
+                'cols': 'four'
+            },
+            'input': {
+                'cols': 'six'
+            },
+            'padding': {
+                'cols': 'two'
+            },
+            'actions': None
+        }
+
+        labels = {'name': 'Translation Set Name'}
+
+
+class CountryTranslationEditForm(ModelForm):
+    class Meta:
+        model = CountryTranslation
+        fields = ['translation']
+        config = {
+            'label': {
+                'cols': 'four'
+            },
+            'input': {
+                'cols': 'four'
+            },
+            'padding': {
+                'cols': 'four'
+            },
         }
 
 
@@ -226,6 +265,135 @@ class CountryCreateView(CreateView):
     success_url = reverse_lazy('country-list')
 
 
-class CountryTranslationListView(ListView):
-    model = CountryGroup
+class CountryTranslationSetListView(PostActionView, ListView):
+    model = CountryTranslationSet
     template_name = 'web/country/translations/list.html'
+
+    def get_form(self, request):
+        action = self.request.POST.get('action', None)
+        if action == 'save':
+            return CountryTranslationSetEditForm(self.request.POST)
+        else:
+            return CountryTranslationSetEditForm()
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['form'] = self.get_form(self.request)
+        return context
+
+    def save(self, request):
+        form = self.get_form(request)
+        logger.debug(form.data)
+        if form.is_valid():
+            instance = form.save()
+            logger.debug(instance.name)
+            return redirect(reverse('country-translation-set-list'))
+
+        return super().get(request)
+
+
+class CountryTranslationSetEditView(PostActionView, UpdateView):
+    model = CountryTranslationSet
+    template_name = 'web/country/translations/edit.html'
+    form_class = CountryTranslationSetEditForm
+    success_url = 'country-translation-set-edit'
+
+    def get(self, request, pk=None):
+        set = super().get_object()
+        if not set.is_active:
+            return redirect(reverse('country-translation-set-list'))
+
+        return super().get(request)
+
+    def get_missing_translations(self, country_list, country_translations):
+        missing_translations = []
+        remaining_count = 0
+        for country in country_list:
+            if country.id not in country_translations:
+                if len(missing_translations) < 6:
+                    missing_translations.append(country)
+                else:
+                    remaining_count += 1
+
+        return {
+            'countries': missing_translations,
+            'remaining': remaining_count
+        }
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        country_list = Country.objects.filter(is_active=True).all()
+        country_translations = CountryTranslation.objects.filter(
+            translation_set=self.object).all()
+        translations = {}
+        for translation in country_translations:
+            translations[translation.country.id] = translation.translation
+
+        context.update({
+            'translations': translations,
+            'country_list': country_list,
+            'missing_translations': self.get_missing_translations(
+                country_list, country_translations)
+        })
+        return context
+
+    def get_success_url(self):
+        object = super().get_object()
+        return reverse(self.success_url, args=[object.id])
+
+    def archive(self, request, pk=None):
+        super().archive(request)
+        return redirect(reverse('country-translation-set-list'))
+
+
+class CountryTranslationCreateUpdateView(UpdateView):
+    model = CountryTranslation
+    template_name = 'web/country/translations/translation/edit.html'
+    form_class = CountryTranslationEditForm
+
+    def get_object(self, queryset=None):
+        try:
+            return CountryTranslation.objects.filter(
+                translation_set=self.translation_set,
+                country=self.country
+            ).get()
+        except ObjectDoesNotExist:
+            return None
+
+    def get_form(self):
+        translation = self.get_object()
+        logger.debug('Translation: %s', translation)
+        return self.form_class(self.request.POST or None, instance=translation)
+
+    def set_data(self, request, set_pk, country_pk, **kwargs):
+        self.translation_set = \
+            CountryTranslationSet.objects.filter(pk=set_pk).get()
+        self.country = Country.objects.filter(pk=country_pk).get()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context.update({
+            'translation_set': self.translation_set,
+            'country': self.country
+        })
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            'country-translation-set-edit', args=[self.translation_set.id, ])
+
+    def form_valid(self, form):
+        form.instance.country_id = self.country.id
+        form.instance.translation_set_id = self.translation_set.id
+        form.save()
+        return redirect(self.get_success_url())
+
+    def get(self, request, *args, **kwargs):
+        self.set_data(request, **kwargs)
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.set_data(request, **kwargs)
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)

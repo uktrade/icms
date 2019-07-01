@@ -150,4 +150,5 @@ class ObsoleteCalibreCreateView(CreateView):
 class ObsoleteCalibreListView(FilteredListView):
     template_name = 'web/obsolete-calibre/group/list.html'
     filterset_class = ObsoleteCalibreGroupFilter
+    model = ObsoleteCalibreGroup
     load_immediate = True

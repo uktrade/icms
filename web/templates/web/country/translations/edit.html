@@ -1,0 +1,105 @@
+{% extends "web/country/country-base.html" %}
+{% import "forms/form.html" as forms %}
+
+{% block page_title %}Editing {{object.name}} Translation Set{% endblock %}
+{% block context_header %}Editing {{object.name}} Translation Set{% endblock %}
+
+{% block main_content %}
+<div class="modal-popover-container {% if not form.errors %} hidden {% endif %}">
+    <div class="modal-popover regular-popover " tabindex="0">
+        <div class="modal-popover-content">
+            <h2 id="engine-modal-popover-title">Edit translation set name</h2>
+
+            {%- call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+
+            <ul class="menu-out modal-popover-actions flow-across">
+                <li>
+                    <button type="submit" class="primary-button button">
+                        Save
+                    </button>
+                </li>
+                <li>
+                    <button id="g93" name="g93" type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
+                        Cancel
+                    </button>
+                </li>
+            </ul>
+            {% endcall -%}
+        </div>
+    </div>
+</div>
+
+<div class="list-actions">
+    <ul class="menu-out small-menu-out flow-across">
+        <li>
+            <button type="button" onclick="$('.modal-popover-container').show()" class="icon-pencil button">
+                Rename translation set
+            </button>
+        </li>
+        <li>
+            <form method="post" action="">
+                {{csrf_input}}
+                <button name="action" type="submit" value="archive" onclick="" class="icon-drawer button">
+                    Archive translation set
+                    <input type="hidden" name="item" value="{{object.id}}" />
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+
+
+{% if missing_translations.countries %}
+<div class="info-box info-box-warning">
+    {%- for country in missing_translations.countries %}
+        <a href="#{{country.name_slug}}" class="link-button inline-link-button button">{{country.name}}</a>,
+    {% endfor -%}
+    {% if missing_translations.remaining %}
+    and {{missing_translations.remaining}} other countries
+    {% endif %}
+    do not have a {{object.name}} translation.
+
+</div>
+{% endif %}
+
+<div class="container">
+    <div class="row">
+        {% set batch_size=(country_list.count()/4)|round(0, 'ceil') %}
+        {%- for countries in country_list|batch(batch_size) %}
+        <div class="three columns">
+            {% for country in countries %}
+            {% set translated = country.id in translations  %}
+            <div id="{{country.name_slug}}" class="container setoutForm">
+                <div class="row">
+                    <div class="twelve columns">
+                        <div class="container setoutForm">
+                            <div class="row">
+                                <div class="twelve columns">
+                                    {% set target=url('country-translation-edit', args=[object.id, country.id]) %}
+                                    <a href="{{target}}" class="truncate-ellipsis country-name link-button inline-link-button button">
+                                        {{country.name}}
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="twelve columns">
+                                    {% if translated %}
+                                        <span class="text-widget truncate-ellipsis translated-country-name">{{translations[country.id]}}</span>
+                                    {% else %}
+                                        <span class="yellow-label label small-label tooltipstered">Awaiting translation</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor -%}
+
+    </div>
+</div>
+
+{% endblock %}

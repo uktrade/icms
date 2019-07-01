@@ -25,34 +25,36 @@ class PostActionMixin(object):
             self, request, *args, **kwargs)
 
 
-class FilteredListView(PostActionMixin, ListView):
+class PostActionView(PostActionMixin):
     def _get_item(self, request, item_param='item'):
         if not (request.POST or request.POST.get(item_param)):
             raise_suspicious()
         id = request.POST.get(item_param)
-        return self.filterset_class.Meta.model.objects.get(pk=id)
+        return self.model.objects.get(pk=id)
 
+    def archive(self, request):
+        if not self.model.Display.archive:
+            raise_suspicious()
+        self._get_item(request).archive()
+        return super().get(request)
+
+    def unarchive(self, request):
+        if not self.model.Display.archive:
+            raise_suspicious()
+        self._get_item(request).unarchive()
+        return super().get(request)
+
+
+class FilteredListView(PostActionView, ListView):
     def get_queryset(self):
         load_immediate = hasattr(self, 'load_immediate') and self.load_immediate
         if self.request.GET or self.request.POST or load_immediate:
-            return self.filterset_class.Meta.model.objects.all()
+            return self.model.objects.all()
         else:
-            return self.filterset_class.Meta.model.objects.none()
+            return self.model.objects.none()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['filter'] = self.filterset_class(
             self.request.GET or None, queryset=self.get_queryset())
         return context
-
-    def archive(self, request):
-        if not self.filterset_class.Meta.model.Display.archive:
-            raise_suspicious()
-        self._get_item(request).archive()
-        return super().get(request)
-
-    def unarchive(self, request):
-        if not self.filterset_class.Meta.model.Display.archive:
-            raise_suspicious()
-        self._get_item(request).unarchive()
-        return super().get(request)
