@@ -86,6 +86,23 @@
           });
       });
 
+      $('#calibre_display_archived_checkbox').change(function(){
+          var checked = $(this).is(':checked');
+          console.log(checked);
+          url = window.location.origin + window.location.pathname;
+          if(checked) {
+              console.debug('Fuck you');
+              // window.location.href = url +  + '?display_archived=yes';
+          } else {
+              console.debug('Gree');
+              // window.location.href = url;
+          }
+      });
+
+
+
+
+
 
 
 

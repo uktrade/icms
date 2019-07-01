@@ -52,16 +52,21 @@
                 <td>
                 {% if field is not string %}
                     {% for f in field  %}
-                        {{item[f] or ''}}
+                        {% if loop.first and conf.view %}
+                            <a href="{{item.id}}">{{item[f] or ''}}</a>
+                        {% else %}
+                            {{item[f] or ''}}
+                        {% endif %}
                         <br/>
                     {% endfor %}
                 {% else %}
-                        {{item[field]}}
+                        {% if loop.first and conf.view %}
+                            <a href="{{item.id}}">{{item[field]}}</a>
+                        {% else %}
+                            {{item[field]}}
+                        {% endif %}
                 {% endif %}
                 {% if loop.first %}
-                    {% if conf.view %}
-                        <a href="{{item.id}}">View</a>
-                    {% endif %}
                     {% if conf.archive and  not item.is_active %}
                         <br/>
                         <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
@@ -81,6 +86,40 @@
                                     aria-label="Edit">
                                     </a>
                                     <div id="edit-hint" role="tooltip" class="hint-content" aria-hidden="true">Edit</div>
+                                </li>
+                            {% endif %}
+                            {% if conf.sort and not loop.first %}
+                                <li>
+                                    <form method="post" action="">
+                                        <button type="submit"
+                                                name="action"
+                                                value="move_up"
+                                                class="link-button icon-arrow-up2 button no-prompt-action tooltipstered"
+                                                aria-describedby="move-up-hint"
+                                                aria-label="Move Up">
+                                            {{csrf_input}}
+                                            <input type="hidden" name="item" value="{{item.id}}" />
+                                            <input type="hidden" name="prev_item" value="{{loop.previtem.id}}" />
+                                        </button>
+                                        <div id="move-up-hint" role="tooltip" class="hint-content">Move Up</div>
+                                    </form>
+                                </li>
+                            {% endif %}
+                            {% if conf.sort and not loop.last %}
+                                <li>
+                                    <form method="post" action="">
+                                        <button type="submit"
+                                                name="action"
+                                                value="move_down"
+                                                class="link-button icon-arrow-down2 button no-prompt-action tooltipstered"
+                                                aria-describedby="move-down-hint"
+                                                aria-label="Move Down">
+                                            {{csrf_input}}
+                                            <input type="hidden" name="item" value="{{item.id}}" />
+                                            <input type="hidden" name="next_item" value="{{loop.nextitem.id}}" />
+                                        </button>
+                                        <div id="move-down-hint" role="tooltip" class="hint-content">Move Down</div>
+                                    </form>
                                 </li>
                             {% endif %}
                             {% if item.is_active %}
