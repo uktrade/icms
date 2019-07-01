@@ -517,10 +517,6 @@ class ObsoleteCalibreGroup(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
 
-    # @property
-    # def number_of_items(self):
-    #     return self.calibres.count()
-
     class Meta:
         ordering = ('order',)
 
@@ -536,6 +532,7 @@ class ObsoleteCalibreGroup(Archivable, models.Model):
         view = True
         edit = True
         archive = True
+        sort = True
 
 
 class ObsoleteCalibre(Archivable, models.Model):
@@ -545,3 +542,15 @@ class ObsoleteCalibre(Archivable, models.Model):
     name = models.CharField(max_length=200, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
+
+    @property
+    def status(self):
+        if not self.id:
+            return 'Pending'
+        elif not self.is_active:
+            return 'Archvied'
+        else:
+            return 'Current'
+
+    class Meta:
+        ordering = ('order',)

@@ -127,6 +127,17 @@ urlpatterns = [
         view.ObsoleteCalibreListView.as_view(),
         name='obsolete-calibre-list'),
 
+    path(
+        'obsolete-calibre/new',
+        view.ObsoleteCalibreCreateView.as_view(),
+        name='obsolete-calibre-new'),
+
+    path(
+        'obsolete-calibre/<int:pk>/edit/',
+        view.ObsoleteCalibreGroupEditView.as_view(),
+        name='obsolete-calibre-edit'),
+
+
 
     # Portal Dashboard for outbound emails
     path('portal/dashboard/', outbound_emails, name='outbound-emails'),

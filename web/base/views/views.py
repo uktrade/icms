@@ -17,19 +17,19 @@ class PostActionMixin(object):
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
-        if not action:
-            raise_suspicious('Invalid action')
-
         logger.debug('Form action: "%s", Arguments:[%s]', action, kwargs)
+        if action and hasattr(self, action):
+            return getattr(self, action)(request, *args, **kwargs)
 
-        return getattr(self, action)(request, *args, **kwargs)
+        return super().__self_class__.__mro__[2].post(
+            self, request, *args, **kwargs)
 
 
 class FilteredListView(PostActionMixin, ListView):
-    def _get_item(self, request):
-        if not (request.POST or request.POST.get('item')):
+    def _get_item(self, request, item_param='item'):
+        if not (request.POST or request.POST.get(item_param)):
             raise_suspicious()
-        id = request.POST.get('item')
+        id = request.POST.get(item_param)
         return self.filterset_class.Meta.model.objects.get(pk=id)
 
     def get_queryset(self):
