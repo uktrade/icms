@@ -71,6 +71,7 @@ class TeamEditForm(ModelForm):
 class TeamListView(FilteredListView):
     template_name = 'web/team/list.html'
     filterset_class = TeamsFilter
+    model = Team
 
 
 class TeamEditView(ContactsManagementMixin, UpdateView):

@@ -28,3 +28,4 @@ class TemplatesFilter(FilterSet):
 class TemplateListView(FilteredListView):
     template_name = 'web/template/list.html'
     filterset_class = TemplatesFilter
+    model = Template

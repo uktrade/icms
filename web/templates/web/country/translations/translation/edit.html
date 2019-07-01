@@ -1,0 +1,12 @@
+{% extends "web/country/country-base.html" %}
+{% import "forms/form.html" as forms %}
+
+{% block page_title %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
+{% block context_header %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
+
+
+{% block main_content %}
+    Enter the {{translation_set.name}} translation of {{country.name}} below.
+    {%- call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+    {% endcall -%}
+{% endblock %}

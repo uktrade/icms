@@ -140,3 +140,4 @@ class CommodityGroupCreateView(CreateView):
 class CommodityGroupListView(FilteredListView):
     template_name = 'web/commodity-group/list.html'
     filterset_class = CommodityGroupFilter
+    model = CommodityGroup

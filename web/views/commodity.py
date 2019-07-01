@@ -132,6 +132,7 @@ class CommodityFilter(FilterSet):
 class CommodityListView(FilteredListView):
     template_name = 'web/commodity/list.html'
     filterset_class = CommodityFilter
+    model = Commodity
     paginate_by = 100
 
 

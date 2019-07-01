@@ -121,6 +121,7 @@ class ProductLegislationDisplayForm(ReadOnlyFormMixin, ModelForm):
 class ProductLegislationListView(FilteredListView):
     template_name = 'web/product-legislation/list.html'
     filterset_class = ProductLegislationFilter
+    model = ProductLegislation
     paginate_by = 100
     load_immediate = True   # show all results on first page load
 

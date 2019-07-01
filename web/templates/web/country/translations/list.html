@@ -1,4 +1,5 @@
 {% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
 {% block page_title %}Manage Country Translation Sets{% endblock %}
 {% block context_header %}Manage Country Translation Sets{% endblock %}
 
@@ -8,109 +9,87 @@
 
 {% block main_content %}
 
+<div class="modal-popover-container  {% if not form.errors %} hidden {% endif %}">
+    <div class="modal-popover regular-popover " tabindex="0">
+        <div class="modal-popover-content">
+        <h2 id="engine-modal-popover-title">Create New Country Translation Set</h2>
+
+            {%- call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+
+                <ul class="menu-out modal-popover-actions flow-across">
+                    <li>
+                        <button type="submit" name="action" value="save" class="primary-button button">
+                            Save
+                        </button>
+                    </li>
+                    <li>
+                        <button id="g93" name="g93" type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
+                            Cancel
+                        </button>
+                    </li>
+                </ul>
+            {% endcall -%}
+
+
+        </div>
+    </div>
+</div>
+
+
 <div class="info-box info-box-info">
     Select a translation set to view or edit the country name translations within it.
 </div>
 <ul class="menu-out flow-across">
-    <li> <button id="g46" name="g46" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-create-translation-set&quot;,&quot;ctxt&quot;:&quot;s175SpO_plrnqVW43&quot;}, this);" class="primary-button button">
-            Create new translation set </button></li>
+    <li>
+        <button type="button" onclick="$('.modal-popover-container').show()" class="primary-button button">
+        Create new translation set
+        </button>
+    </li>
 </ul>
-<table class="setoutList">
-    <caption class="screen-reader-only">List of existing country name translation sets, archived and active.</caption>
-    <thead>
-        <tr>
-            <th scope="col">Translation Set Name
-            </th>
-            <th scope="col">Actions
-            </th>
-        </tr>
-    </thead>
-    <tr data-xfid="f48">
-        <td data-xfid="g49"><span id="g49" class="text-widget ">French</span></td>
-        <td data-xfid="g50">
-            <ul class="menu-out">
-                <li> <button id="g51" name="g51" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuO_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g52" name="g52" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuO_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f53">
-        <td data-xfid="g54"><span id="g54" class="text-widget ">Norwegian 1</span></td>
-        <td data-xfid="g55">
-            <ul class="menu-out">
-                <li> <button id="g56" name="g56" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuS_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g57" name="g57" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuS_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f58">
-        <td data-xfid="g59"><span id="g59" class="text-widget ">Portuguese</span></td>
-        <td data-xfid="g60">
-            <ul class="menu-out">
-                <li> <button id="g61" name="g61" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuW_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g62" name="g62" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177QuW_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f63">
-        <td data-xfid="g64"><span id="g64" class="text-widget ">Russian</span></td>
-        <td data-xfid="g65">
-            <ul class="menu-out">
-                <li> <button id="g66" name="g66" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv0_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g67" name="g67" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv0_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f68">
-        <td data-xfid="g69"><span id="g69" class="text-widget ">Spanish</span></td>
-        <td data-xfid="g70">
-            <ul class="menu-out">
-                <li> <button id="g71" name="g71" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv4_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g72" name="g72" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv4_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f73">
-        <td data-xfid="g74"><span id="g74" class="text-widget ">test</span></td>
-        <td data-xfid="g75">
-            <ul class="menu-out">
-                <li> <button id="g76" name="g76" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv8_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g77" name="g77" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qv8_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f78">
-        <td data-xfid="g79"><span id="g79" class="text-widget ">Turkish</span></td>
-        <td data-xfid="g80">
-            <ul class="menu-out">
-                <li> <button id="g81" name="g81" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-edit-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qvc_plrnqVW43&quot;}, this);" class="link-button icon-pencil button">
-                        Edit </button></li>
-                <li> <button id="g82" name="g82" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to archive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be archived and you will no longer be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-archive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qvc_plrnqVW43&quot;}, this);" class="link-button icon-drawer button">
-                        Archive </button></li>
-            </ul>
-        </td>
-    </tr>
-    <tr data-xfid="f83">
-        <td data-xfid="g84"><span id="g84" class="text-widget ">Sindarin (archived)</span></td>
-        <td data-xfid="g85">
-            <ul class="menu-out">
-                <li> <button id="g86" name="g86" type="button" onclick="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you would like to unarchive this translation set?&lt;br&gt;&lt;br&gt;All country name translations in this set will also be unarchived and you will be able to select this translation set for document translation templates.&quot;,&quot;ref&quot;:&quot;action-unarchive-translation-set&quot;,&quot;ctxt&quot;:&quot;s177Qvg_plrnqVW43&quot;}, this);" class="link-button icon-box-remove button">
-                        Unarchive </button></li>
-            </ul>
-        </td>
-    </tr>
-</table>
+<form method="post" action="">
+    {{csrf_input}}
+    <table class="setoutList">
+        <caption class="screen-reader-only">List of existing country name translation sets, archived and active.</caption>
+        <thead>
+            <tr>
+                <th scope="col">Translation Set Name
+                </th>
+                <th scope="col">Actions
+                </th>
+            </tr>
+        </thead>
+        {% for set in object_list %}
+            <tr data-xfid="f48">
+                <td data-xfid="g49">
+                    <span class="text-widget ">{{set.name}}</span>
+                </td>
+                <td>
+                    <ul class="menu-out">
+                        {% if set.is_active %}
+                        <li>
+                            <a href="{{url('country-translation-set-edit', args=[set.id])}}" class="link-button icon-pencil button">
+                                Edit
+                            </a>
+                        </li>
+                        <li>
+                            <button name="action" type="submit" value="archive" class="link-button icon-drawer button">
+                                Archive
+                                <input type="hidden" name="item" value="{{set.id}}" />
+                            </button>
+                        </li>
+                        {% else %}
+                        <li>
+                            <button name="action" type="submit" value="unarchive" class="link-button icon-box-remove button">
+                                Unarchive
+                                <input type="hidden" name="item" value="{{set.id}}" />
+                            </button>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</form>
 
 {% endblock %}
