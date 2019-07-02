@@ -44,6 +44,20 @@ class PostActionView(PostActionMixin):
         self._get_item(request).unarchive()
         return super().get(request)
 
+    def move_up(self, request):
+        item = self._get_item
+        if not self.model.Display.sort:
+            raise_suspicious()
+        item(request).swap_order(item(request, 'prev_item'))
+        return super().get(request)
+
+    def move_down(self, request):
+        item = self._get_item
+        if not self.model.Display.sort:
+            raise_suspicious()
+        item(request).swap_order(item(request, 'next_item'))
+        return super().get(request)
+
 
 class FilteredListView(PostActionView, ListView):
     def get_queryset(self):
