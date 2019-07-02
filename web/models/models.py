@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (AbstractUser, Group)
 from viewflow.models import Process
 from .managers import AccessRequestQuerySet, ProcessQuerySet
-from .mixins import Archivable
+from .mixins import Archivable, Sortable
 
 
 class Address(models.Model):
@@ -543,7 +543,7 @@ class ProductLegislation(Archivable, models.Model):
         archive = True
 
 
-class ObsoleteCalibreGroup(Archivable, models.Model):
+class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
     name = models.CharField(max_length=200, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)

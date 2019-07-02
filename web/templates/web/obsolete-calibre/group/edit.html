@@ -16,15 +16,12 @@
 
 <div id="calibre_display_archived_checkbox" class="container setoutForm">
     <div class="row">
-    {# {{forms.field(form.display_archived, opts=form.config)}} #}
+        {# {{forms.field(form.display_archived, opts=form.config)}} #}
         <div class="three columns">
-           <label class="prompt west">Display Archived</label>
+            <label class="prompt west">Display Archived</label>
         </div>
-        <div class="nine columns" >
-            <input  id="calibre_display_archived_checkbox" type="checkbox"
-                    {%- if request.GET.get('display_archived') %}
-                    checked="checked"
-                    {% endif -%} />
+        <div class="nine columns">
+            <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
         </div>
     </div>
 </div>
@@ -43,10 +40,28 @@
         <tr>
             {{form.id}}
             {% with field=form.name %}
-              {% include 'forms/inline-field.html' %}
+            {% include 'forms/inline-field.html' %}
             {% endwith %}
             <td>{{form.instance.status}}</td>
-            <td>{{form.instance.order}}</td>
+            <td>
+                <ul class="menu-out grouped flow-across">
+                    <li>{{form.instance.order}}</li>
+                    <li class="move-up"  {% if loop.first %}style="display:none"{% endif %}>
+                        <button name="calibre-move-up" type="button" class="link-button icon-arrow-up2 button no-prompt-action tooltipstered" aria-describedby="move-up-hint" aria-label="Move Up">
+                            {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
+                            {# <input type="hidden" name="prev_item" value="{{loop.previtem.instance.id}}" /> #}
+                        </button>
+                        <div id="move-up-hint" role="tooltip" class="hint-content">Move Up</div>
+                    </li>
+                    <li class="move-down" {% if loop.last %}style="display:none"{% endif %} >
+                        <button name="calibre-move-down" type="button" class="link-button icon-arrow-down2 button no-prompt-action tooltipstered" aria-describedby="move-down-hint" aria-label="Move Down">
+                            {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
+                            {# <input type="hidden" name="prev_item" value="{{loop.nextitem.instance.id}}" /> #}
+                        </button>
+                        <div id="move-down-hint" role="tooltip" class="hint-content">Move Down</div>
+                    </li>
+                </ul>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -55,15 +70,9 @@
 
 <script type="text/javascript">
     $(function() {
-        $('#obsolete-calibres-table tbody tr').formset({
-            prefix: '{{ formset.prefix }}',
-            formCssClass: 'calibres-form',
-            addCssClass: 'small-button icon-plus button',
-            addText: 'Add Obsoloete Calibre',
-            deleteText: ''
-        });
     })
 </script>
+
 {%- endcall %}
 
 {% endblock %}
