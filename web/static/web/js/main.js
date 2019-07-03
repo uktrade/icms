@@ -11,7 +11,6 @@
         }
     }
 
-
     function adjust_sort_arrows(row){
         if(row.prev('tr').length){
             row.find('.move-up').show();
@@ -27,10 +26,51 @@
     }
 
 
-    function on_add_new_calibre(row) {
-        adjust_sort_arrows(row);
-        adjust_sort_arrows(row.prev());
+    function swap_orders(row1, row2) {
+        row1_order_input = row1.find('.calibre-order input');
+        row2_order_input = row2.find('.calibre-order input');
+        row1_order = row1_order_input.val();
+        row2_order = row2_order_input.val();
+        console.log(row1_order);
+        console.log(row2_order);
+        row1_order_input.val(row2_order);
+        row2_order_input.val(row1_order);
     }
+
+    function move_down() {
+        row = $(this).closest('tr');
+        next = row.next('tr');
+        if(next.length){
+            next.after(row);
+            swap_orders(row, next);
+            adjust_sort_arrows(row);
+            adjust_sort_arrows(next);
+        }
+    }
+
+
+    function move_up() {
+        row = $(this).closest('tr');
+        previous = row.prev('tr');
+        if(previous.length) {
+            previous.before(row);
+            swap_orders(row, previous);
+            adjust_sort_arrows(row);
+            adjust_sort_arrows(previous);
+        }
+    }
+
+    function on_add_new_calibre(row) {
+        previous=row.prev();
+        last_order = previous.find('.calibre-order input').val();
+        row.find('.calibre-status').text('Pending');
+        row.find('.calibre-order input').val(+last_order+1);
+        adjust_sort_arrows(row);
+        adjust_sort_arrows(previous);
+        row.find('button[name="calibre-move-down"]').click(move_down);
+        row.find('button[name="calibre-move-up"]').click(move_up);
+    }
+
 
     function initialise() {
 
@@ -81,7 +121,6 @@
 
         $('#remove-countries').click(function(){
             $('input.country_selector:checked').each(function(){
-                console.log('hello');
                 $(this).closest('.country').remove();
             });
         });
@@ -108,33 +147,24 @@
 
 
         $('#obsolete-calibres-table tbody tr').formset({
-            prefix: 'calibres',
+            prefix: 'calibre',
             formCssClass: 'calibres-form',
             addCssClass: 'small-button icon-plus button',
-            addText: 'Add Obsoloete Calibre',
+            addText: 'Add Obsolete Calibre',
             deleteText: '',
             added: on_add_new_calibre
         });
 
-        $('button[name="calibre-move-up"]').click(function() {
-            row = $(this).closest('tr');
-            previous = row.prev('tr');
-            if(previous.length) {
-                previous.before(row);
-                adjust_sort_arrows(row);
-                adjust_sort_arrows(previous);
+        $('#calibre_display_archived_checkbox').change(function(e) {
+            url = window.location.origin + window.location.pathname;
+            if (e.target.checked) {
+                url = url + '?display_archived=on';
             }
+            window.location.href = url;
         });
 
-        $('button[name="calibre-move-down"]').click(function() {
-            row = $(this).closest('tr');
-            next = row.next('tr');
-            if(next.length){
-                next.after(row);
-                adjust_sort_arrows(row);
-                adjust_sort_arrows(next);
-            }
-        });
+        $('button[name="calibre-move-up"]').click(move_up);
+        $('button[name="calibre-move-down"]').click(move_down);
 
         if(path=='/register/') {
             handle_security_question();

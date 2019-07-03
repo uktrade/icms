@@ -1,0 +1,50 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/errors.html" as errors %}
+{% import "forms/form.html" as forms %}
+
+{% block page_title %}Edit Obsolete Calibre Group{% endblock %}
+{% block context_header %}Edit Obsolete Calibre Group{% endblock %}
+
+{% block main_content %}
+
+<h3>Group</h3>
+
+{% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
+<h3>Obsolete Calibres</h3>
+
+<div id="calibre_display_archived_checkbox" class="container setoutForm">
+    <div class="row">
+        {# {{forms.field(form.display_archived, opts=form.config)}} #}
+        <div class="three columns">
+            <label class="prompt west">Display Archived</label>
+        </div>
+        <div class="nine columns">
+            <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
+        </div>
+    </div>
+</div>
+
+<table responsiveList class="setoutList">
+    <thead>
+        <tr>
+            <th scope="col">Obsolete Calibre Name</th>
+            {% if request.GET.get('display_archived') %}
+            <th scope="col">Status </th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for calibre in calibres %}
+        <tr>
+            <td class="calibre-status">
+                <input type="text" disabled="disabled" value="{{calibre.name}}"/>
+            </td>
+            {% if request.GET.get('display_archived') %}
+            <td class="calibre-status">{{calibre.status}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endcall %}
+{% endblock %}
