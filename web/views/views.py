@@ -126,11 +126,11 @@ def register(request):
         user.username = user.email
         user.save()
         user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
-        # TODO: Save email
-        # email = models.EmailAddress.objects.create(
-        #     email=user.email, portal_notifications=True)
-        # models.PersonalEmail(
-        #     user=user, email_address=email, is_primary=True).save()
+        models.PersonalEmail(
+            user=user,
+            email=user.email,
+            is_primary=True,
+            portal_notifications=True).save()
         notify.register(request, user, temp_pass)
         login(request, user)
         return redirect('set-password')
