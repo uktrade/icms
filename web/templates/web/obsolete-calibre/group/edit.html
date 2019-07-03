@@ -2,7 +2,6 @@
 {% import "forms/errors.html" as errors %}
 {% import "forms/form.html" as forms %}
 {# {% import "forms/list.html" as lists %} #}
-{% import "messages/message.html" as messages %}
 
 {% block page_title %}Edit Obsolete Calibre Group{% endblock %}
 {% block context_header %}Edit Obsolete Calibre Group{% endblock %}
@@ -36,16 +35,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for form in formset %}
+        {% for form in formset.sorted_forms() %}
         <tr>
             {{form.id}}
             {% with field=form.name %}
             {% include 'forms/inline-field.html' %}
             {% endwith %}
-            <td>{{form.instance.status}}</td>
+            <td class="calibre-status">{{form.instance.status}}</td>
             <td>
+                <div class="calibre-order">
+                    {{form.order}}
+                </div>
                 <ul class="menu-out grouped flow-across">
-                    <li>{{form.instance.order}}</li>
                     <li class="move-up"  {% if loop.first %}style="display:none"{% endif %}>
                         <button name="calibre-move-up" type="button" class="link-button icon-arrow-up2 button no-prompt-action tooltipstered" aria-describedby="move-up-hint" aria-label="Move Up">
                             {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
@@ -67,11 +68,6 @@
     </tbody>
 </table>
 {{ formset.management_form }}
-
-<script type="text/javascript">
-    $(function() {
-    })
-</script>
 
 {%- endcall %}
 

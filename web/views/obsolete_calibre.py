@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Count, Max
 from django.forms import (inlineformset_factory, BaseInlineFormSet,
@@ -5,12 +6,12 @@ from django.forms import (inlineformset_factory, BaseInlineFormSet,
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 # from django.views.generic.list import ListView
-# from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, CreateView
-from web.base.forms import ModelForm, FilterSet,  widgets
+from web.base.forms import ModelForm, FilterSet, ReadOnlyFormMixin, widgets
 from web.base.forms.fields import BooleanField
 from web.base.views import PostActionMixin, FilteredListView
-# from web.base.utils import dict_merge
+from web.base.utils import dict_merge
 from web.models import ObsoleteCalibreGroup, ObsoleteCalibre
 from .filters import _filter_config
 import django_filters as filter
@@ -60,7 +61,6 @@ class ObsoleteCalibreGroupFilter(FilterSet):
 
 
 class ObsoleteCalibreGroupEditForm(ModelForm):
-
     class Meta:
         model = ObsoleteCalibreGroup
         fields = ['name']
@@ -88,63 +88,124 @@ class ObsoleteCalibreGroupEditForm(ModelForm):
         }
 
 
+class ObsoleteCalibreGroupDisplayForm(ReadOnlyFormMixin, ModelForm):
+    class Meta(ObsoleteCalibreGroupEditForm.Meta):
+        config = dict_merge(ObsoleteCalibreGroupEditForm.Meta.config, {
+            'actions': None,
+        })
+
+
 class ObsoleteCalibreForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = ObsoleteCalibre
-        fields = ['name']
+        fields = ['name', 'order']
+        widgets = {'order': widgets.HiddenInput()}
         config = ObsoleteCalibreGroupEditForm.Meta.config
 
 
 class ObsoleteCalibreFormSet(BaseInlineFormSet):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        # Don' validate unless each form is valid on its own
-        if any(self.errors):
-            return
-
-        max_order = 1
-        last_item = ObsoleteCalibre.objects.all().last()
-        if last_item:
-            max_order = last_item.order + 1
-        for form in self.forms:
-            if not form.instance.order:
-                max_order = max_order + 1
-                form.instance.order = max_order
+    def sorted_forms(self):
+        return sorted(self.forms, key=lambda form: form.instance.order)
 
 
-def new_calibres_formset(instance, data=None):
+def new_calibres_formset(instance, queryset=None, data=None, extra=0):
+    initial = None
+    if extra:
+        initial = [{'order': 1}]
     return inlineformset_factory(
         ObsoleteCalibreGroup,
         ObsoleteCalibre,
-        form=ObsoleteCalibreGroupEditForm,
+        form=ObsoleteCalibreForm,
         formset=ObsoleteCalibreFormSet,
-        extra=0,
-        can_delete=True)(
-            data, prefix='calibre', instance=instance)
+        extra=extra,
+        can_delete=False
+        )(data,
+          initial=initial,
+          queryset=queryset,
+          prefix='calibre',
+          instance=instance)
 
 
-class ObsoleteCalibreGroupEditView(PostActionMixin, UpdateView):
-    template_name = 'web/obsolete-calibre/group/edit.html'
-    form_class = ObsoleteCalibreGroupEditForm
-    model = ObsoleteCalibreGroup
-    success_url = reverse_lazy('obsolete-calibre-list')
+class ObsoleteCalibreGroupBaseView(PostActionMixin):
+    def get_formset(self):
+        extra = 1
+        queryset = None
+        if self.object:
+            queryset = self.object.calibres
+            if not self.request.GET.get('display_archived', None):
+                queryset = queryset.filter(is_active=True)
+            if queryset.count() > 0:
+                extra = 0
+
+        return new_calibres_formset(
+            self.object,
+            queryset=queryset,
+            data=self.request.POST or None,
+            extra=extra)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['formset'] = new_calibres_formset(
-            self.object,
-            data=self.request.POST or None)
+        context['formset'] = self.get_formset()
         return context
 
+    def form_valid(self, form, formset):
+        order = form.instance.order
+        if not order:
+            last = form.instance.order = ObsoleteCalibreGroup.objects.last()
+            if last:
+                order = last.order
+            else:
+                order = 1
+        form.instance.order = order
+        self.object = form.save()
+        formset.save()
+        return super().form_valid(form=form)
 
-class ObsoleteCalibreCreateView(CreateView):
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = super().get_form()
+        formset = self.get_formset()
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+        else:
+            return super().render_to_response(self.get_context_data(form=form))
+
+
+class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView, UpdateView):
     template_name = 'web/obsolete-calibre/group/edit.html'
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
+
+
+class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, CreateView):
+    template_name = 'web/obsolete-calibre/group/edit.html'
+    form_class = ObsoleteCalibreGroupEditForm
+    model = ObsoleteCalibreGroup
+    success_url = reverse_lazy('obsolete-calibre-list')
+
+    def get_object(self):
+        return None
+
+
+class ObsoleteCalibreGroupDetailView(DetailView):
+    template_name = 'web/obsolete-calibre/group/view.html'
+    model = ObsoleteCalibreGroup
+
+    def get_context_data(self, object):
+        context = super().get_context_data()
+        context['form'] = ObsoleteCalibreGroupDisplayForm(instance=object)
+        if self.request.GET.get('display_archived'):
+            calibres = object.calibres.all()
+        else:
+            calibres = object.calibres.filter(is_active=True)
+        context['calibres'] = calibres
+        return context
 
 
 class ObsoleteCalibreListView(FilteredListView):

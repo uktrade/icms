@@ -141,13 +141,20 @@ urlpatterns = [
 
     path(
         'obsolete-calibre/new',
-        view.ObsoleteCalibreCreateView.as_view(),
+        view.ObsoleteCalibreGroupCreateView.as_view(),
         name='obsolete-calibre-new'),
 
     path(
         'obsolete-calibre/<int:pk>/edit/',
         view.ObsoleteCalibreGroupEditView.as_view(),
         name='obsolete-calibre-edit'),
+
+    path(
+        'obsolete-calibre/<int:pk>/',
+        view.ObsoleteCalibreGroupDetailView.as_view(),
+        name='obsolete-calibre-view'),
+
+
 
 
 
