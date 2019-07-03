@@ -1,15 +1,9 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
-from django.db.models import Count, Max
-from django.forms import (inlineformset_factory, BaseInlineFormSet,
-                          ValidationError)
-from django.shortcuts import redirect
-from django.urls import reverse, reverse_lazy
-# from django.views.generic.list import ListView
+from django.db.models import Count
+from django.forms import inlineformset_factory, BaseInlineFormSet
+from django.urls import reverse_lazy
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, CreateView
 from web.base.forms import ModelForm, FilterSet, ReadOnlyFormMixin, widgets
-from web.base.forms.fields import BooleanField
 from web.base.views import PostActionMixin, FilteredListView
 from web.base.utils import dict_merge
 from web.models import ObsoleteCalibreGroup, ObsoleteCalibre

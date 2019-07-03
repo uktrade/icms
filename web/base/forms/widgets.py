@@ -1,6 +1,5 @@
 from django.forms.widgets import (TextInput, Textarea, PasswordInput,
-                                  DateInput, EmailInput, Select, HiddenInput,
-                                  CheckboxInput)
+                                  DateInput, EmailInput, Select, CheckboxInput)
 
 
 class TextInput(TextInput):
