@@ -3,11 +3,16 @@ from web.models import User
 
 
 def create_default_user(apps, schema_editor):
-    user = User(username='admin', is_superuser=True, title='Mr',
-                first_name='Admin', last_name='Gov',
-                security_question='Are you the admin',
-                security_answer='Test')
-    user.set_password('admin')    # will force to reset at login
+    # will force to reset password at login
+    user = User(username='admin',
+                is_superuser=False,
+                is_staff=False,
+                title='Dr.',
+                first_name='Admin',
+                last_name='Gov',
+                security_question='Are you the admin?',
+                security_answer='Maybe',
+                password='pbkdf2_sha256$150000$A9tWmv8WAOKU$fDGeH1uYJP4QvT8ogLnvYmxOBjhyH6SuJoNbLosr4L0=') # NOQA
     user.save()
 
 
