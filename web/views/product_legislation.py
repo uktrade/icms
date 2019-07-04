@@ -1,8 +1,7 @@
 from django.urls import reverse_lazy
-from django.views.generic.edit import (CreateView, UpdateView)
-from django.views.generic.detail import DetailView
 from web.base.forms import FilterSet, ModelForm, widgets, ReadOnlyFormMixin
-from web.base.views import (FilteredListView)
+from web.base.views import (SecureUpdateView, SecureCreateView,
+                            SecureFilteredListView, SecureDetailView)
 from web.models import ProductLegislation
 from web.base.utils import dict_merge
 from django_filters import (CharFilter, ChoiceFilter)
@@ -118,7 +117,7 @@ class ProductLegislationDisplayForm(ReadOnlyFormMixin, ModelForm):
         })
 
 
-class ProductLegislationListView(FilteredListView):
+class ProductLegislationListView(SecureFilteredListView):
     template_name = 'web/product-legislation/list.html'
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
@@ -126,14 +125,14 @@ class ProductLegislationListView(FilteredListView):
     load_immediate = True   # show all results on first page load
 
 
-class ProductLegislationEditView(UpdateView):
+class ProductLegislationEditView(SecureUpdateView):
     template_name = 'web/product-legislation/edit.html'
     form_class = ProductLegislationEditForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
 
 
-class ProductLegislationDetailView(DetailView):
+class ProductLegislationDetailView(SecureDetailView):
     template_name = 'web/product-legislation/view.html'
     model = ProductLegislation
 
@@ -143,7 +142,7 @@ class ProductLegislationDetailView(DetailView):
         return context
 
 
-class ProductLegislationCreateView(CreateView):
+class ProductLegislationCreateView(SecureCreateView):
     template_name = 'web/product-legislation/edit.html'
     form_class = ProductLegislationCreateForm
     model = ProductLegislation
