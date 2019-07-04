@@ -1,5 +1,8 @@
 from django.core.exceptions import SuspiciousOperation
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView, CreateView
+from web.auth.mixins import RequireRegisteredMixin
 import logging
 
 logger = logging.getLogger(__name__)
@@ -72,3 +75,23 @@ class FilteredListView(PostActionView, ListView):
         context['filter'] = self.filterset_class(
             self.request.GET or None, queryset=self.get_queryset())
         return context
+
+
+class SecureFilteredListView(RequireRegisteredMixin, FilteredListView):
+    pass
+
+
+class SecureUpdateView(RequireRegisteredMixin, UpdateView):
+    pass
+
+
+class SecureCreateView(RequireRegisteredMixin, CreateView):
+    pass
+
+
+class SecureListView(RequireRegisteredMixin, ListView):
+    pass
+
+
+class SecureDetailView(RequireRegisteredMixin, DetailView):
+    pass

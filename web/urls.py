@@ -93,7 +93,7 @@ urlpatterns = [
     path(
         'country/groups/new/',
         view.CountryGroupCreateView.as_view(),
-        name='country-group-view'
+        name='country-group-new'
     ),
 
     # Coutry translation sets
@@ -153,9 +153,6 @@ urlpatterns = [
         'obsolete-calibre/<int:pk>/',
         view.ObsoleteCalibreGroupDetailView.as_view(),
         name='obsolete-calibre-view'),
-
-
-
 
 
     # Portal Dashboard for outbound emails

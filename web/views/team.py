@@ -1,10 +1,9 @@
 from django.urls import reverse_lazy
 from django_filters import CharFilter
-from django.views.generic.edit import UpdateView
 from web.base.forms import FilterSet, ModelForm, widgets
 from web.base.forms.fields import (DisplayField)
 from web.base.forms.widgets import (Textarea, Display)
-from web.base.views import FilteredListView
+from web.base.views import SecureFilteredListView, SecureUpdateView
 from web.models import Team
 from .filters import _filter_config
 from .contacts import ContactsManagementMixin
@@ -68,13 +67,13 @@ class TeamEditForm(ModelForm):
         }
 
 
-class TeamListView(FilteredListView):
+class TeamListView(SecureFilteredListView):
     template_name = 'web/team/list.html'
     filterset_class = TeamsFilter
     model = Team
 
 
-class TeamEditView(ContactsManagementMixin, UpdateView):
+class TeamEditView(ContactsManagementMixin, SecureUpdateView):
     template_name = 'web/team/edit.html'
     form_class = TeamEditForm
     success_url = reverse_lazy('team-list')

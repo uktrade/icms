@@ -2,12 +2,11 @@ from django.db import transaction
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView, CreateView
 from web.base.forms import ModelForm, FilterSet
 from web.base.forms.widgets import Select, Textarea
 from web.base.views import PostActionMixin, PostActionView
+from web.base.views import (SecureListView, SecureDetailView,
+                            SecureUpdateView, SecureCreateView)
 from web.base.utils import dict_merge
 from web.models import (Country, CountryGroup,
                         CountryTranslationSet, CountryTranslation)
@@ -150,7 +149,7 @@ class CountryTranslationEditForm(ModelForm):
         }
 
 
-class CountryGroupView(DetailView):
+class CountryGroupView(SecureDetailView):
     model = CountryGroup
     template_name = 'web/country/groups/view.html'
 
@@ -167,7 +166,7 @@ class CountryGroupView(DetailView):
         return context
 
 
-class CountryGroupEditView(PostActionMixin, UpdateView):
+class CountryGroupEditView(PostActionMixin, SecureUpdateView):
     model = CountryGroup
     template_name = 'web/country/groups/edit.html'
     form_class = CountryGroupEditForm
@@ -246,26 +245,26 @@ class CountryGroupCreateView(CountryGroupEditView):
         return CountryGroup()
 
 
-class CountryListView(ListView):
+class CountryListView(SecureListView):
     model = Country
     template_name = 'web/country/list.html'
 
 
-class CountryEditView(UpdateView):
+class CountryEditView(SecureUpdateView):
     model = Country
     template_name = 'web/country/edit.html'
     form_class = CountryEditForm
     success_url = reverse_lazy('country-list')
 
 
-class CountryCreateView(CreateView):
+class CountryCreateView(SecureCreateView):
     # model = Country
     template_name = 'web/country/create.html'
     form_class = CountryCreateForm
     success_url = reverse_lazy('country-list')
 
 
-class CountryTranslationSetListView(PostActionView, ListView):
+class CountryTranslationSetListView(PostActionView, SecureListView):
     model = CountryTranslationSet
     template_name = 'web/country/translations/list.html'
 
@@ -292,7 +291,7 @@ class CountryTranslationSetListView(PostActionView, ListView):
         return super().get(request)
 
 
-class CountryTranslationSetEditView(PostActionView, UpdateView):
+class CountryTranslationSetEditView(PostActionView, SecureUpdateView):
     model = CountryTranslationSet
     template_name = 'web/country/translations/edit.html'
     form_class = CountryTranslationSetEditForm
@@ -346,7 +345,7 @@ class CountryTranslationSetEditView(PostActionView, UpdateView):
         return redirect(reverse('country-translation-set-list'))
 
 
-class CountryTranslationCreateUpdateView(UpdateView):
+class CountryTranslationCreateUpdateView(SecureUpdateView):
     model = CountryTranslation
     template_name = 'web/country/translations/translation/edit.html'
     form_class = CountryTranslationEditForm

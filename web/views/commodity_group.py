@@ -1,11 +1,11 @@
 from django.urls import reverse_lazy
-from django.views.generic.edit import (UpdateView, CreateView)
 from django_filters import (CharFilter, ChoiceFilter, ModelChoiceFilter,
                             BooleanFilter)
 from web.base.forms import FilterSet, widgets, ModelForm
 from web.base.forms.fields import (DisplayField, CharField)
 from web.base.forms.widgets import Textarea
-from web.base.views import FilteredListView
+from web.base.views import (SecureFilteredListView, SecureCreateView,
+                            SecureListView, SecureUpdateView)
 from web.models import (CommodityGroup, Commodity, Unit)
 from .filters import _filter_config
 
@@ -123,21 +123,21 @@ class CommodityGroupCreateForm(ModelForm):
         pass
 
 
-class CommodityGroupEditView(UpdateView):
+class CommodityGroupEditView(SecureUpdateView):
     template_name = 'web/commodity-group/edit.html'
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-groups')
 
 
-class CommodityGroupCreateView(CreateView):
+class CommodityGroupCreateView(SecureCreateView):
     template_name = 'web/commodity-group/create.html'
     form_class = CommodityGroupCreateForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-groups')
 
 
-class CommodityGroupListView(FilteredListView):
+class CommodityGroupListView(SecureFilteredListView):
     template_name = 'web/commodity-group/list.html'
     filterset_class = CommodityGroupFilter
     model = CommodityGroup

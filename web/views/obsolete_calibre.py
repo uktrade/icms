@@ -1,10 +1,10 @@
 from django.db.models import Count
 from django.forms import inlineformset_factory, BaseInlineFormSet
 from django.urls import reverse_lazy
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView, CreateView
 from web.base.forms import ModelForm, FilterSet, ReadOnlyFormMixin, widgets
-from web.base.views import PostActionMixin, FilteredListView
+from web.base.views import PostActionMixin
+from web.base.views import (SecureDetailView, SecureFilteredListView,
+                            SecureUpdateView, SecureCreateView)
 from web.base.utils import dict_merge
 from web.models import ObsoleteCalibreGroup, ObsoleteCalibre
 from .filters import _filter_config
@@ -170,14 +170,16 @@ class ObsoleteCalibreGroupBaseView(PostActionMixin):
             return super().render_to_response(self.get_context_data(form=form))
 
 
-class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView, UpdateView):
+class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView,
+                                   SecureUpdateView):
     template_name = 'web/obsolete-calibre/group/edit.html'
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
 
 
-class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, CreateView):
+class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
+                                     SecureCreateView):
     template_name = 'web/obsolete-calibre/group/edit.html'
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
@@ -187,7 +189,7 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, CreateView):
         return None
 
 
-class ObsoleteCalibreGroupDetailView(DetailView):
+class ObsoleteCalibreGroupDetailView(SecureDetailView):
     template_name = 'web/obsolete-calibre/group/view.html'
     model = ObsoleteCalibreGroup
 
@@ -202,7 +204,7 @@ class ObsoleteCalibreGroupDetailView(DetailView):
         return context
 
 
-class ObsoleteCalibreListView(FilteredListView):
+class ObsoleteCalibreListView(SecureFilteredListView):
     template_name = 'web/obsolete-calibre/group/list.html'
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
