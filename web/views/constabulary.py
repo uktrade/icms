@@ -1,7 +1,8 @@
 from django_filters import (CharFilter, ChoiceFilter)
 from web.base.forms import FilterSet, ModelForm
 from web.base.forms.widgets import (TextInput, Select)
-from web.base.views import (SecureFilteredListView, SecureCreateView, SecureUpdateView)
+from web.base.views import (SecureFilteredListView, SecureCreateView,
+                            SecureUpdateView)
 from web.models import Constabulary
 from .filters import _filter_config
 from .contacts import ContactsManagementMixin
@@ -69,24 +70,21 @@ class ConstabularyCreateForm(ConstabularyEditForm):
 
 
 class ConstabulariesFilter(FilterSet):
-    name = CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
-        widget=TextInput,
-        label='Constabulary Name')
+    name = CharFilter(field_name='name',
+                      lookup_expr='icontains',
+                      widget=TextInput,
+                      label='Constabulary Name')
 
-    region = ChoiceFilter(
-        field_name='region',
-        choices=Constabulary.REGIONS,
-        lookup_expr='icontains',
-        widget=Select,
-        label='Constabulary Region')
+    region = ChoiceFilter(field_name='region',
+                          choices=Constabulary.REGIONS,
+                          lookup_expr='icontains',
+                          widget=Select,
+                          label='Constabulary Region')
 
-    email = CharFilter(
-        field_name='email',
-        lookup_expr='icontains',
-        widget=TextInput,
-        label='Email Address')
+    email = CharFilter(field_name='email',
+                       lookup_expr='icontains',
+                       widget=TextInput,
+                       label='Email Address')
 
     class Meta:
         model = Constabulary
