@@ -121,6 +121,30 @@ urlpatterns = [
          view.ObsoleteCalibreGroupDetailView.as_view(),
          name='obsolete-calibre-view'),
 
+    # Importer
+    path('importer/', view.ImporterListView.as_view(), name='importer-list'),
+    path('importer/<int:pk>/edit/',
+         view.ImporterEditView.as_view(),
+         name='importer-edit'),
+    path('importer/new/',
+         view.ImporterCreateView.as_view(),
+         name='importer-new'),
+    path('importer/<int:pk>/',
+         view.ImporterDetailView.as_view(),
+         name='importer-view'),
+
+    # Exporter
+    path('exporter/', view.ExporterListView.as_view(), name='exporter-list'),
+    path('exporter/<int:pk>/edit/',
+         view.ExporterEditView.as_view(),
+         name='exporter-edit'),
+    path('exporter/new/',
+         view.ExporterCreateView.as_view(),
+         name='exporter-new'),
+    path('exporter/<int:pk>/',
+         view.ExporterDetailView.as_view(),
+         name='exporter-view'),
+
     # Portal Dashboard for outbound emails
     path('portal/dashboard/', outbound_emails, name='outbound-emails'),
 

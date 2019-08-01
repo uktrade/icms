@@ -1,0 +1,18 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block page_title %}Edit Importer {% endblock %}
+{% block context_header %}Edit Importer {% endblock %}
+
+{% block main_content %}
+
+  {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+    {% include "partial/offices.html" %}
+    {% include "partial/firearms-authorities.html" %}
+    {% include "partial/section5-authorities.html" %}
+    {% include "partial/agents.html" %}
+    {% include "web/contacts/tabs.html" %}
+  {% endcall %}
+
+{% endblock %}

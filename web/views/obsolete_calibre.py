@@ -15,20 +15,17 @@ logger = logging.getLogger(__name__)
 
 
 class ObsoleteCalibreGroupFilter(FilterSet):
-    group_name = filter.CharFilter(
-        field_name='name',
-        lookup_expr='icontains',
-        label='Obsolete Calibre Group Name')
+    group_name = filter.CharFilter(field_name='name',
+                                   lookup_expr='icontains',
+                                   label='Obsolete Calibre Group Name')
 
-    calibre_name = filter.CharFilter(
-        field_name='calibres__name',
-        lookup_expr='icontains',
-        label='Obsolete Calibre Name')
+    calibre_name = filter.CharFilter(field_name='calibres__name',
+                                     lookup_expr='icontains',
+                                     label='Obsolete Calibre Name')
 
-    display_archived = filter.BooleanFilter(
-        label='Display Archived',
-        widget=widgets.CheckboxInput,
-        method='filter_display_archived')
+    display_archived = filter.BooleanFilter(label='Display Archived',
+                                            widget=widgets.CheckboxInput,
+                                            method='filter_display_archived')
 
     def filter_display_archived(self, queryset, name, value):
         if value:
@@ -39,11 +36,12 @@ class ObsoleteCalibreGroupFilter(FilterSet):
 
     @property
     def qs(self):
-        self.queryset = ObsoleteCalibreGroup.objects.annotate(Count('calibres'))
+        self.queryset = ObsoleteCalibreGroup.objects.annotate(
+            Count('calibres'))
 
         #  Filter archived querysets on first load as django_filters doesn't
         #  seem to apply filters on first load
-        if not self.form.data:   # first page load
+        if not self.form.data:  # first page load
             self.queryset = self.queryset.filter(is_active=True)
 
         return super().qs
@@ -90,7 +88,6 @@ class ObsoleteCalibreGroupDisplayForm(ReadOnlyFormMixin, ModelForm):
 
 
 class ObsoleteCalibreForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -102,7 +99,6 @@ class ObsoleteCalibreForm(ModelForm):
 
 
 class ObsoleteCalibreFormSet(BaseInlineFormSet):
-
     def sorted_forms(self):
         return sorted(self.forms, key=lambda form: form.instance.order)
 
@@ -111,18 +107,16 @@ def new_calibres_formset(instance, queryset=None, data=None, extra=0):
     initial = None
     if extra:
         initial = [{'order': 1}]
-    return inlineformset_factory(
-        ObsoleteCalibreGroup,
-        ObsoleteCalibre,
-        form=ObsoleteCalibreForm,
-        formset=ObsoleteCalibreFormSet,
-        extra=extra,
-        can_delete=False
-        )(data,
-          initial=initial,
-          queryset=queryset,
-          prefix='calibre',
-          instance=instance)
+    return inlineformset_factory(ObsoleteCalibreGroup,
+                                 ObsoleteCalibre,
+                                 form=ObsoleteCalibreForm,
+                                 formset=ObsoleteCalibreFormSet,
+                                 extra=extra,
+                                 can_delete=False)(data,
+                                                   initial=initial,
+                                                   queryset=queryset,
+                                                   prefix='calibre',
+                                                   instance=instance)
 
 
 class ObsoleteCalibreGroupBaseView(PostActionMixin):
@@ -136,11 +130,10 @@ class ObsoleteCalibreGroupBaseView(PostActionMixin):
             if queryset.count() > 0:
                 extra = 0
 
-        return new_calibres_formset(
-            self.object,
-            queryset=queryset,
-            data=self.request.POST or None,
-            extra=extra)
+        return new_calibres_formset(self.object,
+                                    queryset=queryset,
+                                    data=self.request.POST or None,
+                                    extra=extra)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()

@@ -20,6 +20,10 @@ class EmailField(forms.EmailField):
     widget = EmailInput
 
 
+class ChoiceField(forms.ChoiceField):
+    pass
+
+
 class DisplayField(forms.Field):
     widget = Display
 

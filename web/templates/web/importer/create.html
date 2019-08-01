@@ -1,0 +1,12 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/form.html" as forms %}
+{% import "forms/list.html" as lists %}
+
+{% block page_title %}Create Importer{% endblock %}
+{% block context_header %}Create Importer{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+    {% include "partial/offices.html" %}
+  {% endcall %}
+{% endblock %}
