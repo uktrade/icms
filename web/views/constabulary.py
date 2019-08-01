@@ -1,11 +1,12 @@
-from django_filters import (CharFilter, ChoiceFilter)
+from django_filters import CharFilter, ChoiceFilter
 from web.base.forms import FilterSet, ModelForm
-from web.base.forms.widgets import (TextInput, Select)
-from web.base.views import (SecureFilteredListView, SecureCreateView,
+from web.base.forms.widgets import Select, TextInput
+from web.base.views import (SecureCreateView, SecureFilteredListView,
                             SecureUpdateView)
 from web.models import Constabulary
-from .filters import _filter_config
+
 from .contacts import ContactsManagementMixin
+from .filters import _filter_config
 
 
 class ConstabularyEditForm(ModelForm):

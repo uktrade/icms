@@ -1,0 +1,12 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/errors.html" as errors %}
+{% import "forms/form.html" as forms %}
+
+{% block page_title %}View Importer{% endblock %}
+{% block context_header %}View Importer{% endblock %}
+
+{% block main_content %}
+
+{{forms.form(form, fields=form.fields, csrf_input=csrf_input) }}
+
+{% endblock %}
