@@ -1,6 +1,7 @@
 import logging
 
 from django.db.models.functions import Concat
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, DateFilter
 from web.base.forms import FilterSet, ModelForm, ReadOnlyFormMixin, widgets
@@ -26,11 +27,11 @@ class ImporterFilter(FilterSet):
                                label='Importer Name',
                                method='filter_importer_name')
 
-    #  commodity_type = ChoiceFilter(field_name='commodity_type',
-    #  choices=Commodity.TYPES,
-    #  lookup_expr='icontains',
-    #  widget=widgets.Select,
-    #  label='Commodity Type')
+    # Filter base queryset to only get importers that are not agents.
+    @property
+    def qs(self):
+        queryset = super().qs
+        return queryset.filter(main_importer__isnull=True)
 
     def filter_importer_name(self, queryset, name, value):
         if not value:
@@ -94,12 +95,29 @@ class ImporterEditView(ContactsManagementMixin, SecureUpdateView):
     success_url = reverse_lazy('importer-list')
     model = Importer
 
+    def get(self, request, pk, importer_id=None):
+        form = super().get_form(pk=pk)
+        context = {
+            'contacts': self._get_initial_data(form.instance),
+            'form': form
+        }
+        if importer_id:
+            context['importer'] = Importer.objects.filter(pk=importer_id).get()
+        return self._render(context)
+
 
 class ImporterCreateView(SecureCreateView):
     template_name = 'web/importer/create.html'
     form_class = ImporterCreateForm
     success_url = reverse_lazy('importer-list')
     model = Importer
+
+    def get(self, request, importer_id=None):
+        form = super().get_form()
+        context = {'form': form}
+        if importer_id:
+            context['importer'] = Importer.objects.filter(pk=importer_id).get()
+        return render(self.request, self.template_name, context)
 
 
 class ImporterDetailView(SecureDetailView):

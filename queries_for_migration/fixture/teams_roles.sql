@@ -23,7 +23,6 @@ WITH team_role_privs as (
 	AND rt.SCOPED_WITHIN='UNIVERSAL_SET'
 	AND rtr.RES_TYPE=rtp.RES_TYPE(+)
 	AND rtr.ROLE_NAME=rtp.ROLE_NAME(+)
-
 )
 
 
