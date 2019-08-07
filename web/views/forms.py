@@ -361,6 +361,18 @@ class PersonalEmailForm(ModelForm):
         self.instance.portal_notifications = True if response else False
         return response
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if instance.is_primary:
+            instance.user.username = instance.email
+            instance.user.email =  instance.email
+            instance.user.save()
+        if commit:
+            instance.save()
+
+        return instance
+
+
     class Meta:
         model = models.PersonalEmail
         fields = ['email', 'type', 'notifications', 'comment']

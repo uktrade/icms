@@ -2,10 +2,18 @@
 {% import "forms/form.html" as forms %}
 {% import "forms/list.html" as lists %}
 
-{% block page_title %}Edit Importer {% endblock %}
-{% block context_header %}Edit Importer {% endblock %}
+{% block page_title %}Edit Importer {{form.instance.full_name}} {% endblock %}
+{% block context_header %}Edit Importer {{form.instance.full_name}} {% endblock %}
 
 {% block main_content %}
+
+
+{% if importer %}
+    <div class="info-box info-box-info">
+      This importer is an agent of {{importer.full_name}}.
+    </div>
+{% endif %}
+
 
   {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
     {% include "partial/offices.html" %}

@@ -23,6 +23,7 @@ urlpatterns = [
     path('template/<int:pk>',
          view.TemplateListView.as_view(),
          name='template-list'),
+
     # Teams Management
     path('teams/', view.TeamListView.as_view(), name='team-list'),
     path('teams/<int:pk>/edit/', view.TeamEditView.as_view(),
@@ -132,6 +133,14 @@ urlpatterns = [
     path('importer/<int:pk>/',
          view.ImporterDetailView.as_view(),
          name='importer-view'),
+
+    # Importer Agents
+    path('importer/<int:importer_id>/agent/<int:pk>/edit',
+         view.ImporterEditView.as_view(),
+         name='importer-agent-edit'),
+    path('importer/<int:importer_id>/agent/new/',
+         view.ImporterCreateView.as_view(),
+         name='importer-agent-new'),
 
     # Exporter
     path('exporter/', view.ExporterListView.as_view(), name='exporter-list'),
