@@ -29,13 +29,12 @@ class RegistrationForm(ModelForm):
     telephone_number = PhoneNumberField()
     confirm_email = CharField(widget=EmailInput(), max_length=254)
 
-    security_answer_repeat = CharField(
-        required=True,
-        label="Confirm Security Answer",
-        widget=PasswordInput(render_value=True))
+    security_answer_repeat = CharField(required=True,
+                                       label="Confirm Security Answer",
+                                       widget=PasswordInput(render_value=True))
 
-    security_question_list = CharField(
-        label='Security Question', widget=Select(choices=QUESTIONS))
+    security_question_list = CharField(label='Security Question',
+                                       widget=Select(choices=QUESTIONS))
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
@@ -100,12 +99,14 @@ class CaptchaForm(Form):
     captcha = ReCaptchaField(label='Security Check')
 
 
-class PasswordChangeForm(
-        auth_forms.PasswordChangeForm, metaclass=FormConfigMetaClass):
-    new_password1 = CharField(
-        label='New password', strip=False, widget=PasswordInput())
-    new_password2 = CharField(
-        label='Confirm New Password', strip=False, widget=PasswordInput())
+class PasswordChangeForm(auth_forms.PasswordChangeForm,
+                         metaclass=FormConfigMetaClass):
+    new_password1 = CharField(label='New password',
+                              strip=False,
+                              widget=PasswordInput())
+    new_password2 = CharField(label='Confirm New Password',
+                              strip=False,
+                              widget=PasswordInput())
     old_password = CharField(strip=False, widget=PasswordInput())
     security_question = CharField(disabled=True)
     security_answer = CharField(max_length=4000, widget=PasswordInput())
@@ -176,10 +177,9 @@ class UserDetailsUpdateForm(ModelForm):
     #         'readonly': 'readonly'
     #     }))
 
-    security_answer_repeat = CharField(
-        required=True,
-        label="Re-enter Security Answer",
-        widget=PasswordInput(render_value=True))
+    security_answer_repeat = CharField(required=True,
+                                       label="Re-enter Security Answer",
+                                       widget=PasswordInput(render_value=True))
 
     def __init__(self, *args, **kwargs):
         super(UserDetailsUpdateForm, self).__init__(*args, **kwargs)
@@ -262,8 +262,8 @@ class UserDetailsUpdateForm(ModelForm):
 
 
 class LoginForm(auth_forms.AuthenticationForm, metaclass=FormConfigMetaClass):
-    username = auth_forms.UsernameField(
-        widget=TextInput(attrs={'autofocus': True}))
+    username = auth_forms.UsernameField(widget=TextInput(
+        attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)
     error_messages = {
         'invalid_login':
@@ -316,8 +316,9 @@ class PhoneNumberForm(ModelForm):
 
 class AlternativeEmailsForm(ModelForm):
 
-    notifications = CharField(
-        required=False, widget=Select(choices=((True, 'Yes'), (False, 'No'))))
+    notifications = CharField(required=False,
+                              widget=Select(choices=((True, 'Yes'), (False,
+                                                                     'No'))))
 
     def __init__(self, *args, **kwargs):
         super(AlternativeEmailsForm, self).__init__(*args, **kwargs)
@@ -341,10 +342,10 @@ class AlternativeEmailsForm(ModelForm):
 
 class PersonalEmailForm(ModelForm):
     PRIMARY = 'PRIMARY'
-    notifications = CharField(
-        required=False,
-        widget=Select(
-            choices=((PRIMARY, 'Primary'), (True, 'Yes'), (False, 'No'))))
+    notifications = CharField(required=False,
+                              widget=Select(choices=((PRIMARY, 'Primary'),
+                                                     (True, 'Yes'), (False,
+                                                                     'No'))))
 
     def __init__(self, *args, **kwargs):
         super(PersonalEmailForm, self).__init__(*args, **kwargs)
@@ -365,13 +366,12 @@ class PersonalEmailForm(ModelForm):
         instance = super().save(commit=False)
         if instance.is_primary:
             instance.user.username = instance.email
-            instance.user.email =  instance.email
+            instance.user.email = instance.email
             instance.user.save()
         if commit:
             instance.save()
 
         return instance
-
 
     class Meta:
         model = models.PersonalEmail
@@ -412,11 +412,11 @@ class PostCodeSearchForm(Form):
 
 class ManualAddressEntryForm(Form):
     country = CharField(widget=TextInput({'readonly': 'readonly'}))
-    address = CharField(
-        max_length=4000, widget=Textarea({
-            'rows': 6,
-            'cols': 50
-        }))
+    address = CharField(max_length=4000,
+                        widget=Textarea({
+                            'rows': 6,
+                            'cols': 50
+                        }))
 
     def clean_address(self):
         return validators.validate_manual_address(self)
