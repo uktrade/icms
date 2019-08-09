@@ -1,9 +1,9 @@
 import logging
 
 from django.urls import reverse_lazy
-from django_filters import BooleanFilter, CharFilter, ChoiceFilter, DateFilter
+from django_filters import CharFilter
 from web.base.forms import FilterSet, ModelForm, ReadOnlyFormMixin, widgets
-from web.base.forms.fields import CharField, ChoiceField, DisplayField
+# from web.base.forms.fields import ChoiceField, DisplayField
 from web.base.views import (SecureCreateView, SecureDetailView,
                             SecureFilteredListView, SecureUpdateView)
 from web.models import Exporter
