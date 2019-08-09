@@ -16,7 +16,7 @@ pytest-flake8 = "*"
 pyparsing = ">2.4.1"
 
 [packages]
-django = "==2.2.3"
+django = "==2.2.4"
 django-environ = "*"
 django-recaptcha = "*"
 django-ses = "*"
