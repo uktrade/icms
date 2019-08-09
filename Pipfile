@@ -13,9 +13,10 @@ flake8 = "*"
 pytest-xdist = "*"
 pytest-mock = "*"
 pytest-flake8 = "*"
+pyparsing = ">2.4.1"
 
 [packages]
-django = "==2.2.2"
+django = "==2.2.3"
 django-environ = "*"
 django-recaptcha = "*"
 django-ses = "*"
