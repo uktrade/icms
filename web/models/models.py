@@ -38,6 +38,21 @@ class Address(models.Model):
 
 
 class User(AbstractUser):
+
+    # Statuses
+    NEW = "NEW"
+    BLOCKED = "BLOCKED"
+    SUSPENDED = "SUSPENDED"
+    CANCELLED = "CANCELLED"
+    ACTIVE = "ACTIVE"
+    STATUSES = ((NEW, 'NEW'), (BLOCKED, "Blocked"), (SUSPENDED, "Suspended"),
+                (CANCELLED, "Cancelled"), (ACTIVE, 'ACTIVE'))
+
+    # Password disposition
+    TEMPORARY = 'TEMPORARY'
+    FULL = 'FULL'
+    PASSWORD_DISPOSITION = ((TEMPORARY, 'Temporary'), (FULL, 'Full'))
+
     title = models.CharField(max_length=20, blank=False, null=True)
     preferred_first_name = models.CharField(max_length=4000,
                                             blank=True,
@@ -61,6 +76,21 @@ class User(AbstractUser):
     share_contact_details = models.BooleanField(blank=False,
                                                 null=False,
                                                 default=False)
+    account_status = models.CharField(max_length=20,
+                                      choices=STATUSES,
+                                      blank=False,
+                                      null=False,
+                                      default=NEW)
+    account_status_by = models.ForeignKey("self",
+                                          on_delete=models.SET_NULL,
+                                          blank=True,
+                                          null=True,
+                                          related_name='users_changed')
+    account_status_date = models.DateField(blank=True, null=True)
+    password_disposition = models.CharField(max_length=20,
+                                            choices=PASSWORD_DISPOSITION,
+                                            blank=True,
+                                            null=True)
 
     # work_address = models.ForeignKey(
     #     Address, on_delete=models.SET_NULL, blank=False, null=True)
