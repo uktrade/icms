@@ -4,7 +4,8 @@ from web.models import User
 
 def create_default_user(apps, schema_editor):
     # will force to reset password at login
-    user = User(username='admin',
+    user = User(id=-1, 
+                username='admin',
                 is_superuser=False,
                 is_staff=False,
                 title='Dr.',
