@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import (AbstractUser, Group)
 from viewflow.models import Process
-from .managers import AccessRequestQuerySet, ProcessQuerySet, ImporterManager
+from .managers import AccessRequestQuerySet, ProcessQuerySet
 from .mixins import Archivable, Sortable
 
 
@@ -682,22 +682,15 @@ class Importer(Archivable, BaseTeam):
     NON_EUROPEAN = "O"
     REGIONS = ((UK, "UK"), (EUROPE, 'Europe'), (NON_EUROPEAN, 'Non-European'))
 
-    objects = ImporterManager()
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type = models.CharField(max_length=20,
                             choices=TYPES,
                             blank=False,
                             null=False)
-    #  Individual importer's title
-    title = models.CharField(max_length=20, blank=True, null=True)
     # Individual's or organisation's name
-    name = models.CharField(max_length=4000, blank=False, null=False)
-    # Individual importer's last name
-    last_name = models.CharField(max_length=4000, blank=False, null=False)
+    name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
     eori_number = models.CharField(max_length=20, blank=True, null=True)
-    email = models.EmailField(max_length=254, blank=False, null=False)
-    phone = models.CharField(max_length=60, blank=False, null=False)
     region_origin = models.CharField(max_length=1,
                                      choices=REGIONS,
                                      blank=True,
@@ -710,6 +703,11 @@ class Importer(Archivable, BaseTeam):
                                       blank=True,
                                       null=True,
                                       related_name='agents')
+    user = models.ForeignKey(User,
+                             on_delete=models.SET_NULL,
+                             blank=True,
+                             null=True,
+                             related_name='own_importers')
 
     def is_agent(self):
         return self.main_importer is not None

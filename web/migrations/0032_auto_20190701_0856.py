@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0031_default_user'),
+        ('web', '0029_obsoletecalibre_obsoletecalibregroup'),
     ]
 
     operations = [

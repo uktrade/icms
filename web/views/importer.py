@@ -64,11 +64,8 @@ class ImporterEditForm(ModelForm):
 
     class Meta:
         model = Importer
-        fields = [
-            'type', 'title', 'name', 'last_name', 'email', 'phone',
-            'region_origin', 'comments'
-        ]
-        labels = {'type': 'Entity Type', 'first_name': 'Forename'}
+        fields = ['type', 'name', 'region_origin', 'comments']
+        labels = {'type': 'Entity Type'}
         config = _filter_config
 
 

@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0025_country_groups_data'),
+        ('web', '0024_auto_20190624_1100'),
     ]
 
     operations = [

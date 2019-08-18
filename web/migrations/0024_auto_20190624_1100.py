@@ -6,24 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0023_countries_data'),
+        ('web', '0022_auto_20190624_0944'),
     ]
 
     operations = [
         migrations.AlterModelOptions(
             name='country',
-            options={'ordering': ('name',)},
+            options={'ordering': ('name', )},
         ),
         migrations.CreateModel(
             name='CountryGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id',
+                 models.AutoField(auto_created=True,
+                                  primary_key=True,
+                                  serialize=False,
+                                  verbose_name='ID')),
                 ('name', models.CharField(max_length=4000)),
-                ('comments', models.CharField(blank=True, max_length=4000, null=True)),
-                ('countries', models.ManyToManyField(blank=True, to='web.Country')),
+                ('comments',
+                 models.CharField(blank=True, max_length=4000, null=True)),
+                ('countries',
+                 models.ManyToManyField(blank=True, to='web.Country')),
             ],
             options={
-                'ordering': ('name',),
+                'ordering': ('name', ),
             },
         ),
     ]

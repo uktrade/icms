@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0020_commodity_groups_data'),
+        ('web', '0016_auto_20190619_1055'),
     ]
 
     operations = [
