@@ -687,7 +687,7 @@ class Importer(Archivable, BaseTeam):
                             choices=TYPES,
                             blank=False,
                             null=False)
-    # Individual's or organisation's name
+    # Organisation's name
     name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
     eori_number = models.CharField(max_length=20, blank=True, null=True)
