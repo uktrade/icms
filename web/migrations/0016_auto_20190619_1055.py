@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0011_update_proxy_permissions'),
-        ('web', '0015_templates'),
+        ('web', '0014_auto_20190529_1454'),
     ]
 
     operations = [
