@@ -71,7 +71,6 @@ class ContactsManagementMixin(PostActionMixin):
         role_members = self._fetch_role_members()
         return {
             'members': members,
-            'addresses': param('addresses'),
             'roles': roles,
             'role_members': role_members
         }
@@ -84,7 +83,6 @@ class ContactsManagementMixin(PostActionMixin):
         # TODO: might be slow, use Django api to fetch related efficientl
         return {
             'members': object.members.all(),
-            'addresses': object.addresses.all(),
             'roles': roles,
             'role_members': self._get_role_members(roles)
         }
@@ -95,7 +93,6 @@ class ContactsManagementMixin(PostActionMixin):
         form_data = self.get_form(self.request.POST, pk).data
         put('form', form_data)
         put('members', param('members'))
-        put('addresses', param('addresses'))
         put('role_members', self._extract_role_members())
         if role_id:
             put('add_to_role', role_id)
@@ -121,7 +118,6 @@ class ContactsManagementMixin(PostActionMixin):
             'form': form,
             'contacts': {
                 'members': new_members,
-                'addresses': _pop('addresses'),
                 'roles': self._get_roles(form.instance),
                 'role_members': role_members
             }
