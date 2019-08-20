@@ -5,38 +5,6 @@ from .managers import AccessRequestQuerySet, ProcessQuerySet
 from .mixins import Archivable, Sortable
 
 
-class Address(models.Model):
-    """Address for users and organisations"""
-
-    # Statuses
-    DRAFT = "DRAFT"
-    OVERSEAS = "OVERSEAS"
-    VALID = "VALID"
-    STATUSES = ((DRAFT, "Draft"), (OVERSEAS, "Overseas"), (VALID, "Valid"))
-
-    # Entry type
-    MANUAL = "MANUAL"
-    SEARCH = "SEARCH"
-    EMPTY = "EMPTY"
-    ENTRY_TYPES = ((MANUAL, 'Manual'), (SEARCH, 'Search'), (EMPTY, 'Empty'))
-
-    entry_type = models.CharField(max_length=10,
-                                  blank=False,
-                                  null=False,
-                                  default=EMPTY)
-    postcode_zip_full = models.CharField(max_length=30, blank=True, null=True)
-    postcode_zip_compressed = models.CharField(max_length=30,
-                                               blank=True,
-                                               null=True)
-    address = models.CharField(max_length=4000, blank=False, null=True)
-    status = models.CharField(max_length=12,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False,
-                              default=DRAFT)
-    created_date = models.DateField(auto_now_add=True, blank=False, null=False)
-
-
 class User(AbstractUser):
 
     # Statuses
@@ -92,9 +60,6 @@ class User(AbstractUser):
                                             blank=True,
                                             null=True)
 
-    # work_address = models.ForeignKey(
-    #     Address, on_delete=models.SET_NULL, blank=False, null=True)
-
     class Display:
         display = [('title', 'first_name', 'last_name'),
                    ('organisation', 'email'), 'work_address']
@@ -125,7 +90,6 @@ class Role(Group):
 class BaseTeam(models.Model):
     roles = models.ManyToManyField(Role)
     members = models.ManyToManyField(User)
-    addresses = models.ManyToManyField(Address)
 
     class Meta:
         abstract = True
@@ -670,6 +634,25 @@ class ObsoleteCalibre(Archivable, models.Model):
         ordering = ('order', )
 
 
+class Office(models.Model):
+    """Office for importer/exporters"""
+
+    # Entry type
+    MANUAL = "MANUAL"
+    SEARCH = "SEARCH"
+    EMPTY = "EMPTY"
+    ENTRY_TYPES = ((MANUAL, 'Manual'), (SEARCH, 'Search'), (EMPTY, 'Empty'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    postcode = models.CharField(max_length=30, blank=True, null=True)
+    address = models.CharField(max_length=4000, blank=False, null=True)
+    eori_number = models.CharField(max_length=20, blank=True, null=True)
+    address_entry_type = models.CharField(max_length=10,
+                                          blank=False,
+                                          null=False,
+                                          default=EMPTY)
+
+
 class Importer(Archivable, BaseTeam):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
@@ -696,7 +679,7 @@ class Importer(Archivable, BaseTeam):
                                      blank=True,
                                      null=True)
     comments = models.CharField(max_length=4000, blank=True, null=True)
-    offices = models.ManyToManyField(Address, related_name="importers")
+    offices = models.ManyToManyField(Office)
     # Having a main importer means importer is an agent
     main_importer = models.ForeignKey("self",
                                       on_delete=models.SET_NULL,
@@ -730,7 +713,7 @@ class Exporter(Archivable, BaseTeam):
     name = models.CharField(max_length=4000, blank=False, null=False)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
     comments = models.CharField(max_length=4000, blank=True, null=True)
-    offices = models.ManyToManyField(Address, related_name="exporters")
+    offices = models.ManyToManyField(Office)
     # Having a main exporter means exporter is an agent
     main_exporter = models.ForeignKey("self",
                                       on_delete=models.SET_NULL,
