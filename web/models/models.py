@@ -637,7 +637,7 @@ class ObsoleteCalibre(Archivable, models.Model):
 class Office(models.Model):
     """Office for importer/exporters"""
 
-    # Entry type
+    # Address Entry type
     MANUAL = "MANUAL"
     SEARCH = "SEARCH"
     EMPTY = "EMPTY"
@@ -730,3 +730,76 @@ class Exporter(Archivable, BaseTeam):
         edit = True
         view = True
         archive = True
+
+
+class FirearmsAuthority(models.Model):
+    DEACTIVATED_FIREARMS = 'DEACTIVATED'
+    FIREARMS = 'FIREARMS'
+    REGISTERED_FIREARMS_DEALER = 'RFD'
+    SHOTGUN = 'SHOTGUN'
+
+    # Address Entry type
+    MANUAL = "MANUAL"
+    SEARCH = "SEARCH"
+    ENTRY_TYPES = ((MANUAL, 'Manual'), (SEARCH, 'Search'))
+
+    CERTIFICATE_TYPES = ((DEACTIVATED_FIREARMS, 'Deactivation Certificate'),
+                         (FIREARMS, 'Firearms Certificate'),
+                         (REGISTERED_FIREARMS_DEALER,
+                          'Registered Firearms Dealer Certificate'),
+                         (SHOTGUN, 'Shotgun Certificate'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    reference = models.CharField(max_length=50, blank=False, null=True)
+    certificate_type = models.CharField(max_length=20,
+                                        choices=CERTIFICATE_TYPES,
+                                        blank=False,
+                                        null=False)
+    postcode = models.CharField(max_length=30, blank=True, null=True)
+    address = models.CharField(max_length=300, blank=False, null=False)
+    address_entry_type = models.CharField(max_length=10,
+                                          blank=False,
+                                          null=False,
+                                          default=MANUAL)
+    start_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=False, null=False)
+    further_details = models.CharField(max_length=4000, blank=True, null=True)
+    issuing_constabulary = models.ForeignKey(Constabulary,
+                                             on_delete=models.PROTECT,
+                                             blank=False,
+                                             null=False)
+    linked_offices = models.ManyToManyField(Office)
+    importer = models.ForeignKey(Importer,
+                                 on_delete=models.PROTECT,
+                                 blank=False,
+                                 null=False,
+                                 related_name='firearms_authorities')
+
+
+class Section5Authority(models.Model):
+    # Address Entry type
+    MANUAL = "MANUAL"
+    SEARCH = "SEARCH"
+    ENTRY_TYPES = ((MANUAL, 'Manual'), (SEARCH, 'Search'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    reference = models.CharField(max_length=50, blank=False, null=True)
+    postcode = models.CharField(max_length=30, blank=True, null=True)
+    address = models.CharField(max_length=300, blank=False, null=False)
+    address_entry_type = models.CharField(max_length=10,
+                                          blank=False,
+                                          null=False,
+                                          default=MANUAL)
+    start_date = models.DateField(blank=False, null=False)
+    end_date = models.DateField(blank=False, null=False)
+    further_details = models.CharField(max_length=4000, blank=True, null=True)
+    issuing_constabulary = models.ForeignKey(Constabulary,
+                                             on_delete=models.PROTECT,
+                                             blank=False,
+                                             null=False)
+    linked_offices = models.ManyToManyField(Office)
+    importer = models.ForeignKey(Importer,
+                                 on_delete=models.PROTECT,
+                                 blank=False,
+                                 null=False,
+                                 related_name='section5_authorities')
