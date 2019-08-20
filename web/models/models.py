@@ -793,10 +793,6 @@ class Section5Authority(models.Model):
     start_date = models.DateField(blank=False, null=False)
     end_date = models.DateField(blank=False, null=False)
     further_details = models.CharField(max_length=4000, blank=True, null=True)
-    issuing_constabulary = models.ForeignKey(Constabulary,
-                                             on_delete=models.PROTECT,
-                                             blank=False,
-                                             null=False)
     linked_offices = models.ManyToManyField(Office)
     importer = models.ForeignKey(Importer,
                                  on_delete=models.PROTECT,
