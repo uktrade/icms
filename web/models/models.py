@@ -777,7 +777,7 @@ class AccessRequest(models.Model):
     # Access Request response
     APPROVED = 'APPROVED'
     REFUSED = 'REFUSED'
-    RESPONSES = ((APPROVED, 'Approved'), (REFUSED, 'REFUSED'))
+    RESPONSES = ((APPROVED, 'Approved'), (REFUSED, 'Refused'))
 
     objects = AccessRequestQuerySet.as_manager()
     reference = models.CharField(max_length=50, blank=False, null=False)
@@ -847,13 +847,54 @@ class AccessRequest(models.Model):
             return "Exporter Access Request"
 
 
-#  class ApprovalRequst(models.Model):
-#      """
-#      Approval request for submitted requests.
-#      Approval requests are requested from importer/exporter
-#      contacts by case officers
-#      """
-#      pass
+class ApprovalRequest(models.Model):
+    """
+    Approval request for submitted requests.
+    Approval requests are requested from importer/exporter
+    contacts by case officers
+    """
+
+    # Approval Request response options
+    APPROVE = 'APPROVE'
+    REFUSE = 'REFUSE'
+    RESPONSE_OPTIONS = ((APPROVE, 'Approve'), (REFUSE, 'Refuse'))
+
+    # Approval Request status
+    DRAFT = 'DRAFT'
+    COMPLETED = 'COMPLETED'
+    STATUSES = ((DRAFT, 'DRAFT'), (REFUSE, 'OPEN'))
+
+    access_request = models.ForeignKey(AccessRequest,
+                                       on_delete=models.CASCADE,
+                                       blank=False,
+                                       null=False)
+    status = models.CharField(max_length=20,
+                              choices=STATUSES,
+                              blank=True,
+                              null=True)
+    request_date = models.DateTimeField(blank=True, null=True)
+    requested_by = models.ForeignKey(User,
+                                     on_delete=models.CASCADE,
+                                     blank=True,
+                                     null=True,
+                                     related_name='approval_requests')
+    requested_from = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='assigned_approval_requests')
+    response = models.CharField(max_length=20,
+                                choices=RESPONSE_OPTIONS,
+                                blank=True,
+                                null=True)
+    response_by = models.ForeignKey(User,
+                                    on_delete=models.CASCADE,
+                                    blank=True,
+                                    null=True,
+                                    related_name='responded_approval_requests')
+    response_date = models.DateTimeField(blank=True, null=True)
+    response_reason = models.CharField(max_length=4000, blank=True, null=True)
 
 
 class AccessRequestProcess(Process):
