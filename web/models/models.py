@@ -201,53 +201,6 @@ class PersonalEmail(Email):
                              related_name='personal_emails')
 
 
-class AccessRequest(models.Model):
-
-    IMPORTER = "IMPORTER"
-    IMPORTER_AGENT = "IMPORTER_AGENT"
-    EXPORTER = "EXPORTER"
-    EXPORTER_AGENT = "EXPORTER_AGENT"
-
-    REQUEST_TYPES = (
-        (IMPORTER, 'Request access to act as an Importer'),
-        (IMPORTER_AGENT, 'Request access to act as an Agent for an Importer'),
-        (EXPORTER, 'Request access to act as an Exporter'),
-        (EXPORTER_AGENT, 'Request access to act as an Agent for an Exporter'),
-    )
-
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='access_requests')
-    request_type = models.CharField(max_length=30,
-                                    choices=REQUEST_TYPES,
-                                    blank=False,
-                                    null=False)
-    organisation_name = models.CharField(max_length=100,
-                                         blank=False,
-                                         null=False)
-    organisation_address = models.CharField(max_length=500,
-                                            blank=False,
-                                            null=False)
-    description = models.CharField(max_length=1000, blank=False, null=False)
-    agent_name = models.CharField(max_length=100, blank=False, null=False)
-    agent_address = models.CharField(max_length=500, blank=False, null=False)
-    objects = AccessRequestQuerySet.as_manager()
-
-    def request_type_verbose(self):
-        return dict(AccessRequest.REQUEST_TYPES)[self.request_type]
-
-    def request_type_short(self):
-        if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
-            return "Import Access Request"
-        else:
-            return "Exporter Access Request"
-
-
-class AccessRequestProcess(Process):
-    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
-    objects = ProcessQuerySet.as_manager()
-
-
 class OutboundEmail(models.Model):
     FAILED = 'FAILED'
     SENT = 'SENT'
@@ -799,3 +752,100 @@ class Section5Authority(models.Model):
                                  blank=False,
                                  null=False,
                                  related_name='section5_authorities')
+
+
+class AccessRequest(models.Model):
+
+    # Request types
+    IMPORTER = "MAIN_IMPORTER_ACCESS"
+    IMPORTER_AGENT = "AGENT_IMPORTER_ACCESS"
+    EXPORTER = "MAIN_EXPORTER_ACCESS"
+    EXPORTER_AGENT = "AGENT_EXPORTER_ACCESS"
+
+    REQUEST_TYPES = (
+        (IMPORTER, 'Request access to act as an Importer'),
+        (IMPORTER_AGENT, 'Request access to act as an Agent for an Importer'),
+        (EXPORTER, 'Request access to act as an Exporter'),
+        (EXPORTER_AGENT, 'Request access to act as an Agent for an Exporter'),
+    )
+
+    # Request status
+    SUBMITTED = 'SUBMITTED'
+    CLOSED = 'CLOSED'
+    STATUSES = ((SUBMITTED, 'Submitted'), (CLOSED, 'Closed'))
+
+    objects = AccessRequestQuerySet.as_manager()
+    reference = models.CharField(max_length=50, blank=False, null=False)
+    request_type = models.CharField(max_length=30,
+                                    choices=REQUEST_TYPES,
+                                    blank=False,
+                                    null=False)
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False,
+                              default=SUBMITTED)
+    organisation_name = models.CharField(max_length=100,
+                                         blank=False,
+                                         null=False)
+    organisation_address = models.CharField(max_length=500,
+                                            blank=False,
+                                            null=False)
+    request_reason = models.CharField(max_length=1000, blank=False, null=True)
+    agent_name = models.CharField(max_length=100, blank=False, null=False)
+    agent_address = models.CharField(max_length=500, blank=False, null=False)
+    submit_datetime = models.DateTimeField(auto_now_add=True,
+                                           blank=False,
+                                           null=False)
+    submitted_by = models.ForeignKey(User,
+                                     on_delete=models.PROTECT,
+                                     blank=False,
+                                     null=False,
+                                     related_name='submitted_access_requests')
+    last_update_datetime = models.DateTimeField(auto_now=True,
+                                                blank=False,
+                                                null=False)
+    last_updated_by = models.ForeignKey(User,
+                                        on_delete=models.PROTECT,
+                                        blank=True,
+                                        null=True,
+                                        related_name='updated_access_requests')
+    closed_datetime = models.DateTimeField(blank=True, null=True)
+    closed_by = models.ForeignKey(User,
+                                  on_delete=models.PROTECT,
+                                  blank=True,
+                                  null=True,
+                                  related_name='closed_access_requests')
+    linked_importer = models.ForeignKey(Importer,
+                                        on_delete=models.PROTECT,
+                                        blank=True,
+                                        null=True,
+                                        related_name='access_requests')
+    linked_exporter = models.ForeignKey(Exporter,
+                                        on_delete=models.PROTECT,
+                                        blank=True,
+                                        null=True,
+                                        related_name='access_requests')
+
+    def request_type_verbose(self):
+        return dict(AccessRequest.REQUEST_TYPES)[self.request_type]
+
+    def request_type_short(self):
+        if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
+            return "Import Access Request"
+        else:
+            return "Exporter Access Request"
+
+
+#  class ApprovalRequst(models.Model):
+#      """
+#      Approval request for submitted requests.
+#      Approval requests are requested from importer/exporter
+#      contacts by case officers
+#      """
+#      pass
+
+
+class AccessRequestProcess(Process):
+    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
+    objects = ProcessQuerySet.as_manager()
