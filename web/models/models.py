@@ -769,10 +769,15 @@ class AccessRequest(models.Model):
         (EXPORTER_AGENT, 'Request access to act as an Agent for an Exporter'),
     )
 
-    # Request status
+    # Access Request status
     SUBMITTED = 'SUBMITTED'
     CLOSED = 'CLOSED'
     STATUSES = ((SUBMITTED, 'Submitted'), (CLOSED, 'Closed'))
+
+    # Access Request response
+    APPROVED = 'APPROVED'
+    REFUSED = 'REFUSED'
+    RESPONSES = ((APPROVED, 'Approved'), (REFUSED, 'REFUSED'))
 
     objects = AccessRequestQuerySet.as_manager()
     reference = models.CharField(max_length=50, blank=False, null=False)
@@ -816,6 +821,11 @@ class AccessRequest(models.Model):
                                   blank=True,
                                   null=True,
                                   related_name='closed_access_requests')
+    response = models.CharField(max_length=20,
+                                choices=RESPONSES,
+                                blank=False,
+                                null=True)
+    response_reason = models.CharField(max_length=4000, blank=True, null=True)
     linked_importer = models.ForeignKey(Importer,
                                         on_delete=models.PROTECT,
                                         blank=True,
