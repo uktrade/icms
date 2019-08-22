@@ -792,8 +792,8 @@ class AccessRequest(models.Model):
                                             blank=False,
                                             null=False)
     request_reason = models.CharField(max_length=1000, blank=False, null=True)
-    agent_name = models.CharField(max_length=100, blank=False, null=False)
-    agent_address = models.CharField(max_length=500, blank=False, null=False)
+    agent_name = models.CharField(max_length=100, blank=False, null=True)
+    agent_address = models.CharField(max_length=500, blank=False, null=True)
     submit_datetime = models.DateTimeField(auto_now_add=True,
                                            blank=False,
                                            null=False)
