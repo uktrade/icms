@@ -790,7 +790,7 @@ class AccessRequest(models.Model):
                                          null=False)
     organisation_address = models.CharField(max_length=500,
                                             blank=False,
-                                            null=False)
+                                            null=True)
     request_reason = models.CharField(max_length=1000, blank=False, null=True)
     agent_name = models.CharField(max_length=100, blank=False, null=True)
     agent_address = models.CharField(max_length=500, blank=False, null=True)

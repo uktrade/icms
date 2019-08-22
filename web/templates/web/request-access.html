@@ -39,7 +39,7 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in request.user.access_requests.importer_requests() %}
+            {% for request in request.user.submitted_access_requests.importer_requests() %}
             <tr data-xfid="f30">
                 <td data-title="Reference" data-xfid="g31"><span id="g31" class="text-widget ">IAR/785</span></td>
                 <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">13-FEB-2019 17:29</span></td>
@@ -85,7 +85,7 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in request.user.access_requests.exporter_requests() %}
+            {% for request in request.user.submitted_access_requests.exporter_requests() %}
             <tr data-xfid="f59">
                 <td data-title="Reference" data-xfid="g60"><span id="g60" class="text-widget ">EAR/379</span></td>
                 <td data-title="Requested Date" data-xfid="g61"><span id="g61" class="text-widget ">15-APR-2019 12:53</span></td>
