@@ -2,11 +2,11 @@ from django.urls import reverse_lazy
 from django_filters import (CharFilter, ChoiceFilter, ModelChoiceFilter,
                             BooleanFilter)
 from web.base.forms import FilterSet, widgets, ModelForm
-from web.base.forms.fields import (DisplayField, CharField)
+from web.base.forms.fields import (DisplayField, CharField, ModelChoiceField)
 from web.base.forms.widgets import Textarea
 from web.base.views import (SecureFilteredListView, SecureCreateView,
                             SecureUpdateView)
-from web.models import (CommodityGroup, Commodity, Unit)
+from web.models import (CommodityType, CommodityGroup, Unit)
 from .filters import _filter_config
 
 
@@ -14,9 +14,9 @@ class CommodityGroupFilter(FilterSet):
     group_type = ChoiceFilter(field_name='group_type',
                               choices=CommodityGroup.TYPES,
                               label='Group Type')
-    commodity_types = ChoiceFilter(field_name='commodity_type',
-                                   choices=Commodity.TYPES,
-                                   label='Commodity Types')
+    commodity_type = ModelChoiceFilter(queryset=CommodityType.objects.all(),
+                                       lookup_expr='icontains',
+                                       label='Commodity Types')
 
     group_code = CharFilter(field_name='group_code',
                             lookup_expr='icontains',
@@ -110,11 +110,12 @@ class CommodityGroupCreateForm(ModelForm):
             Group Code. Category groups will allow you manually include \
             commodities')
 
-    commodity_type = CharField(
-        widget=widgets.Select(choices=Commodity.TYPES),
+    commodity_type = ModelChoiceField(
+        queryset=CommodityType.objects.all(),
         label='Commodity Types',
-        help_text='Please choose what type of commodities this group should \
-        contain')
+        widget=widgets.Select,
+        help_text='Please choose what type of commodities this group \
+        should contain')
 
     class Meta(CommodityGroupEditForm.Meta):
         pass

@@ -344,6 +344,14 @@ class Unit(models.Model):
         return self.description
 
 
+class CommodityType(models.Model):
+    type_code = models.CharField(max_length=20, blank=False, null=False)
+    type = models.CharField(max_length=50, blank=False, null=False)
+
+    def __str__(self):
+        return self.type
+
+
 class Commodity(Archivable, models.Model):
     TEXTILES = 'TEXTILES'
     IRON_STEEL = 'IRON_STEEL'
@@ -354,22 +362,16 @@ class Commodity(Archivable, models.Model):
     PRECIOUS_METAL_STONE = 'PRECIOUS_METAL_STONE'
     OIL_PETROCHEMICALS = 'OIL_PETROCHEMICALS'
 
-    TYPES = ((TEXTILES, 'Textiles'), (IRON_STEEL, 'Iron, Steel and Aluminium'),
-             (FIREARMS_AMMO, 'Firearms and Ammunition'), (WOOD, 'Wood'),
-             (VEHICLES, 'Vehicles'), (WOOD_CHARCOAL, 'Wood Charcoal'),
-             (PRECIOUS_METAL_STONE, 'Precious Metals and Stones'),
-             (OIL_PETROCHEMICALS, 'Oil and Petrochemicals'))
-
     is_active = models.BooleanField(blank=False, null=False, default=True)
     start_datetime = models.DateTimeField(auto_now_add=True,
                                           blank=False,
                                           null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
-    commodity_type = models.CharField(max_length=20,
-                                      choices=TYPES,
-                                      blank=False,
-                                      null=False)
+    commodity_type = models.ForeignKey(CommodityType,
+                                       on_delete=models.PROTECT,
+                                       blank=False,
+                                       null=False)
     validity_start_date = models.DateField(blank=False, null=True)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
@@ -377,7 +379,7 @@ class Commodity(Archivable, models.Model):
 
     @property
     def commodity_type_verbose(self):
-        return dict(Commodity.TYPES)[self.commodity_type]
+        return self.commodity_type.type
 
     class Meta:
         ordering = ('commodity_code', )
@@ -412,10 +414,10 @@ class CommodityGroup(Archivable, models.Model):
     group_description = models.CharField(max_length=4000,
                                          blank=True,
                                          null=True)
-    commodity_type = models.CharField(max_length=20,
-                                      choices=Commodity.TYPES,
-                                      blank=True,
-                                      null=True)
+    commodity_type = models.ForeignKey(CommodityType,
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True)
     unit = models.ForeignKey(Unit,
                              on_delete=models.SET_NULL,
                              blank=True,
@@ -428,7 +430,7 @@ class CommodityGroup(Archivable, models.Model):
 
     @property
     def commodity_type_verbose(self):
-        return dict(Commodity.TYPES)[self.commodity_type]
+        return self.commodity_type.type
 
     class Display:
         display = [
@@ -900,3 +902,79 @@ class ApprovalRequest(models.Model):
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
     objects = ProcessQuerySet.as_manager()
+
+
+class ImportApplicationType(models.Model):
+    is_active = models.BooleanField(blank=False, null=False)
+    type_code = models.CharField(max_length=30, blank=False, null=False)
+    type = models.CharField(max_length=70, blank=False, null=False)
+    sub_type_code = models.CharField(max_length=30, blank=False, null=False)
+    sub_type = models.CharField(max_length=70, blank=False, null=False)
+    licent_type_code = models.CharField(max_length=20, blank=False, null=False)
+    sigl_flag = models.BooleanField(blank=False, null=False)
+    chief_flag = models.BooleanField(blank=False, null=False)
+    chief_license_prefix = models.CharField(max_length=10,
+                                            blank=True,
+                                            null=True)
+    paper_license_flag = models.BooleanField(blank=False, null=False)
+    electronic_license_flag = models.BooleanField(blank=False, null=False)
+    cover_letter_flag = models.BooleanField(blank=False, null=False)
+    cover_letter_schedule_flag = models.BooleanField(blank=False, null=False)
+    category_flag = models.BooleanField(blank=False, null=False)
+    sigl_category_prefix = models.CharField(max_length=100,
+                                            blank=True,
+                                            null=True)
+    chief_category_prefix = models.CharField(max_length=10,
+                                             blank=True,
+                                             null=True)
+    default_license_length_months = models.IntegerField(blank=True, null=True)
+    endorsements_flag = models.BooleanField(blank=False, null=False)
+    default_commodity_desc = models.CharField(max_length=200,
+                                              blank=True,
+                                              null=True)
+    quantity_unlimited_flag = models.BooleanField(blank=False, null=False)
+    unit_list_csv = models.CharField(max_length=200, blank=True, null=True)
+    exp_cert_upload_flag = models.BooleanField(blank=False, null=False)
+    supporting_docs_upload_flag = models.BooleanField(blank=False, null=False)
+    multiple_commodities_flag = models.BooleanField(blank=False, null=False)
+    guidance_file_url = models.CharField(max_length=4000,
+                                         blank=True,
+                                         null=True)
+    license_category_description = models.CharField(max_length=1000,
+                                                    blank=True,
+                                                    null=True)
+
+    usage_auto_category_desc_flag = models.BooleanField(blank=False,
+                                                        null=False)
+    case_checklist_flag = models.BooleanField(blank=False, null=False)
+    importer_printable = models.BooleanField(blank=False, null=False)
+    origin_country_group = models.ForeignKey(
+        CountryGroup,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='application_types_from')
+    consignment_country_group = models.ForeignKey(
+        CountryGroup,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='application_types_to')
+    master_country_group = models.ForeignKey(CountryGroup,
+                                             on_delete=models.PROTECT,
+                                             blank=True,
+                                             null=True,
+                                             related_name='application_types')
+    commodity_type = models.ForeignKey(CommodityType,
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True)
+    declaration_template = models.ForeignKey(Template,
+                                             on_delete=models.PROTECT,
+                                             blank=False,
+                                             null=False)
+    endorsements = models.ManyToManyField(Role)
+    default_commodity_group = models.ForeignKey(CommodityGroup,
+                                                on_delete=models.PROTECT,
+                                                blank=True,
+                                                null=True)
