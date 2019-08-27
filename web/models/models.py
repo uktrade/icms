@@ -969,11 +969,14 @@ class ImportApplicationType(models.Model):
                                        on_delete=models.PROTECT,
                                        blank=True,
                                        null=True)
-    declaration_template = models.ForeignKey(Template,
-                                             on_delete=models.PROTECT,
-                                             blank=False,
-                                             null=False)
-    endorsements = models.ManyToManyField(Role)
+    declaration_template = models.ForeignKey(
+        Template,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name='declaration_application_types')
+    endorsements = models.ManyToManyField(
+        Template, related_name='endorsement_application_types')
     default_commodity_group = models.ForeignKey(CommodityGroup,
                                                 on_delete=models.PROTECT,
                                                 blank=True,
