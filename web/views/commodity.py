@@ -1,12 +1,12 @@
 from django.urls import reverse_lazy
-from django_filters import (CharFilter, ChoiceFilter, DateFilter,
-                            BooleanFilter)
+from django_filters import (CharFilter, DateFilter,
+                            BooleanFilter, ModelChoiceFilter)
 from web.base.forms import ModelForm
 from web.base.forms.fields import DisplayField
 from web.base.forms import FilterSet, widgets
 from web.base.views import (SecureFilteredListView, SecureUpdateView,
                             SecureCreateView)
-from web.models import Commodity
+from web.models import Commodity, CommodityType
 from .filters import _filter_config
 
 
@@ -96,11 +96,9 @@ class CommodityFilter(FilterSet):
                                 widget=widgets.TextInput,
                                 label='Commodity Code')
 
-    commodity_type = ChoiceFilter(field_name='commodity_type',
-                                  choices=Commodity.TYPES,
-                                  lookup_expr='icontains',
-                                  widget=widgets.Select,
-                                  label='Commodity Type')
+    commodity_type = ModelChoiceFilter(queryset=CommodityType.objects.all(),
+                                       lookup_expr='icontains',
+                                       label='Commodity Type')
 
     valid_start = DateFilter(field_name='validity_start_date',
                              widget=widgets.DateInput,

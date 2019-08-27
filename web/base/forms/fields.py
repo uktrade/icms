@@ -24,6 +24,10 @@ class ChoiceField(forms.ChoiceField):
     pass
 
 
+class ModelChoiceField(forms.ModelChoiceField):
+    pass
+
+
 class DisplayField(forms.Field):
     widget = Display
 
