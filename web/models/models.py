@@ -909,7 +909,7 @@ class ImportApplicationType(models.Model):
     type_code = models.CharField(max_length=30, blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False)
     sub_type_code = models.CharField(max_length=30, blank=False, null=False)
-    sub_type = models.CharField(max_length=70, blank=False, null=False)
+    sub_type = models.CharField(max_length=70, blank=True, null=True)
     licent_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField(blank=False, null=False)
