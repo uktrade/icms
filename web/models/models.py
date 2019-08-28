@@ -368,10 +368,6 @@ class Commodity(Archivable, models.Model):
                                           null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
-    commodity_type = models.ForeignKey(CommodityType,
-                                       on_delete=models.PROTECT,
-                                       blank=False,
-                                       null=False)
     validity_start_date = models.DateField(blank=False, null=True)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
@@ -913,11 +909,11 @@ class ImportApplicationType(models.Model):
     licent_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField(blank=False, null=False)
-    chief_license_prefix = models.CharField(max_length=10,
+    chief_licence_prefix = models.CharField(max_length=10,
                                             blank=True,
                                             null=True)
-    paper_license_flag = models.BooleanField(blank=False, null=False)
-    electronic_license_flag = models.BooleanField(blank=False, null=False)
+    paper_licence_flag = models.BooleanField(blank=False, null=False)
+    electronic_licence_flag = models.BooleanField(blank=False, null=False)
     cover_letter_flag = models.BooleanField(blank=False, null=False)
     cover_letter_schedule_flag = models.BooleanField(blank=False, null=False)
     category_flag = models.BooleanField(blank=False, null=False)
@@ -927,7 +923,7 @@ class ImportApplicationType(models.Model):
     chief_category_prefix = models.CharField(max_length=10,
                                              blank=True,
                                              null=True)
-    default_license_length_months = models.IntegerField(blank=True, null=True)
+    default_licence_length_months = models.IntegerField(blank=True, null=True)
     endorsements_flag = models.BooleanField(blank=False, null=False)
     default_commodity_desc = models.CharField(max_length=200,
                                               blank=True,
@@ -940,7 +936,7 @@ class ImportApplicationType(models.Model):
     guidance_file_url = models.CharField(max_length=4000,
                                          blank=True,
                                          null=True)
-    license_category_description = models.CharField(max_length=1000,
+    licence_category_description = models.CharField(max_length=1000,
                                                     blank=True,
                                                     null=True)
 
@@ -981,3 +977,154 @@ class ImportApplicationType(models.Model):
                                                 on_delete=models.PROTECT,
                                                 blank=True,
                                                 null=True)
+
+
+class ImportApplication(models.Model):
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    application_type = models.ForeignKey(ImportApplicationType,
+                                         on_delete=models.PROTECT,
+                                         blank=False,
+                                         null=False)
+    applicant_reference = models.CharField(max_length=500,
+                                           blank=True,
+                                           null=True)
+    submit_datetime = models.DateTimeField(blank=True, null=True)
+    create_datetime = models.DateTimeField(blank=False,
+                                           null=False,
+                                           auto_now_add=True)
+    submitted_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='submitted_import_applications')
+    created_by = models.ForeignKey(User,
+                                   on_delete=models.PROTECT,
+                                   blank=False,
+                                   null=False,
+                                   related_name='created_import_applications')
+    importer = models.ForeignKey(Importer,
+                                 on_delete=models.PROTECT,
+                                 blank=False,
+                                 null=False,
+                                 related_name='import_applications')
+    contact = models.ForeignKey(User,
+                                on_delete=models.PROTECT,
+                                blank=True,
+                                null=True,
+                                related_name='contact_import_applications')
+    origin_country = models.ForeignKey(Country,
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       related_name='import_applications_from')
+    consignment_country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='import_applications_to')
+
+
+class ImportCase(models.Model):
+    IN_PROGRESS = 'IN_PROGRESS'
+    SUBMITTED = 'SUBMITTED'
+    PROCESSING = 'PROCESSING'
+    COMPLETED = 'COMPLETED'
+    WITHDRAWN = 'WITHDRAWN'
+    STOPPED = 'STOPPED'
+    VARIATION_REQUESTED = 'VARIATION_REQUESTED'
+    REVOKED = 'REVOKED'
+    DELETED = 'DELETED'
+
+    STATUSES = ((IN_PROGRESS, 'In Progress'), (SUBMITTED, 'Submitted'),
+                (PROCESSING, 'Processing'), (COMPLETED, 'Completed'),
+                (WITHDRAWN, 'Withdrawn'), (STOPPED, 'Stopped'),
+                (REVOKED, 'Revoked'), (VARIATION_REQUESTED,
+                                       'Variation Requested'), (DELETED,
+                                                                'Deleted'))
+
+    # Chief usage status
+    CANCELLED = 'C'
+    EXHAUSTED = 'E'
+    EXPIRED = 'D'
+    SURRENDERED = 'S'
+    CHIEF_STATUSES = ((CANCELLED, 'Cancelled'), (EXHAUSTED, 'Exhausted'),
+                      (EXPIRED, 'Expired'), (SURRENDERED, 'S'))
+
+    # Decision
+    REFUSE = 'REFUSE'
+    APPROVE = 'APPROVE'
+    DECISIONS = ((REFUSE, 'Refuse'), (APPROVE, 'Approve'))
+
+    application = models.OneToOneField(ImportApplication,
+                                       on_delete=models.PROTECT,
+                                       related_name='case')
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    reference = models.CharField(max_length=50, blank=True, null=True)
+    variation_no = models.IntegerField(blank=False, null=False, default=0)
+    legacy_case_flag = models.BooleanField(blank=False,
+                                           null=False,
+                                           default=False)
+    chief_usage_status = models.CharField(max_length=1,
+                                          choices=CHIEF_STATUSES,
+                                          blank=True,
+                                          null=True)
+    under_appeal_flag = models.BooleanField(blank=False,
+                                            null=False,
+                                            default=False)
+    decision = models.CharField(max_length=10,
+                                choices=DECISIONS,
+                                blank=True,
+                                null=True)
+    variation_decision = models.CharField(max_length=10,
+                                          choices=DECISIONS,
+                                          blank=True,
+                                          null=True)
+    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    variation_refuse_reason = models.CharField(max_length=4000,
+                                               blank=True,
+                                               null=True)
+    issue_date = models.DateField(blank=True, null=True)
+    licence_start_date = models.DateField(blank=True, null=True)
+    licence_end_date = models.DateField(blank=True, null=True)
+    licence_extended_flag = models.BooleanField(blank=False,
+                                                null=False,
+                                                default=False)
+    last_update_datetime = models.DateTimeField(blank=False,
+                                                null=False,
+                                                auto_now=True)
+    last_updated_by = models.ForeignKey(User,
+                                        on_delete=models.PROTECT,
+                                        blank=False,
+                                        null=False,
+                                        related_name='updated_import_cases')
+
+
+class CaseConstabularyEmail(models.Model):
+
+    OPEN = 'OPEN'
+    CLOSED = 'CLOSED'
+    DRAFT = 'DRAFT'
+    STATUSES = ((OPEN, 'Open'), (CLOSED, 'Closed'), (DRAFT, 'Draft'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    case = models.ForeignKey(ImportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
+    status = models.CharField(max_length=30,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    email_cc_address_list = models.CharField(max_length=4000,
+                                             blank=True,
+                                             null=True)
+    email_subject = models.CharField(max_length=100, blank=True, null=True)
+    email_body = models.CharField(max_length=4000, blank=True, null=True)
+    email_sent_datetime = models.DateTimeField(blank=True, null=True)
+    email_closed_datetime = models.DateTimeField(blank=True, null=True)
