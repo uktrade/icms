@@ -1128,3 +1128,40 @@ class CaseConstabularyEmail(models.Model):
     email_body = models.CharField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
+
+
+class ImportCaseVariation(models.Model):
+
+    OPEN = 'OPEN'
+    DRAFT = 'DRAFT'
+    CANCELLED = 'CANCELLED'
+    REJECTED = 'REJECTED'
+    ACCEPTED = 'ACCEPTED'
+    WITHDRAWN = 'WITHDRAWN'
+
+    STATUSES = ((DRAFT, 'Draft'), (OPEN, 'Open'), (CANCELLED, 'Cancelled'),
+                (REJECTED, 'Rejected'), (ACCEPTED, 'Accepted'), (WITHDRAWN,
+                                                                 'Withdrawn'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    case = models.ForeignKey(ImportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
+    extension_flag = models.BooleanField(blank=False,
+                                         null=False,
+                                         default=False)
+    requested_date = models.DateField(blank=True, null=True, auto_now_add=True)
+    requested_by = models.ForeignKey(User,
+                                     on_delete=models.PROTECT,
+                                     blank=True,
+                                     null=True)
+    what_varied = models.CharField(max_length=4000, blank=True, null=True)
+    why_varied = models.CharField(max_length=4000, blank=True, null=True)
+    when_varied = models.DateField(blank=True, null=True)
+    reject_reason = models.CharField(max_length=4000, blank=True, null=True)
+    closed_date = models.DateField(blank=True, null=True)
