@@ -1171,3 +1171,32 @@ class ImportCaseVariation(models.Model):
     when_varied = models.DateField(blank=True, null=True)
     reject_reason = models.CharField(max_length=4000, blank=True, null=True)
     closed_date = models.DateField(blank=True, null=True)
+
+
+class ImportCaseNote(models.Model):
+
+    DRAFT = 'DRAFT'
+    DELETED = 'DELETED'
+    COMPLETED = 'COMPLETED'
+    STATUSES = ((DRAFT, 'Draft'), (DELETED, 'Deleted'), (COMPLETED,
+                                                         'Completed'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    note = models.TextField(blank=True, null=True)
+    case = models.ForeignKey(ImportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
+    create_datetime = models.DateTimeField(blank=False,
+                                           null=False,
+                                           auto_now_add=True)
+    created_by = models.ForeignKey(User,
+                                   on_delete=models.PROTECT,
+                                   blank=False,
+                                   null=False,
+                                   related_name='created_import_case_notes')
