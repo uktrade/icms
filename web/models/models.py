@@ -1009,6 +1009,12 @@ class ImportApplication(models.Model):
                                  blank=False,
                                  null=False,
                                  related_name='import_applications')
+    importer_office = models.ForeignKey(
+        Office,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=True,
+        related_name='office_import_applications')
     contact = models.ForeignKey(User,
                                 on_delete=models.PROTECT,
                                 blank=True,
