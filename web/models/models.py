@@ -1130,8 +1130,9 @@ class CaseConstabularyEmail(models.Model):
     email_cc_address_list = models.CharField(max_length=4000,
                                              blank=True,
                                              null=True)
-    email_subject = models.CharField(max_length=100, blank=True, null=True)
-    email_body = models.CharField(max_length=4000, blank=True, null=True)
+    email_subject = models.CharField(max_length=100, blank=False, null=True)
+    email_body = models.CharField(max_length=4000, blank=False, null=True)
+    email_response = models.CharField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
 
