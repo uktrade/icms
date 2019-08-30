@@ -1262,3 +1262,45 @@ class ImportFurtherInformationRequest(models.Model):
                              on_delete=models.PROTECT,
                              blank=False,
                              null=False)
+
+
+class ImportUpdateRequest(models.Model):
+    DRAFT = 'DRAFT'
+    OPEN = 'OPEN'
+    CLOSED = 'CLOSED'
+    UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'
+    RESPONDED = 'RESPONDED'
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=30, blank=False, null=False)
+    request_subject = models.CharField(max_length=100, blank=False, null=True)
+    request_detail = models.CharField(max_length=4000, blank=False, null=True)
+    email_cc_address_list = models.CharField(max_length=4000,
+                                             blank=True,
+                                             null=True)
+    response_detail = models.CharField(max_length=4000, blank=False, null=True)
+    request_date = models.DateField(blank=True, null=True)
+    requested_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='requested_import_application_updates')
+    response_date = models.DateField(blank=True, null=True)
+    response_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='responded_import_application_updates')
+    closed_date = models.DateField(blank=True, null=True)
+    closed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='closed_import_application_updates')
+    case = models.ForeignKey(ImportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
