@@ -1201,3 +1201,64 @@ class ImportCaseNote(models.Model):
                                    blank=False,
                                    null=False,
                                    related_name='created_import_case_notes')
+
+
+class ImportFurtherInformationRequest(models.Model):
+    """
+    Further information requests for import cases
+    requested from applicant by case officers
+    """
+
+    DRAFT = 'DRAFT'
+    CLOSED = 'CLOSED'
+    DELETED = 'DELETED'
+    OPEN = 'OPEN'
+    RESPONDED = 'RESPONDED'
+
+    STATUSES = ((DRAFT, 'Draft'), (CLOSED, 'CLOSED'), (DELETED, 'Deleted'),
+                (OPEN, 'Open'), (RESPONDED, 'Responded'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    request_subject = models.CharField(max_length=100, blank=False, null=True)
+    request_detail = models.CharField(max_length=4000, blank=False, null=True)
+    email_cc_address_list = models.CharField(max_length=4000,
+                                             blank=True,
+                                             null=True)
+    requested_date = models.DateField(blank=True, null=True, auto_now_add=True)
+    response_detail = models.CharField(max_length=4000, blank=False, null=True)
+    response_date = models.DateField(blank=True, null=True)
+    requested_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='requested_further_import_information')
+    response_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='responded_import_information_requests')
+    closed_date = models.DateField(blank=True, null=True)
+    closed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='closed_import_information_requests')
+    deleted_date = models.DateField(blank=True, null=True)
+    deleted_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='deleted_import_information_requests')
+    case = models.ForeignKey(ImportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
