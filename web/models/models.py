@@ -1472,3 +1472,40 @@ class ExportCase(models.Model):
                                         blank=False,
                                         null=False,
                                         related_name='updated_export_cases')
+
+
+class ExportCaseVariation(models.Model):
+
+    DRAFT = 'DRAFT'
+    OPEN = 'OPEN'
+    DELETED = 'DELETED'
+    CANCELLED = 'CANCELLED'
+    CLOSED = 'CLOSED'
+
+    STATUSES = ((DRAFT, 'Draft'), (OPEN, 'Open'), (DELETED, 'Deleted'),
+                (CANCELLED, 'Cancelled'), (CLOSED, 'Closed'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    case = models.ForeignKey(ExportCase,
+                             on_delete=models.PROTECT,
+                             blank=False,
+                             null=False)
+    variation_reason = models.CharField(max_length=4000, blank=True, null=True)
+    opened_datetime = models.DateTimeField(blank=True,
+                                           null=True,
+                                           auto_now_add=True)
+    closed_datetime = models.DateTimeField(blank=True, null=True)
+    opened_by = models.ForeignKey(User,
+                                  on_delete=models.PROTECT,
+                                  blank=True,
+                                  null=True,
+                                  related_name='opened_export_variations')
+    closed_by = models.ForeignKey(User,
+                                  on_delete=models.PROTECT,
+                                  blank=True,
+                                  null=True,
+                                  related_name='closed_export_variations')
