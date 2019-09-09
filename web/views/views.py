@@ -31,14 +31,14 @@ def home(request):
     return render(request, 'web/home.html')
 
 
-def generate_temp_password(length=7):
+def generate_temp_password(length=8):
     """
     Generates a random alphanumerical password of given length.
-    Default length is 7
+    Default length is 8
     """
     return ''.join(random.SystemRandom().choices(string.ascii_letters +
                                                  string.digits,
-                                                 k=7))
+                                                 k=length))
 
 
 def update_password(request):
