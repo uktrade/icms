@@ -1,4 +1,5 @@
 import random
+import string
 import logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
@@ -30,6 +31,16 @@ def home(request):
     return render(request, 'web/home.html')
 
 
+def generate_temp_password(length=7):
+    """
+    Generates a random alphanumerical password of given length.
+    Default length is 7
+    """
+    return ''.join(random.SystemRandom().choices(string.ascii_letters +
+                                                 string.digits,
+                                                 k=7))
+
+
 def update_password(request):
     form = forms.PasswordChangeForm(
         request.user,
@@ -54,8 +65,7 @@ def reset_password(request):
         user = models.User.objects.get(username=login_id)
         form = forms.ResetPasswordSecondForm(user, request.POST or None)
         if form.is_valid():
-            # TODO: Update temp password generation
-            temp_pass = random.randint(1000, 1000000)
+            temp_pass = generate_temp_password()
             user.set_password(temp_pass)
             user.register_complete = False
             user.save()
@@ -120,17 +130,15 @@ def register(request):
     captcha_form = forms.CaptchaForm(request.POST or None)
     if form.is_valid() and captcha_form.is_valid():
         user = form.instance
-        # TODO: Update temp password generation
-        temp_pass = random.randint(1000, 1000000)
+        temp_pass = generate_temp_password()
         user.set_password(temp_pass)
         user.username = user.email
         user.save()
         user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
-        models.PersonalEmail(
-            user=user,
-            email=user.email,
-            is_primary=True,
-            portal_notifications=True).save()
+        models.PersonalEmail(user=user,
+                             email=user.email,
+                             is_primary=True,
+                             portal_notifications=True).save()
         notify.register(request, user, temp_pass)
         login(request, user)
         return redirect('set-password')
@@ -177,10 +185,12 @@ def init_user_details_forms(request, action):
             # personal_emails_initial = form_utils.remove_from_session(
             #     request, 'personal_emails_formset')
 
-    details_form = forms.UserDetailsUpdateForm(
-        data, initial=details_initial, instance=user)
-    phones_formset = new_user_phones_formset(
-        request, data=data, initial=phones_initial)
+    details_form = forms.UserDetailsUpdateForm(data,
+                                               initial=details_initial,
+                                               instance=user)
+    phones_formset = new_user_phones_formset(request,
+                                             data=data,
+                                             initial=phones_initial)
     alternative_emails_formset = new_alternative_emails_formset(
         request, data=data, initial=alternative_emails_initial)
     personal_emails_formset = new_personal_emails_formset(
