@@ -752,6 +752,178 @@ class Section5Authority(models.Model):
                                  related_name='section5_authorities')
 
 
+class VariationRequest(models.Model):
+    """Variation requests for licenses or certificates issued requested by
+    import/export contacts."""
+
+    OPEN = 'OPEN'
+    DRAFT = 'DRAFT'
+    CANCELLED = 'CANCELLED'
+    REJECTED = 'REJECTED'
+    ACCEPTED = 'ACCEPTED'
+    WITHDRAWN = 'WITHDRAWN'
+    DELETED = 'DELETED'
+    CLOSED = 'CLOSED'
+
+    STATUSES = ((DRAFT, 'Draft'), (OPEN, 'Open'), (CANCELLED, 'Cancelled'),
+                (REJECTED, 'Rejected'), (ACCEPTED, 'Accepted'),
+                (WITHDRAWN, 'Withdrawn'), (DELETED, 'Deleted'), (CLOSED,
+                                                                 'Closed'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    extension_flag = models.BooleanField(blank=False,
+                                         null=False,
+                                         default=False)
+    requested_datetime = models.DateTimeField(blank=True,
+                                              null=True,
+                                              auto_now_add=True)
+    requested_by = models.ForeignKey(User,
+                                     on_delete=models.PROTECT,
+                                     blank=True,
+                                     null=True,
+                                     related_name='requested_variations')
+    what_varied = models.CharField(max_length=4000, blank=True, null=True)
+    why_varied = models.CharField(max_length=4000, blank=True, null=True)
+    when_varied = models.DateField(blank=True, null=True)
+    reject_reason = models.CharField(max_length=4000, blank=True, null=True)
+    closed_datetime = models.DateTimeField(blank=True, null=True)
+    closed_by = models.ForeignKey(User,
+                                  on_delete=models.PROTECT,
+                                  blank=True,
+                                  null=True,
+                                  related_name='closed_variations')
+
+
+class CaseNote(models.Model):
+
+    DRAFT = 'DRAFT'
+    DELETED = 'DELETED'
+    COMPLETED = 'COMPLETED'
+    STATUSES = ((DRAFT, 'Draft'), (DELETED, 'Deleted'), (COMPLETED,
+                                                         'Completed'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    note = models.TextField(blank=True, null=True)
+    create_datetime = models.DateTimeField(blank=False,
+                                           null=False,
+                                           auto_now_add=True)
+    created_by = models.ForeignKey(User,
+                                   on_delete=models.PROTECT,
+                                   blank=False,
+                                   null=False,
+                                   related_name='created_import_case_notes')
+
+
+class FurtherInformationRequest(models.Model):
+    """
+    Further information requests for cases requested from
+    applicant by case officers
+    """
+
+    DRAFT = 'DRAFT'
+    CLOSED = 'CLOSED'
+    DELETED = 'DELETED'
+    OPEN = 'OPEN'
+    RESPONDED = 'RESPONDED'
+
+    STATUSES = ((DRAFT, 'Draft'), (CLOSED, 'CLOSED'), (DELETED, 'Deleted'),
+                (OPEN, 'Open'), (RESPONDED, 'Responded'))
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    request_subject = models.CharField(max_length=100, blank=False, null=True)
+    request_detail = models.TextField(blank=False, null=True)
+    email_cc_address_list = models.CharField(max_length=4000,
+                                             blank=True,
+                                             null=True)
+    requested_datetime = models.DateTimeField(blank=True,
+                                              null=True,
+                                              auto_now_add=True)
+    response_detail = models.CharField(max_length=4000, blank=False, null=True)
+    response_datetime = models.DateTimeField(blank=True, null=True)
+    requested_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='requested_further_import_information')
+    response_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='responded_import_information_requests')
+    closed_datetime = models.DateTimeField(blank=True, null=True)
+    closed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='closed_import_information_requests')
+    deleted_datetime = models.DateTimeField(blank=True, null=True)
+    deleted_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='deleted_import_information_requests')
+
+
+class UpdateRequest(models.Model):
+    """Application update requests for import/export cases requested from
+    applicants by case officers"""
+
+    DRAFT = 'DRAFT'
+    OPEN = 'OPEN'
+    CLOSED = 'CLOSED'
+    UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'
+    RESPONDED = 'RESPONDED'
+    DELETED = 'DELETED'
+
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    status = models.CharField(max_length=30, blank=False, null=False)
+    request_subject = models.CharField(max_length=100, blank=False, null=True)
+    request_detail = models.TextField(blank=False, null=True)
+    email_cc_address_list = models.CharField(max_length=4000,
+                                             blank=True,
+                                             null=True)
+    response_detail = models.TextField(blank=False, null=True)
+    request_datetime = models.DateTimeField(blank=True, null=True)
+    requested_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='requested_import_application_updates')
+    response_datetime = models.DateTimeField(blank=True, null=True)
+    response_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='responded_import_application_updates')
+    closed_datetime = models.DateTimeField(blank=True, null=True)
+    closed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='closed_import_application_updates')
+
+
 class AccessRequest(models.Model):
 
     # Request types
@@ -834,6 +1006,8 @@ class AccessRequest(models.Model):
                                         blank=True,
                                         null=True,
                                         related_name='access_requests')
+    further_information_requests = models.ManyToManyField(
+        FurtherInformationRequest)
 
     def request_type_verbose(self):
         return dict(AccessRequest.REQUEST_TYPES)[self.request_type]
@@ -843,6 +1017,11 @@ class AccessRequest(models.Model):
             return "Import Access Request"
         else:
             return "Exporter Access Request"
+
+
+class AccessRequestProcess(Process):
+    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
+    objects = ProcessQuerySet.as_manager()
 
 
 class ApprovalRequest(models.Model):
@@ -895,9 +1074,85 @@ class ApprovalRequest(models.Model):
     response_reason = models.CharField(max_length=4000, blank=True, null=True)
 
 
-class AccessRequestProcess(Process):
-    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
-    objects = ProcessQuerySet.as_manager()
+class ImportCase(models.Model):
+    IN_PROGRESS = 'IN_PROGRESS'
+    SUBMITTED = 'SUBMITTED'
+    PROCESSING = 'PROCESSING'
+    COMPLETED = 'COMPLETED'
+    WITHDRAWN = 'WITHDRAWN'
+    STOPPED = 'STOPPED'
+    VARIATION_REQUESTED = 'VARIATION_REQUESTED'
+    REVOKED = 'REVOKED'
+    DELETED = 'DELETED'
+
+    STATUSES = ((IN_PROGRESS, 'In Progress'), (SUBMITTED, 'Submitted'),
+                (PROCESSING, 'Processing'), (COMPLETED, 'Completed'),
+                (WITHDRAWN, 'Withdrawn'), (STOPPED, 'Stopped'),
+                (REVOKED, 'Revoked'), (VARIATION_REQUESTED,
+                                       'Variation Requested'), (DELETED,
+                                                                'Deleted'))
+
+    # Chief usage status
+    CANCELLED = 'C'
+    EXHAUSTED = 'E'
+    EXPIRED = 'D'
+    SURRENDERED = 'S'
+    CHIEF_STATUSES = ((CANCELLED, 'Cancelled'), (EXHAUSTED, 'Exhausted'),
+                      (EXPIRED, 'Expired'), (SURRENDERED, 'S'))
+
+    # Decision
+    REFUSE = 'REFUSE'
+    APPROVE = 'APPROVE'
+    DECISIONS = ((REFUSE, 'Refuse'), (APPROVE, 'Approve'))
+
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    reference = models.CharField(max_length=50, blank=True, null=True)
+    variation_no = models.IntegerField(blank=False, null=False, default=0)
+    legacy_case_flag = models.BooleanField(blank=False,
+                                           null=False,
+                                           default=False)
+    chief_usage_status = models.CharField(max_length=1,
+                                          choices=CHIEF_STATUSES,
+                                          blank=True,
+                                          null=True)
+    under_appeal_flag = models.BooleanField(blank=False,
+                                            null=False,
+                                            default=False)
+    decision = models.CharField(max_length=10,
+                                choices=DECISIONS,
+                                blank=True,
+                                null=True)
+    variation_decision = models.CharField(max_length=10,
+                                          choices=DECISIONS,
+                                          blank=True,
+                                          null=True)
+    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    variation_refuse_reason = models.CharField(max_length=4000,
+                                               blank=True,
+                                               null=True)
+    issue_date = models.DateField(blank=True, null=True)
+    licence_start_date = models.DateField(blank=True, null=True)
+    licence_end_date = models.DateField(blank=True, null=True)
+    licence_extended_flag = models.BooleanField(blank=False,
+                                                null=False,
+                                                default=False)
+    last_update_datetime = models.DateTimeField(blank=False,
+                                                null=False,
+                                                auto_now=True)
+    last_updated_by = models.ForeignKey(User,
+                                        on_delete=models.PROTECT,
+                                        blank=False,
+                                        null=False,
+                                        related_name='updated_import_cases')
+    variation_requests = models.ManyToManyField(VariationRequest)
+    case_notes = models.ManyToManyField(CaseNote)
+    further_information_requests = models.ManyToManyField(
+        FurtherInformationRequest)
+    update_requests = models.ManyToManyField(UpdateRequest)
+    case_notes = models.ManyToManyField(CaseNote)
 
 
 class ImportApplicationType(models.Model):
@@ -994,6 +1249,11 @@ class ImportApplication(models.Model):
     create_datetime = models.DateTimeField(blank=False,
                                            null=False,
                                            auto_now_add=True)
+    case = models.OneToOneField(ImportCase,
+                                on_delete=models.PROTECT,
+                                related_name='application',
+                                blank=True,
+                                null=True)
     submitted_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -1034,85 +1294,7 @@ class ImportApplication(models.Model):
         related_name='import_applications_to')
 
 
-class ImportCase(models.Model):
-    IN_PROGRESS = 'IN_PROGRESS'
-    SUBMITTED = 'SUBMITTED'
-    PROCESSING = 'PROCESSING'
-    COMPLETED = 'COMPLETED'
-    WITHDRAWN = 'WITHDRAWN'
-    STOPPED = 'STOPPED'
-    VARIATION_REQUESTED = 'VARIATION_REQUESTED'
-    REVOKED = 'REVOKED'
-    DELETED = 'DELETED'
-
-    STATUSES = ((IN_PROGRESS, 'In Progress'), (SUBMITTED, 'Submitted'),
-                (PROCESSING, 'Processing'), (COMPLETED, 'Completed'),
-                (WITHDRAWN, 'Withdrawn'), (STOPPED, 'Stopped'),
-                (REVOKED, 'Revoked'), (VARIATION_REQUESTED,
-                                       'Variation Requested'), (DELETED,
-                                                                'Deleted'))
-
-    # Chief usage status
-    CANCELLED = 'C'
-    EXHAUSTED = 'E'
-    EXPIRED = 'D'
-    SURRENDERED = 'S'
-    CHIEF_STATUSES = ((CANCELLED, 'Cancelled'), (EXHAUSTED, 'Exhausted'),
-                      (EXPIRED, 'Expired'), (SURRENDERED, 'S'))
-
-    # Decision
-    REFUSE = 'REFUSE'
-    APPROVE = 'APPROVE'
-    DECISIONS = ((REFUSE, 'Refuse'), (APPROVE, 'Approve'))
-
-    application = models.OneToOneField(ImportApplication,
-                                       on_delete=models.PROTECT,
-                                       related_name='case')
-    status = models.CharField(max_length=30,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False)
-    reference = models.CharField(max_length=50, blank=True, null=True)
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
-    legacy_case_flag = models.BooleanField(blank=False,
-                                           null=False,
-                                           default=False)
-    chief_usage_status = models.CharField(max_length=1,
-                                          choices=CHIEF_STATUSES,
-                                          blank=True,
-                                          null=True)
-    under_appeal_flag = models.BooleanField(blank=False,
-                                            null=False,
-                                            default=False)
-    decision = models.CharField(max_length=10,
-                                choices=DECISIONS,
-                                blank=True,
-                                null=True)
-    variation_decision = models.CharField(max_length=10,
-                                          choices=DECISIONS,
-                                          blank=True,
-                                          null=True)
-    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
-    variation_refuse_reason = models.CharField(max_length=4000,
-                                               blank=True,
-                                               null=True)
-    issue_date = models.DateField(blank=True, null=True)
-    licence_start_date = models.DateField(blank=True, null=True)
-    licence_end_date = models.DateField(blank=True, null=True)
-    licence_extended_flag = models.BooleanField(blank=False,
-                                                null=False,
-                                                default=False)
-    last_update_datetime = models.DateTimeField(blank=False,
-                                                null=False,
-                                                auto_now=True)
-    last_updated_by = models.ForeignKey(User,
-                                        on_delete=models.PROTECT,
-                                        blank=False,
-                                        null=False,
-                                        related_name='updated_import_cases')
-
-
-class CaseConstabularyEmail(models.Model):
+class ConstabularyEmail(models.Model):
 
     OPEN = 'OPEN'
     CLOSED = 'CLOSED'
@@ -1136,175 +1318,6 @@ class CaseConstabularyEmail(models.Model):
     email_response = models.CharField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
-
-
-class ImportCaseVariation(models.Model):
-
-    OPEN = 'OPEN'
-    DRAFT = 'DRAFT'
-    CANCELLED = 'CANCELLED'
-    REJECTED = 'REJECTED'
-    ACCEPTED = 'ACCEPTED'
-    WITHDRAWN = 'WITHDRAWN'
-
-    STATUSES = ((DRAFT, 'Draft'), (OPEN, 'Open'), (CANCELLED, 'Cancelled'),
-                (REJECTED, 'Rejected'), (ACCEPTED, 'Accepted'), (WITHDRAWN,
-                                                                 'Withdrawn'))
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False)
-    case = models.ForeignKey(ImportCase,
-                             on_delete=models.PROTECT,
-                             blank=False,
-                             null=False)
-    extension_flag = models.BooleanField(blank=False,
-                                         null=False,
-                                         default=False)
-    requested_date = models.DateField(blank=True, null=True, auto_now_add=True)
-    requested_by = models.ForeignKey(User,
-                                     on_delete=models.PROTECT,
-                                     blank=True,
-                                     null=True)
-    what_varied = models.CharField(max_length=4000, blank=True, null=True)
-    why_varied = models.CharField(max_length=4000, blank=True, null=True)
-    when_varied = models.DateField(blank=True, null=True)
-    reject_reason = models.CharField(max_length=4000, blank=True, null=True)
-    closed_date = models.DateField(blank=True, null=True)
-
-
-class ImportCaseNote(models.Model):
-
-    DRAFT = 'DRAFT'
-    DELETED = 'DELETED'
-    COMPLETED = 'COMPLETED'
-    STATUSES = ((DRAFT, 'Draft'), (DELETED, 'Deleted'), (COMPLETED,
-                                                         'Completed'))
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=20,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False,
-                              default=DRAFT)
-    note = models.TextField(blank=True, null=True)
-    case = models.ForeignKey(ImportCase,
-                             on_delete=models.PROTECT,
-                             blank=False,
-                             null=False)
-    create_datetime = models.DateTimeField(blank=False,
-                                           null=False,
-                                           auto_now_add=True)
-    created_by = models.ForeignKey(User,
-                                   on_delete=models.PROTECT,
-                                   blank=False,
-                                   null=False,
-                                   related_name='created_import_case_notes')
-
-
-class ImportFurtherInformationRequest(models.Model):
-    """
-    Further information requests for import cases
-    requested from applicant by case officers
-    """
-
-    DRAFT = 'DRAFT'
-    CLOSED = 'CLOSED'
-    DELETED = 'DELETED'
-    OPEN = 'OPEN'
-    RESPONDED = 'RESPONDED'
-
-    STATUSES = ((DRAFT, 'Draft'), (CLOSED, 'CLOSED'), (DELETED, 'Deleted'),
-                (OPEN, 'Open'), (RESPONDED, 'Responded'))
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=20,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False,
-                              default=DRAFT)
-    request_subject = models.CharField(max_length=100, blank=False, null=True)
-    request_detail = models.CharField(max_length=4000, blank=False, null=True)
-    email_cc_address_list = models.CharField(max_length=4000,
-                                             blank=True,
-                                             null=True)
-    requested_date = models.DateField(blank=True, null=True, auto_now_add=True)
-    response_detail = models.CharField(max_length=4000, blank=False, null=True)
-    response_date = models.DateField(blank=True, null=True)
-    requested_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='requested_further_import_information')
-    response_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='responded_import_information_requests')
-    closed_date = models.DateField(blank=True, null=True)
-    closed_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='closed_import_information_requests')
-    deleted_date = models.DateField(blank=True, null=True)
-    deleted_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='deleted_import_information_requests')
-    case = models.ForeignKey(ImportCase,
-                             on_delete=models.PROTECT,
-                             blank=False,
-                             null=False)
-
-
-class ImportUpdateRequest(models.Model):
-    DRAFT = 'DRAFT'
-    OPEN = 'OPEN'
-    CLOSED = 'CLOSED'
-    UPDATE_IN_PROGRESS = 'UPDATE_IN_PROGRESS'
-    RESPONDED = 'RESPONDED'
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30, blank=False, null=False)
-    request_subject = models.CharField(max_length=100, blank=False, null=True)
-    request_detail = models.CharField(max_length=4000, blank=False, null=True)
-    email_cc_address_list = models.CharField(max_length=4000,
-                                             blank=True,
-                                             null=True)
-    response_detail = models.CharField(max_length=4000, blank=False, null=True)
-    request_date = models.DateField(blank=True, null=True)
-    requested_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='requested_import_application_updates')
-    response_date = models.DateField(blank=True, null=True)
-    response_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='responded_import_application_updates')
-    closed_date = models.DateField(blank=True, null=True)
-    closed_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='closed_import_application_updates')
-    case = models.ForeignKey(ImportCase,
-                             on_delete=models.PROTECT,
-                             blank=False,
-                             null=False)
 
 
 class Mailshot(models.Model):
@@ -1360,15 +1373,6 @@ class Mailshot(models.Model):
 
 class ExportApplicationType(models.Model):
 
-    #  IN_PROGRESS='IN_PROGRESS'
-    #  DELETED = 'DELETED'
-    #  SUBMITTED='SUBMITTED'
-    #  PROCESSING='PROCESSING'
-    #  WITHDRAWN='WITHDRAWN'
-    #  STOPPED='STOPPED'
-    #  COMPLETED='COMPLETED'
-    #  VARIATION
-
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type_code = models.CharField(max_length=30, blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False)
@@ -1387,6 +1391,55 @@ class ExportApplicationType(models.Model):
         related_name='manufacture_export_application_types')
 
 
+class ExportCase(models.Model):
+    IN_PROGRESS = 'IN_PROGRESS'
+    SUBMITTED = 'SUBMITTED'
+    PROCESSING = 'PROCESSING'
+    COMPLETED = 'COMPLETED'
+    WITHDRAWN = 'WITHDRAWN'
+    STOPPED = 'STOPPED'
+    VARIATION_REQUESTED = 'VARIATION'
+    REVOKED = 'REVOKED'
+    DELETED = 'DELETED'
+
+    STATUSES = ((IN_PROGRESS, 'In Progress'), (SUBMITTED, 'Submitted'),
+                (PROCESSING, 'Processing'), (COMPLETED, 'Completed'),
+                (WITHDRAWN, 'Withdrawn'), (STOPPED, 'Stopped'),
+                (REVOKED, 'Revoked'), (VARIATION_REQUESTED,
+                                       'Case Variation'), (DELETED, 'Deleted'))
+
+    # Decision
+    REFUSE = 'REFUSE'
+    APPROVE = 'APPROVE'
+    DECISIONS = ((REFUSE, 'Refuse'), (APPROVE, 'Approve'))
+
+    status = models.CharField(max_length=30,
+                              choices=STATUSES,
+                              blank=False,
+                              null=False)
+    reference = models.CharField(max_length=50, blank=True, null=True)
+    variation_no = models.IntegerField(blank=False, null=False, default=0)
+    decision = models.CharField(max_length=10,
+                                choices=DECISIONS,
+                                blank=True,
+                                null=True)
+    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    last_update_datetime = models.DateTimeField(blank=False,
+                                                null=False,
+                                                auto_now=True)
+    last_updated_by = models.ForeignKey(User,
+                                        on_delete=models.PROTECT,
+                                        blank=False,
+                                        null=False,
+                                        related_name='updated_export_cases')
+    variation_requests = models.ManyToManyField(VariationRequest)
+    case_notes = models.ManyToManyField(CaseNote)
+    further_information_requests = models.ManyToManyField(
+        FurtherInformationRequest)
+    update_requests = models.ManyToManyField(UpdateRequest)
+    case_notes = models.ManyToManyField(CaseNote)
+
+
 class ExportApplication(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
@@ -1394,6 +1447,11 @@ class ExportApplication(models.Model):
                                          on_delete=models.PROTECT,
                                          blank=False,
                                          null=False)
+    case = models.OneToOneField(ExportCase,
+                                on_delete=models.PROTECT,
+                                related_name='application',
+                                blank=True,
+                                null=True)
     submit_datetime = models.DateTimeField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False,
                                            null=False,
@@ -1426,86 +1484,3 @@ class ExportApplication(models.Model):
                                 null=True,
                                 related_name='contact_export_applications')
     countries = models.ManyToManyField(Country)
-
-
-class ExportCase(models.Model):
-    IN_PROGRESS = 'IN_PROGRESS'
-    SUBMITTED = 'SUBMITTED'
-    PROCESSING = 'PROCESSING'
-    COMPLETED = 'COMPLETED'
-    WITHDRAWN = 'WITHDRAWN'
-    STOPPED = 'STOPPED'
-    VARIATION_REQUESTED = 'VARIATION'
-    REVOKED = 'REVOKED'
-    DELETED = 'DELETED'
-
-    STATUSES = ((IN_PROGRESS, 'In Progress'), (SUBMITTED, 'Submitted'),
-                (PROCESSING, 'Processing'), (COMPLETED, 'Completed'),
-                (WITHDRAWN, 'Withdrawn'), (STOPPED, 'Stopped'),
-                (REVOKED, 'Revoked'), (VARIATION_REQUESTED,
-                                       'Case Variation'), (DELETED, 'Deleted'))
-
-    # Decision
-    REFUSE = 'REFUSE'
-    APPROVE = 'APPROVE'
-    DECISIONS = ((REFUSE, 'Refuse'), (APPROVE, 'Approve'))
-
-    application = models.OneToOneField(ExportApplication,
-                                       on_delete=models.PROTECT,
-                                       related_name='case')
-    status = models.CharField(max_length=30,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False)
-    reference = models.CharField(max_length=50, blank=True, null=True)
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
-    decision = models.CharField(max_length=10,
-                                choices=DECISIONS,
-                                blank=True,
-                                null=True)
-    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
-    last_update_datetime = models.DateTimeField(blank=False,
-                                                null=False,
-                                                auto_now=True)
-    last_updated_by = models.ForeignKey(User,
-                                        on_delete=models.PROTECT,
-                                        blank=False,
-                                        null=False,
-                                        related_name='updated_export_cases')
-
-
-class ExportCaseVariation(models.Model):
-
-    DRAFT = 'DRAFT'
-    OPEN = 'OPEN'
-    DELETED = 'DELETED'
-    CANCELLED = 'CANCELLED'
-    CLOSED = 'CLOSED'
-
-    STATUSES = ((DRAFT, 'Draft'), (OPEN, 'Open'), (DELETED, 'Deleted'),
-                (CANCELLED, 'Cancelled'), (CLOSED, 'Closed'))
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False)
-    case = models.ForeignKey(ExportCase,
-                             on_delete=models.PROTECT,
-                             blank=False,
-                             null=False)
-    variation_reason = models.CharField(max_length=4000, blank=True, null=True)
-    opened_datetime = models.DateTimeField(blank=True,
-                                           null=True,
-                                           auto_now_add=True)
-    closed_datetime = models.DateTimeField(blank=True, null=True)
-    opened_by = models.ForeignKey(User,
-                                  on_delete=models.PROTECT,
-                                  blank=True,
-                                  null=True,
-                                  related_name='opened_export_variations')
-    closed_by = models.ForeignKey(User,
-                                  on_delete=models.PROTECT,
-                                  blank=True,
-                                  null=True,
-                                  related_name='closed_export_variations')
