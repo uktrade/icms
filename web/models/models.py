@@ -604,6 +604,26 @@ class Office(models.Model):
                                           default=EMPTY)
 
 
+class File(models.Model):
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+    filename = models.CharField(max_length=300, blank=False, null=True)
+    content_type = models.CharField(max_length=100, blank=False, null=True)
+    browser_content_type = models.CharField(max_length=100,
+                                            blank=False,
+                                            null=True)
+    description = models.CharField(max_length=300, blank=True, null=True)
+    file_size = models.IntegerField(blank=False, null=True)
+    path = models.CharField(max_length=4000, blank=True, null=True)
+    error_message = models.CharField(max_length=4000, blank=True, null=True)
+    created_datetime = models.DateTimeField(auto_now_add=True,
+                                            blank=False,
+                                            null=True)
+    created_by = models.ForeignKey(User,
+                                   on_delete=models.PROTECT,
+                                   blank=False,
+                                   null=True)
+
+
 class Importer(Archivable, BaseTeam):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
@@ -705,26 +725,26 @@ class FirearmsAuthority(models.Model):
     certificate_type = models.CharField(max_length=20,
                                         choices=CERTIFICATE_TYPES,
                                         blank=False,
-                                        null=False)
+                                        null=True)
     postcode = models.CharField(max_length=30, blank=True, null=True)
-    address = models.CharField(max_length=300, blank=False, null=False)
+    address = models.CharField(max_length=300, blank=False, null=True)
     address_entry_type = models.CharField(max_length=10,
                                           blank=False,
-                                          null=False,
-                                          default=MANUAL)
-    start_date = models.DateField(blank=False, null=False)
-    end_date = models.DateField(blank=False, null=False)
+                                          null=True)
+    start_date = models.DateField(blank=False, null=True)
+    end_date = models.DateField(blank=False, null=True)
     further_details = models.CharField(max_length=4000, blank=True, null=True)
     issuing_constabulary = models.ForeignKey(Constabulary,
                                              on_delete=models.PROTECT,
                                              blank=False,
-                                             null=False)
+                                             null=True)
     linked_offices = models.ManyToManyField(Office)
     importer = models.ForeignKey(Importer,
                                  on_delete=models.PROTECT,
                                  blank=False,
                                  null=False,
                                  related_name='firearms_authorities')
+    files = models.ManyToManyField(File)
 
 
 class Section5Authority(models.Model):
@@ -736,13 +756,12 @@ class Section5Authority(models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     reference = models.CharField(max_length=50, blank=False, null=True)
     postcode = models.CharField(max_length=30, blank=True, null=True)
-    address = models.CharField(max_length=300, blank=False, null=False)
+    address = models.CharField(max_length=300, blank=False, null=True)
     address_entry_type = models.CharField(max_length=10,
                                           blank=False,
-                                          null=False,
-                                          default=MANUAL)
-    start_date = models.DateField(blank=False, null=False)
-    end_date = models.DateField(blank=False, null=False)
+                                          null=True)
+    start_date = models.DateField(blank=False, null=True)
+    end_date = models.DateField(blank=False, null=True)
     further_details = models.CharField(max_length=4000, blank=True, null=True)
     linked_offices = models.ManyToManyField(Office)
     importer = models.ForeignKey(Importer,
@@ -750,6 +769,7 @@ class Section5Authority(models.Model):
                                  blank=False,
                                  null=False,
                                  related_name='section5_authorities')
+    files = models.ManyToManyField(File)
 
 
 class VariationRequest(models.Model):
@@ -821,6 +841,7 @@ class CaseNote(models.Model):
                                    blank=False,
                                    null=False,
                                    related_name='created_import_case_notes')
+    files = models.ManyToManyField(File)
 
 
 class FurtherInformationRequest(models.Model):
@@ -880,6 +901,7 @@ class FurtherInformationRequest(models.Model):
         blank=True,
         null=True,
         related_name='deleted_import_information_requests')
+    files = models.ManyToManyField(File)
 
 
 class UpdateRequest(models.Model):
@@ -1369,6 +1391,7 @@ class Mailshot(models.Model):
                                      null=True,
                                      related_name='retracted_mailshots')
     retracted_datetime = models.DateTimeField(blank=False, null=True)
+    files = models.ManyToManyField(File)
 
 
 class ExportApplicationType(models.Model):
