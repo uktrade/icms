@@ -70,8 +70,11 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
     def encode(self, password, salt, iterations=None):
         assert password is not None
         iterations = iterations or self.iterations
-        password_bytes = bytearray(password, 'utf-8')
-        salt_bytes = bytearray.fromhex(salt)
+        id_salt_pair = salt.split(':')
+        id = id_salt_pair[0]
+        base_salt = id_salt_pair[1]
+        password_bytes = bytearray(id + password, 'utf-8')
+        salt_bytes = bytearray.fromhex(base_salt)
         hash = self.encrypt(password_bytes, salt_bytes, iterations, 16, 'sha1')
         return "%s$%d$%s$%s" % (self.algorithm, iterations, salt, hash)
 
