@@ -55,8 +55,8 @@ or
 | ICMS_MIGRATE                      | True                                       | Runs Django migrate before starting the app            |
 | ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
 | ICMS_ALLOWED_HOSTS                | localhost                                  | Comma separated list of hosts                                       |
-| ICMS_AWS_S3_ACCESS_KEY_ID            |                                            | Access Key ID from AWS console                                       |
-| ICMS_AWS_S3_SECRET_ACCESS_KEY        |                                            | Secret Access Key from AWS console                                       |
-| ICMS_AWS_S3_REGION                   |                                            | E.g. eu-west-2                                      |
+| ICMS_AWS_S3_ACCESS_KEY_ID         |                                            | Access Key ID from AWS console                                       |
+| ICMS_AWS_S3_SECRET_ACCESS_KEY     |                                            | Secret Access Key from AWS console                                       |
+| ICMS_AWS_S3_REGION                |                                            | E.g. eu-west-2                                      |
 | ICMS_AWS_S3_BUCKET_NAME           |                                            | E.g. ICMS                          |
 
