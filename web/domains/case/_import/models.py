@@ -1,6 +1,6 @@
 from django.db import models
-from web.domains.models import (CaseNote, FurtherInformationRequest,
-                                UpdateRequest, VariationRequest)
+from web.domains.case.models import (CaseNote, FurtherInformationRequest,
+                                     UpdateRequest, VariationRequest)
 from web.domains.user.models import User
 
 

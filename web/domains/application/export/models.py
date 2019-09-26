@@ -1,4 +1,9 @@
 from django.db import models
+from web.domains.case.export.models import ExportCase
+from web.domains.country.models import Country, CountryGroup
+from web.domains.exporter.models import Exporter
+from web.domains.office.models import Office
+from web.domains.user.models import User
 
 
 class ExportApplicationType(models.Model):
