@@ -1,7 +1,5 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/errors.html" as errors %}
-{% import "forms/form.html" as forms %}
-{# {% import "forms/list.html" as lists %} #}
+{% import "forms/forms.html" as forms %}
 
 {% block page_title %}Edit Obsolete Calibre Group{% endblock %}
 {% block context_header %}Edit Obsolete Calibre Group{% endblock %}
@@ -25,7 +23,7 @@
     </div>
 </div>
 
-{{errors.formset_errors(formset) }}
+{# {{errors.formset_errors(formset) }} #}
 <table id="obsolete-calibres-table" responsiveList class="setoutList">
     <thead>
         <tr>

@@ -1,18 +1,37 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
-{% import "messages/message.html" as messages %}
-
-{% block page_title %}Edit Constabulary{% endblock %}
-{% block context_header %}Edit Constabulary{% endblock %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
 
-{% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
+{% call forms.form(method='post',csrf_input=csrf_input) -%}
+    {{fields.field(form.name)}}
+    {{fields.field(form.region)}}
+    {{fields.field(form.email)}}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">
+                Save
+              </button>
+            </li>
+            <li>
+              <a href="{{url('constabulary-list')}}" class="button link-button">
+                Cancel
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+
     <h3>Contacts</h3>
     {% include "web/contacts/tabs.html" %}
-    <div class="content-actions"></div>
-    </div>
 {%- endcall %}
 
 {% endblock %}

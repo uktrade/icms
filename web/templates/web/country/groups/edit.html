@@ -1,28 +1,49 @@
 {% extends "web/country/country-base.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 {% from "web/country/country-selections.html" import country_selector %}
-{% block page_title %}Editing {{object.name}}{% endblock %}
-{% block context_header %}Editing {{object.name}}{% endblock %}
 
 {% block  main_content %}
     {% include "web/country/groups/filter-bar.html" %}
 
-    {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
-        <div class="list-actions">
-            <ul class="menu-out flow-across">
-                <li>
-                    <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
-                        Add Country
-                    </button>
-                </li>
-                <li>
-                    <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
-                        Remove Selected Countries
-                    </button>
-                </li>
-            </ul>
+    {% call forms.form(method='post', csrf_input=csrf_input) %}
+
+    {{fields.field(form.name)}}
+    {{fields.field(form.comments)}}
+
+    <div class="list-actions">
+      <ul class="menu-out flow-across">
+        <li>
+          <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
+            Add Country
+          </button>
+        </li>
+        <li>
+          <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
+            Remove Selected Countries
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    {{country_selector(countries)}}
+
+    <div class="clearBoth"></div>
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="action" value="save" class="primary-button button">
+                Save
+              </button>
+            </li>
+          </ul>
         </div>
-        {{country_selector(countries)}}
+        <div class="one columns"></div>
+      </div>
+    </div>
     {% endcall %}
 
 {% endblock %}

@@ -1,7 +1,6 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% block page_title %}Manage Country Translation Sets{% endblock %}
-{% block context_header %}Manage Country Translation Sets{% endblock %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block sidebar %}
 {% include "web/country/sidebar.html" %}
@@ -13,9 +12,8 @@
     <div class="modal-popover regular-popover " tabindex="0">
         <div class="modal-popover-content">
         <h2 id="engine-modal-popover-title">Create New Country Translation Set</h2>
-
-            {%- call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
-
+            {%- call forms.form(method='post', csrf_input=csrf_input) %}
+                {{fields.field(form.name)}}
                 <ul class="menu-out modal-popover-actions flow-across">
                     <li>
                         <button type="submit" name="action" value="save" class="primary-button button">
@@ -29,8 +27,6 @@
                     </li>
                 </ul>
             {% endcall -%}
-
-
         </div>
     </div>
 </div>

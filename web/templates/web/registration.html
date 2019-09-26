@@ -1,5 +1,6 @@
 {% extends "layout/public.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
 <div id="header">
@@ -14,10 +15,43 @@
 <p>All fields are mandatory.</p>
 
 
-{% call forms.form(form, fields=form.fields, action=url('register'), csrf_input=csrf_input) -%}
+{% call forms.form(action=url('register'), method='post', csrf_input=csrf_input) -%}
+    {{fields.field(form.email)}}
+    {{fields.field(form.confirm_email)}}
+    {{fields.field(form.title)}}
+    {{fields.field(form.first_name)}}
+    {{fields.field(form.last_name)}}
+    {{fields.field(form.telephone_number)}}
+    {{fields.field(form.organisation)}}
+    {{fields.field(form.date_of_birth)}}
+    {{fields.field(form.security_question_list)}}
+    {{fields.field(form.security_question)}}
+    {{fields.field(form.security_answer)}}
+    {{fields.field(form.security_answer_repeat)}}
     <p>Please enter complete security check displayed below. This is to stop automatic registrations.</p>
-    {{forms.field(captcha_form.captcha, opts=form.config)}}
-    <div class="section-break"></div>
+    {{fields.field(captcha_form.captcha)}}
+    <div class="clearBoth"></div>
+    <div class="container">
+      <div class="row">
+        <div class="four columns"></div>
+        <div class="six columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">
+                Register
+              </button>
+            </li>
+            <li>
+              <a href="{{url('login')}}" class="button link-button">
+                Cancel
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="two columns"></div>
+      </div>
+    </div>
 {% endcall %}
+<div class="section-break"></div>
 
 {% endblock %}

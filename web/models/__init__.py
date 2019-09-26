@@ -1,1 +1,1 @@
-from .models import *  # NOQA
+from web.domains.user.models import *  # NOQA

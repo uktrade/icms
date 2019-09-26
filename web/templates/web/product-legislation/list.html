@@ -1,4 +1,6 @@
 {% extends "layout/filtered-list.html" %}
+{% import "forms/fields.html" as fields %}
+
 {% block page_title %}Maintain Product Legislation{% endblock %}
 {% block context_header %}Maintain Product Legislation{% endblock %}
 {% block empty_message %}There isn't any product legislation that matches your current filters.{% endblock %}
@@ -9,7 +11,31 @@
     </ul>
     <div class="section-break"></div>
     <h4> Filter </h4>
-    {{forms.filter(filter, filters=filter.filters)}}
+    {% call forms.form(action=url('product-legislation-list'))%}
+      {{fields.field(filter.form.name)}}
+      {{fields.field(filter.form.is_biocidal)}}
+      {{fields.field(filter.form.is_biocidal_claim)}}
+      {{fields.field(filter.form.is_eu_cosmetics_regulation)}}
+      <div class="clearBoth"></div>
+      <div class="container">
+        <div class="row">
+        <div class="twelve columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="" value="" class="primary-button button">
+                Apply Filter
+              </button>
+            </li>
+            <li>
+              <a href="{{url('product-legislation-list')}}" class="button link-button">
+                Clear Filter
+              </a>
+            </li>
+          </ul>
+        </div>
+        </div>
+      </div>
+    {% endcall %}
 {% endblock %}
 
 {% block filters %}

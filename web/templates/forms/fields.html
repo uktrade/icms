@@ -1,0 +1,57 @@
+{% macro _field(field, tooltip=None) -%}
+
+  {% set field_markup %}
+    {{ field }}
+    {% if field.errors %}
+      {% for error in field.errors %}
+        <div class="error-message">{{error}}</div>
+      {% endfor %}
+    {% endif %}
+  {% endset %}
+
+  {% if field.help_text or tooltip %}
+    <div class="eleven-column-input">
+      {{field_markup}}
+    </div>
+    <div class="input-group-addon hint-addon">
+      {% if tooltip %}
+        {{tooltip}}
+      {% else %}
+        <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
+          {{field.help_text}}
+        </div>
+        <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
+          {% endif %}
+        </div>
+        {% else %}
+            {{field_markup}}
+        {% endif %}
+{%- endmacro %}
+
+{# Renders a single form field with icms styling #}
+{% macro field(field, tooltip=None) -%}
+  {% set config=field.field.config %}
+  <div class="row" >
+    <div class="{{config.label.cols}} columns">
+      <label for="{{ field.id_for_label }}" class="prompt {{config.label.prompt}}">
+        {{field.label}}
+        {% if config.show_optional_indicator and not field.field.required %}
+          <span class="mand-label">optional</span>
+        {% endif %}
+      </label>
+    </div>
+    <div class="{{config.input.cols}} columns input-group {% if field.errors %}input-error{% endif %}">
+      {{_field(field, tooltip=tooltip)}}
+    </div>
+    {% if config.padding and config.padding.right %}
+      <div class="{{config.padding.right}} columns"> </div>
+    {% endif %}
+</div>
+{%- endmacro %}
+
+{# Renders a single inline form field with icms styling #}
+{% macro inline_field(field) -%}
+  <td {% if field.errors %}class="input-error"{% endif %}>
+    {{_field(field)}}
+  </td>
+{%- endmacro %}

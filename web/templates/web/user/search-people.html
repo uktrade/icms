@@ -1,10 +1,8 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 {% import "forms/list.html" as lists %}
 {% import "messages/message.html" as message %}
-
-{% block page_title %}Search People{% endblock %}
-{% block context_header %}Search People{% endblock %}
 
 {% block main_content %}
 
@@ -13,7 +11,30 @@
     {% endset %}
 
     {{message.info('To search for a person, please fill in at least one field below.')}}
-    {{forms.filter(filter, filters=filter.filters, method='post', csrf_input=csrf_input) }}
+
+    {% call forms.form(method='post', csrf_input=csrf_input) %}
+      {{fields.field(filter.form.email_address)}}
+      {{fields.field(filter.form.forename)}}
+      {{fields.field(filter.form.surname)}}
+      {{fields.field(filter.form.organisation)}}
+      {{fields.field(filter.form.department)}}
+      {{fields.field(filter.form.job)}}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button type="submit" class="primary-button button" name="action" value="search_people">
+                  Search
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
+    {% endcall %}
     <form method="post" action="">
         {{csrf_input}}
         {% if filter.qs.count() > 0 %}

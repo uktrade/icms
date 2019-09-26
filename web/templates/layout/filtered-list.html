@@ -1,10 +1,33 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
 {% import "forms/list.html" as lists %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
     {% block filters %}
-        {{forms.filter(filter, filters=filter.filters)}}
+        {% call forms.form() -%}
+          {% for field in filter.form.fields %}
+            {{fields.field(filter.form[field])}}
+          {% endfor %}
+
+        <div class="clearBoth"></div>
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns">
+              <ul class="menu-out flow-across">
+                <button type="submit" name="" value="" class="primary-button button">
+                  Search
+                </button>
+                </li>
+              </ul>
+            </div>
+            <div class="three columns"></div>
+          </div>
+        </div>
+        {%- endcall %}
+
+
     {% endblock %}
 
     {% block results %}
