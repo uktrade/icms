@@ -54,7 +54,6 @@ TEMPLATES = [
         'BACKEND':
         'django.template.backends.jinja2.Jinja2',
         'DIRS': [
-            os.path.join(BASE_DIR, 'web/base/templates'),
             os.path.join(BASE_DIR, 'web/templates')
         ],
         'APP_DIRS':

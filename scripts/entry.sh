@@ -9,7 +9,6 @@ echo "ICMS running now with debug $ICMS_DEBUG"
 if [ "${ICMS_MIGRATE}" = 'True' ]; then
   echo "Running migrations"
   python manage.py migrate
-  # python manage.py loaddata --app web web/fixtures/web/*.json
 fi
 
 
@@ -19,6 +18,7 @@ fi
 
 
 if [ "$ICMS_DEBUG" = 'True' ]; then
+  python manage.py loaddata --app web web/fixtures/web/*.json
   python manage.py runserver 0:"$ICMS_WEB_PORT"
 else
   gunicorn config.wsgi \
