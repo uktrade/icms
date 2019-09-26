@@ -1,6 +1,6 @@
 from django.db import models
-from web.user.models import User
-from web.file.models import File
+from web.domains.file.models import File
+from web.domains.user.models import User
 
 
 class Mailshot(models.Model):

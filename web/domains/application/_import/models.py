@@ -1,4 +1,11 @@
 from django.db import models
+from web.domains.case._import.models import ImportCase
+from web.domains.commodity.models import CommodityGroup, CommodityType
+from web.domains.country.models import Country, CountryGroup
+from web.domains.importer.models import Importer
+from web.domains.office.models import Office
+from web.domains.template.models import Template
+from web.domains.user.models import User
 
 
 class ImportApplicationType(models.Model):
@@ -132,41 +139,9 @@ class ImportApplication(models.Model):
                                        blank=True,
                                        null=True,
                                        related_name='import_applications_from')
-    usage_auto_category_desc_flag = models.BooleanField(blank=False,
-                                                        null=False)
-    case_checklist_flag = models.BooleanField(blank=False, null=False)
-    importer_printable = models.BooleanField(blank=False, null=False)
-    origin_country_group = models.ForeignKey(
-        CountryGroup,
+    consignment_country = models.ForeignKey(
+        Country,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name='import_application_types_from')
-    consignment_country_group = models.ForeignKey(
-        CountryGroup,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='import_application_types_to')
-    master_country_group = models.ForeignKey(
-        CountryGroup,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name='import_application_types')
-    commodity_type = models.ForeignKey(CommodityType,
-                                       on_delete=models.PROTECT,
-                                       blank=True,
-                                       null=True)
-    declaration_template = models.ForeignKey(
-        Template,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=False,
-        related_name='declaration_application_types')
-    endorsements = models.ManyToManyField(
-        Template, related_name='endorsement_application_types')
-    default_commodity_group = models.ForeignKey(CommodityGroup,
-                                                on_delete=models.PROTECT,
-                                                blank=True,
-                                                null=True)
+        related_name='import_applications_to')

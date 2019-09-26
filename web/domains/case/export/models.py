@@ -1,9 +1,7 @@
 from django.db import models
+from web.domains.case.models import (CaseNote, FurtherInformationRequest,
+                                     UpdateRequest, VariationRequest)
 from web.domains.user.models import User
-from web.domains.case.events.models import VariationRequest
-from web.domains.case.events.models import CaseNote
-from web.domains.case.events.models import FurtherInformationRequest
-from web.domains.case.events.models import UpdateRequest
 
 
 class ExportCase(models.Model):
