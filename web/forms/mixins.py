@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from django.forms import Form
-from django_filters import FilterSet
+# from django_filters import FilterSet
 
 from web.utils import merge_dictionaries as m
 
@@ -26,24 +26,24 @@ default_filter_config = m(default_field_config,
 
 
 class ProcessConfigMixin:
-    """Adds form config if it doesn't exit on the form"""
+    """
+    Adds form config to each form field.
+    If it doesn't exit Uses default config
+    """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         meta = getattr(self, 'Meta', None)
         if meta:
             # Add config if not present
-            config = getattr(meta, 'config', None)
-            if not config:
-                self.Meta.config = self._default_config
-            else:
-                config = deepcopy(getattr(meta, 'config'))
-                __all__ = config.pop('__all__', None)
-                fields = self._get_fields()
-                for key in fields.keys():
-                    conf = config.pop(key, None)
-                    field_config = m(self._default_config, __all__)
-                    field_config = m(field_config, conf)
-                    fields[key].config = field_config
+            config = getattr(meta, 'config', self._default_config)
+            config = deepcopy(config)
+            __all__ = config.pop('__all__', None)
+            fields = self._get_fields()
+            for key in fields.keys():
+                conf = config.pop(key, None)
+                field_config = m(self._default_config, __all__)
+                field_config = m(field_config, conf)
+                fields[key].config = field_config
 
 
 class ReadonlyFormMixin(ProcessConfigMixin, Form):
@@ -62,7 +62,7 @@ class ReadonlyFormMixin(ProcessConfigMixin, Form):
         pass
 
 
-class FormFieldConfigMixin(ProcessConfigMixin, Form):
+class FormFieldConfigMixin(ProcessConfigMixin):
     """ Adds configuration for fields in the form from Form's inner Meta"""
     _default_config = default_field_config
 
@@ -70,7 +70,7 @@ class FormFieldConfigMixin(ProcessConfigMixin, Form):
         return self.fields
 
 
-class FiltersFieldConfigMixin(ProcessConfigMixin, FilterSet):
+class FiltersFieldConfigMixin(ProcessConfigMixin):
     """Adds configuration for fields from filterset's inner Meta"""
     _default_config = default_filter_config
 
