@@ -9,6 +9,26 @@
   {{fields.field(form.commodity_type)}}
   {{fields.field(form.group_code)}}
   {{fields.field(form.group_description)}}
+  <div class="container">
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="eight columns">
+        <ul class="menu-out flow-across">
+          <li>
+            <button type="submit" class="primary-button button">
+              Save
+            </button>
+          </li>
+          <li>
+            <a href="{{url('commodity-group-list')}}" class="button link-button">
+              Cancel
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="one columns"></div>
+    </div>
+  </div>
 {%- endcall %}
 
 {% endblock %}

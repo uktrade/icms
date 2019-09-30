@@ -170,9 +170,6 @@ urlpatterns = [
          ExporterDetailView.as_view(),
          name='exporter-view'),
 
-    # Portal Dashboard for outbound emails
-    #      path('portal/dashboard/', outbound_emails, name='outbound-emails'),
-
     # Access Request
     path('access/',
          RedirectView.as_view(url='request', permanent=False),
