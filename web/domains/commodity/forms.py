@@ -60,10 +60,7 @@ class CommodityForm(ModelEditForm):
             'validity_end_date':
             'After this date, the commodity will no \
             longer be available for applications to choose on application \
-            forms. Leave blank for indefinitely continuing validity',
-            'sigl_product_type':
-            'Mandatory for Iron, Steel, Aluminium and \
-         Textile commodities'
+            forms. Leave blank for indefinitely continuing validity'
         }
         widgets = {
             'validity_start_date': DateInput,

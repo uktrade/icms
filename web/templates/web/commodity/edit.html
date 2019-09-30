@@ -7,7 +7,7 @@
     {{fields.field(form.commodity_code)}}
     {{fields.field(form.validity_start_date)}}
     {{fields.field(form.validity_end_date)}}
-    {{fields.field(form.sigl_product_type)}}
+    {{fields.field(form.sigl_product_type, field_description="Mandatory for Iron, Steel, Aluminium and Textile commodities.")}}
 
     {% if not config.readonly %}
     <div class="container">
