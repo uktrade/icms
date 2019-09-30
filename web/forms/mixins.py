@@ -76,3 +76,4 @@ class FiltersFieldConfigMixin(ProcessConfigMixin):
 
     def _get_fields(self):
         return self.form.fields
+

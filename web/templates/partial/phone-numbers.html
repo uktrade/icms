@@ -1,10 +1,11 @@
-{% import "forms/errors.html" as errors %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 <h3>
     Telephone Number
 </h3>
 
-{{errors.formset_errors(formset) }}
+{{forms.errors(formset)}}
 <table id="phone-numbers-table" responsiveList class="setoutList">
     <thead>
         <tr>
@@ -27,13 +28,13 @@
         <tr>
             {{form.id}}
             {% with field=form.telephone_number %}
-              {% include 'forms/inline-field.html' %}
+              {{fields.inline_field(field)}}
             {% endwith %}
             {% with field=form.type %}
-            {% include 'forms/inline-field.html' %}
+              {{fields.inline_field(field)}}
             {% endwith %}
             {% with field=form.comment %}
-            {% include 'forms/inline-field.html' %}
+              {{fields.inline_field(field)}}
             {% endwith %}
             <td class="phone-remove">
               {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
