@@ -1,5 +1,5 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
 {% block page_title %}Search Addresses{% endblock %}
 {% block context_header %}Search Addresses{% endblock %}
 
@@ -11,7 +11,7 @@
         <div class="six columns">
             <h3>UK Address</h3>
 
-            {% call forms.form(postcode_form, csrf_input=csrf_input) -%}
+            {% call forms.form(method='post', csrf_input=csrf_input) -%}
                 <div class="row">
                     {{forms.label(postcode_form.post_code, opts=postcode_form.config)}}
                     <div class="four columns"></div>

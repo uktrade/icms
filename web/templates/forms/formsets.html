@@ -9,7 +9,6 @@
 
   {{forms.errors(formset)}}
 
-
   <table id="{{formset.prefix}}_table" responsiveList class="setoutList">
     <thead>
         <tr>
@@ -22,23 +21,23 @@
         </tr>
     </thead>
     <tbody>
+
       {% if formset.total_form_count() == 0 %}
-        {% set hide=True %}
+
+      {% else %}
+        {% for form in formset %}
+          <tr {% if hide %} style="display:none" {%endif%}>
+            {% for field in form.fields %}
+              {{fields.inline_field(field)}}
+            {% endfor %}
+            {% if delete and form.instance.pk %}
+              <td>
+                {{ form.DELETE }}
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
       {% endif %}
-
-      {% for form in formset %}
-        <tr {% if hide %} style="display:none" {%endif%}>
-          {% for field in formset.fields %}
-            {{fields.inline_field(field)}}
-          {% endfor %}
-          {% if delete and form.instance.pk %}
-            <td>
-              {{ form.DELETE }}
-            </td>
-          {% endif %}
-        </tr>
-      {% endfor %}
-
     </tbody>
 </table> 
 

@@ -64,10 +64,29 @@
     {{fields.field(details_form.security_answer_repeat)}}
 
 
-    <!-- Phone Numbers -->
-    {{formsets.inline_formset(phones_formset, title='Telephone Number')}}
-    {{formsets.inline_formset(personal_emails_formset, title='Personal Email Addresses')}}
-    {{formsets.inline_formset(alternative_emails_formset, title='Alternative Email Addresses')}}
+   <!-- Phone numbers -->
+    {% with formset = phones_formset %}
+    {% include 'partial/phone-numbers.html' %}
+    {% endwith %}
+
+    <!-- Personal email addresses -->
+    {% with formset=personal_emails_formset,
+            title="Personal Email Addresses",
+            id="personal_emails",
+            form_item_class="person_email"
+    %}
+    {% include 'partial/email-addresses.html' %}
+    {% endwith %}
+
+
+    <!-- Alternative email addresses -->
+    {% with formset=alternative_emails_formset,
+            title="Alternative Email Addresses",
+            id="alternative_emails",
+            form_item_class="alt_email"
+    %}
+    {% include 'partial/email-addresses.html' %}
+    {% endwith %}
 
 
     <div class="clearBoth"></div>
