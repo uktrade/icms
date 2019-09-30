@@ -73,44 +73,22 @@ def address_search(request, action):
 def init_user_details_forms(request, action):
     # If post is not made from user details page but from search page do not
     # try and initialise forms with POST data
-
     data = request.POST or None
-    details_initial = None
-    phones_initial = None
-    alternative_emails_initial = None
-    personal_emails_initial = None
     user = request.user
+    address = None
 
     if request.POST:
         if action == 'save_address':
-            data = None
-            user.work_address = request.POST.get('address')
-            #: TODO: Save changes to session before search
-            # Use new model to allow using initials
-            # with edited values before searching for address
-            # user = models.User()
-            # user.id = request.user.id
-            # user.work_address = request.POST.get('address')
-            # details_initial = form_utils.remove_from_session(
-            #     request, 'details_form')
-            # phones_initial = form_utils.remove_from_session(
-            #     request, 'phones_formset')
-            # alternative_emails_initial = form_utils.remove_from_session(
-            #     request, 'alternative_emails_formset')
-            # personal_emails_initial = form_utils.remove_from_session(
-            #     request, 'personal_emails_formset')
+            address = request.POST.get('address')
+            data = request.session.pop('user_details')
 
-    details_form = UserDetailsUpdateForm(data,
-                                         initial=details_initial,
-                                         instance=user)
-    phones_formset = new_user_phones_formset(request,
-                                             data=data,
-                                             initial=phones_initial)
-    alternative_emails_formset = new_alternative_emails_formset(
-        request, data=data, initial=alternative_emails_initial)
-
-    personal_emails_formset = new_personal_emails_formset(
-        request, data=data, initial=personal_emails_initial)
+    details_form = UserDetailsUpdateForm(data, instance=user)
+    if address:
+        details_form.data['work_address'] = address
+    phones_formset = new_user_phones_formset(request, data=data)
+    alternative_emails_formset = new_alternative_emails_formset(request,
+                                                                data=data)
+    personal_emails_formset = new_personal_emails_formset(request, data=data)
 
     # get details form data from session if exists and not the first page load
     all_forms = {
@@ -126,6 +104,10 @@ def init_user_details_forms(request, action):
 @require_registered
 def user_details(request):
     action = request.POST.get('action')
+    if action == 'edit_address':
+        # Save all data to session before searching address
+        # to restore from session after address search is complete
+        request.session['user_details'] = request.POST
     if action in ['search_address', 'edit_address']:
         return address_search(request, action)
     elif action in ['manual_address', 'save_manual_address']:

@@ -1,9 +1,10 @@
+import logging
 from copy import deepcopy
 
 from django.forms import Form
-# from django_filters import FilterSet
-
 from web.utils import merge_dictionaries as m
+
+logger = logging.getLogger(__name__)
 
 default_field_config = {
     'label': {
@@ -76,4 +77,3 @@ class FiltersFieldConfigMixin(ProcessConfigMixin):
 
     def _get_fields(self):
         return self.form.fields
-

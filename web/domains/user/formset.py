@@ -39,37 +39,40 @@ class AlternativeEmailsFormset(BaseInlineFormSet):
 
 
 def new_user_phones_formset(request, data=None, initial=None):
-    return inlineformset_factory(
-        User,
-        PhoneNumber,
-        form=PhoneNumberForm,
-        formset=PhoneNumbersFormSet,
-        extra=0,
-        can_delete=True,
-        validate_min=True,
-        min_num=1)(
-            data, prefix='phone', instance=request.user)
+    return inlineformset_factory(User,
+                                 PhoneNumber,
+                                 form=PhoneNumberForm,
+                                 formset=PhoneNumbersFormSet,
+                                 extra=0,
+                                 can_delete=True,
+                                 validate_min=True,
+                                 min_num=1)(data,
+                                            prefix='phone',
+                                            initial=initial,
+                                            instance=request.user)
 
 
 def new_alternative_emails_formset(request, data=None, initial=None):
-    return inlineformset_factory(
-        User,
-        AlternativeEmail,
-        form=AlternativeEmailsForm,
-        formset=AlternativeEmailsFormset,
-        extra=0,
-        can_delete=True)(
-            data, prefix='alternative_email', instance=request.user)
+    return inlineformset_factory(User,
+                                 AlternativeEmail,
+                                 form=AlternativeEmailsForm,
+                                 formset=AlternativeEmailsFormset,
+                                 extra=0,
+                                 can_delete=True)(data,
+                                                  prefix='alternative_email',
+                                                  initial=initial,
+                                                  instance=request.user)
 
 
 def new_personal_emails_formset(request, data=None, initial=None):
-    return inlineformset_factory(
-        User,
-        PersonalEmail,
-        form=PersonalEmailForm,
-        formset=PersonalEmailsFormSet,
-        extra=0,
-        can_delete=True,
-        validate_min=True,
-        min_num=1)(
-            data, prefix='personal_email', instance=request.user)
+    return inlineformset_factory(User,
+                                 PersonalEmail,
+                                 form=PersonalEmailForm,
+                                 formset=PersonalEmailsFormSet,
+                                 extra=0,
+                                 can_delete=True,
+                                 validate_min=True,
+                                 min_num=1)(data,
+                                            prefix='personal_email',
+                                            initial=initial,
+                                            instance=request.user)

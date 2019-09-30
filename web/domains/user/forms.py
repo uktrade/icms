@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter
 from web.forms import ModelEditForm, ModelSearchFilter, validators
 from web.forms.fields import PhoneNumberField
+from web.forms.widgets import DateInput
 
 from .models import AlternativeEmail, Email, PersonalEmail, PhoneNumber, User
 
@@ -53,6 +54,7 @@ class UserDetailsUpdateForm(ModelEditForm):
                 'rows': 2,
                 'cols': 50
             }),
+            'date_of_birth': DateInput(),
             'work_address': Textarea({
                 'rows': 5,
                 'readonly': 'readonly'
