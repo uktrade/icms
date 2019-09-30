@@ -3,10 +3,11 @@ from django.forms.fields import CharField
 from django.forms.widgets import Select, Textarea, TextInput
 from django.utils.translation import gettext_lazy as _
 from web.forms import validators
+from web.forms.mixins import FormFieldConfigMixin
 from web.views.utils import countries
 
 
-class PostCodeSearchForm(Form):
+class PostCodeSearchForm(FormFieldConfigMixin, Form):
     post_code = CharField(required=True, label=_('Postcode'))
     country = CharField(
         required=False,
@@ -15,25 +16,20 @@ class PostCodeSearchForm(Form):
 
     class Meta:
         config = {
-            'label': {
-                'cols': 'three',
-                'optional_indicators': False,
-                'prompt': 'north'
-            },
-            'input': {
-                'cols': 'eight'
-            },
-            'actions': {
-                'submit': {
-                    'label': 'Search',
-                    'name': 'action',
-                    'value': 'search_address'
+            '__all__': {
+                'show_optional_indicator': False,
+                'label': {
+                    'cols': 'three',
+                    'prompt': 'north'
+                },
+                'input': {
+                    'cols': 'eight'
                 }
-            },
+            }
         }
 
 
-class ManualAddressEntryForm(Form):
+class ManualAddressEntryForm(FormFieldConfigMixin, Form):
     country = CharField(widget=TextInput({'readonly': 'readonly'}))
     address = CharField(max_length=4000,
                         widget=Textarea({
@@ -45,18 +41,4 @@ class ManualAddressEntryForm(Form):
         return validators.validate_manual_address(self)
 
     class Meta:
-        config = {
-            'actions': {
-                'submit': {
-                    'label': _('Save Address'),
-                    'name': 'action',
-                    'value': 'save_manual_address'
-                },
-                'link': {
-                    'label': _('Cancel'),
-                    'attrs': {
-                        'onclick': 'window.history.back(); return false;'
-                    }
-                }
-            }
-        }
+        config = {'__all__': {'show_optional_indicator': False}}
