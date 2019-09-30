@@ -44,8 +44,6 @@
         </div>
     </div>
 
-
-
     <div class="section-break"></div>
 
     {% if addresses  %}
@@ -78,11 +76,9 @@
     {% else %}
     {% if not request.POST.action == 'edit_address' and not postcode_form.errors  %}
     <div class="info-box info-box-warning">
-        There aren't any addresses that match your search. You can turn on advanced mode for more options.
+      There aren't any addresses that match your search. You can turn on advanced mode for more options.
     </div>
     {% endif %}
     {% endif %}
-
-
 
     {% endblock %}

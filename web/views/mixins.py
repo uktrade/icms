@@ -7,10 +7,8 @@ class ViewConfigMixin:
     specific to implementing view
     """
     def get_context_data(self, **kwargs):
-        print('Adding config')
         context = super().get_context_data()
         config = getattr(self, 'config', None)
-        print(config)
         context['config'] = config
 
         return context
