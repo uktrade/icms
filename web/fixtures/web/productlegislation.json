@@ -1,0 +1,46 @@
+[
+	{
+		"PK" : 19,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "False",
+      "name" : "Chemicals (Hazard Information and Packaging for Supply) Regulations 2009",
+      "is_biocidal" : "False",
+      "is_biocidal_claim" : "False",
+      "is_eu_cosmetics_regulation" : "False"
+    }
+	},
+	{
+		"PK" : 20,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "True",
+      "name" : "Toy Safety Directive 2009\/48\/EC",
+      "is_biocidal" : "False",
+      "is_biocidal_claim" : "False",
+      "is_eu_cosmetics_regulation" : "False"
+    }
+	},
+	{
+		"PK" : 22,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "True",
+      "name" : "Council Directive 89\/686\/EEC on the approximation of the laws of the Member States relating to personal protective equipment",
+      "is_biocidal" : "False",
+      "is_biocidal_claim" : "False",
+      "is_eu_cosmetics_regulation" : "False"
+    }
+	},
+	{
+		"PK" : 42,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "True",
+      "name" : "EU Fertiliser regulation 2003\/2003",
+      "is_biocidal" : "False",
+      "is_biocidal_claim" : "False",
+      "is_eu_cosmetics_regulation" : "False"
+    }
+	}
+]

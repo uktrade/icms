@@ -1,11 +1,11 @@
-{% import "forms/errors.html" as errors %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 <h3>
   {{title}}
 </h3>
 
-{{errors.formset_errors(formset) }}
-
+{{forms.errors(formset)}}
 <table id="{{id}}" responsiveList class="setoutList">
     <thead>
         <tr>

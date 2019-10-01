@@ -1,5 +1,6 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 {% block page_title %}Maintain Contact Edit Address{% endblock %}
 {% block context_header %}Maintain Contact Edit Address{% endblock %}
 
@@ -9,6 +10,27 @@
     You can change this person's address for an existing address or input a new one.
 </div>
 
-{{forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
+{% call forms.form(method='post',csrf_input=csrf_input) -%}
+  {{fields.field(form.country)}}
+  {{fields.field(form.address)}}
+  <div class="container">
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="five columns">
+        <ul class="menu-out flow-across">
+          <li>
+            <button type="submit" name="action" value="save_manual_address" class="primary-button button">
+              Save Address
+            </button>
+          </li>
+          <li>
+            <a href="" class="button link-button"></a>
+          </li>
+        </ul>
+      </div>
+      <div class="four columns"></div>
+    </div>
+  </div>
+{%- endcall %}
 
 {% endblock %}

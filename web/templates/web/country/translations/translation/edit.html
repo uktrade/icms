@@ -1,5 +1,6 @@
 {% extends "web/country/country-base.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block page_title %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
 {% block context_header %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
@@ -7,6 +8,27 @@
 
 {% block main_content %}
     Enter the {{translation_set.name}} translation of {{country.name}} below.
-    {%- call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+    {%- call forms.form(method='post', csrf_input=csrf_input) %}
+      {{fields.field(form.translation)}}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button type="submit" class="primary-button button">
+                  Save
+                </button>
+              </li>
+              <li>
+                <a href="{{url('country-translation-set-list')}}" class="button link-button">
+                  Cancel
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
     {% endcall -%}
 {% endblock %}
