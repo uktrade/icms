@@ -1,29 +1,52 @@
 {% extends "web/country/country-base.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
-
-{% block page_title %}Editing {{object.name}}{% endblock %}
-{% block context_header %}Edit {{object.name}}{% endblock %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
 
-{% call forms.form(form, fields=['name'], csrf_input=csrf_input) -%}
+{% call forms.form(method='post', csrf_input=csrf_input) -%}
 
-    <div class="container">
-        <div class="row">
-            <div class="four columns"> </div>
-            <div class="eight columns">
-                <h3>Attributes</h3>
-            </div>
-        </div>
+  {{fields.field(form.name)}}
+  {{fields.field(form.type)}}
+
+  <div class="container">
+    <div class="row">
+      <div class="three columns"> </div>
+      <div class="six columns">
+        <h3>Attributes</h3>
+      </div>
+      <div class="three columns"> </div>
     </div>
+  </div>
 
-    <div class="container setoutForm noBottomMargin">
-        <div class="row">
-            {{forms.fieldset(fields=['commission_code','hmrc_code'], form=form, opts=form.config)}}
-        </div>
+  <div class="container setoutForm noBottomMargin">
+    <div class="row">
+      {{fields.field(form.commission_code)}}
+      {{fields.field(form.hmrc_code)}}
     </div>
+  </div>
 
+  <div class="clearBoth"></div>
+  <div class="container">
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="eight columns">
+        <ul class="menu-out flow-across">
+          <li>
+            <button type="submit" class="primary-button button">
+              Save
+            </button>
+          </li>
+          <li>
+            <a href="{{url('country-list')}}" class="button link-button">
+              Cancel
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="one columns"></div>
+    </div>
+  </div>
 {%- endcall %}
 
 

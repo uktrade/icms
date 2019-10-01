@@ -1,5 +1,7 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "forms/formsets.html" as formsets %}
 {% block page_title %}Contact Details{% endblock %}
 {% block context_header %}Contact Details{% endblock %}
 
@@ -19,15 +21,8 @@
     These details will be used throughout the system and might be visible to other users. Please make sure they're accurate and up to date.
 </div>
 
-{% call forms.form(
-    details_form,
-    fields=['title', 'first_name', 'preferred_first_name','middle_initials', 'last_name',
-    'organisation', 'department', 'job_title', 'location_at_address'],
-    action=url('user-details'),
-    csrf_input=csrf_input
-)-%}
+  {% call forms.form(action=url('user-details'), method='post', csrf_input=csrf_input )-%}
 
-    {% set opts=details_form.config %}
     {% set edit_address %}
     <button name="action" value="edit_address" type="submit"
             class="link-button inline-link-button icon-pencil button no-prompt-action tooltipstered"
@@ -35,7 +30,17 @@
     </button>
     <div id="edit-address-hint" role="tooltip" class="hint-content" >Edit work address</div>
     {% endset %}
-    {{forms.field(details_form.work_address, opts, tooltip=edit_address)}}
+
+    {{fields.field(details_form.title)}}
+    {{fields.field(details_form.first_name)}}
+    {{fields.field(details_form.preferred_first_name)}}
+    {{fields.field(details_form.middle_initials)}}
+    {{fields.field(details_form.last_name)}}
+    {{fields.field(details_form.organisation)}}
+    {{fields.field(details_form.department)}}
+    {{fields.field(details_form.job_title)}}
+    {{fields.field(details_form.location_at_address)}}
+    {{fields.field(details_form.work_address, tooltip=edit_address)}}
 
     <h3>Share Contact Details</h3>
 
@@ -43,7 +48,7 @@
         Non-DIT ILB users may want to add you to one of their work groups so you can have access to their organisation's work processes and data.
     </div>
 
-    {{forms.field(details_form.share_contact_details, opts)}}
+    {{fields.field(details_form.share_contact_details)}}
 
     <p>Sharing your contact details will enable non-DIT ILB users to search for you and to easily and confirm your address and contact details. If you do not share your contact details, they will have to know your email address in advance and will not have access to the address or contact telephone numbers recorded here.</p>
 
@@ -53,13 +58,13 @@
         These details help us to verify your identity. We'll use them if you have problems logging in to your account. You'll need to enter these details to reset your password if you forget it.
     </div>
 
-    {{forms.fieldset(
-        fields=['date_of_birth','security_question','security_answer','security_answer_repeat'],
-        form=details_form,
-        opts=opts
-    )}}
+    {{fields.field(details_form.date_of_birth)}}
+    {{fields.field(details_form.security_question)}}
+    {{fields.field(details_form.security_answer)}}
+    {{fields.field(details_form.security_answer_repeat)}}
 
-    <!-- Phone numbers -->
+
+   <!-- Phone numbers -->
     {% with formset = phones_formset %}
     {% include 'partial/phone-numbers.html' %}
     {% endwith %}
@@ -73,6 +78,7 @@
     {% include 'partial/email-addresses.html' %}
     {% endwith %}
 
+
     <!-- Alternative email addresses -->
     {% with formset=alternative_emails_formset,
             title="Alternative Email Addresses",
@@ -81,6 +87,27 @@
     %}
     {% include 'partial/email-addresses.html' %}
     {% endwith %}
+
+
+    <div class="clearBoth"></div>
+    <div class="container">
+      <div class="row">
+        <div class="four columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="action" value="save" class="primary-button button">
+        Save
+              </button>
+            </li>
+            <li>
+              <a href="" class="button link-button"></a>
+            </li>
+          </ul>
+        </div>
+        <div class="four columns"></div>
+      </div>
+    </div>
+
 
 {%- endcall %}
 

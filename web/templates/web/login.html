@@ -1,5 +1,6 @@
 {% extends "layout/public.html" %}
-{% import "forms/form.html" as forms %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
 <div id="header">
@@ -29,7 +30,36 @@
     </div>
     {% endif %}
 
-    {{forms.form(form, fields=form.fields, action=url('login'), container_class='login-form', csrf_input=csrf_input)}}
+    {% call forms.form(action=url('login'), 
+                       method='post', 
+                       container_class='login-form',
+                       csrf_input=csrf_input)  -%}
+      {{fields.field(form.username)}}
+      {{fields.field(form.password)}}
+
+      <div class="clearBoth"></div>
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button type="submit" value="save" class="primary-button button">
+                  Sign in
+                </button>
+              </li>
+              <li>
+                <a href="{{url('reset-password')}}" class="button link-button">
+                  Forgot your password?
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
+    {%- endcall %}
+
 </div>
 
 <div class="half-width-box right-box">

@@ -8,8 +8,13 @@
 
     <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
 
-    <title>{% block title %}ICMS - Import Case Management System{% endblock %}</title>
+    {% if config and config.title %}
+      {% set title=config.title %}
+    {% else %}
+      {% set title='ICMS - Import Case Management System' %}
+    {%endif %}
 
+    <title>{{title}}</title>
     <script src="{{ static('web/js/core-header.js') }}" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon.css') }}">

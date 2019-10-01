@@ -1,12 +1,16 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-{% import "forms/list.html" as lists %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block page_title %}Create Importer{% endblock %}
 {% block context_header %}Create Importer{% endblock %}
 
 {% block main_content %}
-  {% call forms.form(form, fields=form.fields, csrf_input=csrf_input) %}
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    {{fields.field(form.type)}}
+    {{fields.field(form.name)}}
+    {{fields.field(form.region_origin)}}
+    {{fields.field(form.comments)}}
     {% include "partial/offices.html" %}
   {% endcall %}
 {% endblock %}

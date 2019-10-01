@@ -1,0 +1,23 @@
+{% import "forms/fields.html" as fields %}
+
+{# Renders a form with a form container within with icms styling #}
+{% macro form(action='', method='get', container_class='', csrf_input=None) -%}
+  <form method="{{method}}" action="{{action}}" autocomplete="off" accept-charset="UTF-8" novalidate>
+      {% if csrf_input %}{{csrf_input}}{% endif %}
+      <div class="container setoutForm {{container_class}}">
+          {% if caller %}{{caller()}}{% endif %}
+      </div>
+  </form>
+{%- endmacro %}
+
+{% macro errors(form) -%}
+  {% if form.non_form_errors() %}
+    <div class="input-error">
+    {% for error in form.non_form_errors() %}
+      <div class="error-message">
+        {{error}}
+      </div>
+    {% endfor%}
+    </div>
+  {% endif %}
+{%- endmacro %}

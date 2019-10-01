@@ -1,0 +1,12 @@
+{% import "forms/fields.html" as fields %}
+
+<tr {% if hide %} style="display:none" {%endif%}>
+  {{ form.id }}
+  {{fields.inline_field(form.email)}}
+  {{fields.inline_field(form.type)}}
+  {{fields.inline_field(form.notifications)}}
+  {{fields.inline_field(form.comment)}}
+  <td class="email-remove">
+    {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+  </td>
+</tr>

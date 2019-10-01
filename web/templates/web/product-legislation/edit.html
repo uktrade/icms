@@ -1,9 +1,37 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/form.html" as forms %}
-
-{% block page_title %}Edit Product Legislation{% endblock %}
-{% block context_header %}Edit Product Legislation{% endblock %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
-    {{forms.form(form, fields=form.fields, csrf_input=csrf_input)}}
+  {% call forms.form(action='', method='post',  csrf_input=csrf_input) %}
+    {{fields.field(form.name)}}
+    {{fields.field(form.is_biocidal, checkbox_label="Product type numbers and active ingredients required on schedule when selected")}}
+    {{fields.field(form.is_biocidal_claim, checkbox_label="An additional biocidal claims question is displayed when selected")}}
+    {{fields.field(form.is_eu_cosmetics_regulation, checkbox_label="Applicant may add 'responsible person' statement to the issued schedule when selected")}}
+
+    <div class="clearBoth"></div>
+
+    {% if not config.readonly %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">
+                Save
+              </button>
+            </li>
+            <li>
+              <a href="{{url('product-legislation-list')}}" class="button link-button">
+                Cancel
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+    {% endif %}
+  {% endcall %}
 {% endblock %}
