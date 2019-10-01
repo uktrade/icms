@@ -50,13 +50,6 @@ class Commodity(Archivable, models.Model):
     class Meta:
         ordering = ('commodity_code', )
 
-    class Display:
-        display = [
-            'commodity_code', 'commodity_type_verbose',
-            ('validity_start_date', 'validity_end_date')
-        ]
-        labels = ['Commodity Code', 'Commodity Type', 'Validity']
-        view = True
 
 
 class CommodityGroup(Archivable, models.Model):
@@ -96,15 +89,3 @@ class CommodityGroup(Archivable, models.Model):
     def commodity_type_verbose(self):
         return self.commodity_type.type
 
-    class Display:
-        display = [
-            'group_type_verbose', 'commodity_type_verbose', 'group_code',
-            'group_description'
-        ]
-        labels = [
-            'Commodity Code', 'Commodity Type', 'Group Code/ Group Name',
-            'Descripption/ Commodities'
-        ]
-        view = False
-        edit = True
-        archive = True

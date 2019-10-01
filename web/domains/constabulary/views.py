@@ -9,7 +9,12 @@ class ConstabularyListView(ModelFilterView):
     template_name = 'web/constabulary/list.html'
     model = Constabulary
     filterset_class = ConstabulariesFilter
-    config = {'title': 'Maintain Constabularies'}
+
+    class Display:
+        fields = ['name', 'region_verbose', 'email']
+        headers = ['Constabulary Name', 'Constabulary Region', 'Email Address']
+        edit = True
+        archive = True
 
 
 class ConstabularyCreateView(ContactsManagementMixin, ModelCreateView):

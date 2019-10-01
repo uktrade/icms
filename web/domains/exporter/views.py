@@ -11,6 +11,13 @@ class ExporterListView(ModelFilterView):
     filterset_class = ExporterFilter
     model = Exporter
 
+    class Display:
+        fields = ['name']
+        headers = ['Exporter Name']
+        edit = True
+        view = True
+        archive = True
+
 
 class ExporterEditView(ModelUpdateView):
     template_name = 'web/exporter/edit.html'

@@ -37,8 +37,3 @@ class Team(BaseTeam):
 
     class Meta:
         ordering = ('name', )
-
-    class Display:
-        display = ['name']
-        labels = ['Name']
-        edit = True

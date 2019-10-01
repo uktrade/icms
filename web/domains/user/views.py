@@ -6,6 +6,7 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
+from web.views import ModelFilterView
 
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
@@ -116,10 +117,27 @@ def user_details(request):
     return details_update(request, action)
 
 
-def search_people(request):
-    if not request.POST:  # first page load
-        filter = UserFilter(queryset=User.objects.none())
-    else:
-        filter = UserFilter(request.POST, queryset=User.objects.all())
+#  def search_people(request):
+#      if not request.POST:  # first page load
+#          filter = UserFilter(queryset=User.objects.none())
+#      else:
+#          filter = UserFilter(request.POST, queryset=User.objects.all())
+#
+#      return render(request, 'web/user/search-people.html', {'filter': filter})
 
-    return render(request, 'web/user/search-people.html', {'filter': filter})
+
+class PeopleSearchView(ModelFilterView):
+    template_name = 'web/user/search-people.html'
+    filterset_class = UserFilter
+    model = User
+    config = {'title': 'Search People'}
+
+    class Display:
+        fields = [('title', 'first_name', 'last_name'),
+                  ('organisation', 'email'), 'work_address']
+        headers = ['Name', 'Job Details', 'Oragnisation Address']
+        select = True
+
+    def post(self, request, *args, **kwargs):
+        request.GET = request.POST
+        return super().get(request, *args, **kwargs)

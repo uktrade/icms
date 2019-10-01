@@ -58,20 +58,6 @@ class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
     class Meta:
         ordering = ('order', )
 
-    class Display:
-        display = ['name', 'calibres__count']
-        #  TODO: Change labels to dictionary with display fields as keys
-        labels = ['Obsolete Calibre Group Name', 'Number of Items']
-        #  TODO: Change help text keys to field names rather than label
-        help_texts = {
-            'Number of Items':
-            'The total number of obsolete calibres in this group'
-        }
-        view = True
-        edit = True
-        archive = True
-        sort = True
-
 
 class ObsoleteCalibre(Archivable, models.Model):
     calibre_group = models.ForeignKey(ObsoleteCalibreGroup,

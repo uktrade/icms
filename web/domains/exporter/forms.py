@@ -9,6 +9,10 @@ class ExporterFilter(ModelSearchFilter):
                                lookup_expr='icontains',
                                label='Exporter Name')
 
+    class Meta:
+        model = Exporter
+        fields = []
+
 
 class ExporterEditForm(ModelEditForm):
     class Meta:

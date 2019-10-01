@@ -1,5 +1,4 @@
 from django.forms.fields import ChoiceField
-from django.forms.widgets import TextInput
 from django_filters import CharFilter
 from web.forms import ModelEditForm, ModelSearchFilter
 from web.forms.mixins import ReadonlyFormMixin
@@ -10,11 +9,9 @@ from .models import Importer
 class ImporterFilter(ModelSearchFilter):
     importer_entity_type = CharFilter(field_name='type',
                                       lookup_expr='icontains',
-                                      widget=TextInput,
                                       label='Importer Entity Type')
 
     importer_name = CharFilter(lookup_expr='icontains',
-                               widget=TextInput,
                                label='Importer Name',
                                method='filter_importer_name')
 
