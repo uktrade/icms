@@ -36,7 +36,3 @@ class Constabulary(Archivable, BaseTeam):
     @property
     def region_verbose(self):
         return dict(Constabulary.REGIONS)[self.region]
-
-    class Display:
-        display = ['name', 'region_verbose', 'email']
-        labels = ['Constabulary Name', 'Constabulary Region', 'Email Address']

@@ -27,10 +27,14 @@
       {{field_markup}}
     </div>
     <div class="input-group-addon hint-addon">
+      {% if tooltip %}
+      {{tooltip}}
+      {% else %}
       <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
         {{tooltip or field.help_text}}
       </div>
       <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
+      {% endif %}
       </div>
   {% else %}
     {{field_markup}}

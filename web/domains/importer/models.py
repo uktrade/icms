@@ -51,9 +51,8 @@ class Importer(Archivable, BaseTeam):
     def entity_type(self):
         return dict(Importer.TYPES)[self.type]
 
-    class Display:
-        display = [('full_name', 'registered_number', 'entity_type')]
-        labels = ['Importer Name / Importer Reg No / Importer Entity Type']
-        edit = True
-        view = True
-        archive = True
+    class Meta:
+        ordering = (
+            '-is_active',
+            'name',
+        )
