@@ -10,21 +10,23 @@
             {{fields.field(filter.form[field])}}
           {% endfor %}
 
-        <div class="clearBoth"></div>
-        <div class="container">
-          <div class="row">
-            <div class="three columns"></div>
-            <div class="six columns">
-              <ul class="menu-out flow-across">
-                <button type="submit" name="" value="" class="primary-button button">
-                  Search
-                </button>
-                </li>
-              </ul>
+          <div class="clearBoth"></div>
+          <div class="container">
+            <div class="row">
+              <div class="three columns"></div>
+              <div class="six columns">
+                <ul class="menu-out flow-across">
+                  <button type="submit" name="" value="" class="primary-button button">
+                    Search
+                  </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="three columns"></div>
             </div>
-            <div class="three columns"></div>
           </div>
-        </div>
+
+          {% include "partial/paginator.html" %}
         {%- endcall %}
 
 
@@ -40,7 +42,8 @@
         {% set hide_empty_message = not(request.POST or request.GET) %}
 
         {{lists.filter_results(
-            filter,
+            page,
+            display_config,
             csrf_input=csrf_input,
             hide_empty_message=hide_empty_message,
             empty_message=empty_message

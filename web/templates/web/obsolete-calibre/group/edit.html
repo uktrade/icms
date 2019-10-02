@@ -1,5 +1,6 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block page_title %}Edit Obsolete Calibre Group{% endblock %}
 {% block context_header %}Edit Obsolete Calibre Group{% endblock %}
@@ -7,23 +8,25 @@
 {% block main_content %}
 
 <h3>Group</h3>
-{% call forms.form(form, fields=form.fields, csrf_input=csrf_input) -%}
+{% call forms.form(method='post', csrf_input=csrf_input) -%}
 
 <h3>Obsolete Calibres</h3>
 
 <div id="calibre_display_archived_checkbox" class="container setoutForm">
     <div class="row">
-        {# {{forms.field(form.display_archived, opts=form.config)}} #}
+      {{fields.field(form.name)}}
         <div class="three columns">
             <label class="prompt west">Display Archived</label>
         </div>
-        <div class="nine columns">
+        <div class="six columns radio-or-tickbox-group">
+          <label class="radio-label" for="calibre_display_archived_checkbox">
             <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
+          </label>
         </div>
     </div>
 </div>
 
-{# {{errors.formset_errors(formset) }} #}
+{{forms.errors(formset)}}
 <table id="obsolete-calibres-table" responsiveList class="setoutList">
     <thead>
         <tr>
@@ -36,9 +39,7 @@
         {% for form in formset.sorted_forms() %}
         <tr>
             {{form.id}}
-            {% with field=form.name %}
-            {% include 'forms/inline-field.html' %}
-            {% endwith %}
+            {{fields.inline_field(form.name)}}
             <td class="calibre-status">{{form.instance.status}}</td>
             <td>
                 <div class="calibre-order">

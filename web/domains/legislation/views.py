@@ -13,6 +13,19 @@ class ProductLegislationListView(ModelFilterView):
     model = ProductLegislation
     config = {'title': 'Maintain Product Legislation'}
 
+    class Display:
+        fields = [
+            'name', 'is_biocidal_yes_no', 'is_biocidal_claim_yes_no',
+            'is_eu_cosmetics_regulation_yes_no'
+        ]
+        headers = [
+            'Legislation Name', 'Is Biocidal', 'Is Biocidal Claim',
+            'Is EU Cosmetics Regulation'
+        ]
+        view = True
+        archive = True
+        edit = True
+
 
 class ProductLegislationCreateView(ModelCreateView):
     template_name = 'web/product-legislation/edit.html'

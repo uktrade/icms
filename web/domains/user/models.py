@@ -57,12 +57,6 @@ class User(AbstractUser):
                                             blank=True,
                                             null=True)
 
-    class Display:
-        display = [('title', 'first_name', 'last_name'),
-                   ('organisation', 'email'), 'work_address']
-        labels = ['Name', 'Job Details', 'Oragnisation Address']
-        select = True
-
 
 class PhoneNumber(models.Model):
     WORK = "WORK"
