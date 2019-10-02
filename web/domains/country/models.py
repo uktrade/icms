@@ -40,9 +40,6 @@ class CountryTranslationSet(Archivable, models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    class Display:
-        archive = True
-
 
 class CountryTranslation(models.Model):
     translation = models.CharField(max_length=150, blank=False, null=False)
@@ -54,6 +51,3 @@ class CountryTranslation(models.Model):
                                         on_delete=models.CASCADE,
                                         blank=False,
                                         null=False)
-
-    class Display:
-        archive = True

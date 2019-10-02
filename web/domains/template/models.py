@@ -59,19 +59,7 @@ class Template(Archivable, models.Model):
         return dict(Template.DOMAINS)[self.application_domain]
 
     class Meta:
-        ordering = ('-is_active', )
-
-    # Default display fields on the listing page of the model
-    class Display:
-        display = [
-            'template_name', 'application_domain_verbose',
-            'template_type_verbose', 'template_status'
-        ]
-        labels = [
-            'Template Name', 'Application Domain', 'Template Type',
-            'Template Status'
-        ]
-        #  Display actions
-        edit = True
-        view = True
-        archive = True
+        ordering = (
+            '-is_active',
+            'template_name',
+        )

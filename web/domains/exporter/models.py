@@ -21,9 +21,8 @@ class Exporter(Archivable, BaseTeam):
     def is_agent(self):
         return self.main_exporter is not None
 
-    class Display:
-        display = ['name']
-        labels = ['Exporter Name']
-        edit = True
-        view = True
-        archive = True
+    class Meta:
+        ordering = (
+            '-is_active',
+            'name',
+        )

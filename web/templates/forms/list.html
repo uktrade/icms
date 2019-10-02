@@ -1,28 +1,24 @@
 {% import "messages/message.html" as message %}
 {% macro filter_results(
-    filter,
+    page,
+    config,
     actions=None,
     csrf_input=None,
     hide_empty_message=False,
     empty_message="There aren't any records that match your search") -%}
 
-
-    {% set qs=filter.qs %}  {# avoid reading qs multiple times as it will query the db earch time #}
-
-    {% set count =  qs.count() %}
-
+    {% set count =  page.paginator.count %}
     {% if count > 0 %}
-    {% set conf=qs.model.Display %}
-    {% set has_actions = conf.edit or conf.view or conf.archive %}
+    {% set has_actions = config.edit or config.view or config.archive %}
     <table responsiveList class="setoutList">
         <thead>
             <tr>
-                {% if conf.select %}
+                {% if config.select %}
                     <th scope="col">Select</th>
                 {% endif %}
-                {% for header in conf.labels %}
+                {% for header in config.headers %}
                     <th scope="col">
-                        {% set tooltip = conf.help_texts and conf.help_texts[header] %}
+                        {% set tooltip = config.help_texts and config.help_texts[header] %}
                         {% set header_id = (header|replace(" ","-")) %}
                         {{header}}
                         {% if tooltip %}
@@ -39,20 +35,20 @@
                 {% endif %}
             </tr>
         </thead>
-        {% for item in qs %}
+        {% for item in page.object_list %}
         <tr>
-            {% if conf.select %}
+            {% if config.select %}
                 <td>
                     <label for="id_select_item" class="radio-label">
                         <input name="selected_items" type="checkbox" class="item_selector" value="{{item.id}}"/>
                     </label>
                 </td>
             {% endif %}
-            {% for field in conf.display %}
+            {% for field in config.fields %}
                 <td>
                 {% if field is not string %}
                     {% for f in field  %}
-                        {% if loop.first and conf.view %}
+                        {% if loop.first and config.view %}
                             <a href="{{item.id}}">{{item[f] or ''}}</a>
                         {% else %}
                             {{item[f] or ''}}
@@ -60,14 +56,14 @@
                         <br/>
                     {% endfor %}
                 {% else %}
-                        {% if loop.first and conf.view %}
+                        {% if loop.first and config.view %}
                             <a href="{{item.id}}">{{item[field]}}</a>
                         {% else %}
                             {{item[field]}}
                         {% endif %}
                 {% endif %}
                 {% if loop.first %}
-                    {% if conf.archive and  not item.is_active %}
+                    {% if config.archive and  not item.is_active %}
                         <br/>
                         <span class="text-widget" style="font-weight:bold">(ARCHIVED)</span>
                     {% endif %}
@@ -78,7 +74,7 @@
             {% if has_actions %}
                 <td data-title="Actions">
                     <ul class="menu-out grouped flow-across">
-                            {% if conf.edit %}
+                            {% if config.edit %}
                                 <li>
                                     <a href="{{item.id}}/edit/"
                                     class="link-button icon-pencil button no-prompt-action tooltipstered"
@@ -88,7 +84,7 @@
                                     <div id="edit-hint" role="tooltip" class="hint-content" aria-hidden="true">Edit</div>
                                 </li>
                             {% endif %}
-                            {% if conf.sort and not loop.first %}
+                            {% if config.sort and not loop.first %}
                                 <li>
                                     <form method="post" action="">
                                         <button type="submit"
@@ -105,7 +101,7 @@
                                     </form>
                                 </li>
                             {% endif %}
-                            {% if conf.sort and not loop.last %}
+                            {% if config.sort and not loop.last %}
                                 <li>
                                     <form method="post" action="">
                                         <button type="submit"
@@ -123,7 +119,7 @@
                                 </li>
                             {% endif %}
                             {% if item.is_active %}
-                            {% if conf.archive %}
+                            {% if config.archive %}
                                 <li>
                                     <form method="post" action="">
                                         <button type="submit"
@@ -140,7 +136,7 @@
                                 </li>
                             {% endif %}
                         {% else %}
-                            {% if conf.archive %}
+                            {% if config.archive %}
                                 <li>
                                     <form method="post" action="">
                                         <button type="submit"
@@ -165,7 +161,7 @@
     </table>
 
     <div class="result-count">
-        {{count}} {{qs.model.__name__|lower}}{%if count > 1 %}s{% endif %} found
+        {{count}} found
     </div>
     {% else %}    {# count=0, no results #}
         {% if not hide_empty_message %}
@@ -174,3 +170,16 @@
     {% endif %}
 
 {%- endmacro %}
+
+{% macro page_link(label, page_no, active=True, class=None) %}
+<li class="{{class}} {% if not active %}disabled{% endif %}" 
+  aria-disabled="{%if not active %}true{%endif%}">
+    {% if active %}
+    <button class="button link-button" type="submit" name="page" value="{{page_no}}">
+      {{label}}
+    </button>
+    {% else %}
+      {{label}}
+    {% endif %}
+  </li>
+{% endmacro %}

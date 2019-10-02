@@ -1,0 +1,19 @@
+{% import "forms/list.html" as lists %}
+
+{% if page.has_other_pages()%}
+<p id="paginator-label" class="screen-reader-only"> Pagination controls</p>
+<ul class="pager" role="navigation" aria-labelledby="paginator-label">
+  {% set has_previous=page.has_previous() %}
+  {% set has_next=page.has_next() %}
+  {% set previous_page_no=page.previous_page_number() if has_previous %}
+  {% set next_page_no=page.next_page_number() if has_next %}
+
+  {{lists.page_link('«', page_no=1, active=has_previous, class="page-skip first")}}
+  {{lists.page_link('‹', page_no=previous_page_no, active=has_previous, class="page-skip previous")}}
+  <li class="current-page-text">
+    {{page.number}}<span class="page-count"> of {{page.paginator.num_pages}}</span>
+  </li>
+  {{lists.page_link('›', page_no=next_page_no, active=has_next, class="page-skip next")}}
+  {{lists.page_link('»', page_no=page.paginator.num_pages, active=has_next, class="page-skip last")}}
+</ul>
+{% endif %}

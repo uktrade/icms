@@ -5,7 +5,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
-from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
+from web.views import (ModelCreateView, ModelDetailView,
                        ModelUpdateView)
 from web.views.mixins import PostActionMixin
 
@@ -18,7 +18,7 @@ from .models import (Country, CountryGroup, CountryTranslation,
 logger = logging.getLogger(__name__)
 
 
-class CountryListView(ModelFilterView):
+class CountryListView(ListView):
     model = Country
     template_name = 'web/country/list.html'
     filterset_class = CountryNameFilter

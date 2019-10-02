@@ -27,13 +27,3 @@ class ProductLegislation(Archivable, models.Model):
 
     class Meta:
         ordering = ('name', )
-
-    class Display:
-        display = [
-            'name', 'is_biocidal_yes_no', 'is_biocidal_claim_yes_no',
-            'is_eu_cosmetics_regulation_yes_no'
-        ]
-        labels = [
-            'legislation Name', 'Is Biocidal', 'Is Biocidal Claim',
-            'Is EU Cosmetics Regulation'
-        ]

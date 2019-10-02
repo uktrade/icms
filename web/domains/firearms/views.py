@@ -13,7 +13,18 @@ class ObsoleteCalibreListView(ModelFilterView):
     template_name = 'web/obsolete-calibre/group/list.html'
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
-    load_immediate = True
+
+    class Display:
+        fields = ['name', 'calibres__count']
+        headers = ['Obsolete Calibre Group Name', 'Number of Items']
+        help_texts = {
+            'Number of Items':
+            'The total number of obsolete calibres in this group'
+        }
+        view = True
+        edit = True
+        archive = True
+        sort = True
 
 
 class ObsoleteCalibreGroupBaseView(PostActionMixin):

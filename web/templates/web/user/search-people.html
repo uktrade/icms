@@ -13,6 +13,7 @@
     {{message.info('To search for a person, please fill in at least one field below.')}}
 
     {% call forms.form(method='post', csrf_input=csrf_input) %}
+      <input type="hidden" name="action" value="search_people"/>
       {{fields.field(filter.form.email_address)}}
       {{fields.field(filter.form.forename)}}
       {{fields.field(filter.form.surname)}}
@@ -25,7 +26,7 @@
           <div class="eight columns">
             <ul class="menu-out flow-across">
               <li>
-                <button type="submit" class="primary-button button" name="action" value="search_people">
+                <button type="submit" class="primary-button button">
                   Search
                 </button>
               </li>
@@ -34,10 +35,11 @@
           <div class="one columns"></div>
         </div>
       </div>
+      {% include "partial/paginator.html" %}
     {% endcall %}
     <form method="post" action="">
         {{csrf_input}}
-        {% if filter.qs.count() > 0 %}
+        {% if page.paginator.count > 0 %}
             <div class="list-actions">
                 <ul class="menu-out small-menu-out flow-across">
                     <li>
@@ -58,6 +60,6 @@
                 </ul>
             </div>
         {% endif %}
-        {{lists.filter_results(filter, csrf_input=csrf_input, hide_empty_message=first_load,  empty_message=empty_message)}}
+        {{lists.filter_results(page, display_config, csrf_input=csrf_input, hide_empty_message=first_load,  empty_message=empty_message)}}
     </form>
 {% endblock %}

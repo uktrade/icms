@@ -13,6 +13,11 @@ class TeamListView(ModelFilterView):
     model = Team
     config = {'title': 'Search Teams'}
 
+    class Display:
+        fields = ['name']
+        headers = ['Name']
+        edit = True
+
 
 class TeamEditView(ContactsManagementMixin, ModelUpdateView):
     template_name = 'web/team/edit.html'

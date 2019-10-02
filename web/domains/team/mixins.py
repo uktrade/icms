@@ -2,7 +2,7 @@ from django.db import transaction
 from django.shortcuts import render
 from web.views.mixins import PostActionMixin
 from web.domains.user.models import User
-from web.domains.user.views import search_people
+from web.domains.user.views import PeopleSearchView
 import logging
 
 from .models import Role
@@ -146,12 +146,12 @@ class ContactsManagementMixin(PostActionMixin):
         })
 
     def search_people(self, request, pk=None):
-        return search_people(request)
+        return PeopleSearchView.as_view()(request)
 
     def add_member(self, request, pk=None):
         add_to_role = request.POST.get('add_to_role', None)
         self._save_to_session(add_to_role, pk)
-        return search_people(request)
+        return PeopleSearchView.as_view()(request)
 
     def add_people(self, request, pk=None):
         # Handles new members added on search users

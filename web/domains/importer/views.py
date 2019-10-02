@@ -16,7 +16,13 @@ class ImporterListView(ModelFilterView):
     template_name = 'web/importer/list.html'
     filterset_class = ImporterFilter
     model = Importer
-    paginate_by = 100
+
+    class Display:
+        fields = [('full_name', 'registered_number', 'entity_type')]
+        headers = ['Importer Name / Importer Reg No / Importer Entity Type']
+        edit = True
+        view = True
+        archive = True
 
 
 class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
