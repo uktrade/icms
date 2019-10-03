@@ -125,6 +125,7 @@
                                         <button type="submit"
                                                 name="action"
                                                 value="archive"
+                                                data-confirm="Are you sure you want to archive this record?"
                                                 class="link-button icon-bin button no-prompt-action tooltipstered"
                                                 aria-describedby="archive-hint"
                                                 aria-label="Archive">
@@ -143,6 +144,7 @@
                                                 name="action"
                                                 value="unarchive"
                                                 class="link-button icon-undo2 button no-prompt-action tooltipstered"
+                                                data-confirm="Are you sure you want to unarchive this record?"
                                                 aria-describedby="unarchive-hint"
                                                 aria-label="Unarchive">
                                             {{csrf_input}}
