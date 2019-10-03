@@ -1,5 +1,5 @@
 {% extends "web/commodity/edit.html" %}
-{% import "messages/message.html" as messages %}
+{% import "messages/banners.html" as banners %}
 
 {% block main_content %}
     {% set info_message %}
@@ -45,6 +45,6 @@
         <br/>
         4402
     {% endset %}
-    {{messages.info(info_message|safe)}}
+    {{banners.info(info_message|safe)}}
     {{super()}}
 {% endblock %}
