@@ -1,4 +1,4 @@
-{% import "messages/message.html" as message %}
+{% import "messages/banners.html" as banners %}
 {% macro filter_results(
     page,
     config,
@@ -167,7 +167,7 @@
     </div>
     {% else %}    {# count=0, no results #}
         {% if not hide_empty_message %}
-            {{message.warning(empty_message)}}
+            {{banners.warning(empty_message)}}
         {% endif %}
     {% endif %}
 
