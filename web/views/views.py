@@ -6,6 +6,7 @@ from django.views.generic.list import ListView
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
 from web.utils import merge_dictionaries as m
+from web.views.mixins import PostActionMixin
 
 from .mixins import DataDisplayConfigMixin, ViewConfigMixin
 
@@ -15,9 +16,19 @@ def home(request):
     return render(request, 'web/home.html')
 
 
-class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
-                      ListView):
+class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
+                      DataDisplayConfigMixin, ListView):
     paginate_by = 50
+
+    def archive(self, *args, **kwargs):
+        item = self.request.POST.get('item')
+        self.model.objects.get(pk=item).archive()
+        return super().get(*args, **kwargs)
+
+    def unarchive(self, *args, **kwargs):
+        item = self.request.POST.get('item')
+        self.model.objects.get(pk=item).unarchive()
+        return super().get(*args, **kwargs)
 
     def paginate(self, queryset):
         paginator = Paginator(queryset, self.paginate_by)
