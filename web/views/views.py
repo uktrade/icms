@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
@@ -23,11 +25,13 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
     def archive(self, *args, **kwargs):
         item = self.request.POST.get('item')
         self.model.objects.get(pk=item).archive()
+        messages.success(self.request, 'Record archived successfully')
         return super().get(*args, **kwargs)
 
     def unarchive(self, *args, **kwargs):
         item = self.request.POST.get('item')
         self.model.objects.get(pk=item).unarchive()
+        messages.success(self.request, 'Record unarchived successfully')
         return super().get(*args, **kwargs)
 
     def paginate(self, queryset):
@@ -50,11 +54,15 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
         return context
 
 
-class ModelCreateView(RequireRegisteredMixin, ViewConfigMixin, CreateView):
+class ModelCreateView(RequireRegisteredMixin, ViewConfigMixin,
+                      SuccessMessageMixin, CreateView):
+    success_message = "Record created successfully"
     pass
 
 
-class ModelUpdateView(RequireRegisteredMixin, ViewConfigMixin, UpdateView):
+class ModelUpdateView(RequireRegisteredMixin, ViewConfigMixin,
+                      SuccessMessageMixin, UpdateView):
+    success_message = "Record updated successfully"
     pass
 
 

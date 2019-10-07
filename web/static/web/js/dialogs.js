@@ -1,4 +1,4 @@
-var dialogs = (function($){
+(function($){
 
   var confirm = function(el, message) {
 
