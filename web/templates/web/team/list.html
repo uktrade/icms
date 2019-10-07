@@ -1,5 +1,5 @@
 {% extends "layout/filtered-list.html" %}
-{% import "messages/message.html" as messages %}
+{% import "messages/banners.html" as banners %}
 
 {% block empty_message %}There aren't any teams that match your search{% endblock %}
 
@@ -12,7 +12,7 @@
 
 {% block main_content %}
 
-{{messages.info(
+{{banners.info(
     "Users can be put into teams. Each team has a different set of roles,
     and each user in the team can be given one or more roles.
     Adding a user to a role may give them extra system privileges.
