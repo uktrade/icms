@@ -5,6 +5,7 @@
 {% block main_content %}
 Hi {{ request.user.username }}, you are logged in
 
+
 <form method="post" action="{{url('logout')}}">
     {{ csrf_input }}
     <button type="submit" >Logout</button>

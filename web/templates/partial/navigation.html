@@ -8,49 +8,57 @@
 
 <ul class="dropdown-menu" id="top-menu">
 
-    {% if not request.user.is_anonymous %}
+  {% if not request.user.is_anonymous %}
+
     <li class="top-menu-action">
         <a href="{{ url('workbasket') }}">Workbasket</a>
     </li>
 
+    {% if perms.web["IMP_ADMIN:DASHBOARD_USER:DASHBOARD_ACCESS_LHS"] %}
     <li class="top-menu-action">
         <a href="">Dashboard</a>
     </li>
+    {% endif %}
 
     <li class="top-menu-action">
         <a href="">Reports</a>
     </li>
+
+    <li class="top-menu-action">
+      <a href="">Search Mailshots</a>
+    </li>
+
+    {% if 
+      perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_SEARCH_CASES_LHS"] or 
+      perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_CERT_SEARCH_CASES_LHS"]
+    %}
     <li class="top-menu-dropdown">
         <a class="dropdown-label" href="#">Search</a>
         <ul class="menu-out flow-down top-menu-subcategory-list">
-
             <li class="top-menu-subcategory">
-
                 <ul class="top-menu-subcategory-actions">
-
+                  {% if perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_SEARCH_CASES_LHS"] %}
                     <li class="top-menu-subcategory-action">
-                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;2922CB4584BF66A88C2ABEED5C8E17A5&quot;}, this);">Search Import Applications</a>
-
+                        <a href="">Search Import Applications</a>
                     </li>
+                  {% endif %}
 
+                  {% if perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_CERT_SEARCH_CASES_LHS"] %}
                     <li class="top-menu-subcategory-action">
-                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;DA13B9EA7DF4B1F7C7F63695DFD43754&quot;}, this);">Search Certificate Applications</a>
-
+                        <a href="">Search Certificate Applications</a>
                     </li>
-
-                    <li class="top-menu-subcategory-action">
-                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;000C44E12803B2CED803BA61C1B3FA24&quot;}, this);">Search Mailshots</a>
-
-                    </li>
-
+                  {% endif %}
                 </ul>
             </li>
-
         </ul>
     </li>
+    {% endif %}
+
     <li class="top-menu-dropdown">
         <a class="dropdown-label" href="#">Admin</a>
         <ul class="menu-out flow-down top-menu-subcategory-list">
+
+          {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] %}
             <li class="top-menu-subcategory">
                 <span class="top-menu-subcategory-prompt">Importers/Exporters</span>
 
@@ -64,25 +72,28 @@
 
                 </ul>
             </li>
+          {% endif %}
 
+          {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:MAILSHOT_ADMIN"] %}
             <li class="top-menu-subcategory">
-
                 <ul class="top-menu-subcategory-actions">
-
                     <li class="top-menu-subcategory-action">
-                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;F0650839C2F159043AFD7416CF93637C&quot;}, this);">Mailshots</a>
-
+                        <a href="">Mailshots</a>
                     </li>
-
                 </ul>
             </li>
+          {% endif %}
 
+          {% if 
+          perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] or 
+          perms.web["COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_ADMIN_LHS"] 
+          %}
             <li class="top-menu-subcategory">
-
                 <span class="top-menu-subcategory-prompt">Reference Data</span>
 
                 <ul class="top-menu-subcategory-actions">
 
+                  {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{url('commodity-list')}}">Commodities</a>
                     </li>
@@ -101,47 +112,46 @@
                         <a href="{{url('product-legislation-list')}}">Product Legislation</a>
 
                     </li>
+                  {% endif %}
 
+                  {% if perms.web["COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_ADMIN_LHS"] %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{url('country-list')}}">Countries</a>
-
                     </li>
+                  {% endif %}
 
                 </ul>
             </li>
+          {% endif %}
 
             <li class="top-menu-subcategory">
 
                 <ul class="top-menu-subcategory-actions">
 
+                  {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{ url('template-list') }}">Templates</a>
-
                     </li>
+                  {% endif %}
 
-                    <li class="top-menu-subcategory-action">
-                        <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;4DB09E3CCF83A288AA390C6CAC0A8140&quot;}, this);">Matrix Folders</a>
-
-                    </li>
-
+                  {% if request.user.groups.count() > 0 %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{url('team-list')}}">Teams</a>
                     </li>
-
+                  {% endif %}
                 </ul>
             </li>
 
         </ul>
     </li>
     <li class="top-menu-button">
-        <button id="g27" name="g27" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-navbar&quot;,&quot;ctxt&quot;:&quot;8ED5AD37BA40C1A64EBA2F9DF252E364&quot;}, this);" class="primary-button button">
+        <button id="g27" name="g27" type="button" onclick="" class="primary-button button">
             New Import Application </button>
     </li>
     <li class="icon-user" id="user-info">
 
         <a class="dropdown-label" href="#">{{request.user.title}} {{request.user.first_name}} {{request.user.last_name}}</a>
         <ul class="menu-out flow-down top-menu-subcategory-list">
-
             <li>
                 <ul class="menu-out">
                     <li> <a href="{{ url('user-details') }}">My details</a></li>
@@ -149,11 +159,10 @@
                 </ul>
             </li>
         </ul>
-
     </li>
-    {% else %}
+  {% else %}
     <li class="icon-user" id="user-info">
         <a class="dropdown-label" href="{{ url('login') }}">Log in</a>
     </li>
-    {% endif %}
+  {% endif %}
 </ul>
