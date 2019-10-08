@@ -23,8 +23,6 @@ class CommodityType(models.Model):
 
 
 class Commodity(Archivable, models.Model):
-    LABEL = 'Commodity'
-
     TEXTILES = 'TEXTILES'
     IRON_STEEL = 'IRON_STEEL'
     FIREARMS_AMMO = 'FIREARMS_AMMO'
@@ -45,12 +43,15 @@ class Commodity(Archivable, models.Model):
     quantity_threshold = models.IntegerField(blank=True, null=True)
     sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
 
+<<<<<<< Updated upstream
+=======
     def __str__(self):
         if self.id:
             return self.LABEL + ' - ' + self.commodity_code
         else:
             return self.LABEL
 
+>>>>>>> Stashed changes
     @property
     def commodity_type_verbose(self):
         return self.commodity_type.type
@@ -60,6 +61,7 @@ class Commodity(Archivable, models.Model):
             '-is_active',
             'commodity_code',
         )
+
 
 
 class CommodityGroup(Archivable, models.Model):
@@ -101,6 +103,8 @@ class CommodityGroup(Archivable, models.Model):
     def commodity_type_verbose(self):
         return self.commodity_type.type
 
+<<<<<<< Updated upstream
+=======
     def __str__(self):
         if self.id:
             return self.LABEL + ' - ' + self.group_code
@@ -112,3 +116,4 @@ class CommodityGroup(Archivable, models.Model):
             '-is_active',
             'group_code',
         )
+>>>>>>> Stashed changes

@@ -1,0 +1,47 @@
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% set title = ('Editing ' if form.instance and form.instance.id else 'New ') + form.instance.__str__() %}
+{% block page_title %}{{title}}{% endblock %}
+{% block context_header %}{{title}}{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
+    {% block fields %}
+      {% for field in form %}
+        {{fields.field(field)}}
+      {% endfor %}
+    {% endblock %}
+
+    {% block additional_form_content %}
+    {% endblock %}
+
+    {% block form_actions %}
+    <div class="container">
+      <div class="row">
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">
+                Save
+              </button>
+            </li>
+            <li>
+              <a href="{{view.success_url}}" class="button link-button">
+                Cancel
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+    {% endblock %}
+
+  {%- endcall %}
+
+{% endblock %}
+

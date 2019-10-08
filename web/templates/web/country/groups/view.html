@@ -1,31 +1,17 @@
-{% extends "web/country/country-base.html" %}
+{% extends "model/view.html" %}
 {% from "web/country/country-selections.html" import country_selector %}
 
-{% block  main_content %}
 
+{% block sidebar %}
+  {% include "web/country/sidebar.html" %}
+{% endblock %}
+
+{% block  fields %}
 {% include "web/country/groups/filter-bar.html" %}
-<div class="container setoutForm">
-    <div class="row">
-        <div class="four columns">
-            <label for="group-name-span" class="prompt west">Group Name</label>
-        </div>
-        <div class="four columns">
-            <span id="group-name-span" class="text-widget">{{object.name}}</span>
-        </div>
-        <div class="four columns"></div>
-    </div>
-    <div class="row">
-        <div class="four columns">
-            <label for="group-commens-span" class="prompt west">Group Comments
-            </label>
-        </div>
-        <div class="four columns">
-            <span id="group-comments-span" class="text-widget "></span>
-        </div>
-        <div class="four columns"></div>
-    </div>
-</div>
+{{super()}}
+{% endblock %}
 
+{% block additional_content %}
 <div class="list-actions">
     <ul class="menu-out flow-across">
         <li>

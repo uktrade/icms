@@ -28,7 +28,7 @@ def generate_temp_password(length=8):
 
 class LoginView(LoginView):
     form_class = LoginForm
-    template_name = 'web/login.html'
+    template_name = 'auth/login.html'
     redirect_authenticated_user = True
 
 
@@ -61,7 +61,7 @@ def register(request):
         login(request, user)
         return redirect('set-password')
 
-    return render(request, 'web/registration.html', {
+    return render(request, 'auth/registration.html', {
         'form': form,
         'captcha_form': captcha_form
     })
@@ -97,9 +97,9 @@ def reset_password(request):
             user.save()
             notify.register(request, user, temp_pass)
             return render(request,
-                          'web/reset-password/reset-password-success.html')
+                          'auth/reset-password/reset-password-success.html')
 
-        return render(request, 'web/reset-password/reset-password-2.html', {
+        return render(request, 'auth/reset-password/reset-password-2.html', {
             'form': form,
             'login_id': login_id
         })
@@ -110,7 +110,7 @@ def reset_password(request):
             user = User.objects.get(
                 username=form.cleaned_data.get('login_id', ''))
             form = ResetPasswordSecondForm(user)
-            return render(request, 'web/reset-password/reset-password-2.html',
+            return render(request, 'auth/reset-password/reset-password-2.html',
                           {
                               'form': form,
                               'login_id': user.username
@@ -118,7 +118,7 @@ def reset_password(request):
         except ObjectDoesNotExist:
             form.add_error(None, 'Invalid login id')
 
-    return render(request, 'web/reset-password/reset-password-1.html',
+    return render(request, 'auth/reset-password/reset-password-1.html',
                   {'form': form})
 
 
@@ -129,7 +129,7 @@ def set_password(request):
     if form.is_valid():
         return redirect('home')
 
-    return render(request, 'web/set-password.html', {'form': form})
+    return render(request, 'auth/set-password.html', {'form': form})
 
 
 @require_registered

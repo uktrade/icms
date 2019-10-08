@@ -17,6 +17,13 @@ class Country(models.Model):
     commission_code = models.CharField(max_length=20, blank=False, null=False)
     hmrc_code = models.CharField(max_length=20, blank=False, null=False)
 
+    def __str__(self):
+        label = 'Country'
+        if self.id:
+            return label + ' - ' + self.name
+        else:
+            return label
+
     @property
     def name_slug(self):
         return self.name.lower().replace(' ', '_')
@@ -31,6 +38,13 @@ class CountryGroup(models.Model):
     countries = models.ManyToManyField(Country,
                                        blank=True,
                                        related_name='country_groups')
+
+    def __str__(self):
+        label = 'Country Group'
+        if self.id:
+            return label + ' - ' + self.name
+        else:
+            return label
 
     class Meta:
         ordering = ('name', )

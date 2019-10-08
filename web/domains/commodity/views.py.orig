@@ -1,6 +1,5 @@
 from django.urls import reverse_lazy
-from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
-                       ModelUpdateView)
+from web.views import ModelCreateView, ModelFilterView, ModelUpdateView
 
 from .forms import (CommodityEditForm, CommodityFilter, CommodityForm,
                     CommodityGroupEditForm, CommodityGroupFilter,
@@ -19,7 +18,7 @@ class CommodityListView(ModelFilterView):
             ('validity_start_date', 'validity_end_date')
         ]
         headers = ['Commodity Code', 'Commodity Type', 'Validity']
-        view = True
+        view = False
         edit = True
         archive = True
 
@@ -29,17 +28,13 @@ class CommodityEditView(ModelUpdateView):
     form_class = CommodityEditForm
     model = Commodity
     success_url = reverse_lazy('commodity-list')
+    config = {'title': 'Edit Commodity'}
 
 
 class CommodityCreateView(ModelCreateView):
-    template_name = 'web/commodity/create.html'
     form_class = CommodityForm
     success_url = reverse_lazy('commodity-list')
-
-
-class CommodityDetailView(ModelDetailView):
-    form_class = CommodityForm
-    model = Commodity
+    config = {'title': 'New Commodity'}
 
 
 class CommodityGroupListView(ModelFilterView):
@@ -62,19 +57,22 @@ class CommodityGroupListView(ModelFilterView):
 
 
 class CommodityGroupEditView(ModelUpdateView):
-    template_name = 'web/commodity-group/edit.html'
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
+    config = {'title': 'Edit Commodity Group'}
 
 
 class CommodityGroupCreateView(ModelCreateView):
-    template_name = 'web/commodity-group/edit.html'
     form_class = CommodityGroupForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
+<<<<<<< Updated upstream
+    config = {'title': 'New Commodity Group'}
+=======
 
 
 class CommodityGroupDetailView(ModelDetailView):
     form_class = CommodityGroupForm
     model = CommodityGroup
+>>>>>>> Stashed changes
