@@ -1,19 +1,6 @@
-{% extends "layout/sidebar.html" %}
-{% import "forms/fields.html" as fields %}
+{% extends "model/edit.html" %}
 
-{% block page_title %}View {{form.instance}}{% endblock %}
-{% block context_header %}View {{form.instance}}{% endblock %}
-
-{% block main_content %}
-  <div class="container setoutForm">
-  {% block fields %}
-    {% for field in form %}
-      {{fields.field(field)}}
-    {% endfor %}
-  {% endblock %}
-  </div>
-
-  {% block additional_content %}
-  {% endblock %}
+{% block form_actions %}
+  {# Disables all form actions #}
 {% endblock %}
 

@@ -3,8 +3,6 @@ from django.db import models
 
 
 class ProductLegislation(Archivable, models.Model):
-    LABEL = 'Product Legislation'
-
     name = models.CharField(max_length=500, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     is_biocidal = models.BooleanField(blank=False, null=False, default=False)
@@ -26,12 +24,6 @@ class ProductLegislation(Archivable, models.Model):
     @property
     def is_eu_cosmetics_regulation_yes_no(self):
         return 'Yes' if self.is_eu_cosmetics_regulation else 'No'
-
-    def __str__(self):
-        if self.id:
-            return self.LABEL + ' - ' + self.name
-        else:
-            return self.LABEL
 
     class Meta:
         ordering = (

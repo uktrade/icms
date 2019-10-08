@@ -8,8 +8,13 @@
 
     <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
 
-    {% set title='Import Case Management System' %}
-    <title>{% block page_title %}{{title}}{%endblock %} - ICMS</title>
+    {%- if page_title %}
+      {% set title=page_title %}
+    {% else %}
+      {% set title='Import Case Management System' %}
+    {% endif -%}
+    <title>{% block page_title %}{{title}}{% endblock %} - ICMS</title>
+
     <script src="{{ static('web/js/core-header.js') }}" type="text/javascript"></script>
     <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon.css') }}">

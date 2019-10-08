@@ -7,9 +7,8 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
-from web.views.mixins import PostActionMixin
 
-from .mixins import DataDisplayConfigMixin, ViewConfigMixin
+from .mixins import PostActionMixin, DataDisplayConfigMixin, PageTitleMixin
 
 
 @require_registered
@@ -49,23 +48,23 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
         f = self.filterset_class(self.request.GET or None,
                                  queryset=self.get_queryset())
         context['filter'] = f
-        context['page'] = self.paginate(f.qs)
+        context['data_page'] = self.paginate(f.qs)
         return context
 
 
-class ModelCreateView(RequireRegisteredMixin, ViewConfigMixin,
+class ModelCreateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, CreateView):
     success_message = "Record created successfully"
     template_name = 'model/edit.html'
 
 
-class ModelUpdateView(RequireRegisteredMixin, ViewConfigMixin,
+class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, UpdateView):
     success_message = "Record updated successfully"
     template_name = 'model/edit.html'
 
 
-class ModelDetailView(RequireRegisteredMixin, DetailView):
+class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
     template_name = 'model/view.html'
 
     def _readonly(self, form):
