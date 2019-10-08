@@ -9,6 +9,9 @@ from web.domains.commodity.views import (
 from web.domains.constabulary.views import (ConstabularyCreateView,
                                             ConstabularyEditView,
                                             ConstabularyListView)
+
+from web.domains.users.views import (UsersListView)
+
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
     CountryGroupEditView, CountryGroupView, CountryListView,
@@ -175,4 +178,15 @@ urlpatterns = [
          RedirectView.as_view(url='request', permanent=False),
          name='request-access'),
     re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
+
+    # Web Users Accounts
+    path('users/',
+             UsersListView.as_view(),
+             name='users-list'),
+        # path('constabulary/new/',
+        #      ConstabularyCreateView.as_view(),
+        #      name='constabulary-new'),
+        # path('constabulary/<int:pk>/edit/',
+        #      ConstabularyEditView.as_view(),
+        #      name='constabulary-edit'),
 ]
