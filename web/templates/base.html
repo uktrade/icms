@@ -30,7 +30,7 @@
 
 <body>
 
-    {% include 'partial/popover-info.html' %}
+    {% include 'partial/flash-messages.html' %}
 
     <div id="skiplinks">
         <p>Skip To:</p>
@@ -58,6 +58,8 @@
     <script src="{{ static('web/js/jquery.formset.js') }}" type="text/javascript"></script>
     <script src="{{ static('web/js/main.js') }}" type="text/javascript"></script>
     <script src="{{ static('web/js/core-footer.js') }}" type="text/javascript"></script>
+    <script src="{{ static('web/js/dialogs.js') }}" type="text/javascript"></script>
+    <script src="{{ static('web/js/messages.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             FOXjs.init(function() {});

@@ -1,0 +1,8 @@
+{% import "messages/messages.html" as m %}
+{% set messages=get_messages(request) %}
+
+{% if messages %}
+  {% for message in messages %}
+    {{m.flash_message(message)}}
+  {% endfor %}
+{% endif %}
