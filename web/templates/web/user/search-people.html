@@ -2,7 +2,7 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 {% import "forms/list.html" as lists %}
-{% import "messages/message.html" as message %}
+{% import "messages/banners.html" as banners %}
 
 {% block main_content %}
 
@@ -10,7 +10,7 @@
        There aren't any people that match your search. You can change your search terms and try again, or <a href="">create a new person</a>
     {% endset %}
 
-    {{message.info('To search for a person, please fill in at least one field below.')}}
+    {{banners.info('To search for a person, please fill in at least one field below.')}}
 
     {% call forms.form(method='post', csrf_input=csrf_input) %}
       <input type="hidden" name="action" value="search_people"/>
