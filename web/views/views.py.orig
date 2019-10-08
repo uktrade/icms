@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
+from web.utils import merge_dictionaries as m
 from web.views.mixins import PostActionMixin
 
 from .mixins import DataDisplayConfigMixin, ViewConfigMixin
@@ -56,18 +57,23 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
 class ModelCreateView(RequireRegisteredMixin, ViewConfigMixin,
                       SuccessMessageMixin, CreateView):
     success_message = "Record created successfully"
-    template_name = 'model/edit.html'
+    pass
 
 
 class ModelUpdateView(RequireRegisteredMixin, ViewConfigMixin,
                       SuccessMessageMixin, UpdateView):
     success_message = "Record updated successfully"
-    template_name = 'model/edit.html'
+    pass
 
 
-class ModelDetailView(RequireRegisteredMixin, DetailView):
-    template_name = 'model/view.html'
-
+<<<<<<< Updated upstream
+class ModelDetailView(RequireRegisteredMixin, ViewConfigMixin, DetailView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        config = getattr(self, 'config', None)
+        config = m({'readonly': True}, config)
+        self.config = config
+=======
     def _readonly(self, form):
         for key in form.fields.keys():
             form.fields[key].disabled = True
@@ -82,3 +88,4 @@ class ModelDetailView(RequireRegisteredMixin, DetailView):
         context = super().get_context_data()
         context['form'] = self.get_form(instance=object)
         return context
+>>>>>>> Stashed changes

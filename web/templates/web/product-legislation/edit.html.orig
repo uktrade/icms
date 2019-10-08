@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+=======
 {% extends "model/edit.html" %}
+>>>>>>> Stashed changes
 {% import "forms/fields.html" as fields %}
 
 {% block fields %}

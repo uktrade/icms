@@ -5,8 +5,7 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
-from web.views import (ModelCreateView, ModelDetailView,
-                       ModelUpdateView)
+from web.views import (ModelCreateView, ModelDetailView, ModelUpdateView)
 from web.views.mixins import PostActionMixin
 
 from .forms import (CountryCreateForm, CountryEditForm, CountryGroupEditForm,
@@ -22,7 +21,20 @@ class CountryListView(ListView):
     model = Country
     template_name = 'web/country/list.html'
     filterset_class = CountryNameFilter
-    config = {'title': 'Editing All Countries'}
+
+
+class CountryEditView(ModelUpdateView):
+    model = Country
+    template_name = 'web/country/edit.html'
+    form_class = CountryEditForm
+    success_url = reverse_lazy('country-list')
+
+
+class CountryCreateView(ModelCreateView):
+    model = Country
+    template_name = 'web/country/edit.html'
+    form_class = CountryCreateForm
+    success_url = reverse_lazy('country-list')
 
 
 def search_countries(request, selected_countries):
@@ -48,6 +60,7 @@ def search_countries(request, selected_countries):
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
     template_name = 'web/country/groups/view.html'
+    form_class = CountryGroupEditForm
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -57,7 +70,7 @@ class CountryGroupView(ModelDetailView):
         return CountryGroup.objects.first()
 
     def get_context_data(self, object):
-        context = super().get_context_data()
+        context = super().get_context_data(object)
         context['groups'] = CountryGroup.objects.all()
         return context
 
@@ -136,21 +149,6 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 class CountryGroupCreateView(CountryGroupEditView):
     def get_object(self):
         return CountryGroup()
-
-
-class CountryEditView(ModelUpdateView):
-    model = Country
-    template_name = 'web/country/edit.html'
-    form_class = CountryEditForm
-    success_url = reverse_lazy('country-list')
-
-
-class CountryCreateView(ModelCreateView):
-    # model = Country
-    template_name = 'web/country/edit.html'
-    form_class = CountryCreateForm
-    success_url = reverse_lazy('country-list')
-    config = {'title': 'New Country'}
 
 
 class CountryTranslationSetListView(PostActionMixin, ListView):

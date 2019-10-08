@@ -1,31 +1,24 @@
-{% extends "layout/sidebar.html" %}
+{% extends "model/edit.html" %}
+
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block page_title %}Edit Importer {{form.instance.full_name}} {% endblock %}
-{% block context_header %}Edit Importer {{form.instance.full_name}} {% endblock %}
-
 {% block main_content %}
 
+  {% if importer %}
+      <div class="info-box info-box-info">
+        This importer is an agent of {{importer.full_name}}.
+      </div>
+  {% endif %}
 
-{% if importer %}
-    <div class="info-box info-box-info">
-      This importer is an agent of {{importer.full_name}}.
-    </div>
-{% endif %}
+  {{super()}}
 
+{% endblock %}
 
-  {% call forms.form(method='post', csrf_input=csrf_input) %}
-    {{fields.field(form.type)}}
-    {{fields.field(form.name)}}
-    {{fields.field(form.region_origin)}}
-    {{fields.field(form.comments)}}
-
+{% block additional_form_content %}
     {% include "partial/offices.html" %}
     {% include "partial/firearms-authorities.html" %}
     {% include "partial/section5-authorities.html" %}
     {% include "partial/agents.html" %}
     {% include "web/contacts/tabs.html" %}
-  {% endcall %}
-
 {% endblock %}
