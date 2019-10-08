@@ -10,6 +10,7 @@ class ProductLegislationListView(ModelFilterView):
     template_name = 'web/product-legislation/list.html'
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
+    page_title = 'Maintain Product Legislation'
 
     class Display:
         fields = [
@@ -30,6 +31,7 @@ class ProductLegislationCreateView(ModelCreateView):
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
+    page_title = 'New Product Legislation'
 
 
 class ProductLegislationUpdateView(ModelUpdateView):
@@ -38,8 +40,14 @@ class ProductLegislationUpdateView(ModelUpdateView):
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
 
+    def get_page_title(self):
+        return f"Ediging '{self.object.name}'"
+
 
 class ProductLegislationDetailView(ModelDetailView):
     template_name = 'web/product-legislation/view.html'
     model = ProductLegislation
     form_class = ProductLegislationForm
+
+    def get_page_title(self):
+        return f"Viewing '{self.object.name}'"
