@@ -30,10 +30,10 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
                     'cols': 'three',
                 },
                 'input': {
-                    'cols': 'eight'
+                    'cols': 'nine'
                 },
                 'padding': {
-                    'right': 'one'
+                    'right': None
                 },
                 'show_optional_indicator': False
             }

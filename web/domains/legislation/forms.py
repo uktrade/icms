@@ -1,5 +1,5 @@
 from django_filters import CharFilter, ChoiceFilter
-from web.forms import (ModelEditForm, ModelDisplayForm, ModelSearchFilter)
+from web.forms import (ModelEditForm, ModelSearchFilter)
 
 from .models import ProductLegislation
 
@@ -71,8 +71,3 @@ class ProductLegislationForm(ModelEditForm):
             selects EU Cosmetics Regulation legislation"
         }
         config = {'__all__': {'show_optional_indicator': False}}
-
-
-class ProductLegislationDisplayForm(ModelDisplayForm):
-    class Meta(ProductLegislationForm.Meta):
-        pass

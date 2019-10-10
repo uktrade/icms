@@ -1,0 +1,23 @@
+{% extends "model/view.html" %}
+{% import "forms/forms.html" as forms %}
+
+{% block main_content %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{super()}}
+  {%- endcall %}
+{% endblock %}
+
+{% block actions %}
+<li>
+  <button type="submit" class="primary-button button">
+    Save
+  </button>
+</li>
+<li>
+  <a href="{{view.cancel_url}}" class="button link-button">
+    Cancel
+  </a>
+</li>
+{% endblock %}
+
+

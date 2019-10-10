@@ -6,9 +6,10 @@ from .forms import TemplatesFilter
 
 class TemplateListView(ModelFilterView):
     template_name = 'web/template/list.html'
-    filterset_class = TemplatesFilter
     model = Template
-    config = {'title': 'Maintain Templates'}
+    filterset_class = TemplatesFilter
+    page_title = 'Maintain Templates'
+    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     # Default display fields on the listing page of the model
     class Display:

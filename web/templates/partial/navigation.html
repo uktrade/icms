@@ -128,7 +128,7 @@
             </li>
           {% endif %}
 
-          {% if request.user.groups.count() > 0 %}
+          {% if request.user.team_set.count() > 0 %}
             <li class="top-menu-subcategory">
                 <ul class="top-menu-subcategory-actions">
                     <li class="top-menu-subcategory-action">

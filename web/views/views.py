@@ -1,4 +1,5 @@
 from django.contrib import messages
+# from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
@@ -7,10 +8,8 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
-from web.utils import merge_dictionaries as m
-from web.views.mixins import PostActionMixin
 
-from .mixins import DataDisplayConfigMixin, ViewConfigMixin
+from .mixins import PostActionMixin, DataDisplayConfigMixin, PageTitleMixin
 
 
 @require_registered
@@ -18,7 +17,7 @@ def home(request):
     return render(request, 'web/home.html')
 
 
-class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
+class ModelFilterView(RequireRegisteredMixin, PostActionMixin,
                       DataDisplayConfigMixin, ListView):
     paginate_by = 50
 
@@ -54,21 +53,32 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
         return context
 
 
-class ModelCreateView(RequireRegisteredMixin, ViewConfigMixin,
+class ModelCreateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, CreateView):
     success_message = "Record created successfully"
-    pass
+    template_name = 'model/edit.html'
 
 
-class ModelUpdateView(RequireRegisteredMixin, ViewConfigMixin,
+class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, UpdateView):
     success_message = "Record updated successfully"
-    pass
+    template_name = 'model/edit.html'
 
 
-class ModelDetailView(RequireRegisteredMixin, ViewConfigMixin, DetailView):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        config = getattr(self, 'config', None)
-        config = m({'readonly': True}, config)
-        self.config = config
+class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
+    template_name = 'model/view.html'
+
+    def _readonly(self, form):
+        for key in form.fields.keys():
+            form.fields[key].disabled = True
+        return form
+
+    def get_form(self, instance=None):
+        """Create new instance of form and make readonly"""
+        form = self.form_class(instance=instance)
+        return self._readonly(form)
+
+    def get_context_data(self, object):
+        context = super().get_context_data()
+        context['form'] = self.get_form(instance=object)
+        return context

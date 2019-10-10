@@ -47,6 +47,18 @@ class Importer(Archivable, BaseTeam):
     def is_agent(self):
         return self.main_importer is not None
 
+    def __str__(self):
+        LABEL = ''
+        if self.is_agent():
+            LABEL = 'Importer Agent'
+        else:
+            LABEL = 'Importer'
+
+        if self.id:
+            return LABEL + ' - ' + (self.name or self.user.full_name)
+        else:
+            return LABEL
+
     @property
     def entity_type(self):
         return dict(Importer.TYPES)[self.type]
