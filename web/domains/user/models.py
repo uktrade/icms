@@ -10,8 +10,8 @@ class User(AbstractUser):
     SUSPENDED = "SUSPENDED"
     CANCELLED = "CANCELLED"
     ACTIVE = "ACTIVE"
-    STATUSES = ((NEW, 'NEW'), (BLOCKED, "Blocked"), (SUSPENDED, "Suspended"),
-                (CANCELLED, "Cancelled"), (ACTIVE, 'ACTIVE'))
+    STATUSES = ((NEW, 'New'), (BLOCKED, "Blocked"), (SUSPENDED, "Suspended"),
+                (CANCELLED, "Cancelled"), (ACTIVE, 'Active'))
 
     # Password disposition
     TEMPORARY = 'TEMPORARY'

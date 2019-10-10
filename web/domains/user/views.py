@@ -3,7 +3,7 @@ from django.shortcuts import render
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
 from web.auth.decorators import require_registered
-from web.domains.user.forms import UserDetailsUpdateForm
+from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
 from web.views import ModelFilterView
@@ -146,14 +146,18 @@ class PeopleSearchView(ModelFilterView):
         return super().get(request, *args, **kwargs)
 
 class UsersListView(ModelFilterView):
-    template_name = 'web/user/search-people.html'
+    template_name = 'web/user/list.html'
     model = User
-    filterset_class = UserFilter
+    filterset_class = UserListFilter
+    page_title = 'Maintain Web User Accounts'
+
+    def has_permission(self):
+        return True
 
     class Display:
         fields = [('title', 'first_name', 'last_name'),
                   ('organisation', 'email'), 'work_address']
-        headers = ['Name', 'Job Details', 'Oragnisation Address']
+        headers = ['Person Details', 'Organisation<br>Job Title', 'Oragnisation Address']
         select = True
 
     def post(self, request, *args, **kwargs):
