@@ -1,4 +1,5 @@
 from django.contrib import messages
+# from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
@@ -16,7 +17,7 @@ def home(request):
     return render(request, 'web/home.html')
 
 
-class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
+class ModelFilterView(RequireRegisteredMixin, PostActionMixin,
                       DataDisplayConfigMixin, ListView):
     paginate_by = 50
 
