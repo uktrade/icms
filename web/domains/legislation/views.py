@@ -5,12 +5,15 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
 from .forms import ProductLegislationFilter, ProductLegislationForm
 from .models import ProductLegislation
 
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+
 
 class ProductLegislationListView(ModelFilterView):
     template_name = 'web/product-legislation/list.html'
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
     page_title = 'Maintain Product Legislation'
+    permission_required = permissions
 
     class Display:
         fields = [
@@ -33,6 +36,7 @@ class ProductLegislationCreateView(ModelCreateView):
     success_url = reverse_lazy('product-legislation-list')
     cancel_url = success_url
     page_title = 'New Product Legislation'
+    permission_required = permissions
 
 
 class ProductLegislationUpdateView(ModelUpdateView):
@@ -41,6 +45,7 @@ class ProductLegislationUpdateView(ModelUpdateView):
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
     cancel_url = success_url
+    permission_required = permissions
 
     def get_page_title(self):
         return f"Editing '{self.object.name}'"
@@ -51,6 +56,7 @@ class ProductLegislationDetailView(ModelDetailView):
     model = ProductLegislation
     form_class = ProductLegislationForm
     cancel_url = reverse_lazy('product-legislation-list')
+    permission_required = permissions
 
     def get_page_title(self):
         return f"Viewing '{self.object.name}'"

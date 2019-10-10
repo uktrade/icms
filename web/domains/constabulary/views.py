@@ -6,11 +6,14 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
 
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+
 
 class ConstabularyListView(ModelFilterView):
     template_name = 'web/constabulary/list.html'
     model = Constabulary
     filterset_class = ConstabulariesFilter
+    permission_required = permissions
 
     class Display:
         fields = ['name', 'region_verbose', 'email']
@@ -24,6 +27,7 @@ class ConstabularyCreateView(ModelCreateView):
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
+    permission_required = permissions
 
 
 class ConstabularyEditView(ModelUpdateView):
@@ -31,8 +35,10 @@ class ConstabularyEditView(ModelUpdateView):
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
+    permission_required = permissions
 
 
 class ConstabularyDetailView(ModelDetailView):
     form_class = ConstabularyForm
     model = Constabulary
+    permission_required = permissions

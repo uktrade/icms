@@ -13,6 +13,8 @@ class ObsoleteCalibreListView(ModelFilterView):
     template_name = 'web/obsolete-calibre/group/list.html'
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     class Display:
         fields = ['name', 'calibres__count']
@@ -77,6 +79,8 @@ class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView,
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
@@ -85,6 +89,8 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get_object(self):
         return None
@@ -93,6 +99,8 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
 class ObsoleteCalibreGroupDetailView(ModelDetailView):
     template_name = 'web/obsolete-calibre/group/view.html'
     model = ObsoleteCalibreGroup
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get_context_data(self, object):
         context = super().get_context_data()
