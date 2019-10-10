@@ -10,7 +10,7 @@ from web.domains.constabulary.views import (ConstabularyCreateView,
                                             ConstabularyEditView,
                                             ConstabularyListView)
 
-from web.domains.users.views import (UsersListView)
+from web.domains.user.views import (UsersListView)
 
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
@@ -46,6 +46,7 @@ urlpatterns = [
     path('set-password/', auth_views.set_password, name='set-password'),
     path('user/password/', auth_views.change_password, name='change-password'),
     path('user/', user_details, name='user-details'),
+    path('users/', UsersListView.as_view(), name='users-list'),
     path('workbasket/', workbasket, name='workbasket'),
 
     # Template Management
@@ -178,15 +179,4 @@ urlpatterns = [
          RedirectView.as_view(url='request', permanent=False),
          name='request-access'),
     re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
-
-    # Web Users Accounts
-    path('users/',
-             UsersListView.as_view(),
-             name='users-list'),
-        # path('constabulary/new/',
-        #      ConstabularyCreateView.as_view(),
-        #      name='constabulary-new'),
-        # path('constabulary/<int:pk>/edit/',
-        #      ConstabularyEditView.as_view(),
-        #      name='constabulary-edit'),
 ]
