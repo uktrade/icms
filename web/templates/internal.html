@@ -3,13 +3,12 @@
 <!-- Base template file with accessibility link and navigation, -->
 <!-- serves as base for internal pages -->
 
-{% block title %}{% block page_title %}{% endblock %} - ICMS{% endblock %}
-
 {% block header %}
-
   <div class="" id="context-header">
     <h2>
-      {{title}}
+      {% block context_header %}
+        {{title}} {# same as page title if not specified #}
+      {% endblock %}
     </h2>
   </div>
 {% endblock %}

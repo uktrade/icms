@@ -1,16 +1,20 @@
 from django.urls import reverse_lazy
-from web.views import ModelCreateView, ModelFilterView, ModelUpdateView
+from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
+                       ModelUpdateView)
 
 from .forms import (CommodityEditForm, CommodityFilter, CommodityForm,
                     CommodityGroupEditForm, CommodityGroupFilter,
                     CommodityGroupForm)
 from .models import Commodity, CommodityGroup
 
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+
 
 class CommodityListView(ModelFilterView):
     template_name = 'web/commodity/list.html'
     filterset_class = CommodityFilter
     model = Commodity
+    permission_required = permissions
 
     class Display:
         fields = [
@@ -18,7 +22,7 @@ class CommodityListView(ModelFilterView):
             ('validity_start_date', 'validity_end_date')
         ]
         headers = ['Commodity Code', 'Commodity Type', 'Validity']
-        view = False
+        view = True
         edit = True
         archive = True
 
@@ -28,20 +32,27 @@ class CommodityEditView(ModelUpdateView):
     form_class = CommodityEditForm
     model = Commodity
     success_url = reverse_lazy('commodity-list')
-    config = {'title': 'Edit Commodity'}
+    permission_required = permissions
 
 
 class CommodityCreateView(ModelCreateView):
     template_name = 'web/commodity/create.html'
     form_class = CommodityForm
     success_url = reverse_lazy('commodity-list')
-    config = {'title': 'New Commodity'}
+    permission_required = permissions
+
+
+class CommodityDetailView(ModelDetailView):
+    form_class = CommodityForm
+    model = Commodity
+    permission_required = permissions
 
 
 class CommodityGroupListView(ModelFilterView):
     template_name = 'web/commodity-group/list.html'
     filterset_class = CommodityGroupFilter
     model = CommodityGroup
+    permission_required = permissions
 
     class Display:
         fields = [
@@ -62,7 +73,7 @@ class CommodityGroupEditView(ModelUpdateView):
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
-    config = {'title': 'Edit Commodity Group'}
+    permission_required = permissions
 
 
 class CommodityGroupCreateView(ModelCreateView):
@@ -70,4 +81,10 @@ class CommodityGroupCreateView(ModelCreateView):
     form_class = CommodityGroupForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
-    config = {'title': 'New Commodity Group'}
+    permission_required = permissions
+
+
+class CommodityGroupDetailView(ModelDetailView):
+    form_class = CommodityGroupForm
+    model = CommodityGroup
+    permission_required = permissions

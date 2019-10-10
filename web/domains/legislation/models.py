@@ -26,4 +26,7 @@ class ProductLegislation(Archivable, models.Model):
         return 'Yes' if self.is_eu_cosmetics_regulation else 'No'
 
     class Meta:
-        ordering = ('name', )
+        ordering = (
+            '-is_active',
+            'name',
+        )
