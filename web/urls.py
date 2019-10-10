@@ -3,14 +3,10 @@ from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from viewflow.flow.viewset import FlowViewSet
 from web.domains.case.access.views import AccessRequestFlow
-from web.domains.commodity.views import (
-    CommodityCreateView, CommodityEditView, CommodityGroupCreateView,
-    CommodityGroupEditView, CommodityGroupListView, CommodityListView)
-from web.domains.constabulary.views import (ConstabularyCreateView,
-                                            ConstabularyEditView,
-                                            ConstabularyListView)
-
 from web.domains.user.views import (UsersListView)
+from web.domains.commodity import views as commodity_views
+from web.domains.constabulary import views as constabulary_views
+
 
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
@@ -58,32 +54,44 @@ urlpatterns = [
 
     # Constabularies Management
     path('constabulary/',
-         ConstabularyListView.as_view(),
+         constabulary_views.ConstabularyListView.as_view(),
          name='constabulary-list'),
+    path('constabulary/<int:pk>/',
+         constabulary_views.ConstabularyDetailView.as_view(),
+         name='constabulary-detail'),
     path('constabulary/new/',
-         ConstabularyCreateView.as_view(),
+         constabulary_views.ConstabularyCreateView.as_view(),
          name='constabulary-new'),
     path('constabulary/<int:pk>/edit/',
-         ConstabularyEditView.as_view(),
+         constabulary_views.ConstabularyEditView.as_view(),
          name='constabulary-edit'),
 
     # Commodities Management
-    path('commodity/', CommodityListView.as_view(), name='commodity-list'),
+    path('commodity/',
+         commodity_views.CommodityListView.as_view(),
+         name='commodity-list'),
+    path('commodity/<int:pk>/',
+         commodity_views.CommodityDetailView.as_view(),
+         name='commodity-detail'),
     path('commodity/<int:pk>/edit/',
-         CommodityEditView.as_view(),
+         commodity_views.CommodityEditView.as_view(),
          name='commodity-edit'),
-    path('commodity/new/', CommodityCreateView.as_view(),
+    path('commodity/new/',
+         commodity_views.CommodityCreateView.as_view(),
          name='commodity-new'),
 
     # Commodity Groups Management
     path('commodity/group/',
-         CommodityGroupListView.as_view(),
+         commodity_views.CommodityGroupListView.as_view(),
          name='commodity-group-list'),
+    path('commodity/group/<int:pk>/',
+         commodity_views.CommodityGroupDetailView.as_view(),
+         name='commodity-group-detail'),
     path('commodity/group/<int:pk>/edit/',
-         CommodityGroupEditView.as_view(),
+         commodity_views.CommodityGroupEditView.as_view(),
          name='commodity-group-edit'),
     path('commodity/group/new/',
-         CommodityGroupCreateView.as_view(),
+         commodity_views.CommodityGroupCreateView.as_view(),
          name='commodity-group-new'),
 
     # Countries management

@@ -57,6 +57,13 @@ class User(AbstractUser):
                                             blank=True,
                                             null=True)
 
+    @property
+    def full_name(self):
+        name = ''
+        name += self.title or ''
+        name += self.first_name + ' ' + self.surname
+        return name
+
 
 class PhoneNumber(models.Model):
     WORK = "WORK"

@@ -14,4 +14,6 @@ def register(request, user, password):
         'user': user,
         'password': password
     }, request)
+    # Logged only on debug
+    logger.debug('Temporary password for %s: %s', user.first_name, password)
     email.send(subject, user, message)

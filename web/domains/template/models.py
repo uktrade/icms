@@ -58,6 +58,13 @@ class Template(Archivable, models.Model):
     def application_domain_verbose(self):
         return dict(Template.DOMAINS)[self.application_domain]
 
+    def __str__(self):
+        label = 'Template'
+        if self.id:
+            return label + ' - ' + self.template_name
+        else:
+            return label
+
     class Meta:
         ordering = (
             '-is_active',
