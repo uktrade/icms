@@ -11,7 +11,7 @@
   {{lists.page_link('«', page_no=1, active=has_previous, class="page-skip first")}}
   {{lists.page_link('‹', page_no=previous_page_no, active=has_previous, class="page-skip previous")}}
   <li class="current-page-text">
-    {{page.number}}<span class="page-count"> of {{page.paginator.num_pages}}</span>
+    Page {{page.number}}<span class="page-count"> of {{page.paginator.num_pages}}</span>
   </li>
   {{lists.page_link('›', page_no=next_page_no, active=has_next, class="page-skip next")}}
   {{lists.page_link('»', page_no=page.paginator.num_pages, active=has_next, class="page-skip last")}}

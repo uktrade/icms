@@ -31,6 +31,7 @@ class ProductLegislationCreateView(ModelCreateView):
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
+    cancel_url = success_url
     page_title = 'New Product Legislation'
 
 
@@ -39,15 +40,17 @@ class ProductLegislationUpdateView(ModelUpdateView):
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
+    cancel_url = success_url
 
     def get_page_title(self):
-        return f"Ediging '{self.object.name}'"
+        return f"Editing '{self.object.name}'"
 
 
 class ProductLegislationDetailView(ModelDetailView):
     template_name = 'web/product-legislation/view.html'
     model = ProductLegislation
     form_class = ProductLegislationForm
+    cancel_url = reverse_lazy('product-legislation-list')
 
     def get_page_title(self):
         return f"Viewing '{self.object.name}'"

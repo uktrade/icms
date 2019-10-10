@@ -1,6 +1,39 @@
-{% extends "model/edit.html" %}
+{% extends "layout/sidebar.html" %}
+{% import "forms/fields.html" as fields %}
 
-{% block form_actions %}
-  {# Disables all form actions #}
+{% block main_content %}
+
+    {% block fields %}
+      {% for field in form %}
+        {{fields.field(field)}}
+      {% endfor %}
+    {% endblock %}
+
+    <div class="section-break"></div>
+
+    {% block additional_content %}
+    {% endblock %}
+
+    <div class="section-break"></div>
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+          {% block actions %}
+          <li>
+            <a href="{{view.cancel_url}}" class="button link-button">
+              Back
+            </a>
+          </li>
+          {% endblock %}
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+
+
 {% endblock %}
 

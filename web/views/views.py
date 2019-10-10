@@ -48,7 +48,7 @@ class ModelFilterView(PostActionMixin, RequireRegisteredMixin,
         f = self.filterset_class(self.request.GET or None,
                                  queryset=self.get_queryset())
         context['filter'] = f
-        context['data_page'] = self.paginate(f.qs)
+        context['page'] = self.paginate(f.qs)
         return context
 
 
