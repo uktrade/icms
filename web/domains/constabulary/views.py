@@ -1,14 +1,19 @@
-from web.domains.team.mixins import ContactsManagementMixin
-from web.views import ModelCreateView, ModelFilterView, ModelUpdateView
+# from web.domains.team.mixins import ContactsManagementMixin
+from django.urls import reverse_lazy
+from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
+                       ModelUpdateView)
 
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
+
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ConstabularyListView(ModelFilterView):
     template_name = 'web/constabulary/list.html'
     model = Constabulary
     filterset_class = ConstabulariesFilter
+    permission_required = permissions
 
     class Display:
         fields = ['name', 'region_verbose', 'email']
@@ -17,15 +22,23 @@ class ConstabularyListView(ModelFilterView):
         archive = True
 
 
-class ConstabularyCreateView(ContactsManagementMixin, ModelCreateView):
+class ConstabularyCreateView(ModelCreateView):
     template_name = 'web/constabulary/edit.html'
     form_class = ConstabularyForm
     model = Constabulary
-    config = {'title': 'New Constabulary'}
+    success_url = reverse_lazy('constabulary-list')
+    permission_required = permissions
 
 
-class ConstabularyEditView(ContactsManagementMixin, ModelUpdateView):
+class ConstabularyEditView(ModelUpdateView):
     template_name = 'web/constabulary/edit.html'
     form_class = ConstabularyForm
     model = Constabulary
-    config = {'title': 'Edit Constabulary'}
+    success_url = reverse_lazy('constabulary-list')
+    permission_required = permissions
+
+
+class ConstabularyDetailView(ModelDetailView):
+    form_class = ConstabularyForm
+    model = Constabulary
+    permission_required = permissions

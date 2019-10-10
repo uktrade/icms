@@ -19,16 +19,28 @@
 <div class="half-width-box">
     <h2>Log in to ICMS</h2>
 
-    {% if next %}
-    <div id="login-error">
-        {% if request.user.is_authenticated %}
-            <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-        {% else %}
-            <p>Please login to see this page.</p>
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="nine columns">
+        {% if form.non_field_errors() %}
+        <div id="login-error">
+          Invalid username or password.<br/>N.B passwords are case sensitive
+        </div>
         {% endif %}
+
+        {% if next %}
+        <div id="login-error">
+          {% if request.user.is_authenticated %}
+          <p>Your account doesn't have access to this page. To proceed,
+          please login with an account that has access.</p>
+          {% else %}
+          <p>Please login to see this page.</p>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
-    {% endif %}
+
 
     {% call forms.form(action=url('login'), 
                        method='post', 
@@ -36,6 +48,10 @@
                        csrf_input=csrf_input)  -%}
       {{fields.field(form.username)}}
       {{fields.field(form.password)}}
+
+      {% if next %}
+      <input type="hidden" name="next" value="{{next}}">
+      {% endif %}
 
       <div class="clearBoth"></div>
       <div class="container">

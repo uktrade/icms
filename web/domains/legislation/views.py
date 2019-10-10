@@ -2,16 +2,18 @@ from django.urls import reverse_lazy
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 
-from .forms import (ProductLegislationDisplayForm, ProductLegislationFilter,
-                    ProductLegislationForm)
+from .forms import ProductLegislationFilter, ProductLegislationForm
 from .models import ProductLegislation
+
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ProductLegislationListView(ModelFilterView):
     template_name = 'web/product-legislation/list.html'
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
-    config = {'title': 'Maintain Product Legislation'}
+    page_title = 'Maintain Product Legislation'
+    permission_required = permissions
 
     class Display:
         fields = [
@@ -32,7 +34,9 @@ class ProductLegislationCreateView(ModelCreateView):
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
-    config = {'title': 'Create Product Legislation'}
+    cancel_url = success_url
+    page_title = 'New Product Legislation'
+    permission_required = permissions
 
 
 class ProductLegislationUpdateView(ModelUpdateView):
@@ -40,15 +44,19 @@ class ProductLegislationUpdateView(ModelUpdateView):
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
-    config = {'title': 'Edit Product Legislation'}
+    cancel_url = success_url
+    permission_required = permissions
+
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
 
 
 class ProductLegislationDetailView(ModelDetailView):
-    template_name = 'web/product-legislation/edit.html'
+    template_name = 'web/product-legislation/view.html'
     model = ProductLegislation
-    config = {'title': 'View Product Legislation'}
+    form_class = ProductLegislationForm
+    cancel_url = reverse_lazy('product-legislation-list')
+    permission_required = permissions
 
-    def get_context_data(self, object):
-        context = super().get_context_data()
-        context['form'] = ProductLegislationDisplayForm(instance=object)
-        return context
+    def get_page_title(self):
+        return f"Viewing '{self.object.name}'"

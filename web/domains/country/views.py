@@ -5,9 +5,8 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
-from web.views import (ModelCreateView, ModelDetailView,
-                       ModelUpdateView)
-from web.views.mixins import PostActionMixin
+from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
+from web.views.mixins import PageTitleMixin, PostActionMixin
 
 from .forms import (CountryCreateForm, CountryEditForm, CountryGroupEditForm,
                     CountryNameFilter, CountryTranslationEditForm,
@@ -22,7 +21,32 @@ class CountryListView(ListView):
     model = Country
     template_name = 'web/country/list.html'
     filterset_class = CountryNameFilter
-    config = {'title': 'Editing All Countries'}
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+
+
+class CountryEditView(ModelUpdateView):
+    model = Country
+    template_name = 'web/country/edit.html'
+    form_class = CountryEditForm
+    success_url = reverse_lazy('country-list')
+    cancel_url = success_url
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
+
+
+class CountryCreateView(ModelCreateView):
+    model = Country
+    template_name = 'web/country/edit.html'
+    form_class = CountryCreateForm
+    success_url = reverse_lazy('country-list')
+    cancel_url = success_url
+    page_title = 'New Country'
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
 
 
 def search_countries(request, selected_countries):
@@ -48,6 +72,9 @@ def search_countries(request, selected_countries):
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
     template_name = 'web/country/groups/view.html'
+    form_class = CountryGroupEditForm
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_MANAGE'
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -57,15 +84,20 @@ class CountryGroupView(ModelDetailView):
         return CountryGroup.objects.first()
 
     def get_context_data(self, object):
-        context = super().get_context_data()
+        context = super().get_context_data(object)
         context['groups'] = CountryGroup.objects.all()
         return context
+
+    def get_page_title(self):
+        return f"Viewing '{self.object.name}'"
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     model = CountryGroup
     template_name = 'web/country/groups/edit.html'
     form_class = CountryGroupEditForm
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_MANAGE'
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -119,6 +151,9 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
+
     @transaction.atomic
     def save(self, request, pk=None):
         form = CountryGroupEditForm(request.POST, instance=self.get_object())
@@ -134,28 +169,22 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 
 
 class CountryGroupCreateView(CountryGroupEditView):
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_CREATE'
+
     def get_object(self):
         return CountryGroup()
 
-
-class CountryEditView(ModelUpdateView):
-    model = Country
-    template_name = 'web/country/edit.html'
-    form_class = CountryEditForm
-    success_url = reverse_lazy('country-list')
+    def get_page_title(self):
+        return 'New Country Group'
 
 
-class CountryCreateView(ModelCreateView):
-    # model = Country
-    template_name = 'web/country/edit.html'
-    form_class = CountryCreateForm
-    success_url = reverse_lazy('country-list')
-    config = {'title': 'New Country'}
-
-
-class CountryTranslationSetListView(PostActionMixin, ListView):
+class CountryTranslationSetListView(PageTitleMixin, PostActionMixin, ListView):
     model = CountryTranslationSet
     template_name = 'web/country/translations/list.html'
+    page_title = 'Manage Country Translation Sets'
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
 
     def get_form(self, request):
         action = self.request.POST.get('action', None)
@@ -185,6 +214,8 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     template_name = 'web/country/translations/edit.html'
     form_class = CountryTranslationSetEditForm
     success_url = 'country-translation-set-edit'
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
 
     def get(self, request, pk=None):
         set = super().get_object()
@@ -231,6 +262,9 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         object = super().get_object()
         return reverse(self.success_url, args=[object.id])
 
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
+
     def archive(self, request, pk=None):
         super().archive(request)
         return redirect(reverse('country-translation-set-list'))
@@ -240,6 +274,8 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
     model = CountryTranslation
     template_name = 'web/country/translations/translation/edit.html'
     form_class = CountryTranslationEditForm
+    permission_required = \
+        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
 
     def get_object(self, queryset=None):
         try:

@@ -16,6 +16,8 @@ class ImporterListView(ModelFilterView):
     template_name = 'web/importer/list.html'
     filterset_class = ImporterFilter
     model = Importer
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     class Display:
         fields = [('full_name', 'registered_number', 'entity_type')]
@@ -30,6 +32,8 @@ class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
     form_class = ImporterEditForm
     success_url = reverse_lazy('importer-list')
     model = Importer
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get(self, request, pk, importer_id=None):
         form = super().get_form(pk=pk)
@@ -47,6 +51,8 @@ class ImporterCreateView(ModelCreateView):
     form_class = ImporterEditForm
     success_url = reverse_lazy('importer-list')
     model = Importer
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get(self, request, importer_id=None):
         form = super().get_form()
@@ -59,6 +65,8 @@ class ImporterCreateView(ModelCreateView):
 class ImporterDetailView(ModelDetailView):
     template_name = 'web/importer/view.html'
     model = Importer
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get_context_data(self, object):
         context = super().get_context_data()

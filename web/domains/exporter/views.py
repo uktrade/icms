@@ -10,6 +10,8 @@ class ExporterListView(ModelFilterView):
     template_name = 'web/exporter/list.html'
     filterset_class = ExporterFilter
     model = Exporter
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     class Display:
         fields = ['name']
@@ -24,6 +26,8 @@ class ExporterEditView(ModelUpdateView):
     form_class = ExporterEditForm
     success_url = reverse_lazy('exporter-list')
     model = Exporter
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ExporterCreateView(ModelCreateView):
@@ -31,11 +35,15 @@ class ExporterCreateView(ModelCreateView):
     form_class = ExporterEditForm
     success_url = reverse_lazy('exporter-list')
     model = Exporter
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ExporterDetailView(ModelDetailView):
     template_name = 'web/exporter/view.html'
     model = Exporter
+    permission_required = \
+        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     def get_context_data(self, object):
         context = super().get_context_data()

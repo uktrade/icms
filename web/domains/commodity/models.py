@@ -23,6 +23,8 @@ class CommodityType(models.Model):
 
 
 class Commodity(Archivable, models.Model):
+    LABEL = 'Commodity'
+
     TEXTILES = 'TEXTILES'
     IRON_STEEL = 'IRON_STEEL'
     FIREARMS_AMMO = 'FIREARMS_AMMO'
@@ -43,16 +45,26 @@ class Commodity(Archivable, models.Model):
     quantity_threshold = models.IntegerField(blank=True, null=True)
     sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
 
+    def __str__(self):
+        if self.id:
+            return self.LABEL + ' - ' + self.commodity_code
+        else:
+            return self.LABEL
+
     @property
     def commodity_type_verbose(self):
         return self.commodity_type.type
 
     class Meta:
-        ordering = ('commodity_code', )
-
+        ordering = (
+            '-is_active',
+            'commodity_code',
+        )
 
 
 class CommodityGroup(Archivable, models.Model):
+    LABEL = 'Commodity Group'
+
     AUTO = 'AUTO'
     CATEGORY = 'CATEGORY'
 
@@ -89,3 +101,14 @@ class CommodityGroup(Archivable, models.Model):
     def commodity_type_verbose(self):
         return self.commodity_type.type
 
+    def __str__(self):
+        if self.id:
+            return self.LABEL + ' - ' + self.group_code
+        else:
+            return self.LABEL
+
+    class Meta:
+        ordering = (
+            '-is_active',
+            'group_code',
+        )

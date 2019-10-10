@@ -1,49 +1,30 @@
-{% extends "web/country/country-base.html" %}
-{% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as fields %}
+{% extends "model/edit.html" %}
 {% from "web/country/country-selections.html" import country_selector %}
 
-{% block  main_content %}
+
+{% block sidebar %}
+  {% include "web/country/sidebar.html" %}
+{% endblock %}
+
+{% block  fields %}
     {% include "web/country/groups/filter-bar.html" %}
+    {{super()}}
+{% endblock %}
 
-    {% call forms.form(method='post', csrf_input=csrf_input) %}
-
-    {{fields.field(form.name)}}
-    {{fields.field(form.comments)}}
-
-    <div class="list-actions">
-      <ul class="menu-out flow-across">
-        <li>
-          <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
-            Add Country
-          </button>
-        </li>
-        <li>
-          <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
-            Remove Selected Countries
-          </button>
-        </li>
-      </ul>
-    </div>
-
-    {{country_selector(countries)}}
-
-    <div class="clearBoth"></div>
-    <div class="container">
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="eight columns">
-          <ul class="menu-out flow-across">
-            <li>
-              <button type="submit" name="action" value="save" class="primary-button button">
-                Save
-              </button>
-            </li>
-          </ul>
-        </div>
-        <div class="one columns"></div>
-      </div>
-    </div>
-    {% endcall %}
-
+{% block additional_form_content %}
+<div class="list-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
+        Add Country
+      </button>
+    </li>
+    <li>
+      <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
+        Remove Selected Countries
+      </button>
+    </li>
+  </ul>
+</div>
+{{country_selector(countries)}}
 {% endblock %}
