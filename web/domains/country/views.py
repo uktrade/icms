@@ -5,8 +5,8 @@ from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
-from web.views import (ModelCreateView, ModelDetailView, ModelUpdateView)
-from web.views.mixins import PostActionMixin
+from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
+from web.views.mixins import PageTitleMixin, PostActionMixin
 
 from .forms import (CountryCreateForm, CountryEditForm, CountryGroupEditForm,
                     CountryNameFilter, CountryTranslationEditForm,
@@ -28,6 +28,10 @@ class CountryEditView(ModelUpdateView):
     template_name = 'web/country/edit.html'
     form_class = CountryEditForm
     success_url = reverse_lazy('country-list')
+    cancel_url = success_url
+
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
 
 
 class CountryCreateView(ModelCreateView):
@@ -35,6 +39,8 @@ class CountryCreateView(ModelCreateView):
     template_name = 'web/country/edit.html'
     form_class = CountryCreateForm
     success_url = reverse_lazy('country-list')
+    cancel_url = success_url
+    page_title = 'New Country'
 
 
 def search_countries(request, selected_countries):
@@ -73,6 +79,9 @@ class CountryGroupView(ModelDetailView):
         context = super().get_context_data(object)
         context['groups'] = CountryGroup.objects.all()
         return context
+
+    def get_page_title(self):
+        return f"Viewing '{self.object.name}'"
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
@@ -132,6 +141,9 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
+
     @transaction.atomic
     def save(self, request, pk=None):
         form = CountryGroupEditForm(request.POST, instance=self.get_object())
@@ -150,10 +162,14 @@ class CountryGroupCreateView(CountryGroupEditView):
     def get_object(self):
         return CountryGroup()
 
+    def get_page_title(self):
+        return 'New Country Group'
 
-class CountryTranslationSetListView(PostActionMixin, ListView):
+
+class CountryTranslationSetListView(PageTitleMixin, PostActionMixin, ListView):
     model = CountryTranslationSet
     template_name = 'web/country/translations/list.html'
+    page_title = 'Manage Country Translation Sets'
 
     def get_form(self, request):
         action = self.request.POST.get('action', None)
@@ -228,6 +244,9 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     def get_success_url(self):
         object = super().get_object()
         return reverse(self.success_url, args=[object.id])
+
+    def get_page_title(self):
+        return f"Editing '{self.object.name}'"
 
     def archive(self, request, pk=None):
         super().archive(request)

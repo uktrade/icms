@@ -1,9 +1,5 @@
 {% extends "model/edit.html" %}
-{% import "forms/fields.html" as fields %}
 
 {% block fields %}
-    {{fields.field(form.name)}}
-    {{fields.field(form.is_biocidal, checkbox_label="Product type numbers and active ingredients required on schedule when selected")}}
-    {{fields.field(form.is_biocidal_claim, checkbox_label="An additional biocidal claims question is displayed when selected")}}
-    {{fields.field(form.is_eu_cosmetics_regulation, checkbox_label="Applicant may add 'responsible person' statement to the issued schedule when selected")}}
+  {% include "web/product-legislation/fields.html" %}
 {% endblock %}
