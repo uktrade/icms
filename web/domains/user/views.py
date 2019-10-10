@@ -13,6 +13,9 @@ from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
 
+from .forms import ConstabulariesFilter
+from web.models import Constabulary
+
 
 def details_update(request, action):
     forms = init_user_details_forms(request, action)
@@ -141,3 +144,19 @@ class PeopleSearchView(ModelFilterView):
     def post(self, request, *args, **kwargs):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
+
+class UsersListView(ModelFilterView):
+    template_name = 'web/user/search-people.html'
+    model = User
+    filterset_class = UserFilter
+
+    class Display:
+        fields = [('title', 'first_name', 'last_name'),
+                  ('organisation', 'email'), 'work_address']
+        headers = ['Name', 'Job Details', 'Oragnisation Address']
+        select = True
+
+    def post(self, request, *args, **kwargs):
+        request.GET = request.POST
+        return super().get(request, *args, **kwargs)
+

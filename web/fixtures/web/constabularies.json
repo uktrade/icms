@@ -1,0 +1,12 @@
+[
+  {
+    "PK": 119,
+    "model": "web.Constabulary",
+    "fields": {
+      "is_active": "True",
+      "name": "aaa",
+      "region": "SW",
+      "email": "hahaha@hello.com"
+    }
+  }
+]
