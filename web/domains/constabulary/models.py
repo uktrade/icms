@@ -37,6 +37,12 @@ class Constabulary(Archivable, BaseTeam):
     def region_verbose(self):
         return dict(Constabulary.REGIONS)[self.region]
 
+    def __str__(self):
+        if self.id:
+            return f'Constabulary ({self.name})'
+        else:
+            return 'Constabulary (New)'
+
     class Meta:
         ordering = (
             '-is_active',
