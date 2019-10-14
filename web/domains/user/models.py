@@ -64,6 +64,16 @@ class User(AbstractUser):
         name += self.first_name + ' ' + self.surname
         return name
 
+    @property
+    def account_status_by_full_name(self):
+        return self.account_status_by.full_name
+
+    @property
+    def account_last_login_date(self):
+        if self.last_login is None:
+            return None
+        return self.last_login.date()
+
 
 class PhoneNumber(models.Model):
     WORK = "WORK"
