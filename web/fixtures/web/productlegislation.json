@@ -1,44 +1,44 @@
 [
 	{
-		"PK" : 19,
+		"PK" : 1,
     "model": "web.ProductLegislation",
     "fields": {
       "is_active" : "False",
-      "name" : "Chemicals (Hazard Information and Packaging for Supply) Regulations 2009",
+      "name" : "Test Legislation",
+      "is_biocidal" : "True",
+      "is_biocidal_claim" : "True",
+      "is_eu_cosmetics_regulation" : "True"
+    }
+	},
+	{
+		"PK" : 2,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "True",
+      "name" : "Comprehensive legislation",
       "is_biocidal" : "False",
+      "is_biocidal_claim" : "False",
+      "is_eu_cosmetics_regulation" : "True"
+    }
+	},
+	{
+		"PK" : 3,
+    "model": "web.ProductLegislation",
+    "fields": {
+      "is_active" : "True",
+      "name" : "New Product Legislation",
+      "is_biocidal" : "True",
       "is_biocidal_claim" : "False",
       "is_eu_cosmetics_regulation" : "False"
     }
 	},
 	{
-		"PK" : 20,
+		"PK" : 4,
     "model": "web.ProductLegislation",
     "fields": {
       "is_active" : "True",
-      "name" : "Toy Safety Directive 2009\/48\/EC",
-      "is_biocidal" : "False",
-      "is_biocidal_claim" : "False",
-      "is_eu_cosmetics_regulation" : "False"
-    }
-	},
-	{
-		"PK" : 22,
-    "model": "web.ProductLegislation",
-    "fields": {
-      "is_active" : "True",
-      "name" : "Council Directive 89\/686\/EEC on the approximation of the laws of the Member States relating to personal protective equipment",
-      "is_biocidal" : "False",
-      "is_biocidal_claim" : "False",
-      "is_eu_cosmetics_regulation" : "False"
-    }
-	},
-	{
-		"PK" : 42,
-    "model": "web.ProductLegislation",
-    "fields": {
-      "is_active" : "True",
-      "name" : "EU Fertiliser regulation 2003\/2003",
-      "is_biocidal" : "False",
+      "name" : "EU Fertiliser regulation",
+      "is_biocidal" : "True",
       "is_biocidal_claim" : "False",
       "is_eu_cosmetics_regulation" : "False"
     }

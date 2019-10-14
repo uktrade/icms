@@ -48,7 +48,7 @@ class ProductLegislationUpdateView(ModelUpdateView):
     permission_required = permissions
 
     def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+        return f"Editing {self.object}"
 
 
 class ProductLegislationDetailView(ModelDetailView):
@@ -59,4 +59,4 @@ class ProductLegislationDetailView(ModelDetailView):
     permission_required = permissions
 
     def get_page_title(self):
-        return f"Viewing '{self.object.name}'"
+        return f"Viewing {self.object}"

@@ -55,14 +55,18 @@ class ModelFilterView(RequireRegisteredMixin, PostActionMixin,
 
 class ModelCreateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, CreateView):
-    success_message = "Record created successfully"
     template_name = 'model/edit.html'
+
+    def get_success_message(self, cleaned_data):
+        return f'{self.object} created successfully.'
 
 
 class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin,
                       SuccessMessageMixin, UpdateView):
-    success_message = "Record updated successfully"
     template_name = 'model/edit.html'
+
+    def get_success_message(self, cleaned_data):
+        return f'{self.object} updated successfully'
 
 
 class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
