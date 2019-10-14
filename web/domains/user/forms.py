@@ -257,11 +257,11 @@ class UserListFilter(ModelSearchFilter):
         fields = []
 
 
-class ConstabulariesFilter(ModelSearchFilter):
+class UsersListFilter(ModelSearchFilter):
     username = CharFilter(field_name='name',
                           lookup_expr='icontains',
                           label='Login Name')
 
     class Meta:
-        model = Constabulary
+        model = User
         fields = []

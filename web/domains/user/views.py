@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
+
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
 from web.auth.decorators import require_registered
@@ -7,14 +8,10 @@ from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
 from web.views import ModelFilterView
-
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
-
-from .forms import ConstabulariesFilter
-from web.models import Constabulary
 
 
 def details_update(request, action):
@@ -156,8 +153,10 @@ class UsersListView(ModelFilterView):
 
     class Display:
         fields = [('title', 'first_name', 'last_name'),
-                  ('organisation', 'email'), 'work_address']
-        headers = ['Person Details', 'Organisation<br>Job Title', 'Oragnisation Address']
+                  ('organisation', 'job_title'), 'username', ('account_status', 'password_disposition'),
+                  'account_last_login_date', ('account_status_by_full_name', 'account_status_date')]
+        headers = ['Person Details', 'Organisation / Job Title', 'Login Name', 'Account Status / Password Disposition',
+                   'Last Login Date', 'Account Status Changed Date/By']
         select = True
 
     def post(self, request, *args, **kwargs):
