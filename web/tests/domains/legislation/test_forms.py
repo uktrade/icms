@@ -1,14 +1,28 @@
-import logging
-
 from django.test import TestCase
 from web.domains.legislation.forms import (ProductLegislationFilter,
                                            ProductLegislationForm)
 
-logger = logging.getLogger(__name__)
+from .factory import ProductLegislationFactory
 
 
 class ProductLegislationFilterTest(TestCase):
-    fixtures = ['web/fixtures/web/productlegislation.json']
+    def setUp(self):
+        ProductLegislationFactory(name='Test Legislation',
+                                  is_biocidal=True,
+                                  is_biocidal_claim=True,
+                                  is_eu_cosmetics_regulation=True)
+        ProductLegislationFactory(name='Comprehensive legislation',
+                                  is_biocidal=False,
+                                  is_biocidal_claim=False,
+                                  is_eu_cosmetics_regulation=True)
+        ProductLegislationFactory(name='New Product Legislation',
+                                  is_biocidal=True,
+                                  is_biocidal_claim=False,
+                                  is_eu_cosmetics_regulation=False)
+        ProductLegislationFactory(name='Eu Test Cosmetics Regulation',
+                                  is_biocidal=True,
+                                  is_biocidal_claim=False,
+                                  is_eu_cosmetics_regulation=False)
 
     def run_filter(self, data=None):
         return ProductLegislationFilter(data=data).qs

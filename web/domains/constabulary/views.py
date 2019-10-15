@@ -14,6 +14,7 @@ class ConstabularyListView(ModelFilterView):
     model = Constabulary
     filterset_class = ConstabulariesFilter
     permission_required = permissions
+    page_title = 'Maintain Constabularies'
 
     class Display:
         fields = ['name', 'region_verbose', 'email']
@@ -28,6 +29,7 @@ class ConstabularyCreateView(ModelCreateView):
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
     permission_required = permissions
+    page_title = 'New Constabulary'
 
 
 class ConstabularyEditView(ModelUpdateView):

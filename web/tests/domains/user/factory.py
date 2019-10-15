@@ -1,3 +1,5 @@
+import random
+
 import factory
 from web.domains.user.models import User
 
@@ -6,10 +8,10 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = 'test_user'
-    email = 'test@example.com'
+    username = factory.Sequence(lambda n: 'User%s' % n)
+    email = factory.LazyAttribute(lambda u: '%s@example.com' % u.username)
     password = factory.PostGenerationMethodCall('set_password', 'test')
-    is_superuser = False
-    is_staff = True
-    is_active = True
-    register_complete = True
+    is_superuser = random.choice([True, False])
+    is_staff = random.choice([True, False])
+    is_active = random.choice([True, False])
+    register_complete = random.choice([True, False])

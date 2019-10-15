@@ -6,7 +6,11 @@ from web.tests.domains.user.factory import UserFactory
 
 class AuthTestCase(TestCase):
     def setUp(self):
-        self.user = UserFactory()
+        self.user = UserFactory(username='test_user',
+                                password='test',
+                                register_complete=True,
+                                is_superuser=False,
+                                is_active=True)
 
     def grant(self, permission_codename):
         permission = Permission.objects.create(name=permission_codename,
@@ -15,7 +19,7 @@ class AuthTestCase(TestCase):
         self.user.user_permissions.add(permission)
 
     def login(self):
-        if not self.client.login(username=self.user.username, password='test'):
+        if not self.client.login(username='test_user', password='test'):
             raise Exception("Login Failed!")
 
     def login_with_permissions(self, permissions=None):
