@@ -68,6 +68,9 @@ class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin,
     def get_success_message(self, cleaned_data):
         return f'{self.object} updated successfully'
 
+    def get_page_title(self):
+        return f"Editing {self.object}"
+
 
 class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
     template_name = 'model/view.html'
@@ -86,3 +89,6 @@ class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
         context = super().get_context_data()
         context['form'] = self.get_form(instance=object)
         return context
+
+    def get_page_title(self):
+        return f"Viewing {self.object}"

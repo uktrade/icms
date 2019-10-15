@@ -1,13 +1,13 @@
 from web.tests.auth import AuthTestCase
 
-from .factory import ProductLegislationFactory
+from .factory import ConstabularyFactory
 
 LOGIN_URL = '/'
 PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
 
 
-class ProductLegislationListViewTest(AuthTestCase):
-    url = '/product-legislation/'
+class ConstabularyListViewTest(AuthTestCase):
+    url = '/constabulary/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
     def test_anonymous_access_redirects(self):
@@ -29,12 +29,12 @@ class ProductLegislationListViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
-                         'Maintain Product Legislation')
+                         'Maintain Constabularies')
 
     def test_number_of_pages(self):
         # Create 51 product legislation as paging lists 50 items per page
-        for i in range(51):
-            ProductLegislationFactory()
+        for i in range(62):
+            ConstabularyFactory()
 
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
@@ -42,16 +42,16 @@ class ProductLegislationListViewTest(AuthTestCase):
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
-        for i in range(51):
-            ProductLegislationFactory()
+        for i in range(65):
+            ConstabularyFactory()
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + '?page=2')
         page = response.context_data['page']
-        self.assertEqual(len(page.object_list), 1)
+        self.assertEqual(len(page.object_list), 15)
 
 
-class ProductLegislationCreateViewTest(AuthTestCase):
-    url = '/product-legislation/new/'
+class ConstabularyCreateViewTest(AuthTestCase):
+    url = '/constabulary/new/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
     def test_anonymous_access_redirects(self):
@@ -73,15 +73,14 @@ class ProductLegislationCreateViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
-                         'New Product Legislation')
+                         'New Constabulary')
 
 
-class ProductLegislationUpdateViewTest(AuthTestCase):
+class ConstabularyUpdateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.legislation = ProductLegislationFactory(
-        )  # Create a product legislation
-        self.url = f'/product-legislation/{self.legislation.id}/edit/'
+        self.constabulary = ConstabularyFactory()  # Create a constabulary
+        self.url = f'/constabulary/{self.constabulary.id}/edit/'
         self.redirect_url = f'{LOGIN_URL}?next={self.url}'
 
     def test_anonymous_access_redirects(self):
@@ -103,14 +102,14 @@ class ProductLegislationUpdateViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
-                         f"Editing {self.legislation}")
+                         f"Editing {self.constabulary}")
 
 
-class ProductLegislationDetailViewTest(AuthTestCase):
+class ConstabularyDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.legislation = ProductLegislationFactory()
-        self.url = f'/product-legislation/{self.legislation.id}/'
+        self.constabulary = ConstabularyFactory()
+        self.url = f'/constabulary/{self.constabulary.id}/'
         self.redirect_url = f'{LOGIN_URL}?next={self.url}'
 
     def test_anonymous_access_redirects(self):
@@ -132,4 +131,4 @@ class ProductLegislationDetailViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
-                         f"Viewing {self.legislation}")
+                         f"Viewing {self.constabulary}")
