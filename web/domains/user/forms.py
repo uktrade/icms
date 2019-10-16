@@ -1,11 +1,11 @@
 from django.forms.fields import CharField
-from django.forms.widgets import EmailInput, PasswordInput, Select, Textarea, CheckboxSelectMultiple, CheckboxInput
+from django.forms.widgets import (CheckboxInput, CheckboxSelectMultiple,
+                                  EmailInput, PasswordInput, Select, Textarea)
 from django.utils.translation import gettext_lazy as _
-from django_filters import CharFilter, MultipleChoiceFilter, BooleanFilter
+from django_filters import BooleanFilter, CharFilter, MultipleChoiceFilter
 from web.forms import ModelEditForm, ModelSearchFilter, validators
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
-from web.models import Constabulary
 
 from .models import AlternativeEmail, Email, PersonalEmail, PhoneNumber, User
 
@@ -48,7 +48,7 @@ class UserDetailsUpdateForm(ModelEditForm):
         }
         widgets = {
             'share_contact_details':
-                Select(choices=((False, 'No'), (True, 'Yes'))),
+            Select(choices=((False, 'No'), (True, 'Yes'))),
             'security_question': Textarea({'rows': 2}),
             'security_answer': PasswordInput(render_value=True),
             'location_at_address': Textarea({
@@ -64,30 +64,32 @@ class UserDetailsUpdateForm(ModelEditForm):
 
         help_texts = {
             'title':
-                'Preferred form of address. Examples: Mr, Ms, Miss, Mrs, Dr, Rev, etc.',  # NOQA
+            'Preferred form of address. Examples: Mr, Ms, Miss, Mrs, Dr, Rev, etc.',  # NOQA
             'first_name':
-                'Formal given name',
+            'Formal given name',
             'preferred_first_name':
-                'Preferred forename can be left blank. It is not used on formal document. Example Forename(Preferred): Robert (Bob)',
-            # NOQA
+            'Preferred forename can be left blank. \
+                It is not used on formal document. \
+                Example Forename(Preferred): Robert (Bob)',
             'middle_initials':
-                'Initials of middle names (if used)',
+            'Initials of middle names (if used)',
             'last_name':
-                'Family or marriage name',
+            'Family or marriage name',
             'organisation':
-                'Organisation name of direct employer. This is not the names of organisations which work may be carried out on behalf of, as this information is recorded elsewhere on the system.',
-            # NOQA
+            'Organisation name of direct employer. \
+                This is not the names of organisations which work may be \
+                carried out on behalf of, as this information is recorded \
+                elsewhere on the system.',
             'department':
-                'Department name associated with, within direct employing organisation.',  # NOQA
+            'Department name associated with, within direct employing \
+                organisation.',
             'job_title':
-                'Job title used within direct employing organisation.',
+            'Job title used within direct employing organisation.',
             'location_at_address':
-                _(
-                    'Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX'
-                    # NOQA
-                ),
+            _('Room or bay number and location within the formal postal address below.\
+             \nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX'),
             'work_address':
-                _('Edit work address')
+            _('Edit work address')
         }
         config = {
             '__all__': {
@@ -220,8 +222,8 @@ class UserListFilter(ModelSearchFilter):
                                lookup_expr='icontains',
                                label='Email Address')
     username = CharFilter(field_name='username',
-                               lookup_expr='icontains',
-                               label='Login Name')
+                          lookup_expr='icontains',
+                          label='Login Name')
     forename = CharFilter(field_name='first_name',
                           lookup_expr='icontains',
                           label='Forename')
@@ -232,14 +234,13 @@ class UserListFilter(ModelSearchFilter):
                               lookup_expr='icontains',
                               label='Organisation')
     job_title = CharFilter(field_name='job_title',
-                     lookup_expr='icontains',
-                     label='Job Title')
+                           lookup_expr='icontains',
+                           label='Job Title')
     status = MultipleChoiceFilter(field_name='account_status',
                                   lookup_expr='icontains',
                                   label='Account Status',
                                   choices=User.STATUSES,
-                                  widget=CheckboxSelectMultiple
-                                  )
+                                  widget=CheckboxSelectMultiple)
     password_disposition = BooleanFilter(field_name='password_disposition',
                                          lookup_expr='icontains',
                                          widget=CheckboxInput,
@@ -251,16 +252,6 @@ class UserListFilter(ModelSearchFilter):
             return queryset.filter(password_disposition=User.TEMPORARY)
         else:
             return queryset
-
-    class Meta:
-        model = User
-        fields = []
-
-
-class UsersListFilter(ModelSearchFilter):
-    username = CharFilter(field_name='name',
-                          lookup_expr='icontains',
-                          label='Login Name')
 
     class Meta:
         model = User
