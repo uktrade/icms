@@ -14,6 +14,8 @@ pytest-xdist = "*"
 pytest-mock = "*"
 pytest-flake8 = "*"
 pyparsing = ">2.4.1"
+factory-boy = "*"
+faker = "*"
 
 [packages]
 django = "==2.2.4"

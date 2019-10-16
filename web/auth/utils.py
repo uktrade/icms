@@ -1,4 +1,5 @@
 import random
+import string
 
 
 def generate_temp_password(length=8):
