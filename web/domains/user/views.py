@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.shortcuts import render
+
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
 from web.auth.decorators import require_registered
-from web.domains.user.forms import UserDetailsUpdateForm
+from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
 from web.views import ModelFilterView
-
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
@@ -141,3 +141,25 @@ class PeopleSearchView(ModelFilterView):
     def post(self, request, *args, **kwargs):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
+
+class UsersListView(ModelFilterView):
+    template_name = 'web/user/list.html'
+    model = User
+    filterset_class = UserListFilter
+    page_title = 'Maintain Web User Accounts'
+
+    def has_permission(self):
+        return True
+
+    class Display:
+        fields = [('title', 'first_name', 'last_name'),
+                  ('organisation', 'job_title'), 'username', ('account_status', 'password_disposition'),
+                  'account_last_login_date', ('account_status_by_full_name', 'account_status_date')]
+        headers = ['Person Details', 'Organisation / Job Title', 'Login Name', 'Account Status / Password Disposition',
+                   'Last Login Date', 'Account Status Changed Date/By']
+        select = True
+
+    def post(self, request, *args, **kwargs):
+        request.GET = request.POST
+        return super().get(request, *args, **kwargs)
+
