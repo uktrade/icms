@@ -142,6 +142,7 @@ class PeopleSearchView(ModelFilterView):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
 
+
 class UsersListView(ModelFilterView):
     template_name = 'web/user/list.html'
     model = User
@@ -153,13 +154,17 @@ class UsersListView(ModelFilterView):
 
     class Display:
         fields = [('title', 'first_name', 'last_name'),
-                  ('organisation', 'job_title'), 'username', ('account_status', 'password_disposition'),
-                  'account_last_login_date', ('account_status_by_full_name', 'account_status_date')]
-        headers = ['Person Details', 'Organisation / Job Title', 'Login Name', 'Account Status / Password Disposition',
-                   'Last Login Date', 'Account Status Changed Date/By']
+                  ('organisation', 'job_title'), 'username',
+                  ('account_status', 'password_disposition'),
+                  'account_last_login_date',
+                  ('account_status_by_full_name', 'account_status_date')]
+        headers = [
+            'Person Details', 'Organisation / Job Title', 'Login Name',
+            'Account Status / Password Disposition', 'Last Login Date',
+            'Account Status Changed Date/By'
+        ]
         select = True
 
     def post(self, request, *args, **kwargs):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
-

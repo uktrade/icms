@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 def merge_dictionaries(a, b):
     '''recursively merges dict's. not just simple a['key'] = b['key'], if
   both a and bhave a key who's value is a dict then dict_merge is called

@@ -47,9 +47,6 @@ class ProductLegislationUpdateView(ModelUpdateView):
     cancel_url = success_url
     permission_required = permissions
 
-    def get_page_title(self):
-        return f"Editing '{self.object.name}'"
-
 
 class ProductLegislationDetailView(ModelDetailView):
     template_name = 'web/product-legislation/view.html'
@@ -57,6 +54,3 @@ class ProductLegislationDetailView(ModelDetailView):
     form_class = ProductLegislationForm
     cancel_url = reverse_lazy('product-legislation-list')
     permission_required = permissions
-
-    def get_page_title(self):
-        return f"Viewing '{self.object.name}'"
