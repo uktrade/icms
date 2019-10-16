@@ -43,7 +43,7 @@ class ConstabularyListViewTest(AuthTestCase):
 
     def test_page_results(self):
         for i in range(65):
-            ConstabularyFactory()
+            ConstabularyFactory(is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + '?page=2')
         page = response.context_data['page']
