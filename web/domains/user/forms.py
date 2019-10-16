@@ -1,7 +1,8 @@
 from django.forms.fields import CharField
-from django.forms.widgets import EmailInput, PasswordInput, Select, Textarea
+from django.forms.widgets import (CheckboxInput, CheckboxSelectMultiple,
+                                  EmailInput, PasswordInput, Select, Textarea)
 from django.utils.translation import gettext_lazy as _
-from django_filters import CharFilter
+from django_filters import BooleanFilter, CharFilter, MultipleChoiceFilter
 from web.forms import ModelEditForm, ModelSearchFilter, validators
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
@@ -67,20 +68,26 @@ class UserDetailsUpdateForm(ModelEditForm):
             'first_name':
             'Formal given name',
             'preferred_first_name':
-            'Preferred forename can be left blank. It is not used on formal document. Example Forename(Preferred): Robert (Bob)',  # NOQA
+            'Preferred forename can be left blank. \
+                It is not used on formal document. \
+                Example Forename(Preferred): Robert (Bob)',
             'middle_initials':
             'Initials of middle names (if used)',
             'last_name':
             'Family or marriage name',
             'organisation':
-            'Organisation name of direct employer. This is not the names of organisations which work may be carried out on behalf of, as this information is recorded elsewhere on the system.',  # NOQA
+            'Organisation name of direct employer. \
+                This is not the names of organisations which work may be \
+                carried out on behalf of, as this information is recorded \
+                elsewhere on the system.',
             'department':
-            'Department name associated with, within direct employing organisation.',  # NOQA
+            'Department name associated with, within direct employing \
+                organisation.',
             'job_title':
             'Job title used within direct employing organisation.',
             'location_at_address':
-            _('Room or bay number and location within the formal postal address below.\nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX'  # NOQA
-              ),
+            _('Room or bay number and location within the formal postal address below.\
+             \nExample:\nROOM 104\nFIRST FLOOR REAR ANNEX'),
             'work_address':
             _('Edit work address')
         }
@@ -118,7 +125,6 @@ class PhoneNumberForm(ModelEditForm):
 
 
 class AlternativeEmailsForm(ModelEditForm):
-
     notifications = CharField(required=False,
                               widget=Select(choices=((True, 'Yes'), (False,
                                                                      'No'))))
@@ -205,6 +211,47 @@ class UserFilter(ModelSearchFilter):
     job = CharFilter(field_name='job_title',
                      lookup_expr='icontains',
                      label='Job')
+
+    class Meta:
+        model = User
+        fields = []
+
+
+class UserListFilter(ModelSearchFilter):
+    email_address = CharFilter(field_name='email',
+                               lookup_expr='icontains',
+                               label='Email Address')
+    username = CharFilter(field_name='username',
+                          lookup_expr='icontains',
+                          label='Login Name')
+    forename = CharFilter(field_name='first_name',
+                          lookup_expr='icontains',
+                          label='Forename')
+    surname = CharFilter(field_name='last_name',
+                         lookup_expr='icontains',
+                         label='Surname')
+    organisation = CharFilter(field_name='organisation',
+                              lookup_expr='icontains',
+                              label='Organisation')
+    job_title = CharFilter(field_name='job_title',
+                           lookup_expr='icontains',
+                           label='Job Title')
+    status = MultipleChoiceFilter(field_name='account_status',
+                                  lookup_expr='icontains',
+                                  label='Account Status',
+                                  choices=User.STATUSES,
+                                  widget=CheckboxSelectMultiple)
+    password_disposition = BooleanFilter(field_name='password_disposition',
+                                         lookup_expr='icontains',
+                                         widget=CheckboxInput,
+                                         method='filter_password_disposition',
+                                         label='Disposition')
+
+    def filter_password_disposition(self, queryset, name, value):
+        if value:
+            return queryset.filter(password_disposition=User.TEMPORARY)
+        else:
+            return queryset
 
     class Meta:
         model = User

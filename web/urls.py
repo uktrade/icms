@@ -3,8 +3,10 @@ from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from viewflow.flow.viewset import FlowViewSet
 from web.domains.case.access.views import AccessRequestFlow
+from web.domains.user.views import (UsersListView)
 from web.domains.commodity import views as commodity_views
 from web.domains.constabulary import views as constabulary_views
+
 
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
@@ -40,6 +42,7 @@ urlpatterns = [
     path('set-password/', auth_views.set_password, name='set-password'),
     path('user/password/', auth_views.change_password, name='change-password'),
     path('user/', user_details, name='user-details'),
+    path('users/', UsersListView.as_view(), name='users-list'),
     path('workbasket/', workbasket, name='workbasket'),
 
     # Template Management
