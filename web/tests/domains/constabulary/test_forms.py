@@ -26,7 +26,12 @@ class ConstabulariesFilterTest(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({'name': 'constab'})
-        self.assertEqual(results.count(), 3)
+        self.assertEqual(results.count(), 2)
+
+    def test_archived_filter(self):
+        results = self.run_filter({'archived': True})
+        self.assertEquals(results.count(), 1)
+        self.assertEqual(results.first().name, 'Test Constabulary')
 
     def test_region_filter(self):
         results = self.run_filter({'region': Constabulary.EASTERN})
@@ -34,15 +39,15 @@ class ConstabulariesFilterTest(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({'email': '@example.com'})
-        self.assertEqual(results.count(), 3)
+        self.assertEqual(results.count(), 2)
 
     def test_filter_order(self):
         results = self.run_filter({'email': 'example'})
-        self.assertEqual(results.count(), 3)
+        self.assertEqual(results.count(), 2)
         first = results.first()
         last = results.last()
         self.assertEqual(first.name, 'Big London Constabulary')
-        self.assertEqual(last.name, 'Test Constabulary')
+        self.assertEqual(last.name, 'That Constabulary')
 
 
 class ProductLegislationFormTest(TestCase):
