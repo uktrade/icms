@@ -30,7 +30,7 @@ class ConstabulariesFilterTest(TestCase):
 
     def test_archived_filter(self):
         results = self.run_filter({'archived': True})
-        self.assertEquals(results.count(), 1)
+        self.assertEqual(results.count(), 1)
         self.assertEqual(results.first().name, 'Test Constabulary')
 
     def test_region_filter(self):
