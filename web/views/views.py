@@ -1,6 +1,6 @@
-from django.contrib import messages
 # from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import SuspiciousOperation
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
 
-from .mixins import PostActionMixin, DataDisplayConfigMixin, PageTitleMixin
+from .mixins import DataDisplayConfigMixin, PageTitleMixin
 
 
 @require_registered
@@ -17,21 +17,21 @@ def home(request):
     return render(request, 'web/home.html')
 
 
-class ModelFilterView(RequireRegisteredMixin, PostActionMixin,
-                      DataDisplayConfigMixin, ListView):
+class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
+                      ListView):
     paginate_by = 50
 
-    def archive(self, *args, **kwargs):
-        item = self.request.POST.get('item')
-        self.model.objects.get(pk=item).archive()
-        messages.success(self.request, 'Record archived successfully')
-        return super().get(*args, **kwargs)
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        if not action:
+            raise SuspiciousOperation('Invalid Request!')
 
-    def unarchive(self, *args, **kwargs):
-        item = self.request.POST.get('item')
-        self.model.objects.get(pk=item).unarchive()
-        messages.success(self.request, 'Record unarchived successfully')
-        return super().get(*args, **kwargs)
+        for a in self.Display.actions:
+            if a.action == action:
+                a.handle(request, self.model)
+                return super().get(request, *args, **kwargs)
+
+        raise SuspiciousOperation('Invalid Request!')
 
     def paginate(self, queryset):
         paginator = Paginator(queryset, self.paginate_by)
