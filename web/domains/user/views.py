@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
@@ -7,15 +8,15 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
-from web.views import ModelFilterView
+from web.views import ModelFilterView, ModelDetailView
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
 
 
-def details_update(request, action):
-    forms = init_user_details_forms(request, action)
+def details_update(request, action, pk):
+    forms = init_user_details_forms(request, action, pk)
     if not action == 'save_address':
         if utils.forms_valid(forms):
             utils.save_forms(forms)
@@ -41,7 +42,7 @@ def manual_address(request, action):
 
     if form.is_valid():
         if action == 'save_manual_address':
-            return details_update(request, 'save_address')
+            return details_update(request, 'save_address', request.user.pk)
 
     return render(request, 'web/user/manual-address.html', {'form': form})
 
@@ -71,11 +72,11 @@ def address_search(request, action):
     })
 
 
-def init_user_details_forms(request, action):
+def init_user_details_forms(request, action, pk):
     # If post is not made from user details page but from search page do not
     # try and initialise forms with POST data
     data = request.POST or None
-    user = request.user
+    user = User.objects.get(pk = pk)
     address = None
 
     if request.POST:
@@ -103,7 +104,11 @@ def init_user_details_forms(request, action):
 
 
 @require_registered
-def user_details(request):
+def current_user_details(request):
+    return user_details(request, request.user.pk)
+
+@require_registered
+def user_details(request, pk):
     action = request.POST.get('action')
     if action == 'edit_address':
         # Save all data to session before searching address
@@ -114,7 +119,7 @@ def user_details(request):
     elif action in ['manual_address', 'save_manual_address']:
         return manual_address(request, action)
 
-    return details_update(request, action)
+    return details_update(request, action, pk)
 
 
 #  def search_people(request):
@@ -162,4 +167,28 @@ class UsersListView(ModelFilterView):
     def post(self, request, *args, **kwargs):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
+
+class UserView(ModelDetailView):
+    form_class = UserDetailsUpdateForm
+    model = User
+    #permission_required = permissions
+
+    def has_permission(self):
+        return True
+
+    # def get(self, request, id):
+    #     return HttpResponse(id)
+
+
+    # class Display:
+    #     fields = [('title', 'first_name', 'last_name'),
+    #               ('organisation', 'job_title'), 'username', ('account_status', 'password_disposition'),
+    #               'account_last_login_date', ('account_status_by_full_name', 'account_status_date')]
+    #     headers = ['Person Details', 'Organisation / Job Title', 'Login Name', 'Account Status / Password Disposition',
+    #                'Last Login Date', 'Account Status Changed Date/By']
+    #     select = True
+    #
+    # def post(self, request, *args, **kwargs):
+    #     request.GET = request.POST
+    #     return super().get(request, *args, **kwargs)
 
