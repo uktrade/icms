@@ -8,7 +8,7 @@
 {% block sidebar %}
 <h4>My details</h4>
 <ul class="menu-out">
-    <li> <a href="{{ url('user-details') }}">Contact Details</a></li>
+    <li> <a href="{{ url('current-user-details') }}">Contact Details</a></li>
     <li> <a href="{{ url('change-password') }}">Change Password</a></li>
 </ul>
 {% endblock %}
@@ -21,7 +21,7 @@
     These details will be used throughout the system and might be visible to other users. Please make sure they're accurate and up to date.
 </div>
 
-  {% call forms.form(action=url('user-details'), method='post', csrf_input=csrf_input )-%}
+  {% call forms.form(action=url('current-user-details'), method='post', csrf_input=csrf_input )-%}
 
     {% set edit_address %}
     <button name="action" value="edit_address" type="submit"
