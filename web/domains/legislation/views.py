@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
+from web.views.actions import Archive, Edit, Unarchive
 
 from .forms import ProductLegislationFilter, ProductLegislationForm
 from .models import ProductLegislation
@@ -20,13 +21,24 @@ class ProductLegislationListView(ModelFilterView):
             'name', 'is_biocidal_yes_no', 'is_biocidal_claim_yes_no',
             'is_eu_cosmetics_regulation_yes_no'
         ]
-        headers = [
-            'Legislation Name', 'Is Biocidal', 'Is Biocidal Claim',
-            'Is EU Cosmetics Regulation'
-        ]
-        view = True
-        archive = True
-        edit = True
+
+        fields_config = {
+            'name': {
+                'header': 'Legislation Name',
+                'link': True
+            },
+            'is_biocidal_yes_no': {
+                'header': 'Is Biocidal'
+            },
+            'is_biocidal_claim_yes_no': {
+                'header': 'Is Biocidal Claim'
+            },
+            'is_eu_cosmetics_regulation_yes_no': {
+                'header': 'Is EU Cosmetics Regulation'
+            }
+        }
+
+        actions = [Archive(), Unarchive(), Edit()]
 
 
 class ProductLegislationCreateView(ModelCreateView):
