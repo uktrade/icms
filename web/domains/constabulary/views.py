@@ -2,6 +2,7 @@
 from django.urls import reverse_lazy
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
+from web.views.actions import Archive, Edit, Unarchive
 
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
@@ -14,12 +15,22 @@ class ConstabularyListView(ModelFilterView):
     model = Constabulary
     filterset_class = ConstabulariesFilter
     permission_required = permissions
+    page_title = 'Maintain Constabularies'
 
     class Display:
         fields = ['name', 'region_verbose', 'email']
-        headers = ['Constabulary Name', 'Constabulary Region', 'Email Address']
-        edit = True
-        archive = True
+        fields_config = {
+            'name': {
+                'header': 'Constabulary Name'
+            },
+            'region_verbose': {
+                'header': 'Constabulary Region'
+            },
+            'email': {
+                'header': 'Email Address'
+            }
+        }
+        actions = [Archive(), Unarchive(), Edit()]
 
 
 class ConstabularyCreateView(ModelCreateView):
@@ -28,6 +39,7 @@ class ConstabularyCreateView(ModelCreateView):
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
     permission_required = permissions
+    page_title = 'New Constabulary'
 
 
 class ConstabularyEditView(ModelUpdateView):

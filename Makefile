@@ -29,8 +29,9 @@ run: test
 	docker-compose up
 
 test: clean
+	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web pytest -s --verbose --cov=web --cov=config web/tests
+	docker-compose run web pytest -s --verbose --cov=web --cov=config $(TEST_TARGET)
 
 # Generate accessibility reports
 accessibility:

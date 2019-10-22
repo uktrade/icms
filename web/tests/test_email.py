@@ -35,27 +35,3 @@ class TestEmail(TestCase):
         assert isinstance(m, mail.EmailMultiAlternatives)
         assert m.subject == 'testing'
         assert m.from_email == 'test@example.com'
-
-    def test_email_stored(self):
-        mail_count = models.OutboundEmail.objects.filter(
-            to_email='tester@example.com').count()
-        assert mail_count == 0
-        email.send('testing', self.user(), 'test')
-        mail_count = models.OutboundEmail.objects.filter(
-            to_email='tester@example.com').count()
-        assert mail_count == 1
-
-    def test_message_body_stored_as_attachment(self):
-        """
-        Test if message body was saved as email attachment
-        """
-        email.send('testing', self.user(), 'test')
-        mail = models.OutboundEmail.objects.filter(
-            to_email='tester@example.com')[0]
-        assert len(mail.attachments.all()) == 1
-
-    def test_status_updated(self):
-        email.send('testing', self.user(), 'test')
-        mail = models.OutboundEmail.objects.filter(
-            to_email='tester@example.com')[0]
-        assert mail.status == models.OutboundEmail.SENT

@@ -1,0 +1,85 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/list.html" as lists %}
+{% import "forms/fields.html" as fields %}
+{% import "tables/tables.html" as tables %}
+
+{% block main_content %}
+
+    {% block filters %}
+
+      {% call forms.form() -%}
+        {% for field in filter.form.fields %}
+          {{fields.field(filter.form[field])}}
+        {% endfor %}
+
+        <div class="clearBoth"></div>
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns">
+              <ul class="menu-out flow-across">
+                <button type="submit" name="" value="" class="primary-button button">
+                  Search
+                </button>
+                </li>
+              </ul>
+            </div>
+            <div class="three columns"></div>
+          </div>
+        </div>
+
+      {%- endcall %}
+
+    {% endblock %}
+
+    {% block results %}
+
+        {% if page %}
+          {% include "partial/paginator.html" %}
+        {% endif %}
+
+        {% set empty_message %}
+            {% block empty_message %}
+                There aren't any records that match your search
+            {% endblock %}
+        {% endset %}
+
+        {% set hide_empty_message = not(request.POST or request.GET) %}
+
+
+        <table responsiveList class="setoutList">
+          <thead>
+            <tr>
+              {{tables.headers(display)}}
+
+              {% if display.actions %}
+                <th scope="col">Actions</th>
+              {% endif %}
+            </tr>
+          </thead>
+
+          {% for item in (page.object_list if page else results) %}
+            <tr>
+              {{tables.fields(item, display)}}
+
+              {% if display.actions %}
+                <td>
+                  {% for action in display.actions %}
+                    {% if action.display(item) %}
+                      {{action.as_html(item, csrf_input)}}
+                    {% endif %}
+                  {% endfor %}
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+
+        {% if page %}
+          {% include "partial/paginator.html" %}
+        {% endif %}
+
+    {% endblock %}
+    <div class=content-actions></div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% macro _header(field, config) -%}
+  {{config.header}}
+  {% if config.tooltip %}
+    <div id="{{field}}-hint"  class="hint-content" role="tooltup" aria-hidden="true">
+      {{config.tooltip}}
+    </div>
+    <div id="{{field}}" aria_describedby="{{field}}-hint" class="hint icon-info tooltipstered"></div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro _field(object, field, config) -%}
+  {% if config and config.link %}
+    <a href={{object.id}}>{{object[field]}}</a>
+  {% else %}
+    {{object[field]}}
+  {% endif %}
+{%- endmacro %}
+
+{% macro headers(display) -%}
+  {% for f in display.fields %}
+    <th scope="col">
+      {% if f is string %}
+        {{_header(f, display.fields_config[f])}}
+      {% else %}
+        {% for field in f %}
+          {{_header(field, display.fields_config[field])}}
+          {% if not loop.last %}
+            / </br>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </th>
+  {% endfor %}
+{%- endmacro %}
+
+{% macro fields(object, display) -%}
+  {% for f in display.fields %}
+    <td>
+      {% if f is string %}
+        {{_field(object, f,display.fields_config[f])}}
+      {% else %}
+        {% for field in f %}
+          {{_field(object, field, display.fields_config[field])}}
+        {% endfor %}
+      {% endif %}
+    </td>
+  {% endfor %}
+{%- endmacro %}

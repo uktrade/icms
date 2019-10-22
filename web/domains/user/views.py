@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.shortcuts import render
-from django.http import HttpResponse
 
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
@@ -15,8 +14,8 @@ from .formset import (new_alternative_emails_formset,
 from .models import User
 
 
-def details_update(request, action, pk):
-    forms = init_user_details_forms(request, action, pk)
+def details_update(request, action):
+    forms = init_user_details_forms(request, action)
     if not action == 'save_address':
         if utils.forms_valid(forms):
             utils.save_forms(forms)
@@ -42,7 +41,7 @@ def manual_address(request, action):
 
     if form.is_valid():
         if action == 'save_manual_address':
-            return details_update(request, 'save_address', request.user.pk)
+            return details_update(request, 'save_address')
 
     return render(request, 'web/user/manual-address.html', {'form': form})
 
@@ -72,11 +71,11 @@ def address_search(request, action):
     })
 
 
-def init_user_details_forms(request, action, pk):
+def init_user_details_forms(request, action):
     # If post is not made from user details page but from search page do not
     # try and initialise forms with POST data
     data = request.POST or None
-    user = User.objects.get(pk = pk)
+    user = request.user
     address = None
 
     if request.POST:
@@ -104,11 +103,7 @@ def init_user_details_forms(request, action, pk):
 
 
 @require_registered
-def current_user_details(request):
-    return user_details(request, request.user.pk)
-
-@require_registered
-def user_details(request, pk):
+def user_details(request):
     action = request.POST.get('action')
     if action == 'edit_address':
         # Save all data to session before searching address
@@ -119,7 +114,7 @@ def user_details(request, pk):
     elif action in ['manual_address', 'save_manual_address']:
         return manual_address(request, action)
 
-    return details_update(request, action, pk)
+    return details_update(request, action)
 
 
 #  def search_people(request):
@@ -147,6 +142,7 @@ class PeopleSearchView(ModelFilterView):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
 
+
 class UsersListView(ModelFilterView):
     template_name = 'web/user/list.html'
     model = User
@@ -158,10 +154,15 @@ class UsersListView(ModelFilterView):
 
     class Display:
         fields = [('title', 'first_name', 'last_name'),
-                  ('organisation', 'job_title'), 'username', ('account_status', 'password_disposition'),
-                  'account_last_login_date', ('account_status_by_full_name', 'account_status_date')]
-        headers = ['Person Details', 'Organisation / Job Title', 'Login Name', 'Account Status / Password Disposition',
-                   'Last Login Date', 'Account Status Changed Date/By']
+                  ('organisation', 'job_title'), 'username',
+                  ('account_status', 'password_disposition'),
+                  'account_last_login_date',
+                  ('account_status_by_full_name', 'account_status_date')]
+        headers = [
+            'Person Details', 'Organisation / Job Title', 'Login Name',
+            'Account Status / Password Disposition', 'Last Login Date',
+            'Account Status Changed Date/By'
+        ]
         select = True
 
     def post(self, request, *args, **kwargs):

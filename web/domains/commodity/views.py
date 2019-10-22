@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
+from web.views.actions import Archive, Edit, Unarchive
 
 from .forms import (CommodityEditForm, CommodityFilter, CommodityForm,
                     CommodityGroupEditForm, CommodityGroupFilter,
@@ -18,13 +19,21 @@ class CommodityListView(ModelFilterView):
 
     class Display:
         fields = [
-            'commodity_code', 'commodity_type_verbose',
-            ('validity_start_date', 'validity_end_date')
+            'commodity_code', ('validity_start_date', 'validity_end_date')
         ]
-        headers = ['Commodity Code', 'Commodity Type', 'Validity']
-        view = True
-        edit = True
-        archive = True
+        fields_config = {
+            'commodity_code': {
+                'header': 'Commodity Code',
+                'link': True
+            },
+            'validity_start_date': {
+                'header': 'Validity Start Date'
+            },
+            'validity_end_date': {
+                'header': 'Validity End Date'
+            }
+        }
+        actions = [Archive(), Unarchive(), Edit()]
 
 
 class CommodityEditView(ModelUpdateView):
@@ -56,16 +65,27 @@ class CommodityGroupListView(ModelFilterView):
 
     class Display:
         fields = [
-            'group_type_verbose', 'commodity_type_verbose', 'group_code',
-            'group_description'
+            'group_type_verbose', 'commodity_type_verbose',
+            ('group_code', 'group_name'), 'group_description'
         ]
-        headers = [
-            'Commodity Code', 'Commodity Type', 'Group Code/ Group Name',
-            'Descripption/ Commodities'
-        ]
-        view = False
-        edit = True
-        archive = True
+        fields_config = {
+            'group_type_verbose': {
+                'header': 'Group Type'
+            },
+            'commodity_type_verbose': {
+                'header': 'Commodity Type'
+            },
+            'group_code': {
+                'header': 'Group Code'
+            },
+            'group_name': {
+                'header': 'Group Name'
+            },
+            'group_description': {
+                'header': 'Description'
+            }
+        }
+        actions = [Archive(), Unarchive(), Edit()]
 
 
 class CommodityGroupEditView(ModelUpdateView):

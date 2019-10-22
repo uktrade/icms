@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 # from django_filters import CharFilter
 from web.views import ModelFilterView, ModelUpdateView
+from web.views.actions import Edit
 
 from .forms import TeamEditForm, TeamsFilter
 from .mixins import ContactsManagementMixin
@@ -30,8 +31,8 @@ class TeamListView(ModelFilterView):
 
     class Display:
         fields = ['name']
-        headers = ['Name']
-        edit = True
+        fields_config = {'name': {'header': 'Name'}}
+        actions = [Edit()]
 
 
 class TeamEditView(ContactsManagementMixin, ModelUpdateView):

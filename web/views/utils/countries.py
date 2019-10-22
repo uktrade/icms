@@ -1,4 +1,5 @@
-def get(): return (
+def get():
+    return (
         (None, ""),
         ("Afghanistan", "Afghanistan"),
         ("Albania", "Albania"),
