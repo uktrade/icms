@@ -10,19 +10,23 @@ class ProductLegislationFilterTest(TestCase):
         ProductLegislationFactory(name='Test Legislation',
                                   is_biocidal=True,
                                   is_biocidal_claim=True,
-                                  is_eu_cosmetics_regulation=True)
+                                  is_eu_cosmetics_regulation=True,
+                                  is_active=False)
         ProductLegislationFactory(name='Comprehensive legislation',
                                   is_biocidal=False,
                                   is_biocidal_claim=False,
-                                  is_eu_cosmetics_regulation=True)
+                                  is_eu_cosmetics_regulation=True,
+                                  is_active=True)
         ProductLegislationFactory(name='New Product Legislation',
                                   is_biocidal=True,
                                   is_biocidal_claim=False,
-                                  is_eu_cosmetics_regulation=False)
+                                  is_eu_cosmetics_regulation=False,
+                                  is_active=False)
         ProductLegislationFactory(name='Eu Test Cosmetics Regulation',
                                   is_biocidal=True,
                                   is_biocidal_claim=False,
-                                  is_eu_cosmetics_regulation=False)
+                                  is_eu_cosmetics_regulation=False,
+                                  is_active=False)
 
     def run_filter(self, data=None):
         return ProductLegislationFilter(data=data).qs
@@ -46,6 +50,10 @@ class ProductLegislationFilterTest(TestCase):
     def test_is_cosmetics_regulation_filter(self):
         results = self.run_filter({'is_eu_cosmetics_regulation': True})
         self.assertEqual(results.count(), 2)
+
+    def test_status_filter(self):
+        results = self.run_filter({'status': True})
+        self.assertEqual(results.count(), 1)
 
     def test_filter_order(self):
         results = self.run_filter({'name': 'legislation'})
