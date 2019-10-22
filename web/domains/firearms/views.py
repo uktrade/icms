@@ -3,6 +3,8 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 from web.views.mixins import PostActionMixin
 
+from web.views.actions import Edit
+
 from .forms import (ObsoleteCalibreGroupDisplayForm,
                     ObsoleteCalibreGroupEditForm, ObsoleteCalibreGroupFilter,
                     new_calibres_formset)
@@ -18,15 +20,17 @@ class ObsoleteCalibreListView(ModelFilterView):
 
     class Display:
         fields = ['name', 'calibres__count']
-        headers = ['Obsolete Calibre Group Name', 'Number of Items']
-        help_texts = {
-            'Number of Items':
-            'The total number of obsolete calibres in this group'
+        fields_config = {
+            'name': {
+                'header': 'Obsolete Calibre Group Name'
+            },
+            'calibres__count': {
+                'header': 'Number of Items',
+                'tooltip':
+                'The total number of obsolete calibres in this group'
+            }
         }
-        view = True
-        edit = True
-        archive = True
-        sort = True
+        actions = [Edit()]
 
 
 class ObsoleteCalibreGroupBaseView(PostActionMixin):

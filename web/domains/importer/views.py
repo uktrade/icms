@@ -21,10 +21,17 @@ class ImporterListView(ModelFilterView):
 
     class Display:
         fields = [('full_name', 'registered_number', 'entity_type')]
-        headers = ['Importer Name / Importer Reg No / Importer Entity Type']
-        edit = True
-        view = True
-        archive = True
+        fields_config = {
+            'full_name': {
+                'header': 'Importer Name'
+            },
+            'registered_number': {
+                'header': 'Importer Reg No'
+            },
+            'entity_type': {
+                'header': 'Importer Entity Type'
+            }
+        }
 
 
 class ImporterEditView(ContactsManagementMixin, ModelUpdateView):

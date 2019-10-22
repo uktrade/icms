@@ -51,10 +51,6 @@ class Commodity(Archivable, models.Model):
         else:
             return self.LABEL
 
-    @property
-    def commodity_type_verbose(self):
-        return self.commodity_type.type
-
     class Meta:
         ordering = (
             '-is_active',

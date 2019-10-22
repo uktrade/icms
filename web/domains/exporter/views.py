@@ -2,6 +2,8 @@ from django.urls import reverse_lazy
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 
+from web.views.actions import Archive, Unarchive, Edit
+
 from .forms import ExporterEditForm, ExporterFilter, ExporterDisplayForm
 from .models import Exporter
 
@@ -15,10 +17,8 @@ class ExporterListView(ModelFilterView):
 
     class Display:
         fields = ['name']
-        headers = ['Exporter Name']
-        edit = True
-        view = True
-        archive = True
+        fields_config = {'name': {'header': 'Exporter Name'}}
+        actions = [Archive(), Unarchive(), Edit()]
 
 
 class ExporterEditView(ModelUpdateView):

@@ -1,4 +1,5 @@
 from web.views import ModelFilterView
+from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
 from .forms import TemplatesFilter
@@ -17,11 +18,19 @@ class TemplateListView(ModelFilterView):
             'template_name', 'application_domain_verbose',
             'template_type_verbose', 'template_status'
         ]
-        headers = [
-            'Template Name', 'Application Domain', 'Template Type',
-            'Template Status'
-        ]
-        #  Display actions
-        edit = True
-        view = True
-        archive = True
+        fields_config = {
+            'template_name': {
+                'header': 'Template Name',
+                'link': True
+            },
+            'application_domain_verbose': {
+                'header': 'Application Domain'
+            },
+            'template_type_verbose': {
+                'header': 'Template Type'
+            },
+            'template_status': {
+                'header': 'Template Status'
+            }
+        }
+        actions = [Archive(), Unarchive(), Edit()]
