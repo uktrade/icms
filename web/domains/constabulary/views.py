@@ -21,7 +21,8 @@ class ConstabularyListView(ModelFilterView):
         fields = ['name', 'region_verbose', 'email']
         fields_config = {
             'name': {
-                'header': 'Constabulary Name'
+                'header': 'Constabulary Name',
+                'link': True
             },
             'region_verbose': {
                 'header': 'Constabulary Region'
