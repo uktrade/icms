@@ -21,7 +21,7 @@
     These details will be used throughout the system and might be visible to other users. Please make sure they're accurate and up to date.
 </div>
 
-  {% call forms.form(action=url('current-user-details'), method='post', csrf_input=csrf_input )-%}
+  {% call forms.form(method='post', csrf_input=csrf_input )-%}
 
     {% set edit_address %}
     <button name="action" value="edit_address" type="submit"

@@ -59,8 +59,7 @@ class User(AbstractUser):
 
     @property
     def full_name(self):
-        name = ' '.join([self.title, self.first_name, self.last_name])
-        return name
+        return ' '.join([self.title, self.first_name, self.last_name])
 
     @property
     def account_status_by_full_name(self):
