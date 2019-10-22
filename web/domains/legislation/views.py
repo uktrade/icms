@@ -15,6 +15,7 @@ class ProductLegislationListView(ModelFilterView):
     model = ProductLegislation
     page_title = 'Maintain Product Legislation'
     permission_required = permissions
+    paginate = False
 
     class Display:
         fields = [

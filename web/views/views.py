@@ -20,6 +20,7 @@ def home(request):
 class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
                       ListView):
     paginate_by = 50
+    paginate = True
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
@@ -49,7 +50,10 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
         f = self.filterset_class(self.request.GET or None,
                                  queryset=self.get_queryset())
         context['filter'] = f
-        context['page'] = self.paginate(f.qs)
+        if self.paginate:
+            context['page'] = self.paginate(f.qs)
+        else:
+            context['results'] = f.qs
         return context
 
 
