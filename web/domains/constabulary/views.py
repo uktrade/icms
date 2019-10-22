@@ -38,6 +38,7 @@ class ConstabularyCreateView(ModelCreateView):
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
+    cancel_url = success_url
     permission_required = permissions
     page_title = 'New Constabulary'
 
@@ -47,10 +48,13 @@ class ConstabularyEditView(ModelUpdateView):
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
+    cancel_url = success_url
     permission_required = permissions
 
 
 class ConstabularyDetailView(ModelDetailView):
     form_class = ConstabularyForm
     model = Constabulary
+    success_url = reverse_lazy('constabulary-list')
+    cancel_url = success_url
     permission_required = permissions
