@@ -29,12 +29,16 @@
           </div>
         </div>
 
-        {% include "partial/paginator.html" %}
       {%- endcall %}
 
     {% endblock %}
 
     {% block results %}
+
+        {% if page %}
+          {% include "partial/paginator.html" %}
+        {% endif %}
+
         {% set empty_message %}
             {% block empty_message %}
                 There aren't any records that match your search
@@ -55,7 +59,7 @@
             </tr>
           </thead>
 
-          {% for item in page.object_list %}
+          {% for item in (page.object_list if page else results) %}
             <tr>
               {{tables.fields(item, display)}}
 
@@ -71,6 +75,11 @@
             </tr>
           {% endfor %}
         </table>
+
+        {% if page %}
+          {% include "partial/paginator.html" %}
+        {% endif %}
+
     {% endblock %}
     <div class=content-actions></div>
 {% endblock %}
