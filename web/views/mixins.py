@@ -28,7 +28,7 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
         context = super().get_context_data()
         display = getattr(self, 'Display', None)
         if display:
-            context['display_config'] = display
+            context['display'] = display
         return context
 
 

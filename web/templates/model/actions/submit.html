@@ -1,0 +1,20 @@
+<div class="container setoutForm">
+  <div class="row">
+    <div class="twelve columns">
+      <form method="post" action="">
+        <input type="hidden" name="item" value="{{object.id}}" />
+        {{csrf_input}}
+        <button type="submit"
+                name="action"
+                value="{{action}}"
+                {% if confirm %}
+                  data-confirm="{{confirm_message}}"
+                {% endif %}
+                class="link-button button no-prompt-action tooltipstered {% if icon %}{{icon}}{% endif %}"
+                aria-label="{{label}}">
+          {{label}}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
