@@ -55,8 +55,17 @@ class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
 
+    def __str__(self):
+        if self.id:
+            return f'Obsolete Calibre Group ({self.name})'
+        else:
+            return f'Obsolete Calibre Group (new) '
+
     class Meta:
-        ordering = ('order', )
+        ordering = (
+            '-is_active',
+            'order',
+        )
 
 
 class ObsoleteCalibre(Archivable, models.Model):
@@ -69,12 +78,18 @@ class ObsoleteCalibre(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
 
+    def __str__(self):
+        if self.id:
+            return f'Obsolete Calibre ({self.name})'
+        else:
+            return f'Obsolete Calibre (New) '
+
     @property
     def status(self):
         if not self.id:
             return 'Pending'
         elif not self.is_active:
-            return 'Archvied'
+            return 'Archived'
         else:
             return 'Current'
 
