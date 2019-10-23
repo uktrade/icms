@@ -46,9 +46,9 @@
           {% set current_value = _field(object, field, display.fields_config[field]) %}
           {% if not 'None' in current_value %}
             {{ current_value }}
-          {% endif %}
-          {% if not loop.last %}
-            </br>
+            {% if not loop.last %}
+              </br>
+            {% endif %}
           {% endif %}
         {% endfor %}
       {% endif %}

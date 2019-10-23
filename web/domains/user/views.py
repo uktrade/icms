@@ -117,7 +117,7 @@ def user_details(request, pk):
     if action in ['search_address', 'edit_address']:
         return address_search(request, action)
     elif action in ['manual_address', 'save_manual_address']:
-        return manual_address(request, action)
+        return manual_address(request, action, pk)
 
     return details_update(request, action, pk)
 
