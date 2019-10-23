@@ -193,4 +193,3 @@ urlpatterns = [
          name='request-access'),
     re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
 ]
-

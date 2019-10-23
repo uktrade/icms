@@ -23,7 +23,7 @@ def details_update(request, action, pk):
             forms['phones_formset'] = new_user_phones_formset(request)
             forms[
                 'alternative_emails_formset'] = new_alternative_emails_formset(
-                    request)
+                request)
             forms['personal_emails_formset'] = new_personal_emails_formset(
                 request)
             messages.success(request,
@@ -75,7 +75,7 @@ def init_user_details_forms(request, action, pk):
     # If post is not made from user details page but from search page do not
     # try and initialise forms with POST data
     data = request.POST or None
-    user = User.objects.get(pk = pk)
+    user = User.objects.get(pk=pk)
     address = None
 
     if request.POST:
@@ -101,9 +101,11 @@ def init_user_details_forms(request, action, pk):
 
     return all_forms
 
+
 @require_registered
 def current_user_details(request):
     return user_details(request, request.user.pk)
+
 
 @require_registered
 def user_details(request, pk):
@@ -188,17 +190,18 @@ class UsersListView(ModelFilterView):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
 
+
 class UserView(ModelDetailView):
     form_class = UserDetailsUpdateForm
     model = User
-    #permission_required = permissions
+
+    # permission_required = permissions
 
     def has_permission(self):
         return True
 
     # def get(self, request, id):
     #     return HttpResponse(id)
-
 
     # class Display:
     #     fields = [('title', 'first_name', 'last_name'),
@@ -211,4 +214,3 @@ class UserView(ModelDetailView):
     # def post(self, request, *args, **kwargs):
     #     request.GET = request.POST
     #     return super().get(request, *args, **kwargs)
-
