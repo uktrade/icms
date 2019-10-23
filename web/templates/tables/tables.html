@@ -37,10 +37,19 @@
   {% for f in display.fields %}
     <td>
       {% if f is string %}
-        {{_field(object, f,display.fields_config[f])}}
+        {% set current_value = _field(object, f,display.fields_config[f]) %}
+        {% if not 'None' in current_value %}
+          {{ current_value }}
+        {% endif %}
       {% else %}
         {% for field in f %}
-          {{_field(object, field, display.fields_config[field])}}
+          {% set current_value = _field(object, field, display.fields_config[field]) %}
+          {% if not 'None' in current_value %}
+            {{ current_value }}
+          {% endif %}
+          {% if not loop.last %}
+            </br>
+          {% endif %}
         {% endfor %}
       {% endif %}
     </td>
