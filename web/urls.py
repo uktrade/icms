@@ -1,9 +1,9 @@
 from django.contrib.auth.views import LogoutView
-from django.urls import include, path, re_path
+from django.urls import include, path, re_path, register_converter
 from django.views.generic import RedirectView
 from viewflow.flow.viewset import FlowViewSet
 from web.domains.case.access.views import AccessRequestFlow
-from web.domains.user.views import UsersListView, UserView, current_user_details
+from web.domains.user.views import UsersListView, current_user_details
 from web.domains.commodity import views as commodity_views
 from web.domains.constabulary import views as constabulary_views
 
@@ -33,6 +33,10 @@ from web.domains.workbasket.views import workbasket
 from .auth import views as auth_views
 from .views import home
 
+from . import converters
+
+register_converter(converters.NegativeIntConverter, 'negint')
+
 urlpatterns = [
     path('', auth_views.LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
@@ -43,7 +47,7 @@ urlpatterns = [
     path('user/password/', auth_views.change_password, name='change-password'),
     path('user/', current_user_details, name='current-user-details'),
     path('users/', UsersListView.as_view(), name='users-list'),
-    path('users/<int:pk>/', user_details, name='user-details'),
+    path('users/<negint:pk>/', user_details, name='user-details'),
     path('workbasket/', workbasket, name='workbasket'),
 
     # Template Management
@@ -189,3 +193,4 @@ urlpatterns = [
          name='request-access'),
     re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
 ]
+
