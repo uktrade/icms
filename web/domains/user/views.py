@@ -175,11 +175,11 @@ class UsersListView(ModelFilterView):
             'account_last_login_date': {
                 'header': 'Last Login Date'
             },
-            'account_status_date': {
-                'header': 'Account Status Changed Date'
-            },
             'account_status_by_full_name': {
-                'header': 'By'
+                'header': 'Account Status Changed By'
+            },
+            'account_status_date': {
+                'header': 'Date'
             }
         }
         select = True
