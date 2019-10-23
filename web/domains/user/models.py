@@ -63,7 +63,7 @@ class User(AbstractUser):
 
     @property
     def account_status_by_full_name(self):
-        return self.account_status_by.full_name
+        return None if self.account_status_by is None else self.account_status_by.full_name
 
     @property
     def account_last_login_date(self):
