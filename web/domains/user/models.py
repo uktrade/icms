@@ -59,7 +59,8 @@ class User(AbstractUser):
 
     @property
     def full_name(self):
-        return ' '.join([self.title, self.first_name, self.last_name])
+        return ' '.join(
+            filter(None, (self.title, self.first_name, self.last_name)))
 
     @property
     def account_status_by_full_name(self):
@@ -69,6 +70,9 @@ class User(AbstractUser):
     @property
     def account_last_login_date(self):
         return None if self.last_login is None else self.last_login.date()
+
+    class Meta:
+        ordering = ('-is_active', 'first_name')
 
 
 class PhoneNumber(models.Model):
