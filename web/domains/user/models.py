@@ -59,20 +59,16 @@ class User(AbstractUser):
 
     @property
     def full_name(self):
-        name = ''
-        name += self.title or ''
-        name += self.first_name + ' ' + self.surname
-        return name
+        return ' '.join([self.title, self.first_name, self.last_name])
 
     @property
     def account_status_by_full_name(self):
-        return self.account_status_by.full_name
+        return None if self.account_status_by is None \
+            else self.account_status_by.full_name
 
     @property
     def account_last_login_date(self):
-        if self.last_login is None:
-            return None
-        return self.last_login.date()
+        return None if self.last_login is None else self.last_login.date()
 
 
 class PhoneNumber(models.Model):
