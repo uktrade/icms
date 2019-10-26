@@ -7,15 +7,15 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
-from web.views import ModelFilterView
+from web.views import ModelFilterView, ModelDetailView
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
 
 
-def details_update(request, action):
-    forms = init_user_details_forms(request, action)
+def details_update(request, action, pk):
+    forms = init_user_details_forms(request, action, pk)
     if not action == 'save_address':
         if utils.forms_valid(forms):
             utils.save_forms(forms)
@@ -23,7 +23,7 @@ def details_update(request, action):
             forms['phones_formset'] = new_user_phones_formset(request)
             forms[
                 'alternative_emails_formset'] = new_alternative_emails_formset(
-                    request)
+                request)
             forms['personal_emails_formset'] = new_personal_emails_formset(
                 request)
             messages.success(request,
@@ -36,12 +36,12 @@ def details_update(request, action):
     return render(request, 'web/user/details.html', forms)
 
 
-def manual_address(request, action):
+def manual_address(request, action, pk):
     form = ManualAddressEntryForm(request.POST or None)
 
     if form.is_valid():
         if action == 'save_manual_address':
-            return details_update(request, 'save_address')
+            return details_update(request, 'save_address', pk)
 
     return render(request, 'web/user/manual-address.html', {'form': form})
 
@@ -71,11 +71,11 @@ def address_search(request, action):
     })
 
 
-def init_user_details_forms(request, action):
+def init_user_details_forms(request, action, pk):
     # If post is not made from user details page but from search page do not
     # try and initialise forms with POST data
     data = request.POST or None
-    user = request.user
+    user = User.objects.get(pk=pk)
     address = None
 
     if request.POST:
@@ -103,7 +103,12 @@ def init_user_details_forms(request, action):
 
 
 @require_registered
-def user_details(request):
+def current_user_details(request):
+    return user_details(request, request.user.pk)
+
+
+@require_registered
+def user_details(request, pk):
     action = request.POST.get('action')
     if action == 'edit_address':
         # Save all data to session before searching address
@@ -112,18 +117,9 @@ def user_details(request):
     if action in ['search_address', 'edit_address']:
         return address_search(request, action)
     elif action in ['manual_address', 'save_manual_address']:
-        return manual_address(request, action)
+        return manual_address(request, action, pk)
 
-    return details_update(request, action)
-
-
-#  def search_people(request):
-#      if not request.POST:  # first page load
-#          filter = UserFilter(queryset=User.objects.none())
-#      else:
-#          filter = UserFilter(request.POST, queryset=User.objects.all())
-#
-#      return render(request, 'web/user/search-people.html', {'filter': filter})
+    return details_update(request, action, pk)
 
 
 class PeopleSearchView(ModelFilterView):
@@ -153,18 +149,51 @@ class UsersListView(ModelFilterView):
         return True
 
     class Display:
-        fields = [('title', 'first_name', 'last_name'),
+        fields = ['full_name',
                   ('organisation', 'job_title'), 'username',
                   ('account_status', 'password_disposition'),
                   'account_last_login_date',
                   ('account_status_by_full_name', 'account_status_date')]
-        headers = [
-            'Person Details', 'Organisation / Job Title', 'Login Name',
-            'Account Status / Password Disposition', 'Last Login Date',
-            'Account Status Changed Date/By'
-        ]
+        fields_config = {
+            'full_name': {
+                'header': 'Person Details',
+                'link': True
+            },
+            'organisation': {
+                'header': 'Organisation'
+            },
+            'job_title': {
+                'header': 'Job Title'
+            },
+            'username': {
+                'header': 'Login Name'
+            },
+            'account_status': {
+                'header': 'Account Status'
+            },
+            'password_disposition': {
+                'header': 'Password Disposition'
+            },
+            'account_last_login_date': {
+                'header': 'Last Login Date'
+            },
+            'account_status_by_full_name': {
+                'header': 'Account Status Changed By'
+            },
+            'account_status_date': {
+                'header': 'Date'
+            }
+        }
         select = True
 
     def post(self, request, *args, **kwargs):
         request.GET = request.POST
         return super().get(request, *args, **kwargs)
+
+
+class UserView(ModelDetailView):
+    form_class = UserDetailsUpdateForm
+    model = User
+
+    def has_permission(self):
+        return True
