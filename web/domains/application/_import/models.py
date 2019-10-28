@@ -87,6 +87,15 @@ class ImportApplicationType(models.Model):
                                                 blank=True,
                                                 null=True)
 
+    def __str__(self):
+        if self.sub_type:
+            return f'{self.type} ({self.sub_type})'
+        else:
+            return f'{self.type}'
+
+    class Meta:
+        ordering = ('type', 'sub_type')
+
 
 class ImportApplication(models.Model):
 
@@ -123,12 +132,23 @@ class ImportApplication(models.Model):
                                  blank=False,
                                  null=False,
                                  related_name='import_applications')
+    agent = models.ForeignKey(Importer,
+                              on_delete=models.PROTECT,
+                              blank=True,
+                              null=True,
+                              related_name='agent_import_applications')
     importer_office = models.ForeignKey(
         Office,
         on_delete=models.PROTECT,
         blank=False,
         null=True,
         related_name='office_import_applications')
+    agent_office = models.ForeignKey(
+        Office,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name='agent_office_import_applications')
     contact = models.ForeignKey(User,
                                 on_delete=models.PROTECT,
                                 blank=True,
