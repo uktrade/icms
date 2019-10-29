@@ -128,12 +128,19 @@
             </li>
           {% endif %}
 
-          {% if request.user.team_set.count() > 0 %}
+          {% if request.user.team_set.count() > 0 or True %}
             <li class="top-menu-subcategory">
                 <ul class="top-menu-subcategory-actions">
+                  {% if request.user.team_set.count() > 0 %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{url('team-list')}}">Teams</a>
                     </li>
+                  {% endif %}
+                  {% if True %}
+                    <li class="top-menu-subcategory-action">
+                        <a href="{{url('users-list')}}">Web User Accounts</a>
+                    </li>
+                  {% endif %}
                 </ul>
             </li>
           {% endif %}
