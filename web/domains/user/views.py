@@ -33,7 +33,8 @@ def details_update(request, action, pk):
                 messages.error(request,
                                'Please correct the highlighted errors.')
 
-    return render(request, 'web/user/details.html', forms)
+    return render(request, 'web/user/details.html' if request.user.pk == pk \
+        else 'web/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
