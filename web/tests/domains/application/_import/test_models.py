@@ -1,7 +1,12 @@
 from django.test import TestCase
 from web.domains.application._import.models import (ImportApplication,
                                                     ImportApplicationType)
+from web.tests.domains.application._import.factory import \
+    ImportApplicationTypeFactory
+from web.tests.domains.importer.factory import ImporterFactory
+from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.template.factory import TemplateFactory
+from web.tests.domains.user.factory import UserFactory
 
 
 class ImportApplicationTypeTest(TestCase):
@@ -41,3 +46,19 @@ class ImportApplicationTypeTest(TestCase):
         self.assertEqual(
             application_type.__str__(),
             f'{application_type.type} ({application_type.sub_type})')
+
+
+class ImportApplicationTest(TestCase):
+    def create_import_application(self):
+        importer = ImporterFactory(offices=(OfficeFactory(is_active=True),
+                                            OfficeFactory(is_active=True)))
+        return ImportApplication.objects.create(
+            is_active=True,
+            application_type=ImportApplicationTypeFactory(),
+            created_by=UserFactory(is_active=True),
+            importer=importer,
+            importer_office=importer.offices.first())
+
+    def test_create_import_application(self):
+        application = self.create_import_application()
+        self.assertTrue(isinstance(application, ImportApplication))
