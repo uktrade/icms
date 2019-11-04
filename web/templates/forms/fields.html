@@ -1,4 +1,4 @@
-{% macro _field(field, tooltip=None, checkbox_label=None, field_description=None) -%}
+{% macro _field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True) -%}
   {% set field_markup %}
 
     {% if field_description %}
@@ -15,7 +15,7 @@
       {{ field }}
     {% endif %}
 
-    {% if field.errors %}
+    {% if show_errors and field.errors %}
       {% for error in field.errors %}
         <div class="error-message">{{error}}</div>
       {% endfor %}
@@ -42,7 +42,7 @@
 {%- endmacro %}
 
 {# Renders a single form field with icms styling #}
-{% macro field(field, tooltip=None, checkbox_label=None, field_description=None) -%}
+{% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True) -%}
   {% set config=field.field.config %}
   <div class="row" >
     <div class="{{config.label.cols}} columns">
@@ -53,8 +53,8 @@
         {% endif %}
       </label>
     </div>
-    <div class="{{config.input.cols}} columns input-group {% if field.errors %}input-error{% endif %}">
-      {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description)}}
+    <div class="{{config.input.cols}} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
+      {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description, show_errors=show_errors)}}
     </div>
     {% if config.padding and config.padding.right %}
       <div class="{{config.padding.right}} columns"> </div>

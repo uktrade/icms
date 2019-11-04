@@ -18,3 +18,6 @@ class Office(models.Model):
                                           blank=False,
                                           null=False,
                                           default=EMPTY)
+
+    def __str__(self):
+        return f'{self.address}'
