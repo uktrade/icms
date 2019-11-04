@@ -14,8 +14,8 @@ class UserTest(TestCase):
             location_at_address='Floor 18',
             work_address='Windsor House, 50 Victoria Street, London, SW1H 0TL',
             date_of_birth='2000-01-01',
-            security_question='Are ghosts real',
-            security_answer='retroactive rationalisation',
+            security_question='Are ghosts real?',
+            security_answer='Retroactive rationalisation.',
             register_complete=True,
             share_contact_details=True,
             account_status=User.NEW,
@@ -39,13 +39,10 @@ class UserTest(TestCase):
                                    account_status_date=account_status_date,
                                    password_disposition=password_disposition)
 
-    def test_create_user(self):
-        user = self.create_user()
-        self.assertTrue(isinstance(user, User))
-        # self.assertEqual(constabulary.name, 'Test Constabulary')
-        # self.assertEqual(constabulary.email, 'test_constabulary@test.com')
-        # self.assertEqual(constabulary.region, Constabulary.EAST_MIDLANDS)
-        # self.assertTrue(constabulary.is_active)
+    # def test_create_user(self):
+    #     user = self.create_user()
+    #     self.assertTrue(isinstance(user, User))
+    #     self.assertEqual(constabulary.name, 'Test Constabulary')
 
     # def test_archive_constabulary(self):
     #     constabulary = self.create_constabulary()
