@@ -18,11 +18,10 @@ class Country(models.Model):
     hmrc_code = models.CharField(max_length=20, blank=False, null=False)
 
     def __str__(self):
-        label = 'Country'
         if self.id:
-            return label + ' - ' + self.name
+            return f'Country ({self.name})'
         else:
-            return label
+            return f'Country (new) '
 
     @property
     def name_slug(self):
@@ -40,11 +39,10 @@ class CountryGroup(models.Model):
                                        related_name='country_groups')
 
     def __str__(self):
-        label = 'Country Group'
         if self.id:
-            return label + ' - ' + self.name
+            return f'Country Group ({self.name})'
         else:
-            return label
+            return f'Country Group (new) '
 
     class Meta:
         ordering = ('name', )

@@ -6,7 +6,7 @@ from web.domains.case.access.views import AccessRequestFlow
 from web.domains.user.views import UsersListView, current_user_details
 from web.domains.commodity import views as commodity_views
 from web.domains.constabulary import views as constabulary_views
-
+from web.domains.application._import import views as imp_app_views
 
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
@@ -192,4 +192,9 @@ urlpatterns = [
          RedirectView.as_view(url='request', permanent=False),
          name='request-access'),
     re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
+
+    # Import Application
+    path('import/apply/',
+         imp_app_views.ImportApplicationCreateView.as_view(),
+         name='import_application_new')
 ]

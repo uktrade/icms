@@ -18,6 +18,7 @@ DATABASES = {'default': env.db('DATABASE_URL')}
 #  Google recaptcha. Using test keys on localhost
 RECAPTCHA_PUBLIC_KEY = env.str('ICMS_RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env.str('ICMS_RECAPTCHA_PRIVATE_KEY')
+SILENCED_SYSTEM_CHECKS = env.list('ICMS_SILENCED_SYSTEM_CHECKS', [])
 
 # Email
 AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')

@@ -23,12 +23,22 @@ debug:
 	docker-compose up
 
 # Run with Gunicorn and Whitenoise serving static files
-run: test
+run: 
+	ICMS_SECRET_KEY='prod' \
+	DATABASE_URL='postgres://postgres@db:5432/postgres' \
+	ICMS_ALLOWED_HOSTS='localhost' \
+	ICMS_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' \
+	ICMS_RECAPTCHA_PRIVATE_KEY='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' \
+	ICMS_EMAIL_FROM='prod@example.com' \
+	ICMS_ADDRESS_API_KEY='prod' \
+	ICMS_SILENCED_SYSTEM_CHECKS='captcha.recaptcha_test_key_error' \
+	AWS_ACCESS_KEY_ID='prod' \
+	AWS_SECRET_ACCESS_KEY='prod' \
 	DJANGO_SETTINGS_MODULE=config.settings.production \
-	ICMS_DEBUG=False \
 	docker-compose up
 
 test: clean
+	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run web pytest -s --verbose --cov=web --cov=config $(TEST_TARGET)
