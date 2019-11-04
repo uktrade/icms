@@ -5,7 +5,7 @@
 
     {% block fields %}
       {% for field in form %}
-        {{fields.field(field)}}
+        {{fields.field(field, show_errors=show_errors )}}
       {% endfor %}
     {% endblock %}
 

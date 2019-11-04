@@ -8,6 +8,7 @@ class ProductLegislationFactory(factory.django.DjangoModelFactory):
         model = ProductLegislation
 
     name = factory.Faker('sentence', nb_words=8)
+    is_active = random.choice([True, False])
     is_biocidal = random.choice([True, False])
     is_biocidal_claim = random.choice([True, False])
     is_eu_cosmetics_regulation = random.choice([True, False])

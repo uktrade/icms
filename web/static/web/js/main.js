@@ -170,6 +170,19 @@
             handle_security_question();
             $('#id_security_question_list').change(handle_security_question);
         }
+
+        if(path=='/import/apply/') {
+          var post_form =function() {
+            var form =$(this).closest('form');
+            $('<input />')
+              .attr('type','hidden')
+              .attr('name', 'change')
+              .attr('value', 'True')
+              .appendTo(form);
+            form.submit();
+          }; 
+          $('#id_application_type, #id_importer').change(post_form);
+        }
     }
 
     $(document).ready(initialise);
