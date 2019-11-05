@@ -7,7 +7,7 @@ services:
     ports:
       - "5432:5432"
   web:
-    restart: always
+    # restart: always
     build: .
     # user: ${UID}
     entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
@@ -29,7 +29,7 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - DJANGO_SETTINGS_MODULE
-    tty: true
+    # tty: true
     ports:
       - "8080:8080"
     volumes:
