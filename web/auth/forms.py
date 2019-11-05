@@ -5,6 +5,7 @@ from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
 from django.utils.translation import gettext_lazy as _
+from django import forms
 from web.domains.user import User
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
@@ -22,6 +23,32 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
         'inactive':
         _("This account is inactive."),
     }
+    error = None
+
+    def confirm_login_allowed(self, user):
+        """
+        Controls whether the given User may log in. This is a policy setting,
+        independent of end-user authentication. This default behavior is to
+        allow login by active users, and reject login by inactive users.
+
+        If the given user cannot log in, this method should raise a
+        ``forms.ValidationError``.
+
+        If the given user may log in, this method should return None.
+        """
+
+
+        if not user.is_active:
+            raise forms.ValidationError(
+                self.error_messages['inactive'],
+                code='inactive',
+            )
+        elif user.account_status == 'Blocked':
+            raise forms.ValidationError(
+                self.error_messages['blocked'],
+                code='blocked'
+            )
+
 
     class Meta:
         config = {
