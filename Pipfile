@@ -32,6 +32,7 @@ django-phonenumber-field = "*"
 phonenumbers = "*"
 jinja2 = "*"
 requests = "*"
+django-compressor = "*"
 
 [requires]
 python_version = "3.7.4"
