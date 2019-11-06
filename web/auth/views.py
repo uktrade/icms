@@ -30,7 +30,7 @@ class LoginView(LoginView):
     form_class = LoginForm
     template_name = 'auth/login.html'
     redirect_authenticated_user = True
-    # authentication_form = LoginForm
+    authentication_form = LoginForm
 
 
 @user_passes_test(lambda u: u.is_anonymous, login_url='home')
