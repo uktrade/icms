@@ -75,4 +75,5 @@ class UserDetailViewTest(AuthTestCase):
     # def test_page_title(self):
     #     self.login_with_permissions(PERMISSIONS)
     #     response = self.client.get(self.url)
-    #     self.assertEqual(response.context_data['page_title'], "Contact Details")
+    #     self.assertEqual(response.context_data['page_title'],
+    #       "Contact Details")
