@@ -24,10 +24,17 @@
       <div class="nine columns">
         {% if form.non_field_errors() %}
         <div id="login-error">
-          Invalid username or password.<br/>N.B passwords are case sensitive
+            {% if form.error_status == 'blocked' %}
+                User account has been blocked.
+            {% elif form.error_status == 'suspended' %}
+                User account has been suspended.
+            {% elif form.error_status == 'cancelled' %}
+                User account has been cancelled.
+            {% else %}
+                Invalid username or password.<br/>N.B passwords are case sensitive
+            {% endif %}
         </div>
         {% endif %}
-
         {% if next %}
         <div id="login-error">
           {% if request.user.is_authenticated %}

@@ -16,39 +16,12 @@ from web.forms.widgets import DateInput
 class LoginForm(FormFieldConfigMixin, AuthenticationForm):
     username = UsernameField(widget=TextInput(attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)
-    error_messages = {
-        'invalid_login':
-        _("Invalid username or password.<br/>N.B. passwords are case sensitive"
-          ),
-        'inactive':
-        _("This account is inactive."),
-    }
-    error = None
+    error_status = None
 
     def confirm_login_allowed(self, user):
-        """
-        Controls whether the given User may log in. This is a policy setting,
-        independent of end-user authentication. This default behavior is to
-        allow login by active users, and reject login by inactive users.
-
-        If the given user cannot log in, this method should raise a
-        ``forms.ValidationError``.
-
-        If the given user may log in, this method should return None.
-        """
-
-
-        if not user.is_active:
-            raise forms.ValidationError(
-                self.error_messages['inactive'],
-                code='inactive',
-            )
-        elif user.account_status == 'Blocked':
-            raise forms.ValidationError(
-                self.error_messages['blocked'],
-                code='blocked'
-            )
-
+        if user.account_status in ['Blocked', 'Suspended', 'Cancelled']:
+            self.error_status = user.account_status.lower()
+            raise forms.ValidationError(f'User {self.error_status}.')
 
     class Meta:
         config = {
@@ -68,7 +41,6 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
 
 
 class RegistrationForm(FormFieldConfigMixin, ModelForm):
-
     # Pre-defined security question options
     FIRST_SCHOOL = "What is the name of your first school?"
     BEST_FRIEND = "What is the name of your childhood best friend?"
