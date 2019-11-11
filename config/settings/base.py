@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'viewflow',
     'web',
     'captcha',
+    'compressor',
     'phonenumber_field',
     'django_filters',
     'django.forms',
@@ -142,6 +143,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'compressor.finders.CompressorFinder',
+)
 
 # Email
 EMAIL_BACKEND = 'django_ses.SESBackend'
