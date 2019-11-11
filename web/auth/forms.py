@@ -20,7 +20,8 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
     error_status = None
 
     def confirm_login_allowed(self, user):
-        if user.account_status in [User.BLOCKED, User.SUSPENDED, User.CANCELLED]:
+        if user.account_status in \
+                [User.BLOCKED, User.SUSPENDED, User.CANCELLED]:
             self.error_status = user.account_status.lower()
             raise forms.ValidationError(f'User {self.error_status}.')
         elif user.password_disposition != 'FULL':
