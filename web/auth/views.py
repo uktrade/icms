@@ -10,7 +10,6 @@ from django.shortcuts import redirect, render
 from web.auth.decorators import require_registered
 from web.domains.user import PersonalEmail, User
 from web.notify import notify
-from web.models import User
 
 from .forms import (CaptchaForm, LoginForm, PasswordChangeForm,
                     RegistrationForm, ResetPasswordForm,
