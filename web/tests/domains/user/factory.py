@@ -14,4 +14,4 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_superuser = random.choice([True, False])
     is_staff = random.choice([True, False])
     is_active = random.choice([True, False])
-    register_complete = random.choice([True, False])
+    password_disposition = random.choice([User.FULL, User.TEMPORARY])

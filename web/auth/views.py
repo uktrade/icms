@@ -10,6 +10,7 @@ from django.shortcuts import redirect, render
 from web.auth.decorators import require_registered
 from web.domains.user import PersonalEmail, User
 from web.notify import notify
+from web.models import User
 
 from .forms import (CaptchaForm, LoginForm, PasswordChangeForm,
                     RegistrationForm, ResetPasswordForm,
@@ -76,7 +77,7 @@ def update_password(request):
 
     if form.is_valid():
         user = form.save(commit=False)
-        user.register_complete = True
+        user.password_disposition = User.TEMPORARY
         user.save()
         update_session_auth_hash(request, user)  # keep user logged in
 
@@ -94,7 +95,7 @@ def reset_password(request):
         if form.is_valid():
             temp_pass = generate_temp_password()
             user.set_password(temp_pass)
-            user.register_complete = False
+            user.password_disposition = User.TEMPORARY
             user.save()
             notify.register(request, user, temp_pass)
             return render(request,

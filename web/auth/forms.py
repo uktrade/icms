@@ -4,6 +4,7 @@ from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
 from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
+from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 from django import forms
 from web.domains.user import User
@@ -19,9 +20,11 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
     error_status = None
 
     def confirm_login_allowed(self, user):
-        if user.account_status in ['Blocked', 'Suspended', 'Cancelled']:
+        if user.account_status in [User.BLOCKED, User.SUSPENDED, User.CANCELLED]:
             self.error_status = user.account_status.lower()
             raise forms.ValidationError(f'User {self.error_status}.')
+        elif user.password_disposition != 'FULL':
+            return redirect('set-password')
 
     class Meta:
         config = {

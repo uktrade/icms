@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Permission
+from web.models import User
 # from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from web.tests.domains.user.factory import UserFactory
@@ -8,7 +9,7 @@ class AuthTestCase(TestCase):
     def setUp(self):
         self.user = UserFactory(username='test_user',
                                 password='test',
-                                register_complete=True,
+                                password_disposition=User.FULL,
                                 is_superuser=False,
                                 is_active=True)
 
