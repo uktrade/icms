@@ -7,7 +7,7 @@ def create_default_user(apps, schema_editor):
     user = User(
         id=-1,
         username='admin',
-        is_superuser=False,
+        is_superuser=True,
         is_staff=False,
         title='Dr.',
         first_name='Admin',
@@ -23,7 +23,7 @@ def create_default_user(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0034_auto_20190814_0939'),
+        ('web', '0073_remove_user_register_complete'),
     ]
 
     operations = [
