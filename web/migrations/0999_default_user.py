@@ -15,7 +15,9 @@ def create_default_user(apps, schema_editor):
         security_question='Are you the admin?',
         security_answer='Maybe',
         password=
-        'pbkdf2_sha256$150000$A9tWmv8WAOKU$fDGeH1uYJP4QvT8ogLnvYmxOBjhyH6SuJoNbLosr4L0='
+        'pbkdf2_sha256$150000$A9tWmv8WAOKU$fDGeH1uYJP4QvT8ogLnvYmxOBjhyH6SuJoNbLosr4L0=',
+        unsuccessful_login_attempts=0,
+        password_disposition=User.TEMPORARY
     )  # NOQA
     user.save()
 
@@ -23,7 +25,7 @@ def create_default_user(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0073_remove_user_register_complete'),
+        ('web', '0076_merge_20191111_1607'),
     ]
 
     operations = [
