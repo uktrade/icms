@@ -53,6 +53,7 @@ class User(AbstractUser):
                                             choices=PASSWORD_DISPOSITION,
                                             blank=True,
                                             null=True)
+    unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
 
     @property
     def full_name(self):
