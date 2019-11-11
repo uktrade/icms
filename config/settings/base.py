@@ -13,6 +13,7 @@ import os
 import environ
 from django.forms import Field
 
+
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
 env = environ.Env()
 
@@ -115,6 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Auth user model
 AUTH_USER_MODEL = 'web.user'
+
+AUTHENTICATION_BACKENDS = ['web.auth.models.CustomBackend']
 
 # Date formats
 DATE_INPUT_FORMATS = ['%d-%b-%Y']  # input formats
