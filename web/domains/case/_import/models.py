@@ -105,7 +105,7 @@ class ConstabularyEmail(models.Model):
                                              blank=True,
                                              null=True)
     email_subject = models.CharField(max_length=100, blank=False, null=True)
-    email_body = models.CharField(max_length=4000, blank=False, null=True)
-    email_response = models.CharField(max_length=4000, blank=True, null=True)
+    email_body = models.TextField(max_length=4000, blank=False, null=True)
+    email_response = models.TextField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
