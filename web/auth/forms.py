@@ -4,7 +4,9 @@ from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
 from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
+from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
+from django import forms
 from web.domains.user import User
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
@@ -15,13 +17,15 @@ from web.forms.widgets import DateInput
 class LoginForm(FormFieldConfigMixin, AuthenticationForm):
     username = UsernameField(widget=TextInput(attrs={'autofocus': True}))
     password = CharField(strip=False, widget=PasswordInput)
-    error_messages = {
-        'invalid_login':
-        _("Invalid username or password.<br/>N.B. passwords are case sensitive"
-          ),
-        'inactive':
-        _("This account is inactive."),
-    }
+    error_status = None
+
+    def confirm_login_allowed(self, user):
+        if user.account_status in \
+                [User.BLOCKED, User.SUSPENDED, User.CANCELLED]:
+            self.error_status = user.account_status.lower()
+            raise forms.ValidationError(f'User {self.error_status}.')
+        elif user.password_disposition != 'FULL':
+            return redirect('set-password')
 
     class Meta:
         config = {
@@ -41,7 +45,6 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
 
 
 class RegistrationForm(FormFieldConfigMixin, ModelForm):
-
     # Pre-defined security question options
     FIRST_SCHOOL = "What is the name of your first school?"
     BEST_FRIEND = "What is the name of your childhood best friend?"

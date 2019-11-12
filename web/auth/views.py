@@ -30,6 +30,7 @@ class LoginView(LoginView):
     form_class = LoginForm
     template_name = 'auth/login.html'
     redirect_authenticated_user = True
+    authentication_form = LoginForm
 
 
 @user_passes_test(lambda u: u.is_anonymous, login_url='home')
@@ -75,7 +76,7 @@ def update_password(request):
 
     if form.is_valid():
         user = form.save(commit=False)
-        user.register_complete = True
+        user.password_disposition = User.TEMPORARY
         user.save()
         update_session_auth_hash(request, user)  # keep user logged in
 
@@ -93,7 +94,7 @@ def reset_password(request):
         if form.is_valid():
             temp_pass = generate_temp_password()
             user.set_password(temp_pass)
-            user.register_complete = False
+            user.password_disposition = User.TEMPORARY
             user.save()
             notify.register(request, user, temp_pass)
             return render(request,

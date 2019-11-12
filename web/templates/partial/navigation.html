@@ -128,12 +128,22 @@
             </li>
           {% endif %}
 
-          {% if request.user.team_set.count() > 0 %}
+          {% if request.user.team_set.count() > 0 or
+            perms.web["DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS"] or
+            perms.web["DIRECTORY_DTI_SUPER_USERS:CONTACT_ADMIN:WEB_USER_ACCOUNT_LHS"] %}
             <li class="top-menu-subcategory">
                 <ul class="top-menu-subcategory-actions">
+                  {% if request.user.team_set.count() > 0 %}
                     <li class="top-menu-subcategory-action">
                         <a href="{{url('team-list')}}">Teams</a>
                     </li>
+                  {% endif %}
+                  {% if perms.web["DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS"] or
+                    perms.web["DIRECTORY_DTI_SUPER_USERS:CONTACT_ADMIN:WEB_USER_ACCOUNT_LHS"] %}
+                    <li class="top-menu-subcategory-action">
+                        <a href="{{url('users-list')}}">Web User Accounts</a>
+                    </li>
+                  {% endif %}
                 </ul>
             </li>
           {% endif %}
