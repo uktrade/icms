@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from functools import wraps
+from web.models import User
 
 
 def require_registered(function):
@@ -17,7 +18,7 @@ def require_registered(function):
         if not decorated_view_func.user.is_authenticated:
             return decorated_view_func(request)  # return redirect to login
 
-        if not request.user.register_complete:
+        if request.user.password_disposition != User.FULL:
             return redirect('set-password')
         else:
             return function(request, *args, **kwargs)

@@ -35,9 +35,6 @@ class User(AbstractUser):
                                          blank=False,
                                          null=True)
     security_answer = models.CharField(max_length=4000, blank=False, null=True)
-    register_complete = models.BooleanField(blank=False,
-                                            null=False,
-                                            default=False)
     share_contact_details = models.BooleanField(blank=False,
                                                 null=False,
                                                 default=False)
@@ -56,6 +53,7 @@ class User(AbstractUser):
                                             choices=PASSWORD_DISPOSITION,
                                             blank=True,
                                             null=True)
+    unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
 
     @property
     def full_name(self):
