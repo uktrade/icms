@@ -36,7 +36,7 @@ def details_update(request, action, pk):
                                'Please correct the highlighted errors.')
 
     return render(request, 'web/user/details.html' if request.user.pk == pk
-        else 'web/user/admin-view-details.html', forms)
+                  else 'web/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
