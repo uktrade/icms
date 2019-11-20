@@ -1,4 +1,3 @@
-import random
 import string
 
 from django.contrib.auth import login, update_session_auth_hash
@@ -14,16 +13,6 @@ from web.notify import notify
 from .forms import (CaptchaForm, LoginForm, PasswordChangeForm,
                     RegistrationForm, ResetPasswordForm,
                     ResetPasswordSecondForm)
-
-
-def generate_temp_password(length=8):
-    """
-    Generates a random alphanumerical password of given length.
-    Default length is 8
-    """
-    return ''.join(random.SystemRandom().choices(string.ascii_letters +
-                                                 string.digits,
-                                                 k=length))
 
 
 class LoginView(LoginView):
@@ -49,8 +38,7 @@ def register(request):
     captcha_form = CaptchaForm(request.POST or None)
     if form.is_valid() and captcha_form.is_valid():
         user = form.instance
-        temp_pass = generate_temp_password()
-        user.set_password(temp_pass)
+        temp_pass = user.set_temp_password()
         user.username = user.email
         user.save()
         user.phone_numbers.create(phone=form.cleaned_data['telephone_number'])
@@ -76,7 +64,7 @@ def update_password(request):
 
     if form.is_valid():
         user = form.save(commit=False)
-        user.password_disposition = User.TEMPORARY
+        user.password_disposition = User.FULL
         user.save()
         update_session_auth_hash(request, user)  # keep user logged in
 
@@ -92,9 +80,7 @@ def reset_password(request):
         user = User.objects.get(username=login_id)
         form = ResetPasswordSecondForm(user, request.POST or None)
         if form.is_valid():
-            temp_pass = generate_temp_password()
-            user.set_password(temp_pass)
-            user.password_disposition = User.TEMPORARY
+            temp_pass = User.set_temp_password()
             user.save()
             notify.register(request, user, temp_pass)
             return render(request,

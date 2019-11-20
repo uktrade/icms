@@ -12,6 +12,8 @@ from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
+from web.views.actions import PostAction
+from web.notify import notify
 
 
 def details_update(request, action, pk):
@@ -34,7 +36,7 @@ def details_update(request, action, pk):
                                'Please correct the highlighted errors.')
 
     return render(request, 'web/user/details.html' if request.user.pk == pk
-                  else 'web/user/admin-view-details.html', forms)
+    else 'web/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
@@ -135,10 +137,27 @@ class PeopleSearchView(ModelFilterView):
         headers = ['Name', 'Job Details', 'Oragnisation Address']
         select = True
 
-    def post(self, request, *args, **kwargs):
-        request.GET = request.POST
-        return super().get(request, *args, **kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     request.GET = request.POST
+    #     return super().get(request, *args, **kwargs)
 
+
+class ReIssuePassword(PostAction):
+    action = 're_issue_password'
+    label = 'Re-Issue Password'
+    confirm = False
+    confirm_message = ''
+    icon = 'icon-bin'
+
+    def display(self, object):
+        return True
+
+    def handle(self, request, model):
+        user = self._get_item(request, model)
+        temp_pass = user.set_temp_password()
+        notify.register(request, user, temp_pass)
+        messages.success(request, 'Temporary password successfully issued for '
+                                  'account')
 
 class UsersListView(ModelFilterView):
     template_name = 'web/user/list.html'
@@ -185,11 +204,12 @@ class UsersListView(ModelFilterView):
                 'header': 'Date'
             }
         }
+        actions = [ReIssuePassword()]
         select = True
 
-    def post(self, request, *args, **kwargs):
-        request.GET = request.POST
-        return super().get(request, *args, **kwargs)
+    # def post(self, request, *args, **kwargs):
+    #     request.GET = request.POST
+    #     return super().get(request, *args, **kwargs)
 
 
 class UserView(ModelDetailView):
