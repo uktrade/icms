@@ -78,7 +78,7 @@ def reset_password(request):
         user = User.objects.get(username=login_id)
         form = ResetPasswordSecondForm(user, request.POST or None)
         if form.is_valid():
-            temp_pass = User.set_temp_password()
+            temp_pass = user.set_temp_password()
             user.save()
             notify.register(request, user, temp_pass)
             return render(request,

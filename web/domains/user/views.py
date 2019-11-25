@@ -147,7 +147,7 @@ class ReIssuePassword(PostAction):
     label = 'Re-Issue Password'
     confirm = False
     confirm_message = ''
-    icon = 'icon-bin'
+    icon = 'icon-key'
 
     def display(self, object):
         return True
@@ -155,6 +155,7 @@ class ReIssuePassword(PostAction):
     def handle(self, request, model):
         user = self._get_item(request, model)
         temp_pass = user.set_temp_password()
+        user.save()
         notify.register(request, user, temp_pass)
         messages.success(request, 'Temporary password successfully issued for '
                                   'account')
