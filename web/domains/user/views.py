@@ -7,13 +7,13 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
+from web.notify import notify
 from web.views import ModelFilterView, ModelDetailView
+from web.views.actions import PostAction
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
-from web.views.actions import PostAction
-from web.notify import notify
 
 
 def details_update(request, action, pk):
@@ -137,10 +137,6 @@ class PeopleSearchView(ModelFilterView):
         headers = ['Name', 'Job Details', 'Oragnisation Address']
         select = True
 
-    # def post(self, request, *args, **kwargs):
-    #     request.GET = request.POST
-    #     return super().get(request, *args, **kwargs)
-
 
 class ReIssuePassword(PostAction):
     action = 're_issue_password'
@@ -208,10 +204,6 @@ class UsersListView(ModelFilterView):
         }
         actions = [ReIssuePassword()]
         select = True
-
-    # def post(self, request, *args, **kwargs):
-    #     request.GET = request.POST
-    #     return super().get(request, *args, **kwargs)
 
 
 class UserView(ModelDetailView):
