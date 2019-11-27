@@ -7,7 +7,9 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
+from web.notify import notify
 from web.views import ModelFilterView, ModelDetailView
+from web.views.actions import PostAction
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
@@ -135,9 +137,24 @@ class PeopleSearchView(ModelFilterView):
         headers = ['Name', 'Job Details', 'Oragnisation Address']
         select = True
 
-    def post(self, request, *args, **kwargs):
-        request.GET = request.POST
-        return super().get(request, *args, **kwargs)
+
+class ReIssuePassword(PostAction):
+    action = 're_issue_password'
+    label = 'Re-Issue Password'
+    confirm = False
+    confirm_message = ''
+    icon = 'icon-key'
+
+    def display(self, object):
+        return True
+
+    def handle(self, request, model):
+        user = self._get_item(request, model)
+        temp_pass = user.set_temp_password()
+        user.save()
+        notify.register(request, user, temp_pass)
+        messages.success(request, 'Temporary password successfully issued for '
+                                  'account')
 
 
 class UsersListView(ModelFilterView):
@@ -185,11 +202,8 @@ class UsersListView(ModelFilterView):
                 'header': 'Date'
             }
         }
+        actions = [ReIssuePassword()]
         select = True
-
-    def post(self, request, *args, **kwargs):
-        request.GET = request.POST
-        return super().get(request, *args, **kwargs)
 
 
 class UserView(ModelDetailView):

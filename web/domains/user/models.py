@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.auth.models import (AbstractUser)
 from django.db import models
 
@@ -68,6 +71,17 @@ class User(AbstractUser):
     @property
     def account_last_login_date(self):
         return None if self.last_login is None else self.last_login.date()
+
+    def set_temp_password(self, length=8):
+        """
+        Generates a random alphanumerical password of given length.
+        Default length is 8
+        """
+        temp_password = ''.join(random.SystemRandom().choices(
+            string.ascii_letters + string.digits, k=length))
+        self.set_password(temp_password)
+        self.password_disposition = self.TEMPORARY
+        return temp_password
 
     class Meta:
         ordering = ('-is_active', 'first_name')
