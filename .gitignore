@@ -116,7 +116,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-/.idea
 
 # Collected static files
 /static/
