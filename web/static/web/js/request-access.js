@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function(event) { // doesn't work 
 
     var container = document.getElementById('form-container');
     container.classList.remove('hidden');
-    var containerPos = container.offsetTop;
 
     var dropdown = document.getElementById('id_request_type');
     dropdown.onchange = function () {
@@ -22,27 +21,24 @@ document.addEventListener("DOMContentLoaded", function(event) { // doesn't work 
                 reasonRowClasses.remove('hidden');
                 agentNameRowClasses.add('hidden');
                 agentAddressRowClasses.add('hidden');
-                container.scrollIntoView(true);
                 break;
             case 'AGENT_IMPORTER_ACCESS':
                 reasonRowClasses.remove('hidden');
                 agentNameRowClasses.remove('hidden');
                 agentAddressRowClasses.remove('hidden');
-                container.scrollIntoView(true);
                 break;
             case 'MAIN_EXPORTER_ACCESS':
                 reasonRowClasses.add('hidden');
                 agentNameRowClasses.add('hidden');
                 agentAddressRowClasses.add('hidden');
-                container.scrollIntoView(true);
                 break;
             case 'AGENT_EXPORTER_ACCESS':
                 reasonRowClasses.add('hidden');
                 agentNameRowClasses.remove('hidden');
                 agentAddressRowClasses.remove('hidden');
-                container.scrollIntoView(true);
                 break;
         }
+        container.scrollIntoView(true);
     };
 });
 
