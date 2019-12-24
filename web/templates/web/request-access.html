@@ -119,35 +119,38 @@
             <p>When you are requesting access as an agent, the importer/exporter will be asked to approve your access.</p>
 
         </div>
-
-        {% call forms.form(method='post', csrf_input=csrf_input) %}
-          {{fields.field(form.request_type)}}
-          {{fields.field(form.organisation_name)}}
-          {{fields.field(form.organisation_address)}}
-          {{fields.field(form.request_reason)}}
-          {{fields.field(form.agent_name)}}
-          {{fields.field(form.agent_address)}}
-          {{activation.management_form}}
-          <div class="clearBoth"></div>
-          <div class="container">
-            <div class="row">
-              <div class="four columns"> </div>
-              <div class="four columns">
-                <ul class="menu-out flow-across">
-                  <li>
-                    <button type="submit" class="primary-button button">
-                      Save
-                    </button>
-                  </li>
-                </ul>
+        <div class="hidden" id="form-container">
+            {% call forms.form(method='post', csrf_input=csrf_input) %}
+              {{fields.field(form.request_type)}}
+              {{fields.field(form.organisation_name)}}
+              {{fields.field(form.organisation_address)}}
+              {{fields.field(form.request_reason)}}
+              {{fields.field(form.agent_name)}}
+              {{fields.field(form.agent_address)}}
+              {{activation.management_form}}
+              <div class="clearBoth"></div>
+              <div class="container">
+                <div class="row">
+                  <div class="four columns"> </div>
+                  <div class="four columns">
+                    <ul class="menu-out flow-across">
+                      <li>
+                        <button type="submit" class="primary-button button">
+                          Save
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="four columns"> </div>
+                </div>
               </div>
-              <div class="four columns"> </div>
-            </div>
-          </div>
-        {% endcall %}
+            {% endcall %}
+        </div>
         <div class="content-actions"></div>
 
     </div>
 </div>
+
+<script src="{{ static('web/js/request-access.js') }}" type="text/javascript"></script>
 
 {% endblock %}
