@@ -10,7 +10,7 @@ class AccessRequestForm(ModelEditForm):
 
         fields = [
             'request_type', 'organisation_name', 'organisation_address',
-            'request_reason', 'agent_name', 'agent_address'
+            'request_reason', 'agent_name', 'agent_address',
         ]
 
         labels = {
@@ -24,7 +24,7 @@ class AccessRequestForm(ModelEditForm):
             'request_type': Select(choices=AccessRequest.REQUEST_TYPES),
             'organisation_address': Textarea({'rows': 5}),
             'request_reason': Textarea({'rows': 5}),
-            'agent_address': Textarea({'rows': 5})
+            'agent_address': Textarea({'rows': 5}),
         }
 
         config = {
