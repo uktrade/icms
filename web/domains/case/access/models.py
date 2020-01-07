@@ -105,7 +105,7 @@ class AccessRequest(models.Model):
 
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
-    objects = ProcessQuerySet.as_manager()
+    # objects = ProcessQuerySet.as_manager()
 
 
 class ApprovalRequest(models.Model):
