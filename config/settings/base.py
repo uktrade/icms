@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import environ
 from django.forms import Field
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
@@ -125,7 +126,7 @@ AUTHENTICATION_BACKENDS = ['web.auth.models.CustomBackend']
 
 # Date formats
 DATE_INPUT_FORMATS = ['%d-%b-%Y']  # input formats
-DATETIME_INPUT_FORMATS = ['%d-%b-%Y %H:%M:%S']
+DATETIME_INPUT_FORMATS += ('%d-%b-%Y %H:%M:%S')
 DATE_FORMAT = ['d-M-Y']  # format for displaying date
 DATETIME_FORMAT = ['d-M-Y H:i:s']
 
