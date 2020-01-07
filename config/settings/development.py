@@ -34,7 +34,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('ICMS_SECRET_KEY', default='development')
-DEBUG = env.bool('ICMS_DEBUG', True)
+DEBUG = True
 
 # Email
 AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', '')
