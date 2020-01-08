@@ -1,10 +1,12 @@
 from viewflow import flow, frontend
 from viewflow.base import this, Flow
 
-from web.domains.case.access.models import AccessRequestProcess
+from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 from web.domains.case.access.views import (
     AccessRequestCreateView,
-    AccessRequestCreatedView
+    ILBReviewRequest,
+    AccessApproved,
+    AccessRefused
 )
 
 
@@ -22,12 +24,27 @@ class AccessRequestFlow(Flow):
 
     review_request = (
         flow.View(
-            AccessRequestCreatedView,
+            ILBReviewRequest,
         ).Permission(
             auto_create=True
-        ).Next(this.end)
+        ).Next(this.check_response)
     )
 
+    check_response = (
+        flow.If(cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED)
+            .Then(
+                this.approved_access_request
+            ).Else(
+                this.refused_access_request
+            )
+        )
+
+    approved_access_request = flow.View(
+        AccessApproved
+    ).Next(this.end)
+
+    refused_access_request = flow.View(
+        AccessRefused
+    ).Next(this.end)
+
     end = flow.End()
-
-

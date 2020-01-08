@@ -28,10 +28,10 @@ from web.domains.team.views import TeamEditView, TeamListView
 from web.domains.template.views import TemplateListView
 from web.domains.user.views import UsersListView, current_user_details
 from web.domains.user.views import user_details
-from web.domains.workbasket.views import workbasket
+from web.domains.workbasket.views import workbasket, take_ownership
 from . import converters
 from .auth import views as auth_views
-from .domains.case.access.views import AccessRequestCreatedView
+from .domains.case.access.views import AccessRequestCreatedView, ILBReviewRequest, AccessApproved, AccessRefused
 from .views import home
 
 register_converter(converters.NegativeIntConverter, 'negint')
@@ -195,11 +195,31 @@ urlpatterns = [
 
     path(
         "access-created/",
-        AccessRequestCreatedView.as_view(), name="request-access"
+        AccessRequestCreatedView.as_view(), name="access_request_created"
+    ),
+
+    path(
+        "access-approved/",
+        AccessApproved.as_view(), name="access_request_approved"
+    ),
+
+    path(
+        "access-refused/",
+        AccessRefused.as_view(), name="access_request_refused"
     ),
 
     path('viewflow/', include(frontend_urls)),
     path('viewflow/', generic.RedirectView.as_view(url='/viewflow/workflow/', permanent=False)),
+
+    path(
+        "take-ownership/<process_id>/",
+        take_ownership, name="take_ownership"
+    ),
+
+    # path(
+    #     "review-request/",
+    #     ILBReviewRequest, name="review_request"
+    # ),
 
     # Import Application
     path('import/apply/',
