@@ -10,9 +10,27 @@
 {% block main_content %}
     <div class="no-sidebar" id="content">
         <div id="content-ie8-float">
-    {{ view.get_info() }}
+{#    {{ view.get_info() }}#}
         APPROVED
-
+            {% call forms.form(method='post', csrf_input=csrf_input) %}
+              {{activation.management_form}}
+              <div class="clearBoth"></div>
+              <div class="container">
+                <div class="row">
+                  <div class="four columns"> </div>
+                  <div class="four columns">
+                    <ul class="menu-out flow-across">
+                      <li>
+                        <button type="submit" class="primary-button button">
+                          Save
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="four columns"> </div>
+                </div>
+              </div>
+            {% endcall %}
         </div>
     </div>
 {% endblock %}
