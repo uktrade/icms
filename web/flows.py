@@ -5,8 +5,8 @@ from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 from web.domains.case.access.views import (
     AccessRequestCreateView,
     ILBReviewRequest,
-    AccessApproved,
-    AccessRefused
+    AccessRefused,
+    AccessApproved
 )
 
 
@@ -30,21 +30,27 @@ class AccessRequestFlow(Flow):
         ).Next(this.check_response)
     )
 
-    check_response = (
-        flow.If(cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED)
-            .Then(
-                this.approved_access_request
-            ).Else(
-                this.refused_access_request
-            )
-        )
+    check_response = flow.If(cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED
+    ).Then(
+        this.approved_access_request
+    ).Else(
+        this.refused_access_request
+    )
 
     approved_access_request = flow.View(
-        AccessApproved
+        AccessApproved,
+    ).Assign(
+        this.review_request.owner
+    ).Permission(
+        auto_create=True
     ).Next(this.end)
 
     refused_access_request = flow.View(
-        AccessRefused
+        AccessRefused,
+    ).Assign(
+        this.review_request.owner
+    ).Permission(
+        auto_create=True
     ).Next(this.end)
 
     end = flow.End()

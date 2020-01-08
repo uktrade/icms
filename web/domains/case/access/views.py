@@ -1,8 +1,10 @@
 from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from viewflow.decorators import flow_view
 from viewflow.flow.views import (
     StartFlowMixin,
     FlowMixin,
@@ -40,44 +42,51 @@ class ILBReviewRequest(FlowMixin, generic.UpdateView):
     def get_object(self):
         return self.activation.process
 
-    #   def get_form(self):
-    #   return self.form_class(instance=self.activation.process.access_request, **self.get_form_kwargs())
-
     def request_details(self):
         return self.activation.process.access_request
 
     def form_valid(self, form):
-        access_request = form.save()
-
+        form.save()
+        self.activation_done()
         return redirect(self.get_success_url())
 
 
-# class ILBReviewRequest(FlowMixin, FormView):
-#     template_name = 'web/review-access-request.html'
-#     form_class = ReviewAccessRequestForm
-#
-#     def request_details(self):
-#         return self.activation.process.access_request
-#
-#     def get_form(self):
-#         return self.form_class(instance=self.activation.process.access_request, **self.get_form_kwargs())
-#
-#     def get_success_url(self):
-#         test = get_next_task_url(self.request, self.request.activation.process)
-#         return redirect(get_next_task_url(self.request, self.request.activation.process))
-#
-#     def form_valid(self, form):
-#         access_request = form.save()
-#         return super().form_valid(form)
+@flow_view
+def registraton_view(request, activation):
+    activation.prepare(request.POST or None, user=request.user)
+    form = AccessRequestForm(request.POST or None)
+
+    if form.is_valid():
+        activation.process.user = form.save()
+        activation.done()
+        return redirect(...)
+
+    return render(request, 'web/access-approved.html', {
+        'form': form,
+        'activation': activation,
+    })
 
 
-class AccessApproved(FlowMixin, generic.UpdateView):
+class AccessApproved(FlowMixin, FormView):
     template_name = 'web/access-approved.html'
+    form_class = AccessRequestForm
+
+    def form_valid(self, form):
+        access_request = form.save()
+        self.activation_done()
+        return redirect(self.get_success_url())
 
 
-class AccessRefused(FlowMixin, generic.UpdateView):
+class AccessRefused(FlowMixin, FormView):
     template_name = 'web/access-refused.html'
+    form_class = AccessRequestForm
 
+    def form_valid(self, form):
+        access_request = form.save()
+        self.activation_done()
+        return redirect(self.get_success_url())
+
+# WIP:
 # @require_registered
 # @flow_start_view
 # def request_access(request):
@@ -95,10 +104,3 @@ class AccessRefused(FlowMixin, generic.UpdateView):
 #         'form': form,
 #         'activation': request.activation
 #     })
-
-
-# class AccessRequestFlow(Flow):
-#     process_class = AccessRequestProcess
-#     request = flow.Start(request_access).Next(flow.End())
-#     # request = flow.Start(request_access).Next(this.approve)
-#     # approve = flow.View(home).Next(flow.End())

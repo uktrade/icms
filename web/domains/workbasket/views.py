@@ -1,9 +1,9 @@
 from datetime import datetime
+
 from django.shortcuts import render, redirect
+
 from web.auth.decorators import require_registered
 from web.domains.case.access.models import AccessRequestProcess, AccessRequest
-
-from viewflow.models import Task
 
 
 @require_registered
@@ -25,5 +25,3 @@ def take_ownership(request, process_id):
     task.process.accessrequestprocess.access_request.save()
 
     return redirect(f"/viewflow/workflow/web/accessrequest/{process.id}/review_request/{task.id}/")
-
-
