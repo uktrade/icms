@@ -121,7 +121,6 @@
         </div>
         <div class="hidden" id="form-container">
             {% call forms.form(method='post', csrf_input=csrf_input) %}
-              {{ activation.management_form }}
               {{fields.field(form.request_type)}}
               {{fields.field(form.organisation_name)}}
               {{fields.field(form.organisation_address)}}

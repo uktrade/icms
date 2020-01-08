@@ -50,9 +50,9 @@ class AccessRequest(models.Model):
     organisation_address = models.CharField(max_length=500,
                                             blank=False,
                                             null=True)
-    request_reason = models.CharField(max_length=1000, blank=False, null=True)
-    agent_name = models.CharField(max_length=100, blank=False, null=True)
-    agent_address = models.CharField(max_length=500, blank=False, null=True)
+    request_reason = models.CharField(max_length=1000, blank=True, null=True)
+    agent_name = models.CharField(max_length=100, blank=True, null=True)
+    agent_address = models.CharField(max_length=500, blank=True, null=True)
     submit_datetime = models.DateTimeField(auto_now_add=True,
                                            blank=False,
                                            null=False)
@@ -105,7 +105,7 @@ class AccessRequest(models.Model):
 
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
-    # objects = ProcessQuerySet.as_manager()
+    objects = ProcessQuerySet.as_manager()
 
 
 class ApprovalRequest(models.Model):

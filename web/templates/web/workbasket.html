@@ -196,9 +196,11 @@
                                         </tr>
                                     </thead>
                                     <tr data-xfid="f55">
-                                        <td data-xfid="g56"> <a href="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);">View</a></td>
-                                        <td data-xfid="g57"> <button id="g57" name="g57" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
-                                                New </button>
+                                        <td data-xfid="g56"><form name="form" id="access_request_{{ process.id }}" action="{{ url("take_ownership", args=[process.id]) }}" method="post">{{csrf_input}}<a href="javascript:document.getElementById('access_request_{{ process.id }}').submit()">Manage</a></form></td>
+                                        <td data-xfid="g57">
+                                            <button id="g57" name="g57" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
+                                                New
+                                            </button>
                                             <div id="hint164-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
                                         </td>
                                         <td></td>
