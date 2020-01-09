@@ -46,8 +46,6 @@ class ReviewAccessRequestForm(ModelEditForm):
         model = AccessRequest
 
         fields = [
-            # 'request_type', 'organisation_name', 'organisation_address',
-            # 'request_reason', 'agent_name', 'agent_address',
             'response'
         ]
 
