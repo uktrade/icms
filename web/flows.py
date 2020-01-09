@@ -30,7 +30,8 @@ class AccessRequestFlow(Flow):
         ).Next(this.check_response)
     )
 
-    check_response = flow.If(cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED
+    check_response = flow.If(
+        cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED
     ).Then(
         this.approved_access_request
     ).Else(
