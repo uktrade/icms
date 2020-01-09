@@ -1,10 +1,14 @@
 from django.forms.widgets import Select, Textarea
 from web.forms import ModelEditForm
+import datetime
 
 from .models import AccessRequest
 
 
 class AccessRequestForm(ModelEditForm):
+
+    datetime_now = datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')
+
     class Meta:
         model = AccessRequest
 

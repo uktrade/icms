@@ -126,7 +126,7 @@ AUTHENTICATION_BACKENDS = ['web.auth.models.CustomBackend']
 
 # Date formats
 DATE_INPUT_FORMATS = ['%d-%b-%Y']  # input formats
-DATETIME_INPUT_FORMATS += ('%d-%b-%Y %H:%M:%S')
+DATETIME_INPUT_FORMATS = ['%d-%b-%Y %H:%M:%S']
 DATE_FORMAT = ['d-M-Y']  # format for displaying date
 DATETIME_FORMAT = ['d-M-Y H:i:s']
 
