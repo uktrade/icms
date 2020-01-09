@@ -3,7 +3,6 @@
 
 {% if messages %}
   {% for message in messages %}
-      {{ message }}
     {{m.flash_message(message)}}
   {% endfor %}
 {% endif %}
