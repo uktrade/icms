@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import environ
 from django.forms import Field
-from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..

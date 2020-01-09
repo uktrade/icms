@@ -213,7 +213,7 @@ urlpatterns = [
         take_ownership, name="take_ownership"
     ),
 
-    #Viewflow
+    # Viewflow
     path('viewflow/', include(frontend_urls)),
     path('viewflow/', generic.RedirectView.as_view(url='/viewflow/workflow/', permanent=False)),
 

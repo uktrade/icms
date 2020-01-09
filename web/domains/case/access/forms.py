@@ -1,14 +1,10 @@
 from django.forms.widgets import Select, Textarea
-from web.forms import ModelEditForm
-import datetime
 
+from web.forms import ViewFlowModelEditForm
 from .models import AccessRequest
 
 
-class AccessRequestForm(ModelEditForm):
-
-    datetime_now = datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')
-
+class AccessRequestForm(ViewFlowModelEditForm):
     class Meta:
         model = AccessRequest
 
@@ -19,9 +15,9 @@ class AccessRequestForm(ModelEditForm):
 
         labels = {
             'request_type':
-            'Access Request Type',
+                'Access Request Type',
             'request_reason':
-            'What are you importing and where are you importing it from?'
+                'What are you importing and where are you importing it from?'
         }
 
         widgets = {
@@ -45,11 +41,11 @@ class AccessRequestForm(ModelEditForm):
             }
         }
 
-class ReviewAccessRequestForm(ModelEditForm):
+
+class ReviewAccessRequestForm(ViewFlowModelEditForm):
     class Meta:
         model = AccessRequest
 
         fields = [
             'response'
         ]
-
