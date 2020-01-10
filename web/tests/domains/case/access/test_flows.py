@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Permission
 from django.test import TestCase
 from viewflow.models import Process
@@ -40,7 +42,7 @@ class ExportAccessRequestFlowTest(TestCase):
              'organisation_address': '''50 Victoria St
              London
              SW1H 0TL''',
-             '_viewflow_activation-started': '09-Jan-2020 16:48:56'}
+             '_viewflow_activation-started': datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')}
         )
         assert response.status_code == 302
         process = Process.objects.get()
@@ -52,7 +54,7 @@ class ExportAccessRequestFlowTest(TestCase):
         response = self.client.post(
             '/viewflow/workflow/web/accessrequest/1/review_request/2/',
             {'response': 'MAIN_EXPORTER_ACCESS',
-             '_viewflow_activation-started': '09-Jan-2020 16:58:56'}
+             '_viewflow_activation-started': datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')}
         )
         assert response.status_code == 302
         process.refresh_from_db()
