@@ -72,7 +72,7 @@ class AccessApproved(FlowMixin, FormView):
     form_class = AccessRequestForm
 
     def form_valid(self, form):
-        access_request = form.save()
+        form.save()
         self.activation_done()
         return redirect(self.get_success_url())
 
@@ -82,7 +82,7 @@ class AccessRefused(FlowMixin, FormView):
     form_class = AccessRequestForm
 
     def form_valid(self, form):
-        access_request = form.save()
+        form.save()
         self.activation_done()
         return redirect(self.get_success_url())
 

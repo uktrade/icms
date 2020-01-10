@@ -18,7 +18,7 @@ class AccessRequestFlow(Flow):
         flow.Start(
             AccessRequestCreateView,
         ).Permission(
-            auto_create=True
+            'web.create_access_request'
         ).Next(this.review_request)
     )
 
@@ -26,7 +26,7 @@ class AccessRequestFlow(Flow):
         flow.View(
             ILBReviewRequest,
         ).Permission(
-            auto_create=True
+            'web.review_access_request'
         ).Next(this.check_response)
     )
 
@@ -43,7 +43,7 @@ class AccessRequestFlow(Flow):
     ).Assign(
         this.review_request.owner
     ).Permission(
-        auto_create=True
+        'web.review_access_request'
     ).Next(this.end)
 
     refused_access_request = flow.View(
@@ -51,7 +51,7 @@ class AccessRequestFlow(Flow):
     ).Assign(
         this.review_request.owner
     ).Permission(
-        auto_create=True
+        'web.review_access_request'
     ).Next(this.end)
 
     end = flow.End()
