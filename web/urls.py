@@ -1,13 +1,12 @@
+from material.frontend import urls as frontend_urls
+from django.views import generic
+
 from django.contrib.auth.views import LogoutView
-from django.urls import include, path, re_path, register_converter
-from django.views.generic import RedirectView
-from viewflow.flow.viewset import FlowViewSet
-from web.domains.case.access.views import AccessRequestFlow
-from web.domains.user.views import UsersListView, current_user_details
+from django.urls import include, path, register_converter
+
+from web.domains.application._import import views as imp_app_views
 from web.domains.commodity import views as commodity_views
 from web.domains.constabulary import views as constabulary_views
-from web.domains.application._import import views as imp_app_views
-
 from web.domains.country.views import (
     CountryCreateView, CountryEditView, CountryGroupCreateView,
     CountryGroupEditView, CountryGroupView, CountryListView,
@@ -27,13 +26,13 @@ from web.domains.legislation.views import (ProductLegislationCreateView,
                                            ProductLegislationUpdateView)
 from web.domains.team.views import TeamEditView, TeamListView
 from web.domains.template.views import TemplateListView
+from web.domains.user.views import UsersListView, current_user_details
 from web.domains.user.views import user_details
-from web.domains.workbasket.views import workbasket
-
-from .auth import views as auth_views
-from .views import home
-
+from web.domains.workbasket.views import workbasket, take_ownership
 from . import converters
+from .auth import views as auth_views
+from .domains.case.access.views import AccessRequestCreatedView, AccessRefused, AccessApproved
+from .views import home
 
 register_converter(converters.NegativeIntConverter, 'negint')
 
@@ -189,10 +188,35 @@ urlpatterns = [
          name='exporter-view'),
 
     # Access Request
-    path('access/',
-         RedirectView.as_view(url='request', permanent=False),
-         name='request-access'),
-    re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
+    # path('access/',
+    #      RedirectView.as_view(url='request', permanent=False),
+    #      name='request-access'),
+    # re_path(r'^access/', include(FlowViewSet(AccessRequestFlow).urls)),
+
+    path(
+        "access-created/",
+        AccessRequestCreatedView.as_view(), name="access_request_created"
+    ),
+
+    path(
+        "access-approved/",
+        AccessApproved.as_view(), name="access_request_approved"
+    ),
+
+    path(
+        "access-refused/",
+        AccessRefused.as_view(), name="access_request_refused"
+    ),
+
+    path(
+        "take-ownership/<process_id>/",
+        take_ownership, name="take_ownership"
+    ),
+
+    # Viewflow
+    path('viewflow/', include(frontend_urls)),
+    path('viewflow/', generic.RedirectView.as_view(url='/viewflow/workflow/', permanent=False)),
+
 
     # Import Application
     path('import/apply/',

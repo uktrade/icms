@@ -17,7 +17,7 @@
 
             </div>
             <ul class="menu-out flow-across">
-                <li> <a id="g19" href="{{ url('request-access') }}" name="g19"  class="link-button button">
+                <li> <a id="g19" href="/viewflow/workflow/web/accessrequest/start/" name="g19"  class="link-button button">
                         Submit Another Request </a></li>
                 <li> <a id="g18" href="{{ url('logout') }}" name="g18"  class="link-button button">
                         Logout </a></li>
@@ -27,4 +27,10 @@
 
         </div>
     </div>
+    <style>
+    /* Remove Viewflow DJango flash message */
+    .flash-message .info-box {
+        display: none;
+    }
+    </style>
 {% endblock %}
