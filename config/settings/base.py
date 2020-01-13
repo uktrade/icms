@@ -23,7 +23,6 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 INSTALLED_APPS = [
-    'viewflow',
     'web',
     'captcha',
     'compressor',
@@ -36,6 +35,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'material',
+    'material.frontend',
+    'viewflow',
+    'viewflow.frontend',
 ]
 
 MIDDLEWARE = [

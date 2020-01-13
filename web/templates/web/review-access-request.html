@@ -1,0 +1,32 @@
+{% extends "layout/simple.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block page_title %}Importer/Exporter Access Request{% endblock %}
+{% block context_header %}Importer/Exporter Access Request{% endblock %}
+
+
+{% block main_content %}
+    <div class="no-sidebar" id="content">
+        <div id="content-ie8-float">
+
+        <h1>
+            {{ view.request_details().organisation_name }}
+        </h1>
+
+            <div class="content-actions"></div>
+
+            <div class="info-box info-box-success">
+                {% call forms.form(method='post', csrf_input=csrf_input) %}
+                <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now  }}" id="id__viewflow_activation-started">
+                {{ fields.field(form.response)}}
+                    <input type="submit" />
+                {% endcall %}
+            </div>
+
+            <div class="content-actions"></div>
+
+        </div>
+    </div>
+{% endblock %}
