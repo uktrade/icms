@@ -10,7 +10,10 @@ clean:
 requirements:
 	unset UID && \
 	docker-compose run web python3 -m pipenv install --dev --system
-#	docker-compose run web pipenv install
+
+fixlock:
+	unset UID && \
+	docker-compose run web pipenv install
 
 collectstatic:
 	docker-compose run web ./manage.py collectstatic --noinput --traceback

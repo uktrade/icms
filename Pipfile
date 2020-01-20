@@ -18,7 +18,7 @@ factory-boy = "*"
 faker = "*"
 
 [packages]
-django = "==2.2.8"
+django = "==2.2.9"
 django-environ = "*"
 django-recaptcha = "*"
 django-ses = "*"
