@@ -57,9 +57,9 @@ class ExportAccessRequestFlowTest(TestCase):
              '_viewflow_activation-started': datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')}
         )
         assert response.status_code == 302
-        process.refresh_from_db()
-        self.assertEquals('NEW', process.status)
 
-        self.assertEquals(2, process.task_set.count())
+        process = Process.objects.get()
+        self.assertEquals('NEW', process.status)
+        self.assertEquals(3, process.task_set.count())
 
         # self.assertEquals('DONE', process.status)
