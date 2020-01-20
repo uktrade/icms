@@ -6,7 +6,6 @@ from viewflow.flow.views import (
     StartFlowMixin,
     FlowMixin,
 )
-from viewflow.flow.views.utils import get_next_task_url
 
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 
