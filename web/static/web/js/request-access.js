@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
     'use strict';
+
     var reasonRowClasses = getClasses('id_request_reason');
     var agentNameRowClasses = getClasses('id_agent_name');
     var agentAddressRowClasses = getClasses('id_agent_address');
@@ -29,6 +30,8 @@ document.addEventListener("DOMContentLoaded", function (event) { // doesn't work
         uiConfig[dropdown.value][1] ? agentNameRowClasses.remove('hidden') : agentNameRowClasses.add('hidden');
         uiConfig[dropdown.value][2] ? agentAddressRowClasses.remove('hidden') : agentAddressRowClasses.add('hidden');
 
+        removeOptionalLabels();
+
         container.scrollIntoView(true);
     };
 });
@@ -36,4 +39,16 @@ document.addEventListener("DOMContentLoaded", function (event) { // doesn't work
 function getClasses(id) {
     'use strict';
     return document.getElementById(id).parentElement.parentElement.classList;
+}
+
+function removeElement(element) {
+    'use strict';
+    element.parentNode.removeChild(element);
+}
+
+function removeOptionalLabels() {
+    'use strict';
+    Array.prototype.forEach.call(
+        document.getElementsByClassName("mand-label"),
+        removeElement);
 }
