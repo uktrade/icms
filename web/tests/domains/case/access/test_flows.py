@@ -47,19 +47,26 @@ class ExportAccessRequestFlowTest(TestCase):
         assert response.status_code == 302
         process = Process.objects.get()
         self.assertEquals('NEW', process.status)
+        self.assertEquals(3, process.task_set.count())
 
         self.client.logout()
         self.client.force_login(self.ilb_admin_user)
 
         response = self.client.post(
-            '/viewflow/workflow/web/accessrequest/1/review_request/2/',
-            {'response': 'MAIN_EXPORTER_ACCESS',
+            '/take-ownership/1/'
+        )
+
+        process.refresh_from_db()
+        self.assertEquals('NEW', process.status)
+        self.assertEquals(3, process.task_set.count())
+
+        response = self.client.post(
+            '/viewflow/workflow/web/accessrequest/1/review_request/3/',
+            {'response': 'APPROVED',
              '_viewflow_activation-started': datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')}
         )
         assert response.status_code == 302
 
-        process = Process.objects.get()
-        self.assertEquals('NEW', process.status)
-        self.assertEquals(3, process.task_set.count())
-
-        # self.assertEquals('DONE', process.status)
+        process.refresh_from_db()
+        self.assertEquals('DONE', process.status)
+        self.assertEquals(6, process.task_set.count())
