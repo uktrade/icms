@@ -8,6 +8,23 @@ from viewflow.flow.views import (
 )
 
 from .forms import AccessRequestForm, ReviewAccessRequestForm
+from .models import AccessRequest
+
+
+def clean_extra_request_data(access_request):
+    if access_request.request_type == AccessRequest.IMPORTER:
+        access_request.agent_name = None
+        access_request.agent_address = None
+    elif access_request.request_type == AccessRequest.IMPORTER_AGENT:
+        pass
+    elif access_request.request_type == AccessRequest.EXPORTER:
+        access_request.agent_name = None
+        access_request.agent_address = None
+        access_request.request_reason = None
+    elif access_request.request_type == AccessRequest.EXPORTER_AGENT:
+        access_request.request_reason = None
+    else:
+        raise ValueError("Unknown access request type")
 
 
 class AccessRequestCreateView(StartFlowMixin, FormView):
@@ -20,6 +37,7 @@ class AccessRequestCreateView(StartFlowMixin, FormView):
     def form_valid(self, form):
         access_request = form.save(commit=False)
         access_request.submitted_by = self.request.user
+        clean_extra_request_data(access_request)
         access_request.save()
 
         self.activation.process.access_request = access_request
