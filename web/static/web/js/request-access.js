@@ -34,8 +34,6 @@ document.addEventListener("DOMContentLoaded", function (event) { // doesn't work
         showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, agentAddressRowClasses);
         doRemoveOptionalLabels();
         container.scrollIntoView(true);
-        container.scrollIntoView(true);
-        container.scrollIntoView(true);
     }
 });
 
