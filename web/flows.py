@@ -49,7 +49,7 @@ class AccessRequestFlow(Flow):
 
     email_requester = (
         flow.Handler(
-            send_admin_notification_email
+            send_requester_notification_email
         ).Next(this.close_request)
     )
 

@@ -56,6 +56,7 @@ class ExportAccessRequestFlowTest(TestCase):
             '/take-ownership/1/'
         )
 
+        assert response.status_code == 302
         process.refresh_from_db()
         self.assertEquals('NEW', process.status)
         self.assertEquals(3, process.task_set.count())
