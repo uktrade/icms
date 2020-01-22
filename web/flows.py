@@ -1,4 +1,4 @@
-from viewflow import flow, frontend
+from viewflow import flow
 from viewflow.base import this, Flow
 
 from web.domains.case.access.models import AccessRequestProcess, AccessRequest
@@ -21,7 +21,6 @@ def close_request(activation):
     activation.process.access_request.save()
 
 
-@frontend.register
 class AccessRequestFlow(Flow):
     process_class = AccessRequestProcess
 
