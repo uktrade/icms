@@ -6,21 +6,22 @@ from .models import AccessRequest
 
 
 class AccessRequestForm(ViewFlowModelEditForm):
-    def validate_fields(self, fields):
+    def validate_fields(self, fields, cleaned_data):
         for field in fields:
-            if self.data[field] == '':
+            if cleaned_data[field] == '':
                 self.add_error(field, 'You must enter this item')
 
     def clean(self):
-        request_type = self.data['request_type']
+        cleaned_data = super().clean()
+        request_type = cleaned_data['request_type']
         if request_type == AccessRequest.IMPORTER:
-            self.validate_fields(['request_reason'])
+            self.validate_fields(['request_reason'], cleaned_data)
         elif request_type == AccessRequest.IMPORTER_AGENT:
-            self.validate_fields(['request_reason', 'agent_name', 'agent_address'])
+            self.validate_fields(['request_reason', 'agent_name', 'agent_address'], cleaned_data)
         elif request_type == AccessRequest.EXPORTER:
             pass
         elif request_type == AccessRequest.EXPORTER_AGENT:
-            self.validate_fields(['agent_name', 'agent_address'])
+            self.validate_fields(['agent_name', 'agent_address'], cleaned_data)
         else:
             raise ValidationError("Unknown access request type")
 
