@@ -1,8 +1,7 @@
-from material.frontend import urls as frontend_urls
-from django.views import generic
-
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path, register_converter
+from django.views import generic
+from material.frontend import urls as frontend_urls
 
 from web.domains.application._import import views as imp_app_views
 from web.domains.commodity import views as commodity_views
@@ -31,7 +30,7 @@ from web.domains.user.views import user_details
 from web.domains.workbasket.views import workbasket, take_ownership
 from . import converters
 from .auth import views as auth_views
-from .domains.case.access.views import AccessRequestCreatedView, AccessRefused, AccessApproved
+from .domains.case.access.views import AccessRequestCreatedView
 from .views import home
 
 register_converter(converters.NegativeIntConverter, 'negint')
@@ -196,16 +195,6 @@ urlpatterns = [
     path(
         "access-created/",
         AccessRequestCreatedView.as_view(), name="access_request_created"
-    ),
-
-    path(
-        "access-approved/",
-        AccessApproved.as_view(), name="access_request_approved"
-    ),
-
-    path(
-        "access-refused/",
-        AccessRefused.as_view(), name="access_request_refused"
     ),
 
     path(

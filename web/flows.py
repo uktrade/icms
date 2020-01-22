@@ -5,9 +5,20 @@ from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 from web.domains.case.access.views import (
     AccessRequestCreateView,
     ILBReviewRequest,
-    AccessRefused,
-    AccessApproved
 )
+
+
+def send_admin_notification_email(activation):
+    print(f'Request from {activation.process.access_request.organisation_name}')  # TODO
+
+
+def send_requester_notification_email(activation):
+    print(f'{activation.process.access_request.organisation_name}: {activation.process.access_request.response}')  # TODO
+
+
+def close_request(activation):
+    activation.process.access_request.status = AccessRequest.CLOSED
+    activation.process.access_request.save()
 
 
 @frontend.register
@@ -19,6 +30,12 @@ class AccessRequestFlow(Flow):
             AccessRequestCreateView,
         ).Permission(
             'web.create_access_request'
+        ).Next(this.email_admins)
+    )
+
+    email_admins = (
+        flow.Handler(
+            send_admin_notification_email
         ).Next(this.review_request)
     )
 
@@ -27,31 +44,19 @@ class AccessRequestFlow(Flow):
             ILBReviewRequest,
         ).Permission(
             'web.review_access_request'
-        ).Next(this.check_response)
+        ).Next(this.email_requester)
     )
 
-    check_response = flow.If(
-        cond=lambda act: act.process.access_request.response == AccessRequest.APPROVED
-    ).Then(
-        this.approved_access_request
-    ).Else(
-        this.refused_access_request
+    email_requester = (
+        flow.Handler(
+            send_requester_notification_email
+        ).Next(this.close_request)
     )
 
-    approved_access_request = flow.View(
-        AccessApproved,
-    ).Assign(
-        this.review_request.owner
-    ).Permission(
-        'web.review_access_request'
-    ).Next(this.end)
-
-    refused_access_request = flow.View(
-        AccessRefused,
-    ).Assign(
-        this.review_request.owner
-    ).Permission(
-        'web.review_access_request'
-    ).Next(this.end)
+    close_request = (
+        flow.Handler(
+            close_request
+        ).Next(this.end)
+    )
 
     end = flow.End()
