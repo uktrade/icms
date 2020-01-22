@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
-    'use strict';
+"use strict";
 
+document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
     var reasonRowClasses = getClasses('id_request_reason');
     var agentNameRowClasses = getClasses('id_agent_name');
     var agentAddressRowClasses = getClasses('id_agent_address');
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function (event) { // doesn't work
 });
 
 function showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, agentAddressRowClasses) {
-    'use strict';
     if (dropdown.options.length === 5) {
         dropdown.remove(0);
     }
@@ -49,18 +48,15 @@ function showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, a
 }
 
 function getClasses(id) {
-    'use strict';
     return document.getElementById(id).parentElement.parentElement.classList;
 }
 
 function doRemoveOptionalLabels() {
-    'use strict';
     removeOptionalLabels();
     removeOptionalLabels(); // needs two calls, for some unknown reason, to fully do the job ...
 }
 
 function removeOptionalLabels() {
-    'use strict';
     var optionalTags = document.getElementsByClassName("mand-label");
     for (var i = 0; i < optionalTags.length; i++) {
         optionalTags[i].parentNode.removeChild(optionalTags[i]);
