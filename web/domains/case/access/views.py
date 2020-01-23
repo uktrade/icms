@@ -1,11 +1,10 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from viewflow.flow.views import (
-    StartFlowMixin,
-    FlowMixin,
-)
+from viewflow.flow.views.start import BaseStartFlowMixin
+from viewflow.flow.views.task import BaseFlowMixin
 
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest
@@ -27,7 +26,21 @@ def clean_extra_request_data(access_request):
         raise ValueError("Unknown access request type")
 
 
-class AccessRequestCreateView(StartFlowMixin, FormView):
+class SimpleStartFlowMixin(BaseStartFlowMixin):
+    """StartFlowMixin without  MessageUserMixin"""
+
+    def activation_done(self, *args, **kwargs):
+        """Finish task activation."""
+        self.activation.done()
+
+    def form_valid(self, *args, **kwargs):
+        """If the form is valid, save the associated model and finish the task."""
+        super(SimpleStartFlowMixin, self).form_valid(*args, **kwargs)
+        self.activation_done(*args, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
     template_name = 'web/request-access.html'
     form_class = AccessRequestForm
 
@@ -48,7 +61,21 @@ class AccessRequestCreatedView(TemplateView):
     template_name = 'web/request-access-success.html'
 
 
-class ILBReviewRequest(FlowMixin, FormView):
+class SimpleFlowMixin(BaseFlowMixin):
+    """FlowMixin without  MessageUserMixin."""
+
+    def activation_done(self, *args, **kwargs):
+        """Finish the task activation."""
+        self.activation.done()
+
+    def form_valid(self, *args, **kwargs):
+        """If the form is valid, save the associated model and finish the task."""
+        super(SimpleFlowMixin, self).form_valid(*args, **kwargs)
+        self.activation_done(*args, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class ILBReviewRequest(SimpleFlowMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
 
