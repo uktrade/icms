@@ -27,7 +27,7 @@ def clean_extra_request_data(access_request):
 
 
 class SimpleStartFlowMixin(BaseStartFlowMixin):
-    """StartFlowMixin without  MessageUserMixin"""
+    """StartFlowMixin without MessageUserMixin"""
 
     def activation_done(self, *args, **kwargs):
         """Finish task activation."""
@@ -62,7 +62,7 @@ class AccessRequestCreatedView(TemplateView):
 
 
 class SimpleFlowMixin(BaseFlowMixin):
-    """FlowMixin without  MessageUserMixin."""
+    """FlowMixin without MessageUserMixin."""
 
     def activation_done(self, *args, **kwargs):
         """Finish the task activation."""
