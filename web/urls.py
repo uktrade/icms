@@ -29,7 +29,7 @@ from web.domains.user.views import user_details
 from web.domains.workbasket.views import workbasket, take_ownership
 from . import converters
 from .auth import views as auth_views
-from .domains.case.access.views import AccessRequestCreatedView, AccessRequestCreateView
+from .domains.case.access.views import AccessRequestCreatedView
 from .flows import AccessRequestFlow
 from .views import home
 
