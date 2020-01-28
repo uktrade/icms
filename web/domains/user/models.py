@@ -6,7 +6,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-
     # Statuses
     NEW = "NEW"
     BLOCKED = "BLOCKED"
@@ -57,6 +56,11 @@ class User(AbstractUser):
                                             blank=True,
                                             null=True)
     unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
+
+    @property
+    def get_work_address_html(self):
+        return '123'
+        # return "<br />".join(self.work_address.split("\n"))
 
     @property
     def full_name(self):
