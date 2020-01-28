@@ -1,4 +1,4 @@
-{% extends "layout/simple.html" %}
+{% extends "layout/sidebar.html" %}
 
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
@@ -8,21 +8,98 @@
 
 
 {% block main_content %}
+    <div class="info-box info-box-info">
+        <p>The user specified below has requested access to act as an importer/agent. If you already know that this user should have these access rights you can
+            simply add them to the appropriate importer/agent team (note - you may need to create the importer/agent entity first). Use the Link/Maintain link
+            below.</p>
+        <p>If on the other hand this is a new access request then you can request approval from the main importer using the form below. Note - you will need to
+            link the importer on the access request to an importer within the ICMS system first.</p>
+        <p>Once the Access Request has been actioned you should close the request using the Close section below. An email will be sent to the requester stating
+            the outcome of their request.</p>
+    </div>
+    <div class="container setoutForm noBottomMargin" data-xfid="f54">
+        <div class="row">
+            <div class="three columns" data-xfid="g55"><label id="pg55" for="g55" class="prompt west">Access Requested By
+            </label>
+            </div>
+            <div class="three columns" data-xfid="g55"><span id="g55" class="text-widget noBottomMargin">{{ view.get_request_process().created_by.title }}
+                {{ view.get_request_process().created_by.first_name }} {{ view.get_request_process().created_by.last_name }}
+                ({{ view.get_request_process().created_by.email }})</span>
+            </div>
+            <div class="one columns" data-xfid="g56"><label id="pg56" for="g56" class="prompt west">Request Date
+            </label>
+            </div>
+            <div class="two columns" data-xfid="g56"><span id="g56" class="text-widget noBottomMargin">
+                {{ view.get_request_process().created.strftime('%d-%b-%Y %H:%M:%S') }}</span></div>
+            <div class="three columns"></div>
+        </div>
+    </div>
+    {% set request = view.get_request() %}
+    <div class="container setoutForm" data-xfid="f57">
+        <div class="row">
+            <div class="three columns" data-xfid="g58"><label id="pg58" for="g58" class="prompt west">Access Request Type
+            </label>
+            </div>
+            <div class="six columns" data-xfid="g58"><span id="g58" class="text-widget ">
+                {{ dict(request.REQUEST_TYPES)[request.request_type] }}</span></div>
+            <div class="three columns"></div>
+        </div>
+        <div class="row">
+            <div class="twelve columns" data-xfid="f59">
+                <div class="container setoutForm" data-xfid="f59">
+                    <div class="row">
+                        <div class="three columns" data-xfid="g60"><label id="pg60" for="g60" class="prompt west">Importer Name
+                        </label>
+                        </div>
+                        <div class="six columns" data-xfid="g60"><span id="g60" class="text-widget ">{{ request.organisation_name }}</span></div>
+                        <div class="three columns"></div>
+                    </div>
+                    <div class="row">
+                        <div class="three columns" data-xfid="g61"><label id="pg61" for="g61" class="prompt west">Importer Address
+                        </label>
+                        </div>
+                        <div class="six columns" data-xfid="g61"><span id="g61" class="text-widget ">{{ request.get_work_address_html }}</span></div>
+                        <div class="three columns"></div>
+                    </div>
+                    <div class="row">
+                        <div class="three columns" data-xfid="g62"><label id="pg62" for="g62" class="prompt west">What are you importing and where are you
+                            importing it from?
+                        </label>
+                        </div>
+                        <div class="six columns" data-xfid="g62"><span id="g62" class="text-widget ">{{ request.request_reason }}</span></div>
+                        <div class="three columns"></div>
+                    </div>
+                    <div class="row">
+                        <div class="three columns"></div>
+                        <div class="six columns" data-xfid="g63">
+                            <button id="g63" name="g63" type="button"
+                                    onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-find-main-importer&quot;,&quot;ctxt&quot;:&quot;s7ZDY9_plrCtx0zP&quot;}, this);"
+                                    class="link-button inline-link-button button">
+                                Link / Maintain Importer
+                            </button>
+                        </div>
+                        <div class="three columns"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns" data-xfid="g64"></div>
+            <div class="three columns"></div>
+        </div>
+    </div>
+
     <div class="no-sidebar" id="content">
         <div id="content-ie8-float">
-
-        <h1>
-            {{ view.request_details().organisation_name }}
-        </h1>
-
             <div class="content-actions"></div>
 
             <div class="info-box info-box-success">
                 {% call forms.form(method='post', csrf_input=csrf_input) %}
-                <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now  }}" id="id__viewflow_activation-started">
-                <input type="hidden" name="_continue" value="True" />
-                {{ fields.field(form.response)}}
-                    <input type="submit" name="_start" />
+                    <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now }}" id="id__viewflow_activation-started">
+                    <input type="hidden" name="_continue" value="True"/>
+                    {{ fields.field(form.response)}}
+                    <input type="submit" name="_start"/>
                 {% endcall %}
             </div>
 
