@@ -6,7 +6,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-
     # Statuses
     NEW = "NEW"
     BLOCKED = "BLOCKED"
