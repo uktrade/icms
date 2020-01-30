@@ -8,6 +8,8 @@
 
 
 {% block main_content %}
+    {% set request = view.get_request() %}
+    {% set process = view.get_request_process() %}
     <div class="info-box info-box-info">
         <p>The user specified below has requested access to act as an importer/agent. If you already know that this user should have these access rights you can
             simply add them to the appropriate importer/agent team (note - you may need to create the importer/agent entity first). Use the Link/Maintain link
@@ -22,19 +24,18 @@
             <div class="three columns" data-xfid="g55"><label id="pg55" for="g55" class="prompt west">Access Requested By
             </label>
             </div>
-            <div class="three columns" data-xfid="g55"><span id="g55" class="text-widget noBottomMargin">{{ view.get_request_process().created_by.title }}
-                {{ view.get_request_process().created_by.first_name }} {{ view.get_request_process().created_by.last_name }}
-                ({{ view.get_request_process().created_by.email }})</span>
+            <div class="three columns" data-xfid="g55"><span id="g55" class="text-widget noBottomMargin">{{ process.created_by.title }}
+                {{ process.created_by.first_name }} {{ process.created_by.last_name }}
+                ({{ process.created_by.email }})</span>
             </div>
             <div class="one columns" data-xfid="g56"><label id="pg56" for="g56" class="prompt west">Request Date
             </label>
             </div>
             <div class="two columns" data-xfid="g56"><span id="g56" class="text-widget noBottomMargin">
-                {{ view.get_request_process().created.strftime('%d-%b-%Y %H:%M:%S') }}</span></div>
+                {{ process.created.strftime('%d-%b-%Y %H:%M:%S') }}</span></div>
             <div class="three columns"></div>
         </div>
     </div>
-    {% set request = view.get_request() %}
     <div class="container setoutForm" data-xfid="f57">
         <div class="row">
             <div class="three columns" data-xfid="g58"><label id="pg58" for="g58" class="prompt west">Access Request Type
@@ -48,63 +49,107 @@
             <div class="twelve columns" data-xfid="f59">
                 <div class="container setoutForm" data-xfid="f59">
                     <div class="row">
-                        <div class="three columns" data-xfid="g60"><label id="pg60" for="g60" class="prompt west">Importer Name
+                        <div class="three columns" data-xfid="g60"><label id="pg60" for="g60" class="prompt west">Organisation Name
                         </label>
                         </div>
                         <div class="six columns" data-xfid="g60"><span id="g60" class="text-widget ">{{ request.organisation_name }}</span></div>
                         <div class="three columns"></div>
                     </div>
                     <div class="row">
-                        <div class="three columns" data-xfid="g61"><label id="pg61" for="g61" class="prompt west">Importer Address
+                        <div class="three columns" data-xfid="g61"><label id="pg61" for="g61" class="prompt west">Organisation Address
                         </label>
                         </div>
-                        <div class="six columns" data-xfid="g61"><span id="g61" class="text-widget ">{{ request.get_work_address_html }}</span></div>
+                        <div class="six columns" data-xfid="g61"><span id="g61" class="text-widget ">{{ request.organisation_address|nl2br }}</span></div>
                         <div class="three columns"></div>
                     </div>
-                    <div class="row">
-                        <div class="three columns" data-xfid="g62"><label id="pg62" for="g62" class="prompt west">What are you importing and where are you
-                            importing it from?
-                        </label>
+                    {% if view.get_request().request_reason is not none %}
+                        <div class="row">
+                            <div class="three columns" data-xfid="g62"><label id="pg62" for="g62" class="prompt west">What are you importing and where are you
+                                importing it from?
+                            </label>
+                            </div>
+                            <div class="six columns" data-xfid="g62"><span id="g62" class="text-widget ">{{ request.request_reason|nl2br }}</span></div>
+                            <div class="three columns"></div>
                         </div>
-                        <div class="six columns" data-xfid="g62"><span id="g62" class="text-widget ">{{ request.request_reason }}</span></div>
-                        <div class="three columns"></div>
-                    </div>
-                    <div class="row">
-                        <div class="three columns"></div>
-                        <div class="six columns" data-xfid="g63">
-                            <button id="g63" name="g63" type="button"
-                                    onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-find-main-importer&quot;,&quot;ctxt&quot;:&quot;s7ZDY9_plrCtx0zP&quot;}, this);"
-                                    class="link-button inline-link-button button">
-                                Link / Maintain Importer
-                            </button>
+                        <div class="row">
+                            <div class="three columns"></div>
+                            <div class="six columns" data-xfid="g63">
+                                <button id="g63" name="g63" type="button"
+                                        onclick="javascript:console.log('Link / Maintain Importer button clicked')"
+                                        class="link-button inline-link-button button">
+                                    Link / Maintain Importer
+                                </button>
+                            </div>
+                            <div class="three columns"></div>
                         </div>
-                        <div class="three columns"></div>
+                    {% else %}
+                        <div class="row">
+                            <div class="three columns"></div>
+                            <div class="six columns" data-xfid="g63">
+                                <button id="g63" name="g63" type="button"
+                                        onclick="javascript:console.log('Link / Maintain Exporter button clicked')"
+                                        class="link-button inline-link-button button">
+                                    Link / Maintain Exporter
+                                </button>
+                            </div>
+                            <div class="three columns"></div>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if view.get_request().agent_name is not none %}
+                    <div class="row">
+                        <div class="twelve columns" data-xfid="f64">
+                            <div class="container setoutForm" data-xfid="f64">
+                                <div class="row">
+                                    <div class="three columns" data-xfid="g65"><label id="pg65" for="g65" class="prompt west">Agent Name
+                                    </label>
+                                    </div>
+                                    <div class="six columns" data-xfid="g65"><span id="g65" class="text-widget ">{{ request.agent_name }}</span></div>
+                                    <div class="three columns"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="three columns" data-xfid="g66"><label id="pg66" for="g66" class="prompt west">Agent Address
+                                    </label>
+                                    </div>
+                                    <div class="six columns" data-xfid="g66"><span id="g66" class="text-widget ">{{ request.agent_address|nl2br }}</span></div>
+                                    <div class="three columns"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                {% endif %}
+                <div class="row">
+                    <div class="three columns"></div>
+                    <div class="six columns" data-xfid="g67"></div>
+                    <div class="three columns"></div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="three columns"></div>
-            <div class="six columns" data-xfid="g64"></div>
-            <div class="three columns"></div>
-        </div>
-    </div>
+            {% if view.get_request().request_reason is none %}
+                <h3>Exporter Access Approval</h3>
+                <div class="info-box info-box-info">
+                    You must first link an exporter to the access request if you wish to start exporter access approval. Please use Link / Maintain Exporter
+                    above.
+                </div>
+            {% else %}
+                <h3>Importer Access Approval</h3>
+                <div class="info-box info-box-info">
+                    You must first link an importer to the access request if you wish to start importer access approval. Please use Link / Maintain Importer
+                    above.
+                </div>
+            {% endif %}
 
-    <div class="no-sidebar" id="content">
-        <div id="content-ie8-float">
-            <div class="content-actions"></div>
+            <h3>
+                Close Access Request
+            </h3>
 
-            <div class="info-box info-box-success">
+             <div class="info-box info-box-success">
                 {% call forms.form(method='post', csrf_input=csrf_input) %}
                     <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now }}" id="id__viewflow_activation-started">
                     <input type="hidden" name="_continue" value="True"/>
                     {{ fields.field(form.response)}}
-                    <input type="submit" name="_start"/>
+                    <input type="submit" name="_start" value="Close Access Request"/>
                 {% endcall %}
             </div>
-
-            <div class="content-actions"></div>
-
         </div>
     </div>
 {% endblock %}
