@@ -36,7 +36,7 @@ class ExportAccessRequestFlowTest(TestCase):
         self.client.force_login(self.test_access_requester)
 
         response = self.client.post(
-            '/viewflow/workflow/web/accessrequest/start/',
+            '/access/start/',
             {'request_type': 'MAIN_EXPORTER_ACCESS',
              'organisation_name': 'Test7201',
              'organisation_address': '''50 Victoria St
@@ -62,7 +62,7 @@ class ExportAccessRequestFlowTest(TestCase):
         self.assertEquals(3, process.task_set.count())
 
         response = self.client.post(
-            '/viewflow/workflow/web/accessrequest/1/review_request/3/',
+            '/access/1/review_request/3/',
             {'response': 'APPROVED',
              '_viewflow_activation-started': datetime.datetime.now().strftime('%d-%b-%Y %H:%M:%S')}
         )

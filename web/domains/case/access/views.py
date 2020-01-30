@@ -2,11 +2,8 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from viewflow.flow.views import (
-    StartFlowMixin,
-    FlowMixin,
-)
 
+from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest
 
@@ -27,7 +24,7 @@ def clean_extra_request_data(access_request):
         raise ValueError("Unknown access request type")
 
 
-class AccessRequestCreateView(StartFlowMixin, FormView):
+class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
     template_name = 'web/request-access.html'
     form_class = AccessRequestForm
 
@@ -48,7 +45,7 @@ class AccessRequestCreatedView(TemplateView):
     template_name = 'web/request-access-success.html'
 
 
-class ILBReviewRequest(FlowMixin, FormView):
+class ILBReviewRequest(SimpleFlowMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
 
