@@ -1,3 +1,4 @@
+from django.urls import reverse
 from datetime import datetime
 
 from django.shortcuts import render, redirect
@@ -24,4 +25,4 @@ def take_ownership(request, process_id):
 
     task.process.accessrequestprocess.access_request.save()
 
-    return redirect(f"/viewflow/workflow/web/accessrequest/{process.id}/review_request/{task.id}/")
+    return redirect(reverse('review_request', args=(process.id, task.id)))

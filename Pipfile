@@ -32,7 +32,6 @@ phonenumbers = "*"
 jinja2 = "*"
 requests = "*"
 django-compressor = "*"
-django-material="*"
 django-viewflow="*"
 
 [requires]
