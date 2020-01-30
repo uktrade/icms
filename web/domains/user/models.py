@@ -58,11 +58,6 @@ class User(AbstractUser):
     unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
 
     @property
-    def get_work_address_html(self):
-        return '123'
-        # return "<br />".join(self.work_address.split("\n"))
-
-    @property
     def full_name(self):
         return ' '.join(
             filter(None, (self.title, self.first_name, self.last_name)))

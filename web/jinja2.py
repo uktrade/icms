@@ -1,8 +1,22 @@
+import re
+
 from compressor.contrib.jinja2ext import CompressorExtension
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import reverse
-from jinja2 import Environment
+from jinja2 import Environment, evalcontextfilter
+from markupsafe import Markup, escape
+
+_paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+
+
+@evalcontextfilter
+def nl2br(eval_ctx, value):
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', Markup('<br>\n'))
+                          for p in _paragraph_re.split(escape(value)))
+    if eval_ctx.autoescape:
+        result = Markup(result)
+    return result
 
 
 def show_all_attrs(value):
@@ -28,4 +42,5 @@ def environment(**options):
         'modify_query': modify_query
     })
     env.filters['show_all_attrs'] = show_all_attrs
+    env.filters['nl2br'] = nl2br
     return env
