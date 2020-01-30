@@ -1,4 +1,4 @@
-{% extends "layout/simple.html" %}
+{% extends "layout/no-sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 {% block page_title %}Request Importer/Exporter Access{% endblock %}
@@ -10,6 +10,12 @@
         <div class="content-actions"></div>
 
         <h3>
+            <div class="info-box info-box-info">
+
+                You are not currently associated with any importers/exporters. Please complete an access request below to begin using the system. You may
+                complete further access requests after submission if you require access to multiple importers/exporters.
+
+            </div>
             <div class="list-secondary-actions">
                 <ul class="menu-out flow-across">
                     <li> <a id="g28" name="g28" href="" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-get-open-access-requests&quot;,&quot;ctxt&quot;:&quot;s6JNe_plrnqWp1W&quot;}, this);" class="link-button icon-spinner11 button">
@@ -40,7 +46,7 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in request.user.submitted_access_requests.importer_requests() %}
+            {% for request in request.user.submitted_access_requests.importer_requests().filter(accessrequestprocess__access_request__status="SUBMITTED") %}
             <tr data-xfid="f30">
                 <td data-title="Reference" data-xfid="g31"><span id="g31" class="text-widget ">IAR/785</span></td>
                 <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">13-FEB-2019 17:29</span></td>
@@ -86,7 +92,7 @@
                     </th>
                 </tr>
             </thead>
-            {% for request in request.user.submitted_access_requests.exporter_requests() %}
+            {% for request in request.user.submitted_access_requests.exporter_requests().filter(accessrequestprocess__access_request__status="SUBMITTED") %}
             <tr data-xfid="f59">
                 <td data-title="Reference" data-xfid="g60"><span id="g60" class="text-widget ">EAR/379</span></td>
                 <td data-title="Requested Date" data-xfid="g61"><span id="g61" class="text-widget ">15-APR-2019 12:53</span></td>

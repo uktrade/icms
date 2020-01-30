@@ -49,9 +49,6 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
 
-    def request_details(self):
-        return self.activation.process.access_request
-
     def form_valid(self, form):
         form.save()
         self.activation_done()
