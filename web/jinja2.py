@@ -7,13 +7,13 @@ from django.urls import reverse
 from jinja2 import Environment, evalcontextfilter
 from markupsafe import Markup, escape
 
-_paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
-
 
 @evalcontextfilter
 def nl2br(eval_ctx, value):
-    result = u'\n\n'.join(u'<p>%s</p>' % p.replace('\n', Markup('<br>\n'))
-                          for p in _paragraph_re.split(escape(value)))
+    paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+    paragraphs = paragraph_re.split(escape(value))
+    html = ('<p>%s</p>' % p.replace('\n', Markup('<br>\n')) for p in paragraphs)
+    result = '\n\n'.join(html)
     if eval_ctx.autoescape:
         result = Markup(result)
     return result
