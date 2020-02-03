@@ -12,7 +12,7 @@ from markupsafe import Markup, escape
 def nl2br(eval_ctx, value):
     paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
     paragraphs = paragraph_re.split(escape(value))
-    html = ('<p>%s</p>' % p.replace('\n', Markup('<br>\n')) for p in paragraphs)
+    html = ('<p>{}</p>'.format(p.replace('\n', Markup('<br>\n'))) for p in paragraphs)
     result = '\n\n'.join(html)
     if eval_ctx.autoescape:
         result = Markup(result)
