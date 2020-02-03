@@ -146,9 +146,13 @@
                     <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now }}" id="id__viewflow_activation-started">
                     <input type="hidden" name="_continue" value="True"/>
                     {{ fields.field(form.response)}}
-                    <input type="submit" name="_start" value="Close Access Request"/>
+                    <input type="submit" name="_start" value="Close Access Request" onclick="javascript:showModal(); return false;"/>
                 {% endcall %}
             </div>
         </div>
     </div>
+
+    <script src="{{ static('web/js/review-request-access.js') }}" type="text/javascript"></script>
+
+
 {% endblock %}
