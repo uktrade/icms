@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
     "use strict";
 
-    // document.getElementsByName('_start')[0].addEventListener("click", showModal);
     document.getElementsByTagName('form')[0].addEventListener("submit", function (event) {
         showModal(event)
         event.preventDefault();
