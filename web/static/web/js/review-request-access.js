@@ -2,10 +2,14 @@ document.addEventListener("DOMContentLoaded", function (event) { // doesn't work
     "use strict";
 
     // document.getElementsByName('_start')[0].addEventListener("click", showModal);
+    document.getElementsByTagName('form')[0].addEventListener("submit", function (event) {
+        showModal(event)
+        event.preventDefault();
+    });
 
 });
 
-function showModal() {
+function showModal(event) {
     "use strict";
 
     var html = '<div class="modal-popover-container">' +
@@ -14,10 +18,10 @@ function showModal() {
         '<div class="modal-popover-icon icon-question"></div>' +
         '<div class="modal-popover-text">Are you sure you want to close this Access Request? This will email the requester with the status below.' +
         '</div><ul class="modal-popover-actions"><li><button class="primary-button alert-dismiss" ' +
-        'onclick="javascript:document.body.removeChild(document.body.firstChild); return true;"' +
-        '>OK</button></li>' +
-        '<li><button class="link-button" ' +
-        'onclick="javascript:document.body.removeChild(document.body.firstChild);  return true;"' +
+        'onclick="javascript:document.body.removeChild(document.body.firstChild);' +
+        'document.getElementsByTagName(\'form\')[0].submit();"' +
+        '>OK</button></li><li><button class="link-button" ' +
+        'onclick="javascript:document.body.removeChild(document.body.firstChild);"' +
         '>Cancel</button></li></ul></div></div></div>';
 
     var div = document.createElement('div');
