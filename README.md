@@ -20,10 +20,12 @@
 [Docker Compose 1.23.2+](https://docs.docker.com/compose/)
 
 
+
 ## Development installation
 
     git clone https://github.com/uktrade/icms.git
     cd icms
+    make setup # only needed on first run or after freshly build containers
     make debug
 
 Go to url http://localhost:8080
