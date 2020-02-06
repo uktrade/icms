@@ -5,18 +5,18 @@ UID=$(shell id -u):$(shell id -g)
 
 clean:
 	unset UID && \
-	docker-compose run web find . -type d -name __pycache__ -exec rm -rf {} \+
+	docker-compose run --rm web find . -type d -name __pycache__ -exec rm -rf {} \+
 
 requirements:
 	unset UID && \
-	docker-compose run web python3 -m pipenv install --dev --system
+	docker-compose run --rm web python3 -m pipenv install --dev --system
 
 fixlock:
 	unset UID && \
-	docker-compose run web pipenv install
+	docker-compose run --rm web pipenv install
 
 collectstatic:
-	docker-compose run web ./manage.py collectstatic --noinput --traceback
+	docker-compose run --rm web ./manage.py collectstatic --noinput --traceback
 
 build:
 	docker-compose build web
@@ -45,35 +45,35 @@ test: clean
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web pytest -s --verbose --cov=web --cov=config $(TEST_TARGET)
+	docker-compose run --rm web pytest -s --verbose --cov=web --cov=config $(TEST_TARGET)
 
 # Generate accessibility reports
 accessibility:
 	unset UID && \
-	docker-compose run pa11y node index.js
+	docker-compose run --rm pa11y node index.js
 
 test_style: clean
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run web pytest --flake8
+	docker-compose run --rm web pytest --flake8
 
 migrations:
-	docker-compose run web ./manage.py makemigrations
+	docker-compose run --rm web ./manage.py makemigrations
 
 migrate:
-	docker-compose run web ./manage.py migrate
+	docker-compose run --rm web ./manage.py migrate
 
 # Load fixtures
 loaddata:
-	docker-compose run web ./manage.py loaddata --app web web/fixtures/web/*.json
+	docker-compose run --rm web ./manage.py loaddata --app web web/fixtures/web/*.json
 
 dumpdata:
-	docker-compose run web ./manage.py dumpdata --format=json web  > test.json
+	docker-compose run --rm web ./manage.py dumpdata --format=json web  > test.json
 
 sqlsequencereset:
-	docker-compose run web ./manage.py sqlsequencereset web
+	docker-compose run --rm web ./manage.py sqlsequencereset web
 
 createsuperuser:
-	docker-compose run web ./manage.py createsuperuser
+	docker-compose run --rm web ./manage.py createsuperuser
 
 release_major:
 	./scripts/release.sh major
@@ -85,6 +85,11 @@ release_patch:
 	./scripts/release.sh patch
 
 shell:
-	docker-compose run web ./manage.py shell
+	docker-compose run --rm web ./manage.py shell
 
 all: requirements
+
+setup: requirements migrations migrate
+
+down:
+	docker-compose down
