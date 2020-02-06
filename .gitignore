@@ -121,3 +121,5 @@ dmypy.json
 # Collected static files
 /static/
 
+# postgress data
+/pgdata
