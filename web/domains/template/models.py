@@ -35,7 +35,7 @@ class Template(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     template_name = models.CharField(max_length=100, blank=False, null=False)
     template_code = models.CharField(max_length=50, blank=True, null=True)
-    template_type = models.CharField(max_length=20,
+    template_type = models.CharField(max_length=50,
                                      choices=TYPES,
                                      blank=False,
                                      null=False)
