@@ -1,6 +1,14 @@
 from viewflow import flow
 from viewflow.base import this, Flow
 
+from web.notify import email
+from django.template.loader import render_to_string
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
 from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 from web.domains.case.access.views import (
     AccessRequestCreateView,
@@ -13,6 +21,17 @@ def send_admin_notification_email(activation):
 
 
 def send_requester_notification_email(activation):
+    requester = activation.process.access_request.submitted_by
+    logger.debug('Notifying %s for registration', requester.email)
+    subject = 'Import Case Management System Account'
+    message = render_to_string('email/registration/registration.html', {
+        'subject': subject,
+        'user': user,
+        'password': password
+    }, request)
+    # Logged only on debug
+    logger.debug('Temporary password for %s: %s', user.first_name, password)
+    email.send(subject, user, message)
     print(f'{activation.process.access_request.organisation_name}: {activation.process.access_request.response}')  # TODO
 
 
