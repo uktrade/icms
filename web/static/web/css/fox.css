@@ -4709,3 +4709,7 @@ fieldset {
     color: inherit;
     text-decoration: none;
 }
+
+#sidebar .current-page {
+    font-weight: bold;
+}

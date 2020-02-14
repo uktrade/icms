@@ -1,0 +1,18 @@
+{% with 
+    process_id=view.activation.process.access_request.id, 
+    task_id=view.activation.task.id, 
+    route=request.resolver_match.url_name  
+%}    
+    <ul class="menu-out">
+        <li>  
+            <a href="{{ url('review_request', args=(process_id,task_id)) }}"
+               class="{% if route == 'review_request' %}current-page{% endif %}"
+            >
+                Access Request
+            </a>
+        </li>
+        <li> 
+            <a href="#" class=""> Further Information Requests</a>
+        </li>
+    </ul>
+{% endwith %}

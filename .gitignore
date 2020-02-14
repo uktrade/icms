@@ -123,3 +123,4 @@ dmypy.json
 
 # postgress data
 /pgdata
+/.vscode
