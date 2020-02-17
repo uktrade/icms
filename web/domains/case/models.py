@@ -110,9 +110,9 @@ class FurtherInformationRequest(models.Model):
     files = models.ManyToManyField(File)
 
     def date_created_formatted(self):
-    """
-        returns a formatted datetime
-    """
+        """
+            returns a formatted datetime
+        """
         return self.requested_datetime.strftime('%d-%b-%Y %H:%M:%S')
 
 
