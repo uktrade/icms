@@ -5,8 +5,7 @@ from django.views.generic.edit import FormView
 
 from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
 from .forms import AccessRequestForm, ReviewAccessRequestForm
-from .models import AccessRequest
-
+from .models import AccessRequest, AccessRequestProcess
 
 def clean_extra_request_data(access_request):
     if access_request.request_type == AccessRequest.IMPORTER:
@@ -59,3 +58,20 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
             instance=self.activation.process.access_request,
             **self.get_form_kwargs(),
         )
+
+
+class AccessRequestFirListView(TemplateView):
+    """
+    Access Request Further Information Request - list
+    """
+    template_name = 'web/access-request/access-request-fir-list.html'
+
+    def get_context_data(self, process_id, *args, **kwargs):
+        process = AccessRequestProcess.objects.get(pk=process_id)
+
+        context = super().get_context_data(*args, **kwargs)
+        context['activation'] = {
+            'process': process,
+        }
+
+        return context

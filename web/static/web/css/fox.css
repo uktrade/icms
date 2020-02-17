@@ -4713,3 +4713,23 @@ fieldset {
 #sidebar .current-page {
     font-weight: bold;
 }
+
+.status .text-widget {
+	border: 1px solid;
+	border-radius: 3px;
+	color: #000;
+	padding-left: 1.25em;
+	padding-right: 1.25em;
+	font-size: 0.8em;
+	text-transform: uppercase;
+}
+
+.status.open .text-widget, .status.responded .text-widget {
+    background-color: #FFEB9B;
+    border-color: #FFC519;
+}
+
+.status.draft .text-widget, .status.deleted .text-widget {
+    background-color: #E6E6E6;
+    border-color: #C2C2C2;
+}
