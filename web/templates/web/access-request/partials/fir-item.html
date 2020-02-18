@@ -1,0 +1,49 @@
+{% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
+
+
+<fieldset>
+    <legend><strong>FIR {{ idx }}</strong></legend>
+
+    {% call forms.form(method='post', csrf_input=csrf_input) %}
+        <div class="row">
+            {{ fields.label(fir.status )}}
+            <div class="six columns" data-xfid="g57">
+                <div class="status {{ fir.status.value()|lower }}">
+                    <div class="individual-input" data-xfid="g59"><span id="g59" class="text-widget ">{{ fir.status.value()|upper }}</span></div>
+                </div>
+            </div>
+            <div class="three columns"></div>
+        </div>
+        <div class="row">
+            {{ fields.inline_field_with_label(fir.requested_datetime) }}
+            {{ fields.inline_field_with_label(fir.requested_by) }}
+        </div>
+        {{ fields.field(fir.request_subject) }}
+        {{ fields.field(fir.email_cc_address_list) }}
+        {{ fields.field(fir.request_detail) }}
+        
+        <div class="row">
+        <div class="three columns">
+            <label for="id_status" class="prompt west">Documents</label>
+        </div>
+            <div class="six columns">
+                {% for file in fir.files %}
+                    {{ fields.field(file) }}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns" data-xfid="g80">
+                <ul class="menu-out flow-across">
+                    <li> 
+                        <button id="g81" name="g81" type="button" onclick="" class="button"> Withdraw Request  </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="three columns"></div>
+        </div>
+    {% endcall %}
+</fieldset>

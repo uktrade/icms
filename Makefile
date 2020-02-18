@@ -13,11 +13,12 @@ help: ## Show this screen
 ##@ Development
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web ./manage.py makemigrations
+	docker-compose run --rm web ./manage.py makemigrations ${OPTS}
 
 migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web ./manage.py migrate
+
 
 loaddata: ## Load fixtures
 	unset UID && \
@@ -102,7 +103,7 @@ accessibility: ## Generate accessibility reports
 	unset UID && \
 	docker-compose run --rm pa11y node index.js
 
-test_style: clean
+test_style: clean ## runs linter
 	unset UID && \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run --rm web pytest --flake8

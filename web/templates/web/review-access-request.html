@@ -8,7 +8,11 @@
 
 
 {% block sidebar%}
-    {% include "web/case-fir-sidebar.html" %}
+    {% with process_id=view.activation.process.access_request.id, 
+            task_id=view.activation.task.id 
+    %}
+        {% include "web/case-fir-sidebar.html" %}
+    {% endwith %}
 {% endblock %}
 
 {% block main_content %}
