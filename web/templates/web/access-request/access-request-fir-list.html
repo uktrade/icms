@@ -35,7 +35,8 @@
         </ul>
     </div>
 
-    {% for fir in activation.process.access_request.further_information_requests.all().order_by('pk').reverse() %}
+
+    {% for fir in fir_list %}
         {% with idx=loop.index %}
             {% include "web/access-request/partials/fir-item.html" %}
         {% endwith %}
