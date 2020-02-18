@@ -1,6 +1,7 @@
 from django import forms
 from web.forms import ModelDisplayForm
 from web.domains.case.models import FurtherInformationRequest
+from web.views.actions import Archive
 
 
 class FurtherInformationRequestForm():
@@ -20,7 +21,10 @@ class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelD
         label=FurtherInformationRequestForm.Meta.labels['requested_datetime']
     )
     requested_by = forms.CharField()
-    
+
+    withdraw = Archive()
+    withdraw.label = "Withdraw Request"
+
     class Meta(FurtherInformationRequestForm.Meta):
         config = {
                 'requested_datetime': {
@@ -39,6 +43,5 @@ class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelD
                     'input': {
                         'cols': 'two'
                     },
-
                 }
         }

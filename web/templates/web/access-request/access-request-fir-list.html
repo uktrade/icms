@@ -1,9 +1,9 @@
 {% extends "layout/sidebar.html" %}
 
-{% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as fields %}
 
 {% block page_title %}Importer/Exporter Access Request{% endblock %}
+
+
 {% block context_header %}Importer/Exporter Access Request{% endblock %}
 
 
@@ -13,6 +13,7 @@
     {% endwith %}
 {% endblock %}
 
+
 {% block content_actions %}
     <div class="content-actions">
         <ul class="menu-out flow-across">
@@ -20,6 +21,7 @@
         </ul>
     </div>
 {% endblock %}
+
 
 {% block main_content %}
    <div class="info-box info-box-info">
@@ -35,13 +37,11 @@
         </ul>
     </div>
 
-
     {% for fir in fir_list %}
         {% with idx=loop.index %}
             {% include "web/access-request/partials/fir-item.html" %}
         {% endwith %}
     {% endfor%}
-
 
     <div class="content-actions">
         <ul class="menu-out flow-across">

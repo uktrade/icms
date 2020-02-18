@@ -202,7 +202,6 @@ urlpatterns = [
         "take-ownership/<process_id>/",
         take_ownership, name="take_ownership"
     ),
-    
 
     # Import Application
     path('import/apply/',
