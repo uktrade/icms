@@ -86,5 +86,4 @@ class AccessRequestFirListView(TemplateView):
             'process': process,
         }
 
-        print(context)
         return context
