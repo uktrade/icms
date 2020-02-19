@@ -74,10 +74,10 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
     def edit(self, request, process_id, *args, **kwargs):
         """
         Edits the FIR selected by the user.
-        The selected fir comes from the id property in request body
+        The selected FIR comes from the id property in the request body
         """
 
-        data = request.POST.copy() if request.POST else None
+        data = request.POST if request.POST else None
         if not data or 'id' not in data:
             return HttpResponseBadRequest('Invalid body received')
 
