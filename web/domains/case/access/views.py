@@ -91,7 +91,11 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
 
     def create_display_or_edit_form(self, fir, selected_fir):
         """
-        creates an edit form if fir is the selected fir otherwise creates a display form
+        This function either returns an Further Information Request (FIR) form, or a read only version of it.
+
+        By default returns a read only version of the FIR form (for display puposes).
+
+        If `fir.id` is is the same as `selected_fir` then a "editable" version of the form is returned
         """
         if selected_fir and fir.id == selected_fir:
             return FurtherInformationRequestForm(instance=fir)
