@@ -62,4 +62,6 @@ or
 | ICMS_AWS_S3_REGION                |                                            | E.g. eu-west-2                                         |
 | ICMS_AWS_S3_BUCKET_NAME           |                                            | E.g. ICMS                                              |
 | ICMS_CLAMAV_URL                   |                                            | E.g. https://test:pass@clamav.digital/v2/scan          |
+| ELASTIC_APM_SECRET_TOKEN          |                                            | Elastic APM server secret token for sending metrics    |
+| ELASTIC_APM_ENVIRONMENT          |                                            | ICMS deployment env to separate metrics per env. e.g. prod|
 

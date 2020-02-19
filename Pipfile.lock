@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3f81642dd91b3c1df38dee5bfadf36f157d35be8858b73063216abf58cc859f9"
+            "sha256": "bd693c21ea912a6b371affb780e198e921dc315b936c047e1cf537e9f9cb0fd5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -127,6 +127,37 @@
             "index": "pypi",
             "version": "==1.6.0"
         },
+        "elastic-apm": {
+            "hashes": [
+                "sha256:05e4ecb81478a397a10805d944868ae644854c083f1a0b2ec58414b6c7d5877e",
+                "sha256:0dbbec666e2db70607decaafc0492a9866126a7052429dc6fa6ffdfe7740954c",
+                "sha256:2330d7e3211b65150d9f19084a14ed37f75cb2447cbbb53eea872f87da69f4e2",
+                "sha256:2960ecbe3449f754c85ecae22c4ae88f33892c6d341a988d7e3276999712a361",
+                "sha256:39e083b87cd62d28a93625f5b445ea3a04a74888a1bb2c06171b574fbb2c1f17",
+                "sha256:3fbd3911fab84fe4a0bc12216afdb6356ef0391f00e48d0a65699dc446f23abe",
+                "sha256:411a0f23789fde2b251c2d408cb87bfe12157e5c659d44f8ff377028f79e6aa6",
+                "sha256:4885e151d7ce31ecdf3bf621b286582e638a417640d24ef25c6d65f944de0a42",
+                "sha256:56e63e7fbf9cedb9bbf812da12d59dfc4eff2cc4f85da276b91a27250df9169d",
+                "sha256:5d32e720958f4ce630ea8459ff2e5845e0a24236eaa11e93e9e7d5321894c46a",
+                "sha256:6396f8e21aec2c9ae5160941652ed9598c7c727db526429f482f526765c43c31",
+                "sha256:65201190f2ad6ea5638298632b7c37dcc4ebb1e40d0aedf9d33ac05660d24d0b",
+                "sha256:6a8242bfed278a1301e8768089e275adb7e8758ba360a5bd8cb89701fa79c93c",
+                "sha256:8568da80a588a99048edabcffdfba8bda8ff6aca5e7428003d52e5779d5c3dc6",
+                "sha256:8a906064fc2d579755fe6829ef57294f9366058b579e86e001503e2810e2f0db",
+                "sha256:8b0a97a0c891b5ea3d485e0edbc03bedecffd7cd84bc06fc496a5f0522777b26",
+                "sha256:b3c9cedc1826f139ed3efcadaaee3bd35384e7303f04c170f87ddbd542dbb333",
+                "sha256:c27df219dd44ab802220cb01432d25717b4189790e21c869da469ecc46772260",
+                "sha256:c50b50abbe12d43c5eaec6f87d399d9b3cb7abbbd28f29ac06982f96f17fe8ff",
+                "sha256:d2866eb553949c6c0426fc3a6001d88d2526a60b32d4bf494b3f9a913741bdb2",
+                "sha256:d5f6525a047492784b3b1a1be31b852681a5a8d8df61aa6b5886172a2af660e8",
+                "sha256:e12cbed5f084d4e75bad7f7a08a4ed37c6ea0deff6b6db1c0e00597c638b53f1",
+                "sha256:e544246adfac43a14b9ff226aa45b7b07fcaa296a7c6fea94f1814789f5743e2",
+                "sha256:e8ae1b1cf11cd0b49306645aac640a756defaedcbe7bacefb0c727d90ae18402",
+                "sha256:f6984e8f2d302b07fe6516c4e22aba6398f26e6a33dcb6098a663af1dd80620d"
+            ],
+            "index": "pypi",
+            "version": "==5.3.3"
+        },
         "future": {
             "hashes": [
                 "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"
@@ -204,11 +235,11 @@
         },
         "phonenumbers": {
             "hashes": [
-                "sha256:a4a3016c39ca058a0c953eb58cbb8138d8c75472e018f6a2554255049e22679e",
-                "sha256:d73c4f552653d2d7aea7baf47e6b6995215d3e0f23934558e113005a814100e6"
+                "sha256:685e81ac131fea8dbd71b7769d2ac480c9fe9d5a45838e8546f5de9910670e8e",
+                "sha256:9ca4332425ae4f4d1e7925bbf98ef9446755b59a903ae6a63cf4fb19adcd168b"
             ],
             "index": "pypi",
-            "version": "==8.11.3"
+            "version": "==8.11.4"
         },
         "psycopg2": {
             "hashes": [
@@ -588,10 +619,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:ccc94ed0909b58ffe34430ea5451f07bc0c76467d7081619a454bf5c98b89e28",
-                "sha256:feae2f18633c32fc71f2de629bfb3bd3c9325cd4419642b1f1da42ee488d9b98"
+                "sha256:5c56e330306215cd3553342cfafc73dda2c60792384117893f3a83f8a1209f50",
+                "sha256:d65287feb793213ffe11c0f31b81602be31448f38aeb8ffc2eb286c4f6f6657e"
             ],
-            "version": "==2.1.0"
+            "version": "==2.2.0"
         }
     }
 }
