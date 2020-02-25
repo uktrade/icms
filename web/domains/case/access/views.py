@@ -2,11 +2,14 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from django.http import HttpResponseBadRequest
+from django.shortcuts import render
 
 from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
-from web.domains.case.forms import FurtherInformationRequestDisplayForm
+from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
+from web.views.mixins import PostActionMixin
 
 
 def clean_extra_request_data(access_request):
@@ -62,26 +65,57 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
         )
 
 
-class AccessRequestFirListView(TemplateView):
+class AccessRequestFirListView(TemplateView, PostActionMixin):
     """
     Access Request Further Information Request - list
     """
     template_name = 'web/access-request/access-request-fir-list.html'
 
-    def get_context_data(self, process_id, *args, **kwargs):
+    def edit(self, request, process_id, *args, **kwargs):
+        """
+        Edits the FIR selected by the user.
+        The selected FIR comes from the id property in the request body
+        """
+
+        data = request.POST if request.POST else None
+        if not data or 'id' not in data:
+            return HttpResponseBadRequest('Invalid body received')
+
+        fir_id = int(data['id'])
+
+        return render(
+            request,
+            self.template_name,
+            self.get_context_data(process_id, selected_fir=fir_id, action="edit")
+        )
+
+    def create_display_or_edit_form(self, fir, selected_fir):
+        """
+        This function either returns an Further Information Request (FIR) form, or a read only version of it.
+
+        By default returns a read only version of the FIR form (for display puposes).
+
+        If `fir.id` is is the same as `selected_fir` then a "editable" version of the form is returned
+        """
+        if selected_fir and fir.id == selected_fir:
+            return FurtherInformationRequestForm(instance=fir)
+
+        return FurtherInformationRequestDisplayForm(
+            instance=fir,
+            initial={
+                'requested_datetime': fir.date_created_formatted().upper(),
+                'requested_by': fir.requested_by
+            }
+        )
+
+    def get_context_data(self, process_id, selected_fir=None, action="display", *args, **kwargs):
         process = AccessRequestProcess.objects.get(pk=process_id)
         context = super().get_context_data(*args, **kwargs)
 
-        fir_list = []
-        for fir in process.access_request.further_information_requests.all().order_by('pk').reverse():
-            fir_list.append(FurtherInformationRequestDisplayForm(
-                instance=fir,
-                initial={
-                    'requested_datetime': fir.date_created_formatted().upper(),
-                    'requested_by': fir.requested_by
-                }))
+        items = process.access_request.further_information_requests.all().order_by('pk').reverse()
 
-        context['fir_list'] = fir_list
+        context['fir_list'] = [self.create_display_or_edit_form(fir, selected_fir) for fir in items]
+        context['action'] = action
         context['activation'] = {
             'process': process,
         }

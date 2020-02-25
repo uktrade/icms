@@ -76,6 +76,10 @@
 
 {% endmacro %}
 
+{% macro hidden(name, value) -%}
+  <input type="hidden" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
+
 {# Renders a single inline form field with icms styling #}
 {% macro inline_field(field) -%}
   <td {% if field.errors %}class="input-error"{% endif %}>

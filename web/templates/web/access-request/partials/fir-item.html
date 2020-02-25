@@ -3,9 +3,24 @@
 
 
 <fieldset>
-    <legend><strong>FIR {{ idx }}</strong></legend>
+    <legend><strong>FIR {{ idx }} </strong></legend>
 
-    {% call forms.form(method='post', csrf_input=csrf_input) %}
+
+    {% call forms.form(method='post', csrf_input=csrf_input, container_class=action) -%}
+        {{ fields.hidden('id', fir.instance.id) }}
+        {% if fir.status.value()|lower == 'draft' %}
+            <div class="row">
+                <div class="six columns" data-xfid="g80">
+                    <ul class="menu-out flow-across">
+                        <li>
+                            <button name="action" value="edit" type="submit" onclick="" class="small-button icon-pencil button"> Edit  </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="three columns"></div>
+            </div>
+        {% endif %}
+
         <div class="row">
             {{ fields.label(fir.status )}}
             <div class="six columns" data-xfid="g57">
@@ -15,14 +30,16 @@
             </div>
             <div class="three columns"></div>
         </div>
+        {% if 'requested_datetime' in fir %}
         <div class="row">
             {{ fields.inline_field_with_label(fir.requested_datetime) }}
             {{ fields.inline_field_with_label(fir.requested_by) }}
         </div>
+        {% endif %}
         {{ fields.field(fir.request_subject) }}
         {{ fields.field(fir.email_cc_address_list) }}
         {{ fields.field(fir.request_detail) }}
-        
+
         <div class="row">
         <div class="three columns">
             <label for="id_status" class="prompt west">Documents</label>
@@ -34,16 +51,18 @@
             </div>
         </div>
 
+        {% if fir.status.value()|lower == 'open' %}
         <div class="row">
             <div class="three columns"></div>
             <div class="six columns" data-xfid="g80">
                 <ul class="menu-out flow-across">
-                    <li> 
-                        <button id="g81" name="g81" type="button" onclick="" class="button"> Withdraw Request  </button>
+                    <li>
+                        <button  name="action" value="withdraw" type="submit" class="button">Withdraw Request  </button>
                     </li>
                 </ul>
             </div>
             <div class="three columns"></div>
         </div>
+        {% endif %}
     {% endcall %}
 </fieldset>
