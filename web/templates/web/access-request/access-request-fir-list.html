@@ -15,24 +15,22 @@
 
 
 {% block content_actions %}
-    <div class="content-actions">
-        <ul class="menu-out flow-across">
-            <li>  <a href="{{ url('workbasket') }}" class="prev-link">Workbasket</a></li>
-        </ul>
-    </div>
+   {% include "web/access-request/partials/back-to-workbasket.html" %}
 {% endblock %}
 
 
 {% block main_content %}
    <div class="info-box info-box-info">
         <p>This screen is used to send a request to the access request applicant for further information.</p>
-        <p>An email will be sent to the person who submitted the access request, who will need to log in and supply further information. When they submit their response, ILB admins will be notified via email.</p>                  
+        <p>An email will be sent to the person who submitted the access request, who will need to log in and supply further information. When they submit their response, ILB admins will be notified via email.</p>
     </div>
 
     <div class="list-actions">
         <ul class="menu-out flow-across">
-            <li>  
-                <button type="button" class="small-button icon-plus button">New FIR</button>
+            <li>
+                {% with action="new", css="icon-plus", label="New FIR", class="small-button" %}
+                    <form method="POST">{{ csrf_input }} {% include 'web/access-request/partials/fir-action-button.html' %}</form>
+                {% endwith %}
             </li>
         </ul>
     </div>
@@ -43,10 +41,7 @@
         {% endwith %}
     {% endfor%}
 
-    <div class="content-actions">
-        <ul class="menu-out flow-across">
-            <li>  <a href="{{ url('workbasket') }}" class="prev-link">Workbasket</a></li>
-        </ul>
-    </div>
+    {% include "web/access-request/partials/back-to-workbasket.html" %}
+
 
 {% endblock %}

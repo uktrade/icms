@@ -4,13 +4,17 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render
+import logging
 
 from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
 from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
 from web.views.mixins import PostActionMixin
+from web.domains.case.models import FurtherInformationRequest
 
+
+logger = logging.getLogger(__name__)
 
 def clean_extra_request_data(access_request):
     if access_request.request_type == AccessRequest.IMPORTER:
@@ -86,7 +90,39 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         return render(
             request,
             self.template_name,
-            self.get_context_data(process_id, selected_fir=fir_id, action="edit")
+            self.get_context_data(process_id, selected_fir=fir_id)
+        )
+
+    def save(self, request, process_id, *args, **kwargs):
+        """
+        Saves the FIR being editted by the user
+        """
+        model = FurtherInformationRequest.objects.get(pk=request.POST['id'])
+        form = FurtherInformationRequestForm(data=request.POST, instance=model)
+
+        if form.is_valid():
+            form.save()
+        else:
+            return HttpResponseBadRequest('invalid form')
+
+        return redirect('access_request_fir_list', process_id=process_id)
+
+    def new(self, request, process_id):
+        """
+        Creates a new FIR and associates it with the current access request then display the FIR form
+        so the user can edit data
+        """
+        instance = FurtherInformationRequest()
+        instance.requested_by = request.user
+        instance.save()
+
+        AccessRequest.objects.get(pk=process_id).further_information_requests.add(instance)
+
+        logger.debug("NEW FIR ID %s" % instance.id)
+        return render(
+            request,
+            self.template_name,
+            self.get_context_data(process_id, selected_fir=instance.id)
         )
 
     def create_display_or_edit_form(self, fir, selected_fir):
@@ -104,18 +140,17 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
             instance=fir,
             initial={
                 'requested_datetime': fir.date_created_formatted().upper(),
-                'requested_by': fir.requested_by
+                'requested_by': fir.requested_by.full_name
             }
         )
 
-    def get_context_data(self, process_id, selected_fir=None, action="display", *args, **kwargs):
+    def get_context_data(self, process_id, selected_fir=None, *args, **kwargs):
         process = AccessRequestProcess.objects.get(pk=process_id)
         context = super().get_context_data(*args, **kwargs)
 
         items = process.access_request.further_information_requests.all().order_by('pk').reverse()
 
         context['fir_list'] = [self.create_display_or_edit_form(fir, selected_fir) for fir in items]
-        context['action'] = action
         context['activation'] = {
             'process': process,
         }

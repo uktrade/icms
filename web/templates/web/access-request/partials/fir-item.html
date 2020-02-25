@@ -5,45 +5,39 @@
 <fieldset>
     <legend><strong>FIR {{ idx }} </strong></legend>
 
+    {% set fir_status = fir.status.value()|lower %}
+    {% set form_actions_config = fir.Meta.actions %}
+    {% set container_class = "display" if fir.requested_datetime else "edit" %}
 
-    {% call forms.form(method='post', csrf_input=csrf_input, container_class=action) -%}
+    {% call forms.form(method='post', csrf_input=csrf_input, container_class=container_class) -%}
         {{ fields.hidden('id', fir.instance.id) }}
-        {% if fir.status.value()|lower == 'draft' %}
+        {{ fields.hidden('status', fir.status.value() ) }}
+
+        {% with config=form_actions_config, buttons_list=fir.actions_top, padding="", class="small-button" %}
+            {% include "web/access-request/partials/fields/form-buttons-row.html" %}
+        {% endwith %}
+
+        <div class="row">
+           {% include "web/access-request/partials/fields/fir-status.html" %}
+        </div>
+
+        {% if fir.requested_datetime %}
+            {# only shown on display form, edit form does not contain this fields #}
             <div class="row">
-                <div class="six columns" data-xfid="g80">
-                    <ul class="menu-out flow-across">
-                        <li>
-                            <button name="action" value="edit" type="submit" onclick="" class="small-button icon-pencil button"> Edit  </button>
-                        </li>
-                    </ul>
-                </div>
-                <div class="three columns"></div>
+                {{ fields.inline_field_with_label(fir.requested_datetime) }}
+                {{ fields.inline_field_with_label(fir.requested_by) }}
             </div>
         {% endif %}
 
-        <div class="row">
-            {{ fields.label(fir.status )}}
-            <div class="six columns" data-xfid="g57">
-                <div class="status {{ fir.status.value()|lower }}">
-                    <div class="individual-input" data-xfid="g59"><span id="g59" class="text-widget ">{{ fir.status.value()|upper }}</span></div>
-                </div>
-            </div>
-            <div class="three columns"></div>
-        </div>
-        {% if 'requested_datetime' in fir %}
-        <div class="row">
-            {{ fields.inline_field_with_label(fir.requested_datetime) }}
-            {{ fields.inline_field_with_label(fir.requested_by) }}
-        </div>
-        {% endif %}
         {{ fields.field(fir.request_subject) }}
         {{ fields.field(fir.email_cc_address_list) }}
         {{ fields.field(fir.request_detail) }}
 
         <div class="row">
-        <div class="three columns">
-            <label for="id_status" class="prompt west">Documents</label>
-        </div>
+            {# @todo: revise this layout when implementing file upload #}
+            <div class="three columns">
+                <label for="id_status" class="prompt west">Documents</label>
+            </div>
             <div class="six columns">
                 {% for file in fir.files %}
                     {{ fields.field(file) }}
@@ -51,18 +45,9 @@
             </div>
         </div>
 
-        {% if fir.status.value()|lower == 'open' %}
-        <div class="row">
-            <div class="three columns"></div>
-            <div class="six columns" data-xfid="g80">
-                <ul class="menu-out flow-across">
-                    <li>
-                        <button  name="action" value="withdraw" type="submit" class="button">Withdraw Request  </button>
-                    </li>
-                </ul>
-            </div>
-            <div class="three columns"></div>
-        </div>
-        {% endif %}
+        {% with config=form_actions_config, buttons_list=fir.actions_bottom %}
+            {% include "web/access-request/partials/fields/form-buttons-row.html" %}
+        {% endwith %}
+
     {% endcall %}
 </fieldset>
