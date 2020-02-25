@@ -6,7 +6,7 @@ from web.domains.case.models import FurtherInformationRequest
 class FurtherInformationRequestForm(ModelEditForm):
 
     actions_top = ['save']  # buttons to show on the top row of the form
-    actions_bottom = ['send', 'delete'] # buttons to show at the end of the form
+    actions_bottom = ['send', 'delete']  # buttons to show at the end of the form
 
     class Meta:
         model = FurtherInformationRequest

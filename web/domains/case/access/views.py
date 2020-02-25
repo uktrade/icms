@@ -13,8 +13,8 @@ from web.domains.case.forms import FurtherInformationRequestDisplayForm, Further
 from web.views.mixins import PostActionMixin
 from web.domains.case.models import FurtherInformationRequest
 
-
 logger = logging.getLogger(__name__)
+
 
 def clean_extra_request_data(access_request):
     if access_request.request_type == AccessRequest.IMPORTER:
