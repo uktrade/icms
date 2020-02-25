@@ -3,13 +3,14 @@
 
 
 <fieldset>
+    <a name="{{ fir.instance.id }}"></a>
     <legend><strong>FIR {{ idx }} </strong></legend>
 
     {% set fir_status = fir.status.value()|lower %}
     {% set form_actions_config = fir.Meta.actions %}
     {% set container_class = "display" if fir.requested_datetime else "edit" %}
 
-    {% call forms.form(method='post', csrf_input=csrf_input, container_class=container_class) -%}
+    {% call forms.form(method='post', action="#%s" % fir.instance.id, csrf_input=csrf_input, container_class=container_class) -%}
         {{ fields.hidden('id', fir.instance.id) }}
         {{ fields.hidden('status', fir.status.value() ) }}
 
