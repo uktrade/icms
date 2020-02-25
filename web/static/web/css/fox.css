@@ -4741,3 +4741,7 @@ form .display textarea {
     color: #000;
     background: #fff;
 }
+
+form .display .hint-addon {
+    display: none;
+}

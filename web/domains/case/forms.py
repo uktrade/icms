@@ -17,6 +17,16 @@ class FurtherInformationRequestForm(ModelEditForm):
             'requested_datetime': 'Request Date',
         }
 
+        help_texts = {
+               'email_cc_address_list': """
+                You may enter a list of email addresses to CC this email to.
+                <br>
+                Use a semicolon (<strong>;</strong>) to seperate multiple addresses.
+                <br>
+                <br>
+                E.g. <span style="white-space:nowrap;">john@smith.com <strong>;</strong> jane@smith.com</span>"""
+        }
+
         # From action configuration, here we can configure what button appear where on the FIR form, its style and action
         actions = {
             'save': {
