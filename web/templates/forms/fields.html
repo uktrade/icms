@@ -31,7 +31,7 @@
       {{tooltip}}
       {% else %}
       <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
-        {{tooltip or field.help_text}}
+        {{tooltip or field.help_text|safe}}
       </div>
       <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
       {% endif %}
@@ -51,7 +51,7 @@
 {# Renders a single INLINE form field with icms styling #}
 {% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True) -%}
   {% set config=field.field.config %}
-  
+
   {{ label(field) }}
 
   <div class="{{config.input.cols}} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
