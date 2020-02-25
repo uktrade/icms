@@ -102,10 +102,13 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
 
         if form.is_valid():
             form.save()
-        else:
-            return HttpResponseBadRequest('invalid form')
+            return redirect('access_request_fir_list', process_id=process_id)
 
-        return redirect('access_request_fir_list', process_id=process_id)
+        return render(
+            request,
+            self.template_name,
+            self.get_context_data(process_id, selected_fir=model.id, form=form)
+        )
 
     def new(self, request, process_id):
         """
@@ -118,23 +121,27 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
 
         AccessRequest.objects.get(pk=process_id).further_information_requests.add(instance)
 
-        logger.debug("NEW FIR ID %s" % instance.id)
         return render(
             request,
             self.template_name,
             self.get_context_data(process_id, selected_fir=instance.id)
         )
 
-    def create_display_or_edit_form(self, fir, selected_fir):
+    def create_display_or_edit_form(self, fir, selected_fir, form):
         """
         This function either returns an Further Information Request (FIR) form, or a read only version of it.
 
         By default returns a read only version of the FIR form (for display puposes).
 
         If `fir.id` is is the same as `selected_fir` then a "editable" version of the form is returned
+
+        Params:
+        fir - FurtherInformationRequest model
+        selected_fir - id of the FIR the user is editing (or None)
+        form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
         if selected_fir and fir.id == selected_fir:
-            return FurtherInformationRequestForm(instance=fir)
+            return form if form else FurtherInformationRequestForm(instance=fir)
 
         return FurtherInformationRequestDisplayForm(
             instance=fir,
@@ -144,13 +151,13 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
             }
         )
 
-    def get_context_data(self, process_id, selected_fir=None, *args, **kwargs):
+    def get_context_data(self, process_id, selected_fir=None, form=None, *args, **kwargs):
         process = AccessRequestProcess.objects.get(pk=process_id)
         context = super().get_context_data(*args, **kwargs)
 
         items = process.access_request.further_information_requests.all().order_by('pk').reverse()
-
-        context['fir_list'] = [self.create_display_or_edit_form(fir, selected_fir) for fir in items]
+        logger.debug('getting context data')
+        context['fir_list'] = [self.create_display_or_edit_form(fir, selected_fir, form) for fir in items]
         context['activation'] = {
             'process': process,
         }
