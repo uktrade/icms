@@ -107,7 +107,7 @@ class FurtherInformationRequest(models.Model):
         blank=True,
         null=True,
         related_name='deleted_import_information_requests')
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField(File, blank=True)
 
     def date_created_formatted(self):
         """
