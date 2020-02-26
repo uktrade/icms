@@ -112,23 +112,17 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
             self.get_context_data(process_id, selected_fir=model.id, form=form)
         )
 
-    def _fetchTemplate(self, code):
-        """
-        Fetches a template from the database, returns an empty template if no template can be found
-        """
-        try:
-            return Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=True)
-        except Exception as e:
-            logger.warn(e)
-            return Template()
-
     def new(self, request, process_id):
         """
         Creates a new FIR and associates it with the current access request then display the FIR form
         so the user can edit data
         """
         access_request = AccessRequest.objects.get(pk=process_id)
-        template = self._fetchTemplate(self.FIR_TEMPLATE_CODE)
+        try:
+            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=True)
+        except Exception as e:
+            logger.warn(e)
+            template = Template()
 
         instance = FurtherInformationRequest()
         instance.requested_by = request.user
