@@ -12,6 +12,7 @@ from .models import AccessRequest, AccessRequestProcess
 from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
 from web.views.mixins import PostActionMixin
 from web.domains.case.models import FurtherInformationRequest
+from web.domains.template.models import Template
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
     Access Request Further Information Request - list
     """
     template_name = 'web/access-request/access-request-fir-list.html'
+    FIR_TEMPLATE_CODE = 'IAR_RFI_EMAIL'
 
     def edit(self, request, process_id, *args, **kwargs):
         """
@@ -115,11 +117,22 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         Creates a new FIR and associates it with the current access request then display the FIR form
         so the user can edit data
         """
+        access_request = AccessRequest.objects.get(pk=process_id)
+        try:
+            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=False)
+        except Exception as e:
+            logger.warn('could not fetch templat with code "%s" - reason %s' % (self.FIR_TEMPLATE_CODE, str(e)))
+            template = Template()
+
         instance = FurtherInformationRequest()
         instance.requested_by = request.user
+        instance.request_detail = template.get_content({
+            'CURRENT_USER_NAME': self.request.user.full_name,
+            'REQUESTER_NAME': access_request.submitted_by.full_name
+        })
         instance.save()
 
-        AccessRequest.objects.get(pk=process_id).further_information_requests.add(instance)
+        access_request.further_information_requests.add(instance)
 
         return render(
             request,
