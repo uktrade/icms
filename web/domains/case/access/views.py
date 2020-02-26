@@ -5,7 +5,6 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render
 import logging
-import re
 
 from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
 from .forms import AccessRequestForm, ReviewAccessRequestForm
