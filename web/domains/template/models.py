@@ -74,6 +74,10 @@ class Template(Archivable, models.Model):
         with all occurences of [[foo]] replaced with bar
         """
         content = self.template_content
+
+        if content is None:
+            return ""
+
         for replacement, value in replacements.items():
             content = re.sub(r"\[\[%s\]\]" % replacement, value, content)
 
