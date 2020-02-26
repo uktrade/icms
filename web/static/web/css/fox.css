@@ -4745,3 +4745,7 @@ form .display textarea {
 form .display .hint-addon {
     display: none;
 }
+
+form .display.closed [value=withdraw] {
+    display: none;
+}
