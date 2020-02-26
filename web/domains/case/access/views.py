@@ -72,7 +72,9 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
 
 class AccessRequestFirView(PostActionMixin):
     """
-    Access Request Further Information Request - list
+    Access Request Further Information Request
+
+    This view class handles all actions that can be performed on a FIR
     """
     template_name = 'web/access-request/access-request-fir-list.html'
     FIR_TEMPLATE_CODE = 'IAR_RFI_EMAIL'
