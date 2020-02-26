@@ -95,6 +95,36 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
             self.get_context_data(process_id, selected_fir=fir_id)
         )
 
+    def set_fir_status(self, id, status):
+        """
+        Helper function to set and save a FIR status
+
+        returns the changed FIR
+        """
+        model = FurtherInformationRequest.objects.get(pk=id)
+        model.status = status
+        model.save()
+
+        return model
+
+    def withdraw(self, request, process_id):
+        """
+        Marks the FIR as withdrawn
+        """
+        self.set_fir_status(request.POST['id'], FurtherInformationRequest.CLOSED)
+        return redirect('access_request_fir_list', process_id=process_id)
+
+    def delete(self, request, process_id):
+        """
+        Marks the FIR as deleted and sets it as inactive
+        @todo: check with PO if we display inactive FIRs
+        """
+        model = self.set_fir_status(request.POST['id'], FurtherInformationRequest.DELETED)
+        model.is_active = False
+        model.save()
+
+        return redirect('access_request_fir_list', process_id=process_id)
+
     def save(self, request, process_id, *args, **kwargs):
         """
         Saves the FIR being editted by the user
@@ -119,7 +149,7 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         """
         access_request = AccessRequest.objects.get(pk=process_id)
         try:
-            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=False)
+            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=True)
         except Exception as e:
             logger.warn('could not fetch templat with code "%s" - reason %s' % (self.FIR_TEMPLATE_CODE, str(e)))
             template = Template()
