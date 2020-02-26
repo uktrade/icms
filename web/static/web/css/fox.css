@@ -4746,6 +4746,7 @@ form .display .hint-addon {
     display: none;
 }
 
+form .display.deleted [value=withdraw],
 form .display.closed [value=withdraw] {
     display: none;
 }
