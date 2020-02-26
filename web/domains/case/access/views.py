@@ -149,7 +149,7 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         """
         access_request = AccessRequest.objects.get(pk=process_id)
         try:
-            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=False)
+            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=True)
         except Exception as e:
             logger.warn('could not fetch templat with code "%s" - reason %s' % (self.FIR_TEMPLATE_CODE, str(e)))
             template = Template()
