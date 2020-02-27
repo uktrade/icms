@@ -13,5 +13,6 @@
             <a href="{{ url('access_request_fir_list', args=(process_id,)) }}"
                class="{% if route == 'access_request_fir_list' %}current-page{% endif %}">
                 Further Information Requests ({{ "%s/%s" % (open_ifr, total_ifr) }})
+            </a>
     </ul>
 {% endwith %}
