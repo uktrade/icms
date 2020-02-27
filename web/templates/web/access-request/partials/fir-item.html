@@ -14,7 +14,7 @@
         {{ fields.hidden('id', fir.instance.id) }}
         {{ fields.hidden('status', fir.status.value() ) }}
 
-        {% with config=form_actions_config, buttons_list=fir.actions_top, padding="", class="small-button" %}
+        {% with config=form_actions_config, buttons_list=fir.get_top_buttons(), padding="", class="small-button" %}
             {% include "web/access-request/partials/fields/form-buttons-row.html" %}
         {% endwith %}
 
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        {% with config=form_actions_config, buttons_list=fir.actions_bottom %}
+        {% with config=form_actions_config, buttons_list=fir.get_bottom_buttons() %}
             {% include "web/access-request/partials/fields/form-buttons-row.html" %}
         {% endwith %}
 
