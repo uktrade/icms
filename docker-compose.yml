@@ -6,6 +6,9 @@ services:
     image: postgres:11
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
     ports:
       - "5432:5432"
   web:
