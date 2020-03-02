@@ -81,7 +81,7 @@ class AccessRequestFirView(PostActionMixin):
 
     def get(self, request, process_id):
         """
-        Lists all FIRs associated to the acces request
+        Lists all FIRs associated to the access request
 
         Params:
             process_id - Access Request id
