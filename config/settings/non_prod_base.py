@@ -8,7 +8,7 @@ ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 DATABASES = {
-    'default': env.db('DATABASE_URL', 'postgres://postgres@db:5432/postgres')
+    'default': env.db('DATABASE_URL', 'postgres://postgres:password@db:5432/postgres')
 }
 
 #  Google recaptcha. Using test keys on localhost
