@@ -53,7 +53,7 @@ class FurtherInformationRequestForm(ModelEditForm):
                 'css': '',
                 'action': 'Delete',
                 'label': 'Delete',
-                'confirm_message': 'You sure?',
+                'confirm_message': 'Are you sure you want to delete this Further Information Request?',
             },
             'edit': {
                 'css': 'icon-pencil',
@@ -64,7 +64,7 @@ class FurtherInformationRequestForm(ModelEditForm):
                 'css': '',
                 'action': 'withdraw',
                 'label': 'Withdraw Request',
-                'confirm_message': 'You sure?',
+                'confirm_message': 'Are you sure you want to withdraw this Further Information Request?',
             },
         }
 

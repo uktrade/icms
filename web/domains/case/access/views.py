@@ -132,7 +132,18 @@ class AccessRequestFirView(PostActionMixin):
         Params:
             process_id - Access Request id
         """
-        self.set_fir_status(request.POST['id'], FurtherInformationRequest.CLOSED)
+        self.set_fir_status(request.POST['id'], FurtherInformationRequest.DRAFT)
+        return redirect('access_request_fir_list', process_id=process_id)
+
+    def send(self, request, process_id):
+        """
+        Marks the FIR as open
+        @todo: send the actual email
+
+        Params:
+            process_id - Access Request id
+        """
+        self.set_fir_status(request.POST['id'], FurtherInformationRequest.OPEN)
         return redirect('access_request_fir_list', process_id=process_id)
 
     def delete(self, request, process_id):
@@ -233,7 +244,7 @@ class AccessRequestFirView(PostActionMixin):
             form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
         process = AccessRequestProcess.objects.get(pk=process_id)
-        items = process.access_request.further_information_requests.all().order_by('pk').reverse()
+        items = process.access_request.further_information_requests.exclude(status=FurtherInformationRequest.DELETED).order_by('pk').reverse()
 
         return {
             'fir_list': [self.create_display_or_edit_form(fir, selected_fir, form) for fir in items],
