@@ -5,8 +5,17 @@ from web.domains.case.models import FurtherInformationRequest
 
 class FurtherInformationRequestForm(ModelEditForm):
 
-    actions_top = ['save']  # buttons to show on the top row of the form
-    actions_bottom = ['send', 'delete']  # buttons to show at the end of the form
+    def get_top_buttons(self):
+        """
+        buttons to show on the form's top row
+        """
+        return ['save']
+
+    def get_bottom_buttons(self):
+        """
+        buttons to show on the form's bottom row
+        """
+        return ['send', 'delete']
 
     class Meta:
         model = FurtherInformationRequest
@@ -38,11 +47,13 @@ class FurtherInformationRequestForm(ModelEditForm):
                 'css': 'primary-button',
                 'action': 'send',
                 'label': 'Send Request',
+                'confirm_message': 'You sure?',
             },
             'delete': {
                 'css': '',
                 'action': 'Delete',
                 'label': 'Delete',
+                'confirm_message': 'Are you sure you want to delete this Further Information Request?',
             },
             'edit': {
                 'css': 'icon-pencil',
@@ -53,6 +64,7 @@ class FurtherInformationRequestForm(ModelEditForm):
                 'css': '',
                 'action': 'withdraw',
                 'label': 'Withdraw Request',
+                'confirm_message': 'Are you sure you want to withdraw this Further Information Request?',
             },
         }
 
@@ -64,8 +76,23 @@ class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelD
     )
     requested_by = forms.CharField()
 
-    actions_top = ['edit']
-    actions_bottom = ['withdraw']
+    def get_top_buttons(self):
+        """
+        buttons to show on the form's top row
+        """
+        if self.instance.status == FurtherInformationRequest.DRAFT:
+            return ['edit']
+
+        return []
+
+    def get_bottom_buttons(self):
+        """
+        buttons to show on the form's bottom row
+        """
+        if self.instance.status == FurtherInformationRequest.OPEN:
+            return ['withdraw']
+
+        return []
 
     class Meta(FurtherInformationRequestForm.Meta):
         config = {

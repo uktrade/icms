@@ -8,10 +8,11 @@
             </a>
         </li>
         <li>
-            {% set total_ifr = activation.process.access_request.further_information_requests.all()|length %}
+            {% set total_ifr = activation.process.access_request.further_information_requests.exclude(status="DELETED")|length %}
             {% set open_ifr = activation.process.access_request.further_information_requests.filter(status="OPEN")|length %}
             <a href="{{ url('access_request_fir_list', args=(process_id,)) }}"
                class="{% if route == 'access_request_fir_list' %}current-page{% endif %}">
                 Further Information Requests ({{ "%s/%s" % (open_ifr, total_ifr) }})
+            </a>
     </ul>
 {% endwith %}

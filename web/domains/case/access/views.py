@@ -70,17 +70,35 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
         )
 
 
-class AccessRequestFirListView(TemplateView, PostActionMixin):
+class AccessRequestFirView(PostActionMixin):
     """
-    Access Request Further Information Request - list
+    Access Request Further Information Request
+
+    This view class handles all actions that can be performed on a FIR
     """
     template_name = 'web/access-request/access-request-fir-list.html'
     FIR_TEMPLATE_CODE = 'IAR_RFI_EMAIL'
+
+    def get(self, request, process_id):
+        """
+        Lists all FIRs associated to the access request
+
+        Params:
+            process_id - Access Request id
+        """
+        return render(
+            request,
+            self.template_name,
+            self.get_context_data(process_id)
+        )
 
     def edit(self, request, process_id, *args, **kwargs):
         """
         Edits the FIR selected by the user.
         The selected FIR comes from the id property in the request body
+
+        Params:
+            process_id - Access Request id
         """
 
         data = request.POST if request.POST else None
@@ -110,14 +128,30 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
     def withdraw(self, request, process_id):
         """
         Marks the FIR as withdrawn
+
+        Params:
+            process_id - Access Request id
         """
-        self.set_fir_status(request.POST['id'], FurtherInformationRequest.CLOSED)
+        self.set_fir_status(request.POST['id'], FurtherInformationRequest.DRAFT)
+        return redirect('access_request_fir_list', process_id=process_id)
+
+    def send(self, request, process_id):
+        """
+        Marks the FIR as open
+        @todo: send the actual email
+
+        Params:
+            process_id - Access Request id
+        """
+        self.set_fir_status(request.POST['id'], FurtherInformationRequest.OPEN)
         return redirect('access_request_fir_list', process_id=process_id)
 
     def delete(self, request, process_id):
         """
         Marks the FIR as deleted and sets it as inactive
-        @todo: check with PO if we display inactive FIRs
+
+        Params:
+            process_id - Access Request id
         """
         model = self.set_fir_status(request.POST['id'], FurtherInformationRequest.DELETED)
         model.is_active = False
@@ -128,6 +162,9 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
     def save(self, request, process_id, *args, **kwargs):
         """
         Saves the FIR being editted by the user
+
+        Params:
+            process_id - Access Request id
         """
         model = FurtherInformationRequest.objects.get(pk=request.POST['id'])
         form = FurtherInformationRequestForm(data=request.POST, instance=model)
@@ -146,6 +183,9 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         """
         Creates a new FIR and associates it with the current access request then display the FIR form
         so the user can edit data
+
+        Params:
+            process_id - Access Request id
         """
         access_request = AccessRequest.objects.get(pk=process_id)
         try:
@@ -179,9 +219,9 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         If `fir.id` is is the same as `selected_fir` then a "editable" version of the form is returned
 
         Params:
-        fir - FurtherInformationRequest model
-        selected_fir - id of the FIR the user is editing (or None)
-        form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
+            fir - FurtherInformationRequest model
+            selected_fir - id of the FIR the user is editing (or None)
+            form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
         if selected_fir and fir.id == selected_fir:
             return form if form else FurtherInformationRequestForm(instance=fir)
@@ -195,14 +235,20 @@ class AccessRequestFirListView(TemplateView, PostActionMixin):
         )
 
     def get_context_data(self, process_id, selected_fir=None, form=None, *args, **kwargs):
+        """
+        Helper function to generate context data to be sent to views
+
+        Params:
+            process_id - Access Request id
+            selected_fir - id of the FIR the user is editing (or None)
+            form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
+        """
         process = AccessRequestProcess.objects.get(pk=process_id)
-        context = super().get_context_data(*args, **kwargs)
+        items = process.access_request.further_information_requests.exclude(status=FurtherInformationRequest.DELETED).order_by('pk').reverse()
 
-        items = process.access_request.further_information_requests.all().order_by('pk').reverse()
-        logger.debug('getting context data')
-        context['fir_list'] = [self.create_display_or_edit_form(fir, selected_fir, form) for fir in items]
-        context['activation'] = {
-            'process': process,
+        return {
+            'fir_list': [self.create_display_or_edit_form(fir, selected_fir, form) for fir in items],
+            'activation': {  # keeping the same format as viewflow, so sidebar works seamlessly
+                'process': process,
+            }
         }
-
-        return context
