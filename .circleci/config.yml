@@ -25,7 +25,11 @@ job_defaults: &job_defaults
 
     - image: <<parameters.postgres_image>>
       environment:
-        POSTGRES_DB=icms
+        POSTGRES_DB: icms
+        POSTGRES_USERNAME: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_HOST_AUTH_METHOD: trust
+
 
   steps:
     - checkout
