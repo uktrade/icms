@@ -8,7 +8,8 @@
 
     {% set fir_status = fir.status.value()|lower %}
     {% set form_actions_config = fir.Meta.actions %}
-    {% set container_class = " ".join([fir_status, "display" if fir.requested_datetime else "edit"]) %}
+    {% set in_edit_action = False if fir.requested_datetime else True %}
+    {% set container_class = " ".join([fir_status, "edit" if in_edit_action else "display"]) %}
 
     {% call forms.form(method='post', action="#%s" % fir.instance.id, csrf_input=csrf_input, container_class=container_class) -%}
         {{ fields.hidden('id', fir.instance.id) }}
@@ -34,17 +35,7 @@
         {{ fields.field(fir.email_cc_address_list) }}
         {{ fields.field(fir.request_detail) }}
 
-        <div class="row">
-            {# @todo: revise this layout when implementing file upload #}
-            <div class="three columns">
-                <label for="id_status" class="prompt west">Documents</label>
-            </div>
-            <div class="six columns">
-                {% for file in fir.files %}
-                    {{ fields.field(file) }}
-                {% endfor %}
-            </div>
-        </div>
+        {% include "web/access-request/partials/fir-item-file-upload.html" %}
 
         {% with config=form_actions_config, buttons_list=fir.get_bottom_buttons() %}
             {% include "web/access-request/partials/fields/form-buttons-row.html" %}

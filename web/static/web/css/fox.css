@@ -4742,11 +4742,43 @@ form .display textarea {
     background: #fff;
 }
 
+form .display .uploadControl,
 form .display .hint-addon {
-    display: none;
+    display: none!important;
 }
 
 form .display.deleted [value=withdraw],
 form .display.closed [value=withdraw] {
     display: none;
 }
+
+
+ul.fileList {
+    list-style-type: none;
+}
+
+.fileInfo.readonly {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    text-decoration: none;
+}
+
+.filesize {
+    color: #666;
+    font-size: 0.8em;
+    display: block;
+    margin-left: 0.5em;
+}
+
+.fileUploadInput {
+    display: block;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    filter: alpha(opacity=0);
+    opacity: 0;
+}
+
