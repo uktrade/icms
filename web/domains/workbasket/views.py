@@ -1,8 +1,7 @@
 from django.urls import reverse
-from datetime import datetime
-
 from django.shortcuts import render, redirect
 from django.utils import timezone
+
 from web.auth.decorators import require_registered
 from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 
