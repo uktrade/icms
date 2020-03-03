@@ -9,7 +9,7 @@ UID=$(shell id -u):$(shell id -g)
 help: ## Show this screen
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 	@echo ""
-	
+
 ##@ Development
 migrations: ## make db migrations
 	unset UID && \
@@ -29,7 +29,7 @@ dumpdata: ## dumps db data
 	docker-compose run --rm web ./manage.py dumpdata --format=json web  > test.json
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
-	unset UID && \	
+	unset UID && \
 	docker-compose run --rm web ./manage.py sqlsequencereset web
 
 createsuperuser: ## create django super user
@@ -64,7 +64,7 @@ all: requirements
 setup: ## sets up system for first use, you might want to run load data after
 	mkdir -p pgdata
 	chmod -R 777 pgdata
-	make requirements migrations migrate 
+	make requirements migrations migrate
 
 
 ##@ Server
@@ -98,7 +98,7 @@ test: clean ## run tests
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web pytest -s --verbose --cov=web --cov=config $(TEST_TARGET)
+	docker-compose run --rm web pytest --verbose --cov=web --cov=config $(TEST_TARGET)
 
 accessibility: ## Generate accessibility reports
 	unset UID && \
