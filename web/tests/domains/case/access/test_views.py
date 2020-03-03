@@ -66,9 +66,9 @@ class AccessRequestFirViewTest(TestCase):
         """
         Asserts FIR has the status changes sucessfully
         """
-        self.assertEquals(FurtherInformationRequest.DRAFT, self.model.status)
+        self.assertEqual(FurtherInformationRequest.DRAFT, self.model.status)
         model = self.view.set_fir_status(self.model.pk, FurtherInformationRequest.OPEN)
-        self.assertEquals(FurtherInformationRequest.OPEN, model.status)
+        self.assertEqual(FurtherInformationRequest.OPEN, model.status)
 
     def test_create_display_or_edit_form_return_edit_form(self):
         """
@@ -76,7 +76,7 @@ class AccessRequestFirViewTest(TestCase):
         """
         form = self.view.create_display_or_edit_form(self.model, self.model.pk, None)
         self.assertIsInstance(form, FurtherInformationRequestForm)
-        self.assertEquals(form.instance, self.model)
+        self.assertEqual(form.instance, self.model)
 
     def test_create_display_or_edit_form_return_passed_form(self):
         """
@@ -92,4 +92,4 @@ class AccessRequestFirViewTest(TestCase):
         """
         form = self.view.create_display_or_edit_form(self.model, self.model.pk + 1, None)
         self.assertIsInstance(form, FurtherInformationRequestDisplayForm)
-        self.assertEquals(form.instance, self.model)
+        self.assertEqual(form.instance, self.model)
