@@ -4770,7 +4770,7 @@ ul.fileList {
     color: #666;
     font-size: 0.8em;
     display: block;
-    margin-left: 0.5em;
+    /* margin-left: 0.5em; */
 }
 
 .fileUploadInput {
