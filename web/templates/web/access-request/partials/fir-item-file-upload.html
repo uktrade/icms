@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="three columns">
+        <label class="prompt west">Documents</label>
+    </div>
+    <div class="six columns">
+        <form>
+            <table class="setoutList" role="file-list">
+                <thead>
+                    <tr>
+                        <th scope="col">File </th>
+                        <th scope="col">Created By </th>
+                        <th scope="col">Actions </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {# todo: replace with loop through files when we have uploaded files#}
+                    {% for x in [1,2,3] %}
+                        {% include "web/access-request/partials/fir-item-file-upload-row.html" %}
+                    {% endfor %}
+
+                    <tr>
+                        <td colspan="3">
+                            {% if in_edit_action %}
+                                {% include "web/access-request/partials/fields/file-upload-button.html" %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="three columns"></div>
+</div>
+
+<script id="file-upload-row-template" type="text/template">
+    {% include "web/access-request/partials/fir-item-file-upload-row.html" %}
+</script>
