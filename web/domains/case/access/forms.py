@@ -67,5 +67,5 @@ class ReviewAccessRequestForm(ViewFlowModelEditForm):
         model = AccessRequest
 
         fields = [
-            'response'
+            'response', 'response_reason'
         ]

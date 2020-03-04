@@ -102,6 +102,12 @@ class AccessRequest(models.Model):
         else:
             return "Exporter Access Request"
 
+    def requester_type(self):
+        if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
+            return "importer"
+        else:
+            return "exporter"
+
 
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
