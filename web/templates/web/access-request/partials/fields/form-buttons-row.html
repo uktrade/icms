@@ -1,0 +1,11 @@
+<div class="row">
+    <div class="{{ padding|default('three') }} columns"></div>
+    <div class="six columns">
+        {% for action in buttons_list %}
+            {% with css=config[action].css, label=config[action].label, class=class, confirm_message=config[action].confirm_message %}
+                {% include 'web/access-request/partials/fields/fir-action-button.html' %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+    <div class="{{ padding|default('three') }} columns"></div>
+</div>

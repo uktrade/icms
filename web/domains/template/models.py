@@ -1,3 +1,4 @@
+import re
 from django.db import models
 from web.models.mixins import Archivable
 
@@ -64,6 +65,23 @@ class Template(Archivable, models.Model):
             return label + ' - ' + self.template_name
         else:
             return label
+
+    def get_content(self, replacements={}):
+        """
+        returns the template content with the placeholders replaced with their value
+
+        calling this function with replacements={'foo': 'bar'} will return the template content
+        with all occurences of [[foo]] replaced with bar
+        """
+        content = self.template_content
+
+        if content is None:
+            return ""
+
+        for replacement, value in replacements.items():
+            content = re.sub(r"\[\[%s\]\]" % replacement, value, content)
+
+        return content
 
     class Meta:
         ordering = (

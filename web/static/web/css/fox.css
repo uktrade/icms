@@ -4709,3 +4709,75 @@ fieldset {
     color: inherit;
     text-decoration: none;
 }
+
+#sidebar .current-page {
+    font-weight: bold;
+}
+
+.status .text-widget {
+	border: 1px solid;
+	border-radius: 3px;
+	color: #000;
+	padding-left: 1.25em;
+	padding-right: 1.25em;
+	font-size: 0.8em;
+	text-transform: uppercase;
+}
+
+.status.open .text-widget, .status.responded .text-widget {
+    background-color: #FFEB9B;
+    border-color: #FFC519;
+}
+
+.status.draft .text-widget, .status.deleted .text-widget {
+    background-color: #E6E6E6;
+    border-color: #C2C2C2;
+}
+
+
+form .display input,
+form .display textarea {
+    border: none;
+    color: #000;
+    background: #fff;
+}
+
+form .display .uploadControl,
+form .display .hint-addon {
+    display: none!important;
+}
+
+form .display.deleted [value=withdraw],
+form .display.closed [value=withdraw] {
+    display: none;
+}
+
+
+ul.fileList {
+    list-style-type: none;
+}
+
+.fileInfo.readonly {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    text-decoration: none;
+}
+
+.filesize {
+    color: #666;
+    font-size: 0.8em;
+    display: block;
+}
+
+.fileUploadInput {
+    display: block;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+    filter: alpha(opacity=0);
+    opacity: 0;
+}
+

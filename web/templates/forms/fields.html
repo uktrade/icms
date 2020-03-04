@@ -31,7 +31,7 @@
       {{tooltip}}
       {% else %}
       <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
-        {{tooltip or field.help_text}}
+        {{tooltip or field.help_text|safe}}
       </div>
       <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
       {% endif %}
@@ -43,24 +43,42 @@
 
 {# Renders a single form field with icms styling #}
 {% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True) -%}
-  {% set config=field.field.config %}
   <div class="row" >
-    <div class="{{config.label.cols}} columns">
-      <label for="{{ field.id_for_label }}" class="prompt {{config.label.prompt}}">
-        {{field.label}}
-        {% if config.show_optional_indicator and not field.field.required %}
-          <span class="mand-label">optional</span>
-        {% endif %}
-      </label>
-    </div>
-    <div class="{{config.input.cols}} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
-      {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description, show_errors=show_errors)}}
-    </div>
-    {% if config.padding and config.padding.right %}
-      <div class="{{config.padding.right}} columns"> </div>
-    {% endif %}
-</div>
+    {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors) }}
+  </div>
 {%- endmacro %}
+
+{# Renders a single INLINE form field with icms styling #}
+{% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True) -%}
+  {% set config=field.field.config %}
+
+  {{ label(field) }}
+
+  <div class="{{config.input.cols}} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
+    {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description, show_errors=show_errors)}}
+  </div>
+  {% if config.padding and config.padding.right %}
+    <div class="{{config.padding.right}} columns"> </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro label(field) %}
+  {% set config=field.field.config %}
+
+    <div class="{{config.label.cols}} columns">
+    <label for="{{ field.id_for_label }}" class="prompt {{config.label.prompt}}">
+      {{field.label}}
+      {% if config.show_optional_indicator and not field.field.required %}
+        <span class="mand-label">optional</span>
+      {% endif %}
+    </label>
+  </div>
+
+{% endmacro %}
+
+{% macro hidden(name, value) -%}
+  <input type="hidden" name="{{ name }}" value="{{ value }}" />
+{% endmacro %}
 
 {# Renders a single inline form field with icms styling #}
 {% macro inline_field(field) -%}

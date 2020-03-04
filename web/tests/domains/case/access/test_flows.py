@@ -46,8 +46,8 @@ class ExportAccessRequestFlowTest(TestCase):
         )
         assert response.status_code == 302
         process = Process.objects.get()
-        self.assertEquals('NEW', process.status)
-        self.assertEquals(3, process.task_set.count())
+        self.assertEqual('NEW', process.status)
+        self.assertEqual(3, process.task_set.count())
 
         self.client.logout()
         self.client.force_login(self.ilb_admin_user)
@@ -58,8 +58,8 @@ class ExportAccessRequestFlowTest(TestCase):
 
         assert response.status_code == 302
         process.refresh_from_db()
-        self.assertEquals('NEW', process.status)
-        self.assertEquals(3, process.task_set.count())
+        self.assertEqual('NEW', process.status)
+        self.assertEqual(3, process.task_set.count())
 
         response = self.client.post(
             '/access/1/review_request/3/',
@@ -69,5 +69,5 @@ class ExportAccessRequestFlowTest(TestCase):
         assert response.status_code == 302
 
         process.refresh_from_db()
-        self.assertEquals('DONE', process.status)
-        self.assertEquals(6, process.task_set.count())
+        self.assertEqual('DONE', process.status)
+        self.assertEqual(6, process.task_set.count())

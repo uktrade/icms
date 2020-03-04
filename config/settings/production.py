@@ -60,3 +60,15 @@ LOGGING = {
         }
     },
 }
+
+# Elastic APM config
+INSTALLED_APPS += [  # NOQA
+    'elasticapm.contrib.django',
+]
+
+ELASTIC_APM = {
+    'SERVICE_NAME': 'ICMS',
+    'SECRET_TOKEN': env.str('ELASTIC_APM_SECRET_TOKEN'),
+    'SERVER_URL': 'https://apm.ci.uktrade.io:8200',
+    'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development')
+}

@@ -1,6 +1,7 @@
 from django.db import models
 from web.domains.file.models import File
 from web.domains.user.models import User
+# from config.settings.base import DATETIME_FORMAT
 
 
 class VariationRequest(models.Model):
@@ -106,7 +107,13 @@ class FurtherInformationRequest(models.Model):
         blank=True,
         null=True,
         related_name='deleted_import_information_requests')
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField(File, blank=True)
+
+    def date_created_formatted(self):
+        """
+            returns a formatted datetime
+        """
+        return self.requested_datetime.strftime('%d-%b-%Y %H:%M:%S')
 
 
 class UpdateRequest(models.Model):

@@ -7,6 +7,14 @@
 {% block context_header %}Importer/Exporter Access Request{% endblock %}
 
 
+{% block sidebar%}
+    {% with process_id=view.activation.process.access_request.id, 
+            task_id=view.activation.task.id 
+    %}
+        {% include "web/case-fir-sidebar.html" %}
+    {% endwith %}
+{% endblock %}
+
 {% block main_content %}
     {% set process, request = view.activation.process, view.activation.process.access_request %}
     <div class="info-box info-box-info">
