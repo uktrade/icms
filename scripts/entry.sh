@@ -14,6 +14,7 @@ fi
 
 if [ "$ICMS_DEBUG" = 'False' ]; then
   python manage.py collectstatic --noinput --traceback
+  python manage.py compress --engine jinja2
 fi
 
 

@@ -76,7 +76,7 @@ debug: ## runs sytem in debug mode
 run: ## Run with Gunicorn and Whitenoise serving static files
 	unset UID && \
 	ICMS_SECRET_KEY='prod' \
-	DATABASE_URL='postgres://postgres@db:5432/postgres' \
+	DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
 	ICMS_ALLOWED_HOSTS='localhost' \
 	ICMS_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' \
 	ICMS_RECAPTCHA_PRIVATE_KEY='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' \

@@ -72,3 +72,7 @@ ELASTIC_APM = {
     'SERVER_URL': 'https://apm.ci.uktrade.io:8200',
     'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development')
 }
+
+
+# Django Compressor
+COMPRESS_OFFLINE = True
