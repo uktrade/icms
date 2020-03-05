@@ -1,19 +1,32 @@
 from viewflow import flow
 from viewflow.base import this, Flow
 
+from web.domains import User
+from web.notify import notify
+
 from web.domains.case.access.models import AccessRequestProcess, AccessRequest
 from web.domains.case.access.views import (
     AccessRequestCreateView,
     ILBReviewRequest,
 )
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 
 def send_admin_notification_email(activation):
-    print(f'Request from {activation.process.access_request.organisation_name}')  # TODO
+    ilb_admins = User.objects.filter(is_staff=True)
+    for admin in ilb_admins:
+        try:
+            notify.access_request_admin(admin, activation.process.access_request)
+        except Exception as e:  # noqa
+            logger.exception('Failed to notify an ILB admin', e)
 
 
 def send_requester_notification_email(activation):
-    print(f'{activation.process.access_request.organisation_name}: {activation.process.access_request.response}')  # TODO
+    notify.access_request_requester(activation.process.access_request)
 
 
 def close_request(activation):

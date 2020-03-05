@@ -1,5 +1,5 @@
-from django.urls import reverse
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.utils import timezone
 
 from web.auth.decorators import require_registered
