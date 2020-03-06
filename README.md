@@ -13,7 +13,7 @@
 [Python 3.7+](https://www.python.org/downloads/release/python-372/)
 
 
-[PostgreSQL](https://www.postgresql.org/) 
+[PostgreSQL](https://www.postgresql.org/)
 
 ## Development requirements
 
@@ -27,6 +27,16 @@
     cd icms
     make setup # only needed on first run or after freshly build containers
     make debug
+    make local_S3 # only needed on first run or after freshly build containers
+
+### Local AWS S3
+    Local development used [localstack](https://github.com/localstack/localstack) to emulate S3 locally
+
+    You will need aws cli tools installed and configured, if you have not done so run`aws configure` the values don't really matter but aws cli won't run without a configuration file created.
+
+    `make local_S3` will create an S3 bucket named `icms.dev` on the localstack S3 instance
+
+    localstack UI can be found on http://localhost:8081 and used to very the if S3 bucket is created
 
 Go to url http://localhost:8080
 
@@ -36,16 +46,16 @@ Above script will start a PostgreSQL database and ICMS app in debug mode. In ord
 
 Make sure to rebuild the image if new dependencies are installed and added to requirements.txt
 
-    make build 
-    
+    make build
+
 or build and run using:
 
-    make build debug 
-    
+    make build debug
+
 or
-    
+
     make build run
-    
+
 
 ## Environment Variables
 
