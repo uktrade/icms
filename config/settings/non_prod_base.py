@@ -1,5 +1,5 @@
 import environ
-import structlog as logging
+import structlog
 
 from .base import *  # NOQA”
 
