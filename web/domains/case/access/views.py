@@ -4,15 +4,21 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render
+from django.conf import settings
 import logging
 
-from web.utils import SimpleStartFlowMixin, SimpleFlowMixin
+from web.utils import SimpleStartFlowMixin, SimpleFlowMixin, FilevalidationService
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
 from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
 from web.views.mixins import PostActionMixin
 from web.domains.case.models import FurtherInformationRequest
 from web.domains.template.models import Template
+from web.domains.file.models import File
+from django.views.decorators.csrf import csrf_exempt
+from s3chunkuploader.file_handler import s3_client
+from web.utils.virus import ClamAV
+from web.utils.s3upload import S3UploadService
 
 logger = logging.getLogger(__name__)
 
@@ -209,6 +215,47 @@ class AccessRequestFirView(PostActionMixin):
             self.template_name,
             self.get_context_data(process_id, selected_fir=instance.id)
         )
+
+    @csrf_exempt
+    def upload(self, request, process_id):
+        data = request.POST if request.POST else None
+        if not data or 'id' not in data:
+            return HttpResponseBadRequest('Invalid body received')
+
+        uploaded_file = request.FILES['uploaded_file']
+
+        error_message = ''
+        try:
+            upload_service = S3UploadService(
+                s3_client=s3_client(),
+                virus_scanner=ClamAV(settings.CLAM_AV_USERNAME, settings.CLAM_AV_PASSWORD, settings.CLAM_AV_URL),
+                file_validator=FilevalidationService()
+            )
+
+            upload_service.process_uploaded_file(
+                settings.AWS_STORAGE_BUCKET_NAME,
+                uploaded_file,
+                f'/documents/fir/{data["id"]}/'
+            )
+        except Exception as e:
+            error_message = str(e)
+
+        file_model = File()
+        file_model.filename = uploaded_file.original_name
+        file_model.content_type = uploaded_file.content_type
+        file_model.browser_content_type = uploaded_file.content_type
+        file_model.description = ''
+        file_model.file_size = uploaded_file.size
+        file_model.path = uploaded_file.name
+        file_model.error_message = error_message
+        file_model.created_by = request.user
+        file_model.save()
+
+        fir = FurtherInformationRequest.objects.get(pk=request.POST['id'])
+        fir.files.add(file_model)
+        fir.save()
+
+        return redirect('access_request_fir_list', process_id=process_id)
 
     def create_display_or_edit_form(self, fir, selected_fir, form):
         """

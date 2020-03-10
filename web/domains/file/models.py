@@ -20,3 +20,9 @@ class File(models.Model):
                                    on_delete=models.PROTECT,
                                    blank=False,
                                    null=True)
+
+    def date_created_formatted(self):
+        """
+            returns a formatted datetime
+        """
+        return self.created_datetime.strftime('%d-%b-%Y %H:%M:%S')

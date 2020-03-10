@@ -29,7 +29,10 @@
         <ul class="menu-out flow-across">
             <li>
                 {% with action="new", css="icon-plus", label="New FIR", class="small-button" %}
-                    <form method="POST">{{ csrf_input }} {% include 'web/access-request/partials/fields/fir-action-button.html' %}</form>
+                    <form method="POST" >
+                        {{ csrf_input }}
+                        {% include 'web/access-request/partials/fields/fir-action-button.html' %}
+                    </form>
                 {% endwith %}
             </li>
         </ul>

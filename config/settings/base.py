@@ -159,3 +159,21 @@ AWS_SES_REGION_ENDPOINT = 'email.eu-west-1.amazonaws.com'
 Field.default_error_messages = {
     'required': 'You must enter this item',
 }
+
+# Upload to S3
+# TODO: prefix this settings with CHUNK_UPLOADER_ when upstream library is pushed to registry
+AWS_ACCESS_KEY_ID = 'dev'
+AWS_SECRET_ACCESS_KEY = 'bar'
+S3_APPEND_DATETIME_ON_UPLOAD = True
+# AWS_REGION = 'us-west-2'
+AWS_STORAGE_BUCKET_NAME = 'icms.local'
+AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
+S3_GENERATE_OBJECT_KEY_FUNCTION = 'web.utils.s3upload.random_file_name'
+S3_DOCUMENT_ROOT_DIRECTORY = 'tmp'
+
+FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler',)
+
+# Antu virus settings
+CLAM_AV_USERNAME = env.str('CLAM_AV_USERNAME', 'test')
+CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '')
+CLAM_AV_URL = env.str('CLAM_AV_URL', 'https://clamav.london.cloudapps.digital/v2/scan')

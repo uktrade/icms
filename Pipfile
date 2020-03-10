@@ -34,6 +34,6 @@ requests = "*"
 django-compressor = "*"
 django-viewflow="*"
 elastic-apm = "*"
-
+s3chunkuploader = "*"
 [requires]
 python_version = "3.7.6"
