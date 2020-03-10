@@ -1,9 +1,10 @@
+import structlog as logging
 from django.db import transaction
 from django.shortcuts import render
-from web.views.mixins import PostActionMixin
+
 from web.domains.user.models import User
 from web.domains.user.views import PeopleSearchView
-import logging
+from web.views.mixins import PostActionMixin
 
 from .models import Role
 

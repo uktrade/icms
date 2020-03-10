@@ -1,8 +1,9 @@
 import requests
-import logging
+import structlog as logging
 from django.conf import settings
-from web.errors import ICMSException, UnknownError
 from django.core.exceptions import ImproperlyConfigured
+
+from web.errors import ICMSException, UnknownError
 
 logger = logging.getLogger(__name__)
 

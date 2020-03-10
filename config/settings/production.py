@@ -1,5 +1,7 @@
-from .base import *  # NOQA
 import environ
+import structlog
+
+from .base import *  # NOQA
 
 env = environ.Env()
 
@@ -28,38 +30,7 @@ EMAIL_FROM = env.str('ICMS_EMAIL_FROM')
 # getAddress.io api key
 ADDRESS_API_KEY = env.str('ICMS_ADDRESS_API_KEY')
 
-# Loging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format':
-            '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} - {message} [{module}]',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-        'web': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        }
-    },
-}
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Elastic APM config
 INSTALLED_APPS += [  # NOQA
@@ -73,6 +44,33 @@ ELASTIC_APM = {
     'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development')
 }
 
-
 # Django Compressor
 COMPRESS_OFFLINE = True
+
+# Print json formatted logs to console
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json_formatter": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(),
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json_formatter",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
+        "web": {
+            "handlers": ["console"],
+            "level": "INFO",
+        }
+    }
+}

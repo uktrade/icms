@@ -42,38 +42,5 @@ AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY', 'dev')
 EMAIL_FROM = env.str('ICMS_EMAIL_FROM',
                      'enquiries.ilb@icms.trade.dev.uktrade.io')
 
-# Loging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format':
-            '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} - {message} [{module}]',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-        'web': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-        }
-    },
-}
-
 # TODO: prefix this settings with CHUNK_UPLOADER_ when upstream library is pushed to registry
 S3_ENDPOINT_URL = "http://localhost:4752"
