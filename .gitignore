@@ -123,4 +123,9 @@ dmypy.json
 
 # postgress data
 /pgdata
+
+# visual studio code project data
 /.vscode
+
+# localstack persistency data folder
+/.ls_data

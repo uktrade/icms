@@ -1,14 +1,17 @@
-{#
- # TODO: replace placeholder items with real values when we implement reading file data from db
- #}
+{% set file_name = file.filename if file is defined and file.filename is defined else 'FILENAME.PDF' %}
+{% set file_size = file.file_size if file is defined and file.file_size is defined else '??KB' %}
+{% set created_by = file.created_by.full_name if file is defined and file.created_by is defined else 'MR UNKOWN' %}
+{% set created_at = file.date_created_formatted() if file is defined else '1 JAN 1900 00:00:00' %}
+
+
 <tr>
     <td>
-        <a  role="filename" class="fileInfo readonly downloadLink" href="#">{# this is a placeholder #}filename-{{ x }}.pdf</a>
-        <span role="filesize" class="filesize" >{# this is a placeholder #}21KB</span>
+        <a  role="filename" class="fileInfo readonly downloadLink" href="#">{{ file_name }}</a>
+        <span role="filesize" class="filesize" >{{ file_size }}</span>
     </td>
     <td>
-        <span role="username">{# this is a placeholder #}Mr Admin Gov</span>
-        <span role="date" class="filesize">{# this is a placeholder #}02-MAR-2020 14:18:51</span>
+        <span role="username">{{ created_by }}</span>
+        <span role="date" class="filesize">{{ created_at }}</span>
     </td>
     <td role="actions">
         {% if in_edit_action %}

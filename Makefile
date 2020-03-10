@@ -63,8 +63,15 @@ all: requirements
 
 setup: ## sets up system for first use, you might want to run load data after
 	mkdir -p pgdata
-	chmod -R 777 pgdata
+	chmod -R 777 pgdata 2>/dev/null; exit 0
+	mkdir -p .ls_data
+	chmod -R 777 .ls_data
 	make requirements migrations migrate
+
+local_s3: ## creates s3 buckets on localstack container
+	aws --endpoint-url=http://localhost:4572 s3 mb s3://icms.local
+	aws --endpoint-url=http://localhost:4572 s3api put-bucket-acl --bucket icms.local --acl public-read
+
 
 
 ##@ Server

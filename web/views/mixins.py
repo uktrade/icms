@@ -43,4 +43,4 @@ class PostActionMixin(View):
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
-        raise SuspiciousOperation('Invalid Request!')
+        raise SuspiciousOperation('%s: Invalid Request!' % action)

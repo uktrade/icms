@@ -37,8 +37,8 @@ SECRET_KEY = env.str('ICMS_SECRET_KEY', default='development')
 DEBUG = env.bool('ICMS_DEBUG', True)
 
 # Email
-AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY', '')
+AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID', 'dev')
+AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY', 'dev')
 EMAIL_FROM = env.str('ICMS_EMAIL_FROM',
                      'enquiries.ilb@icms.trade.dev.uktrade.io')
 
@@ -74,3 +74,6 @@ LOGGING = {
         }
     },
 }
+
+# TODO: prefix this settings with CHUNK_UPLOADER_ when upstream library is pushed to registry
+S3_ENDPOINT_URL = "http://localhost:4752"
