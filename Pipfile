@@ -35,5 +35,7 @@ django-compressor = "*"
 django-viewflow="*"
 elastic-apm = "*"
 s3chunkuploader = "*"
+django-structlog = "*"
+
 [requires]
 python_version = "3.7.6"

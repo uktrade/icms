@@ -1,10 +1,11 @@
-import time
+import structlog as logging
 import os
 import random
-from web.utils.virus import InfectedFileException
-from django.conf import settings
-import logging
+import time
 
+from django.conf import settings
+
+from web.utils.virus import InfectedFileException
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +22,8 @@ def random_file_name(request, original_file_name, random_salt_max=10000):
     miliseconds = int(round(time.time() * 1000))
     salt = random.randint(0, random_salt_max)
 
-    return os.path.join(
-        getattr(settings, 'S3_DOCUMENT_ROOT_DIRECTORY', ''),
-        f'{miliseconds}_{salt}{file_extension}'
-    )
+    return os.path.join(getattr(settings, 'S3_DOCUMENT_ROOT_DIRECTORY', ''),
+                        f'{miliseconds}_{salt}{file_extension}')
 
 
 class InvalidFileException(Exception):
@@ -67,13 +66,16 @@ class S3UploadService():
 
         # upload to /documents/fir/<fir id>
         logger.debug('Processing Uploaded File %s' % uploaded_file.name)
-        s3_file = self.s3_client.get_object(Bucket=bucket, Key=uploaded_file.name)
+        s3_file = self.s3_client.get_object(Bucket=bucket,
+                                            Key=uploaded_file.name)
         s3_file_content = s3_file['Body'].read()
 
         if not self.virus_scanner.is_safe(s3_file_content):
             # delete the file
             # save model with error message
-            raise InfectedFileException(f"'{uploaded_file.name}' failed virus scanning")
+            raise InfectedFileException(
+                f"'{uploaded_file.name}' failed virus scanning")
 
         if not self.file_validator.is_valid(uploaded_file):
-            raise InvalidFileException(f"'{uploaded_file.name}' is not an allowed file")
+            raise InvalidFileException(
+                f"'{uploaded_file.name}' is not an allowed file")

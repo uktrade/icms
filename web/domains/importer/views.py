@@ -1,7 +1,7 @@
-import logging
-
+import structlog as logging
 from django.shortcuts import render
 from django.urls import reverse_lazy
+
 from web.domains.team.mixins import ContactsManagementMixin
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)

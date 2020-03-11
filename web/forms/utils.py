@@ -1,6 +1,6 @@
 import json
-import logging
 
+import structlog as logging
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.formsets import BaseFormSet
 

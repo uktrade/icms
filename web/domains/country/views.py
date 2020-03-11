@@ -1,10 +1,10 @@
-import logging
-
+import structlog as logging
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
+
 from web.auth.mixins import RequireRegisteredMixin
 from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
 from web.views.mixins import PageTitleMixin, PostActionMixin

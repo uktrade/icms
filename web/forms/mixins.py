@@ -1,7 +1,8 @@
-import logging
 from copy import deepcopy
 
+import structlog as logging
 from django.forms import Form
+
 from web.utils import merge_dictionaries as m
 
 logger = logging.getLogger(__name__)

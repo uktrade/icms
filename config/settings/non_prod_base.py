@@ -1,5 +1,7 @@
-from .base import *  # NOQA”
 import environ
+import structlog
+
+from .base import *  # NOQA”
 
 env = environ.Env()
 
@@ -8,7 +10,8 @@ ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 DATABASES = {
-    'default': env.db('DATABASE_URL', 'postgres://postgres:password@db:5432/postgres')
+    'default':
+    env.db('DATABASE_URL', 'postgres://postgres:password@db:5432/postgres')
 }
 
 #  Google recaptcha. Using test keys on localhost
@@ -21,33 +24,28 @@ ADDRESS_API_KEY = env.str('ICMS_ADDRESS_API_KEY', default='')
 
 # Loging
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format':
-            '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} - {message} [{module}]',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "plain_console": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.dev.ConsoleRenderer(),
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "plain_console",
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'WARNING',
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
         },
-        'web': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+        "web": {
+            "handlers": ["console"],
+            "level": "DEBUG",
         }
-    },
+    }
 }
