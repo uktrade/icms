@@ -1,5 +1,6 @@
-from .non_prod_base import *  # NOQA”
 import environ
+
+from .non_prod_base import *  # NOQA”
 
 env = environ.Env()
 
@@ -8,6 +9,7 @@ INTERNAL_IPS = ('127.0.0.1', 'localhost')
 INSTALLED_APPS += [  # NOQA
     'debug_toolbar',
 ]
+
 MIDDLEWARE += [  # NOQA
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
