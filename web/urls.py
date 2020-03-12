@@ -207,6 +207,8 @@ urlpatterns = [
     path('import/apply/',
          imp_app_views.ImportApplicationCreateView.as_view(),
          name='import_application_new'),
+
+    # Viewflow frontend
     path('viewflow/', include(frontend_urls)),
     path(
         'viewflow/',
