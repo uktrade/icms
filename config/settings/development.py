@@ -6,9 +6,9 @@ env = environ.Env()
 
 # Debug toolbar config
 INTERNAL_IPS = ('127.0.0.1', 'localhost')
-INSTALLED_APPS = [  # NOQA
+INSTALLED_APPS += [  # NOQA
     'debug_toolbar',
-] + INSTALLED_APPS
+]
 
 MIDDLEWARE += [  # NOQA
     'debug_toolbar.middleware.DebugToolbarMiddleware',
