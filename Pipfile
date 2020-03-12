@@ -16,6 +16,7 @@ pytest-flake8 = "*"
 pyparsing = ">2.4.1"
 factory-boy = "*"
 faker = "*"
+django-material = "*"
 
 [packages]
 django = "==2.2.10"

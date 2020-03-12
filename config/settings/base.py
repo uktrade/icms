@@ -28,6 +28,10 @@ INSTALLED_APPS = [
     'captcha',
     'compressor',
     'phonenumber_field',
+    'viewflow',
+    'viewflow.frontend',
+    'material',
+    'material.frontend',
     'django_filters',
     'django.forms',
     'django.contrib.admin',
@@ -36,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'viewflow',
 ]
 
 MIDDLEWARE = [
