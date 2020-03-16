@@ -74,6 +74,3 @@ LOGGING = {
         }
     },
 }
-
-# TODO: prefix this settings with CHUNK_UPLOADER_ when upstream library is pushed to registry
-S3_ENDPOINT_URL = "http://localhost:4752"

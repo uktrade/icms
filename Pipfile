@@ -35,5 +35,6 @@ django-compressor = "*"
 django-viewflow="*"
 elastic-apm = "*"
 s3chunkuploader = "*"
+humanize = "*"
 [requires]
 python_version = "3.7.6"

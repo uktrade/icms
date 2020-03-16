@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.conf import settings
 import logging
 
-from web.utils import SimpleStartFlowMixin, SimpleFlowMixin, FilevalidationService
+from web.utils import SimpleStartFlowMixin, SimpleFlowMixin, FilevalidationService, url_path_join
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
 from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
@@ -224,7 +224,6 @@ class AccessRequestFirView(PostActionMixin):
 
         uploaded_file = request.FILES['uploaded_file']
 
-        error_message = ''
         try:
             upload_service = S3UploadService(
                 s3_client=s3_client(),
@@ -232,21 +231,27 @@ class AccessRequestFirView(PostActionMixin):
                 file_validator=FilevalidationService()
             )
 
-            upload_service.process_uploaded_file(
+            file_path = upload_service.process_uploaded_file(
                 settings.AWS_STORAGE_BUCKET_NAME,
                 uploaded_file,
-                f'/documents/fir/{data["id"]}/'
+                url_path_join(settings.PATH_STORAGE_FIR, data["id"])
             )
+
+            file_size = uploaded_file.size
+            error_message = ''
+
         except Exception as e:
+            file_size = 0
             error_message = str(e)
+            file_path = ''
 
         file_model = File()
         file_model.filename = uploaded_file.original_name
         file_model.content_type = uploaded_file.content_type
         file_model.browser_content_type = uploaded_file.content_type
         file_model.description = ''
-        file_model.file_size = uploaded_file.size
-        file_model.path = uploaded_file.name
+        file_model.file_size = file_size
+        file_model.path = file_path
         file_model.error_message = error_message
         file_model.created_by = request.user
         file_model.save()

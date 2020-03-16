@@ -1,5 +1,13 @@
+import logging
+import humanize
+
 from django.db import models
+from django.conf import settings
 from web.domains.user.models import User
+from web.utils import url_path_join
+
+
+logger = logging.getLogger(__name__)
 
 
 class File(models.Model):
@@ -26,3 +34,9 @@ class File(models.Model):
             returns a formatted datetime
         """
         return self.created_datetime.strftime('%d-%b-%Y %H:%M:%S')
+
+    def full_path(self):
+        return url_path_join(settings.AWS_BASE_URL, settings.AWS_STORAGE_BUCKET_NAME, self.path)
+
+    def human_readable_file_size(self):
+        return humanize.naturalsize(self.file_size or 0)
