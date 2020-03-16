@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
-import environ
-from django.forms import Field
 
+import environ
+import structlog
+from django.forms import Field
 
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
 env = environ.Env()
@@ -27,6 +28,10 @@ INSTALLED_APPS = [
     'captcha',
     'compressor',
     'phonenumber_field',
+    'viewflow',
+    'viewflow.frontend',
+    'material',
+    'material.frontend',
     'django_filters',
     'django.forms',
     'django.contrib.admin',
@@ -35,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'viewflow',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_structlog.middlewares.RequestMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -82,8 +87,6 @@ TEMPLATES = [
     },
 ]
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
-
-WSGI_APPLICATION = 'config.wsgi.application'
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -174,12 +177,32 @@ S3_DOCUMENT_ROOT_DIRECTORY = 'tmp'
 
 AWS_BASE_URL = "http://localhost:4572/"  # base url used for file downloads
 
-FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler',)
+FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler', )
 
 # Anti virus settings
 CLAM_AV_USERNAME = env.str('CLAM_AV_USERNAME', 'test')
-CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '')
+CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '74q4q7S75JWFKA9K6vWy46jXa')
 CLAM_AV_URL = env.str('CLAM_AV_URL', 'https://clamav.london.cloudapps.digital/v2/scan')
 
 # Storage Folders
 PATH_STORAGE_FIR = '/documents/fir/'  # start with /
+
+# Structured logging shared configuration
+structlog.configure(
+    processors=[
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.ExceptionPrettyPrinter(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    context_class=structlog.threadlocal.wrap_dict(dict),
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
+    cache_logger_on_first_use=True,
+)

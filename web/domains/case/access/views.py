@@ -1,24 +1,24 @@
-from django.shortcuts import redirect
+import structlog as logging
+from django.conf import settings
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django.http import HttpResponseBadRequest
-from django.shortcuts import render
-from django.conf import settings
-import logging
 
 from web.utils import SimpleStartFlowMixin, SimpleFlowMixin, FilevalidationService, url_path_join
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
 from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
 from web.views.mixins import PostActionMixin
-from web.domains.case.models import FurtherInformationRequest
-from web.domains.template.models import Template
-from web.domains.file.models import File
-from django.views.decorators.csrf import csrf_exempt
 from s3chunkuploader.file_handler import s3_client
-from web.utils.virus import ClamAV
+from web.domains.case.models import FurtherInformationRequest
+from web.domains.file.models import File
+from web.domains.template.models import Template
 from web.utils.s3upload import S3UploadService
+from web.utils.virus import ClamAV
+
 
 logger = logging.getLogger(__name__)
 
@@ -92,11 +92,8 @@ class AccessRequestFirView(PostActionMixin):
         Params:
             process_id - Access Request id
         """
-        return render(
-            request,
-            self.template_name,
-            self.get_context_data(process_id)
-        )
+        return render(request, self.template_name,
+                      self.get_context_data(process_id))
 
     def edit(self, request, process_id, *args, **kwargs):
         """
@@ -113,11 +110,8 @@ class AccessRequestFirView(PostActionMixin):
 
         fir_id = int(data['id'])
 
-        return render(
-            request,
-            self.template_name,
-            self.get_context_data(process_id, selected_fir=fir_id)
-        )
+        return render(request, self.template_name,
+                      self.get_context_data(process_id, selected_fir=fir_id))
 
     def set_fir_status(self, id, status):
         """
@@ -138,7 +132,8 @@ class AccessRequestFirView(PostActionMixin):
         Params:
             process_id - Access Request id
         """
-        self.set_fir_status(request.POST['id'], FurtherInformationRequest.DRAFT)
+        self.set_fir_status(request.POST['id'],
+                            FurtherInformationRequest.DRAFT)
         return redirect('access_request_fir_list', process_id=process_id)
 
     def send(self, request, process_id):
@@ -159,7 +154,8 @@ class AccessRequestFirView(PostActionMixin):
         Params:
             process_id - Access Request id
         """
-        model = self.set_fir_status(request.POST['id'], FurtherInformationRequest.DELETED)
+        model = self.set_fir_status(request.POST['id'],
+                                    FurtherInformationRequest.DELETED)
         model.is_active = False
         model.save()
 
@@ -180,10 +176,9 @@ class AccessRequestFirView(PostActionMixin):
             return redirect('access_request_fir_list', process_id=process_id)
 
         return render(
-            request,
-            self.template_name,
-            self.get_context_data(process_id, selected_fir=model.id, form=form)
-        )
+            request, self.template_name,
+            self.get_context_data(process_id, selected_fir=model.id,
+                                  form=form))
 
     def new(self, request, process_id):
         """
@@ -195,26 +190,28 @@ class AccessRequestFirView(PostActionMixin):
         """
         access_request = AccessRequest.objects.get(pk=process_id)
         try:
-            template = Template.objects.get(template_code=self.FIR_TEMPLATE_CODE, is_active=True)
+            template = Template.objects.get(
+                template_code=self.FIR_TEMPLATE_CODE, is_active=True)
         except Exception as e:
-            logger.warn('could not fetch templat with code "%s" - reason %s' % (self.FIR_TEMPLATE_CODE, str(e)))
+            logger.warn('could not fetch templat with code "%s" - reason %s' %
+                        (self.FIR_TEMPLATE_CODE, str(e)))
             template = Template()
 
         instance = FurtherInformationRequest()
         instance.requested_by = request.user
         instance.request_detail = template.get_content({
-            'CURRENT_USER_NAME': self.request.user.full_name,
-            'REQUESTER_NAME': access_request.submitted_by.full_name
+            'CURRENT_USER_NAME':
+            self.request.user.full_name,
+            'REQUESTER_NAME':
+            access_request.submitted_by.full_name
         })
         instance.save()
 
         access_request.further_information_requests.add(instance)
 
         return render(
-            request,
-            self.template_name,
-            self.get_context_data(process_id, selected_fir=instance.id)
-        )
+            request, self.template_name,
+            self.get_context_data(process_id, selected_fir=instance.id))
 
     @csrf_exempt
     def upload(self, request, process_id):
@@ -227,9 +224,10 @@ class AccessRequestFirView(PostActionMixin):
         try:
             upload_service = S3UploadService(
                 s3_client=s3_client(),
-                virus_scanner=ClamAV(settings.CLAM_AV_USERNAME, settings.CLAM_AV_PASSWORD, settings.CLAM_AV_URL),
-                file_validator=FilevalidationService()
-            )
+                virus_scanner=ClamAV(settings.CLAM_AV_USERNAME,
+                                     settings.CLAM_AV_PASSWORD,
+                                     settings.CLAM_AV_URL),
+                file_validator=FilevalidationService())
 
             file_path = upload_service.process_uploaded_file(
                 settings.AWS_STORAGE_BUCKET_NAME,
@@ -239,7 +237,6 @@ class AccessRequestFirView(PostActionMixin):
 
             file_size = uploaded_file.size
             error_message = ''
-
         except Exception as e:
             file_size = 0
             error_message = str(e)
@@ -276,17 +273,22 @@ class AccessRequestFirView(PostActionMixin):
             form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
         if selected_fir and fir.id == selected_fir:
-            return form if form else FurtherInformationRequestForm(instance=fir)
+            return form if form else FurtherInformationRequestForm(
+                instance=fir)
 
         return FurtherInformationRequestDisplayForm(
             instance=fir,
             initial={
                 'requested_datetime': fir.date_created_formatted().upper(),
                 'requested_by': fir.requested_by.full_name
-            }
-        )
+            })
 
-    def get_context_data(self, process_id, selected_fir=None, form=None, *args, **kwargs):
+    def get_context_data(self,
+                         process_id,
+                         selected_fir=None,
+                         form=None,
+                         *args,
+                         **kwargs):
         """
         Helper function to generate context data to be sent to views
 
@@ -296,7 +298,8 @@ class AccessRequestFirView(PostActionMixin):
             form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
         process = AccessRequestProcess.objects.get(pk=process_id)
-        items = process.access_request.further_information_requests.exclude(status=FurtherInformationRequest.DELETED).order_by('pk').reverse()
+        items = process.access_request.further_information_requests.exclude(
+            status=FurtherInformationRequest.DELETED).order_by('pk').reverse()
 
         return {
             'fir_list': [self.create_display_or_edit_form(fir, selected_fir, form) for fir in items],

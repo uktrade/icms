@@ -1,6 +1,7 @@
-from . import email
+import structlog as logging
 from django.template.loader import render_to_string
-import logging
+
+from . import email
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)

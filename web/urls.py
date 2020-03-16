@@ -1,7 +1,9 @@
-from viewflow.flow.viewset import FlowViewSet
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path, register_converter
+from django.views import generic
 
+from material.frontend import urls as frontend_urls
+from viewflow.flow.viewset import FlowViewSet
 from web.domains.application._import import views as imp_app_views
 from web.domains.commodity import views as commodity_views
 from web.domains.constabulary import views as constabulary_views
@@ -24,12 +26,14 @@ from web.domains.legislation.views import (ProductLegislationCreateView,
                                            ProductLegislationUpdateView)
 from web.domains.team.views import TeamEditView, TeamListView
 from web.domains.template.views import TemplateListView
-from web.domains.user.views import UsersListView, current_user_details
-from web.domains.user.views import user_details
-from web.domains.workbasket.views import workbasket, take_ownership
+from web.domains.user.views import (UsersListView, current_user_details,
+                                    user_details)
+from web.domains.workbasket.views import take_ownership, workbasket
+
 from . import converters
 from .auth import views as auth_views
-from .domains.case.access.views import AccessRequestCreatedView, AccessRequestFirView
+from .domains.case.access.views import (AccessRequestCreatedView,
+                                        AccessRequestFirView)
 from .flows import AccessRequestFlow
 from .views import home
 
@@ -189,22 +193,25 @@ urlpatterns = [
          name='exporter-view'),
 
     # Access Request
-    path(
-         'access/<process_id>/fir',
-         AccessRequestFirView.as_view(), name="access_request_fir_list"
-    ),
+    path('access/<process_id>/fir',
+         AccessRequestFirView.as_view(),
+         name="access_request_fir_list"),
     path('access/', include(access_request_urls)),
-    path(
-        "access-created/",
-        AccessRequestCreatedView.as_view(), name="access_request_created"
-    ),
-    path(
-        "take-ownership/<process_id>/",
-        take_ownership, name="take_ownership"
-    ),
+    path("access-created/",
+         AccessRequestCreatedView.as_view(),
+         name="access_request_created"),
+    path("take-ownership/<process_id>/", take_ownership,
+         name="take_ownership"),
 
     # Import Application
     path('import/apply/',
          imp_app_views.ImportApplicationCreateView.as_view(),
-         name='import_application_new')
+         name='import_application_new'),
+
+    # Viewflow frontend
+    path('viewflow/', include(frontend_urls)),
+    path(
+        'viewflow/',
+        generic.RedirectView.as_view(url='/viewflow/workflow/',
+                                     permanent=False))
 ]

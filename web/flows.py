@@ -1,16 +1,12 @@
-from viewflow import flow
-from viewflow.base import this, Flow
+import structlog as logging
 
+from viewflow import flow, frontend
+from viewflow.base import Flow, this
 from web.domains import User
+from web.domains.case.access.models import AccessRequest, AccessRequestProcess
+from web.domains.case.access.views import (AccessRequestCreateView,
+                                           ILBReviewRequest)
 from web.notify import notify
-
-from web.domains.case.access.models import AccessRequestProcess, AccessRequest
-from web.domains.case.access.views import (
-    AccessRequestCreateView,
-    ILBReviewRequest,
-)
-
-import logging
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -34,6 +30,7 @@ def close_request(activation):
     activation.process.access_request.save()
 
 
+@frontend.register
 class AccessRequestFlow(Flow):
     process_class = AccessRequestProcess
 

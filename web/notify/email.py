@@ -1,7 +1,9 @@
+import traceback
+
+import structlog as logging
 from django.conf import settings
 from django.core.mail import send_mail
-import logging
-import traceback
+
 import html2text
 
 logger = logging.getLogger(__name__)

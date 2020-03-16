@@ -49,7 +49,7 @@
             {% for request in request.user.submitted_access_requests.importer_requests().filter(accessrequestprocess__access_request__status="SUBMITTED") %}
             <tr data-xfid="f30">
                 <td data-title="Reference" data-xfid="g31"><span id="g31" class="text-widget ">IAR/785</span></td>
-                <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">13-FEB-2019 17:29</span></td>
+                <td data-title="Requested Date" data-xfid="g32"><span id="g32" class="text-widget ">{{request.submit_datetime}}</span></td>
                 <td data-title="Request Type" data-xfid="g33"><span id="g33" class="text-widget ">{{request.request_type_verbose()}}</span></td>
                 <td data-title="Importer Name / Address" data-xfid="g34"><span id="g34" class="text-widget ">{{request.organisation_name}}<br><br>{{request.organisation_address}}</span></td>
                 <td data-title="Agent Name / Address" data-xfid="g35"><span id="g35" class="text-widget ">{{request.agent_name}}<br><br>{{request.agent_address}}</span></td>
@@ -133,7 +133,7 @@
               {{fields.field(form.request_reason)}}
               {{fields.field(form.agent_name)}}
               {{fields.field(form.agent_address)}}
-              <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now  }}" id="id__viewflow_activation-started">
+              {{activation.management_form}}
               <div class="clearBoth"></div>
               <div class="container">
                 <div class="row">

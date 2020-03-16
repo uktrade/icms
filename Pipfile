@@ -33,8 +33,11 @@ jinja2 = "*"
 requests = "*"
 django-compressor = "*"
 django-viewflow="*"
+django-material = "*"
 elastic-apm = "*"
 s3chunkuploader = "*"
 humanize = "*"
+django-structlog = "*"
+
 [requires]
 python_version = "3.7.6"

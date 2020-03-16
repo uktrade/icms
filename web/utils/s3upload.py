@@ -1,11 +1,11 @@
-import time
+import structlog as logging
 import os
 import random
+import time
+
+from django.conf import settings
 from web.utils.virus import InfectedFileException
 from web.utils import url_path_join
-from django.conf import settings
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,8 @@ class S3UploadService():
 
         # upload to /documents/fir/<fir id>
         logger.debug('Processing Uploaded File %s' % uploaded_file.name)
-        s3_file = self.s3_client.get_object(Bucket=bucket, Key=uploaded_file.name)
+        s3_file = self.s3_client.get_object(Bucket=bucket,
+                                            Key=uploaded_file.name)
         s3_file_content = s3_file['Body'].read()
 
         try:
@@ -96,5 +97,5 @@ class S3UploadService():
         finally:
             # delete uploaded file as it is no longer needed.
             # it either failed validation or virus scanning or has been copied to the right place
-            # self.s3_client.delete_object(Bucket=bucket, Key=uploaded_file.name)
+            self.s3_client.delete_object(Bucket=bucket, Key=uploaded_file.name)
             pass
