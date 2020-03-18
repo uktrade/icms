@@ -1,24 +1,26 @@
 import structlog as logging
 from django.conf import settings
-from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.http import Http404, HttpResponseBadRequest
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 from s3chunkuploader.file_handler import s3_client
+from viewflow.flow.views import FlowMixin
 from web.domains.case.forms import (FurtherInformationRequestDisplayForm,
                                     FurtherInformationRequestForm)
 from web.domains.case.models import FurtherInformationRequest
 from web.domains.file.models import File
+from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
-from web.utils import (FilevalidationService, SimpleFlowMixin,
-                       SimpleStartFlowMixin)
+from web.utils import FilevalidationService
 from web.utils.s3upload import S3UploadService
 from web.utils.virus import ClamAV
-from web.views.mixins import PostActionMixin
+from web.views.mixins import (PostActionMixin, SimpleStartFlowMixin)
 
+from .actions import LinkImporter
 from .forms import AccessRequestForm, ReviewAccessRequestForm
 from .models import AccessRequest, AccessRequestProcess
 
@@ -62,13 +64,15 @@ class AccessRequestCreatedView(TemplateView):
     template_name = 'web/request-access-success.html'
 
 
-class ILBReviewRequest(SimpleFlowMixin, FormView):
+class ILBReviewRequest(FlowMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
+    success_url = reverse_lazy('workbasket')
 
-    def form_valid(self, form):
+    def form_valid(self, form, *args, **kwargs):
         form.save()
-        self.activation_done()
+        # Finish task
+        self.activation.done()
         return redirect(reverse('workbasket'))
 
     def get_form(self):
@@ -76,6 +80,24 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
             instance=self.activation.process.access_request,
             **self.get_form_kwargs(),
         )
+
+
+class LinkImporterView(ImporterListView):
+    """
+        Displays importer list view for searching and linking
+        importers to access requests.
+    """
+    def get(self, request, process_id, task_id):
+        process = get_object_or_404(AccessRequestProcess, pk=process_id)
+        task = get_object_or_404(process.flow_class.task_class,
+                                 process=process,
+                                 finished__isnull=True,
+                                 pk=task_id)
+
+        return super().get(request, process_id, task_id)
+
+    class Display(ImporterListView.Display):
+        actions = [LinkImporter()]
 
 
 class AccessRequestFirView(PostActionMixin):

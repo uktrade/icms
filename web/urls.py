@@ -33,7 +33,8 @@ from web.domains.workbasket.views import take_ownership, workbasket
 from . import converters
 from .auth import views as auth_views
 from .domains.case.access.views import (AccessRequestCreatedView,
-                                        AccessRequestFirView)
+                                        AccessRequestFirView, LinkImporterView)
+
 from .flows import AccessRequestFlow
 from .views import home
 
@@ -197,6 +198,9 @@ urlpatterns = [
          AccessRequestFirView.as_view(),
          name="access_request_fir_list"),
     path('access/', include(access_request_urls)),
+    path('access/<process_id>/review_request/<task_id>/link/',
+         LinkImporterView.as_view(),
+         name="link-importer"),
     path("access-created/",
          AccessRequestCreatedView.as_view(),
          name="access_request_created"),
