@@ -1,6 +1,6 @@
 import structlog as logging
 from django.conf import settings
-from django.http import Http404, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
@@ -18,7 +18,7 @@ from web.domains.template.models import Template
 from web.utils import FilevalidationService, url_path_join
 from web.utils.s3upload import S3UploadService
 from web.utils.virus import ClamAV
-from web.views.mixins import (PostActionMixin, SimpleStartFlowMixin)
+from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
 from .actions import LinkImporter
 from .forms import AccessRequestForm, ReviewAccessRequestForm
@@ -254,10 +254,8 @@ class AccessRequestFirView(PostActionMixin):
                 file_validator=FilevalidationService())
 
             file_path = upload_service.process_uploaded_file(
-                settings.AWS_STORAGE_BUCKET_NAME,
-                uploaded_file,
-                url_path_join(settings.PATH_STORAGE_FIR, data["id"])
-            )
+                settings.AWS_STORAGE_BUCKET_NAME, uploaded_file,
+                url_path_join(settings.PATH_STORAGE_FIR, data["id"]))
 
             file_size = uploaded_file.size
             error_message = ''

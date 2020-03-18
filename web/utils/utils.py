@@ -2,11 +2,6 @@ import os
 import logging
 from copy import deepcopy
 
-from django.http import HttpResponseRedirect
-from viewflow.flow.views.start import BaseStartFlowMixin
-from viewflow.flow.views.task import BaseFlowMixin
-
-
 logger = logging.getLogger(__name__)
 
 
