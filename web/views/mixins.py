@@ -1,5 +1,4 @@
 import structlog as logging
-from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponseRedirect
 from django.views.generic.base import View
 from django.views.generic.list import ListView

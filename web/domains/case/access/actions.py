@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 
-from web.domains.case.access.models import AccessRequest, AccessRequestProcess
+from web.domains.case.access.models import AccessRequestProcess
 from web.views.actions import PostAction
 
 # from viewflow.decorators import flow_func
@@ -24,7 +24,8 @@ class LinkImporter(PostAction):
         return True
 
     def handle(self, request, model, process_id, task_id):
-        access_request = AccessRequestProcess.objects.get(pk=process_id).access_request
+        access_request = AccessRequestProcess.objects.get(
+            pk=process_id).access_request
         importer = self._get_item(request, model)
         logger.debug('Linking importer',
                      access_request=access_request,

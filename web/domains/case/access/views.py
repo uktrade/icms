@@ -89,10 +89,10 @@ class LinkImporterView(ImporterListView):
     """
     def get(self, request, process_id, task_id):
         process = get_object_or_404(AccessRequestProcess, pk=process_id)
-        task = get_object_or_404(process.flow_class.task_class,
-                                 process=process,
-                                 finished__isnull=True,
-                                 pk=task_id)
+        get_object_or_404(process.flow_class.task_class,
+                          process=process,
+                          finished__isnull=True,
+                          pk=task_id)
 
         return super().get(request, process_id, task_id)
 

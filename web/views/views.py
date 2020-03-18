@@ -32,7 +32,7 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
                 response = a.handle(request, self.model, *args, **kwargs)
                 if response:
                     return response
-                else: # Render the same page
+                else:  # Render the same page
                     return super().get(request, *args, **kwargs)
 
         raise SuspiciousOperation('Invalid Request!')
