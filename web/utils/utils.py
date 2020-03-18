@@ -1,5 +1,19 @@
 import os
+import logging
 from copy import deepcopy
+
+from django.http import HttpResponseRedirect
+from viewflow.flow.views.start import BaseStartFlowMixin
+from viewflow.flow.views.task import BaseFlowMixin
+
+
+logger = logging.getLogger(__name__)
+
+
+def url_path_join(*args):
+    clean_args = [x.rstrip('/') for x in args]
+    return "/".join(clean_args)
+
 
 def merge_dictionaries(a, b):
     '''recursively merges dict's. not just simple a['key'] = b['key'], if
@@ -23,8 +37,22 @@ class FilevalidationService():
         Basic file validation service
     """
     EXTENSION_BLACKLIST = [
-        'bat', 'bin', 'com', 'dll', 'exe', 'htm', 'html', 'msc', 'msi', 'msp',
-        'ocx', 'scr', 'wsc', 'wsf', 'wsh', 'txt'
+        'bat',
+        'bin',
+        'com',
+        'dll',
+        'exe',
+        'htm',
+        'html',
+        'msc',
+        'msi',
+        'msp',
+        'ocx',
+        'scr',
+        'wsc',
+        'wsf',
+        'wsh',
+        'txt'
     ]
 
     def has_valid_extenstion(self, file):
@@ -52,3 +80,5 @@ class FilevalidationService():
         """
         if not self.has_valid_extenstion(file):
             return False
+
+        return True

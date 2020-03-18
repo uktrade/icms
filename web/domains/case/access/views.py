@@ -15,7 +15,7 @@ from web.domains.case.models import FurtherInformationRequest
 from web.domains.file.models import File
 from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
-from web.utils import FilevalidationService
+from web.utils import FilevalidationService, url_path_join
 from web.utils.s3upload import S3UploadService
 from web.utils.virus import ClamAV
 from web.views.mixins import (PostActionMixin, SimpleStartFlowMixin)
@@ -245,7 +245,6 @@ class AccessRequestFirView(PostActionMixin):
 
         uploaded_file = request.FILES['uploaded_file']
 
-        error_message = ''
         try:
             upload_service = S3UploadService(
                 s3_client=s3_client(),
@@ -254,19 +253,26 @@ class AccessRequestFirView(PostActionMixin):
                                      settings.CLAM_AV_URL),
                 file_validator=FilevalidationService())
 
-            upload_service.process_uploaded_file(
-                settings.AWS_STORAGE_BUCKET_NAME, uploaded_file,
-                f'/documents/fir/{data["id"]}/')
+            file_path = upload_service.process_uploaded_file(
+                settings.AWS_STORAGE_BUCKET_NAME,
+                uploaded_file,
+                url_path_join(settings.PATH_STORAGE_FIR, data["id"])
+            )
+
+            file_size = uploaded_file.size
+            error_message = ''
         except Exception as e:
+            file_size = 0
             error_message = str(e)
+            file_path = ''
 
         file_model = File()
         file_model.filename = uploaded_file.original_name
         file_model.content_type = uploaded_file.content_type
         file_model.browser_content_type = uploaded_file.content_type
         file_model.description = ''
-        file_model.file_size = uploaded_file.size
-        file_model.path = uploaded_file.name
+        file_model.file_size = file_size
+        file_model.path = file_path
         file_model.error_message = error_message
         file_model.created_by = request.user
         file_model.save()

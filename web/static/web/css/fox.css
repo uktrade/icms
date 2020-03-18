@@ -3595,19 +3595,24 @@ IE compat
     -moz-box-sizing: border-box;
 }
 
+.file-list,
 .setoutList {
     width: 100%;
 }
 
+.file-list th,
+.file-list td,
 .setoutList th,
 .setoutList td {
     padding: 1em;
 }
 
+.file-list th.listPrompt ,
 .setoutList th.listPrompt {
     text-align: center;
 }
 
+.file-list th,
 .setoutList th {
     font-weight: 600;
     text-align: left;
@@ -3615,22 +3620,41 @@ IE compat
     border-bottom: 2px solid #ccc;
 }
 
+.file-list th .link-button ,
 .setoutList th .link-button {
     font-weight: 600;
     margin: 0;
 }
 
+.file-list td ,
 .setoutList td {
     font-size: 0.9em;
     border-bottom: 1px solid #ccc;
     vertical-align: top;
 }
 
+.file-list tr.has-error td {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.file-list tr.error td {
+    border-bottom: 1px solid #ccc;
+}
+
+.file-list tr.error td {
+    color: red;
+    font-size: .8em;
+    padding-top: 0.2em;
+}
+
+.file-list .nestedList thead,
 .setoutList .nestedList thead,
 .headlessList thead {
     display: none;
 }
 
+.file-list .nestedList td,
 .setoutList .nestedList td,
 .unborderedList td {
     border-bottom: none;
@@ -3652,6 +3676,7 @@ IE compat
     padding: 0 1em 1em 0;
 }
 
+.setoutForm .file-list th ,
 .setoutForm .setoutList th {
     padding-top: 0;
 }

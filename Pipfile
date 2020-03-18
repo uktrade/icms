@@ -36,6 +36,7 @@ django-viewflow="*"
 django-material = "*"
 elastic-apm = "*"
 s3chunkuploader = "*"
+humanize = "*"
 django-structlog = "*"
 
 [requires]
