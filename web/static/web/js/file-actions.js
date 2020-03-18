@@ -27,6 +27,16 @@ $(document).ready(function(){
             $frm.submit();
         });
 
-    $input.click();
+        $input.click();
+    });
+
+
+    $('[role=file-delete]').on('click', function(evt){
+        evt.preventDefault();
+        $el = $(evt.currentTarget);
+        $frm = $el.closest('form');
+        $frm.append('<input type="hidden" name="action" value="delete_file">');
+        $frm.append('<input type="hidden" name="file_id" value="'+ $el.attr('x-file-id') +'">');
+        $frm.submit();
     });
 });
