@@ -1,12 +1,23 @@
 {% set file_name = file.filename if file is defined and file.filename is defined else 'FILENAME.PDF' %}
-{% set file_size = file.file_size if file is defined and file.file_size is defined else '??KB' %}
+{% set file_size = file.human_readable_file_size() if file is defined else '??KB' %}
 {% set created_by = file.created_by.full_name if file is defined and file.created_by is defined else 'MR UNKOWN' %}
 {% set created_at = file.date_created_formatted() if file is defined else '1 JAN 1900 00:00:00' %}
+{% set file_url = file.full_path() if file is defined else '#' %}
+{% set error_message = file.error_message if file is defined and file.error_message is defined else False %}
 
+{% if error_message %}
+    {% set file_url = '#' %}
+{% endif %}
 
-<tr>
+<tr class="{% if error_message %} has-error {% endif %}">
     <td>
-        <a  role="filename" class="fileInfo readonly downloadLink" href="#">{{ file_name }}</a>
+        <a
+            role="filename"
+            class="fileInfo readonly downloadLink"
+            href="{{ file_url }}"
+        >
+            {{ file_name }}
+        </a>
         <span role="filesize" class="filesize" >{{ file_size }}</span>
     </td>
     <td>
@@ -20,3 +31,10 @@
 
     </td>
 </tr>
+{% if error_message %}
+    <tr class="error">
+        <td colspan="3" class="uploadError errorMessage">
+            {{ error_message }}
+        </td>
+    </tr>
+{% endif %}

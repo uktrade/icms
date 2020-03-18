@@ -173,14 +173,19 @@ AWS_STORAGE_BUCKET_NAME = 'icms.local'
 AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
 S3_GENERATE_OBJECT_KEY_FUNCTION = 'web.utils.s3upload.random_file_name'
 S3_DOCUMENT_ROOT_DIRECTORY = 'tmp'
+# END TODO
+
+AWS_BASE_URL = "http://localhost:4572/"  # base url used for file downloads
 
 FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler', )
 
-# Antu virus settings
+# Anti virus settings
 CLAM_AV_USERNAME = env.str('CLAM_AV_USERNAME', 'test')
 CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '')
-CLAM_AV_URL = env.str('CLAM_AV_URL',
-                      'https://clamav.london.cloudapps.digital/v2/scan')
+CLAM_AV_URL = env.str('CLAM_AV_URL', 'https://clamav.london.cloudapps.digital/v2/scan')
+
+# Storage Folders
+PATH_STORAGE_FIR = '/documents/fir/'  # start with /
 
 # Structured logging shared configuration
 structlog.configure(

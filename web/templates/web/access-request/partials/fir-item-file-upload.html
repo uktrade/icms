@@ -3,7 +3,7 @@
         <label class="prompt west">Documents</label>
     </div>
     <div class="six columns">
-        <table class="setoutList" role="file-list">
+        <table class="file-list" role="file-list">
             <thead>
                 <tr>
                     <th scope="col">File </th>
@@ -12,17 +12,17 @@
                 </tr>
             </thead>
             <tbody>
-                {% for file in fir.instance.files.all() %}
+                {% for file in fir.instance.files.all().order_by('pk').reverse() %}
                     {% include "web/access-request/partials/fir-item-file-upload-row.html" %}
                 {% endfor %}
 
-                <tr>
-                    <td colspan="3">
-                        {% if in_edit_action %}
+                {% if in_edit_action %}
+                    <tr>
+                        <td colspan="3">
                             {% include "web/access-request/partials/fields/file-upload-button.html" %}
-                        {% endif %}
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
