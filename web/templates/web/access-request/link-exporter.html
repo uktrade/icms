@@ -1,16 +1,12 @@
-{% extends "web/importer/list.html" %}
-
-{% import "forms/fields.html" as fields %}
+{% extends "web/exporter/list.html" %}
 
 {% block main_content %}
 
-
 <div class="info-box info-box-info">
-  Import Access Request Details
+  Export Access Request Details
 
   {% include "web/access-request/partials/access-request-display.html" %}
 </div>
 
 {{super()}}
-{%endblock %}
-
+{% endblock %}

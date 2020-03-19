@@ -12,6 +12,7 @@ from viewflow.flow.views import FlowMixin
 from web.domains.case.forms import (FurtherInformationRequestDisplayForm,
                                     FurtherInformationRequestForm)
 from web.domains.case.models import FurtherInformationRequest
+from web.domains.exporter.views import ExporterListView
 from web.domains.file.models import File
 from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
@@ -20,8 +21,9 @@ from web.utils.s3upload import S3UploadService
 from web.utils.virus import ClamAV
 from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
-from .actions import LinkImporter
-from .forms import AccessRequestForm, ReviewAccessRequestForm
+from .actions import LinkExporter, LinkImporter
+from .forms import (AccessRequestDisplayForm, AccessRequestForm,
+                    ReviewAccessRequestForm)
 from .models import AccessRequest, AccessRequestProcess
 
 logger = logging.getLogger(__name__)
@@ -87,17 +89,51 @@ class LinkImporterView(ImporterListView):
         Displays importer list view for searching and linking
         importers to access requests.
     """
+    template_name = 'web/access-request/link-importer.html'
+
     def get(self, request, process_id, task_id):
-        process = get_object_or_404(AccessRequestProcess, pk=process_id)
-        get_object_or_404(process.flow_class.task_class,
-                          process=process,
-                          finished__isnull=True,
-                          pk=task_id)
+        self.process = get_object_or_404(AccessRequestProcess, pk=process_id)
+        self.access_request = self.process.access_request
+        self.task = get_object_or_404(self.process.flow_class.task_class,
+                                      process=self.process,
+                                      finished__isnull=True,
+                                      pk=task_id)
 
         return super().get(request, process_id, task_id)
 
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['access_request'] = self.access_request
+        return context
+
     class Display(ImporterListView.Display):
         actions = [LinkImporter()]
+
+
+class LinkExporterView(ExporterListView):
+    """
+        Displays exporter list view for searching and linking
+        exporter to access requests.
+    """
+    template_name = 'web/access-request/link-exporter.html'
+
+    def get(self, request, process_id, task_id):
+        self.process = get_object_or_404(AccessRequestProcess, pk=process_id)
+        self.access_request = self.process.access_request
+        self.task = get_object_or_404(self.process.flow_class.task_class,
+                                      process=self.process,
+                                      finished__isnull=True,
+                                      pk=task_id)
+
+        return super().get(request, process_id, task_id)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['access_request'] = self.access_request
+        return context
+
+    class Display(ExporterListView.Display):
+        actions = [LinkExporter()]
 
 
 class AccessRequestFirView(PostActionMixin):

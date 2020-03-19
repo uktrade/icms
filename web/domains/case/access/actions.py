@@ -32,5 +32,26 @@ class LinkImporter(PostAction):
                      importer=importer)
         access_request.linked_importer = importer
         access_request.save()
-        messages.success(request, 'Linked successfuly')
+        messages.success(request, 'Linked Importer Successfuly')
+        return redirect(reverse('review_request', args=(process_id, task_id)))
+
+class LinkExporter(PostAction):
+    action = 'link'
+    label = 'Link Exporter'
+    icon = 'icon-link'
+    confirm = False
+
+    def display(self, object):
+        return True
+
+    def handle(self, request, model, process_id, task_id):
+        access_request = AccessRequestProcess.objects.get(
+            pk=process_id).access_request
+        exporter = self._get_item(request, model)
+        logger.debug('Linking Exporter',
+                     access_request=access_request,
+                     exporter=exporter)
+        access_request.linked_exporter = exporter
+        access_request.save()
+        messages.success(request, 'Linked Exporter Successfuly')
         return redirect(reverse('review_request', args=(process_id, task_id)))
