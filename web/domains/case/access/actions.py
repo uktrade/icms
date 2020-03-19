@@ -35,6 +35,7 @@ class LinkImporter(PostAction):
         messages.success(request, 'Linked Importer Successfuly')
         return redirect(reverse('review_request', args=(process_id, task_id)))
 
+
 class LinkExporter(PostAction):
     action = 'link'
     label = 'Link Exporter'

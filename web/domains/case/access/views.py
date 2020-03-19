@@ -22,8 +22,7 @@ from web.utils.virus import ClamAV
 from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
 from .actions import LinkExporter, LinkImporter
-from .forms import (AccessRequestDisplayForm, AccessRequestForm,
-                    ReviewAccessRequestForm)
+from .forms import (AccessRequestForm, ReviewAccessRequestForm)
 from .models import AccessRequest, AccessRequestProcess
 
 logger = logging.getLogger(__name__)

@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms.widgets import Select, Textarea
 
-from web.forms import ModelDisplayForm, ViewFlowModelEditForm
+from web.forms import ViewFlowModelEditForm
 
 from .models import AccessRequest
 
@@ -67,23 +67,6 @@ class AccessRequestForm(ViewFlowModelEditForm):
                 }
             }
         }
-
-
-class AccessRequestDisplayForm(ModelDisplayForm):
-    pass
-
-    class Meta:
-        model = AccessRequest
-
-        fields = [
-            'submitted_by',
-            'submit_datetime',
-            'request_type',
-            'organisation_name',
-            'organisation_address',
-            'agent_name',
-            'agent_address',
-        ]
 
 
 class ReviewAccessRequestForm(ViewFlowModelEditForm):
