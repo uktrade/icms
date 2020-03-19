@@ -12,7 +12,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for file in fir.instance.files.all().order_by('pk').reverse() %}
+                {% for file in fir.instance.files.all().filter(is_active=True).order_by('pk').reverse() %}
                     {% include "web/access-request/partials/fir-item-file-upload-row.html" %}
                 {% endfor %}
 

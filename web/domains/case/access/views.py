@@ -259,6 +259,18 @@ class AccessRequestFirView(PostActionMixin):
 
         return redirect('access_request_fir_list', process_id=process_id)
 
+    def delete_file(self, request, process_id):
+        data = request.POST if request.POST else None
+        if not data or 'file_id' not in data:
+            return HttpResponseBadRequest('Invalid body received')
+
+        file_id = data['file_id']
+        file_model = File.objects.get(pk=file_id)
+        file_model.is_active = False
+        file_model.save()
+
+        return redirect('access_request_fir_list', process_id=process_id)
+
     def create_display_or_edit_form(self, fir, selected_fir, form):
         """
         This function either returns an Further Information Request (FIR) form, or a read only version of it.
