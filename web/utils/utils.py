@@ -32,22 +32,8 @@ class FilevalidationService():
         Basic file validation service
     """
     EXTENSION_BLACKLIST = [
-        'bat',
-        'bin',
-        'com',
-        'dll',
-        'exe',
-        'htm',
-        'html',
-        'msc',
-        'msi',
-        'msp',
-        'ocx',
-        'scr',
-        'wsc',
-        'wsf',
-        'wsh',
-        'txt'
+        'bat', 'bin', 'com', 'dll', 'exe', 'htm', 'html', 'msc', 'msi', 'msp',
+        'ocx', 'scr', 'wsc', 'wsf', 'wsh'
     ]
 
     def has_valid_extenstion(self, file):
