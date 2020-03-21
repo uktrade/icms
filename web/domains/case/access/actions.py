@@ -9,8 +9,6 @@ from django.urls import reverse
 from web.domains.case.access.models import AccessRequestProcess
 from web.views.actions import PostAction
 
-# from viewflow.decorators import flow_func
-
 logger = logging.get_logger(__name__)
 
 
