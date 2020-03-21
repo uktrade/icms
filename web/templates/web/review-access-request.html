@@ -84,7 +84,7 @@
                             <div class="six columns" data-xfid="g63">
                               {{access_request.linked_importer}}
                               {% call forms.form(method='post', csrf_input=csrf_input) %}
-                              <a href="{{url('link-importer', args=(process.id,task.id ))}}" value="link" type="submit"
+                              <a href="{{url('link-importer', args=(process.id,task.id ))}}?name={{access_request.organisation_name}}&agent_name={{access_request.agent_name or ''}}" value="link" type="submit"
                                         class="link-button inline-link-button button">
                                     Link / Maintain Importer
                                 </a>
