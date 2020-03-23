@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+
 from web.models.mixins import Archivable, Sortable
 
 
@@ -22,16 +23,16 @@ class PostAction(ListAction):
         return mark_safe(
             render_to_string(
                 self.template, {
-                    'icon': self.icon or None,
+                    'icon': getattr(self, 'icon', None),
                     'csrf_input': csrf_input,
                     'object': object,
                     'confirm': self.confirm,
-                    'confirm_message': self.confirm_message,
+                    'confirm_message': getattr(self, 'confirm_message', None),
                     'action': self.action,
                     'label': self.label
                 }))
 
-    def handle(self, request, model):
+    def handle(self, request, model, *args):
         raise SuspiciousOperation('Not implemented!')
 
 

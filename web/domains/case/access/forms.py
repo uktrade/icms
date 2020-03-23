@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms.widgets import Select, Textarea
 
 from web.forms import ViewFlowModelEditForm
+
 from .models import AccessRequest
 
 
@@ -17,7 +18,9 @@ class AccessRequestForm(ViewFlowModelEditForm):
         if request_type == AccessRequest.IMPORTER:
             self.validate_fields(['request_reason'], cleaned_data)
         elif request_type == AccessRequest.IMPORTER_AGENT:
-            self.validate_fields(['request_reason', 'agent_name', 'agent_address'], cleaned_data)
+            self.validate_fields(
+                ['request_reason', 'agent_name', 'agent_address'],
+                cleaned_data)
         elif request_type == AccessRequest.EXPORTER:
             pass
         elif request_type == AccessRequest.EXPORTER_AGENT:
@@ -29,15 +32,19 @@ class AccessRequestForm(ViewFlowModelEditForm):
         model = AccessRequest
 
         fields = [
-            'request_type', 'organisation_name', 'organisation_address',
-            'request_reason', 'agent_name', 'agent_address',
+            'request_type',
+            'organisation_name',
+            'organisation_address',
+            'request_reason',
+            'agent_name',
+            'agent_address',
         ]
 
         labels = {
             'request_type':
-                'Access Request Type',
+            'Access Request Type',
             'request_reason':
-                'What are you importing and where are you importing it from?'
+            'What are you importing and where are you importing it from?'
         }
 
         widgets = {
@@ -66,6 +73,4 @@ class ReviewAccessRequestForm(ViewFlowModelEditForm):
     class Meta:
         model = AccessRequest
 
-        fields = [
-            'response', 'response_reason'
-        ]
+        fields = ['response', 'response_reason']

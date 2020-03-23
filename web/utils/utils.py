@@ -2,11 +2,6 @@ import os
 import logging
 from copy import deepcopy
 
-from django.http import HttpResponseRedirect
-from viewflow.flow.views.start import BaseStartFlowMixin
-from viewflow.flow.views.task import BaseFlowMixin
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -32,54 +27,13 @@ def merge_dictionaries(a, b):
     return result
 
 
-class SimpleStartFlowMixin(BaseStartFlowMixin):
-    """StartFlowMixin without MessageUserMixin"""
-
-    def activation_done(self, *args, **kwargs):
-        """Finish task activation."""
-        self.activation.done()
-
-    def form_valid(self, *args, **kwargs):
-        """If the form is valid, save the associated model and finish the task."""
-        super(SimpleStartFlowMixin, self).form_valid(*args, **kwargs)
-        self.activation_done(*args, **kwargs)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class SimpleFlowMixin(BaseFlowMixin):
-    """FlowMixin without MessageUserMixin."""
-
-    def activation_done(self, *args, **kwargs):
-        """Finish the task activation."""
-        self.activation.done()
-
-    def form_valid(self, *args, **kwargs):
-        """If the form is valid, save the associated model and finish the task."""
-        super(SimpleFlowMixin, self).form_valid(*args, **kwargs)
-        self.activation_done(*args, **kwargs)
-        return HttpResponseRedirect(self.get_success_url())
-
-
 class FilevalidationService():
     """
         Basic file validation service
     """
     EXTENSION_BLACKLIST = [
-        'bat',
-        'bin',
-        'com',
-        'dll',
-        'exe',
-        'htm',
-        'html',
-        'msc',
-        'msi',
-        'msp',
-        'ocx',
-        'scr',
-        'wsc',
-        'wsf',
-        'wsh',
+        'bat', 'bin', 'com', 'dll', 'exe', 'htm', 'html', 'msc', 'msi', 'msp',
+        'ocx', 'scr', 'wsc', 'wsf', 'wsh'
     ]
 
     def has_valid_extenstion(self, file):

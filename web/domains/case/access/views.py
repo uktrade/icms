@@ -1,24 +1,29 @@
 import structlog as logging
 from django.conf import settings
 from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
-from web.utils import SimpleStartFlowMixin, SimpleFlowMixin, FilevalidationService, url_path_join
-from .forms import AccessRequestForm, ReviewAccessRequestForm
-from .models import AccessRequest, AccessRequestProcess
-from web.domains.case.forms import FurtherInformationRequestDisplayForm, FurtherInformationRequestForm
-from web.views.mixins import PostActionMixin
 from s3chunkuploader.file_handler import s3_client
+from viewflow.flow.views import FlowMixin
+from web.domains.case.forms import (FurtherInformationRequestDisplayForm,
+                                    FurtherInformationRequestForm)
 from web.domains.case.models import FurtherInformationRequest
+from web.domains.exporter.views import ExporterListView
 from web.domains.file.models import File
+from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
+from web.utils import FilevalidationService, url_path_join
 from web.utils.s3upload import S3UploadService
 from web.utils.virus import ClamAV
+from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
+from .actions import LinkExporter, LinkImporter
+from .forms import (AccessRequestForm, ReviewAccessRequestForm)
+from .models import AccessRequest, AccessRequestProcess
 
 logger = logging.getLogger(__name__)
 
@@ -60,13 +65,15 @@ class AccessRequestCreatedView(TemplateView):
     template_name = 'web/request-access-success.html'
 
 
-class ILBReviewRequest(SimpleFlowMixin, FormView):
+class ILBReviewRequest(FlowMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
+    success_url = reverse_lazy('workbasket')
 
-    def form_valid(self, form):
+    def form_valid(self, form, *args, **kwargs):
         form.save()
-        self.activation_done()
+        # Finish task
+        self.activation.done()
         return redirect(reverse('workbasket'))
 
     def get_form(self):
@@ -74,6 +81,58 @@ class ILBReviewRequest(SimpleFlowMixin, FormView):
             instance=self.activation.process.access_request,
             **self.get_form_kwargs(),
         )
+
+
+class LinkImporterView(ImporterListView):
+    """
+        Displays importer list view for searching and linking
+        importers to access requests.
+    """
+    template_name = 'web/access-request/link-importer.html'
+
+    def get(self, request, process_id, task_id):
+        self.process = get_object_or_404(AccessRequestProcess, pk=process_id)
+        self.access_request = self.process.access_request
+        self.task = get_object_or_404(self.process.flow_class.task_class,
+                                      process=self.process,
+                                      finished__isnull=True,
+                                      pk=task_id)
+
+        return super().get(request, process_id, task_id)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['access_request'] = self.access_request
+        return context
+
+    class Display(ImporterListView.Display):
+        actions = [LinkImporter()]
+
+
+class LinkExporterView(ExporterListView):
+    """
+        Displays exporter list view for searching and linking
+        exporter to access requests.
+    """
+    template_name = 'web/access-request/link-exporter.html'
+
+    def get(self, request, process_id, task_id):
+        self.process = get_object_or_404(AccessRequestProcess, pk=process_id)
+        self.access_request = self.process.access_request
+        self.task = get_object_or_404(self.process.flow_class.task_class,
+                                      process=self.process,
+                                      finished__isnull=True,
+                                      pk=task_id)
+
+        return super().get(request, process_id, task_id)
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['access_request'] = self.access_request
+        return context
+
+    class Display(ExporterListView.Display):
+        actions = [LinkExporter()]
 
 
 class AccessRequestFirView(PostActionMixin):
@@ -230,10 +289,8 @@ class AccessRequestFirView(PostActionMixin):
                 file_validator=FilevalidationService())
 
             file_path = upload_service.process_uploaded_file(
-                settings.AWS_STORAGE_BUCKET_NAME,
-                uploaded_file,
-                url_path_join(settings.PATH_STORAGE_FIR, data["id"])
-            )
+                settings.AWS_STORAGE_BUCKET_NAME, uploaded_file,
+                url_path_join(settings.PATH_STORAGE_FIR, data["id"]))
 
             file_size = uploaded_file.size
             error_message = ''

@@ -1,4 +1,7 @@
+import datetime
+
 from django.db import models
+
 from viewflow.models import Process
 from web.domains.case.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
@@ -53,9 +56,7 @@ class AccessRequest(models.Model):
     request_reason = models.CharField(max_length=1000, blank=True, null=True)
     agent_name = models.CharField(max_length=100, blank=True, null=True)
     agent_address = models.CharField(max_length=500, blank=True, null=True)
-    submit_datetime = models.DateTimeField(auto_now_add=True,
-                                           blank=False,
-                                           null=False)
+    submit_datetime = models.DateTimeField(blank=False, null=False)
     submitted_by = models.ForeignKey(User,
                                      on_delete=models.PROTECT,
                                      blank=False,
@@ -93,20 +94,30 @@ class AccessRequest(models.Model):
     further_information_requests = models.ManyToManyField(
         FurtherInformationRequest)
 
+    @property
     def request_type_verbose(self):
         return dict(AccessRequest.REQUEST_TYPES)[self.request_type]
 
+    @property
     def request_type_short(self):
         if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
             return "Import Access Request"
         else:
             return "Exporter Access Request"
 
+    @property
     def requester_type(self):
         if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
             return "importer"
         else:
             return "exporter"
+
+    def save(self):
+        # Set submit_datetime on save
+        # audo_now=True causes field to be non-editable
+        # and prevents from being added to a form
+        self.submit_datetime = datetime.datetime.now()
+        super().save()
 
 
 class AccessRequestProcess(Process):

@@ -1,7 +1,7 @@
 import random
 import string
 
-from django.contrib.auth.models import (AbstractUser)
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -57,10 +57,16 @@ class User(AbstractUser):
                                             null=True)
     unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
 
+    def __str__(self):
+        return self.full_name
+
     @property
     def full_name(self):
-        return ' '.join(
-            filter(None, (self.title, self.first_name, self.last_name)))
+        if self.title:
+            return ' '.join(
+                filter(None, (self.title, self.first_name, self.last_name)))
+        else:
+            return ' '.join(filter(None, (self.first_name, self.last_name)))
 
     @property
     def account_status_by_full_name(self):
