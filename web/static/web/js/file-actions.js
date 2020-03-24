@@ -51,8 +51,6 @@ $(document).ready(function(){
 
 
     $('[role=deleted-files-control]').on('click', function(evt){
-        evt.preventDefault()
-        // alert('a')
         $el = $(evt.currentTarget);
         id = $el.attr('x-data-id')
         $tbl = $('[role=file-list][x-data-id='+id+']').first();
