@@ -4806,3 +4806,11 @@ ul.fileList {
     opacity: 0;
 }
 
+.file-list .deleted-file {
+    display: none;;
+}
+.file-list.show-deleted .deleted-file {
+    display: table-row;
+    opacity: .6;
+}
+

@@ -39,4 +39,24 @@ $(document).ready(function(){
         $frm.append('<input type="hidden" name="file_id" value="'+ $el.attr('x-file-id') +'">');
         $frm.submit();
     });
+
+    $('[role=file-restore]').on('click', function(evt){
+        evt.preventDefault();
+        $el = $(evt.currentTarget);
+        $frm = $el.closest('form');
+        $frm.append('<input type="hidden" name="action" value="restore_file">');
+        $frm.append('<input type="hidden" name="file_id" value="'+ $el.attr('x-file-id') +'">');
+        $frm.submit();
+    });
+
+
+    $('[role=deleted-files-control]').on('click', function(evt){
+        evt.preventDefault()
+        // alert('a')
+        $el = $(evt.currentTarget);
+        id = $el.attr('x-data-id')
+        $tbl = $('[role=file-list][x-data-id='+id+']').first();
+        console.log($el, $tbl)
+        $tbl.toggleClass('show-deleted')
+    });
 });
