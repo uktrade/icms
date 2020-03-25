@@ -21,6 +21,18 @@ class Exporter(Archivable, BaseTeam):
     def is_agent(self):
         return self.main_exporter is not None
 
+    def __str__(self):
+        LABEL = ''
+        if self.is_agent():
+            LABEL = 'Exporter Agent'
+        else:
+            LABEL = 'Exporter'
+
+        if self.id:
+            return LABEL + ' - ' + (self.name or self.user.full_name)
+        else:
+            return LABEL
+
     class Meta:
         ordering = (
             '-is_active',

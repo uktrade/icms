@@ -22,7 +22,7 @@
       {% if f is string %}
         {{_header(f, display.fields_config[f])}}
       {% else %}
-        {% for field in f %}
+        {% for field in f if not display.fields_config[field].no_header %}
           {{_header(field, display.fields_config[field])}}
           {% if not loop.last %}
             / </br>

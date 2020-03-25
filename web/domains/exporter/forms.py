@@ -9,6 +9,10 @@ class ExporterFilter(ModelSearchFilter):
                                lookup_expr='icontains',
                                label='Exporter Name')
 
+    agent_name = CharFilter(field_name='agents__name',
+                            lookup_expr='icontains',
+                            label='Agent Name')
+
     class Meta:
         model = Exporter
         fields = []

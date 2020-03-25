@@ -1,0 +1,12 @@
+{% extends "web/exporter/list.html" %}
+
+{% block main_content %}
+
+<div class="info-box info-box-info">
+  Export Access Request Details
+
+  {% include "web/access-request/partials/access-request-display.html" %}
+</div>
+
+{{super()}}
+{% endblock %}

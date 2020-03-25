@@ -14,4 +14,4 @@ class AccessRequesModelsTest(TestCase):
         access_request = AccessRequest()
         for k, v in expected_results.items():
             access_request.request_type = k
-            self.assertEqual(access_request.requester_type(), v)
+            self.assertEqual(access_request.requester_type, v)

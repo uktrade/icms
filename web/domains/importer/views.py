@@ -20,10 +20,13 @@ class ImporterListView(ModelFilterView):
         'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
     class Display:
-        fields = [('full_name', 'registered_number', 'entity_type')]
+        fields = [('name', 'user', 'registered_number', 'entity_type')]
         fields_config = {
-            'full_name': {
+            'name': {
                 'header': 'Importer Name'
+            },
+            'user': {
+                'no_header': True
             },
             'registered_number': {
                 'header': 'Importer Reg No'

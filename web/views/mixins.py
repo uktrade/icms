@@ -1,6 +1,12 @@
-from django.core.exceptions import SuspiciousOperation
-from django.views.generic.list import ListView
+import structlog as logging
+from django.http import HttpResponseRedirect
 from django.views.generic.base import View
+from django.views.generic.list import ListView
+
+from viewflow.flow.views.start import BaseStartFlowMixin
+from viewflow.flow.views.task import BaseFlowMixin
+
+logger = logging.get_logger(__name__)
 
 
 class PageTitleMixin(View):
@@ -39,8 +45,37 @@ class PostActionMixin(View):
     """
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
+        logger.debug('Received post action', action=action)
         if action:
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
-        raise SuspiciousOperation('%s: Invalid Request!' % action)
+        # If action does not exist continue with regular post request
+        return super().post(self, request, *args, **kwargs)
+
+
+class SimpleStartFlowMixin(BaseStartFlowMixin):
+    """StartFlowMixin without MessageUserMixin"""
+    def activation_done(self, *args, **kwargs):
+        """Finish task activation."""
+        self.activation.done()
+
+    def form_valid(self, *args, **kwargs):
+        """If the form is valid, save the associated model and finish the task."""
+        super(SimpleStartFlowMixin, self).form_valid(*args, **kwargs)
+        self.activation_done(*args, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class SimpleFlowMixin(BaseFlowMixin):
+    """FlowMixin without MessageUserMixin."""
+    def activation_done(self, *args, **kwargs):
+        """Finish the task activation."""
+        self.activation.done()
+
+    def form_valid(self, form, **kwargs):
+        """If the form is valid, save the associated model and finish the task."""
+        super(SimpleFlowMixin, self).form_valid(form, **kwargs)
+        form.save()
+        self.activation_done(form, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
