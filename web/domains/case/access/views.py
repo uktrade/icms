@@ -16,8 +16,8 @@ from s3chunkuploader.file_handler import s3_client
 from web.domains.case.models import FurtherInformationRequest
 from web.domains.file.models import File
 from web.domains.template.models import Template
-from web.utils.s3upload import S3UploadService
-from web.utils.virus import ClamAV
+from web.utils.s3upload import S3UploadService, InvalidFileException
+from web.utils.virus import ClamAV, InfectedFileException
 
 
 logger = logging.getLogger(__name__)
@@ -222,6 +222,10 @@ class AccessRequestFirView(PostActionMixin):
         uploaded_file = request.FILES['uploaded_file']
 
         try:
+            file_size = 0
+            file_path = ''
+            error_message = ''
+
             upload_service = S3UploadService(
                 s3_client=s3_client(),
                 virus_scanner=ClamAV(settings.CLAM_AV_USERNAME,
@@ -236,11 +240,12 @@ class AccessRequestFirView(PostActionMixin):
             )
 
             file_size = uploaded_file.size
-            error_message = ''
-        except Exception as e:
-            file_size = 0
+
+        except (InvalidFileException, InfectedFileException) as e:
             error_message = str(e)
-            file_path = ''
+
+        except Exception:
+            error_message = 'Unknown error uploading file'
 
         file_model = File()
         file_model.filename = uploaded_file.original_name
