@@ -243,7 +243,6 @@ class AccessRequestFirView(PostActionMixin):
 
         except (InvalidFileException, InfectedFileException) as e:
             error_message = str(e)
-
         except Exception:
             error_message = 'Unknown error uploading file'
 
@@ -273,6 +272,8 @@ class AccessRequestFirView(PostActionMixin):
         file_model = File.objects.get(pk=file_id)
         file_model.is_active = False
         file_model.save()
+
+        return redirect('access_request_fir_list', process_id=process_id)
 
     def restore_file(self, request, process_id):
         data = request.POST if request.POST else None

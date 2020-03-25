@@ -14,10 +14,12 @@ $(document).ready(function(){
 
             $template.find('[role=filename]').html(filename);
             $template.find('[role=filename]').attr('href', 'javascript:;');
-            $template.find('[role=actions]').html('<a href="javascript:;" class="fileInfo readonly"><span class="icon-animated-spinner"></span> uploading ...</a>');
+            $template.find('[role=actions]').html('<a href="javascript:;" class="fileInfo readonly" style="white-space: nowrap;"><span class="icon-animated-spinner"></span> uploading ...</a>');
             $template.find('[role=username]').html('');
             $template.find('[role=date]').html('');
             $template.find('[role=filesize]').html('');
+            $template.removeClass('deleted-file')
+
 
             $frm.find('[role=file-list] tbody').prepend($template);
 
@@ -54,7 +56,6 @@ $(document).ready(function(){
         $el = $(evt.currentTarget);
         id = $el.attr('x-data-id')
         $tbl = $('[role=file-list][x-data-id='+id+']').first();
-        console.log($el, $tbl)
         $tbl.toggleClass('show-deleted')
     });
 });
