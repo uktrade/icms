@@ -16,9 +16,9 @@ from web.domains.exporter.views import ExporterListView
 from web.domains.file.models import File
 from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
+from web.utils.s3upload import S3UploadService, InvalidFileException
+from web.utils.virus import ClamAV, InfectedFileException
 from web.utils import FilevalidationService, url_path_join
-from web.utils.s3upload import S3UploadService
-from web.utils.virus import ClamAV
 from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
 from .actions import LinkExporter, LinkImporter
@@ -281,6 +281,10 @@ class AccessRequestFirView(PostActionMixin):
         uploaded_file = request.FILES['uploaded_file']
 
         try:
+            file_size = 0
+            file_path = ''
+            error_message = ''
+
             upload_service = S3UploadService(
                 s3_client=s3_client(),
                 virus_scanner=ClamAV(settings.CLAM_AV_USERNAME,
@@ -293,11 +297,11 @@ class AccessRequestFirView(PostActionMixin):
                 url_path_join(settings.PATH_STORAGE_FIR, data["id"]))
 
             file_size = uploaded_file.size
-            error_message = ''
-        except Exception as e:
-            file_size = 0
+
+        except (InvalidFileException, InfectedFileException) as e:
             error_message = str(e)
-            file_path = ''
+        except Exception:
+            error_message = 'Unknown error uploading file'
 
         file_model = File()
         file_model.filename = uploaded_file.original_name
@@ -324,6 +328,18 @@ class AccessRequestFirView(PostActionMixin):
         file_id = data['file_id']
         file_model = File.objects.get(pk=file_id)
         file_model.is_active = False
+        file_model.save()
+
+        return redirect('access_request_fir_list', process_id=process_id)
+
+    def restore_file(self, request, process_id):
+        data = request.POST if request.POST else None
+        if not data or 'file_id' not in data:
+            return HttpResponseBadRequest('Invalid body received')
+
+        file_id = data['file_id']
+        file_model = File.objects.get(pk=file_id)
+        file_model.is_active = True
         file_model.save()
 
         return redirect('access_request_fir_list', process_id=process_id)

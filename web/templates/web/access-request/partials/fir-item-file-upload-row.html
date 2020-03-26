@@ -5,12 +5,12 @@
 {% set created_at = file.date_created_formatted() if file is defined else '1 JAN 1900 00:00:00' %}
 {% set file_url = file.full_path() if file is defined else '#' %}
 {% set error_message = file.error_message if file is defined and file.error_message is defined else False %}
-
+{% set is_active = file.is_active if file is defined else False %}
 {% if error_message %}
     {% set file_url = '#' %}
 {% endif %}
 
-<tr class="{% if error_message %} has-error {% endif %}">
+<tr class="{% if error_message %} has-error {% endif %} {% if not is_active %}deleted-file{% endif %}">
     <td>
         <a
             role="filename"
@@ -27,13 +27,17 @@
     </td>
     <td role="actions">
         {% if in_edit_action %}
-            <a href="" role="file-delete" x-file-id="{{ file_id }}">Delete</a>
+            {% if  is_active %}
+                <a href="" role="file-delete" x-file-id="{{ file_id }}">Delete</a>
+            {% else %}
+                <a href="" role="file-restore" x-file-id="{{ file_id }}">Restore</a>
+            {% endif %}
         {% endif %}
 
     </td>
 </tr>
 {% if error_message %}
-    <tr class="error">
+    <tr class="error {% if not is_active %}deleted-file{% endif %} ">
         <td colspan="3" class="uploadError errorMessage">
             {{ error_message }}
         </td>
