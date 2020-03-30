@@ -32,9 +32,10 @@ from web.domains.workbasket.views import take_ownership, workbasket
 
 from . import converters
 from .auth import views as auth_views
-from .domains.case.access.views import (AccessRequestCreatedView,
-                                        AccessRequestFirView, LinkImporterView,
-                                        LinkExporterView)
+from web.domains.case.access.views import (AccessRequestCreatedView,
+                                           AccessRequestFirView,
+                                           LinkImporterView, LinkExporterView)
+from web.domains.mailshot.views import MailshotListView
 
 from .flows import AccessRequestFlow
 from .views import home
@@ -215,6 +216,9 @@ urlpatterns = [
     path('import/apply/',
          imp_app_views.ImportApplicationCreateView.as_view(),
          name='import_application_new'),
+
+    # Mailshots
+    path('mailshots/', MailshotListView.as_view(), name='mailshot-list'),
 
     # Viewflow frontend
     path('viewflow/', include(frontend_urls)),

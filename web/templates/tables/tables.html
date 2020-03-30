@@ -9,6 +9,9 @@
 {%- endmacro %}
 
 {% macro _field(object, field, config) -%}
+  {% if config and config.label %}
+    {{config.label | safe}}
+  {% endif %}
   {% if config and config.link %}
     <a href={{object.id}}>{{object[field]}}</a>
   {% else %}
