@@ -25,4 +25,4 @@ class MailshotTest(TestCase):
         self.assertTrue(isinstance(mailshot, Mailshot))
         self.assertEqual(mailshot.title, 'Test Mailshot')
         self.assertEqual(mailshot.status, Mailshot.DRAFT)
-        self.assertTrue(mailshot.is_active)factory.SubFactory(UserFactory),
+        self.assertTrue(mailshot.is_active)

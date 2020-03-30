@@ -1,6 +1,6 @@
 import structlog as logging
 
-from viewflow import flow, frontend
+from viewflow import flow
 from viewflow.base import Flow, this
 from web.domains import User
 from web.domains.case.access.models import AccessRequest, AccessRequestProcess
@@ -31,7 +31,6 @@ def close_request(activation):
     activation.process.access_request.save()
 
 
-@frontend.register
 class AccessRequestFlow(Flow):
     process_class = AccessRequestProcess
 

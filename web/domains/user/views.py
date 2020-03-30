@@ -7,9 +7,9 @@ from web.auth.decorators import require_registered
 from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
-from web.notify import notify
-from web.views import ModelFilterView, ModelDetailView
-from web.views.actions import PostAction
+from web.views import ModelDetailView, ModelFilterView
+
+from . import actions
 from .forms import UserFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
@@ -25,7 +25,7 @@ def details_update(request, action, pk):
             forms['phones_formset'] = new_user_phones_formset(request)
             forms[
                 'alternative_emails_formset'] = new_alternative_emails_formset(
-                request)
+                    request)
             forms['personal_emails_formset'] = new_personal_emails_formset(
                 request)
             messages.success(request,
@@ -35,8 +35,9 @@ def details_update(request, action, pk):
                 messages.error(request,
                                'Please correct the highlighted errors.')
 
-    return render(request, 'web/user/details.html' if request.user.pk == pk
-                  else 'web/user/admin-view-details.html', forms)
+    return render(
+        request, 'web/user/details.html' if request.user.pk == pk else
+        'web/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
@@ -138,25 +139,6 @@ class PeopleSearchView(ModelFilterView):
         select = True
 
 
-class ReIssuePassword(PostAction):
-    action = 're_issue_password'
-    label = 'Re-Issue Password'
-    confirm = False
-    confirm_message = ''
-    icon = 'icon-key'
-
-    def display(self, object):
-        return True
-
-    def handle(self, request, model):
-        user = self._get_item(request, model)
-        temp_pass = user.set_temp_password()
-        user.save()
-        notify.register(request, user, temp_pass)
-        messages.success(request, 'Temporary password successfully issued for '
-                                  'account')
-
-
 class UsersListView(ModelFilterView):
     template_name = 'web/user/list.html'
     model = User
@@ -167,11 +149,12 @@ class UsersListView(ModelFilterView):
         return True
 
     class Display:
-        fields = ['full_name',
-                  ('organisation', 'job_title'), 'username',
-                  ('account_status', 'password_disposition'),
-                  'account_last_login_date',
-                  ('account_status_by_full_name', 'account_status_date')]
+        fields = [
+            'full_name', ('organisation', 'job_title'), 'username',
+            ('account_status', 'password_disposition'),
+            'account_last_login_date',
+            ('account_status_by_full_name', 'account_status_date')
+        ]
         fields_config = {
             'full_name': {
                 'header': 'Person Details',
@@ -202,7 +185,12 @@ class UsersListView(ModelFilterView):
                 'header': 'Date'
             }
         }
-        actions = [ReIssuePassword()]
+        actions = [
+            actions.ReIssuePassword(),
+            actions.CancelUser(),
+            actions.ActivateUser(),
+            actions.BlockUser()
+        ]
         select = True
 
 

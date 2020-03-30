@@ -1,4 +1,5 @@
-from captcha.fields import ReCaptchaField
+import structlog as logging
+from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
                                        UsernameField)
 from django.forms import Form, ModelForm, ValidationError
@@ -6,12 +7,15 @@ from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
-from django import forms
+
+from captcha.fields import ReCaptchaField
 from web.domains.user import User
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
 from web.forms.mixins import FormFieldConfigMixin
 from web.forms.widgets import DateInput
+
+logger = logging.get_logger(__name__)
 
 
 class LoginForm(FormFieldConfigMixin, AuthenticationForm):
@@ -20,9 +24,11 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
     error_status = None
 
     def confirm_login_allowed(self, user):
-        if user.account_status in \
-                [User.BLOCKED, User.SUSPENDED, User.CANCELLED]:
+        if user.account_status != User.ACTIVE:
             self.error_status = user.account_status.lower()
+            logger.warn('Failed login attempt',
+                        user=user,
+                        status=user.account_status)
             raise forms.ValidationError(f'User {self.error_status}.')
         elif user.password_disposition != 'FULL':
             return redirect('set-password')

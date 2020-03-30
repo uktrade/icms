@@ -44,7 +44,7 @@ class User(AbstractUser):
                                       choices=STATUSES,
                                       blank=False,
                                       null=False,
-                                      default=NEW)
+                                      default=ACTIVE)
     account_status_by = models.ForeignKey("self",
                                           on_delete=models.SET_NULL,
                                           blank=True,
