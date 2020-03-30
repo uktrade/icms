@@ -1,5 +1,7 @@
 from web.tests.auth import AuthTestCase
 
+from web.domains.user import User
+
 from .factory import UserFactory
 
 LOGIN_URL = '/'
@@ -20,6 +22,10 @@ class UsersListViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          'Maintain Web User Accounts')
+
+    def test_default_account_status(self):
+        user = UserFactory()
+        self.assertEqual(user.account_status, User.ACTIVE)
 
 
 class UserDetailViewTest(AuthTestCase):

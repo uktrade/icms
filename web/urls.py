@@ -1,8 +1,6 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import include, path, register_converter
-from django.views import generic
 
-from material.frontend import urls as frontend_urls
 from viewflow.flow.viewset import FlowViewSet
 from web.domains.application._import import views as imp_app_views
 from web.domains.commodity import views as commodity_views
@@ -215,11 +213,4 @@ urlpatterns = [
     path('import/apply/',
          imp_app_views.ImportApplicationCreateView.as_view(),
          name='import_application_new'),
-
-    # Viewflow frontend
-    path('viewflow/', include(frontend_urls)),
-    path(
-        'viewflow/',
-        generic.RedirectView.as_view(url='/viewflow/workflow/',
-                                     permanent=False))
 ]

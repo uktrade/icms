@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
@@ -8,8 +9,8 @@ from web.models.mixins import Archivable, Sortable
 
 class ListAction:
     def _get_item(self, request, model):
-        id = request.POST.get('item')
-        return model.objects.get(pk=id)
+        _id = request.POST.get('item')
+        return get_object_or_404(model, pk=_id)
 
     def display(self, object):
         return True
