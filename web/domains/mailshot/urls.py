@@ -6,5 +6,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('mailshots/', views.MailshotListView.as_view(), name='mailshot-list'),
+    path('', views.MailshotListView.as_view(), name='mailshot-list'),
 ]

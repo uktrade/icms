@@ -5,5 +5,5 @@ from django.urls import path
 from .views import TemplateListView
 
 urlpatterns = [
-    path('template/', TemplateListView.as_view(), name='template-list'),
+    path('', TemplateListView.as_view(), name='template-list'),
 ]

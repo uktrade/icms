@@ -6,16 +6,16 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('product-legislation/',
+    path('',
          views.ProductLegislationListView.as_view(),
          name='product-legislation-list'),
-    path('product-legislation/new/',
+    path('new/',
          views.ProductLegislationCreateView.as_view(),
          name='product-legislation-new'),
-    path('product-legislation/<int:pk>/',
+    path('<int:pk>/',
          views.ProductLegislationDetailView.as_view(),
          name='product-legislation-detail'),
-    path('product-legislation/<int:pk>/edit/',
+    path('<int:pk>/edit/',
          views.ProductLegislationUpdateView.as_view(),
          name='product-legislation-edit'),
 ]
