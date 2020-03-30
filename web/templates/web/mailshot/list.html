@@ -1,0 +1,13 @@
+{% extends "model/list.html" %}
+
+{% block sidebar %}
+<ul class="menu-out">
+    <li>
+      <a href="{{url('constabulary-new')}}">New Mailshot</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block empty_message %}
+        There aren't any mailshots that match your search
+{% endblock %}

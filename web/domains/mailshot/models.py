@@ -16,7 +16,7 @@ class Mailshot(models.Model):
     status = models.CharField(max_length=20, blank=False, null=False)
     title = models.CharField(max_length=200, blank=True, null=True)
     description = models.CharField(max_length=4000, blank=True, null=True)
-    is_email = models.BooleanField(blank=False, null=False)
+    is_email = models.BooleanField(blank=False, null=False, default=True)
     email_subject = models.CharField(max_length=78, blank=False, null=True)
     email_body = models.CharField(max_length=4000, blank=False, null=True)
     is_retraction_email = models.BooleanField(blank=False, null=False)
@@ -53,3 +53,25 @@ class Mailshot(models.Model):
                                      related_name='retracted_mailshots')
     retracted_datetime = models.DateTimeField(blank=False, null=True)
     files = models.ManyToManyField(File)
+
+    @property
+    def started(self):
+        if self.create_datetime:
+            return self.create_datetime.strftime('%d %b %Y %H:%M')
+
+    @property
+    def published(self):
+        if self.published_datetime:
+            return self.published_datetime.strftime('%d %b %Y %H:%M')
+
+    @property
+    def retracted(self):
+        if self.retracted_datetime:
+            return self.retracted_datetime.strftime('%d %b %Y %H:%M')
+
+    @property
+    def status_verbose(self):
+        return dict(Mailshot.STATUSES)[self.status]
+
+    class Meta:
+        ordering = ('-id', )
