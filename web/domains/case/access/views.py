@@ -220,6 +220,8 @@ class AccessRequestFirView(PostActionMixin):
 
         return redirect('access_request_fir_list', process_id=process_id)
 
+
+    @csrf_exempt
     def save(self, request, process_id, *args, **kwargs):
         """
         Saves the FIR being editted by the user
@@ -227,17 +229,40 @@ class AccessRequestFirView(PostActionMixin):
         Params:
             process_id - Access Request id
         """
+
         model = FurtherInformationRequest.objects.get(pk=request.POST['id'])
         form = FurtherInformationRequestForm(data=request.POST, instance=model)
 
-        if form.is_valid():
-            form.save()
-            return redirect('access_request_fir_list', process_id=process_id)
+        if not form.is_valid():
+            return render(
+                request,
+                self.template_name,
+                self.get_context_data(
+                    process_id,
+                    selected_fir=model.id,
+                    form=form
+                )
+            )
 
-        return render(
-            request, self.template_name,
-            self.get_context_data(process_id, selected_fir=model.id,
-                                  form=form))
+        form.save()
+
+        if 'uploaded_file' in request.FILES:
+            self.upload(request, process_id)
+            return self.edit(request, process_id)
+
+        if 'delete_file_id' in request.POST:
+            logger.debug('going to mark file %s as deleted' % request.POST['delete_file_id'])
+            self.delete_file(request.POST['delete_file_id'])
+            return self.edit(request, process_id)
+
+        if 'restore_file_id' in request.POST:
+            logger.debug('going to mark file %s as restored' % request.POST['restore_file_id'])
+            self.restore_file(request.POST['restore_file_id'])
+            return self.edit(request, process_id)
+
+        return redirect('access_request_fir_list', process_id=process_id)
+
+
 
     def new(self, request, process_id):
         """
@@ -272,7 +297,6 @@ class AccessRequestFirView(PostActionMixin):
             request, self.template_name,
             self.get_context_data(process_id, selected_fir=instance.id))
 
-    @csrf_exempt
     def upload(self, request, process_id):
         data = request.POST if request.POST else None
         if not data or 'id' not in data:
@@ -318,31 +342,15 @@ class AccessRequestFirView(PostActionMixin):
         fir.files.add(file_model)
         fir.save()
 
-        return redirect('access_request_fir_list', process_id=process_id)
-
-    def delete_file(self, request, process_id):
-        data = request.POST if request.POST else None
-        if not data or 'file_id' not in data:
-            return HttpResponseBadRequest('Invalid body received')
-
-        file_id = data['file_id']
+    def delete_file(self, file_id):
         file_model = File.objects.get(pk=file_id)
         file_model.is_active = False
         file_model.save()
 
-        return redirect('access_request_fir_list', process_id=process_id)
-
-    def restore_file(self, request, process_id):
-        data = request.POST if request.POST else None
-        if not data or 'file_id' not in data:
-            return HttpResponseBadRequest('Invalid body received')
-
-        file_id = data['file_id']
+    def restore_file(self, file_id):
         file_model = File.objects.get(pk=file_id)
         file_model.is_active = True
         file_model.save()
-
-        return redirect('access_request_fir_list', process_id=process_id)
 
     def create_display_or_edit_form(self, fir, selected_fir, form):
         """
