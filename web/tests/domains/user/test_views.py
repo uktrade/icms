@@ -23,7 +23,7 @@ class UsersListViewTest(AuthTestCase):
 
     def test_default_account_status(self):
         user = UserFactory()
-        self.assertEqual(user.account_status=User.ACTIVE)
+        self.assertEqual(user.account_status,User.ACTIVE)
 
 class UserDetailViewTest(AuthTestCase):
     def setUp(self):
