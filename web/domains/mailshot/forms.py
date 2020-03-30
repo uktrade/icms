@@ -10,8 +10,8 @@ from .models import Mailshot
 class MailshotFilter(ModelSearchFilter):
 
     id = CharFilter(field_name='id',
-                       lookup_expr='icontains',
-                       label='Reference')
+                    lookup_expr='icontains',
+                    label='Reference')
 
     title = CharFilter(field_name='title',
                        lookup_expr='icontains',

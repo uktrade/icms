@@ -1,4 +1,3 @@
-import factory
 from django.test import TestCase
 
 from web.domains.mailshot.models import Mailshot
