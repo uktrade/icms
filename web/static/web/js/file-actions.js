@@ -14,10 +14,12 @@ $(document).ready(function(){
 
             $template.find('[role=filename]').html(filename);
             $template.find('[role=filename]').attr('href', 'javascript:;');
-            $template.find('[role=actions]').html('<a href="javascript:;" class="fileInfo readonly"><span class="icon-animated-spinner"></span> uploading ...</a>');
+            $template.find('[role=actions]').html('<a href="javascript:;" class="fileInfo readonly" style="white-space: nowrap;"><span class="icon-animated-spinner"></span> uploading ...</a>');
             $template.find('[role=username]').html('');
             $template.find('[role=date]').html('');
             $template.find('[role=filesize]').html('');
+            $template.removeClass('deleted-file')
+
 
             $frm.find('[role=file-list] tbody').prepend($template);
 
@@ -38,5 +40,22 @@ $(document).ready(function(){
         $frm.append('<input type="hidden" name="action" value="delete_file">');
         $frm.append('<input type="hidden" name="file_id" value="'+ $el.attr('x-file-id') +'">');
         $frm.submit();
+    });
+
+    $('[role=file-restore]').on('click', function(evt){
+        evt.preventDefault();
+        $el = $(evt.currentTarget);
+        $frm = $el.closest('form');
+        $frm.append('<input type="hidden" name="action" value="restore_file">');
+        $frm.append('<input type="hidden" name="file_id" value="'+ $el.attr('x-file-id') +'">');
+        $frm.submit();
+    });
+
+
+    $('[role=deleted-files-control]').on('click', function(evt){
+        $el = $(evt.currentTarget);
+        id = $el.attr('x-data-id')
+        $tbl = $('[role=file-list][x-data-id='+id+']').first();
+        $tbl.toggleClass('show-deleted')
     });
 });

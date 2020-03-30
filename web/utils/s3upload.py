@@ -87,8 +87,6 @@ class S3UploadService():
                 Key=new_file_path
             )
 
-            logger.debug('NEW FILE PATH %s' % new_file_path)
-
             return new_file_path
 
         except Exception as e:

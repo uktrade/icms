@@ -115,6 +115,9 @@ class FurtherInformationRequest(models.Model):
         """
         return self.requested_datetime.strftime('%d-%b-%Y %H:%M:%S')
 
+    def has_deleted_files(self):
+        return self.files.all().filter(is_active=False).count() > 0
+
 
 class UpdateRequest(models.Model):
     """Application update requests for import/export cases requested from
