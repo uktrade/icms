@@ -220,11 +220,13 @@ class AccessRequestFirView(PostActionMixin):
 
         return redirect('access_request_fir_list', process_id=process_id)
 
-
     @csrf_exempt
     def save(self, request, process_id, *args, **kwargs):
         """
         Saves the FIR being editted by the user
+
+        user is redirected to list view if no file actions are performed, otherwise user is redirected
+        to edit view
 
         Params:
             process_id - Access Request id
@@ -251,18 +253,14 @@ class AccessRequestFirView(PostActionMixin):
             return self.edit(request, process_id)
 
         if 'delete_file_id' in request.POST:
-            logger.debug('going to mark file %s as deleted' % request.POST['delete_file_id'])
             self.delete_file(request.POST['delete_file_id'])
             return self.edit(request, process_id)
 
         if 'restore_file_id' in request.POST:
-            logger.debug('going to mark file %s as restored' % request.POST['restore_file_id'])
             self.restore_file(request.POST['restore_file_id'])
             return self.edit(request, process_id)
 
         return redirect('access_request_fir_list', process_id=process_id)
-
-
 
     def new(self, request, process_id):
         """
