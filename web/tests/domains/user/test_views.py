@@ -21,6 +21,9 @@ class UsersListViewTest(AuthTestCase):
         self.assertEqual(response.context_data['page_title'],
                          'Maintain Web User Accounts')
 
+    def test_default_account_status(self):
+        user = UserFactory()
+        self.assertEqual(user.account_status=User.ACTIVE)
 
 class UserDetailViewTest(AuthTestCase):
     def setUp(self):
