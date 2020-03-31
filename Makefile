@@ -90,8 +90,8 @@ run: ## Run with Gunicorn and Whitenoise serving static files
 	ICMS_EMAIL_FROM='prod@example.com' \
 	ICMS_ADDRESS_API_KEY='prod' \
 	ICMS_SILENCED_SYSTEM_CHECKS='captcha.recaptcha_test_key_error' \
-	AWS_ACCESS_KEY_ID='prod' \
-	AWS_SECRET_ACCESS_KEY='prod' \
+	AWS_SES_ACCESS_KEY_ID='prod' \
+	AWS_SES_SECRET_ACCESS_KEY='prod' \
 	ELASTIC_APM_ENVIRONMENT='prod-test' \
 	DJANGO_SETTINGS_MODULE=config.settings.production \
 	docker-compose up
