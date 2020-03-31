@@ -6,7 +6,7 @@ LOGIN_URL = '/'
 
 
 class MailshotListViewTest(AuthTestCase):
-    url = '/mailshots/'
+    url = '/mailshot/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
     def test_authorized_access(self):

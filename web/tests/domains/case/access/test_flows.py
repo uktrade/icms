@@ -53,7 +53,7 @@ class ExportAccessRequestFlowTest(TestCase):
         self.client.force_login(self.ilb_admin_user)
 
         response = self.client.post(
-            '/take-ownership/1/'
+            '/access/take-ownership/1/'
         )
 
         assert response.status_code == 302

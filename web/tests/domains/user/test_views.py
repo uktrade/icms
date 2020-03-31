@@ -9,7 +9,7 @@ PERMISSIONS = ['TODO']
 
 
 class UsersListViewTest(AuthTestCase):
-    url = '/users/'
+    url = '/user/users/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
     def test_anonymous_access_redirects(self):
