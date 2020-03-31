@@ -1,12 +1,12 @@
 from django.test import TestCase
 
-from web.domains.mailshot.forms import MailshotFilter
+from web.domains.mailshot.forms import MailshotFilter, MailshotForm
 from web.domains.mailshot.models import Mailshot
 
 from .factory import MailshotFactory
 
 
-class ConstabulariesFilterTest(TestCase):
+class MailshotsFilterTest(TestCase):
     def setUp(self):
         MailshotFactory(title='Draft Mailshot',
                         description='This is a draft mailshot',
@@ -49,3 +49,37 @@ class ConstabulariesFilterTest(TestCase):
         last = results.last()
         self.assertEqual(first.title, 'Cancelled Mailshot')
         self.assertEqual(last.title, 'Draft Mailshot')
+
+
+class MailshotFormTest(TestCase):
+    def test_form_valid(self):
+        form = MailshotForm(
+            data={
+                'title': 'Testing',
+                'description': 'Description',
+                'is_email': 'on',
+                'email_subject': 'New Mailshot',
+                'email_body': 'Email body',
+                'recipients': ['importers']
+            })
+        self.assertTrue(form.is_valid())
+
+    def test_form_invalid(self):
+        form = MailshotForm(data={
+            'title': 'Test',
+            'description': 'Description'
+        })
+        self.assertFalse(form.is_valid())
+
+    def test_invalid_form_message(self):
+        form = MailshotForm(
+            data={
+                'title': 'Test Mailshot',
+                'description': 'Description',
+                'is_email': False,
+                'email_subject': 'New Mailshot',
+                'email_body': 'Email body'
+            })
+        self.assertEqual(len(form.errors), 1)
+        message = form.errors['recipients'][0]
+        self.assertEqual(message, 'You must enter this item')
