@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -8,6 +9,7 @@ from django.views import View
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.template.models import Template
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views.mixins import PostActionMixin
 
 from .actions import Edit
 from .actions import View as Display
@@ -75,7 +77,7 @@ class MailshotCreateView(RequireRegisteredMixin, View):
         return redirect(reverse_lazy('mailshot-edit', args=(mailshot.id, )))
 
 
-class MailshotEditView(ModelUpdateView):
+class MailshotEditView(PostActionMixin, ModelUpdateView):
     template_name = 'web/mailshot/edit.html'
     form_class = MailshotForm
     model = Mailshot
@@ -83,7 +85,26 @@ class MailshotEditView(ModelUpdateView):
     cancel_url = success_url
     # TODO: Permission to be identified for this view
     permission_required = []
-    page_title = 'Edit Mailshot'
+
+    def save_draft(self, request, pk):
+        """
+            Saves mailshot draft bypassing all validation.
+        """
+        self.object = super().get_object()
+        form = self.get_form()
+        for field in form:
+            field.field.required = False
+        if form.is_valid():
+            return super().form_valid(form)
+        else:
+            return super().form_invalid(form)
+
+    def cancel(self, request, pk):
+        mailshot = Mailshot.objects.get(pk=pk)
+        mailshot.status = Mailshot.CANCELLED
+        mailshot.save()
+        messages.success(request, 'Mailshot cancelled successfully')
+        return redirect(self.success_url)
 
     def get_queryset(self):
         """
