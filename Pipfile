@@ -41,6 +41,9 @@ elastic-apm = "*"
 s3chunkuploader = "*"
 humanize = "*"
 django-structlog = "*"
+django-celery-results = "*"
+celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7.6"
