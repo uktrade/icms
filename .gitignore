@@ -124,6 +124,9 @@ dmypy.json
 # postgress data
 /pgdata
 
+# redis data
+/.redis_data
+
 # visual studio code project data
 /.vscode
 
