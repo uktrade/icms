@@ -91,6 +91,33 @@ class MailshotEditViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
+    def test_cancel_draft(self):
+        self.login()
+        self.client.post(self.url, {'action': 'cancel'})
+        self.mailshot.refresh_from_db()
+        self.assertEqual(self.mailshot.status, Mailshot.CANCELLED)
+
+    def test_cancel_redirects_to_list(self):
+        self.login()
+        response = self.client.post(self.url, {'action': 'cancel'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/mailshot/')
+
+    def test_save_draft(self):
+        self.login()
+        self.client.post(self.url, {'title': 'Test', 'action': 'save_draft'})
+        self.mailshot.refresh_from_db()
+        self.assertEqual(self.mailshot.title, 'Test')
+
+    def test_save_draft_redirects_to_list(self):
+        self.login()
+        response = self.client.post(self.url, {
+            'title': 'Test',
+            'action': 'save_draft'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/mailshot/')
+
     def test_page_title(self):
         self.login()
         response = self.client.get(self.url)
