@@ -50,7 +50,7 @@ class ConstabulariesFilterTest(TestCase):
         self.assertEqual(last.name, 'That Constabulary')
 
 
-class ProductLegislationFormTest(TestCase):
+class ConstabularyFormTest(TestCase):
     def test_form_valid(self):
         form = ConstabularyForm(
             data={
