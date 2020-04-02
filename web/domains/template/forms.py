@@ -1,20 +1,32 @@
 from django_filters import CharFilter, ChoiceFilter
-from web.forms import ModelSearchFilter
+from web.forms import ModelSearchFilter, ModelEditForm
 
 from .models import Template
+
+
+class GenericTemplate(ModelEditForm):
+    class Meta:
+        model = Template
+        fields = ['template_name', 'template_title', 'template_content']
 
 
 class TemplatesFilter(ModelSearchFilter):
     # Fields of the model that can be filtered
     template_name = CharFilter(lookup_expr='icontains',
-                               help_text='Use % for wildcard searching.',
                                label='Template Name')
     application_domain = ChoiceFilter(choices=Template.DOMAINS,
                                       lookup_expr='exact',
-                                      label='Adpplication Domain')
+                                      label='Application Domain')
     template_type = ChoiceFilter(choices=Template.TYPES,
                                  lookup_expr='exact',
                                  label='Template Type')
+    template_title = CharFilter(lookup_expr='icontains',
+                                label='Template Title')
+    template_content = CharFilter(lookup_expr='icontains',
+                                  label='Template Content')
+    is_active = ChoiceFilter(choices=Template.STATUS,
+                             lookup_expr='exact',
+                             label='Template Status')
 
     class Meta:
         model = Template
