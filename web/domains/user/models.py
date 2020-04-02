@@ -136,9 +136,14 @@ class AlternativeEmail(Email):
                              on_delete=models.CASCADE,
                              related_name='alternative_emails')
 
+    def __str__(self):
+        return self.email
 
 class PersonalEmail(Email):
     is_primary = models.BooleanField(blank=False, null=False, default=False)
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,
                              related_name='personal_emails')
+
+    def __str__(self):
+        return self.email

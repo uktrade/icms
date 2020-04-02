@@ -15,8 +15,8 @@
             <td><b>{{password}}</b><br><i>(please note, this is a temporary password and you will be required to change it on first login)</i></td>
         </tr>
     </table>
-    <p>Please <a href="https://www.ilb.trade.gov.uk/icms/fox/icms/IMP_LOGIN/login">click here to login</a>.</p>
+    <p>Please <a href="{{"{0}://{1}".format(request.scheme, request.get_host())}}">click here to login</a>.</p>
     <p/>
     For assistance or support email: <a href="mailto:enquiries.ilb@trade.gov.uk">enquiries.ilb@trade.gov.uk</a>.
-
+  
 {% endblock %}
