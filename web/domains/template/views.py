@@ -1,8 +1,8 @@
-from web.views import ModelFilterView
+from web.views import ModelFilterView, ModelDetailView
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
-from .forms import TemplatesFilter
+from .forms import TemplatesFilter, GenericTemplate
 
 
 class TemplateListView(ModelFilterView):
@@ -34,3 +34,11 @@ class TemplateListView(ModelFilterView):
             }
         }
         actions = [Archive(), Unarchive(), Edit()]
+
+
+class TemplateDetailView(ModelDetailView):
+    form_class = GenericTemplate
+    model = Template
+    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    success_url = "javascript:history.go(-1)"
+    cancel_url = success_url
