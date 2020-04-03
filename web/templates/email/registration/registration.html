@@ -2,20 +2,20 @@
 
 {% block message %}
 
-<p>Dear {{user.first_name}}</p>
+<p>Dear {{first_name}}</p>
     <p>Your Import Case Management System Account has been setup and is ready for you to use.</p>
     <p>Your login details are shown below:</p>
     <table border="0" cellspacing="5" cellpadding="0">
         <tr>
             <td align="left"><b><u>Login Id:</u></b></td>
-            <td><b>{{user.email}}</b></td>
+            <td><b>{{username}}</b></td>
         </tr>
         <tr>
             <td align="left" valign="top"><b><u>Password:</u></b></td>
             <td><b>{{password}}</b><br><i>(please note, this is a temporary password and you will be required to change it on first login)</i></td>
         </tr>
     </table>
-    <p>Please <a href="{{"{0}://{1}".format(request.scheme, request.get_host())}}">click here to login</a>.</p>
+    <p>Please <a href="{{url}}">click here to login</a>.</p>
     <p/>
     For assistance or support email: <a href="mailto:enquiries.ilb@trade.gov.uk">enquiries.ilb@trade.gov.uk</a>.
   
