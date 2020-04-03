@@ -11,6 +11,10 @@ class Template(Archivable, models.Model):
     EMAIL_TEMPLATE = 'EMAIL_TEMPLATE'
     CFS_TRANSLATION = 'CFS_TRANSLATION'
     DECLARATION = 'DECLARATION'
+    CFS_SCHEDULE = 'CFS_SCHEDULE'
+    LETTER_FRAGMENT = 'LETTER_FRAGMENT'
+    CFS_DECLARATION_TRANSLATION = 'CFS_DECLARATION_TRANSLATION'
+    CFS_SCHEDULE_TRANSLATION = 'CFS_SCHEDULE_TRANSLATION'
 
     TYPES = (
         (ENDORSEMENT, 'Endorsement'),
@@ -18,6 +22,10 @@ class Template(Archivable, models.Model):
         (EMAIL_TEMPLATE, 'Email template'),
         (CFS_TRANSLATION, 'CFS translation'),
         (DECLARATION, 'Declaration'),
+        (CFS_SCHEDULE, 'CFS schedule'),
+        (LETTER_FRAGMENT, 'Letter fragment'),
+        (CFS_DECLARATION_TRANSLATION, 'CFS declaration translation'),
+        (CFS_SCHEDULE_TRANSLATION, 'CFS schedule translation'),
     )
 
     # Application domain
@@ -31,19 +39,22 @@ class Template(Archivable, models.Model):
         (ACCESS_REQUEST, "Access Requests"),
     )
 
+    # Template Status
+    ACTIVE = True
+    ARCHIVED = False
+
+    STATUS = (
+        (ACTIVE, "Active"),
+        (ARCHIVED, "Archived"),
+    )
+
     start_datetime = models.DateTimeField(blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     template_name = models.CharField(max_length=100, blank=False, null=False)
     template_code = models.CharField(max_length=50, blank=True, null=True)
-    template_type = models.CharField(max_length=50,
-                                     choices=TYPES,
-                                     blank=False,
-                                     null=False)
-    application_domain = models.CharField(max_length=20,
-                                          choices=DOMAINS,
-                                          blank=False,
-                                          null=False)
+    template_type = models.CharField(max_length=50, choices=TYPES, blank=False, null=False)
+    application_domain = models.CharField(max_length=20, choices=DOMAINS, blank=False, null=False)
     template_title = models.CharField(max_length=4000, blank=False, null=True)
     template_content = models.TextField(blank=False, null=True)
 
