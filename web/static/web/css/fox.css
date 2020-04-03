@@ -4813,3 +4813,6 @@ ul.fileList {
     opacity: .6;
 }
 
+.menu-out.flow-across.actions li a:first-child {
+    padding-left: 0;
+}
