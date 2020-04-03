@@ -13,13 +13,18 @@ class Mailshot(models.Model):
                 (RETRACTED, 'Retracted'), (CANCELLED, 'Cancelled'))
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=20, blank=False, null=False)
-    title = models.CharField(max_length=200, blank=True, null=True)
-    description = models.CharField(max_length=4000, blank=True, null=True)
+    status = models.CharField(max_length=20,
+                              blank=False,
+                              null=False,
+                              default=DRAFT)
+    title = models.CharField(max_length=200, blank=False, null=True)
+    description = models.CharField(max_length=4000, blank=False, null=True)
     is_email = models.BooleanField(blank=False, null=False, default=True)
     email_subject = models.CharField(max_length=78, blank=False, null=True)
     email_body = models.CharField(max_length=4000, blank=False, null=True)
-    is_retraction_email = models.BooleanField(blank=False, null=False)
+    is_retraction_email = models.BooleanField(blank=False,
+                                              null=False,
+                                              default=False)
     retract_email_subject = models.CharField(max_length=78,
                                              blank=False,
                                              null=True)
@@ -72,6 +77,12 @@ class Mailshot(models.Model):
     @property
     def status_verbose(self):
         return dict(Mailshot.STATUSES)[self.status]
+
+    def __str__(self):
+        if self.id:
+            return f'Mailshot ({self.id})'
+        else:
+            return 'Mailshot (New)'
 
     class Meta:
         ordering = ('-id', )
