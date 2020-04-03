@@ -40,5 +40,4 @@ class TemplateDetailView(ModelDetailView):
     form_class = GenericTemplate
     model = Template
     permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
-    success_url = "javascript:history.go(-1)"
-    cancel_url = success_url
+    cancel_url = "javascript:history.go(-1)"
