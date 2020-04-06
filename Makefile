@@ -93,6 +93,7 @@ run: ## Run with Gunicorn and Whitenoise serving static files
 	AWS_SES_ACCESS_KEY_ID='prod' \
 	AWS_SES_SECRET_ACCESS_KEY='prod' \
 	ELASTIC_APM_ENVIRONMENT='prod-test' \
+	ELASTIC_APM_URL='https://apm.ci.uktrade.io' \
 	DJANGO_SETTINGS_MODULE=config.settings.production \
 	docker-compose up
 
