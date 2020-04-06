@@ -5,6 +5,17 @@ from .models import Template
 
 
 class GenericTemplate(ModelEditForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.set_labels(self.instance.template_type)
+
+    def set_labels(self, template_type):
+        if template_type == Template.EMAIL_TEMPLATE:
+            self.fields['template_title'].label = "Email Subject"
+            self.fields['template_content'].label = "Email Body"
+
     class Meta:
         model = Template
         fields = ['template_name', 'template_title', 'template_content']
