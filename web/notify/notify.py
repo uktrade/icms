@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 def send_notification(subject, template, context={}, recipients=[]):
     """
-        Renders given email template and sends to recipiens. 
-        User's personal and alternative emails with portal notifications 
+        Renders given email template and sends to recipiens.
+        User's personal and alternative emails with portal notifications
         enabled will be used.
 
         Emails are queued to Redis to be sent asynchronously
@@ -24,7 +24,7 @@ def send_notification(subject, template, context={}, recipients=[]):
 
 def register(request, user, password):
     logger.debug('Notifying user for registration', user=user)
-    subject = 'Import Case Management System Account '
+    subject = 'Import Case Management System Account'
     send_notification(subject,
                       'email/registration/registration.html',
                       context={

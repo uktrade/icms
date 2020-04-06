@@ -9,7 +9,7 @@ from web.domains.user.models import User
 from . import utils
 
 
-@app.task(name='web.notify.send_email')
+@app.task(name='web.notify.email.send_email')
 def send_email(subject, message, recipients, html_message=None):
     utils.send_email(subject, message, recipients, html_message=html_message)
 
@@ -41,7 +41,7 @@ def send_to_exporters(subject, message, html_message=None):
                              html_message=html_message)
 
 
-@app.task(name='web.notify.send_mailshot')
+@app.task(name='web.notify.email.send_mailshot')
 def send_mailshot(subject,
                   message,
                   html_message=None,
@@ -53,4 +53,4 @@ def send_mailshot(subject,
     if to_importers:
         send_to_importers(subject, message, html_message=html_message)
     if to_exporters:
-        send_to_importers(subject, message, html_message=html_message)
+        send_to_exporters(subject, message, html_message=html_message)

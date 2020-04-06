@@ -43,6 +43,5 @@ def get_app_url(request):
     """
         Returns app's base url with scheme and host
         e.g. http://example.com[:port]
-        
     """
     return "{0}://{1}".format(request.scheme, request.get_host())
