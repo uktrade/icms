@@ -1,4 +1,6 @@
-from web.views import ModelFilterView, ModelDetailView
+from django.urls import reverse_lazy
+
+from web.views import ModelFilterView, ModelDetailView, ModelUpdateView
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
@@ -41,3 +43,11 @@ class TemplateDetailView(ModelDetailView):
     model = Template
     permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
     cancel_url = "javascript:history.go(-1)"
+
+
+class TemplateEditView(ModelUpdateView):
+    form_class = GenericTemplate
+    model = Template
+    success_url = reverse_lazy('template-list')
+    cancel_url = success_url
+    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
