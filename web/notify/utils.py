@@ -6,8 +6,6 @@ import itertools
 from django.conf import settings
 from django.core.mail import send_mail
 
-from web.domains.importer.models import Importer
-
 
 def send_email(
     subject,
@@ -48,5 +46,3 @@ def get_app_url(request):
         
     """
     return "{0}://{1}".format(request.scheme, request.get_host())
-
-

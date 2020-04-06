@@ -57,6 +57,8 @@ services:
     command: celery --app=config.celery:app --loglevel=debug worker
     environment:
       - DJANGO_SETTINGS_MODULE
+      - AWS_SES_ACCESS_KEY_ID
+      - AWS_SES_SECRET_ACCESS_KEY
     volumes:
       - .:/code
     depends_on:

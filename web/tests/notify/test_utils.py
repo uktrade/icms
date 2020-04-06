@@ -4,8 +4,9 @@
 from django.core import mail
 from django.test import TestCase
 
+from web.domains.user.models import AlternativeEmail, PersonalEmail
 from web.notify.notify import utils
-from web.domains.user.models import User, PersonalEmail, AlternativeEmail
+from web.tests.domains.user.factory import UserFactory
 
 
 class TestNotifyUtils(TestCase):
@@ -46,11 +47,7 @@ class TestNotifyUtils(TestCase):
         assert m.to[1] == 'test2@example.com'
 
     def test_get_notification_emails(self):
-        user = User.objects.create_user(username="tester",
-                                        email="tester@example.com",
-                                        first_name="Tester",
-                                        last_name="Testing")
-        user.save()
+        user = UserFactory()
         PersonalEmail(user=user,
                       email='email@example.com',
                       portal_notifications=True).save()

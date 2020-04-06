@@ -2,4 +2,5 @@
 # -*- coding: utf-8 -*-
 
 # Celery tasks
-from web.notify.notify import email_user  # NOQA
+from web.notify.email import send_email  # NOQA
+from web.notify.email import send_mailshot  # NOQA
