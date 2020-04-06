@@ -1,23 +1,35 @@
-{% extends "model/view.html" %}
+{% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block main_content %}
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{super()}}
-  {%- endcall %}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {% for field in form %}
+            {{fields.field(field, show_errors=show_errors )}}
+        {% endfor %}
+
+        <div class="section-break"></div>
+        {% block additional_content %}{% endblock %}
+        <div class="section-break"></div>
+
+        <div class="container">
+            <div class="row">
+                <div class="three columns"></div>
+                <div class="eight columns">
+                    <ul class="menu-out flow-across">
+                        {% block actions %}
+                            <li>
+                                <button type="submit" class="primary-button button">Save</button>
+                            </li>
+                            <li>
+                                <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
+                            </li>
+                            {% endblock %}
+                        </ul>
+                </div>
+                <div class="one columns"></div>
+            </div>
+    </div>
+
+    {% endcall %}
 {% endblock %}
-
-{% block actions %}
-<li>
-  <button type="submit" class="primary-button button">
-    Save
-  </button>
-</li>
-<li>
-  <a href="{{view.cancel_url}}" class="button link-button">
-    Cancel
-  </a>
-</li>
-{% endblock %}
-
-

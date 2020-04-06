@@ -4,9 +4,13 @@
 {% block main_content %}
 
     {% block fields %}
-      {% for field in form %}
-        {{fields.field(field)}}
-      {% endfor %}
+		{% for field in form %}
+			<div class="row">
+				{{ fields.label(field) }} {# three colums markup added by macro #}
+				<div class="eight columns">{{ field.value()|nl2br|safe if field.value() is not none}}</div>
+				<div class="one columns"></div>
+			</div>
+      	{% endfor %}
     {% endblock %}
 
     <div class="section-break"></div>
@@ -20,7 +24,7 @@
       <div class="row">
         <div class="three columns"></div>
         <div class="eight columns">
-          <ul class="menu-out flow-across">
+          <ul class="menu-out flow-across actions">
           {% block actions %}
           <li>
             <a href="{{view.cancel_url}}" class="button link-button">
