@@ -170,7 +170,7 @@ class MailshotRetractView(ModelUpdateView):
         }
 
     def get_form(self, *args, **kwargs):
-        """ 
+        """
             Add mailshot form into the context for displaying mailshot details
         """
         form = super().get_form(*args, **kwargs)
