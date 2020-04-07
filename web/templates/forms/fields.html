@@ -88,12 +88,9 @@
 {%- endmacro %}
 
 {% macro field_as_text(field) %}
-
-  {% if field.field.choices %}
-    {{ field }}
+  {% if 'Text' in field.field.widget.__class__.__name__ %}
+    {{ field.value()|nl2br }}
   {% else %}
-     {{ field.value() }}
+    {{ field }}
   {% endif %}
-
-
 {% endmacro %}
