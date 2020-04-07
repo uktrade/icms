@@ -11,7 +11,7 @@ class GenericTemplate(ModelEditForm):
         super().__init__(*args, **kwargs)
 
         self.set_labels(self.instance.template_type)
-        self.enable_html_editor()
+        self.enable_html_editor(self.instance.template_type)
 
     def set_labels(self, template_type):
         if template_type == Template.EMAIL_TEMPLATE:
