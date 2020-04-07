@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from web.domains.mailshot.forms import MailshotFilter, MailshotForm
+from web.domains.mailshot.forms import (MailshotFilter, MailshotForm,
+                                        MailshotRetractForm)
 from web.domains.mailshot.models import Mailshot
 
 from .factory import MailshotFactory
@@ -82,4 +83,33 @@ class MailshotFormTest(TestCase):
             })
         self.assertEqual(len(form.errors), 1)
         message = form.errors['recipients'][0]
+        self.assertEqual(message, 'You must enter this item')
+
+
+class MailshotRetractFormTest(TestCase):
+    def test_form_valid(self):
+        form = MailshotRetractForm(
+            data={
+                'is_retraction_email': 'on',
+                'retract_email_subject': 'Retracted Mailshot',
+                'retract_email_body': 'Email body'
+            })
+        self.assertTrue(form.is_valid())
+
+    def test_form_invalid(self):
+        form = MailshotRetractForm(
+            data={
+                'is_retraction_email': 'Test',
+                'retract_email_subject': 'Retracted Mailshot'
+            })
+        self.assertFalse(form.is_valid())
+
+    def test_invalid_form_message(self):
+        form = MailshotRetractForm(
+            data={
+                'is_retraction_email': 'Test',
+                'retract_email_subject': 'Retracted Mailshot'
+            })
+        self.assertEqual(len(form.errors), 1)
+        message = form.errors['retract_email_body'][0]
         self.assertEqual(message, 'You must enter this item')
