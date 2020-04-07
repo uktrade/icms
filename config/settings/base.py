@@ -18,6 +18,8 @@ from django.forms import Field
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
 env = environ.Env()
 
+VCAP_SERVICES = env.json('VCAP_SERVICES', {})
+
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/'
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     'viewflow',
     'django_filters',
     'django.forms',
+    'django_celery_results',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -179,7 +182,8 @@ FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler', )
 # Anti virus settings
 CLAM_AV_USERNAME = env.str('CLAM_AV_USERNAME', 'test')
 CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '')
-CLAM_AV_URL = env.str('CLAM_AV_URL', 'https://clamav.london.cloudapps.digital/v2/scan')
+CLAM_AV_URL = env.str('CLAM_AV_URL',
+                      'https://clamav.london.cloudapps.digital/v2/scan')
 
 # Storage Folders
 PATH_STORAGE_FIR = '/documents/fir/'  # start with /
@@ -203,3 +207,16 @@ structlog.configure(
     wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
+
+# Celery & Redis shared configuration
+if 'redis' in VCAP_SERVICES:
+    REDIS_URL = VCAP_SERVICES['redis'][0]['credentials']['uri']
+else:
+    REDIS_URL = env.str('REDIS_URL', 'redis://redis:6379')
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'

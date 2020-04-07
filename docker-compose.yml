@@ -44,6 +44,26 @@ services:
       - .:/code
     depends_on:
       - db
+      - redis
+
+  redis:
+    image: redis:latest
+    volumes:
+      - ./.redis_data:/data
+    ports:
+      - '6379:6379'
+
+  celery:
+    build: .
+    command: celery --app=config.celery:app --loglevel=debug worker
+    environment:
+      - DJANGO_SETTINGS_MODULE
+      - AWS_SES_ACCESS_KEY_ID
+      - AWS_SES_SECRET_ACCESS_KEY
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
 
   localstack:
     image: localstack/localstack

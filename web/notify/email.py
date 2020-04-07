@@ -1,33 +1,56 @@
-import traceback
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import structlog as logging
-from django.conf import settings
-from django.core.mail import send_mail
+from config.celery import app
+from web.domains.exporter.models import Exporter
+from web.domains.importer.models import Importer
+from web.domains.user.models import User
 
-import html2text
-
-logger = logging.getLogger(__name__)
+from . import utils
 
 
-def send(subject, to_user, html_message):
+@app.task(name='web.notify.email.send_email')
+def send_email(subject, message, recipients, html_message=None):
+    utils.send_email(subject, message, recipients, html_message=html_message)
+
+
+def send_to_importers(subject, message, html_message=None):
+    importers = Importer.objects.filter(is_active=True)
+    for importer in importers:
+        if importer.type == Importer.INDIVIDUAL:
+            if importer.user.account_status == User.ACTIVE:
+                send_email.delay(subject,
+                                 message,
+                                 utils.get_notification_emails(importer.user),
+                                 html_message=html_message)
+        else:  # Importer organisation
+            for user in importer.members.filter(account_status=User.ACTIVE):
+                send_email.delay(subject,
+                                 message,
+                                 utils.get_notification_emails(user),
+                                 html_message=html_message)
+
+
+def send_to_exporters(subject, message, html_message=None):
+    exporters = Exporter.objects.filter(is_active=True)
+    for exporter in exporters:
+        for user in exporter.members.filter(account_status=User.ACTIVE):
+            send_email.delay(subject,
+                             message,
+                             utils.get_notification_emails(user),
+                             html_message=html_message)
+
+
+@app.task(name='web.notify.email.send_mailshot')
+def send_mailshot(subject,
+                  message,
+                  html_message=None,
+                  to_importers=False,
+                  to_exporters=False):
     """
-    Sends email to a single recipient
-    Message must be html, html is converted to text both formats are sent
-    as a multipart email.
-
-    This function will not throw any exceptions, emails are stored
-    with status to be found in OutboundEmail table
+        Sends mailshots
     """
-
-    message_text = html2text.html2text(html_message)
-    email_addresses = to_user.personal_emails.filter(portal_notifications=True)
-    for email in email_addresses:
-        logger.debug('Email to %s:\nsubject:%s\nmessage:\n%s', email.email,
-                     subject, message_text)
-        try:
-            send_mail(subject,
-                      message_text,
-                      settings.EMAIL_FROM, [email.email],
-                      html_message=html_message)
-        except Exception:
-            logger.error(traceback.format_exc())
+    if to_importers:
+        send_to_importers(subject, message, html_message=html_message)
+    if to_exporters:
+        send_to_exporters(subject, message, html_message=html_message)
