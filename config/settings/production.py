@@ -40,7 +40,7 @@ INSTALLED_APPS += [  # NOQA
 ELASTIC_APM = {
     'SERVICE_NAME': 'ICMS',
     'SECRET_TOKEN': env.str('ELASTIC_APM_SECRET_TOKEN'),
-    'SERVER_URL': 'https://apm.ci.uktrade.io:8200',
+    'SERVER_URL': env.str('ELASTIC_APM_URL'),
     'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development')
 }
 

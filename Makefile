@@ -66,6 +66,8 @@ setup: ## sets up system for first use, you might want to run load data after
 	chmod -R 777 pgdata 2>/dev/null; exit 0
 	mkdir -p .ls_data
 	chmod -R 777 .ls_data
+	mkdir -p .redis_data
+	chmod -R 777 .redis_data
 	make requirements migrations migrate
 
 local_s3: ## creates s3 buckets on localstack container
@@ -93,6 +95,7 @@ run: ## Run with Gunicorn and Whitenoise serving static files
 	AWS_SES_ACCESS_KEY_ID='prod' \
 	AWS_SES_SECRET_ACCESS_KEY='prod' \
 	ELASTIC_APM_ENVIRONMENT='prod-test' \
+	ELASTIC_APM_URL='https://apm.ci.uktrade.io' \
 	DJANGO_SETTINGS_MODULE=config.settings.production \
 	docker-compose up
 

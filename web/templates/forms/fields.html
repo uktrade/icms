@@ -86,3 +86,11 @@
     {{_field(field)}}
   </td>
 {%- endmacro %}
+
+{% macro field_as_text(field) %}
+  {% if 'Text' in field.field.widget.__class__.__name__ %}
+    {{ field.value()|nl2br }}
+  {% else %}
+    {{ field }}
+  {% endif %}
+{% endmacro %}

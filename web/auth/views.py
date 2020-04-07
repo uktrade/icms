@@ -44,8 +44,8 @@ def register(request):
                       email=user.email,
                       is_primary=True,
                       portal_notifications=True).save()
-        notify.register(request, user, temp_pass)
         login(request, user)
+        notify.register(request, user, temp_pass)
         return redirect('set-password')
 
     return render(request, 'auth/registration.html', {

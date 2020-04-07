@@ -4,10 +4,12 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import View
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.template.models import Template
+from web.notify import notify
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
@@ -86,6 +88,23 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     # TODO: Permission to be identified for this view
     permission_required = []
 
+    def handle_notification(self, request, mailshot):
+        if mailshot.is_email:
+            notify.mailshot(request, mailshot)
+
+    def form_valid(self, form):
+        """
+            Publish mailshot if form is valid.
+        """
+        mailshot = form.instance
+        mailshot.status = Mailshot.PUBLISHED
+        mailshot.published_datetime = timezone.now()
+        mailshot.published_by = self.request.user
+        response = super().form_valid(form)
+        if response.status_code == 302 and response.url == self.success_url:
+            self.handle_notification(self.request, mailshot)
+        return response
+
     def save_draft(self, request, pk):
         """
             Saves mailshot draft bypassing all validation.
@@ -105,6 +124,13 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         mailshot.save()
         messages.success(request, 'Mailshot cancelled successfully')
         return redirect(self.success_url)
+
+    def get_success_message(self, cleaned_data):
+        action = self.request.POST.get('action')
+        if action and action == 'save_draft':
+            return super().get_success_message(cleaned_data)
+
+        return f'{self.object} published successfully'
 
     def get_queryset(self):
         """

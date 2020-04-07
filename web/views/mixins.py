@@ -45,8 +45,8 @@ class PostActionMixin(View):
     """
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
-        logger.debug('Received post action', action=action)
         if action:
+            logger.debug('Received post action', action=action)
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
