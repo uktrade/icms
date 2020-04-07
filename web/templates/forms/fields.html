@@ -86,3 +86,18 @@
     {{_field(field)}}
   </td>
 {%- endmacro %}
+
+{% macro field_as_text(field) -%}
+
+  {% if field.field.choices %}
+    {% for choice in field.field.choices %}
+      {% if choice.0 == field.value().0 %}
+        {{ choice.1 }}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+     {{ field.value()|nl2br }}
+  {% endif %}
+
+
+{% endmacro %}
