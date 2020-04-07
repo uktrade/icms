@@ -8,6 +8,8 @@ from django.forms.widgets import CheckboxSelectMultiple, Textarea
 from django_filters import CharFilter, ChoiceFilter
 from web.forms import ModelEditForm, ModelSearchFilter
 
+from web.forms.mixins import ReadonlyFormMixin
+
 from .models import Mailshot
 
 logger = logging.get_logger(__name__)
@@ -92,3 +94,27 @@ class MailshotForm(ModelEditForm):
             "Optionally send emails to the selected recipients. Note that uploaded documents will not be attached to the email."
         }
         config = {'__all__': {'show_optional_indicator': False}}
+
+
+class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):
+    pass
+
+
+class MailshotRetractForm(ModelEditForm):
+    class Meta:
+        model = Mailshot
+        fields = [
+            'is_retraction_email', 'retract_email_subject',
+            'retract_email_body'
+        ]
+        widgets = {
+            'retract_email_body': Textarea({
+                'rows': 4,
+                'cols': 50
+            }),
+        }
+        labels = {
+            'is_retraction_email': 'Send Emails',
+            'retract_email_subject': 'Email Subject',
+            'retract_email_body': 'Email Body',
+        }

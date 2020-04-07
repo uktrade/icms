@@ -70,13 +70,29 @@ def access_request_requester(access_request):
 def mailshot(request, mailshot):
     logger.debug('Notifying for published mailshot', mailshot=mailshot)
     html_message = render_to_string(
-        'email/mailshot/new-mailshot.html', {
+        'email/mailshot/mailshot.html', {
             'subject': mailshot.email_subject,
             'body': mailshot.email_body,
             'url': utils.get_app_url(request)
         })
     message_text = html2text.html2text(html_message)
-    email.send_mailshot.delay(f'New Mailshot - {mailshot.email_subject}',
+    email.send_mailshot.delay(f'{mailshot.email_subject}',
+                              message_text,
+                              html_message=html_message,
+                              to_importers=mailshot.is_to_importers,
+                              to_exporters=mailshot.is_to_exporters)
+
+
+def retract_mailshot(request, mailshot):
+    logger.debug('Notifying for retracted mailshot', mailshot=mailshot)
+    html_message = render_to_string(
+        'email/mailshot/mailshot.html', {
+            'subject': mailshot.retract_email_subject,
+            'body': mailshot.retract_email_body,
+            'url': utils.get_app_url(request)
+        })
+    message_text = html2text.html2text(html_message)
+    email.send_mailshot.delay(f'{mailshot.retract_email_subject}',
                               message_text,
                               html_message=html_message,
                               to_importers=mailshot.is_to_importers,

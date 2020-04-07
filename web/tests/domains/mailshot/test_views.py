@@ -51,7 +51,7 @@ class MailshotCreateViewTest(AuthTestCase):
         TemplateFactory(
             template_code='PUBLISH_MAILSHOT',
             template_title='New Mailshot',
-            template_content='Template Content')  # Create a constabulary
+            template_content='Template Content')  # Create mailshot template
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -123,6 +123,30 @@ class MailshotEditViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          f"Editing {self.mailshot}")
+
+
+class MailshotRetractViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        TemplateFactory(template_code='RETRACT_MAILSHOT',
+                        template_title='Retract Mailshot',
+                        template_content='Template Content'
+                        )  # Create retraction mail template
+        self.mailshot = MailshotFactory(
+            status=Mailshot.PUBLISHED)  # Create a mailshot
+        self.mailshot.save()
+        self.url = f'/mailshot/{self.mailshot.id}/retract/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_authorized_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
 
 
 class MailshotDetailViewTest(AuthTestCase):
