@@ -87,16 +87,12 @@
   </td>
 {%- endmacro %}
 
-{% macro field_as_text(field) -%}
+{% macro field_as_text(field) %}
 
   {% if field.field.choices %}
-    {% for choice in field.field.choices %}
-      {% if choice.0 == field.value().0 %}
-        {{ choice.1 }}
-      {% endif %}
-    {% endfor %}
+    {{ field }}
   {% else %}
-     {{ field.value()|nl2br }}
+     {{ field.value() }}
   {% endif %}
 
 
