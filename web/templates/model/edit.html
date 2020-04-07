@@ -33,3 +33,47 @@
 
     {% endcall %}
 {% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.css">
+{% endblock css%}
+{% block js %}
+    {{ super() }}
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.js"></script>
+
+
+    <script>
+        var buttons = [
+            'bold',
+            'strikethrough',
+            'underline',
+            'italic',
+            'eraser',
+            '|',
+            'ul',
+            'ol',
+            '|',
+            'outdent',
+            'indent',
+            '|',
+            'font',
+            'fontsize',
+            'brush',
+            'paragraph',
+            '|',
+            'align',
+            '|',
+            'hr',
+            'symbol',
+        ]
+        new Jodit('textarea[lang=html]', {
+            buttons: buttons,
+            buttonsMD: buttons,
+            buttonsSM: buttons,
+            buttonsXS: buttons,
+        });
+    </script>
+
+
+{% endblock js%}
