@@ -48,15 +48,19 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
         except EmptyPage:
             return paginator.page(paginator.num_pages)
 
+    def get_filterset(self, **kwargs):
+        return self.filterset_class(self.request.GET or None,
+                                    queryset=self.get_queryset(),
+                                    **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        f = self.filterset_class(self.request.GET or None,
-                                 queryset=self.get_queryset())
-        context['filter'] = f
+        filterset = self.get_filterset()
+        context['filter'] = filterset
         if self.paginate:
-            context['page'] = self.paginate(f.qs)
+            context['page'] = self.paginate(filterset.qs)
         else:
-            context['results'] = f.qs
+            context['results'] = filterset.qs
         return context
 
 

@@ -39,6 +39,46 @@ class MailshotFilter(ModelSearchFilter):
         fields = []
 
 
+class ReceivedMailshotsFilter(ModelSearchFilter):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+
+    id = CharFilter(field_name='id',
+                    lookup_expr='icontains',
+                    label='Reference')
+
+    title = CharFilter(field_name='title',
+                       lookup_expr='icontains',
+                       label='Title')
+
+    description = CharFilter(field_name='description',
+                             lookup_expr='icontains',
+                             label='Description')
+
+    @property
+    def qs(self):
+        queryset = super().qs.filter(status=Mailshot.PUBLISHED)
+        if self.user.is_superuser:
+            return queryset
+
+        is_importer = self.user.is_importer()
+        is_exporter = self.user.is_exporter()
+
+        if is_importer and is_exporter:
+            return queryset
+        elif is_importer:
+            return queryset.filter(is_to_importers=True)
+        elif is_exporter:
+            return queryset.filter(is_to_exporters=True)
+        else:
+            return queryset.none()
+
+    class Meta:
+        model = Mailshot
+        fields = []
+
+
 class MailshotForm(ModelEditForm):
 
     RECIPIENT_CHOICES = (('importers', 'Importers and Agents'),
@@ -91,7 +131,8 @@ class MailshotForm(ModelEditForm):
             'title':
             "The mailshot title will appear in the recipient's workbasket.",
             'is_email':
-            "Optionally send emails to the selected recipients. Note that uploaded documents will not be attached to the email."
+            "Optionally send emails to the selected recipients. \
+            Note that uploaded documents will not be attached to the email."
         }
         config = {'__all__': {'show_optional_indicator': False}}
 

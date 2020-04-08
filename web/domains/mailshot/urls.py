@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.urls import path
+from django.urls import path, reverse_lazy
 
 from . import views
 
@@ -16,5 +16,12 @@ urlpatterns = [
          name='mailshot-edit'),
     path('<int:pk>/retract/',
          views.MailshotRetractView.as_view(),
-         name='mailshot-retract')
+         name='mailshot-retract'),
+    path('received/',
+         views.ReceivedMailshotsView.as_view(),
+         name='mailshot-received'),
+    path('received/<int:pk>/',
+         views.MailshotDetailView.as_view(
+             cancel_url=reverse_lazy('mailshot-received')),
+         name='mailshot-detail-received'),
 ]

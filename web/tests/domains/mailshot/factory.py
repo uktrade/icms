@@ -15,7 +15,9 @@ class MailshotFactory(factory.django.DjangoModelFactory):
     description = factory.Faker('sentence')
     status = factory.fuzzy.FuzzyChoice(Mailshot.STATUSES,
                                        getter=lambda r: r[0])
-    is_email = True
+    is_email = random.choice([True, False])
     is_retraction_email = random.choice([True, False])
+    is_to_importers = random.choice([True, False])
+    is_to_exporters = random.choice([True, False])
     created_by = factory.SubFactory(UserFactory)
     is_active = random.choice([True, False])

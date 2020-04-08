@@ -77,6 +77,25 @@ class User(AbstractUser):
     def account_last_login_date(self):
         return None if self.last_login is None else self.last_login.date()
 
+    def is_importer(self):
+        """
+            Checks if user is a member of any import organisation or is an individual importer
+        """
+        # Check if user has any invidual importer company
+        own_importers = self.own_importers.filter(is_active=True).count()
+        if own_importers > 0:
+            return True
+
+        # Check if user is a member of any import/agent organisation
+        member_of_count = self.importer_set.filter(is_active=True).count()
+        return member_of_count > 0
+
+    def is_exporter(self):
+        """
+           Checks if user is a member of any export organisation
+        """
+        return self.exporter_set.filter(is_active=True).count() > 0
+
     def set_temp_password(self, length=8):
         """
         Generates a random alphanumerical password of given length.
