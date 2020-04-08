@@ -91,7 +91,7 @@ class ReceivedMailshotsFilterTest(TestCase):
 
     def setUp(self):
         self.user = UserFactory(is_superuser=False)
-        self.super_user = UserFactory(is_superuser=True)
+        self.superuser = UserFactory(is_superuser=True)
         self.importer_organisation = ImporterFactory(is_active=True)
         self.individual_importer = ImporterFactory(is_active=True)
         self.exporter = ExporterFactory(is_active=True)
@@ -105,6 +105,13 @@ class ReceivedMailshotsFilterTest(TestCase):
         self.individual_importer.save()
         self.exporter.members.add(self.user)
         results = self.run_filter({'title': 'Mailshot'}, user=self.user)
+        self.assertEqual(results.count(), 3)
+        self.assertTrue(results[0].status, Mailshot.PUBLISHED)
+        self.assertTrue(results[1].status, Mailshot.PUBLISHED)
+        self.assertTrue(results[2].status, Mailshot.PUBLISHED)
+
+    def test_superuser_gets_all_published_mailshots(self):
+        results = self.run_filter({'title': 'Mailshot'}, user=self.superuser)
         self.assertEqual(results.count(), 3)
         self.assertTrue(results[0].status, Mailshot.PUBLISHED)
         self.assertTrue(results[1].status, Mailshot.PUBLISHED)
