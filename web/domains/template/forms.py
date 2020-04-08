@@ -18,11 +18,15 @@ class GenericTemplate(ModelEditForm):
             self.fields['template_title'].label = "Email Subject"
             self.fields['template_content'].label = "Email Body"
 
+        if template_type == Template.LETTER_TEMPLATE:
+            del (self.fields['template_title'])
+            self.fields['template_content'].label = "Letter"
+
     def enable_html_editor(self, template_type):
         """
             Sets lang=html on textarea boxes that need to show an html editor
         """
-        if template_type in (Template.EMAIL_TEMPLATE,):
+        if template_type in (Template.LETTER_TEMPLATE,):
             self.fields['template_content'].widget = forms.Textarea(
                 attrs={'lang': 'html'}
             )

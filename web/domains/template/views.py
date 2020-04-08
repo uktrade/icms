@@ -46,6 +46,7 @@ class TemplateDetailView(ModelDetailView):
 
 
 class TemplateEditView(ModelUpdateView):
+    template_name = 'web/template/edit.html'
     form_class = GenericTemplate
     model = Template
     success_url = reverse_lazy('template-list')
