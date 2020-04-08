@@ -6,14 +6,23 @@ from .models import Mailshot
 
 
 class Edit(Edit):
-    icon = ''
-
     def display(self, mailshot):
         return mailshot.status == Mailshot.DRAFT
 
 
 class View(View):
-    icon = ''
+    icon = 'icon-eye'
 
     def display(self, mailshot):
         return mailshot.status != Mailshot.DRAFT
+
+
+class Retract(Edit):
+    icon = 'icon-bin'
+    label = 'Retract'
+
+    def href(self, object):
+        return f'{object.id}/retract/'
+
+    def display(self, mailshot):
+        return mailshot.status == Mailshot.PUBLISHED

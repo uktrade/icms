@@ -24,7 +24,7 @@ class Mailshot(models.Model):
     email_body = models.CharField(max_length=4000, blank=False, null=True)
     is_retraction_email = models.BooleanField(blank=False,
                                               null=False,
-                                              default=False)
+                                              default=True)
     retract_email_subject = models.CharField(max_length=78,
                                              blank=False,
                                              null=True)

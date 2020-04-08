@@ -1,0 +1,27 @@
+{% extends "model/edit.html" %}
+
+{% set page_title='Retract ' + object.__str__() %}
+
+
+{% block main_content %}
+  {% with form=view.view_form %}
+    {% include "partial/view-form-fields.html" %}
+  {% endwith %}
+
+  <h3>Retract</h3>
+
+  {{super()}}
+{% endblock %}
+
+{% block actions %}
+<li>
+  <button type="submit" data-confirm="Are you sure you want to retract this mailshot?" class="secondary-button button">
+    Retract
+  </button>
+</li>
+<li>
+  <a href="{{view.cancel_url}}" class="secondary-button button">
+    Cancel
+  </a>
+</li>
+{% endblock %}
