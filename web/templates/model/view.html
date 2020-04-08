@@ -7,7 +7,7 @@
 		{% for field in form %}
 			<div class="row">
 				{{ fields.label(field) }} {# three colums markup added by macro #}
-				<div class="eight columns">{{ fields.field_as_text(field)|safe if field.value() is not none}}</div>
+				<div class="eight columns">{{ fields.field_as_text(field) if field.value() is not none}}</div>
 				<div class="one columns"></div>
 			</div>
       	{% endfor %}
