@@ -16,8 +16,37 @@ from web.views.mixins import PostActionMixin
 from .actions import Edit, Retract
 from .actions import View as Display
 from .forms import (MailshotFilter, MailshotForm, MailshotReadonlyForm,
-                    MailshotRetractForm)
+                    MailshotRetractForm, ReceivedMailshotsFilter)
 from .models import Mailshot
+
+
+class ReceivedMailshotsView(ModelFilterView):
+    template_name = 'web/mailshot/received.html'
+    model = Mailshot
+    filterset_class = ReceivedMailshotsFilter
+    permission_required = []
+    page_title = 'Received Mailshots'
+
+    def get_filterset(self):
+        return super().get_filterset(user=self.request.user)
+
+    class Display:
+        fields = ['id', 'published', 'title', 'description']
+        fields_config = {
+            'id': {
+                'header': 'Reference'
+            },
+            'published': {
+                'header': 'Published'
+            },
+            'title': {
+                'header': 'Title',
+            },
+            'description': {
+                'header': 'Description'
+            }
+        }
+        actions = [Display()]
 
 
 class MailshotListView(ModelFilterView):
@@ -145,8 +174,7 @@ class MailshotDetailView(ModelDetailView):
     template_name = 'model/view.html'
     form_class = MailshotForm
     model = Mailshot
-    success_url = reverse_lazy('mailshot-list')
-    cancel_url = success_url
+    cancel_url = reverse_lazy('mailshot-list')
     # TODO:
     permission_required = []
 

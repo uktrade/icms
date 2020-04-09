@@ -1,8 +1,8 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
-{% import "forms/list.html" as lists %}
 {% import "forms/fields.html" as fields %}
 {% import "tables/tables.html" as tables %}
+{% import "messages/banners.html" as banners %}
 
 {% block main_content %}
 
@@ -35,49 +35,54 @@
 
     {% block results %}
 
-        {% if page %}
-          {% include "partial/paginator.html" %}
-        {% endif %}
-
         {% set empty_message %}
             {% block empty_message %}
                 There aren't any records that match your search
             {% endblock %}
         {% endset %}
 
-        {% set hide_empty_message = not(request.POST or request.GET) %}
+        {% if (page and page.object_list) or results %}
+          
+          {% if page %}
+            {% include "partial/paginator.html" %}
+          {% endif %}
 
+          <table responsiveList class="setoutList">
+            <thead>
+              <tr>
+                {{tables.headers(display)}}
 
-        <table responsiveList class="setoutList">
-          <thead>
-            <tr>
-              {{tables.headers(display)}}
+                {% if display.actions %}
+                  <th scope="col">Actions</th>
+                {% endif %}
+              </tr>
+            </thead>
 
-              {% if display.actions %}
-                <th scope="col">Actions</th>
-              {% endif %}
-            </tr>
-          </thead>
+            {% for item in (page.object_list if page else results) %}
+              <tr>
+                {{tables.fields(item, display)}}
 
-          {% for item in (page.object_list if page else results) %}
-            <tr>
-              {{tables.fields(item, display)}}
+                {% if display.actions %}
+                  <td>
+                    {% for action in display.actions %}
+                      {% if action.display(item) %}
+                        {{action.as_html(item, csrf_input)}}
+                      {% endif %}
+                    {% endfor %}
+                  </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </table>
 
-              {% if display.actions %}
-                <td>
-                  {% for action in display.actions %}
-                    {% if action.display(item) %}
-                      {{action.as_html(item, csrf_input)}}
-                    {% endif %}
-                  {% endfor %}
-                </td>
-              {% endif %}
-            </tr>
-          {% endfor %}
-        </table>
+          {% if page %}
+            {% include "partial/paginator.html" %}
+          {% endif %}
 
-        {% if page %}
-          {% include "partial/paginator.html" %}
+        {% else %}
+
+          {{banners.warning(empty_message)}}
+
         {% endif %}
 
     {% endblock %}

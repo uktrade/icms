@@ -56,6 +56,7 @@ class LinkAction(ListAction):
 
 class View(LinkAction):
     label = 'View'
+    icon = 'icon-eye'
 
 
 class Edit(LinkAction):

@@ -41,6 +41,22 @@ class MailshotListViewTest(AuthTestCase):
         self.assertEqual(len(page.object_list), 15)
 
 
+class ReceivedMailshotsView(AuthTestCase):
+    url = '/mailshot/received/'
+    redirect_url = f'{LOGIN_URL}?next={url}'
+
+    def test_authorized_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         'Received Mailshots')
+
+
 class MailshotCreateViewTest(AuthTestCase):
     url = '/mailshot/new/'
     redirect_url = f'{LOGIN_URL}?next={url}'

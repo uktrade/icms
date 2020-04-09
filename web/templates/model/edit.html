@@ -5,7 +5,7 @@
 {% block main_content %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
         {% for field in form %}
-            {{fields.field(field, show_errors=show_errors )}}
+            {{fields.field(field)}}
         {% endfor %}
 
         <div class="section-break"></div>
