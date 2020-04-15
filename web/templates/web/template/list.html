@@ -1,3 +1,46 @@
 {% extends "model/list.html" %}
 
 {% block empty_message %}There aren't any templates that match your search{% endblock %}
+
+
+{% block page_js %}
+    <script>
+        $(document).ready(function(){
+            $('#id_template_type').on('change', function(evt){
+                $el = $(evt.currentTarget);
+
+                switch($el.val()) {
+                    case 'ENDORSEMENT':
+                        $('.row_id_template_title').hide();
+                        $('label[for=id_template_content]').html('Endorsement Text');
+
+                        $('label[for=id_is_active]').html('Endorsement Status');
+                        $('.row_id_is_active').show();
+                        break;
+
+                    case 'DECLARATION':
+                        $('label[for=id_template_content]').html('Declaration Text');
+                        $('.row_id_template_content').show();
+                        
+                        $('label[for=id_template_title]').html('Declaration Title');
+                        $('.row_id_template_title').show();
+
+                        $('.row_id_is_active').hide();
+                        break;
+
+                    default:
+                        $('label[for=id_template_content]').html('Template Content');
+                        $('.row_id_template_content').show();
+                        
+                        $('label[for=id_template_title]').html('Template Title');
+                        $('.row_id_template_title').show();
+
+                        $('label[for=id_is_active]').html('Template Status');
+                        $('.row_id_is_active').hide();
+                }
+            });
+
+             $('#id_template_type').trigger('change');
+        });
+    </script>
+{% endblock page_js %}
