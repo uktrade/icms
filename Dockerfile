@@ -2,10 +2,13 @@ FROM python:3.7.6-alpine
 ENV PYTHONBUFFERED 1
 ENV ICMS_WEB_PORT ${ICMS_WEB_PORT}
 ENV DOCKERIZE_VERSION v0.6.1
+ARG ICMS_VIEWFLOW_LICENSE
 RUN mkdir /code
 RUN mkdir /deps
 WORKDIR /code
 COPY Pipfile Pipfile.lock /code/
+
+RUN [ ! -z "${ICMS_VIEWFLOW_LICENSE}" ] || { echo "Viewflow license key cannot be empty"; exit 1; }
 
 # Install dependencies
 RUN \

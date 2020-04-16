@@ -3,6 +3,11 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[[source]]
+name = "viewflow"
+url = "https://pypi.viewflow.io/${ICMS_VIEWFLOW_LICENSE}/simple/"
+verify_ssl = true
+
 [dev-packages]
 django-debug-toolbar = "*"
 # TODO: set version to * 
@@ -35,8 +40,8 @@ phonenumbers = "*"
 jinja2 = "*"
 requests = "*"
 django-compressor = "*"
-django-viewflow="*"
-django-material = "*"
+django-viewflow-pro= {version="*", index="viewflow"}
+django-material-pro= {version="*", index="viewflow"}
 elastic-apm = "*"
 s3chunkuploader = "*"
 humanize = "*"
