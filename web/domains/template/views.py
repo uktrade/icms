@@ -1,10 +1,10 @@
 from django.urls import reverse_lazy
 
-from web.views import ModelFilterView, ModelDetailView, ModelUpdateView
+from web.views import ModelFilterView, ModelDetailView, ModelUpdateView, ModelCreateView
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
-from .forms import TemplatesFilter, GenericTemplate
+from .forms import TemplatesFilter, GenericTemplate, EnsorsemenCreateTemplateForm
 
 
 class TemplateListView(ModelFilterView):
@@ -52,3 +52,13 @@ class TemplateEditView(ModelUpdateView):
     success_url = reverse_lazy('template-list')
     cancel_url = success_url
     permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+
+
+class EnsorsemenCreateView(ModelCreateView):
+    template_name = 'web/template/edit.html'
+    form_class = EnsorsemenCreateTemplateForm
+    model = Template
+    success_url = reverse_lazy('template-list')
+    cancel_url = success_url
+    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    page_title = 'New Endorsement'

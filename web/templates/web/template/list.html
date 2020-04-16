@@ -2,6 +2,11 @@
 
 {% block empty_message %}There aren't any templates that match your search{% endblock %}
 
+{% block sidebar %}
+    <ul class="menu-out">
+        <li><a href="{{ url('template-endorsement-new') }}">New Endorsement</a></li>
+    </ul>
+{% endblock sidebar%}
 
 {% block page_js %}
     <script>

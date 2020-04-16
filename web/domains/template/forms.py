@@ -28,8 +28,9 @@ class GenericTemplate(ModelEditForm):
             self.fields['template_content'].help_text = "This will be displayed as the main text of the Submit page"
 
         if template_type == Template.ENDORSEMENT:
-            self.fields['template_title'].label = "Endorsment Title"
+            self.fields['template_name'].label = "Endorsment Name"
             self.fields['template_content'].label = "Endorsement Text"
+            del (self.fields['template_title'])
 
         if template_type == Template.LETTER_FRAGMENT:
             del (self.fields['template_title'])
@@ -48,6 +49,27 @@ class GenericTemplate(ModelEditForm):
     class Meta:
         model = Template
         fields = ['template_name', 'template_title', 'template_content']
+
+
+class EnsorsemenCreateTemplateForm(GenericTemplate):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['template_type'].widget = forms.HiddenInput()
+        self.fields['template_type'].choices = (Template.get_choice_entry(Template.TYPES, Template.ENDORSEMENT),)
+        self.fields['template_type'].initial = Template.ENDORSEMENT
+
+        self.fields['application_domain'].widget = forms.HiddenInput()
+        self.fields['application_domain'].choices = (Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION),)
+        self.fields['application_domain'].initial = Template.IMPORT_APPLICATION
+
+        self.fields['template_title'].widget = forms.HiddenInput()
+
+        self.fields['template_content'].label = 'Endorsement Text'
+        self.fields['template_name'].label = 'Endorsement Name'
+
+    class Meta(GenericTemplate.Meta):
+        fields = GenericTemplate.Meta.fields + ['template_type', 'application_domain']
 
 
 class TemplatesFilter(ModelSearchFilter):
