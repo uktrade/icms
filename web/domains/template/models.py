@@ -55,7 +55,7 @@ class Template(Archivable, models.Model):
     template_code = models.CharField(max_length=50, blank=True, null=True)
     template_type = models.CharField(max_length=50, choices=TYPES, blank=False, null=False)
     application_domain = models.CharField(max_length=20, choices=DOMAINS, blank=False, null=False)
-    template_title = models.CharField(max_length=4000, blank=True, null=True)
+    template_title = models.CharField(max_length=4000, blank=False, null=True)
     template_content = models.TextField(blank=False, null=True)
 
     @property

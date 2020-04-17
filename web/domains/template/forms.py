@@ -51,25 +51,13 @@ class GenericTemplate(ModelEditForm):
         fields = ['template_name', 'template_title', 'template_content']
 
 
-class EnsorsemenCreateTemplateForm(GenericTemplate):
+class EnsdorsementCreateTemplateForm(GenericTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['template_type'].widget = forms.HiddenInput()
-        self.fields['template_type'].choices = (Template.get_choice_entry(Template.TYPES, Template.ENDORSEMENT),)
-        self.fields['template_type'].initial = Template.ENDORSEMENT
-
-        self.fields['application_domain'].widget = forms.HiddenInput()
-        self.fields['application_domain'].choices = (Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION),)
-        self.fields['application_domain'].initial = Template.IMPORT_APPLICATION
-
-        self.fields['template_title'].widget = forms.HiddenInput()
-
+        del (self.fields['template_title'])
         self.fields['template_content'].label = 'Endorsement Text'
         self.fields['template_name'].label = 'Endorsement Name'
-
-    class Meta(GenericTemplate.Meta):
-        fields = GenericTemplate.Meta.fields + ['template_type', 'application_domain']
 
 
 class TemplatesFilter(ModelSearchFilter):

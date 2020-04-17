@@ -4,7 +4,7 @@ from web.views import ModelFilterView, ModelDetailView, ModelUpdateView, ModelCr
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
-from .forms import TemplatesFilter, GenericTemplate, EnsorsemenCreateTemplateForm
+from .forms import TemplatesFilter, GenericTemplate, EnsdorsementCreateTemplateForm
 
 
 class TemplateListView(ModelFilterView):
@@ -56,9 +56,20 @@ class TemplateEditView(ModelUpdateView):
 
 class EnsorsemenCreateView(ModelCreateView):
     template_name = 'web/template/edit.html'
-    form_class = EnsorsemenCreateTemplateForm
+    form_class = EnsdorsementCreateTemplateForm
     model = Template
     success_url = reverse_lazy('template-list')
     cancel_url = success_url
     permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
     page_title = 'New Endorsement'
+
+    def form_valid(self, form):
+        """
+            Sets readonly fields for this template type and validates other inputs.
+        """
+        template = form.instance
+
+        template.template_type = Template.ENDORSEMENT
+        template.application_domain = Template.IMPORT_APPLICATION
+
+        return super().form_valid(form)
