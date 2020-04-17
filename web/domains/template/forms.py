@@ -28,8 +28,9 @@ class GenericTemplate(ModelEditForm):
             self.fields['template_content'].help_text = "This will be displayed as the main text of the Submit page"
 
         if template_type == Template.ENDORSEMENT:
-            self.fields['template_title'].label = "Endorsment Title"
+            self.fields['template_name'].label = "Endorsment Name"
             self.fields['template_content'].label = "Endorsement Text"
+            del (self.fields['template_title'])
 
         if template_type == Template.LETTER_FRAGMENT:
             del (self.fields['template_title'])
@@ -48,6 +49,15 @@ class GenericTemplate(ModelEditForm):
     class Meta:
         model = Template
         fields = ['template_name', 'template_title', 'template_content']
+
+
+class EnsdorsementCreateTemplateForm(GenericTemplate):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        del (self.fields['template_title'])
+        self.fields['template_content'].label = 'Endorsement Text'
+        self.fields['template_name'].label = 'Endorsement Name'
 
 
 class TemplatesFilter(ModelSearchFilter):

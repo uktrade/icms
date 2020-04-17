@@ -48,7 +48,7 @@ class Template(Archivable, models.Model):
         (ARCHIVED, "Archived"),
     )
 
-    start_datetime = models.DateTimeField(blank=False, null=False)
+    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     template_name = models.CharField(max_length=100, blank=False, null=False)
@@ -93,6 +93,19 @@ class Template(Archivable, models.Model):
             content = re.sub(r"\[\[%s\]\]" % replacement, value, content)
 
         return content
+
+    @staticmethod
+    def get_choice_entry(items, search):
+        """
+            Returns the entry that matched the `search` term on the `items` collection
+            This is meant to be used to create form that need a choice with only a few of the
+            configured choices
+
+            e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION) returns  (IMPORT_APPLICATION, "Import Applications")
+        """
+        for entry in items:
+            if entry[0] == search:
+                return entry
 
     class Meta:
         ordering = (

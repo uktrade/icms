@@ -66,12 +66,15 @@
   {% set config=field.field.config %}
 
     <div class="{{config.label.cols}} columns">
-    <label for="{{ field.id_for_label }}" class="prompt {{config.label.prompt}}">
-      {{field.label}}
-      {% if config.show_optional_indicator and not field.field.required %}
-        <span class="mand-label">optional</span>
-      {% endif %}
-    </label>
+    {% if 'HiddenInput' not in field.field.widget.__class__.__name__ %}
+      {# do not render the label on hidden fields #}
+      <label for="{{ field.id_for_label }}" class="prompt {{config.label.prompt}}">
+        {{field.label}}
+        {% if config.show_optional_indicator and not field.field.required %}
+          <span class="mand-label">optional</span>
+        {% endif %}
+      </label>
+    {% endif %}
   </div>
 
 {% endmacro %}
