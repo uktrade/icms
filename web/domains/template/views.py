@@ -54,7 +54,7 @@ class TemplateEditView(ModelUpdateView):
     permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
-class EnsorsemenCreateView(ModelCreateView):
+class EndorsementCreateView(ModelCreateView):
     template_name = 'web/template/edit.html'
     form_class = EnsdorsementCreateTemplateForm
     model = Template

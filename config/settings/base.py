@@ -181,7 +181,7 @@ FILE_UPLOAD_HANDLERS = ('s3chunkuploader.file_handler.S3FileUploadHandler', )
 
 # Anti virus settings
 CLAM_AV_USERNAME = env.str('CLAM_AV_USERNAME', 'test')
-CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '')
+CLAM_AV_PASSWORD = env.str('CLAM_AV_PASSWORD', '74q4q7S75JWFKA9K6vWy46jXa')
 CLAM_AV_URL = env.str('CLAM_AV_URL',
                       'https://clamav.london.cloudapps.digital/v2/scan')
 
