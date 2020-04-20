@@ -49,8 +49,8 @@
     </div>
 
 
-    {% call forms.form(action=url('login'), 
-                       method='post', 
+    {% call forms.form(action=url('login'),
+                       method='post',
                        container_class='login-form',
                        csrf_input=csrf_input)  -%}
       {{fields.field(form.username)}}
@@ -117,6 +117,6 @@
     </ul>
 </div>
 <div class="clearBoth"> </div>
-<a id="g11" href="{{ url('register') }}" class="primary-button button">
+<a  href="{{ url('register') }}" class="primary-button button">
     Register </a>
 {% endblock %}
