@@ -7,8 +7,8 @@
 {% block context_header %}Importer/Exporter Access Request{% endblock %}
 
 {% block sidebar%}
-    {% with process_id=activation.process.access_request.id, 
-            task_id=activation.task.id 
+    {% with process_id=activation.process.access_request.id,
+            task_id=activation.task.id
     %}
         {% include "web/case-fir-sidebar.html" %}
     {% endwith %}
@@ -28,14 +28,14 @@
 
     {% include "web/access-request/partials/access-request-display.html" %}
 
-    <div class="container setoutForm" data-xfid="f57">
+    <div class="container setoutForm" >
         <div class="row">
-            <div class="twelve columns" data-xfid="f59">
-                <div class="container setoutForm" data-xfid="f59">
+            <div class="twelve columns" >
+                <div class="container setoutForm" >
                     {% if access_request.requester_type == 'importer' %}
                         <div class="row">
                             <div class="three columns"></div>
-                            <div class="six columns" data-xfid="g63">
+                            <div class="six columns" >
                               {{access_request.linked_importer}}
                               {% call forms.form(method='post', csrf_input=csrf_input) %}
                               <a href="{{url('link-importer', args=(process.id,task.id ))}}?name={{access_request.organisation_name}}&agent_name={{access_request.agent_name or ''}}"
@@ -49,7 +49,7 @@
                     {% else %}
                         <div class="row">
                             <div class="three columns"></div>
-                            <div class="six columns" data-xfid="g63">
+                            <div class="six columns" >
                               {{access_request.linked_exporter}}
                               {% call forms.form(method='post', csrf_input=csrf_input) %}
                               <a href="{{url('link-exporter', args=(process.id,task.id ))}}?exporter_name={{access_request.organisation_name}}&agent_name={{access_request.agent_name or ''}}"
@@ -64,7 +64,7 @@
                 </div>
                 <div class="row">
                     <div class="three columns"></div>
-                    <div class="six columns" data-xfid="g67"></div>
+                    <div class="six columns" ></div>
                     <div class="three columns"></div>
                 </div>
             </div>

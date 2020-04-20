@@ -7,22 +7,22 @@
         Filter
     </h4>
 
-    <div class="container setoutForm tightForm" data-xfid="f25">
+    <div class="container setoutForm tightForm" >
         <div class="row">
-            <div class="twelve columns" data-xfid="g26"><label id="pg26" for="g26" class="prompt north">Transaction / Ref
+            <div class="twelve columns" ><label id="pg26" for="g26" class="prompt north">Transaction / Ref
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g26"><input id="g26" name="g26" type="text" value="" size="10" class="tightForm" aria-required="false" /></div>
+            <div class="twelve columns" ><input id="g26" name="g26" type="text" value="" size="10" class="tightForm" aria-required="false" /></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g27"><label id="pg27" for="g27" class="prompt north">Subject
+            <div class="twelve columns" ><label id="pg27" for="g27" class="prompt north">Subject
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g27"><select id="g27" name="g27" class="tightForm" aria-required="false">
+            <div class="twelve columns" ><select id="g27" name="g27" class="tightForm" aria-required="false">
                     <option value="g27/__FX_N" selected="selected">All</option>
                     <option value="g27/0">Account successfully created</option>
                     <option value="g27/1">Certificate Application</option>
@@ -31,44 +31,44 @@
                 </select></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g28"><label id="pg28" for="g28" class="prompt north">Topic
+            <div class="twelve columns" ><label id="pg28" for="g28" class="prompt north">Topic
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g28"><input id="g28" name="g28" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+            <div class="twelve columns" ><input id="g28" name="g28" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g29"><label id="pg29" for="g29" class="prompt north">Company
+            <div class="twelve columns" ><label id="pg29" for="g29" class="prompt north">Company
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g29"><input id="g29" name="g29" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+            <div class="twelve columns" ><input id="g29" name="g29" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g30"><label id="pg30" for="g30" class="prompt north">Status
+            <div class="twelve columns" ><label id="pg30" for="g30" class="prompt north">Status
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g30"><input id="g30" name="g30" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+            <div class="twelve columns" ><input id="g30" name="g30" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g31"><label id="pg31" for="g31" class="prompt north">Information
+            <div class="twelve columns" ><label id="pg31" for="g31" class="prompt north">Information
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g31"><input id="g31" name="g31" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
+            <div class="twelve columns" ><input id="g31" name="g31" type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g32"><label id="pg32" for="g32" class="prompt north">Filter Tag
+            <div class="twelve columns" ><label id="pg32" for="g32" class="prompt north">Filter Tag
                 </label>
             </div>
         </div>
         <div class="row">
-            <div class="twelve columns" data-xfid="g32"><select id="g32" name="g32" class="tightForm" aria-required="true">
+            <div class="twelve columns" ><select id="g32" name="g32" class="tightForm" aria-required="true">
                     <option value="g32/0">All</option>
                     <option value="g32/1" selected="selected">For Attention</option>
                 </select></div>
@@ -173,7 +173,7 @@
 
                             <div class="six columns break-word">
 
-                                <div class="individual-input" data-xfid="g53"><span id="g53" class="text-widget ">Access Request</span></div>
+                                <div class="individual-input" ><span id="g53" class="text-widget ">Access Request</span></div>
 
                             </div>
                             <div class="six columns">
@@ -195,9 +195,9 @@
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tr data-xfid="f55">
-                                        <td data-xfid="g56"><form name="form" id="access_request_{{ process.id }}" action="{{ url("take_ownership", args=[process.id]) }}" method="post">{{csrf_input}}<a href="javascript:document.getElementById('access_request_{{ process.id }}').submit()">Manage</a></form></td>
-                                        <td data-xfid="g57">
+                                    <tr >
+                                        <td ><form name="form" id="access_request_{{ process.id }}" action="{{ url("take_ownership", args=[process.id]) }}" method="post">{{csrf_input}}<a href="javascript:document.getElementById('access_request_{{ process.id }}').submit()">Manage</a></form></td>
+                                        <td >
                                             <button id="g57" name="g57" type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-remove-new-indicator&quot;,&quot;ctxt&quot;:&quot;s9tEP_plrnqWp1W&quot;}, this);" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
                                                 New
                                             </button>
@@ -206,15 +206,15 @@
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td data-xfid="g58"><span id="g58" class="text-widget "></span></td>
+                                        <td ><span id="g58" class="text-widget "></span></td>
                                     </tr>
-                                    <tr data-xfid="f59">
-                                        <td data-xfid="g60"> <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tF1_plrnqWp1W&quot;}, this);">Clear</a></td>
+                                    <tr >
+                                        <td > <a href="javascript:FOXjs.action({&quot;confirm&quot;:&quot;Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared.&quot;,&quot;ref&quot;:&quot;action-execute-dynamic-action&quot;,&quot;ctxt&quot;:&quot;s9tF1_plrnqWp1W&quot;}, this);">Clear</a></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <td data-xfid="g61"><span id="g61" class="text-widget "></span></td>
+                                        <td ><span id="g61" class="text-widget "></span></td>
                                     </tr>
                                 </table>
 
