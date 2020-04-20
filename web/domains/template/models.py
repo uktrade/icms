@@ -141,5 +141,9 @@ class CFSScheduleTranslationParagraph(models.Model):
                                  blank=False,
                                  null=False,
                                  related_name='paragraphs')
+    order = models.IntegerField(blank=False, null=False)
     name = models.CharField(max_length=100, blank=False, null=False)
     content = models.TextField(blank=False, null=True)
+
+    class Meta:
+        ordering = ('order',)
