@@ -1,5 +1,8 @@
 import re
+
 from django.db import models
+
+from web.domains.country.models import Country, CountryTranslationSet
 from web.models.mixins import Archivable
 
 
@@ -48,15 +51,28 @@ class Template(Archivable, models.Model):
         (ARCHIVED, "Archived"),
     )
 
-    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    start_datetime = models.DateTimeField(auto_now_add=True,
+                                          blank=False,
+                                          null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     template_name = models.CharField(max_length=100, blank=False, null=False)
     template_code = models.CharField(max_length=50, blank=True, null=True)
-    template_type = models.CharField(max_length=50, choices=TYPES, blank=False, null=False)
-    application_domain = models.CharField(max_length=20, choices=DOMAINS, blank=False, null=False)
+    template_type = models.CharField(max_length=50,
+                                     choices=TYPES,
+                                     blank=False,
+                                     null=False)
+    application_domain = models.CharField(max_length=20,
+                                          choices=DOMAINS,
+                                          blank=False,
+                                          null=False)
     template_title = models.CharField(max_length=4000, blank=False, null=True)
     template_content = models.TextField(blank=False, null=True)
+    countries = models.ManyToManyField(Country)
+    country_translation_set = models.ForeignKey(CountryTranslationSet,
+                                                on_delete=models.SET_NULL,
+                                                blank=False,
+                                                null=True)
 
     @property
     def template_status(self):
@@ -101,7 +117,8 @@ class Template(Archivable, models.Model):
             This is meant to be used to create form that need a choice with only a few of the
             configured choices
 
-            e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION) returns  (IMPORT_APPLICATION, "Import Applications")
+            e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION)
+            returns  (IMPORT_APPLICATION, "Import Applications")
         """
         for entry in items:
             if entry[0] == search:
@@ -112,3 +129,17 @@ class Template(Archivable, models.Model):
             '-is_active',
             'template_name',
         )
+
+
+class CFSScheduleTranslationParagraph(models.Model):
+    """
+        Paragraphs for Certificate of Free Sale Schedule and
+        Certificate of Free Sale Schedule Translation templates
+    """
+    template = models.ForeignKey(Template,
+                                 on_delete=models.CASCADE,
+                                 blank=False,
+                                 null=False,
+                                 related_name='paragraphs')
+    name = models.CharField(max_length=100, blank=False, null=False)
+    content = models.TextField(blank=False, null=True)
