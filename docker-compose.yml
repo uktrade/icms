@@ -5,7 +5,7 @@ services:
   db:
     image: postgres:11
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
@@ -13,7 +13,7 @@ services:
       - "5432:5432"
   web:
     # restart: always
-    build: 
+    build:
       context: .
       args:
         ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
@@ -83,3 +83,7 @@ services:
     volumes:
       - ".ls_data:/tmp/localstack"
       - '/var/run/docker.sock:/var/run/docker.sock'
+
+
+volumes:
+  pgdata:
