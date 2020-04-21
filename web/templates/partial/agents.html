@@ -14,8 +14,7 @@
 
   <div class="list-actions">
     <ul class="menu-out flow-across">
-      <li> <button type="button" onclick="javascript:FOXjs.action({&quot;ref&quot;:&quot;action-create-agent&quot;,&quot;ctxt&quot;:&quot;s1Kzx6c_plrnqVW43&quot;}, this);" class="small-button icon-user-plus button">
-          Create Agent </button></li>
+      <li> <button type="button" role="action-button" data-csrf="{{ csrf_token }}" data-action="action-create-agent" class="small-button icon-user-plus button"> Create Agent </button></li>
     </ul>
   </div>
 

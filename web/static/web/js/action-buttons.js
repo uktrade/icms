@@ -2,15 +2,14 @@ $(document).ready(function() {
     $('[role=action-button]').off().on('click', function(evt){
 
         evt.preventDefault();
-        var url    = $(this).attr('href');
-        var action = $(this).attr('data-action');
-        var csrf   = $(this).attr('data-csrf');
-        var method = $(this).attr('data-method') || 'POST';
+        var $el = $(this)
+        var url    = $el.attr('href');
+        var action = $el.attr('data-action');
+        var csrf   = $el.attr('data-csrf');
+        var method = $el.attr('data-method') || 'POST';
 
-        var confirmMessage =  $(this).attr('data-confirm');
-
-        var doAction = function(){
-            console.log('running action button callback')
+        var standAloneAction = function(){
+            console.log('running standAloneAction callback')
             $frm = $('<form></form>');
             $frm.attr('method', method);
 
@@ -28,11 +27,22 @@ $(document).ready(function() {
             $frm.submit();
         };
 
-        if (confirmMessage) {
-            return Dialogue().show(confirmMessage, doAction);
+        var inFormAction = function() {
+            console.log('running inFormAction callback')
+
+            $frm = $el.closest('frm');
+            $frm.append('<input type="hidden" name="action" value="'+ action +'" />')
+            $frm.submit();
         }
 
-        doAction();
+        var callback = $el.is('[data-in-form]') ? inFormAction : standAloneAction;
+
+        var confirmMessage =  $el.attr('data-confirm');
+        if (confirmMessage) {
+            return Dialogue().show(confirmMessage, callback);
+        }
+
+        callback();
     });
 });
 
