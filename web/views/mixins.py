@@ -37,12 +37,17 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
             context['display'] = display
         return context
 
-
 class PostActionMixin(View):
     """
     Handle post requests with action variable: Calls method with the same name
     as action variable to handle action
     """
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            return self.post(request, *args, **kwargs)
+
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
         if action:

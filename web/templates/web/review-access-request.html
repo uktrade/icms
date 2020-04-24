@@ -68,35 +68,22 @@
                     <div class="three columns"></div>
                 </div>
             </div>
-            {% if activation.process.access_request.request_reason is none %}
-                <h3>Exporter Access Approval</h3>
-                <div class="info-box info-box-info">
-                    You must first link an exporter to the access request if you wish to start exporter access approval. Please use Link / Maintain Exporter
-                    above.
-                </div>
-            {% else %}
-                <h3>Importer Access Approval</h3>
-                <div class="info-box info-box-info">
-                    You must first link an importer to the access request if you wish to start importer access approval. Please use Link / Maintain Importer
-                    above.
-                </div>
-            {% endif %}
 
-            <h3>
-                Close Access Request
-            </h3>
+            {% call forms.form(method='post', csrf_input=csrf_input) %}
+              <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now }}" id="id__viewflow_activation-started">
 
-             <div class="info-box info-box-success">
-                {% call forms.form(method='post', csrf_input=csrf_input) %}
-                    <input type="hidden" name="_viewflow_activation-started" value="{{ form.datetime_now }}" id="id__viewflow_activation-started">
-                    {{ fields.field(form.response)}}
-                    <div class="hidden" id="response-reason-container">{{ fields.field(form.response_reason) }}</div>
-                    <button type="submit" name="action" value="respond" />Close Access Request</button>
-                {% endcall %}
-            </div>
+              {% include "web/access-request/partials/access-request-approval.html" %}
+
+              <h3>Close Access Request</h3>
+
+               <div class="info-box info-box-success">
+                {{ fields.field(form.response)}}
+                <div class="hidden" id="response-reason-container">{{ fields.field(form.response_reason) }}</div>
+                <button type="submit" name="action" value="respond" />Close Access Request</button>
+              </div>
+            {% endcall %}
         </div>
     </div>
 
-    <script src="{{ static('web/js/review-request-access.js') }}" type="text/javascript"></script>
 
 {% endblock %}

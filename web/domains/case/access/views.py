@@ -3,12 +3,13 @@ from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-
 from s3chunkuploader.file_handler import s3_client
 from viewflow.flow.views import FlowMixin
+
 from web.domains.case.forms import (FurtherInformationRequestDisplayForm,
                                     FurtherInformationRequestForm)
 from web.domains.case.models import FurtherInformationRequest
@@ -16,14 +17,15 @@ from web.domains.exporter.views import ExporterListView
 from web.domains.file.models import File
 from web.domains.importer.views import ImporterListView
 from web.domains.template.models import Template
-from web.utils.s3upload import S3UploadService, InvalidFileException
-from web.utils.virus import ClamAV, InfectedFileException
 from web.utils import FilevalidationService, url_path_join
+from web.utils.s3upload import InvalidFileException, S3UploadService
+from web.utils.virus import ClamAV, InfectedFileException
 from web.views.mixins import PostActionMixin, SimpleStartFlowMixin
 
 from .actions import LinkExporter, LinkImporter
-from .forms import (AccessRequestForm, ReviewAccessRequestForm)
-from .models import AccessRequest, AccessRequestProcess
+from .forms import (AccessRequestForm, ApprovalRequestForm,
+                    ReviewAccessRequestForm)
+from .models import AccessRequest, AccessRequestProcess, ApprovalRequest
 
 logger = logging.getLogger(__name__)
 
@@ -65,10 +67,33 @@ class AccessRequestCreatedView(TemplateView):
     template_name = 'web/request-access-success.html'
 
 
-class ILBReviewRequest(FlowMixin, FormView):
+class ILBReviewRequest(FlowMixin, PostActionMixin, FormView):
     template_name = 'web/review-access-request.html'
     form_class = ReviewAccessRequestForm
     success_url = reverse_lazy('workbasket')
+
+    def start_approval(self, request, *args, **kwargs):
+        """
+            Create a draft approval request form current access request.
+        """
+        approval = ApprovalRequest(
+            access_request=self.activation.process.access_request)
+        approval.status = ApprovalRequest.DRAFT
+        approval.save()
+        return redirect(request.get_full_path())
+
+    def request_approval(self, request):
+        """
+            Start flow for approval from contacts.
+        """
+        approval_request = self.activation.process.access_request.approval_request
+        approval_request.request_date = timezone.now()
+        approval_request.requested_by = request.user
+        approval_request.status = ApprovalRequest.OPEN
+        approval_request.requested_from_id = request.POST.get('requested_from')
+        approval_request.save()
+        self.activation.done()
+        return redirect(request.get_full_path())
 
     def form_valid(self, form, *args, **kwargs):
         form.save()
@@ -81,6 +106,17 @@ class ILBReviewRequest(FlowMixin, FormView):
             instance=self.activation.process.access_request,
             **self.get_form_kwargs(),
         )
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        access_request = self.activation.process.access_request
+        if hasattr(access_request, 'approval_request'):
+            context['approval_form'] = ApprovalRequestForm(
+                access_request.linked_importer
+                or access_request.linked_exporter,
+                instance=access_request.approval_request)
+
+        return context
 
 
 class LinkImporterView(ImporterListView):
@@ -237,14 +273,10 @@ class AccessRequestFirView(PostActionMixin):
 
         if not form.is_valid():
             return render(
-                request,
-                self.template_name,
-                self.get_context_data(
-                    process_id,
-                    selected_fir=model.id,
-                    form=form
-                )
-            )
+                request, self.template_name,
+                self.get_context_data(process_id,
+                                      selected_fir=model.id,
+                                      form=form))
 
         form.save()
 
