@@ -1,6 +1,6 @@
 import datetime
 
-from django.forms import ModelForm, BaseForm
+from django.forms import ModelForm
 from django_filters import FilterSet
 
 from .mixins import (FiltersFieldConfigMixin, FormFieldConfigMixin,
