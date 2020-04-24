@@ -1,13 +1,13 @@
 {% extends "model/edit.html" %}
 
 {% block css %}
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.css">
+<link rel="stylesheet" href="{{ static('3rdparty/jodit/jodit.min.css') }}">
 {% endblock css%}
 
 {% block page_js %}
     {{ super() }}
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jodit/3.1.39/jodit.min.js"></script>
+    <script src="{{ static('3rdparty/jodit/jodit.min.js') }}" type="text/javascript"></script>
 
 
     <script>
@@ -34,12 +34,15 @@
             'hr',
             'symbol',
         ]
-        new Jodit('textarea[lang=html]', {
-            buttons: buttons,
-            buttonsMD: buttons,
-            buttonsSM: buttons,
-            buttonsXS: buttons,
-        });
+
+        if($('textarea[lang=html]').length) {
+            new Jodit('textarea[lang=html]', {
+                buttons: buttons,
+                buttonsMD: buttons,
+                buttonsSM: buttons,
+                buttonsXS: buttons,
+            });
+        }
     </script>
 
 
