@@ -1,8 +1,9 @@
 import os
 import glob
 import shutil
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
+
 
 class Command(BaseCommand):
     help = 'install js dependencies'
@@ -26,7 +27,3 @@ class Command(BaseCommand):
                     self.mkdir(destination)
                     print(f"\t{file}\t==>\t{destination}/{os.path.basename(file)}")
                     shutil.copy(file, destination)
-
-
-
-

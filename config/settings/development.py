@@ -78,7 +78,7 @@ LOGGING = {
     },
 }
 
-NPM_STATIC_FILES_LOCATION = os.path.join('web', 'static','3rdparty')
+NPM_STATIC_FILES_LOCATION = os.path.join('web', 'static', '3rdparty')
 
 NPM_FILE_PATTERNS = {
     'jquery': [os.path.join('dist', 'jquery.min.js')],
