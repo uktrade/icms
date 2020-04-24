@@ -1,4 +1,5 @@
 import environ
+import os
 
 from .non_prod_base import *  # NOQA”
 
@@ -75,4 +76,14 @@ LOGGING = {
             'level': 'DEBUG',
         }
     },
+}
+
+NPM_STATIC_FILES_LOCATION = os.path.join('web', 'static', '3rdparty')
+
+NPM_FILE_PATTERNS = {
+    'jquery': [os.path.join('dist', 'jquery.min.js')],
+    'jquery-ui-dist': ['jquery-ui.min.js'],
+    'html5shiv': [os.path.join('dist', 'html5shiv.min.js')],
+    'jquery.formset': [os.path.join('src', 'jquery.formset.js')],
+    'jodit': [os.path.join('build', 'jodit.min.*')],
 }

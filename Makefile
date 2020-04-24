@@ -13,28 +13,28 @@ help: ## Show this screen
 ##@ Development
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web ./manage.py makemigrations ${OPTS}
+	docker-compose run --rm web python ./manage.py makemigrations ${OPTS}
 
 migrate: ## execute db migration
 	unset UID && \
-	docker-compose run --rm web ./manage.py migrate
+	docker-compose run --rm web python ./manage.py migrate
 
 
 loaddata: ## Load fixtures
 	unset UID && \
-	docker-compose run --rm web ./manage.py loaddata --app web web/fixtures/web/*.json
+	docker-compose run --rm web python ./manage.py loaddata --app web web/fixtures/web/*.json
 
 dumpdata: ## dumps db data
 	unset UID && \
-	docker-compose run --rm web ./manage.py dumpdata --format=json web  > test.json
+	docker-compose run --rm web python ./manage.py dumpdata --format=json web  > test.json
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
-	docker-compose run --rm web ./manage.py sqlsequencereset web
+	docker-compose run --rm web python ./manage.py sqlsequencereset web
 
 createsuperuser: ## create django super user
 	unset UID && \
-	docker-compose run --rm web ./manage.py createsuperuser
+	docker-compose run --rm web python ./manage.py createsuperuser
 
 clean: ## removes python cache files from project
 	unset UID && \
@@ -44,12 +44,18 @@ requirements: ## install dev and prod dependecies via pipenv
 	unset UID && \
 	docker-compose run --rm web python3 -m pipenv install --dev --system
 
+requirements-web: ## install javascript dependencies
+	unset UID && \
+	ICMS_DEBUG=True \
+	ICMS_MIGRATE=False \
+	docker-compose run --rm web python manage.py npm && python manage.py collect-npm
+
 fixlock: ## install prod dependencies via pipenv
 	unset UID && \
 	docker-compose run --rm web pipenv install
 
 collectstatic: ## copies static files to STATIC_ROOT
-	docker-compose run --rm web ./manage.py collectstatic --noinput --traceback
+	docker-compose run --rm web python ./manage.py collectstatic --noinput --traceback
 
 build: ## build docker containers
 	docker-compose pull
@@ -57,9 +63,11 @@ build: ## build docker containers
 
 shell: ## Starts the Python interactive interpreter
 	unset UID && \
-	docker-compose run --rm web ./manage.py shell
+	ICMS_DEBUG=True \
+	ICMS_MIGRATE=False \
+	docker-compose run --rm web python ./manage.py shell
 
-all: requirements
+all: requirements requirements-web
 
 setup: ## sets up system for first use, you might want to run load data after
 	mkdir -p pgdata
