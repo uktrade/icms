@@ -36,7 +36,7 @@ class ExportAccessRequestFlowTest(TestCase):
         self.client.force_login(self.test_access_requester)
 
         response = self.client.post(
-            '/access/start/',
+            '/access/access_start/',
             {'request_type': 'MAIN_EXPORTER_ACCESS',
              'organisation_name': 'Test7201',
              'organisation_address': '''50 Victoria St
@@ -70,4 +70,4 @@ class ExportAccessRequestFlowTest(TestCase):
 
         process.refresh_from_db()
         self.assertEqual('DONE', process.status)
-        self.assertEqual(6, process.task_set.count())
+        self.assertEqual(7, process.task_set.count())

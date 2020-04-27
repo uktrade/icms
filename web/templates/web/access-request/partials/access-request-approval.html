@@ -1,0 +1,60 @@
+{% import "forms/fields.html" as fields %}
+
+{% if access_request.requester_type == 'importer' %}
+  <h3>Importer Access Approval</h3>
+  {% if not  access_request.linked_importer %}
+    <div class="info-box info-box-info">
+      You must first link an importer to the access request if you wish to start importer access approval. Please use Link / Maintain Importer
+      above.
+    </div>
+  {% endif %}
+{% else %}
+  <h3>Exporter Access Approval</h3>
+  {% if not  access_request.linked_importer %}
+    <div class="info-box info-box-info">
+      You must first link an exporter to the access request if you wish to start exporter access approval. Please use Link / Maintain Exporter
+      above.
+    </div>
+  {% endif %}
+{% endif %}
+
+
+{% if access_request.linked_importer or access_request.linked_exporter %}
+
+  {% if approval_form %}
+    {% if access_request.approval_request.status == 'DRAFT' %}
+      {{fields.field(approval_form.status)}}
+      {{fields.field(approval_form.requested_from)}}
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="six columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button name="action" value="request_approval" class="primary-button button">Request Approval</button>
+            </li>
+            <li>
+              <button name="action" value="cancel_approval" class="link-button button">Cancel Approval Request</button>
+            </li>
+          </ul>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
+
+
+    {% if access_request.approval_request.status == 'OPEN' %}
+      {{fields.field(approval_form.status)}}
+      {{fields.field(approval_form.requested_from)}}
+    {% endif %}
+
+  {% else %}
+
+    <ul class="menu-out flow-across">
+      <li>
+        <button name="action" value="start_approval" class="button">Start Importer Access Approval</button>
+      </li>
+    </ul>
+
+  {% endif %}
+
+{% endif %}
