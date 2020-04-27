@@ -209,7 +209,7 @@ var FOXjs = {
     // Scroll to first error on the page after submit.
     var error = $("form .error-message");
     if(error.length > 0) {
-      var row = error.first().closest('div[class="row"]');
+      var row = error.first().closest('div.row');
       $('html, body').animate({
         scrollTop: (row.offset().top)
       },0);
