@@ -49,7 +49,7 @@ function compressTopMenu() {
 }
 
 $(window).resize(compressTopMenu);
-$(window).load(compressTopMenu);
+$(window).on("load", compressTopMenu);
 
 
 var StickySidebar = {
@@ -147,8 +147,8 @@ var StickySidebar = {
   }
 };
 
-$(window).load(StickySidebar.init);
-$(window).load(StickySidebar.checkIfMobile);
+$(window).on("load", StickySidebar.init);
+$(window).on("load", StickySidebar.checkIfMobile);
 $(window).scroll(StickySidebar.processScroll);
 $(window).resize(StickySidebar.checkIfMobile);
 
