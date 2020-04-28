@@ -1,12 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.forms.widgets import Select, Textarea
 
-from web.forms import ViewFlowModelEditForm
+from web.forms import ViewFlowForm, ModelEditForm
 
-from .models import AccessRequest
+from .models import AccessRequest, ApprovalRequest
 
 
-class AccessRequestForm(ViewFlowModelEditForm):
+class AccessRequestForm(ViewFlowForm, ModelEditForm):
     def validate_fields(self, fields, cleaned_data):
         for field in fields:
             if cleaned_data[field] == '':
@@ -69,8 +69,31 @@ class AccessRequestForm(ViewFlowModelEditForm):
         }
 
 
-class ReviewAccessRequestForm(ViewFlowModelEditForm):
+class ReviewAccessRequestForm(ViewFlowForm, ModelEditForm):
     class Meta:
         model = AccessRequest
 
         fields = ['response', 'response_reason']
+
+
+class ApprovalRequestForm(ViewFlowForm, ModelEditForm):
+    def __init__(self, team, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].disabled = True
+        self.fields['requested_from'].queryset = team.members.all(
+        )  # TODO: All members? Check if certain roles or not
+        self.fields['requested_from'].empty_label = 'All'
+
+    class Meta:
+        model = ApprovalRequest
+
+        fields = ['status', 'requested_from']
+
+        labels = {'requested_from': 'Contact'}
+
+        widgets = {'requested_from': Select()}
+        config = {
+            '__all__': {
+                'show_optional_indicator': False,
+            }
+        }

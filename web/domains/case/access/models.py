@@ -2,7 +2,7 @@ import datetime
 
 from django.db import models
 
-from viewflow.models import Process
+from viewflow.models import Process, Subprocess
 from web.domains.case.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
@@ -127,9 +127,9 @@ class AccessRequestProcess(Process):
 
 class ApprovalRequest(models.Model):
     """
-    Approval request for submitted requests.
+    Approval request for submitted access requests.
     Approval requests are requested from importer/exporter
-    contacts by case officers
+    contacts by case officers for access requests by user
     """
 
     # Approval Request response options
@@ -139,13 +139,16 @@ class ApprovalRequest(models.Model):
 
     # Approval Request status
     DRAFT = 'DRAFT'
+    OPEN = 'OPEN'
     COMPLETED = 'COMPLETED'
-    STATUSES = ((DRAFT, 'DRAFT'), (REFUSE, 'OPEN'))
+    STATUSES = ((DRAFT, 'DRAFT'), (OPEN, 'OPEN'), (COMPLETED, 'COMPLETED'))
 
-    access_request = models.ForeignKey(AccessRequest,
-                                       on_delete=models.CASCADE,
-                                       blank=False,
-                                       null=False)
+    access_request = models.OneToOneField(AccessRequest,
+                                          on_delete=models.CASCADE,
+                                          blank=False,
+                                          null=False,
+                                          related_name='approval_request')
+
     status = models.CharField(max_length=20,
                               choices=STATUSES,
                               blank=True,
@@ -173,3 +176,15 @@ class ApprovalRequest(models.Model):
                                     related_name='responded_approval_requests')
     response_date = models.DateTimeField(blank=True, null=True)
     response_reason = models.CharField(max_length=4000, blank=True, null=True)
+
+    @property
+    def is_complete(self):
+        return self.status == self.COMPLETED
+
+
+class ApprovalRequestProcess(Subprocess):
+    """
+        Approval Request subprocess for access requests
+    """
+    approval_request = models.ForeignKey(ApprovalRequest,
+                                         on_delete=models.CASCADE)
