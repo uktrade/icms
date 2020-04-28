@@ -6,7 +6,15 @@
 </h3>
 
 {{forms.errors(formset)}}
-<table id="phone-numbers-table" responsiveList class="setoutList">
+<table id="phone-numbers-table"
+       responsiveList
+       class="setoutList"
+       role="formset"
+       data-formset-prefix="{{formset.prefix}}"
+       data-formset-form-css-class="phone-form"
+       data-formset-add-text="Add Telephone Number"
+       data-formset-add-css-class="icon-phone small-button button"
+>
     <thead>
         <tr>
             <th scope="col">Telephone Number
@@ -44,15 +52,3 @@
     </tbody>
 </table>
 {{ formset.management_form }}
-
-<script type="text/javascript">
-    $(function() {
-        $('#phone-numbers-table tbody tr').formset({
-            prefix: '{{ formset.prefix }}',
-            formCssClass: 'phone-form',
-            addCssClass: 'icon-phone small-button button',
-            addText: 'Add Telephone Number',
-            deleteText: 'Remove',
-        });
-    })
-</script>

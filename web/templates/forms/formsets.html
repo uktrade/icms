@@ -9,7 +9,7 @@
 
   {{forms.errors(formset)}}
 
-  <table id="{{formset.prefix}}_table" responsiveList class="setoutList">
+  <table id="{{formset.prefix}}_table" role="formset" data-formset-prefix="{{formset.prefix}}" data-formset-add-text="Add Telephone Number" responsiveList class="setoutList">
     <thead>
         <tr>
           {% for field in formset.fields %}
@@ -39,20 +39,10 @@
         {% endfor %}
       {% endif %}
     </tbody>
-</table> 
+</table>
 
 {{ formset.management_form }}
 
-<script type="text/javascript">
-    $(function() {
-      $('#{{formset.prefix}}_table tbody tr').formset({
-          prefix: '{{ formset.prefix }}',
-          formCssClass: '{{formset.prefix}}-form',
-          addCssClass: 'icon-phone small-button button',
-          addText: 'Add Telephone Number',
-          deleteText: 'Remove',
-      });
-    })
-</script>
+
 
 {%- endmacro %}
