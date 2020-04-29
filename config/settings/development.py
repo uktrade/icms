@@ -87,5 +87,5 @@ NPM_FILE_PATTERNS = {
     'jquery.formset': [os.path.join('src', 'jquery.formset.js')],
     'jodit': [os.path.join('build', 'jodit.min.*')],
     'jquery-fontspy': ['jQuery-FontSpy.js'],
-    'sticky-kit': [os.path.join('dist','sticky-kit.min.js')],
+    'sticky-kit': [os.path.join('dist', 'sticky-kit.min.js')],
 }
