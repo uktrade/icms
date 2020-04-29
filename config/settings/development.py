@@ -86,4 +86,6 @@ NPM_FILE_PATTERNS = {
     'html5shiv': [os.path.join('dist', 'html5shiv.min.js')],
     'jquery.formset': [os.path.join('src', 'jquery.formset.js')],
     'jodit': [os.path.join('build', 'jodit.min.*')],
+    'jquery-fontspy': ['jQuery-FontSpy.js'],
+    'sticky-kit': [os.path.join('dist', 'sticky-kit.min.js')],
 }
