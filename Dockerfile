@@ -13,10 +13,11 @@ RUN [ ! -z "${ICMS_VIEWFLOW_LICENSE}" ] || { echo "Viewflow license key cannot b
 # Install dependencies
 RUN \
   apk add --no-cache postgresql-libs openssl && \
-  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev npm && \
+  apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev && \
   python3 -m pip install --upgrade pip && \
   python3 -m pip install pipenv && \
   python3 -m pipenv install --system --dev --deploy && \
+  apk add npm && \
   apk --purge del .build-deps
 # Install dockerize
 RUN \

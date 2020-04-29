@@ -3,7 +3,9 @@
     "html5shiv": "^3.7.3",
     "jodit": "^3.3.24",
     "jquery": "^3.5.0",
+    "jquery-fontspy": "^3.0.0",
     "jquery-ui-dist": "^1.12.1",
-    "jquery.formset": "^1.3.0"
+    "jquery.formset": "^1.3.0",
+    "sticky-kit": "^1.1.3"
   }
 }
