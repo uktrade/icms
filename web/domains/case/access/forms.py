@@ -69,7 +69,7 @@ class AccessRequestForm(ViewFlowForm, ModelEditForm):
         }
 
 
-class ReviewAccessRequestForm(ViewFlowForm, ModelEditForm):
+class CloseAccessRequestForm(ModelEditForm):
     class Meta:
         model = AccessRequest
 

@@ -114,14 +114,17 @@ class AccessRequestTakeOwnershipView(AssignTaskView):
     template_name = 'web/domains/case/access/take-ownership.html'
 
 
-class CloseAccessRequestView(FlowMixin, FormView):
-    template_name = 'web/domains/case/access/close-access-request.html'
+class CloseAccessRequestView(UpdateProcessView):
+    template_name = 'web/domains/case/access/close.html'
+    form_class = forms.CloseAccessRequestForm
+
+    def get_success_url(self):
+        return reverse('workbasket')
 
 
 class ApprovalRequestResponseView(UpdateProcessView):
     template_name = 'web/domains/case/access/approval/respond.html'
     form_class = forms.ApprovalRequestResponseForm
-
 
     def get_success_url(self):
         return reverse('workbasket')

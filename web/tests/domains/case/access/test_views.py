@@ -6,7 +6,7 @@ from web.domains.case.access.views import clean_extra_request_data
 from web.domains.case.fir.forms import (FurtherInformationRequestDisplayForm,
                                         FurtherInformationRequestForm)
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.fir.views import AccessRequestFirView
+from web.domains.case.fir.views import FurtherInformationRequestView
 from web.tests.domains.case.fir.factory import FurtherInformationRequestFactory
 
 
@@ -57,9 +57,9 @@ class AccessRequestViewsTest(TestCase):
         self.assertIsNone(access_request.request_reason)
 
 
-class AccessRequestFirViewTest(TestCase):
+class FurtherInformationRequestViewTest(TestCase):
     def setUp(self):
-        self.view = AccessRequestFirView()
+        self.view = FurtherInformationRequestView()
 
         self.model = FurtherInformationRequestFactory()
 
