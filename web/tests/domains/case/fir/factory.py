@@ -1,5 +1,5 @@
 import factory
-from web.domains.case.models import FurtherInformationRequest
+from web.domains.case.fir.models import FurtherInformationRequest
 from web.tests.domains.user.factory import UserFactory
 
 

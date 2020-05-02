@@ -1,14 +1,14 @@
 import datetime
 
 from django.db import models
-
 from viewflow.models import Process, Subprocess
-from web.domains.case.models import FurtherInformationRequest
+
+from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 
-from .managers import AccessRequestQuerySet, ProcessQuerySet
+from .managers import AccessRequestQuerySet
 
 
 class AccessRequest(models.Model):
@@ -120,11 +120,6 @@ class AccessRequest(models.Model):
         super().save()
 
 
-class AccessRequestProcess(Process):
-    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE)
-    objects = ProcessQuerySet.as_manager()
-
-
 class ApprovalRequest(models.Model):
     """
     Approval request for submitted access requests.
@@ -182,9 +177,19 @@ class ApprovalRequest(models.Model):
         return self.status == self.COMPLETED
 
 
+class AccessRequestProcess(Process):
+    access_request = models.ForeignKey(AccessRequest,
+                                       null=True,
+                                       on_delete=models.SET_NULL)
+    approval_required = models.BooleanField(blank=False,
+                                            null=False,
+                                            default=False)
+
+
 class ApprovalRequestProcess(Subprocess):
     """
         Approval Request subprocess for access requests
     """
     approval_request = models.ForeignKey(ApprovalRequest,
-                                         on_delete=models.CASCADE)
+                                         on_delete=models.SET_NULL,
+                                         null=True)

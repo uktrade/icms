@@ -1,6 +1,6 @@
 from django import forms
 from web.forms import ModelDisplayForm, ModelEditForm
-from web.domains.case.models import FurtherInformationRequest
+from web.domains.case.fir.models import FurtherInformationRequest
 
 
 class FurtherInformationRequestForm(ModelEditForm):

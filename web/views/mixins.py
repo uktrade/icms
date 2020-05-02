@@ -68,7 +68,7 @@ class SimpleStartFlowMixin(BaseStartFlowMixin):
 
     def form_valid(self, *args, **kwargs):
         """If the form is valid, save the associated model and finish the task."""
-        super(SimpleStartFlowMixin, self).form_valid(*args, **kwargs)
+        super().form_valid(*args, **kwargs)
         self.activation_done(*args, **kwargs)
         return HttpResponseRedirect(self.get_success_url())
 
@@ -81,7 +81,7 @@ class SimpleFlowMixin(BaseFlowMixin):
 
     def form_valid(self, form, **kwargs):
         """If the form is valid, save the associated model and finish the task."""
-        super(SimpleFlowMixin, self).form_valid(form, **kwargs)
+        super().form_valid(form, **kwargs)
         form.save()
         self.activation_done(form, **kwargs)
         return HttpResponseRedirect(self.get_success_url())

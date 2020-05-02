@@ -1,12 +1,5 @@
 from django.forms.widgets import DateInput
 
-#  class TextInput(TextInput):
-#      template_name = 'forms/widgets/input.html'
-
-#  class PasswordInput(PasswordInput):
-#      template_name = 'forms/widgets/input.html'
-
-
 class DateInput(DateInput):
     template_name = 'forms/widgets/date.html'
 

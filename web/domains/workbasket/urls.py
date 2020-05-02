@@ -6,5 +6,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.workbasket, name='workbasket'),
+    path('', views.Workbasket.as_view(), name='workbasket'),
 ]

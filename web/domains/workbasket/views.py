@@ -1,27 +1,19 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.utils import timezone
+import structlog as logging
+from django.views.generic.list import ListView
 
-from web.auth.decorators import require_registered
-from web.domains.case.access.models import AccessRequestProcess, AccessRequest
+from web.auth.mixins import RequireRegisteredMixin
+from web.domains.case.access.models import AccessRequestProcess
+from web.domains.case.access.flows import AccessRequestFlow, ApprovalRequestFlow
 
+from viewflow.models import Process
 
-@require_registered
-def workbasket(request):
-    process = AccessRequestProcess.objects.filter(access_request__status=AccessRequest.SUBMITTED)
-    return render(request, 'web/workbasket.html', {'process_list': process})
+logger = logging.get_logger(__name__)
 
 
-def take_ownership(request, process_id):
-    process = AccessRequestProcess.objects.get(pk=process_id)
+class Workbasket(RequireRegisteredMixin, ListView):
+    template_name = 'web/domains/workbasket/workbasket.html'
+    permission_required = []
 
-    task = process.task_set.first()
-
-    task.assigned = timezone.now()
-    task.owner = request.user
-    task.status = "ASSIGNED"
-    task.save()
-
-    task.process.accessrequestprocess.access_request.save()
-
-    return redirect(reverse('review_request', args=(process.id, task.id)))
+    def get_queryset(self):
+        return Process.objects.filter_available(
+            [AccessRequestFlow], self.request.user)

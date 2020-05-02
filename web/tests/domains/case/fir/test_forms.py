@@ -1,6 +1,6 @@
 from django.test import TestCase
-from web.domains.case.forms import FurtherInformationRequestForm, FurtherInformationRequestDisplayForm
-from web.domains.case.models import FurtherInformationRequest
+from web.domains.case.fir.forms import FurtherInformationRequestForm, FurtherInformationRequestDisplayForm
+from web.domains.case.fir.models import FurtherInformationRequest
 
 
 class FurtherInformationRequestFormTest(TestCase):
@@ -14,7 +14,6 @@ class FurtherInformationRequestFormTest(TestCase):
 
 
 class FurtherInformationRequestDisplayFormTest(TestCase):
-
     def setUp(self):
         form = FurtherInformationRequestDisplayForm()
         fir = FurtherInformationRequest()

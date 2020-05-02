@@ -1,12 +1,13 @@
-from django.test import TestCase
 from django import forms
+from django.test import TestCase
 
 from web.domains.case.access.models import AccessRequest
-from web.domains.case.access.views import clean_extra_request_data, AccessRequestFirView
-from web.domains.case.models import FurtherInformationRequest
-from web.domains.case.forms import FurtherInformationRequestForm, FurtherInformationRequestDisplayForm
-
-from web.tests.domains.case.factory import FurtherInformationRequestFactory
+from web.domains.case.access.views import clean_extra_request_data
+from web.domains.case.fir.forms import (FurtherInformationRequestDisplayForm,
+                                        FurtherInformationRequestForm)
+from web.domains.case.fir.models import FurtherInformationRequest
+from web.domains.case.fir.views import AccessRequestFirView
+from web.tests.domains.case.fir.factory import FurtherInformationRequestFactory
 
 
 def populate_fields(access_request):
@@ -67,14 +68,16 @@ class AccessRequestFirViewTest(TestCase):
         Asserts FIR has the status changes sucessfully
         """
         self.assertEqual(FurtherInformationRequest.DRAFT, self.model.status)
-        model = self.view.set_fir_status(self.model.pk, FurtherInformationRequest.OPEN)
+        model = self.view.set_fir_status(self.model.pk,
+                                         FurtherInformationRequest.OPEN)
         self.assertEqual(FurtherInformationRequest.OPEN, model.status)
 
     def test_create_display_or_edit_form_return_edit_form(self):
         """
         Asserts that when the fir id matches the id passed an edit form is returned
         """
-        form = self.view.create_display_or_edit_form(self.model, self.model.pk, None)
+        form = self.view.create_display_or_edit_form(self.model, self.model.pk,
+                                                     None)
         self.assertIsInstance(form, FurtherInformationRequestForm)
         self.assertEqual(form.instance, self.model)
 
@@ -83,13 +86,15 @@ class AccessRequestFirViewTest(TestCase):
         Asserts that when the fir id matches the id passed and a return object is passed, that object is returned
         """
         expected_return_class = forms.Form
-        form = self.view.create_display_or_edit_form(self.model, self.model.pk, expected_return_class())
+        form = self.view.create_display_or_edit_form(self.model, self.model.pk,
+                                                     expected_return_class())
         self.assertIsInstance(form, expected_return_class)
 
     def test_create_display_or_edit_form_return_display_form(self):
         """
         Asserts that when the fir id DO NOT match the id passed a display form is returned
         """
-        form = self.view.create_display_or_edit_form(self.model, self.model.pk + 1, None)
+        form = self.view.create_display_or_edit_form(self.model,
+                                                     self.model.pk + 1, None)
         self.assertIsInstance(form, FurtherInformationRequestDisplayForm)
         self.assertEqual(form.instance, self.model)

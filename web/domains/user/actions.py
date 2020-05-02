@@ -18,8 +18,8 @@ class ReIssuePassword(PostAction):
     def display(self, object):
         return True
 
-    def handle(self, request, model):
-        user = self._get_item(request, model)
+    def handle(self, request, view):
+        user = self._get_item(request, view.model)
         temp_pass = user.set_temp_password()
         user.account_status = User.ACTIVE
         user.account_status_by = request.user
@@ -40,8 +40,8 @@ class CancelUser(PostAction):
     def display(self, user):
         return user.account_status == User.ACTIVE
 
-    def handle(self, request, model):
-        user = self._get_item(request, model)
+    def handle(self, request, view):
+        user = self._get_item(request, view.model)
         user.account_status = User.CANCELLED
         user.account_status_by = request.user
         user.save()
@@ -58,8 +58,8 @@ class ActivateUser(PostAction):
     def display(self, user):
         return user.account_status == User.BLOCKED
 
-    def handle(self, request, model):
-        user = self._get_item(request, model)
+    def handle(self, request, view):
+        user = self._get_item(request, view.model)
         user.account_status = User.ACTIVE
         user.account_status_by = request.user
         user.save()
@@ -76,8 +76,8 @@ class BlockUser(PostAction):
     def display(self, user):
         return user.account_status == User.ACTIVE
 
-    def handle(self, request, model):
-        user = self._get_item(request, model)
+    def handle(self, request, view):
+        user = self._get_item(request, view.model)
         user.account_status = User.BLOCKED
         user.account_status_by = request.user
         user.save()

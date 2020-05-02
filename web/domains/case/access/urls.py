@@ -1,30 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.urls import path, include
-
+import structlog as logging
+from django.urls import include, path
 from viewflow.flow.viewset import FlowViewSet
-from web.domains.workbasket.views import take_ownership
-from web.flows import AccessRequestFlow
+
+from web.domains.case.fir.views import FurtherInformationRequestView
+from web.flows import AccessRequestFlow, ApprovalRequestFlow
 
 from . import views
 
+logger = logging.getLogger(__name__)
+
 access_request_urls = FlowViewSet(AccessRequestFlow).urls
+approval_request_urls = FlowViewSet(ApprovalRequestFlow).urls
+
+app_name = 'access'
 
 urlpatterns = [
-    path('<process_id>/fir',
-         views.AccessRequestFirView.as_view(),
-         name="access_request_fir_list"),
+    path('<process_id>/fir/',
+         FurtherInformationRequestView.as_view(),
+         name="fir"),
     path('', include(access_request_urls)),
-    path('<process_id>/review_request/<task_id>/link-importer/',
+    path('approval/', include((approval_request_urls, 'approval'))),
+    path('<process_id>/review/<task_id>/link-importer/',
          views.LinkImporterView.as_view(),
          name="link-importer"),
-    path('<process_id>/review_request/<task_id>/link-exporter/',
+    path('<process_id>/review/<task_id>/link-exporter/',
          views.LinkExporterView.as_view(),
          name="link-exporter"),
-    path("access-created/",
+    path("requested/",
          views.AccessRequestCreatedView.as_view(),
-         name="access_request_created"),
-    path("take-ownership/<process_id>/", take_ownership,
-         name="take_ownership"),
+         name="requested")
 ]

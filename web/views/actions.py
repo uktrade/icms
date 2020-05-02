@@ -20,20 +20,24 @@ class PostAction(ListAction):
     template = 'model/actions/submit.html'
     confirm = True  # confirm action before submitting
 
-    def as_html(self, object, csrf_input):
+    def as_html(self, object, csrf_input, **kwargs):
         return mark_safe(
             render_to_string(
-                self.template, {
-                    'icon': getattr(self, 'icon', None),
-                    'csrf_input': csrf_input,
-                    'object': object,
-                    'confirm': self.confirm,
-                    'confirm_message': getattr(self, 'confirm_message', None),
-                    'action': self.action,
-                    'label': self.label
-                }))
+                self.template,
+                self.get_context_data(object, csrf_input, **kwargs)))
 
-    def handle(self, request, model, *args):
+    def get_context_data(self, object, csrf_input, **kwargs):
+        return {
+            'icon': getattr(self, 'icon', None),
+            'csrf_input': csrf_input,
+            'object': object,
+            'confirm': self.confirm,
+            'confirm_message': getattr(self, 'confirm_message', None),
+            'action': self.action,
+            'label': self.label
+        }
+
+    def handle(self, request, view, *args):
         raise SuspiciousOperation('Not implemented!')
 
 
@@ -45,13 +49,15 @@ class LinkAction(ListAction):
 
     def as_html(self, object, *args):
         return mark_safe(
-            render_to_string(
-                self.template, {
-                    'icon': self.icon or None,
-                    'object': object,
-                    'label': self.label,
-                    'href': self.href(object)
-                }))
+            render_to_string(self.template, self.get_context_data(object)))
+
+    def get_context_data(self, object):
+        return {
+            'icon': self.icon or None,
+            'object': object,
+            'label': self.label,
+            'href': self.href(object)
+        }
 
 
 class View(LinkAction):
@@ -76,8 +82,8 @@ class Archive(PostAction):
     def display(self, object):
         return isinstance(object, Archivable) and object.is_active
 
-    def handle(self, request, model):
-        self._get_item(request, model).archive()
+    def handle(self, request, view):
+        self._get_item(request, view.model).archive()
         messages.success(request, 'Record archived successfully')
 
 
@@ -90,8 +96,8 @@ class Unarchive(PostAction):
     def display(self, object):
         return isinstance(object, Archivable) and not object.is_active
 
-    def handle(self, request, model):
-        self._get_item(request, model).unarchive()
+    def handle(self, request, view):
+        self._get_item(request, view.model).unarchive()
         messages.success(request, 'Record unarchived successfully')
 
 

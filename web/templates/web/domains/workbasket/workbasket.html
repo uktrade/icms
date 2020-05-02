@@ -146,103 +146,41 @@
 
 
             </thead>
-            {% for process in process_list %}
-           {% with request=process.access_request %}
-
+            {% for process in object_list %}
             <tr>
                 <td>
-                    IAR/788
+                    {{process.id}}
                 </td>
                 <td>
-                    {{request.request_type_short}}
-                    <br>
-
+                  {{process.summary()}}
                 </td>
                 <td>
-                    {{request.organisation_name}}<br />{{request.organisation_address}}
+                  {{process.access_request.organisation_name}} <br/> {{process.access_request.organisation_address}}
                 </td>
                 <td>
                     Submitted
                     <br>
-                    18 APR 2019 13:04:25
+                    {{process.created}}
                 </td>
                 <td>
-                    <div class="container">
+                  {% for task in process.active_tasks() %}
+                      {% with namespace = 'access' %}
+                        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
+                      {% endwith %}
+                    {% for subprocess in task.subprocess_set.all() %}
+                      {% for task in subprocess.active_tasks() %}
+                        {% with namespace = 'access:approval' %}
+                        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
+                        {% endwith %}
+                      {% endfor %}
+                    {% endfor %}
+                  {% endfor %}
 
-
-                        <div class="row">
-
-
-                            <div class="six columns break-word">
-
-                                <div class="individual-input" ><span  class="text-widget ">Access Request</span></div>
-
-                            </div>
-                            <div class="six columns">
-
-                                <table class="nestedList setoutList">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">
-                                            </th>
-                                            <th scope="col">
-                                            </th>
-                                            <th scope="col">
-                                            </th>
-                                            <th scope="col">
-                                            </th>
-                                            <th scope="col">
-                                            </th>
-                                            <th scope="col">
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tr >
-                                        <td >
-                                            <a role="action-button" data-csrf="{{ csrf_token }}" href="{{ url("take_ownership", args=[process.id]) }}"/>Manage</a>
-                                        </td>
-                                        <td >
-                                            <button role="action-button" type="button" data-action="action-remove-new-indicator" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
-                                                New
-                                            </button>
-                                            <div id="hint164-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
-                                        </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td ><span  class="text-widget "></span></td>
-                                    </tr>
-                                    <tr >
-                                        <td >
-                                        <a
-                                            href="#"
-                                            role="action-button"
-                                            data-action="clear"
-                                            data-csrf="{{ csrf_token }}"
-                                            data-confirm="Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared."
-                                        >Clear</a>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td ><span  class="text-widget "></span></td>
-                                    </tr>
-                                </table>
-
-                            </div>
-
-                        </div>
-
-
-
-                    </div>
                 </td>
             </tr>
-            {% endwith %}
             {% endfor %}
 
         </table>
-
 
 
         <div class="result-count">

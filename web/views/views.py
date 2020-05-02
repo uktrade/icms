@@ -29,7 +29,7 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
 
         for a in self.Display.actions:
             if a.action == action:
-                response = a.handle(request, self.model, *args, **kwargs)
+                response = a.handle(request, self, *args, **kwargs)
                 if response:
                     return response
                 else:  # Render the same page

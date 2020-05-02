@@ -4,6 +4,7 @@
       <form method="post" action="">
         <input type="hidden" name="item" value="{{object.id}}" />
         {{csrf_input}}
+        {% block extra_inputs %}{% endblock %}
         <button type="submit"
                 name="action"
                 value="{{action}}"
