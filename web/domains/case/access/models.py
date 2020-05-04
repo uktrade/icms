@@ -135,20 +135,25 @@ class ApprovalRequest(models.Model):
     # Approval Request status
     DRAFT = 'DRAFT'
     OPEN = 'OPEN'
+    CANCELLED = 'CANCELLED'
     COMPLETED = 'COMPLETED'
-    STATUSES = ((DRAFT, 'DRAFT'), (OPEN, 'OPEN'), (COMPLETED, 'COMPLETED'))
+    STATUSES = ((DRAFT, 'DRAFT'), (OPEN, 'OPEN'), (CANCELLED, 'CANCELLED'),
+                (COMPLETED, 'COMPLETED'))
 
-    access_request = models.OneToOneField(AccessRequest,
-                                          on_delete=models.CASCADE,
-                                          blank=False,
-                                          null=False,
-                                          related_name='approval_request')
+    access_request = models.ForeignKey(AccessRequest,
+                                       on_delete=models.CASCADE,
+                                       blank=False,
+                                       null=False,
+                                       related_name='approval_requests')
 
     status = models.CharField(max_length=20,
                               choices=STATUSES,
                               blank=True,
-                              null=True)
-    request_date = models.DateTimeField(blank=True, null=True)
+                              null=True,
+                              default=OPEN)
+    request_date = models.DateTimeField(blank=True,
+                                        null=True,
+                                        auto_now_add=True)
     requested_by = models.ForeignKey(User,
                                      on_delete=models.CASCADE,
                                      blank=True,
@@ -176,6 +181,9 @@ class ApprovalRequest(models.Model):
     def is_complete(self):
         return self.status == self.COMPLETED
 
+    class Meta:
+        ordering = ('-request_date', )
+
 
 class AccessRequestProcess(Process):
     access_request = models.ForeignKey(AccessRequest,
@@ -184,6 +192,10 @@ class AccessRequestProcess(Process):
     approval_required = models.BooleanField(blank=False,
                                             null=False,
                                             default=False)
+
+    restart_approval = models.BooleanField(blank=False,
+                                           null=False,
+                                           default=False)
 
 
 class ApprovalRequestProcess(Subprocess):

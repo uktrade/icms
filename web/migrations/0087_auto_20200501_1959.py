@@ -17,11 +17,6 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='accessrequestprocess',
-            name='access_request',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.AccessRequest'),
-        ),
-        migrations.AlterField(
             model_name='approvalrequestprocess',
             name='approval_request',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.ApprovalRequest'),

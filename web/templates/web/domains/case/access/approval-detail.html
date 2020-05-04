@@ -1,0 +1,34 @@
+{% extends 'layout/no-sidebar.html' %}
+
+{% import "forms/forms.html" as forms %}
+
+{% block main_content %}
+
+  {% with access_request=activation.process.access_request %}
+    {% include "web/domains/case/access/partials/access-request-display.html" %}
+  {% endwith %}
+
+  {% with approval_request=activation.process.access_request.approval_requests.first(), type=activation.process.access_request.requester_type%}
+    {% include "web/domains/case/access/partials/approval-request-display.html" %}
+  {% endwith %}
+
+
+  {% set withdraw_url=url('access:approval:action_cancel', args=(activation.task.subprocess_set.first().id, )) %}
+
+  {% call forms.form(action=withdraw_url, method='post', csrf_input=csrf_input) %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="secondary-button button" name="_cancel_process">Withdraw Request</a>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}

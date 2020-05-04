@@ -75,7 +75,8 @@ class ApprovalRequestFlow(Flow):
     @method_decorator(flow.flow_start_func)
     def start_func(self, activation, parent_task):
         activation.prepare(parent_task)
-        activation.process.approval_request = parent_task.process.access_request.approval_request
+        activation.process.approval_request = parent_task.process.access_request.approval_requests.first(
+        )
         activation.done()
         return activation
 
@@ -108,10 +109,19 @@ class AccessRequestFlow(Flow):
         this.request_approval).Assign(this.review.owner)
 
     request_approval = flow.View(views.RequestApprovalView).Next(
-        this.start_approval).Assign(this.review.owner)
+        this.approval).Assign(this.review.owner)
 
-    start_approval = flow.Subprocess(ApprovalRequestFlow.start).Next(
-        this.review)
+    approval = flow.Subprocess(
+        ApprovalRequestFlow.start,
+        detail_view=views.ApprovalProcessDetailView.as_view(),
+    ).Next(this.review_approval)
+
+    review_approval = flow.View(views.ApprovalRequestReviewView).Next(
+        this.check_approval_restart).Assign(this.review.owner)
+
+    check_approval_restart = flow.If(
+        cond=lambda act: act.process.restart_approval).Then(
+            this.request_approval).Else(this.close_request)
 
     close_request = flow.View(views.CloseAccessRequestView).Assign(
         this.review.owner).Next(this.email_requester)
