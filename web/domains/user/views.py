@@ -186,10 +186,10 @@ class UsersListView(ModelFilterView):
             }
         }
         actions = [
-            actions.ReIssuePassword(),
+            actions.BlockUser(),
             actions.CancelUser(),
             actions.ActivateUser(),
-            actions.BlockUser()
+            actions.ReIssuePassword()
         ]
         select = True
 
