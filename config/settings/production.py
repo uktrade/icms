@@ -74,3 +74,6 @@ LOGGING = {
         }
     }
 }
+
+# minifi html (djano-htmlmin)
+HTML_MINIFY = True
