@@ -188,7 +188,7 @@ class ApprovalRequestWithdrawView(CancelProcessView):
 
     def get(self, request, *args, **kwargs):
         """
-            Withdraw view doesn't implement a page view. 
+            Withdraw view doesn't implement a page view.
             Form is to be posted from Access Request approval task
             detail view.
         """

@@ -4,7 +4,6 @@
 import structlog as logging
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.urls import reverse
 from viewflow.flow.views.utils import get_next_task_url
 
 from web.views.actions import PostAction
