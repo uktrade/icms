@@ -7,6 +7,7 @@
                 aria-label="{{label}}"
                 data-action="{{ action }}"
                 data-csrf="{{ csrf_token }}"
+                data-item="{{ object.id }}"
                 {% if confirm %} data-confirm="{{confirm_message}}" {% endif %}
             >
                 {{ label }}
