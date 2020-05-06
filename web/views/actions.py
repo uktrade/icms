@@ -20,12 +20,12 @@ class PostAction(ListAction):
     template = 'model/actions/submit.html'
     confirm = True  # confirm action before submitting
 
-    def as_html(self, object, csrf_input):
+    def as_html(self, object, csrf_token):
         return mark_safe(
             render_to_string(
                 self.template, {
                     'icon': getattr(self, 'icon', None),
-                    'csrf_input': csrf_input,
+                    'csrf_token': csrf_token,
                     'object': object,
                     'confirm': self.confirm,
                     'confirm_message': getattr(self, 'confirm_message', None),

@@ -7,6 +7,7 @@ $(document).ready(function() {
         var action = $el.attr('data-action');
         var csrf   = $el.attr('data-csrf');
         var method = $el.attr('data-method') || 'POST';
+        var item   = $el.attr('data-item');
 
         var standAloneAction = function(){
             console.log('running standAloneAction callback')
@@ -19,6 +20,10 @@ $(document).ready(function() {
 
             if (csrf) {
                 $frm.append('<input type="hidden" name="csrfmiddlewaretoken" value="'+ csrf +'"/>')
+            }
+
+            if (item) {
+                $frm.append('<input type="hidden" name="item" value="'+ item +'" />')
             }
 
             $frm.append('<input type="hidden" name="action" value="'+ action +'" />')
