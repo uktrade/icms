@@ -42,7 +42,7 @@
         {% endset %}
 
         {% if (page and page.object_list) or results %}
-          
+
           {% if page %}
             {% include "partial/paginator.html" %}
           {% endif %}
@@ -67,9 +67,9 @@
                     {% for action in display.actions %}
                       {% if action.display(item) %}
                         {% if activation %}
-                          {{action.as_html(item, csrf_input, activation=activation)}}
+                          {{action.as_html(item, csrf_token, activation=activation)}}
                         {% else %}
-                          {{action.as_html(item, csrf_input)}}
+                          {{action.as_html(item, csrf_token)}}
                         {% endif %}
                       {% endif %}
                     {% endfor %}

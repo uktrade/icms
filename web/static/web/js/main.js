@@ -180,7 +180,7 @@
               .attr('value', 'True')
               .appendTo(form);
             form.submit();
-          }; 
+          };
           $('#id_application_type, #id_importer').change(post_form);
         }
     }
@@ -188,3 +188,7 @@
     $(document).ready(initialise);
 
 })(jQuery);
+
+$(document).ready(function() {
+    FOXjs.init(function() {});
+});

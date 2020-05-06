@@ -86,4 +86,12 @@ NPM_FILE_PATTERNS = {
     'html5shiv': [os.path.join('dist', 'html5shiv.min.js')],
     'jquery.formset': [os.path.join('src', 'jquery.formset.js')],
     'jodit': [os.path.join('build', 'jodit.min.*')],
+    'jquery-fontspy': ['jQuery-FontSpy.js'],
+    'sticky-kit': [os.path.join('dist', 'sticky-kit.min.js')],
 }
+
+# Django Compressor - uncomment to activate (also set ICMS_DEBUG to False, to trigger compression of js on system start)
+# COMPRESS_OFFLINE = True
+
+# minifi html (djano-htmlmin) - uncomment to activate
+# HTML_MINIFY = True

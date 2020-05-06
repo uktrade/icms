@@ -6,7 +6,15 @@
 </h3>
 
 {{forms.errors(formset)}}
-<table id="{{id}}" responsiveList class="setoutList">
+<table id="{{id}}"
+       responsiveList
+       class="setoutList"
+       role="formset"
+       data-formset-prefix="{{formset.prefix}}"
+       data-formset-form-css-class="form_item_class"
+       data-formset-add-text="Add Email Address"
+       data-formset-add-css-class="icon-mail2 small-button button"
+>
     <thead>
         <tr>
             <th scope="col">Email Address
@@ -33,14 +41,3 @@
     </tbody>
 </table>
 {{ formset.management_form }}
-<script type="text/javascript">
-    $(function() {
-        $('#{{id}} tbody tr').formset({
-            prefix: '{{ formset.prefix }}',
-            formCssClass: '{{ form_item_class }}',
-            addCssClass: 'icon-mail2 small-button button',
-            addText: 'Add Email Address',
-            deleteText: 'Remove',
-        });
-    })
-</script>

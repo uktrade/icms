@@ -156,7 +156,9 @@
 
     </div>
 </div>
+{% endblock %}
 
-<script src="{{ static('web/js/request-access.js') }}" type="text/javascript"></script>
-
+{% block page_js %}
+    {{ super() }}
+    <script src="{{ static('web/js/pages/request-access.js') }}" type="text/javascript"></script>
 {% endblock %}

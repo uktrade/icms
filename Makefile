@@ -48,7 +48,7 @@ requirements-web: ## install javascript dependencies
 	unset UID && \
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose run --rm web python manage.py npm && python manage.py collect-npm
+	docker-compose run --rm web sh -c "python manage.py npm && python manage.py collect-npm"
 
 fixlock: ## install prod dependencies via pipenv
 	unset UID && \

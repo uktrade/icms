@@ -34,9 +34,9 @@ class LinkImporter(PostAction):
         messages.success(request, 'Linked Importer Successfuly')
         return redirect(get_next_task_url(request, view.activation.process))
 
-    def get_context_data(self, object, csrf_input, **kwargs):
+    def get_context_data(self, object, csrf_token, **kwargs):
         activation = kwargs.pop('activation')
-        context = super().get_context_data(object, csrf_input, **kwargs)
+        context = super().get_context_data(object, csrf_token, **kwargs)
         context['activation'] = activation
         return context
 
