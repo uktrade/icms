@@ -2242,6 +2242,7 @@ h2 {
 h3 {
     font-size: 2em;
     font-weight: 400;
+    text-transform: capitalize;
 }
 
 h4 {

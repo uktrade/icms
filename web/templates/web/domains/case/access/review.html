@@ -35,15 +35,15 @@
       <div class="row">
 
         <h3>
-          <span class="capitalize">{{requester_type}}</span> Access Approval
+          {{requester_type}} Access Approval
         </h3>
         {% call forms.form(method='post', csrf_input=csrf_input) %}
           {{activation.management_form}}
           <input type='hidden' name='_continue'>
           <ul class="menu-out flow-across">
             <li>
-              <button name="start_approval" class="button">
-                Start <span class="capitalize">{{requester_type}}</span> Access Approval
+              <button name="start_approval" class="button capitalize">
+                Start {{requester_type}} Access Approval
               </button>
             </li>
           </ul>
