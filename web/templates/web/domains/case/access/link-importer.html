@@ -1,9 +1,9 @@
 {% extends "web/importer/list.html" %}
 
 {% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
 
 {% block main_content %}
-
 
 <div class="info-box info-box-info">
   Import Access Request Details
@@ -16,3 +16,10 @@
 {{super()}}
 {%endblock %}
 
+{% block results %}
+  <form method="post" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {{activation.management_form}}
+    <input type="hidden" name="_continue"></input>
+    {{super()}}
+  </form>
+{% endblock %}

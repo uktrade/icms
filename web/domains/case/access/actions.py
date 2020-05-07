@@ -16,6 +16,7 @@ class LinkImporter(PostAction):
     label = 'Link Importer'
     icon = 'icon-link'
     confirm = False
+    submit_data_in_form = True
     template = "web/domains/case/access/partials/link-action.html"
 
     def display(self, object):
