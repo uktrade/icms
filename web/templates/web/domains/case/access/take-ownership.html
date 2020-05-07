@@ -1,0 +1,28 @@
+{% extends 'layout/no-sidebar.html' %}
+
+{% import "forms/forms.html" as forms %}
+
+{% block main_content %}
+
+  {% with access_request=activation.process.access_request %}
+    {% include "web/domains/case/access/partials/access-request-display.html" %}
+  {% endwith %}
+
+
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="secondary-button button" name="_continue">Take Ownership</button>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}

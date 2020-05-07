@@ -9,8 +9,7 @@ from viewflow.base import Flow, this
 from web.domains import User
 from web.notify import notify
 
-from .models import AccessRequest, AccessRequestProcess, ApprovalRequestProcess
-from .views import AccessRequestCreateView, ILBReviewRequest
+from . import models, views
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -32,8 +31,16 @@ def send_requester_notification_email(activation):
     notify.access_request_requester(activation.process.access_request)
 
 
+def send_approval_request_email(activation):
+    pass
+
+
+def send_approval_request_response_email(activation):
+    pass
+
+
 def close_request(activation):
-    activation.process.access_request.status = AccessRequest.CLOSED
+    activation.process.access_request.status = models.AccessRequest.CLOSED
     activation.process.access_request.save()
 
 
@@ -48,40 +55,81 @@ def has_approval(activation):
 
 
 class ApprovalRequestFlow(Flow):
-    process_class = ApprovalRequestProcess
+    process_class = models.ApprovalRequestProcess
 
-    start = flow.StartSubprocess(func=this.start_func).Next(this.end)
+    start = flow.StartSubprocess(func=this.start_func).Next(
+        this.notify_contacts)
+
+    notify_contacts = flow.Handler(send_approval_request_email).Next(
+        this.respond)
+
+    respond = flow.View(views.ApprovalRequestResponseView).Next(
+        this.notify_case_officers).Assign(lambda activation: activation.process
+                                          .approval_request.requested_from)
+
+    notify_case_officers = flow.Handler(
+        send_approval_request_response_email).Next(this.end)
 
     end = flow.End()
 
     @method_decorator(flow.flow_start_func)
     def start_func(self, activation, parent_task):
         activation.prepare(parent_task)
-        activation.process.approval_request = parent_task.process.access_request.approval_request
+        activation.process.approval_request = parent_task.process.access_request.approval_requests.first(
+        )
         activation.done()
         return activation
 
 
 class AccessRequestFlow(Flow):
-    process_class = AccessRequestProcess
+    process_class = models.AccessRequestProcess
 
-    access_start = flow.Start(AccessRequestCreateView).Next(this.email_admins)
+    request = flow.Start(views.AccessRequestCreateView).Next(
+        this.notify_case_officers)
 
-    email_admins = flow.Handler(send_admin_notification_email).Next(
-        this.review_request)
+    notify_case_officers = flow.Handler(send_admin_notification_email).Next(
+        this.review)
 
-    review_request = flow.View(ILBReviewRequest, ).Next(this.check_approval)
+    review = flow.View(
+        views.AccessRequestReviewView,
+        assign_view=views.AccessRequestTakeOwnershipView.as_view()).Next(
+            this.check_approval_required)
 
-    # If an approval request is created start subprocess for approval
-    check_approval = flow.If(cond=lambda act: has_approval(act)).Then(
-        this.request_approval).Else(this.email_requester)
+    check_approval_required = flow.If(
+        cond=lambda act: act.process.approval_required).Then(
+            this.check_requester_type).Else(this.close_request)
 
-    request_approval = flow.Subprocess(ApprovalRequestFlow.start).Next(
-        this.review_request)
+    check_requester_type = flow.If(this.is_importer).Then(
+        this.link_importer).Else(this.link_exporter)
 
-    email_requester = (flow.Handler(send_requester_notification_email).Next(
-        this.close_request))
+    link_importer = flow.View(views.LinkImporterView).Next(
+        this.request_approval).Assign(this.review.owner)
 
-    close_request = (flow.Handler(close_request).Next(this.end))
+    link_exporter = flow.View(views.LinkExporterView).Next(
+        this.request_approval).Assign(this.review.owner)
+
+    request_approval = flow.View(views.RequestApprovalView).Next(
+        this.approval).Assign(this.review.owner)
+
+    approval = flow.Subprocess(
+        ApprovalRequestFlow.start,
+        detail_view=views.ApprovalProcessDetailView.as_view(),
+    ).Next(this.review_approval)
+
+    review_approval = flow.View(views.ApprovalRequestReviewView).Next(
+        this.check_approval_restart).Assign(this.review.owner)
+
+    check_approval_restart = flow.If(
+        cond=lambda act: act.process.restart_approval).Then(
+            this.request_approval).Else(this.close_request)
+
+    close_request = flow.View(views.CloseAccessRequestView).Assign(
+        this.review.owner).Next(this.email_requester)
+
+    email_requester = flow.Handler(send_requester_notification_email).Next(
+        this.end)
 
     end = flow.End()
+
+    def is_importer(self, activation):
+        return activation.process.access_request.requester_type == 'importer'

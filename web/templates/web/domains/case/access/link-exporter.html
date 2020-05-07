@@ -5,7 +5,9 @@
 <div class="info-box info-box-info">
   Export Access Request Details
 
-  {% include "web/access-request/partials/access-request-display.html" %}
+  {% with access_request=activation.process.access_request %}
+    {% include "web/domains/case/access/partials/access-request-display.html" %}
+  {% endwith %}
 </div>
 
 {{super()}}

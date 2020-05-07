@@ -8,6 +8,8 @@ $(document).ready(function() {
         var csrf   = $el.attr('data-csrf');
         var method = $el.attr('data-method') || 'POST';
         var item   = $el.attr('data-item');
+        // TODO: Move link action outside the table, link selected
+        var viewflow_started = $el.next('input[name=_viewflow_activation-started]').attr('value')
 
         var standAloneAction = function(){
             console.log('running standAloneAction callback')
@@ -24,6 +26,11 @@ $(document).ready(function() {
 
             if (item) {
                 $frm.append('<input type="hidden" name="item" value="'+ item +'" />')
+            }
+
+            if (viewflow_started) {
+                $frm.append('<input type="hidden" name="_viewflow_activation-started" value="'+ viewflow_started +'" />')
+                $frm.append('<input type="hidden" name="_continue"'+ '/>')
             }
 
             $frm.append('<input type="hidden" name="action" value="'+ action +'" />')

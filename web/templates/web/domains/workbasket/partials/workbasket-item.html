@@ -1,0 +1,59 @@
+<div class="container" >
+  <div class="row">
+    <div class="six columns break-word">
+      <div class="individual-input" ><span  class="text-widget ">{{task.flow_task}}</span></div>
+    </div>
+    <div class="six columns">
+
+      <table class="nestedList setoutList">
+        <thead>
+          <tr>
+            <th scope="col">
+            </th>
+            <th scope="col">
+            </th>
+            <th scope="col">
+            </th>
+            <th scope="col">
+            </th>
+            <th scope="col">
+            </th>
+            <th scope="col">
+            </th>
+          </tr>
+        </thead>
+        <tr >
+          <td >
+            <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace, user=request.user)}}"/>Manage</a>
+          </td>
+          <td >
+            <button role="action-button" type="button" data-action="action-remove-new-indicator" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
+              New
+            </button>
+            <div id="hint164-content" role="tooltip" class="hint-content">This item is new or updated. Click to remove this indicator.</div>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td ><span  class="text-widget "></span></td>
+        </tr>
+        <tr >
+          <td >
+            <a
+              href="#"
+              role="action-button"
+              data-action="clear"
+              data-csrf="{{ csrf_token }}"
+              data-confirm="Are you sure you want to clear this access request from your workbasket? Note - the access request will still be processed by ILB even if it is cleared."
+              >Clear</a>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td ><span  class="text-widget "></span></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+<hr/>

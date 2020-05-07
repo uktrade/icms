@@ -20,7 +20,8 @@ urlpatterns = [
     path('firearms/', include('web.domains.firearms.urls')),
     path('importer/', include('web.domains.importer.urls')),
     path('exporter/', include('web.domains.exporter.urls')),
-    path('access/', include('web.domains.case.access.urls')),
+    path('access/', include('web.domains.case.access.urls',
+                            namespace='access')),
     path('import/', include('web.domains.application._import.urls')),
     path('mailshot/', include('web.domains.mailshot.urls')),
 ]

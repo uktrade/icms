@@ -1,0 +1,6 @@
+{% extends "model/actions/submit.html" %}
+
+{% block extra_inputs %}
+  {{activation.management_form}}
+  <input type="hidden" name="_continue">
+{% endblock %}

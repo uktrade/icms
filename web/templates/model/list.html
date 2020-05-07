@@ -66,7 +66,11 @@
                   <td>
                     {% for action in display.actions %}
                       {% if action.display(item) %}
-                        {{action.as_html(item, csrf_token)}}
+                        {% if activation %}
+                          {{action.as_html(item, csrf_token, activation=activation)}}
+                        {% else %}
+                          {{action.as_html(item, csrf_token)}}
+                        {% endif %}
                       {% endif %}
                     {% endfor %}
                   </td>

@@ -1,0 +1,37 @@
+{% extends 'layout/no-sidebar.html' %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% set access_request = activation.process.access_request %}
+
+{% block main_content %}
+
+  {% include "web/domains/case/access/partials/access-request-display.html" %}
+
+  <h3>
+    {{access_request.requester_type}} Access Approval
+  </h3>
+
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    {{activation.management_form}}
+    {{ fields.field(form.requested_from) }}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button" name="_continue">Request Approval</button>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}
+
+
+

@@ -69,17 +69,16 @@ class AccessRequestForm(ViewFlowForm, ModelEditForm):
         }
 
 
-class ReviewAccessRequestForm(ViewFlowForm, ModelEditForm):
+class CloseAccessRequestForm(ModelEditForm):
     class Meta:
         model = AccessRequest
 
         fields = ['response', 'response_reason']
 
 
-class ApprovalRequestForm(ViewFlowForm, ModelEditForm):
+class ApprovalRequestForm(ModelEditForm):
     def __init__(self, team, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['status'].disabled = True
         self.fields['requested_from'].queryset = team.members.all(
         )  # TODO: All members? Check if certain roles or not
         self.fields['requested_from'].empty_label = 'All'
@@ -87,7 +86,7 @@ class ApprovalRequestForm(ViewFlowForm, ModelEditForm):
     class Meta:
         model = ApprovalRequest
 
-        fields = ['status', 'requested_from']
+        fields = ['requested_from']
 
         labels = {'requested_from': 'Contact'}
 
@@ -97,3 +96,13 @@ class ApprovalRequestForm(ViewFlowForm, ModelEditForm):
                 'show_optional_indicator': False,
             }
         }
+
+
+class ApprovalRequestResponseForm(ModelEditForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['response'].required = True
+
+    class Meta:
+        model = ApprovalRequest
+        fields = ['response', 'response_reason']

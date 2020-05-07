@@ -3,6 +3,7 @@ from web.domains.application.export.models import *  # NOQA
 from web.domains.case._import.models import *  # NOQA
 from web.domains.case.access.models import *  # NOQA
 from web.domains.case.export.models import *  # NOQA
+from web.domains.case.fir.models import *  # NOQA
 from web.domains.case.models import *  # NOQA
 from web.domains.commodity.models import *  # NOQA
 from web.domains.constabulary.models import *  # NOQA

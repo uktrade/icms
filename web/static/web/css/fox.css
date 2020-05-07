@@ -2242,6 +2242,7 @@ h2 {
 h3 {
     font-size: 2em;
     font-weight: 400;
+    text-transform: capitalize;
 }
 
 h4 {
@@ -3089,15 +3090,18 @@ ul.modal-popover-actions li {
     color: #66512c;
 }
 
+.info-box-error,
 .info-box-danger {
     border-color: #CF1111;
     background: #FFF5F5;
 }
 
+.info-box-error hr,
 .info-box-danger hr {
     border-top-color: #e4b9c0;
 }
 
+.info-box-error .info-box-link,
 .info-box-danger .info-box-link {
     color: #843534;
 }
@@ -3131,6 +3135,8 @@ ul.modal-popover-actions li {
 }
 
 .info-box-danger[class^="icon-"]:before,
+.info-box-error[class^="icon-"]:before,
+.info-box-error[class*=" icon-"]:before,
 .info-box-danger[class*=" icon-"]:before {
     color: #CF1111;
 }
@@ -4815,4 +4821,9 @@ ul.fileList {
 
 .menu-out.flow-across.actions li a:first-child {
     padding-left: 0;
+}
+
+
+.capitalize {
+  text-transform: capitalize
 }
