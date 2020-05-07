@@ -15,8 +15,8 @@ class ReIssuePassword(PostAction):
     confirm_message = ''
     icon = 'icon-key'
 
-    def display(self, object):
-        return True
+    def display(self, user):
+        return user.account_status in [User.ACTIVE, User.SUSPENDED]
 
     def handle(self, request, view):
         user = self._get_item(request, view.model)
@@ -25,9 +25,8 @@ class ReIssuePassword(PostAction):
         user.account_status_by = request.user
         user.save()
         notify.register(request, user, temp_pass)
-        messages.success(
-            request, 'Temporary password successfully issued for '
-            'account')
+        messages.success(request,
+                         'Temporary password successfully issued for account')
 
 
 class CancelUser(PostAction):
@@ -35,10 +34,10 @@ class CancelUser(PostAction):
     label = 'Cancel'
     confirm = True
     confirm_message = 'Are you sure you want to cancel this account?'
-    icon = 'icon-cancel'
+    icon = 'icon-bin'
 
     def display(self, user):
-        return user.account_status == User.ACTIVE
+        return user.account_status != User.CANCELLED
 
     def handle(self, request, view):
         user = self._get_item(request, view.model)
@@ -53,7 +52,7 @@ class ActivateUser(PostAction):
     label = 'Activate'
     confirm = True
     confirm_message = 'Are you sure you want to activate this account?'
-    icon = 'icon-activate'
+    icon = 'icon-eye'
 
     def display(self, user):
         return user.account_status == User.BLOCKED
@@ -71,7 +70,7 @@ class BlockUser(PostAction):
     label = 'Block'
     confirm = True
     confirm_message = 'Are you sure you want to block this account?'
-    icon = 'icon-activate'
+    icon = 'icon-eye-blocked'
 
     def display(self, user):
         return user.account_status == User.ACTIVE
