@@ -4821,3 +4821,8 @@ ul.fileList {
 .menu-out.flow-across.actions li a:first-child {
     padding-left: 0;
 }
+
+
+.capitalize {
+  text-transform: capitalize
+}

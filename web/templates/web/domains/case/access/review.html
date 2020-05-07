@@ -34,13 +34,17 @@
     <div class="container setoutForm" >
       <div class="row">
 
-        <h3>{{requester_type|capitalize}} Access Approval</h3>
+        <h3>
+          <span class="capitalize">{{requester_type}}</span> Access Approval
+        </h3>
         {% call forms.form(method='post', csrf_input=csrf_input) %}
           {{activation.management_form}}
           <input type='hidden' name='_continue'>
           <ul class="menu-out flow-across">
             <li>
-              <button name="start_approval" class="button">Start {{requester_type|capitalize}} Access Approval</button>
+              <button name="start_approval" class="button">
+                Start <span class="capitalize">{{requester_type}}</span> Access Approval
+              </button>
             </li>
           </ul>
           <h3>Close Access Request</h3>

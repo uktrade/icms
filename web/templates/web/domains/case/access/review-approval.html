@@ -21,7 +21,9 @@
           <input type='hidden' name='_continue'>
           <ul class="menu-out flow-across">
             <li>
-              <button name="start_approval" class="button">Restart {{access_request.requester_type|capitalize}} Access Approval</button>
+              <button name="start_approval" class="button">
+                Restart <span class="capitalize">{{access_request.requester_type}}</span> Access Approval
+              </button>
             </li>
           </ul>
           <h3>Close Access Request</h3>

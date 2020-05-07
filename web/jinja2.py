@@ -31,16 +31,6 @@ def show_all_attrs(value):
     return '\n'.join(res)
 
 
-def capitalize(value):
-    """
-        Converts first character of string to uppercase letter
-    """
-    if value:
-        return value.capitalize()
-
-    return value
-
-
 def input_datetime(value):
     """
         Convert a utc datetime from string to input date format
@@ -86,6 +76,5 @@ def environment(**options):
     })
     env.filters['show_all_attrs'] = show_all_attrs
     env.filters['input_datetime'] = input_datetime
-    env.filters['capitalize'] = capitalize
     env.filters['nl2br'] = nl2br
     return env

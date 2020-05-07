@@ -9,7 +9,9 @@
 
   {% include "web/domains/case/access/partials/access-request-display.html" %}
 
-  <h3>{{access_request.requester_type|capitalize}} Access Approval</h3>
+  <h3>
+    <span class="capitalize">{{access_request.requester_type}}</span> Access Approval
+  </h3>
 
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {{activation.management_form}}
