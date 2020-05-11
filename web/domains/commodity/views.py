@@ -12,7 +12,7 @@ permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class CommodityListView(ModelFilterView):
-    template_name = 'web/commodity/list.html'
+    template_name = 'web/domains/commodity/list.html'
     filterset_class = CommodityFilter
     model = Commodity
     permission_required = permissions
@@ -38,7 +38,7 @@ class CommodityListView(ModelFilterView):
 
 
 class CommodityEditView(ModelUpdateView):
-    template_name = 'web/commodity/edit.html'
+    template_name = 'web/domains/commodity/edit.html'
     form_class = CommodityEditForm
     model = Commodity
     success_url = reverse_lazy('commodity-list')
@@ -47,7 +47,7 @@ class CommodityEditView(ModelUpdateView):
 
 
 class CommodityCreateView(ModelCreateView):
-    template_name = 'web/commodity/create.html'
+    template_name = 'web/domains/commodity/create.html'
     form_class = CommodityForm
     success_url = reverse_lazy('commodity-list')
     cancel_url = success_url
@@ -63,7 +63,7 @@ class CommodityDetailView(ModelDetailView):
 
 
 class CommodityGroupListView(ModelFilterView):
-    template_name = 'web/commodity-group/list.html'
+    template_name = 'web/domains/commodity/group/list.html'
     filterset_class = CommodityGroupFilter
     model = CommodityGroup
     permission_required = permissions
