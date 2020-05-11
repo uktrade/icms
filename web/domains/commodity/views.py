@@ -16,6 +16,7 @@ class CommodityListView(ModelFilterView):
     filterset_class = CommodityFilter
     model = Commodity
     permission_required = permissions
+    page_title = 'Maintain Commodities'
 
     class Display:
         fields = [
@@ -41,6 +42,7 @@ class CommodityEditView(ModelUpdateView):
     form_class = CommodityEditForm
     model = Commodity
     success_url = reverse_lazy('commodity-list')
+    cancel_url = success_url
     permission_required = permissions
 
 
@@ -48,13 +50,16 @@ class CommodityCreateView(ModelCreateView):
     template_name = 'web/commodity/create.html'
     form_class = CommodityForm
     success_url = reverse_lazy('commodity-list')
+    cancel_url = success_url
     permission_required = permissions
+    page_title = 'New Commodity'
 
 
 class CommodityDetailView(ModelDetailView):
     form_class = CommodityForm
     model = Commodity
     permission_required = permissions
+    cancel_url = reverse_lazy('commodity-list')
 
 
 class CommodityGroupListView(ModelFilterView):

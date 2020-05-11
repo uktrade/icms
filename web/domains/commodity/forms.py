@@ -14,10 +14,6 @@ class CommodityFilter(ModelSearchFilter):
                                 lookup_expr='icontains',
                                 label='Commodity Code')
 
-    commodity_type = ModelChoiceFilter(queryset=CommodityType.objects.all(),
-                                       lookup_expr='icontains',
-                                       label='Commodity Type')
-
     valid_start = DateFilter(field_name='validity_start_date',
                              lookup_expr='gte',
                              widget=DateInput,
@@ -46,7 +42,7 @@ class CommodityForm(ModelEditForm):
         model = Commodity
         fields = [
             'commodity_code', 'validity_start_date', 'validity_end_date',
-            'sigl_product_type'
+            'quantity_threshold', 'sigl_product_type'
         ]
         labels = {
             'validity_start_date': 'First day of validity',
@@ -60,11 +56,28 @@ class CommodityForm(ModelEditForm):
             'validity_end_date':
             'After this date, the commodity will no \
             longer be available for applications to choose on application \
-            forms. Leave blank for indefinitely continuing validity'
+            forms. Leave blank for indefinitely continuing validity',
+            'quantity_threshold':
+            'Quantity threshold is only necessary \
+            for Iron, Steel and Aluminium commodities'
         }
         widgets = {
             'validity_start_date': DateInput,
             'validity_end_date': DateInput
+        }
+
+        config = {
+            'quantity_threshold': {
+                'label': {
+                    'cols': 'three',
+                },
+                'input': {
+                    'cols': 'two'
+                },
+                'padding': {
+                    'right': 'seven'
+                }
+            }
         }
 
 

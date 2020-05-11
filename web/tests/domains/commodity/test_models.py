@@ -36,24 +36,3 @@ class CommodityTest(TestCase):
         commodity = self.create_commodity()
         commodity.unarchive()
         self.assertTrue(commodity.is_active)
-
-    #  def test_biocidal_yes_no_label(self):
-    #      product_legisation = self.create_legislation()
-    #      self.assertEqual(product_legisation.is_biocidal_yes_no, 'No')
-    #      product_legisation.is_biocidal = True
-    #      self.assertEqual(product_legisation.is_biocidal_yes_no, 'Yes')
-    #
-    #  def test_biocidal_claim_yes_no_label(self):
-    #      product_legisation = self.create_legislation()
-    #      product_legisation.is_biocidal_claim = True
-    #      self.assertEqual(product_legisation.is_biocidal_claim_yes_no, 'Yes')
-    #
-    #  def test_cosmetics_regulation_yes_no_label(self):
-    #      product_legisation = self.create_legislation()
-    #      self.assertEqual(product_legisation.is_eu_cosmetics_regulation_yes_no,
-    #                       'Yes')
-    #
-    #  def test_string_representation(self):
-    #      product_legisation = self.create_legislation()
-    #      self.assertEqual(product_legisation.__str__(),
-    #                       f'Product Legislation ({product_legisation.name})')

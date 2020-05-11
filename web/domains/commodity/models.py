@@ -25,15 +25,6 @@ class CommodityType(models.Model):
 class Commodity(Archivable, models.Model):
     LABEL = 'Commodity'
 
-    TEXTILES = 'TEXTILES'
-    IRON_STEEL = 'IRON_STEEL'
-    FIREARMS_AMMO = 'FIREARMS_AMMO'
-    WOOD = 'WOOD'
-    VEHICLES = 'VEHICLES'
-    WOOD_CHARCOAL = 'WOOD_CHARCOAL'
-    PRECIOUS_METAL_STONE = 'PRECIOUS_METAL_STONE'
-    OIL_PETROCHEMICALS = 'OIL_PETROCHEMICALS'
-
     is_active = models.BooleanField(blank=False, null=False, default=True)
     start_datetime = models.DateTimeField(auto_now_add=True,
                                           blank=False,
@@ -47,7 +38,7 @@ class Commodity(Archivable, models.Model):
 
     def __str__(self):
         if self.id:
-            return self.LABEL + ' - ' + self.commodity_code
+            return f'{self.LABEL} - {self.commodity_code}'
         else:
             return self.LABEL
 
