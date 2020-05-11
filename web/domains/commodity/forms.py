@@ -92,7 +92,6 @@ class CommodityGroupFilter(ModelSearchFilter):
                               choices=CommodityGroup.TYPES,
                               label='Group Type')
     commodity_type = ModelChoiceFilter(queryset=CommodityType.objects.all(),
-                                       lookup_expr='icontains',
                                        label='Commodity Types')
 
     group_code = CharFilter(field_name='group_code',

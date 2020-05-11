@@ -2,7 +2,7 @@ import datetime
 from datetime import date
 
 from django.test import TestCase
-from web.domains.commodity.models import Commodity
+from web.domains.commodity.models import Commodity, CommodityGroup
 
 
 class CommodityTest(TestCase):
@@ -36,3 +36,38 @@ class CommodityTest(TestCase):
         commodity = self.create_commodity()
         commodity.unarchive()
         self.assertTrue(commodity.is_active)
+
+
+class CommodityGroupTest(TestCase):
+    def create_commodity_group(
+        self,
+        is_active=True,
+        group_type=CommodityGroup.AUTO,
+        group_code='12',
+        group_name='Test group',
+        group_description='Test group description',
+        start_datetime=date.today(),
+        end_datetime=date.today() + datetime.timedelta(days=20),
+    ):
+        return CommodityGroup.objects.create(
+            is_active=is_active,
+            group_type=group_type,
+            group_code=group_code,
+            group_description=group_description,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime)
+
+    def test_create_commodity_group(self):
+        commodity_group = self.create_commodity_group()
+        self.assertTrue(isinstance(commodity_group, CommodityGroup))
+        self.assertEqual(commodity_group.group_code, '12')
+
+    def test_archive_commodity_group(self):
+        commodity_group = self.create_commodity_group()
+        commodity_group.archive()
+        self.assertFalse(commodity_group.is_active)
+
+    def test_unarchive_commodity_group(self):
+        commodity_group = self.create_commodity_group()
+        commodity_group.unarchive()
+        self.assertTrue(commodity_group.is_active)

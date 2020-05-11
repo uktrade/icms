@@ -90,7 +90,7 @@ class CommodityGroup(Archivable, models.Model):
 
     def __str__(self):
         if self.id:
-            return self.LABEL + ' - ' + self.group_code
+            return f'{self.LABEL} - {self.group_code}'
         else:
             return self.LABEL
 

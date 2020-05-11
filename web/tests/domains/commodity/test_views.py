@@ -1,6 +1,6 @@
 from web.tests.auth import AuthTestCase
 
-from .factory import CommodityFactory
+from .factory import CommodityFactory, CommodityGroupFactory
 
 LOGIN_URL = '/'
 PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
@@ -131,3 +131,87 @@ class CommodityDetailViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          f"Viewing {self.commodity}")
+
+
+class CommodityGroupCreateViewTest(AuthTestCase):
+    url = '/commodity/group/new/'
+    redirect_url = f'{LOGIN_URL}?next={url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         'New Commodity Group')
+
+
+class CommodityGroupUpdateViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.commodity_group = CommodityGroupFactory()
+        self.url = f'/commodity/group/{self.commodity_group.id}/edit/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         f"Editing {self.commodity_group}")
+
+
+class CommodityGroupDetailView(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.commodity_group = CommodityGroupFactory()
+        self.url = f'/commodity/group/{self.commodity_group.id}/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         f"Viewing {self.commodity_group}")

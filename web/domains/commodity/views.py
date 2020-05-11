@@ -94,7 +94,7 @@ class CommodityGroupListView(ModelFilterView):
 
 
 class CommodityGroupEditView(ModelUpdateView):
-    template_name = 'web/commodity-group/edit.html'
+    template_name = 'model/edit.html'
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
@@ -102,11 +102,13 @@ class CommodityGroupEditView(ModelUpdateView):
 
 
 class CommodityGroupCreateView(ModelCreateView):
-    template_name = 'web/commodity-group/edit.html'
+    template_name = 'model/edit.html'
     form_class = CommodityGroupForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
+    cancel_url = success_url
     permission_required = permissions
+    page_title = 'New Commodity Group'
 
 
 class CommodityGroupDetailView(ModelDetailView):
