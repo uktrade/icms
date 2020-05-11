@@ -10,7 +10,7 @@ permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ProductLegislationListView(ModelFilterView):
-    template_name = 'web/product-legislation/list.html'
+    template_name = 'web/domains/legislation/list.html'
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
     page_title = 'Maintain Product Legislation'
@@ -43,7 +43,7 @@ class ProductLegislationListView(ModelFilterView):
 
 
 class ProductLegislationCreateView(ModelCreateView):
-    template_name = 'web/product-legislation/edit.html'
+    template_name = 'web/domains/legislation/edit.html'
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
@@ -53,7 +53,7 @@ class ProductLegislationCreateView(ModelCreateView):
 
 
 class ProductLegislationUpdateView(ModelUpdateView):
-    template_name = 'web/product-legislation/edit.html'
+    template_name = 'web/domains/legislation/edit.html'
     form_class = ProductLegislationForm
     model = ProductLegislation
     success_url = reverse_lazy('product-legislation-list')
@@ -62,7 +62,7 @@ class ProductLegislationUpdateView(ModelUpdateView):
 
 
 class ProductLegislationDetailView(ModelDetailView):
-    template_name = 'web/product-legislation/view.html'
+    template_name = 'web/domains/legislation/view.html'
     model = ProductLegislation
     form_class = ProductLegislationForm
     cancel_url = reverse_lazy('product-legislation-list')
