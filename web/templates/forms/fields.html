@@ -91,7 +91,7 @@
 {%- endmacro %}
 
 {% macro field_as_text(field) -%}
-  {% if 'Text' in field.field.widget.__class__.__name__ %}
+  {% if field.field.widget.__class__.__name__ in ['TextInput', 'EmailInput', 'Textarea', 'DateInput', 'NumberInput'] %}
     {{ field.value()|safe|nl2br }}
   {% else %}
     {{ field }}
