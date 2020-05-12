@@ -110,6 +110,7 @@ class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView,
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
+    cancen_url = success_url
     permission_required = permissions
 
 
@@ -120,6 +121,7 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
     permission_required = permissions
+    page_title = 'New Obsolete Calibre Group'
 
     def get_object(self):
         return None

@@ -1,73 +1,71 @@
-{% extends "layout/sidebar.html" %}
+{% extends "model/edit.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block page_title %}Edit Obsolete Calibre Group{% endblock %}
-{% block context_header %}Edit Obsolete Calibre Group{% endblock %}
+{% block fields %}
 
-{% block main_content %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>Group</h3>
+    {{fields.field(form.name)}}
 
-<h3>Group</h3>
-{% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>Obsolete Calibres</h3>
 
-<h3>Obsolete Calibres</h3>
-
-<div id="calibre_display_archived_checkbox" class="container setoutForm">
-    <div class="row">
-      {{fields.field(form.name)}}
-        <div class="three columns">
-            <label class="prompt west">Display Archived</label>
-        </div>
-        <div class="six columns radio-or-tickbox-group">
-          <label class="radio-label" for="calibre_display_archived_checkbox">
-            <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
-          </label>
-        </div>
+    <div id="calibre_display_archived_checkbox" class="container setoutForm">
+      <div class="row">
+          <div class="three columns">
+              <label class="prompt west">Display Archived</label>
+          </div>
+          <div class="six columns radio-or-tickbox-group">
+            <label class="radio-label" for="calibre_display_archived_checkbox">
+              <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
+            </label>
+          </div>
+      </div>
     </div>
-</div>
 
-{{forms.errors(formset)}}
-<table id="obsolete-calibres-table" responsiveList class="setoutList">
-    <thead>
-        <tr>
-            <th scope="col">Obsolete Calibre Name</th>
-            <th scope="col">Status </th>
-            <th scope="col">Actions </th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for form in formset.sorted_forms() %}
-        <tr>
-            {{form.id}}
-            {{fields.inline_field(form.name)}}
-            <td class="calibre-status">{{form.instance.status}}</td>
-            <td>
-                <div class="calibre-order">
-                    {{form.order}}
-                </div>
-                <ul class="menu-out grouped flow-across">
-                    <li class="move-up"  {% if loop.first %}style="display:none"{% endif %}>
-                        <button name="calibre-move-up" type="button" class="link-button icon-arrow-up2 button no-prompt-action tooltipstered" aria-describedby="move-up-hint" aria-label="Move Up">
-                            {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
-                            {# <input type="hidden" name="prev_item" value="{{loop.previtem.instance.id}}" /> #}
-                        </button>
-                        <div id="move-up-hint" role="tooltip" class="hint-content">Move Up</div>
-                    </li>
-                    <li class="move-down" {% if loop.last %}style="display:none"{% endif %} >
-                        <button name="calibre-move-down" type="button" class="link-button icon-arrow-down2 button no-prompt-action tooltipstered" aria-describedby="move-down-hint" aria-label="Move Down">
-                            {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
-                            {# <input type="hidden" name="prev_item" value="{{loop.nextitem.instance.id}}" /> #}
-                        </button>
-                        <div id="move-down-hint" role="tooltip" class="hint-content">Move Down</div>
-                    </li>
-                </ul>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{{ formset.management_form }}
+    {{forms.errors(formset)}}
 
-{%- endcall %}
+    <table id="obsolete-calibres-table" responsiveList class="setoutList">
+      <thead>
+          <tr>
+              <th scope="col">Obsolete Calibre Name</th>
+              <th scope="col">Status </th>
+              <th scope="col">Actions </th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for form in formset.sorted_forms() %}
+          <tr>
+              {{form.id}}
+              {{fields.inline_field(form.name)}}
+              <td class="calibre-status">{{form.instance.status}}</td>
+              <td>
+                  <div class="calibre-order">
+                      {{form.order}}
+                  </div>
+                  <ul class="menu-out grouped flow-across">
+                      <li class="move-up"  {% if loop.first %}style="display:none"{% endif %}>
+                          <button name="calibre-move-up" type="button" class="link-button icon-arrow-up2 button no-prompt-action tooltipstered" aria-describedby="move-up-hint" aria-label="Move Up">
+                              {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
+                              {# <input type="hidden" name="prev_item" value="{{loop.previtem.instance.id}}" /> #}
+                          </button>
+                          <div id="move-up-hint" role="tooltip" class="hint-content">Move Up</div>
+                      </li>
+                      <li class="move-down" {% if loop.last %}style="display:none"{% endif %} >
+                          <button name="calibre-move-down" type="button" class="link-button icon-arrow-down2 button no-prompt-action tooltipstered" aria-describedby="move-down-hint" aria-label="Move Down">
+                              {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
+                              {# <input type="hidden" name="prev_item" value="{{loop.nextitem.instance.id}}" /> #}
+                          </button>
+                          <div id="move-down-hint" role="tooltip" class="hint-content">Move Down</div>
+                      </li>
+                  </ul>
+              </td>
+          </tr>
+          {% endfor %}
+      </tbody>
+    </table>
+    {{ formset.management_form }}
+
+  {%- endcall %}
 
 {% endblock %}
