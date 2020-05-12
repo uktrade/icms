@@ -62,10 +62,7 @@ class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
             return f'Obsolete Calibre Group (new) '
 
     class Meta:
-        ordering = (
-            '-is_active',
-            'order',
-        )
+        ordering = ('order', '-is_active')
 
 
 class ObsoleteCalibre(Archivable, models.Model):

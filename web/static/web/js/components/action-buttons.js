@@ -2,12 +2,12 @@ $(document).ready(function() {
     $('[role=action-button]').off().on('click', function(evt){
 
         evt.preventDefault();
+      
         var $el = $(this)
         var url    = $el.attr('href');
-        var action = $el.attr('data-action');
-        var csrf   = $el.attr('data-csrf');
-        var method = $el.attr('data-method') || 'POST';
-        var item   = $el.attr('data-item');
+        var data = $el.data()
+        var method = data['method'] || 'POST'
+        var confirmMessage =  data['confirm']
         var form = $el.closest('form')
 
         var submit = function(){
@@ -18,32 +18,29 @@ $(document).ready(function() {
             } else {
               $frm = $('<form></form>');
               $('body').append($frm);
-            }
-            $frm.attr('method', method);
-
-            if (url) {
+              $frm.attr('method', method);
+              if (url) {
                 $frm.attr('action', url);
+              }
             }
 
-            if (csrf) {
-                $frm.append('<input type="hidden" name="csrfmiddlewaretoken" value="'+ csrf +'"/>')
+            // Add data attributes as hidden inputs
+            for (var key in data) {
+              if (key.substring(0,6) == 'input_'){
+                var name = key.substring(6)
+                console.log(name)
+                $frm.append('<input type="hidden" name="' + name + '" value="' + data[key] + '" />')
+              }
             }
-
-            if (item) {
-                $frm.append('<input type="hidden" name="item" value="'+ item +'" />')
-            }
-
-            $frm.append('<input type="hidden" name="action" value="'+ action +'" />')
 
             $frm.submit();
         };
 
-        var confirmMessage =  $el.attr('data-confirm');
         if (confirmMessage) {
             return Dialogue().show(confirmMessage, submit);
+        } else {
+            submit();
         }
-
-        submit();
     });
 });
 

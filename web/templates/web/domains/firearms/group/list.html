@@ -1,0 +1,73 @@
+{% extends "model/list.html" %}
+{% block empty_message %}There aren't any obsolete calibres that match your search{% endblock %}
+{% set filtered = request.GET.group_name or request.GET.calibre_name  %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+      <li>
+          <a href="{{url('obsolete-calibre-new')}}">New Obsolete Calibre Group</a>
+      </li>
+  </ul>
+{% endblock %}
+
+
+{% block results %}
+  <table responsiveList class="setoutList">
+    <thead>
+      <tr>
+        {{tables.headers(display)}}
+        <th scope="col">Actions</th>
+        {% if not filtered %}
+          <th scope="col">Sort</th>
+        {% endif %}
+      </tr>
+    </thead>
+
+    {% for item in results %}
+      <tr>
+        {{tables.fields(item, display)}}
+        <td>
+          {% for action in display.actions %}
+            {% if action.display(item) %}
+              {{action.as_html(item, csrf_token)}}
+            {% endif %}
+          {% endfor %}
+        </td>
+        {% if not filtered %}
+          <td>
+            <ul class="menu-out grouped flow-across">
+              {% if not loop.first %}
+                <li>
+                  <button
+                    role="action-button"
+                    class="link-button button no-prompt-action tooltipstered icon-arrow-up2"
+                    aria-label="Move up"
+                    data-input_action="move_up"
+                    data-input_csrfmiddlewaretoken="{{ csrf_token }}"
+                    data-input_item="{{ item.id }}"
+                    data-input_previtem={{loop.previtem.id}}
+                  >
+                  </button>
+                </li>
+              {% endif %}
+              {% if not loop.last %}
+                <li>
+                  <button
+                    role="action-button"
+                    class="link-button button no-prompt-action tooltipstered icon-arrow-down2"
+                    aria-label="Move down"
+                    data-input_action="move_down"
+                    data-input_csrfmiddlewaretoken="{{ csrf_token }}"
+                    data-input_item="{{ item.id }}"
+                    data-input_nextitem={{loop.nextitem.id}}
+                  >
+                  </button>
+                </li>
+              {% endif %}
+            </ul>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
