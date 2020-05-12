@@ -17,12 +17,13 @@ RUN \
   python3 -m pip install --upgrade pip && \
   python3 -m pip install pipenv && \
   python3 -m pipenv install --system --dev --deploy && \
-  apk add npm && \
-  apk --purge del .build-deps
+  apk add npm
+
 # Install dockerize
 RUN \
   wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
   && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
   && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
 COPY . /code/
 CMD scripts/entry.sh

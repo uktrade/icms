@@ -127,6 +127,8 @@ test_style: clean ## runs linter
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose run --rm web pytest --flake8
 
+behave:
+	docker-compose exec web python manage.py behave --settings=config.settings.test
 ##@ Releases
 
 release_major: ## create major release

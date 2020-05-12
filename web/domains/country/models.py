@@ -21,7 +21,7 @@ class Country(models.Model):
         if self.id:
             return f'Country ({self.name})'
         else:
-            return f'Country (new) '
+            return 'Country (new) '
 
     @property
     def name_slug(self):
@@ -42,7 +42,7 @@ class CountryGroup(models.Model):
         if self.id:
             return f'Country Group ({self.name})'
         else:
-            return f'Country Group (new) '
+            return 'Country Group (new) '
 
     class Meta:
         ordering = ('name', )
