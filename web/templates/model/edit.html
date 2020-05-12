@@ -4,9 +4,12 @@
 
 {% block main_content %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-        {% for field in form %}
-            {{fields.field(field)}}
-        {% endfor %}
+
+        {% block fields %}
+          {% for field in form %}
+              {{fields.field(field)}}
+          {% endfor %}
+        {% endblock %}
 
         <div class="section-break"></div>
         {% block additional_content %}{% endblock %}
