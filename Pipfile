@@ -24,6 +24,7 @@ pytest-flake8 = "*"
 pyparsing = ">2.4.1"
 factory-boy = "*"
 faker = "*"
+selenium = "*"
 
 [packages]
 django = "==2.2.10"
@@ -50,6 +51,8 @@ django-celery-results = "*"
 celery = "*"
 redis = "*"
 django-htmlmin = "*"
+selenium = "*"
+behave-django = "*"
 
 [requires]
 python_version = "3.7.6"
