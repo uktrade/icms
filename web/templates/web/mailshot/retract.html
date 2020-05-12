@@ -1,8 +1,5 @@
 {% extends "model/edit.html" %}
 
-{% set page_title='Retract ' + object.__str__() %}
-
-
 {% block main_content %}
   {% with form=view.view_form %}
     {% include "partial/view-form-fields.html" %}
