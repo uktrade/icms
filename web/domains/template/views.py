@@ -4,7 +4,7 @@ from web.views import ModelFilterView, ModelDetailView, ModelUpdateView, ModelCr
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
-from .forms import TemplatesFilter, GenericTemplate, EnsdorsementCreateTemplateForm
+from .forms import TemplatesFilter, GenericTemplate, EndorsementCreateTemplateForm
 
 permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
@@ -58,7 +58,7 @@ class TemplateEditView(ModelUpdateView):
 
 class EndorsementCreateView(ModelCreateView):
     template_name = 'web/domains/template/edit.html'
-    form_class = EnsdorsementCreateTemplateForm
+    form_class = EndorsementCreateTemplateForm
     model = Template
     success_url = reverse_lazy('template-list')
     cancel_url = success_url
