@@ -10,7 +10,7 @@ permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class TemplateListView(ModelFilterView):
-    template_name = 'web/template/list.html'
+    template_name = 'web/domains/template/list.html'
     model = Template
     filterset_class = TemplatesFilter
     page_title = 'Maintain Templates'
@@ -48,7 +48,7 @@ class TemplateDetailView(ModelDetailView):
 
 
 class TemplateEditView(ModelUpdateView):
-    template_name = 'web/template/edit.html'
+    template_name = 'web/domains/template/edit.html'
     form_class = GenericTemplate
     model = Template
     success_url = reverse_lazy('template-list')
@@ -57,7 +57,7 @@ class TemplateEditView(ModelUpdateView):
 
 
 class EndorsementCreateView(ModelCreateView):
-    template_name = 'web/template/edit.html'
+    template_name = 'web/domains/template/edit.html'
     form_class = EnsdorsementCreateTemplateForm
     model = Template
     success_url = reverse_lazy('template-list')
