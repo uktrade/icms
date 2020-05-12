@@ -1,89 +1,109 @@
 # This docker-compose configuration is for ICMS development.
 # Production deployment does not use this configuration.
-version: '3'
+version: "3"
 services:
-  db:
-    image: postgres:11
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - "5432:5432"
-  web:
-    # restart: always
-    build:
-      context: .
-      args:
-        ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
-    # user: ${UID}
-    entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
-    command: scripts/entry.sh
-    environment:
-      - ICMS_WEB_PORT
-      - ICMS_DEBUG
-      - ICMS_NUM_WORKERS # Gunicorn workers number
-      - ICMS_MIGRATE
-      - ICMS_ADDRESS_API_KEY # getAddress.io api key for post code search
-      # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
-      - DATABASE_URL
-      - ICMS_ALLOWED_HOSTS
-      - ICMS_RECAPTCHA_PUBLIC_KEY
-      - ICMS_RECAPTCHA_PRIVATE_KEY
-      - ICMS_SILENCED_SYSTEM_CHECKS
-      - ICMS_SECRET_KEY
-      - ICMS_EMAIL_FROM
-      - AWS_SES_ACCESS_KEY_ID
-      - AWS_SES_SECRET_ACCESS_KEY
-      - DJANGO_SETTINGS_MODULE
-      - ELASTIC_APM_SECRET_TOKEN
-      - ELASTIC_APM_ENVIRONMENT
-      - ELASTIC_APM_URL
-    # tty: true
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-      - redis
+    db:
+        image: postgres:11
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=password
+        ports:
+            - "5432:5432"
+    web:
+        restart: unless-stopped
+        build:
+            context: .
+            args:
+                ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
+        # user: ${UID}
+        entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
+        command: scripts/entry.sh
+        environment:
+            - ICMS_WEB_PORT
+            - ICMS_DEBUG
+            - ICMS_NUM_WORKERS # Gunicorn workers number
+            - ICMS_MIGRATE
+            - ICMS_ADDRESS_API_KEY # getAddress.io api key for post code search
+            # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
+            - DATABASE_URL
+            - ICMS_ALLOWED_HOSTS
+            - ICMS_RECAPTCHA_PUBLIC_KEY
+            - ICMS_RECAPTCHA_PRIVATE_KEY
+            - ICMS_SILENCED_SYSTEM_CHECKS
+            - ICMS_SECRET_KEY
+            - ICMS_EMAIL_FROM
+            - AWS_SES_ACCESS_KEY_ID
+            - AWS_SES_SECRET_ACCESS_KEY
+            - DJANGO_SETTINGS_MODULE
+            - ELASTIC_APM_SECRET_TOKEN
+            - ELASTIC_APM_ENVIRONMENT
+            - ELASTIC_APM_URL
+        # tty: true
+        ports:
+            - "8080:8080"
+        volumes:
+            - .:/code
+        depends_on:
+            - db
+            - redis
 
-  redis:
-    image: redis:latest
-    volumes:
-      - ./.redis_data:/data
-    ports:
-      - '6379:6379'
+    redis:
+        image: redis:latest
+        volumes:
+            - ./.redis_data:/data
+        ports:
+            - "6379:6379"
 
-  celery:
-    build:
-      context: .
-      args:
-        ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
-    command: celery --app=config.celery:app --loglevel=debug worker
-    environment:
-      - DJANGO_SETTINGS_MODULE
-      - AWS_SES_ACCESS_KEY_ID
-      - AWS_SES_SECRET_ACCESS_KEY
-    volumes:
-      - .:/code
-    depends_on:
-      - redis
+    celery:
+        build:
+            context: .
+            args:
+                ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
+        command: celery --app=config.celery:app --loglevel=debug worker
+        environment:
+            - DJANGO_SETTINGS_MODULE
+            - AWS_SES_ACCESS_KEY_ID
+            - AWS_SES_SECRET_ACCESS_KEY
+        volumes:
+            - .:/code
+        depends_on:
+            - redis
 
-  localstack:
-    image: localstack/localstack
-    ports:
-      - "4567-4599:4567-4599"
-      - "8081:8080"
-    environment:
-      - SERVICES=s3
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-    volumes:
-      - ".ls_data:/tmp/localstack"
-      - '/var/run/docker.sock:/var/run/docker.sock'
+    localstack:
+        image: localstack/localstack
+        ports:
+            - "4567-4599:4567-4599"
+            - "8081:8080"
+        environment:
+            - SERVICES=s3
+            - DEBUG=1
+            - DATA_DIR=/tmp/localstack/data
+        volumes:
+            - ".ls_data:/tmp/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
 
+    selenium-hub:
+        image: selenium/hub:3.141.59-vanadium
+        container_name: selenium-hub
+        ports:
+            - "4444:4444"
+            - "49154:49154"
+        depends_on:
+            - web
+
+    chrome:
+        image: selenium/node-chrome-debug:3.141.59-vanadium
+        volumes:
+            - /dev/shm:/dev/shm
+        depends_on:
+            - selenium-hub
+        environment:
+            - HUB_HOST=selenium-hub
+            - HUB_PORT=4444
+        ports:
+            - "5900:5900"
 
 volumes:
-  pgdata:
+    pgdata:
