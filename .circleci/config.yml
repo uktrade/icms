@@ -27,10 +27,6 @@ jobs:
                     command:  make build
 
             - run:
-                    name: install dependencies
-                    command:  make requirements
-
-            - run:
                     name: run unit tests & lint checks
                     command: make test_style
 
