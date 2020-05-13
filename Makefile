@@ -70,12 +70,6 @@ shell: ## Starts the Python interactive interpreter
 all: requirements requirements-web
 
 setup: ## sets up system for first use, you might want to run load data after
-	mkdir -p pgdata
-	chmod -R 777 pgdata 2>/dev/null; exit 0
-	mkdir -p .ls_data
-	chmod -R 777 .ls_data
-	mkdir -p .redis_data
-	chmod -R 777 .redis_data
 	make requirements migrations migrate
 
 local_s3: ## creates s3 buckets on localstack container

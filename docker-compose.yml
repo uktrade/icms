@@ -52,7 +52,7 @@ services:
     redis:
         image: redis:latest
         volumes:
-            - ./.redis_data:/data
+            - redis_data:/data
         ports:
             - "6379:6379"
 
@@ -81,7 +81,7 @@ services:
             - DEBUG=1
             - DATA_DIR=/tmp/localstack/data
         volumes:
-            - ".ls_data:/tmp/localstack"
+            - ls_data:/tmp/localstack
             - "/var/run/docker.sock:/var/run/docker.sock"
 
     selenium-hub:
@@ -107,3 +107,5 @@ services:
 
 volumes:
     pgdata:
+    ls_data:
+    redis_data:

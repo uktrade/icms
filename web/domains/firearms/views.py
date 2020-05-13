@@ -1,22 +1,49 @@
+import structlog as logging
 from django.urls import reverse_lazy
+
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
+from web.views.actions import Archive, Edit, Unarchive
 from web.views.mixins import PostActionMixin
-
-from web.views.actions import Edit
 
 from .forms import (ObsoleteCalibreGroupDisplayForm,
                     ObsoleteCalibreGroupEditForm, ObsoleteCalibreGroupFilter,
                     new_calibres_formset)
 from .models import ObsoleteCalibreGroup
 
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
-class ObsoleteCalibreListView(ModelFilterView):
-    template_name = 'web/obsolete-calibre/group/list.html'
+logger = logging.getLogger(__name__)
+
+
+class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
+    template_name = 'web/domains/firearms/group/list.html'
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
-    permission_required = \
-        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    page_title = 'Maintain Obsolete Calibres'
+    permission_required = permissions
+    paginate = False
+
+    def swap_orders(self, first, second):
+        order = first.order
+        first.order = second.order
+        second.order = order
+        first.save()
+        second.save()
+
+    def move_up(self, request, *args, **kwargs):
+        pk = request.POST.get('item')
+        previous_pk = request.POST.get('previtem')
+        groups = ObsoleteCalibreGroup.objects.filter(pk__in=[pk, previous_pk])
+        self.swap_orders(groups.first(), groups.last())
+        return super().get(request)
+
+    def move_down(self, request, *args, **kwargs):
+        pk = request.POST.get('item')
+        next_pk = request.POST.get('nextitem')
+        groups = ObsoleteCalibreGroup.objects.filter(pk__in=[pk, next_pk])
+        self.swap_orders(groups.first(), groups.last())
+        return super().get(request)
 
     class Display:
         fields = ['name', 'calibres__count']
@@ -30,7 +57,7 @@ class ObsoleteCalibreListView(ModelFilterView):
                 'The total number of obsolete calibres in this group'
             }
         }
-        actions = [Edit()]
+        actions = [Edit(), Archive(), Unarchive()]
 
 
 class ObsoleteCalibreGroupBaseView(PostActionMixin):
@@ -79,32 +106,31 @@ class ObsoleteCalibreGroupBaseView(PostActionMixin):
 
 class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView,
                                    ModelUpdateView):
-    template_name = 'web/obsolete-calibre/group/edit.html'
+    template_name = 'web/domains/firearms/group/edit.html'
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
-    permission_required = \
-        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    cancen_url = success_url
+    permission_required = permissions
 
 
 class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView,
                                      ModelCreateView):
-    template_name = 'web/obsolete-calibre/group/edit.html'
+    template_name = 'web/domains/firearms/group/edit.html'
     form_class = ObsoleteCalibreGroupEditForm
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy('obsolete-calibre-list')
-    permission_required = \
-        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
+    page_title = 'New Obsolete Calibre Group'
 
     def get_object(self):
         return None
 
 
 class ObsoleteCalibreGroupDetailView(ModelDetailView):
-    template_name = 'web/obsolete-calibre/group/view.html'
+    template_name = 'web/domains/firearms/group/view.html'
     model = ObsoleteCalibreGroup
-    permission_required = \
-        'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
 
     def get_context_data(self, object):
         context = super().get_context_data()

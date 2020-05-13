@@ -52,12 +52,16 @@ class PostActionMixin(View):
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
         if action:
-            logger.debug('Received post action', action=action)
+            logger.debug('Received post action',
+                         action=action,
+                         inputs=request.POST,
+                         args=args,
+                         kwargs=kwargs)
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
         # If action does not exist continue with regular post request
-        return super().post(self, request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class SimpleStartFlowMixin(BaseStartFlowMixin):

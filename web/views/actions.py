@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from web.models.mixins import Archivable, Sortable
+from web.models.mixins import Archivable
 
 
 class ListAction:
@@ -99,10 +99,3 @@ class Unarchive(PostAction):
     def handle(self, request, view):
         self._get_item(request, view.model).unarchive()
         messages.success(request, 'Record unarchived successfully')
-
-
-class Sort(PostAction):
-    action = 'sort'
-
-    def display(self, object):
-        return isinstance(object, Sortable)

@@ -6,9 +6,11 @@ from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+
 from web.auth.decorators import require_registered
 from web.auth.mixins import RequireRegisteredMixin
 
+from .actions import PostAction
 from .mixins import DataDisplayConfigMixin, PageTitleMixin
 
 
@@ -28,7 +30,7 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
             raise SuspiciousOperation('Invalid Request!')
 
         for a in self.Display.actions:
-            if a.action == action:
+            if isinstance(a, PostAction) and a.action == action:
                 response = a.handle(request, self, *args, **kwargs)
                 if response:
                     return response
