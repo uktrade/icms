@@ -43,8 +43,7 @@ services:
         # tty: true
         ports:
             - "8080:8080"
-        volumes:
-            - .:/code
+
         depends_on:
             - db
             - redis
@@ -66,8 +65,6 @@ services:
             - DJANGO_SETTINGS_MODULE
             - AWS_SES_ACCESS_KEY_ID
             - AWS_SES_SECRET_ACCESS_KEY
-        volumes:
-            - .:/code
         depends_on:
             - redis
 
