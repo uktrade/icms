@@ -1,6 +1,5 @@
 from behave import then, when
 from selenium.webdriver.common.by import By
-from behave_django.decorators import fixtures
 
 
 @then(u'the login page is displayed')
