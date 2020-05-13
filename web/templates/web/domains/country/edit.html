@@ -7,7 +7,12 @@
 
 {% block fields %}
 
-  {{fields.field(form.name)}}
+  
+  {% set tooltip %}
+    {% include "web/domains/country/groups-tooltip.html" %}
+  {% endset %}
+
+  {{fields.field(form.name, tooltip=tooltip)}}
   {{fields.field(form.type)}}
 
   <div class="container">
