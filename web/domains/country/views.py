@@ -259,8 +259,9 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
             'remaining': remaining_count
         }
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         country_list = Country.objects.filter(is_active=True).all()
         country_translations = CountryTranslation.objects.filter(
             translation_set=self.object).all()
@@ -274,7 +275,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
             'country_list':
             country_list,
             'missing_translations':
-            self.get_missing_translations(country_list, country_translations)
+            self.get_missing_translations(country_list, translations)
         })
         return context
 
@@ -283,10 +284,10 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         return reverse(self.success_url, args=[object.id])
 
     def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+        return f"Editing {self.object.name} Translation Set"
 
-    def archive(self, request, pk=None):
-        super().archive(request)
+    def archive(self, request, pk):
+        super().get_object().archive()
         return redirect(reverse('country-translation-set-list'))
 
 
