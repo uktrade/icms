@@ -1,4 +1,5 @@
 import structlog as logging
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.shortcuts import redirect, render
@@ -193,33 +194,40 @@ class CountryGroupCreateView(CountryGroupEditView):
         return 'New Country Group'
 
 
-class CountryTranslationSetListView(PageTitleMixin, PostActionMixin, ListView):
+class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     model = CountryTranslationSet
+    form_class = CountryTranslationSetEditForm
     template_name = 'web/domains/country/translations/list.html'
     page_title = 'Manage Country Translation Sets'
     permission_required = permissions
+    success_url = reverse_lazy('country-translation-set-list')
 
-    def get_form(self, request):
-        action = self.request.POST.get('action', None)
-        if action == 'save':
-            return CountryTranslationSetEditForm(self.request.POST)
-        else:
+    def archive(self, request):
+        translation_set = CountryTranslationSet.objects.get(
+            pk=request.POST.get('item'))
+        translation_set.archive()
+        messages.success(request, 'Record archived successfully')
+        return super().get(request)
+
+    def unarchive(self, request):
+        translation_set = CountryTranslationSet.objects.get(
+            pk=request.POST.get('item'))
+        translation_set.unarchive()
+        messages.success(request, 'Record restored successfully')
+        return super().get(request)
+
+    def get_form(self):
+        post = self.request.POST
+
+        if (not post) or post.get('action'):
             return CountryTranslationSetEditForm()
 
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['form'] = self.get_form(self.request)
+        return CountryTranslationSetEditForm(post)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_list'] = CountryTranslationSet.objects.all()
         return context
-
-    def save(self, request):
-        form = self.get_form(request)
-        logger.debug(form.data)
-        if form.is_valid():
-            instance = form.save()
-            logger.debug(instance.name)
-            return redirect(reverse('country-translation-set-list'))
-
-        return super().get(request)
 
 
 class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
