@@ -5,19 +5,30 @@ from web.tests.domains.template.factory import TemplateFactory
 from .factory import MailshotFactory
 
 LOGIN_URL = '/'
+PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
 
 
 class MailshotListViewTest(AuthTestCase):
     url = '/mailshot/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
-    def test_authorized_access(self):
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
         self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          'Maintain Mailshots')
@@ -27,7 +38,7 @@ class MailshotListViewTest(AuthTestCase):
         for i in range(62):
             MailshotFactory()
 
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         page = response.context_data['page']
         self.assertEqual(page.paginator.num_pages, 2)
@@ -35,7 +46,7 @@ class MailshotListViewTest(AuthTestCase):
     def test_page_results(self):
         for i in range(65):
             MailshotFactory()
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + '?page=2')
         page = response.context_data['page']
         self.assertEqual(len(page.object_list), 15)
@@ -74,15 +85,20 @@ class MailshotCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    def test_authorized_access_redirects(self):
+    def test_forbidden_access(self):
         self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access_redirects(self):
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         mailshot = Mailshot.objects.first()
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, f'/mailshot/{mailshot.id}/edit/')
 
     def test_create_as_draft(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         self.client.get(self.url)
         mailshot = Mailshot.objects.first()
         self.assertEqual(mailshot.status, Mailshot.DRAFT)
@@ -102,31 +118,36 @@ class MailshotEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    def test_authorized_access(self):
+    def test_forbidden_access(self):
         self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_cancel_draft(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         self.client.post(self.url, {'action': 'cancel'})
         self.mailshot.refresh_from_db()
         self.assertEqual(self.mailshot.status, Mailshot.CANCELLED)
 
     def test_cancel_redirects_to_list(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.post(self.url, {'action': 'cancel'})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/mailshot/')
 
     def test_save_draft(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         self.client.post(self.url, {'title': 'Test', 'action': 'save_draft'})
         self.mailshot.refresh_from_db()
         self.assertEqual(self.mailshot.title, 'Test')
 
     def test_save_draft_redirects_to_list(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.post(self.url, {
             'title': 'Test',
             'action': 'save_draft'
@@ -135,7 +156,7 @@ class MailshotEditViewTest(AuthTestCase):
         self.assertRedirects(response, '/mailshot/')
 
     def test_page_title(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          f"Editing {self.mailshot}")
@@ -159,10 +180,21 @@ class MailshotRetractViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    def test_authorized_access(self):
+    def test_forbidden_access(self):
         self.login()
         response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         f"Retract {self.mailshot}")
 
 
 class MailshotDetailViewTest(AuthTestCase):
@@ -178,13 +210,18 @@ class MailshotDetailViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    def test_authorized_access(self):
+    def test_forbidden_access(self):
         self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login()
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          f"Viewing {self.mailshot}")

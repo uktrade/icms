@@ -6,7 +6,6 @@ from .models import Template
 
 
 class GenericTemplate(ModelEditForm):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -25,7 +24,8 @@ class GenericTemplate(ModelEditForm):
         if template_type == Template.DECLARATION:
             self.fields['template_title'].label = "Declaration Title"
             self.fields['template_content'].label = "Declaration Text"
-            self.fields['template_content'].help_text = "This will be displayed as the main text of the Submit page"
+            self.fields[
+                'template_content'].help_text = "This will be displayed as the main text of the Submit page"
 
         if template_type == Template.ENDORSEMENT:
             self.fields['template_name'].label = "Endorsment Name"
@@ -41,17 +41,19 @@ class GenericTemplate(ModelEditForm):
         """
             Sets lang=html on textarea boxes that need to show an html editor
         """
-        if template_type in (Template.LETTER_TEMPLATE, Template.LETTER_FRAGMENT,):
+        if template_type in (
+                Template.LETTER_TEMPLATE,
+                Template.LETTER_FRAGMENT,
+        ):
             self.fields['template_content'].widget = forms.Textarea(
-                attrs={'lang': 'html'}
-            )
+                attrs={'lang': 'html'})
 
     class Meta:
         model = Template
         fields = ['template_name', 'template_title', 'template_content']
 
 
-class EnsdorsementCreateTemplateForm(GenericTemplate):
+class EndorsementCreateTemplateForm(GenericTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -62,8 +64,7 @@ class EnsdorsementCreateTemplateForm(GenericTemplate):
 
 class TemplatesFilter(ModelSearchFilter):
     # Fields of the model that can be filtered
-    template_name = CharFilter(lookup_expr='icontains',
-                               label='Template Name')
+    template_name = CharFilter(lookup_expr='icontains', label='Template Name')
     application_domain = ChoiceFilter(choices=Template.DOMAINS,
                                       lookup_expr='exact',
                                       label='Application Domain')

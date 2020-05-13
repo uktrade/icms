@@ -5,6 +5,7 @@ from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.base import View
 from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case.access.models import (AccessRequest,
@@ -23,7 +24,7 @@ from .forms import (FurtherInformationRequestDisplayForm,
 logger = logging.getLogger(__name__)
 
 
-class FurtherInformationRequestView(PostActionMixin):
+class FurtherInformationRequestView(PostActionMixin, View):
     """
     Access Request Further Information Request
 

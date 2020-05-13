@@ -24,7 +24,7 @@ class ObsoleteCalibreGroupTest(TestCase):
     def test_string_representation(self):
         calibre_group = ObsoleteCalibreGroupFactory(name='Test')
         self.assertEqual(calibre_group.__str__(),
-                         f'Obsolete Calibre Group (Test)')
+                         'Obsolete Calibre Group (Test)')
 
 
 class ObsoleteCalibreTest(TestCase):
@@ -57,4 +57,4 @@ class ObsoleteCalibreTest(TestCase):
 
     def test_string_representation(self):
         calibre = ObsoleteCalibreFactory(name='Test')
-        self.assertEqual(calibre.__str__(), f'Obsolete Calibre (Test)')
+        self.assertEqual(calibre.__str__(), 'Obsolete Calibre (Test)')

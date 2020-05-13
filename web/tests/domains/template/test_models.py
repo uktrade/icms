@@ -1,56 +1,37 @@
 from django.test import TestCase
-from web.domains.legislation.models import ProductLegislation
+from web.domains.template.models import Template
 
 
-class ProductLegislationTest(TestCase):
-    def create_legislation(self,
-                           name='Test Legislation',
-                           is_active=True,
-                           is_biocidal=False,
-                           is_eu_cosmetics_regulation=True,
-                           is_biocidal_claim=False):
-        return ProductLegislation.objects.create(
-            name=name,
-            is_active=is_active,
-            is_biocidal=is_biocidal,
-            is_eu_cosmetics_regulation=is_eu_cosmetics_regulation,
-            is_biocidal_claim=is_biocidal_claim)
+class TemplateTest(TestCase):
+    def create_template(self,
+                        template_name='Test Template',
+                        is_active=True,
+                        template_type=Template.ENDORSEMENT,
+                        application_domain=Template.IMPORT_APPLICATION):
+        return Template.objects.create(template_name=template_name,
+                                       is_active=is_active,
+                                       template_type=template_type,
+                                       application_domain=application_domain)
 
-    def test_create_legislation(self):
-        product_legisation = self.create_legislation()
-        self.assertTrue(isinstance(product_legisation, ProductLegislation))
-        self.assertEqual(product_legisation.name, 'Test Legislation')
-        self.assertFalse(product_legisation.is_biocidal)
-        self.assertFalse(product_legisation.is_biocidal_claim)
-        self.assertTrue(product_legisation.is_eu_cosmetics_regulation)
+    def test_create_template(self):
+        template = self.create_template()
+        self.assertTrue(isinstance(template, Template))
+        self.assertEqual(template.template_name, 'Test Template')
+        self.assertEqual(template.template_type, Template.ENDORSEMENT)
+        self.assertTrue(template.is_active)
 
-    def test_archive_legislation(self):
-        product_legisation = self.create_legislation()
-        product_legisation.archive()
-        self.assertFalse(product_legisation.is_active)
+    def test_archive_template(self):
+        template = self.create_template()
+        template.archive()
+        self.assertFalse(template.is_active)
 
-    def test_unarchive_legislation(self):
-        product_legisation = self.create_legislation()
-        product_legisation.unarchive()
-        self.assertTrue(product_legisation.is_active)
-
-    def test_biocidal_yes_no_label(self):
-        product_legisation = self.create_legislation()
-        self.assertEqual(product_legisation.is_biocidal_yes_no, 'No')
-        product_legisation.is_biocidal = True
-        self.assertEqual(product_legisation.is_biocidal_yes_no, 'Yes')
-
-    def test_biocidal_claim_yes_no_label(self):
-        product_legisation = self.create_legislation()
-        product_legisation.is_biocidal_claim = True
-        self.assertEqual(product_legisation.is_biocidal_claim_yes_no, 'Yes')
-
-    def test_cosmetics_regulation_yes_no_label(self):
-        product_legisation = self.create_legislation()
-        self.assertEqual(product_legisation.is_eu_cosmetics_regulation_yes_no,
-                         'Yes')
+    def test_unarchive_template(self):
+        template = self.create_template(is_active=False)
+        self.assertFalse(template.is_active)
+        template.unarchive()
+        self.assertTrue(template.is_active)
 
     def test_string_representation(self):
-        product_legisation = self.create_legislation()
+        product_legisation = self.create_template()
         self.assertEqual(product_legisation.__str__(),
-                         f'Product Legislation ({product_legisation.name})')
+                         'Template - Test Template')

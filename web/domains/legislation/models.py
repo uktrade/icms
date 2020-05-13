@@ -29,7 +29,7 @@ class ProductLegislation(Archivable, models.Model):
         if self.id:
             return f'Product Legislation ({self.name})'
         else:
-            return f'Product Legislation (new) '
+            return 'Product Legislation (new) '
 
     class Meta:
         ordering = (

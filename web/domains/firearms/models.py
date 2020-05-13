@@ -59,13 +59,10 @@ class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
         if self.id:
             return f'Obsolete Calibre Group ({self.name})'
         else:
-            return f'Obsolete Calibre Group (new) '
+            return 'Obsolete Calibre Group (new) '
 
     class Meta:
-        ordering = (
-            '-is_active',
-            'order',
-        )
+        ordering = ('order', '-is_active')
 
 
 class ObsoleteCalibre(Archivable, models.Model):
@@ -82,7 +79,7 @@ class ObsoleteCalibre(Archivable, models.Model):
         if self.id:
             return f'Obsolete Calibre ({self.name})'
         else:
-            return f'Obsolete Calibre (New) '
+            return 'Obsolete Calibre (New) '
 
     @property
     def status(self):

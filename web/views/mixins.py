@@ -2,9 +2,10 @@ import structlog as logging
 from django.http import HttpResponseRedirect
 from django.views.generic.base import View
 from django.views.generic.list import ListView
-
 from viewflow.flow.views.start import BaseStartFlowMixin
 from viewflow.flow.views.task import BaseFlowMixin
+
+from web.auth.mixins import RequireRegisteredMixin
 
 logger = logging.get_logger(__name__)
 
@@ -38,26 +39,24 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
         return context
 
 
-class PostActionMixin(View):
+class PostActionMixin(RequireRegisteredMixin):
     """
     Handle post requests with action variable: Calls method with the same name
     as action variable to handle action
     """
-    def dispatch(self, request, *args, **kwargs):
-        if request.method == 'POST':
-            return self.post(request, *args, **kwargs)
-
-        return super().dispatch(request, *args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
         if action:
-            logger.debug('Received post action', action=action)
+            logger.debug('Received post action',
+                         action=action,
+                         inputs=request.POST,
+                         args=args,
+                         kwargs=kwargs)
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
         # If action does not exist continue with regular post request
-        return super().post(self, request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class SimpleStartFlowMixin(BaseStartFlowMixin):

@@ -18,6 +18,8 @@ class TemplateFactory(factory.django.DjangoModelFactory):
         start_date=t.start_datetime, end_date="+2y", tzinfo=pytz.UTC))
     is_active = random.choice([True, False])
     template_name = factory.Faker('sentence', nb_words=4)
+    template_title = factory.Faker('sentence', nb_words=3)
+    template_content = factory.Faker('sentence', nb_words=8)
     template_type = factory.fuzzy.FuzzyChoice(Template.TYPES,
                                               getter=lambda t: t[0])
     application_domain = factory.fuzzy.FuzzyChoice(Template.DOMAINS,

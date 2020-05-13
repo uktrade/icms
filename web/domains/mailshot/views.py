@@ -19,6 +19,8 @@ from .forms import (MailshotFilter, MailshotForm, MailshotReadonlyForm,
                     MailshotRetractForm, ReceivedMailshotsFilter)
 from .models import Mailshot
 
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+
 
 class ReceivedMailshotsView(ModelFilterView):
     template_name = 'web/mailshot/received.html'
@@ -53,7 +55,7 @@ class MailshotListView(ModelFilterView):
     template_name = 'web/mailshot/list.html'
     model = Mailshot
     filterset_class = MailshotFilter
-    permission_required = []
+    permission_required = permissions
     page_title = 'Maintain Mailshots'
 
     class Display:
@@ -92,8 +94,7 @@ class MailshotListView(ModelFilterView):
 
 class MailshotCreateView(RequireRegisteredMixin, View):
     MAILSHOT_TEMPLATE_CODE = 'PUBLISH_MAILSHOT'
-    # TODO: Permission to be identified for this view
-    permission_required = []
+    permission_required = permissions
 
     def get(self, request):
         """
@@ -115,8 +116,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy('mailshot-list')
     cancel_url = success_url
-    # TODO: Permission to be identified for this view
-    permission_required = []
+    permission_required = permissions
 
     def handle_notification(self, request, mailshot):
         if mailshot.is_email:
@@ -175,8 +175,7 @@ class MailshotDetailView(ModelDetailView):
     form_class = MailshotForm
     model = Mailshot
     cancel_url = reverse_lazy('mailshot-list')
-    # TODO:
-    permission_required = []
+    permission_required = permissions
 
 
 class MailshotRetractView(ModelUpdateView):
@@ -186,8 +185,7 @@ class MailshotRetractView(ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy('mailshot-list')
     cancel_url = success_url
-    # TODO: Permission to be identified for this view
-    permission_required = []
+    permission_required = permissions
 
     def __init__(self, *args, **kwargs):
         template = Template.objects.get(
@@ -231,3 +229,6 @@ class MailshotRetractView(ModelUpdateView):
             Leads to 404 otherwise
         """
         return Mailshot.objects.filter(status=Mailshot.PUBLISHED)
+
+    def get_page_title(self):
+        return f"Retract {self.object}"
