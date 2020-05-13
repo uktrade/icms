@@ -122,16 +122,21 @@ test_style: clean ## runs linter
 	docker-compose run --rm web pytest --flake8 -v
 
 behave: down
-	docker-compose run web sh -c " \
-		echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell && \
-		python manage.py migrate \
-	"
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose run web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
+
+	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose run web sh -c "python manage.py makemigrations"
 
 	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	ICMS_DEBUG=True \
 	docker-compose up -d
 
+	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	ICMS_DEBUG=True \
 	docker-compose exec web sh -c " \
 		dockerize -wait http://localhost:8080 -timeout 60s && \
 		python manage.py loaddata features/fixtures/users.json && \

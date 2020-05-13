@@ -34,6 +34,5 @@ def login_error_is_displayed(context):
 
 
 @when(u'the user logs in with invalid credentials')
-@fixtures('users.json')
 def user_login_invalid_credentials(context):
     return user_login(context, 'app-admin', 'test')
