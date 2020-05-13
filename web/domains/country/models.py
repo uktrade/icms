@@ -58,6 +58,12 @@ class CountryTranslationSet(Archivable, models.Model):
         else:
             return 'Country Translation Set (new) '
 
+    class Meta:
+        ordering = (
+            '-is_active',
+            'name'
+        )
+
 
 class CountryTranslation(models.Model):
     translation = models.CharField(max_length=150, blank=False, null=False)

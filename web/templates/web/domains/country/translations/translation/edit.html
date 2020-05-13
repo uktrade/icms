@@ -2,10 +2,6 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block page_title %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
-{% block context_header %}Editing {{translation_set.name}} translation of {{country.name}}{% endblock %}
-
-
 {% block main_content %}
     Enter the {{translation_set.name}} translation of {{country.name}} below.
     {%- call forms.form(method='post', csrf_input=csrf_input) %}
@@ -21,7 +17,7 @@
                 </button>
               </li>
               <li>
-                <a href="{{url('country-translation-set-list')}}" class="button link-button">
+                <a href="{{view.get_cancel_url()}}" class="button link-button">
                   Cancel
                 </a>
               </li>

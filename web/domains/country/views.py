@@ -329,6 +329,9 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
                            self.translation_set.id,
                        ])
 
+    def get_cancel_url(self):
+        return self.get_success_url()
+
     def form_valid(self, form):
         form.instance.country_id = self.country.id
         form.instance.translation_set_id = self.translation_set.id
@@ -344,3 +347,6 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         self.set_data(request, **kwargs)
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
+
+    def get_page_title(self):
+        return f'Editing {self.translation_set.name} translations of {self.country.name}'
