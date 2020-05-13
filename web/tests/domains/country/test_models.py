@@ -40,6 +40,10 @@ class CountryGroupTest(TestCase):
         self.assertTrue(isinstance(group, CountryGroup))
         self.assertEqual(group.name, 'Some Countries')
 
+    def test_string_representation(self):
+        group = self.create_country_group(name='EU Countries')
+        self.assertEqual(group.__str__(), 'Country Group (EU Countries)')
+
 
 class CountryTranslationSetTest(TestCase):
     def create_translation_set(self, name='French', is_active=True):
@@ -61,6 +65,11 @@ class CountryTranslationSetTest(TestCase):
         set = self.create_translation_set(is_active=False)
         set.unarchive()
         self.assertTrue(set.is_active)
+
+    def test_string_representation(self):
+        translation_set = self.create_translation_set(name='Sindarin')
+        self.assertEqual(translation_set.__str__(),
+                         'Country Translation Set (Sindarin)')
 
 
 class CountryTranslationTest(TestCase):

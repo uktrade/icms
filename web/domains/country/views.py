@@ -2,7 +2,8 @@ import structlog as logging
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
 
@@ -40,9 +41,6 @@ class CountryEditView(ModelUpdateView):
     cancel_url = success_url
     permission_required = permissions
 
-    def get_page_title(self):
-        return f"Editing '{self.object.name}'"
-
 
 class CountryCreateView(ModelCreateView):
     model = Country
@@ -73,7 +71,9 @@ def search_countries(request, selected_countries):
         'page_title':
         'Country Search'
     }
-    return render(request, 'web/domains/country/search.html', context)
+
+    return TemplateResponse(request, 'web/domains/country/search.html',
+                            context).render()
 
 
 class CountryGroupView(ModelDetailView):
@@ -94,9 +94,6 @@ class CountryGroupView(ModelDetailView):
         context = super().get_context_data(object)
         context['groups'] = CountryGroup.objects.all()
         return context
-
-    def get_page_title(self):
-        return f"Viewing {self.object.name}"
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
@@ -166,9 +163,6 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 
     def get_cancel_url(self):
         return self.get_success_url()
-
-    def get_page_title(self):
-        return f"Editing {self.object.name}"
 
     @transaction.atomic
     def save(self, request, pk=None):
