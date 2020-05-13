@@ -1,86 +1,30 @@
-version: 2.1
-
-job_defaults: &job_defaults
-  parameters:
-    python_image:
-      type: string
-
-    postgres_image:
-      type: string
-
-    publish_coverage:
-      type: boolean
-      default: false
-
-  environment:
-    DATABASE_URL: postgresql://postgres@localhost/icms
-    ICMS_DEBUG: 'True'
-    DJANGO_SECRET_KEY: test
-    DJANGO_SETTINGS_MODULE: config.settings.test
-
-  working_directory: ~/code
-
-  docker:
-    - image: <<parameters.python_image>>
-
-    - image: <<parameters.postgres_image>>
-      environment:
-        POSTGRES_DB: icms
-        POSTGRES_USERNAME: postgres
-        POSTGRES_PASSWORD: password
-
-  steps:
-    - checkout
-
-    - restore_cache:
-        name: Restore pip cache
-        keys:
-          - v1-icms-{{ checksum "Pipfile.lock" }}
-          - v1-icms-
-        paths:
-          - ~/cache/pip
-
-    - run:
-        name: Install dependencies
-        command: pip install --user pipenv  && PIPENV_CACHE_DIR=~/cache/pip python -m pipenv install --dev --system --deploy
-
-    - save_cache:
-        name: Save pip cache
-        key: v1-icms-{{ checksum "Pipfile.lock" }}
-        paths:
-          - ~/cache/pip
-
-    - run:
-        name: Run tests
-        command: python -m pytest -p no:sugar --cov=web --cov=config web/tests
-
-    - run:
-        name: Run Flake8
-        command: python -m flake8
-
-    - store_test_results:
-        path: test-reports
-
-    - when:
-        condition: <<parameters.publish_coverage>>
-        steps:
-        - run:
-            name: Publish coverage
-            command: |
-              wget -O codecov.sh https://codecov.io/bash
-              bash ./codecov.sh -t ${COV_TOKEN}
-
+version: 2
 jobs:
-  build:
-    <<: *job_defaults
+    build:
+        docker:
+            - image: python:3.7.6
+        steps:
+            - setup_remote_docker
+            - checkout
 
-workflows:
-  version: 2
+            - run:
+                    name: Install Docker client
+                    command: |
+                        set -x
+                        VER="17.03.0-ce"
+                        curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
+                        tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+                        mv /tmp/docker/* /usr/bin
 
-  # Current standard environment
-  Default build:
-    jobs:
-      - build:
-          publish_coverage: true
-          python_image: python:3.7.6
-          postgres_image: postgres:9.5
+            - run:
+                    name: Install Docker Compose
+                    command: |
+                        set -x
+                        curl -L https://github.com/docker/compose/releases/download/1.11.2/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+                        chmod +x /usr/local/bin/docker-compose
+            - run:
+                    name: build containers
+                    command:  make build
+
+
+
