@@ -1,13 +1,13 @@
 {% extends "model/edit.html" %}
-{% from "web/country/country-selections.html" import country_selector %}
+{% from "web/domains/country/country-selections.html" import country_selector %}
 
 
 {% block sidebar %}
-  {% include "web/country/sidebar.html" %}
+  {% include "web/domains/country/sidebar.html" %}
 {% endblock %}
 
 {% block  fields %}
-    {% include "web/country/groups/filter-bar.html" %}
+    {% include "web/domains/country/groups/filter-bar.html" %}
     {{super()}}
 {% endblock %}
 

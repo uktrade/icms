@@ -1,7 +1,7 @@
 {% extends "model/list.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
-{% from "web/country/country-selections.html" import country_selector %}
+{% from "web/domains/country/country-selections.html" import country_selector %}
 
 {% block main_content %}
     {%- call forms.form( method='post', csrf_input=csrf_input) %}
