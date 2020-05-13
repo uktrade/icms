@@ -10,10 +10,7 @@ verify_ssl = true
 
 [dev-packages]
 django-debug-toolbar = "*"
-# TODO: set version to *
-# Current version pinned to <5.4.0 due to error in pytest-sugar
-# see https://github.com/Teemu/pytest-sugar/pull/188#issuecomment-604462148
-pytest = "<5.4.0"
+pytest = "*"
 pytest-django = "*"
 pytest-cov = "*"
 pytest-sugar = "*"
