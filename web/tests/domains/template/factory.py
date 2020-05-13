@@ -2,9 +2,10 @@ import random
 
 import factory
 import factory.fuzzy
-from faker import Faker
-from web.domains.template.models import Template
 import pytz
+from faker import Faker
+
+from web.domains.template.models import Template
 
 fake = Faker('en_GB')
 

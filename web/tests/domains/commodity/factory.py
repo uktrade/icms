@@ -2,8 +2,11 @@ import random
 
 import factory
 import factory.fuzzy
+import pytz
 from faker import Faker
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
+
+from web.domains.commodity.models import (Commodity, CommodityGroup,
+                                          CommodityType)
 
 fake = Faker('en_GB')
 
@@ -13,9 +16,11 @@ class CommodityFactory(factory.django.DjangoModelFactory):
         model = Commodity
 
     is_active = random.choice([True, False])
-    start_datetime = fake.date_time_between(start_date="-2y", end_date="+1y")
+    start_datetime = fake.date_time_between(start_date="-2y",
+                                            end_date="+1y",
+                                            tzinfo=pytz.UTC)
     end_datetime = factory.LazyAttribute(lambda c: fake.date_time_between(
-        start_date=c.start_datetime, end_date="+2y"))
+        start_date=c.start_datetime, end_date="+2y", tzinfo=pytz.UTC))
     commodity_code = factory.fuzzy.FuzzyInteger(1000000000, 3000000000)
     validity_start_date = fake.date_between(start_date="-1y", end_date="+1y")
     validity_end_date = factory.LazyAttribute(lambda c: fake.date_between(
@@ -29,9 +34,11 @@ class CommodityGroupFactory(factory.django.DjangoModelFactory):
         model = CommodityGroup
 
     is_active = random.choice([True, False])
-    start_datetime = fake.date_time_between(start_date="-3y", end_date="+2y")
+    start_datetime = fake.date_time_between(start_date="-3y",
+                                            end_date="+2y",
+                                            tzinfo=pytz.UTC)
     end_datetime = factory.LazyAttribute(lambda c: fake.date_time_between(
-        start_date=c.start_datetime, end_date="+3y"))
+        start_date=c.start_datetime, end_date="+3y", tzinfo=pytz.UTC))
     group_type = random.choice([CommodityGroup.AUTO, CommodityGroup.CATEGORY])
     group_code = factory.fuzzy.FuzzyInteger(10, 30)
     group_name = factory.Faker('sentence', nb_words=3)

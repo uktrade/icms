@@ -119,7 +119,7 @@ accessibility: ## Generate accessibility reports
 test_style: clean ## runs linter
 	unset UID && \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web pytest --flake8
+	docker-compose run --rm web pytest --flake8 -v
 
 behave:
 	docker-compose exec web python manage.py behave --settings=config.settings.test
