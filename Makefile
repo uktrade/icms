@@ -134,6 +134,7 @@ behave: down
 
 	docker-compose exec web sh -c " \
 		dockerize -wait http://localhost:8080 -timeout 60s && \
+		python manage.py loaddata features/fixtures/users.json && \
 		python manage.py behave --settings=config.settings.test --use-existing-database; \
 	"
 
