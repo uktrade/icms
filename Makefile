@@ -145,6 +145,10 @@ behave: down
 
 	docker-compose down
 
+	# must run after down, so all connections to db are closed, sice django keeps an open connection
+	docker-compose run --rm web sh -c "echo 'drop  database test_postgres;' | python manage.py dbshell"
+
+
 ##@ Releases
 
 release_major: ## create major release
