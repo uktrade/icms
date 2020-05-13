@@ -1,10 +1,17 @@
+{% set groups = country.country_groups.all() %}
 <div class="input-group-addon hint-addon">
   <div id="hint{{country.id}}-content" role="tooltip" class="hint-content">
     <h4>{{country.name}}</h4>
-    In Group(s) 
-    {% for group in country.country_groups.all() %}
-      {{group.name}},
-    {% endfor %}
+    {% if groups %}
+      In Group(s) : </br>
+      <ul>
+      {% for group in groups %}
+        <li>{{group.name}}</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      Not in any country groups
+    {% endif %}
   </div>
   <div id="hint{{country.id}}" aria-describedby="hint{{country.id}}-content" class="hint icon-info"></div>
 </div>

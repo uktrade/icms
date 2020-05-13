@@ -27,6 +27,9 @@ class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
     permission_required = permissions
     page_title = 'Editing All Countries'
 
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('country_groups')
+
 
 class CountryEditView(ModelUpdateView):
     model = Country
