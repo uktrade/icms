@@ -26,5 +26,17 @@ jobs:
                     name: build containers
                     command:  make build
 
+            - run:
+                    name: install dependencies
+                    command:  make requirements
+
+            - run:
+                    name: run unit tests & lint checks
+                    command: make test_style
+
+            - run:
+                    name: run end to end tests
+                    command: make behave
+
 
 
