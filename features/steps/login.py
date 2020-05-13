@@ -1,5 +1,6 @@
 from behave import then, when
 from selenium.webdriver.common.by import By
+from behave_django.decorators import fixtures
 
 
 @then(u'the login page is displayed')
@@ -23,14 +24,16 @@ def user_login(context, username, password):
 
 @then(u'the user is presented with an invalid login message')
 def login_error_is_displayed(context):
+    print('checking for login error')
     try:
         assert context.browser.find_element(By.ID, 'login-error'), "Login Error Message Not Found"
         assert 'Invalid username or password' in context.browser.find_element(By.ID, 'login-error').text, "Login Error Message Is not the one we expected"
-    except Exception as e:
         print(context.browser.page_source)
+    except Exception as e:
         raise e
 
 
 @when(u'the user logs in with invalid credentials')
+@fixtures('users.json')
 def user_login_invalid_credentials(context):
-    return user_login(context, 'admin', 'wrongpassword')
+    return user_login(context, 'app-admin', 'test')

@@ -4,6 +4,10 @@ from django.conf import settings
 
 
 def set_up_test_objects(context):
+    pass
+
+
+def before_scenario(context, scenario):
     context.BASE_URL = f'http://{settings.TEST_SITE_HOST}'
 
     context.PAGES_MAP = {
@@ -11,10 +15,6 @@ def set_up_test_objects(context):
         'Login page': context.BASE_URL,
         'workbasket': f'{context.BASE_URL}/workbasket',
     }
-
-
-def before_scenario(context, scenario):
-    set_up_test_objects(context)
 
 
 def after_feature(context, feature):
@@ -30,4 +30,13 @@ def before_feature(context, feature):
         command_executor=f"http://{settings.SELENIUM_HUB_HOST}/wd/hub",
         desired_capabilities=browser,
     )
-    context.browser.implicitly_wait(60)
+    context.browser.implicitly_wait(5)
+
+    # print('Creating admin user')
+    # UserFactory(
+    #     username='app-admin',
+    #     password='password',
+    #     password_disposition=User.FULL,
+    #     is_superuser=False,
+    #     is_active=True
+    # )
