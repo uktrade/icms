@@ -25,7 +25,7 @@
                                 <button type="submit" class="primary-button button">Save</button>
                             </li>
                             <li>
-                                <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
+                                <a href="{{view.cancel_url or view.get_cancel_url()}}" class="button link-button">Cancel</a>
                             </li>
                             {% endblock %}
                         </ul>

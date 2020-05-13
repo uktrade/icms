@@ -11,7 +11,7 @@
     {{super()}}
 {% endblock %}
 
-{% block additional_form_content %}
+{% block additional_content %}
 <div class="list-actions">
   <ul class="menu-out flow-across">
     <li>
@@ -28,3 +28,15 @@
 </div>
 {{country_selector(countries)}}
 {% endblock %}
+
+
+{% block actions %}
+  <li>
+    <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+  </li>
+  <li>
+    <a href="{{view.get_cancel_url()}}" class="button link-button">Cancel</a>
+  </li>
+{% endblock %}
+
+

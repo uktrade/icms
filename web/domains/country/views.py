@@ -68,7 +68,9 @@ def search_countries(request, selected_countries):
         'filter':
         CountryNameFilter(request.POST or {}, queryset=Country.objects.all()),
         'selected_countries':
-        selected_countries
+        selected_countries,
+        'page_title':
+        'Country Search'
     }
     return render(request, 'web/domains/country/search.html', context)
 
@@ -77,6 +79,7 @@ class CountryGroupView(ModelDetailView):
     model = CountryGroup
     template_name = 'web/domains/country/groups/view.html'
     form_class = CountryGroupEditForm
+    cancel_url = reverse_lazy('country-group-view')
     permission_required = permissions
 
     def get_object(self):
@@ -92,7 +95,7 @@ class CountryGroupView(ModelDetailView):
         return context
 
     def get_page_title(self):
-        return f"Viewing '{self.object.name}'"
+        return f"Viewing {self.object.name}"
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
@@ -153,8 +156,18 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
+    def get_success_url(self):
+        view_name = 'country-group-view'
+        if self.object.id:
+            return reverse_lazy(view_name, args=(self.object.id, ))
+        else:
+            return reverse_lazy(view_name)
+
+    def get_cancel_url(self):
+        return self.get_success_url()
+
     def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+        return f"Editing {self.object.name}"
 
     @transaction.atomic
     def save(self, request, pk=None):

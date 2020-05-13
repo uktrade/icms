@@ -1,15 +1,17 @@
-{% set groups = country.country_groups.all() %}
-<div id="hint{{country.id}}-content" role="tooltip" class="hint-content">
-  <h4>{{country.name}}</h4>
-  {% if groups %}
-    In Group(s) : </br>
-    <ul>
-    {% for group in groups %}
-      <li>{{group.name}}</li>
-    {% endfor %}
-    </ul>
-  {% else %}
-    Not in any country groups
-  {% endif %}
-</div>
-<div id="hint{{country.id}}" aria-describedby="hint{{country.id}}-content" class="hint icon-info"></div>
+{% if country %}
+  {% set groups = country.country_groups.all() %}
+  <div id="hint{{country.id}}-content" role="tooltip" class="hint-content">
+    <h4>{{country.name}}</h4>
+    {% if groups %}
+      In Group(s) : </br>
+      <ul>
+      {% for group in groups %}
+        <li>{{group.name}}</li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      Not in any country groups
+    {% endif %}
+  </div>
+  <div id="hint{{country.id}}" aria-describedby="hint{{country.id}}-content" class="hint icon-info"></div>
+{% endif %}
