@@ -4,15 +4,17 @@ from web.views import ModelFilterView, ModelDetailView, ModelUpdateView, ModelCr
 from web.views.actions import Archive, Unarchive, Edit
 
 from .models import Template
-from .forms import TemplatesFilter, GenericTemplate, EnsdorsementCreateTemplateForm
+from .forms import TemplatesFilter, GenericTemplate, EndorsementCreateTemplateForm
+
+permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class TemplateListView(ModelFilterView):
-    template_name = 'web/template/list.html'
+    template_name = 'web/domains/template/list.html'
     model = Template
     filterset_class = TemplatesFilter
     page_title = 'Maintain Templates'
-    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
 
     # Default display fields on the listing page of the model
     class Display:
@@ -41,26 +43,26 @@ class TemplateListView(ModelFilterView):
 class TemplateDetailView(ModelDetailView):
     form_class = GenericTemplate
     model = Template
-    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
     cancel_url = "javascript:history.go(-1)"
 
 
 class TemplateEditView(ModelUpdateView):
-    template_name = 'web/template/edit.html'
+    template_name = 'web/domains/template/edit.html'
     form_class = GenericTemplate
     model = Template
     success_url = reverse_lazy('template-list')
     cancel_url = success_url
-    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
 
 
 class EndorsementCreateView(ModelCreateView):
-    template_name = 'web/template/edit.html'
-    form_class = EnsdorsementCreateTemplateForm
+    template_name = 'web/domains/template/edit.html'
+    form_class = EndorsementCreateTemplateForm
     model = Template
     success_url = reverse_lazy('template-list')
     cancel_url = success_url
-    permission_required = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+    permission_required = permissions
     page_title = 'New Endorsement'
 
     def form_valid(self, form):
