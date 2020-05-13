@@ -30,4 +30,4 @@ def before_feature(context, feature):
         command_executor=f"http://{settings.SELENIUM_HUB_HOST}/wd/hub",
         desired_capabilities=browser,
     )
-    context.browser.implicitly_wait(5)
+    context.browser.implicitly_wait(60)
