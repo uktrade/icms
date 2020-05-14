@@ -35,7 +35,7 @@ urlpatterns = [
     path('translations/<int:pk>/edit/',
          views.CountryTranslationSetEditView.as_view(),
          name='country-translation-set-edit'),
-    path('translations/<int:set_pk>/edit/<int:country_pk>',
+    path('translations/<int:set_pk>/edit/<int:country_pk>/',
          views.CountryTranslationCreateUpdateView.as_view(),
          name='country-translation-edit'),
 ]

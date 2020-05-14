@@ -1,6 +1,7 @@
 from web.tests.auth import AuthTestCase
 
-from .factory import CountryFactory, CountryGroupFactory
+from .factory import (CountryFactory, CountryGroupFactory,
+                      CountryTranslationSetFactory)
 
 LOGIN_URL = '/'
 PERMISSIONS = ['COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE']
@@ -94,12 +95,12 @@ class CountryCreateViewTest(AuthTestCase):
         self.assertEqual(response.context_data['page_title'], 'New Country')
 
 
-class CountryGroupDefaultView(AuthTestCase):
+class CountryGroupDefaultViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         CountryGroupFactory(name='Asian Countries')
         CountryGroupFactory(name='American Countries')
-        self.url = f'/country/groups/'
+        self.url = '/country/groups/'
         self.redirect_url = f'{LOGIN_URL}?next={self.url}'
 
     def test_anonymous_access_redirects(self):
@@ -124,7 +125,7 @@ class CountryGroupDefaultView(AuthTestCase):
                          'Viewing Country Group (American Countries)')
 
 
-class CountryGroupView(AuthTestCase):
+class CountryGroupViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.group = CountryGroupFactory(name='European Countries')
@@ -153,7 +154,7 @@ class CountryGroupView(AuthTestCase):
                          'Viewing Country Group (European Countries)')
 
 
-class CountryGroupEditView(AuthTestCase):
+class CountryGroupEditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.group = CountryGroupFactory(name='African Countries')
@@ -192,7 +193,7 @@ class CountryGroupEditView(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         countries = response.context_data['countries']
-        self.assertEqual(len(countries),2)
+        self.assertEqual(len(countries), 2)
         self.assertEqual(countries[0].name, 'Benin')
         self.assertEqual(countries[1].name, 'Kenya')
 
@@ -240,101 +241,138 @@ class CountryGroupEditView(AuthTestCase):
         self.assertEqual(countries[2].name, 'Kenya')
 
 
-#  class MailshotCreateViewTest(AuthTestCase):
-#      url = '/mailshot/new/'
-#      redirect_url = f'{LOGIN_URL}?next={url}'
-#
-#      def setUp(self):
-#          super().setUp()
-#          # Create publish mailshot template for testing
-#          TemplateFactory(
-#              template_code='PUBLISH_MAILSHOT',
-#              template_title='New Mailshot',
-#              template_content='Template Content')  # Create mailshot template
-#
-#      def test_anonymous_access_redirects(self):
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 302)
-#          self.assertRedirects(response, self.redirect_url)
-#
-#      def test_forbidden_access(self):
-#          self.login()
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 403)
-#
-#      def test_authorized_access_redirects(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          response = self.client.get(self.url)
-#          mailshot = Mailshot.objects.first()
-#          self.assertEqual(response.status_code, 302)
-#          self.assertRedirects(response, f'/mailshot/{mailshot.id}/edit/')
-#
-#      def test_create_as_draft(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          self.client.get(self.url)
-#          mailshot = Mailshot.objects.first()
-#          self.assertEqual(mailshot.status, Mailshot.DRAFT)
+class CountryTranslationSetListViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.translation_set = CountryTranslationSetFactory(name='Chinese',
+                                                            is_active=True)
+        self.translation_set_archived = CountryTranslationSetFactory(
+            name='Persian', is_active=False)
+        self.url = '/country/translations/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
 
-#  class MailshotRetractViewTest(AuthTestCase):
-#      def setUp(self):
-#          super().setUp()
-#          TemplateFactory(template_code='RETRACT_MAILSHOT',
-#                          template_title='Retract Mailshot',
-#                          template_content='Template Content'
-#                          )  # Create retraction mail template
-#          self.mailshot = MailshotFactory(
-#              status=Mailshot.PUBLISHED)  # Create a mailshot
-#          self.mailshot.save()
-#          self.url = f'/mailshot/{self.mailshot.id}/retract/'
-#          self.redirect_url = f'{LOGIN_URL}?next={self.url}'
-#
-#      def test_anonymous_access_redirects(self):
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 302)
-#          self.assertRedirects(response, self.redirect_url)
-#
-#      def test_forbidden_access(self):
-#          self.login()
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 403)
-#
-#      def test_authorized_access(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 200)
-#
-#      def test_page_title(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.context_data['page_title'],
-#                           f"Retract {self.mailshot}")
-#
-#
-#  class MailshotDetailViewTest(AuthTestCase):
-#      def setUp(self):
-#          super().setUp()
-#          self.mailshot = MailshotFactory()  # Create a mailshot
-#          self.mailshot.save()
-#          self.url = f'/mailshot/{self.mailshot.id}/'
-#          self.redirect_url = f'{LOGIN_URL}?next={self.url}'
-#
-#      def test_anonymous_access_redirects(self):
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 302)
-#          self.assertRedirects(response, self.redirect_url)
-#
-#      def test_forbidden_access(self):
-#          self.login()
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 403)
-#
-#      def test_authorized_access(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.status_code, 200)
-#
-#      def test_page_title(self):
-#          self.login_with_permissions(PERMISSIONS)
-#          response = self.client.get(self.url)
-#          self.assertEqual(response.context_data['page_title'],
-#                           f"Viewing {self.mailshot}")
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         'Manage Country Translation Sets')
+
+    def test_post_action_anonymous_access(self):
+        response = self.client.post(self.url, {'action': 'archive'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_post_action_forbidden_access(self):
+        self.login()
+        response = self.client.post(self.url, {'action': 'unarchive'})
+        self.assertEqual(response.status_code, 403)
+
+    def test_archive_translation_set(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.client.post(self.url, {
+            'action': 'archive',
+            'item': self.translation_set.id
+        })
+        self.translation_set.refresh_from_db()
+        self.assertFalse(self.translation_set.is_active)
+
+    def test_unarchive_translation_set(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.client.post(self.url, {
+            'action': 'unarchive',
+            'item': self.translation_set_archived.id
+        })
+        self.translation_set_archived.refresh_from_db()
+        self.assertTrue(self.translation_set_archived.is_active)
+
+
+class CountryTranslationSetEditViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.translation_set = CountryTranslationSetFactory(name='Arabic',
+                                                            is_active=True)
+        self.url = f'/country/translations/{self.translation_set.id}/edit/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         'Editing Arabic Translation Set')
+
+    def test_post_action_anonymous_access(self):
+        response = self.client.post(self.url, {'action': 'archive'})
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_post_action_forbidden_access(self):
+        self.login()
+        response = self.client.post(self.url, {'action': 'archive'})
+        self.assertEqual(response.status_code, 403)
+
+    def test_archive_translation_set(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.client.post(self.url, {'action': 'archive'})
+        self.translation_set.refresh_from_db()
+        self.assertFalse(self.translation_set.is_active)
+
+
+class CountryTranslationEditViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.translation_set = CountryTranslationSetFactory(name='Russian',
+                                                            is_active=True)
+        self.country = CountryFactory(name='Egypt', is_active=True)
+        self.url = f'/country/translations/{self.translation_set.id}/edit/{self.country.id}/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_page_title(self):
+        self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.context_data['page_title'],
+                         'Editing Russian translation of Egypt')

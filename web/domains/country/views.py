@@ -343,4 +343,4 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         return super().post(request, *args, **kwargs)
 
     def get_page_title(self):
-        return f'Editing {self.translation_set.name} translations of {self.country.name}'
+        return f'Editing {self.translation_set.name} translation of {self.country.name}'
