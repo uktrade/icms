@@ -138,7 +138,7 @@ behave: down
 	ICMS_DEBUG=True \
 	docker-compose exec web sh -c " \
 		dockerize -wait http://localhost:8080 -timeout 60s && \
-		docker-compose run web sh -c "python manage.py migrate"
+		docker-compose exec web sh -c "python manage.py migrate && \"
 		python manage.py loaddata features/fixtures/users.json && \
 		python manage.py behave --settings=config.settings.test --use-existing-database; \
 	"
