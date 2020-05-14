@@ -62,10 +62,6 @@ class UsersListViewTest(AuthTestCase):
         self.assertEqual(response.context_data['page_title'],
                          'Maintain Web User Accounts')
 
-    def test_default_account_status(self):
-        user = UserFactory()
-        self.assertEqual(user.account_status, User.ACTIVE)
-
     def test_post_action_anonymous_access_redirects(self):
         response = self.client.post(self.url, {'action': 'archive'})
         self.assertEqual(response.status_code, 302)

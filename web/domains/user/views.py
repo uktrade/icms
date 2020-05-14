@@ -39,8 +39,8 @@ def details_update(request, action, pk):
                                'Please correct the highlighted errors.')
 
     return render(
-        request, 'web/user/details.html' if request.user.pk == pk else
-        'web/user/admin-view-details.html', forms)
+        request, 'web/domains/user/details.html' if request.user.pk == pk else
+        'web/domains/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
@@ -50,7 +50,8 @@ def manual_address(request, action, pk):
         if action == 'save_manual_address':
             return details_update(request, 'save_address', pk)
 
-    return render(request, 'web/user/manual-address.html', {'form': form})
+    return render(request, 'web/domains/user/manual-address.html',
+                  {'form': form})
 
 
 def address_search(request, action):
@@ -72,7 +73,7 @@ def address_search(request, action):
             postcode_form.add_error('post_code',
                                     'Please enter a valid postcode')
 
-    return render(request, 'web/user/search-address.html', {
+    return render(request, 'web/domains/user/search-address.html', {
         'postcode_form': postcode_form,
         'addresses': addresses
     })
@@ -135,7 +136,7 @@ def get_user_details(request, pk):
 
 
 class PeopleSearchView(ModelFilterView):
-    template_name = 'web/user/search-people.html'
+    template_name = 'web/domains/user/search-people.html'
     filterset_class = PeopleFilter
     model = User
     config = {'title': 'Search People'}
@@ -148,7 +149,7 @@ class PeopleSearchView(ModelFilterView):
 
 
 class UsersListView(ModelFilterView):
-    template_name = 'web/user/list.html'
+    template_name = 'web/domains/user/list.html'
     model = User
     filterset_class = UserListFilter
     page_title = 'Maintain Web User Accounts'
