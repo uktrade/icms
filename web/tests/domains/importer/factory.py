@@ -12,6 +12,7 @@ class ImporterFactory(factory.django.DjangoModelFactory):
     type = factory.fuzzy.FuzzyChoice(Importer.TYPES, getter=lambda t: t[0])
     name = factory.Faker('sentence', nb_words=4)
     main_importer = None
+    user = None
 
     @factory.post_generation
     def offices(self, create, extracted, **kwargs):

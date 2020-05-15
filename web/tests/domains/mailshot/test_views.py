@@ -1,5 +1,8 @@
+from web.domains.importer.models import Importer
 from web.domains.mailshot.models import Mailshot
 from web.tests.auth import AuthTestCase
+from web.tests.domains.exporter.factory import ExporterFactory
+from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.template.factory import TemplateFactory
 
 from .factory import MailshotFactory
@@ -56,13 +59,42 @@ class ReceivedMailshotsView(AuthTestCase):
     url = '/mailshot/received/'
     redirect_url = f'{LOGIN_URL}?next={url}'
 
-    def test_authorized_access(self):
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
         self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_exporter_access(self):
+        self.login()
+        exporter = ExporterFactory(is_active=True)
+        exporter.members.add(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_organisation_importer_access(self):
+        self.login()
+        importer = ImporterFactory(type=Importer.ORGANISATION, is_active=True)
+        importer.members.add(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_individual_importer_access(self):
+        self.login()
+        ImporterFactory(type=Importer.INDIVIDUAL,
+                        user=self.user,
+                        is_active=True)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
         self.login()
+        importer = ImporterFactory(is_active=True)
+        importer.members.add(self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          'Received Mailshots')
