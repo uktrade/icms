@@ -26,8 +26,11 @@ class ReceivedMailshotsView(ModelFilterView):
     template_name = 'web/mailshot/received.html'
     model = Mailshot
     filterset_class = ReceivedMailshotsFilter
-    permission_required = []
     page_title = 'Received Mailshots'
+
+    def has_permission(self):
+        return self.request.user.is_importer(
+        ) or self.request.user.is_exporter()
 
     def get_filterset(self):
         return super().get_filterset(user=self.request.user)
