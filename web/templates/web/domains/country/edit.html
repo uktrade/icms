@@ -2,12 +2,17 @@
 {% import "forms/fields.html" as fields %}
 
 {% block sidebar %}
-  {% include "web/country/sidebar.html" %}
+  {% include "web/domains/country/sidebar.html" %}
 {% endblock %}
 
 {% block fields %}
 
-  {{fields.field(form.name)}}
+  
+  {% set tooltip %}
+    {% include "web/domains/country/groups-tooltip.html" %}
+  {% endset %}
+
+  {{fields.field(form.name, tooltip=tooltip)}}
   {{fields.field(form.type)}}
 
   <div class="container">

@@ -1,19 +1,22 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import \
+    permission_required as require_permission
 from django.shortcuts import render
 
 from web.address import address
 from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
 from web.auth.decorators import require_registered
-from web.domains.user.forms import UserDetailsUpdateForm, UserListFilter
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
-from web.views import ModelDetailView, ModelFilterView
+from web.views import ModelFilterView
 
 from . import actions
-from .forms import UserFilter
+from .forms import PeopleFilter, UserDetailsUpdateForm, UserListFilter
 from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
+
+permissions = 'web.DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS'
 
 
 def details_update(request, action, pk):
@@ -36,8 +39,8 @@ def details_update(request, action, pk):
                                'Please correct the highlighted errors.')
 
     return render(
-        request, 'web/user/details.html' if request.user.pk == pk else
-        'web/user/admin-view-details.html', forms)
+        request, 'web/domains/user/details.html' if request.user.pk == pk else
+        'web/domains/user/admin-view-details.html', forms)
 
 
 def manual_address(request, action, pk):
@@ -47,7 +50,8 @@ def manual_address(request, action, pk):
         if action == 'save_manual_address':
             return details_update(request, 'save_address', pk)
 
-    return render(request, 'web/user/manual-address.html', {'form': form})
+    return render(request, 'web/domains/user/manual-address.html',
+                  {'form': form})
 
 
 def address_search(request, action):
@@ -69,7 +73,7 @@ def address_search(request, action):
             postcode_form.add_error('post_code',
                                     'Please enter a valid postcode')
 
-    return render(request, 'web/user/search-address.html', {
+    return render(request, 'web/domains/user/search-address.html', {
         'postcode_form': postcode_form,
         'addresses': addresses
     })
@@ -108,11 +112,16 @@ def init_user_details_forms(request, action, pk):
 
 @require_registered
 def current_user_details(request):
-    return user_details(request, request.user.pk)
+    return get_user_details(request, request.user.pk)
 
 
 @require_registered
+@require_permission(permissions, raise_exception=True)
 def user_details(request, pk):
+    return get_user_details(request, pk)
+
+
+def get_user_details(request, pk):
     action = request.POST.get('action')
     if action == 'edit_address':
         # Save all data to session before searching address
@@ -127,8 +136,8 @@ def user_details(request, pk):
 
 
 class PeopleSearchView(ModelFilterView):
-    template_name = 'web/user/search-people.html'
-    filterset_class = UserFilter
+    template_name = 'web/domains/user/search-people.html'
+    filterset_class = PeopleFilter
     model = User
     config = {'title': 'Search People'}
 
@@ -140,13 +149,11 @@ class PeopleSearchView(ModelFilterView):
 
 
 class UsersListView(ModelFilterView):
-    template_name = 'web/user/list.html'
+    template_name = 'web/domains/user/list.html'
     model = User
     filterset_class = UserListFilter
     page_title = 'Maintain Web User Accounts'
-
-    def has_permission(self):
-        return True
+    permission_required = permissions
 
     class Display:
         fields = [
@@ -192,11 +199,3 @@ class UsersListView(ModelFilterView):
             actions.ReIssuePassword()
         ]
         select = True
-
-
-class UserView(ModelDetailView):
-    form_class = UserDetailsUpdateForm
-    model = User
-
-    def has_permission(self):
-        return True

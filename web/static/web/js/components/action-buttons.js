@@ -38,9 +38,9 @@ $(document).ready(function() {
 
         if (confirmMessage) {
             return Dialogue().show(confirmMessage, submit);
-        } else {
-            submit();
-        }
+        } 
+
+        submit();
     });
 });
 

@@ -86,6 +86,9 @@ class TestEmail(TestCase):
                     'email': 'active_org_user@example.com',
                     'notify': True
                 }, {
+                    'email': 'active_org_user_second_email@example.com',
+                    'notify': True
+                }, {
                     'email': 'active_org_user_no_notify@example.com',
                     'notify': False
                 }],
@@ -101,6 +104,10 @@ class TestEmail(TestCase):
                 True,
                 'personal': [{
                     'email': 'second_active_org_user@example.com',
+                    'notify': True
+                }],
+                'alternative': [{
+                    'email': 'second_active_org_user_alt@example.com',
                     'notify': True
                 }]
             }, {
@@ -240,13 +247,22 @@ class TestEmail(TestCase):
                                   to_importers=True)
         outbox = mail.outbox
         assert len(outbox) == 3
-        assert len(outbox[0].to) == 2
-        assert 'active_org_user@example.com' in outbox[0].to
-        assert 'active_org_user_alt@example.com' in outbox[0].to
-        assert len(outbox[1].to) == 1
-        assert 'second_active_org_user@example.com' in outbox[1].to
-        assert len(outbox[2].to) == 1
-        assert 'ind_importer_user@example.com' in outbox[2].to
+        # Many-to-many relations order is not guaranteed
+        # Members of exporter team might have different order
+        # Testing by length
+        for o in outbox:
+            if len(o.to) == 3:
+                assert 'active_org_user@example.com' in o.to
+                assert 'active_org_user_second_email@example.com' in o.to
+                assert 'active_org_user_alt@example.com' in o.to
+            elif len(o.to) == 2:
+                assert 'second_active_org_user@example.com' in o.to
+                assert 'second_active_org_user_alt@example.com' in o.to
+            elif len(o.to) == 1:
+                assert 'ind_importer_user@example.com' in o.to
+            else:
+                raise AssertionError(
+                    'Test failed with invalid email recipients')
 
     def test_send_mailshot_to_exporters(self):
         email.send_mailshot.delay('Test subject',
@@ -255,8 +271,15 @@ class TestEmail(TestCase):
                                   to_exporters=True)
         outbox = mail.outbox
         assert len(outbox) == 2
-        assert len(outbox[0].to) == 2
-        assert 'active_export_user@example.com' in outbox[0].to
-        assert 'active_export_user_alt@example.com' in outbox[0].to
-        assert len(outbox[1].to) == 1
-        assert 'second_active_export_user@example.com' in outbox[1].to
+        # Many-to-many relations order is not guaranteed
+        # Members of exporter team might have different order
+        # Testing by length
+        for o in outbox:
+            if len(o.to) == 2:
+                assert 'active_export_user@example.com' in o.to
+                assert 'active_export_user_alt@example.com' in o.to
+            elif len(o.to) == 1:
+                assert 'second_active_export_user@example.com' in o.to
+            else:
+                raise AssertionError(
+                    'Test failed with invalid email recipients')

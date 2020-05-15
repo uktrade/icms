@@ -21,7 +21,7 @@
           <ul class="menu-out flow-across actions">
           {% block actions %}
           <li>
-            <a href="{{view.cancel_url}}" class="button link-button">
+            <a href="{{view.cancel_url or view.get_cancel_url()}}" class="button link-button">
               Back
             </a>
           </li>

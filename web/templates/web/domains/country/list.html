@@ -1,0 +1,48 @@
+{% extends "web/domains/country/country-base.html" %}
+
+{% block main_content %}
+
+  <div class="filter-bar">
+    <div class="container setoutForm noBottomMargin">
+      <div class="row">
+        <div class="four columns">
+            <label id="pg48" for="g48" class="prompt west">Country Set</label>
+        </div>
+        <div class="four columns setoutForm">
+          <select name="country-set" aria-required="true">
+            <option value="all-countries" selected="selected">All Countries</option>
+          </select>
+        </div>
+        <div class="four columns"></div>
+      </div>
+    </div>
+  </div>
+
+  {% set batch_size=(object_list.count()/4)|round(0, 'ceil') %}
+  <div class="container">
+    <div class="row">
+      {%- for countries in object_list|batch(batch_size) %}
+        <div class="three columns">
+          {% for country in countries %}
+            <div class="container setoutForm">
+              <div class="row">
+                <div class="ten columns input-group">
+                  <div class="eleven-column-input">
+                    <a href="{{url('country-edit', args=[country.id])}}" aria-describedby="hint{{country.id}}-content">
+                      {{country.name}}
+                    </a>
+                  </div>
+                  <div class="input-group-addon hint-addon">
+                    {% include "web/domains/country/groups-tooltip.html" %}
+                  </div>
+                </div>
+                <div class="two columns"></div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor -%}
+    </div>
+  </div>
+
+{% endblock %}

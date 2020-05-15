@@ -1,0 +1,127 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+{% include "web/domains/country/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+
+<div class="modal-popover-container  {% if not form.errors %} hidden {% endif %}">
+  <div class="modal-popover regular-popover " tabindex="0">
+    <div class="modal-popover-content">
+      <h2 id="engine-modal-popover-title">Create New Country Translation Set</h2>
+      {%- call forms.form(method='post', csrf_input=csrf_input) %}
+      {{fields.field(form.name)}}
+      <ul class="menu-out modal-popover-actions flow-across">
+        <li>
+          <button type="submit" class="primary-button button">
+            Save
+          </button>
+        </li>
+        <li>
+          <button type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
+            Cancel
+          </button>
+        </li>
+      </ul>
+      {% endcall -%}
+    </div>
+  </div>
+</div>
+
+
+<div class="info-box info-box-info">
+  Select a translation set to view or edit the country name translations within it.
+</div>
+<ul class="menu-out flow-across">
+  <li>
+    <button type="button" onclick="$('.modal-popover-container').show()" class="primary-button button">
+      Create new translation set
+    </button>
+  </li>
+</ul>
+
+
+{% set archive_confirm_message %}
+Are you sure you would like to archive this translation set?
+</br>
+</br>
+All country name translations in this set will also be archived 
+and you will no longer be able to select this translation set 
+for document translation templates.
+{% endset %}
+
+
+{% set unarchive_confirm_message %}
+Are you sure you would like to unarchive this translation set?
+</br>
+</br>
+All country name translations in this set will also be unarchived 
+and you will be able to select this translation set 
+for document translation templates.
+{% endset %}
+
+
+<form method="post" action="">
+  {{csrf_input}}
+  <table class="setoutList">
+    <caption class="screen-reader-only">List of existing country name translation sets, archived and active.</caption>
+    <thead>
+      <tr>
+        <th scope="col">Translation Set Name
+        </th>
+        <th scope="col">Actions
+        </th>
+      </tr>
+    </thead>
+    {% for set in object_list %}
+    <tr >
+      <td >
+        <span class="text-widget ">
+          {{set.name}}{% if not set.is_active %} (archived){% endif %}
+        </span>
+      </td>
+      <td>
+        <ul class="menu-out">
+          {% if set.is_active %}
+          <li>
+            <a href="{{url('country-translation-set-edit', args=[set.id])}}" class="link-button icon-pencil button">
+              Edit
+            </a>
+          </li>
+          <li>
+            <button 
+              role="action-button" 
+              data-input_action="archive" 
+              data-input_item="{{set.id}}"
+              data-confirm="{{archive_confirm_message}}"
+              type="submit" 
+              class="link-button icon-drawer button"
+            >
+              Archive
+            </button>
+          </li>
+          {% else %}
+          <li>
+            <button 
+              role="action-button" 
+              data-input_action="unarchive" 
+              data-input_item="{{set.id}}"
+              data-confirm="{{unarchive_confirm_message}}"
+              type="submit" 
+              class="link-button icon-box-remove button"
+            >
+              Unarchive
+            </button>
+          </li>
+          {% endif %}
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</form>
+
+{% endblock %}

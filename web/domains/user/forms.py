@@ -192,7 +192,7 @@ class PersonalEmailForm(ModelEditForm):
         }
 
 
-class UserFilter(ModelSearchFilter):
+class PeopleFilter(ModelSearchFilter):
     email_address = CharFilter(field_name='personal_emails__email',
                                lookup_expr='icontains',
                                label='Email')

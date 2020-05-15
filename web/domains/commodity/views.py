@@ -98,6 +98,7 @@ class CommodityGroupEditView(ModelUpdateView):
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy('commodity-group-list')
+    cancel_url = success_url
     permission_required = permissions
 
 
@@ -115,3 +116,4 @@ class CommodityGroupDetailView(ModelDetailView):
     form_class = CommodityGroupForm
     model = CommodityGroup
     permission_required = permissions
+    cancel_url = reverse_lazy('commodity-group-list')

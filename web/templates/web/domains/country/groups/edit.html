@@ -1,17 +1,17 @@
 {% extends "model/edit.html" %}
-{% from "web/country/country-selections.html" import country_selector %}
+{% from "web/domains/country/country-selections.html" import country_selector %}
 
 
 {% block sidebar %}
-  {% include "web/country/sidebar.html" %}
+  {% include "web/domains/country/sidebar.html" %}
 {% endblock %}
 
 {% block  fields %}
-    {% include "web/country/groups/filter-bar.html" %}
+    {% include "web/domains/country/groups/filter-bar.html" %}
     {{super()}}
 {% endblock %}
 
-{% block additional_form_content %}
+{% block additional_content %}
 <div class="list-actions">
   <ul class="menu-out flow-across">
     <li>
@@ -28,3 +28,15 @@
 </div>
 {{country_selector(countries)}}
 {% endblock %}
+
+
+{% block actions %}
+  <li>
+    <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+  </li>
+  <li>
+    <a href="{{view.get_cancel_url()}}" class="button link-button">Cancel</a>
+  </li>
+{% endblock %}
+
+
