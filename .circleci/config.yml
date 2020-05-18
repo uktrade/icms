@@ -30,7 +30,7 @@ jobs:
                 name: Publish coverage
                 command: |
                     wget -O codecov.sh https://codecov.io/bash
-                    bash ./codecov.sh -t ${CODECOV_TOKEN} -s test-reports
+                    bash ./codecov.sh -t ${CODECOV_TOKEN} -s test-reports -f "*.xml"
 
 
 
