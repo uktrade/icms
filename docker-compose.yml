@@ -48,7 +48,7 @@ services:
             - redis
         volumes:
             # needed for ci
-            - test-reports:/code/test-reports
+            - ./test-reports:/code/test-reports
 
     redis:
         image: redis:latest
