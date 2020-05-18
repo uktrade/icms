@@ -40,8 +40,8 @@ jobs:
             - run:
                 name: Publish coverage
                 command: |
-                wget -O codecov.sh https://codecov.io/bash
-                bash ./codecov.sh -t ${COV_TOKEN}
+                    wget -O codecov.sh https://codecov.io/bash
+                    bash ./codecov.sh -t ${COV_TOKEN}
 
 
 
