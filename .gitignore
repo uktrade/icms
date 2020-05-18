@@ -135,3 +135,6 @@ dmypy.json
 
 # local docker-compose changes
 /docker-compose.override.yml
+
+# test reports
+/test-reports
