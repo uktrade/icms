@@ -28,7 +28,11 @@ jobs:
 
             - run:
                     name: run unit tests & lint checks
-                    command: make test && ls test-reports
+                    command: make test
+
+            - run:
+                    name: debug
+                    command: ls -l ./ ; ls -l test-reports
 
             - run:
                     name: run end to end tests
@@ -40,9 +44,9 @@ jobs:
             - run:
                 name: Publish coverage
                 command: |
-                    ls test-reports
+                    ls -l test-reports
                     wget -O codecov.sh https://codecov.io/bash
-                    bash ./codecov.sh -t ${COV_TOKEN} -s test-reports
+                    bash ./codecov.sh -t ${COV_TOKEN} -v -f test-reports/cov.xml
 
 
 
