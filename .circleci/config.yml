@@ -16,7 +16,7 @@ jobs:
                 command: make flake8
 
             - run:
-                name: run unit tests & lint checks
+                name: run unit tests
                 command: make test
 
             - run:
