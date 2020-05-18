@@ -2,29 +2,33 @@ version: 2
 jobs:
     build:
         machine:
-            image: ubuntu-1604:201903-01
+            image: ubuntu-1604:202004-01
+
         steps:
             - checkout
 
             - run:
-                    name: build containers
-                    command:  make build
+                name: build containers
+                command:  make build
 
             - run:
-                    name: run unit tests & lint checks
-                    command: make test
+                name: run coding standards compliance test
+                command: make flake8
 
             - run:
-                    name: run end to end tests
-                    command: make behave
+                name: run unit tests & lint checks
+                command: make test
+
+            - run:
+                name: run end to end tests
+                command: make behave
 
             - store_test_results:
-               path: test-reports
+                path: test-reports
 
             - run:
                 name: Publish coverage
                 command: |
-                    echo ${CODECOV_TOKEN}
                     wget -O codecov.sh https://codecov.io/bash
                     bash ./codecov.sh -t ${CODECOV_TOKEN} -f test-reports/cov.xml
 
