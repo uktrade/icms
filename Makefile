@@ -111,7 +111,7 @@ test: ## run tests
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run -v test-reports:/code/test-reports --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml web/tests
+	docker-compose run --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml web/tests
 	docker-compose run --rm web python -m flake8
 
 publish-coverage: ## publishes test coverage to codecov
