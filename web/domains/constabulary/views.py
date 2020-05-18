@@ -1,5 +1,10 @@
 # from web.domains.team.mixins import ContactsManagementMixin
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 from django.urls import reverse_lazy
+
+from web.domains.team.models import Role
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 from web.views.actions import Archive, Edit, Unarchive
@@ -42,6 +47,26 @@ class ConstabularyCreateView(ModelCreateView):
     cancel_url = success_url
     permission_required = permissions
     page_title = 'New Constabulary'
+
+    @transaction.atomic
+    def form_valid(self, form):
+        """
+            Create new constabulary role for firearms authority management for importers
+        """
+        response = super().form_valid(form)
+        role = Role.objects.create(
+            name=
+            f'Constabulary Contacts:Verified Firearms Authority Editor:{self.object.id}',
+            description='Users in this role have privileges to view and edit \
+            importer verified firearms authorities issued by the constabulary.',
+            role_order=10)
+        permission = Permission.objects.create(
+            codename=
+            f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{self.object.id}:IMP_EDIT_FIREARMS_AUTHORITY',
+            name='Verified Firearms Authority Editor',
+            content_type=ContentType.objects.get_for_model(Constabulary))
+        role.permissions.add(permission)
+        return response
 
 
 class ConstabularyEditView(ModelUpdateView):
