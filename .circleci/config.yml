@@ -2,7 +2,7 @@ version: 2
 jobs:
     build:
         machine:
-            image: ubuntu
+            image: ubuntu-1604:201903-01
         steps:
             # - setup_remote_docker
             - checkout
