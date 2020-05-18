@@ -54,15 +54,17 @@ class ConstabularyCreateView(ModelCreateView):
             Create new constabulary role for firearms authority management for importers
         """
         response = super().form_valid(form)
-        role = Role.objects.create(
-            name=
-            f'Constabulary Contacts:Verified Firearms Authority Editor:{self.object.id}',
-            description='Users in this role have privileges to view and edit \
-            importer verified firearms authorities issued by the constabulary.',
-            role_order=10)
+        role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{self.object.id}'
+        role_description = 'Users in this role have privileges to view and edit \
+            importer verified firearms authorities issued by the constabulary.'
+
+        permission_code = f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{self.object.id}:IMP_EDIT_FIREARMS_AUTHORITY'  # noqa: C0301
+
+        role = Role.objects.create(name=role_name,
+                                   description=role_description,
+                                   role_order=10)
         permission = Permission.objects.create(
-            codename=
-            f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{self.object.id}:IMP_EDIT_FIREARMS_AUTHORITY',
+            codename=permission_code,
             name='Verified Firearms Authority Editor',
             content_type=ContentType.objects.get_for_model(Constabulary))
         role.permissions.add(permission)

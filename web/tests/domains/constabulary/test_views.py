@@ -102,11 +102,8 @@ class ConstabularyCreateViewTest(AuthTestCase):
                 'email': 'test@example.com'
             })
         constabulary = Constabulary.objects.first()
-        self.assertTrue(
-            Role.objects.filter(
-                name=
-                f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
-            ).exists())
+        role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
+        self.assertTrue(Role.objects.filter(name=role_name).exists())
 
     def test_firearms_authority_permission_created(self):
         self.login_with_permissions(PERMISSIONS)
@@ -117,10 +114,8 @@ class ConstabularyCreateViewTest(AuthTestCase):
                 'email': 'test@example.com'
             })
         constabulary = Constabulary.objects.first()
-        self.assertTrue(
-            Permission.objects.filter(
-                codename=
-                f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{constabulary.id}:IMP_EDIT_FIREARMS_AUTHORITY').exists())
+        codename = f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{constabulary.id}:IMP_EDIT_FIREARMS_AUTHORITY'  # noqa: C0301
+        self.assertTrue(Permission.objects.filter(codename=codename).exists())
 
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
