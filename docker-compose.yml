@@ -1,4 +1,4 @@
-# This docker-compose configuration is for ICMS development.
+# This docker-compose configuration is for ICMS development and CI environment.
 # Production deployment does not use this configuration.
 version: "3"
 services:

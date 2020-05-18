@@ -82,7 +82,7 @@ local_s3: ## creates s3 buckets on localstack container
 debug: ## runs sytem in debug mode
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose up
+	docker-compose up &
 
 run: ## Run with Gunicorn and Whitenoise serving static files
 	unset UID && \
@@ -105,12 +105,19 @@ down: ## Stops and downs containers
 	docker-compose down
 
 ##@ Tests & Reports
-test: clean ## run tests
+test: ## run tests
+	mkdir -p test-reports
 	unset UID && \
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web pytest --verbose --cov=web --cov=config $(TEST_TARGET)
+	docker-compose run -v test-reports:/code/test-reports --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml web/tests
+	docker-compose run --rm web python -m flake8
+
+publish-coverage: ## publishes test coverage to codecov
+	docker-compose exec web sh -c " \
+		wget -O codecov.sh https://codecov.io/bash && \
+		bash ./codecov.sh -t ${COV_TOKEN} "
 
 accessibility: ## Generate accessibility reports
 	unset UID && \

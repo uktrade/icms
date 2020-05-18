@@ -25,13 +25,14 @@
 
   ICMS uses PRO version of [Viewflow](http://viewflow.io/), in order to fetch PRO package from private viewflow index `ICMS_VIEWFLOW_LICENSE` must be set.
 
-  Ask your teammates or Webops team for license number. 
+  Ask your teammates or Webops team for license number.
 
   `.env` file is ignored by git, make sure not to include this file in the repository and it is only used locally
 
     git clone https://github.com/uktrade/icms.git
     cd icms
     echo "ICMS_VIEWFLOW_LICENSE=<license_number>" > .env   #  use actual license number in place of <license_number>
+    mv docker-compose.override.yml-dist docker-compose.override.yml  # local docker changes
     make setup # only needed on first run or after freshly build containers
     make debug
     make local_S3 # only needed on first run or after freshly build containers

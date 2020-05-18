@@ -132,3 +132,6 @@ dmypy.json
 /.ls_data
 
 /node_modules
+
+# local docker-compose changes
+/docker-compose.override.yml

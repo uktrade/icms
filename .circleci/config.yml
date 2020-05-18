@@ -28,11 +28,20 @@ jobs:
 
             - run:
                     name: run unit tests & lint checks
-                    command: make test_style
+                    command: make test COV_TOKEN="${COV_TOKEN}"
 
             - run:
                     name: run end to end tests
                     command: make behave
+
+            - store_test_results:
+               path: test-reports
+
+            - run:
+                name: Publish coverage
+                command: |
+                wget -O codecov.sh https://codecov.io/bash
+                bash ./codecov.sh -t ${COV_TOKEN}
 
 
 
