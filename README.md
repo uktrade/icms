@@ -32,7 +32,6 @@
     git clone https://github.com/uktrade/icms.git
     cd icms
     echo "ICMS_VIEWFLOW_LICENSE=<license_number>" > .env   #  use actual license number in place of <license_number>
-    mv docker-compose.override.yml-dist docker-compose.override.yml  # local docker changes
     make setup # only needed on first run or after freshly build containers
     make debug
     make local_S3 # only needed on first run or after freshly build containers
