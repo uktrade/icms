@@ -31,12 +31,3 @@ def before_feature(context, feature):
         desired_capabilities=browser,
     )
     context.browser.implicitly_wait(5)
-
-    # print('Creating admin user')
-    # UserFactory(
-    #     username='app-admin',
-    #     password='password',
-    #     password_disposition=User.FULL,
-    #     is_superuser=False,
-    #     is_active=True
-    # )

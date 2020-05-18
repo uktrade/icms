@@ -130,10 +130,6 @@ accessibility: ## Generate accessibility reports
 behave: down
 	docker-compose run web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
 
-	# DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-	# DJANGO_SETTINGS_MODULE=config.settings.test \
-	# docker-compose run web sh -c "python manage.py makemigrations"
-
 	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	ICMS_DEBUG=True \
