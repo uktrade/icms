@@ -1,3 +1,7 @@
+from django.contrib.auth.models import Permission
+
+from web.domains.constabulary.models import Constabulary
+from web.domains.team.models import Role
 from web.tests.auth import AuthTestCase
 
 from .factory import ConstabularyFactory
@@ -30,6 +34,26 @@ class ConstabularyListViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'],
                          'Maintain Constabularies')
+
+    def test_anonymous_post_access_redirects(self):
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 302)
+
+    def test_forbidden_post_access(self):
+        self.login()
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_archive_constabulary(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.constabulary = ConstabularyFactory(is_active=True)
+        response = self.client.post(self.url, {
+            'action': 'archive',
+            'item': self.constabulary.id
+        })
+        self.assertEqual(response.status_code, 200)
+        self.constabulary.refresh_from_db()
+        self.assertFalse(self.constabulary.is_active)
 
     def test_number_of_pages(self):
         # Create 51 product legislation as paging lists 50 items per page
@@ -68,6 +92,30 @@ class ConstabularyCreateViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+    def test_firearms_authority_role_created(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.client.post(
+            self.url, {
+                'name': 'Testing',
+                'region': Constabulary.EAST_MIDLANDS,
+                'email': 'test@example.com'
+            })
+        constabulary = Constabulary.objects.first()
+        role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
+        self.assertTrue(Role.objects.filter(name=role_name).exists())
+
+    def test_firearms_authority_permission_created(self):
+        self.login_with_permissions(PERMISSIONS)
+        self.client.post(
+            self.url, {
+                'name': 'Testing',
+                'region': Constabulary.EAST_MIDLANDS,
+                'email': 'test@example.com'
+            })
+        constabulary = Constabulary.objects.first()
+        codename = f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{constabulary.id}:IMP_EDIT_FIREARMS_AUTHORITY'  # noqa: C0301
+        self.assertTrue(Permission.objects.filter(codename=codename).exists())
 
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
