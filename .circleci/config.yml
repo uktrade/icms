@@ -25,7 +25,7 @@ jobs:
             - run:
                 name: Publish coverage
                 command: |
-                    ls -l test-reports
+                    echo ${COV_TOKEN}
                     wget -O codecov.sh https://codecov.io/bash
                     bash ./codecov.sh -t ${COV_TOKEN} -v -f test-reports/cov.xml
 
