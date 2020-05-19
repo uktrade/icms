@@ -23,9 +23,6 @@ jobs:
                 name: run end to end tests
                 command: make behave
 
-            - store_test_results:
-                path: test-reports
-
             - run:
                 name: Publish coverage
                 command: |
