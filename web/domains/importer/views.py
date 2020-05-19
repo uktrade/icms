@@ -25,7 +25,7 @@ def has_permission(user):
 
 
 class ImporterListView(ModelFilterView):
-    template_name = 'web/importer/list.html'
+    template_name = 'web/domains/importer/list.html'
     filterset_class = ImporterFilter
     model = Importer
     page_title = 'Maintain Importers'
@@ -52,7 +52,7 @@ class ImporterListView(ModelFilterView):
 
 
 class ImporterEditView(ModelUpdateView):
-    template_name = 'web/importer/edit.html'
+    template_name = 'web/domains/importer/edit.html'
     form_class = ImporterEditForm
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
@@ -63,7 +63,7 @@ class ImporterEditView(ModelUpdateView):
 
 
 class ImporterCreateView(ModelCreateView):
-    template_name = 'web/importer/create.html'
+    template_name = 'web/domains/importer/create.html'
     form_class = ImporterEditForm
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
@@ -75,7 +75,7 @@ class ImporterCreateView(ModelCreateView):
 
 
 class ImporterDetailView(ModelDetailView):
-    template_name = 'web/importer/view.html'
+    template_name = 'web/domains/importer/view.html'
     model = Importer
 
     def has_permission(self):
