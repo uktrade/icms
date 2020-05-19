@@ -2,7 +2,9 @@
 
 TEST_TARGET ?= web/tests
 .EXPORT_ALL_VARIABLES:
+
 DJANGO_SETTINGS_MODULE=config.settings.development
+COMPOSE_PROJECT_NAME=icms
 
 UID=$(shell id -u):$(shell id -g)
 
@@ -109,7 +111,7 @@ down: ## Stops and downs containers
 flake8: ## runs lint tests
 	unset UID && \
 	ICMS_DEBUG=False \
-	docker-compose run --rm web python -m flake8 -v
+	docker-compose run --rm web python -m flake8
 
 test: ## run tests
 	mkdir -p test-reports
@@ -123,28 +125,31 @@ accessibility: ## Generate accessibility reports
 	unset UID && \
 	docker-compose run --rm pa11y node index.js
 
-behave: down
-	docker-compose run web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
 
+behave: down ## runs functional tests
+	# recreate test database
+	docker-compose run --rm web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
+
+	# start containers
 	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-	DJANGO_SETTINGS_MODULE=config.settings.test \
 	ICMS_DEBUG=True \
 	docker-compose up -d
 
-	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-	DJANGO_SETTINGS_MODULE=config.settings.test \
-	ICMS_DEBUG=True \
+	# load fixtures for intial data on test database
+	docker-compose exec web sh -c " \
+		DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
+		python manage.py loaddata features/fixtures/initial-data.json \
+	"
+
+	# keep db as postgres since behave will prepend test_ to db when selectiong one to use
 	docker-compose exec web sh -c " \
 		dockerize -wait http://localhost:8080 -timeout 60s && \
-		python manage.py migrate && \
-		python manage.py loaddata features/fixtures/users.json && \
-		python manage.py behave --settings=config.settings.test --use-existing-database; \
+		DJANGO_SETTINGS_MODULE=config.settings.test \
+		DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
+		python manage.py behave --keepdb \
 	"
 
 	docker-compose down
-
-	# must run after down, so all connections to db are closed, sice django keeps an open connection
-	docker-compose run --rm web sh -c "echo 'drop  database test_postgres;' | python manage.py dbshell"
 
 
 ##@ Releases

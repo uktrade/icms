@@ -3,10 +3,6 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.conf import settings
 
 
-def set_up_test_objects(context):
-    pass
-
-
 def before_scenario(context, scenario):
     context.BASE_URL = f'http://{settings.TEST_SITE_HOST}'
 
@@ -14,6 +10,13 @@ def before_scenario(context, scenario):
         'ICMS homepage': context.BASE_URL,
         'Login page': context.BASE_URL,
         'workbasket': f'{context.BASE_URL}/workbasket',
+    }
+
+    context.CREATED_USERS = {
+        'app-user': {
+            'username': 'app-user',
+            'password': 'app-user'
+        }
     }
 
 
