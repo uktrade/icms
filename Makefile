@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := help
 
+TEST_TARGET ?= web/tests
 .EXPORT_ALL_VARIABLES:
 DJANGO_SETTINGS_MODULE=config.settings.development
 
@@ -82,7 +83,7 @@ local_s3: ## creates s3 buckets on localstack container
 debug: ## runs sytem in debug mode
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose up
+	docker-compose up &
 
 run: ## Run with Gunicorn and Whitenoise serving static files
 	unset UID && \
@@ -105,35 +106,38 @@ down: ## Stops and downs containers
 	docker-compose down
 
 ##@ Tests & Reports
-test: clean ## run tests
+flake8: ## runs lint tests
+	unset UID && \
+	ICMS_DEBUG=False \
+	docker-compose run --rm web python -m flake8 -v
+
+test: ## run tests
+	mkdir -p test-reports
 	unset UID && \
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web pytest --verbose --cov=web --cov=config $(TEST_TARGET)
+	docker-compose run --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml $(TEST_TARGET)
 
 accessibility: ## Generate accessibility reports
 	unset UID && \
 	docker-compose run --rm pa11y node index.js
 
-test_style: clean ## runs linter
-	unset UID && \
-	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web pytest --flake8 -v
-
 behave: down
-	docker-compose run web sh -c " \
-		echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell && \
-		python manage.py migrate \
-	"
+	docker-compose run web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
 
 	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	ICMS_DEBUG=True \
 	docker-compose up -d
 
+	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	ICMS_DEBUG=True \
 	docker-compose exec web sh -c " \
 		dockerize -wait http://localhost:8080 -timeout 60s && \
+		python manage.py migrate && \
+		python manage.py loaddata features/fixtures/users.json && \
 		python manage.py behave --settings=config.settings.test --use-existing-database; \
 	"
 

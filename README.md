@@ -25,7 +25,7 @@
 
   ICMS uses PRO version of [Viewflow](http://viewflow.io/), in order to fetch PRO package from private viewflow index `ICMS_VIEWFLOW_LICENSE` must be set.
 
-  Ask your teammates or Webops team for license number. 
+  Ask your teammates or Webops team for license number.
 
   `.env` file is ignored by git, make sure not to include this file in the repository and it is only used locally
 

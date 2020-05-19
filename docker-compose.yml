@@ -1,4 +1,4 @@
-# This docker-compose configuration is for ICMS development.
+# This docker-compose configuration is for ICMS development and CI environment.
 # Production deployment does not use this configuration.
 version: "3"
 services:
@@ -43,11 +43,12 @@ services:
         # tty: true
         ports:
             - "8080:8080"
-        volumes:
-            - .:/code
         depends_on:
             - db
             - redis
+        volumes:
+            - ./test-reports:/code/test-reports # needed for ci
+            - .:/code
 
     redis:
         image: redis:latest
@@ -66,10 +67,10 @@ services:
             - DJANGO_SETTINGS_MODULE
             - AWS_SES_ACCESS_KEY_ID
             - AWS_SES_SECRET_ACCESS_KEY
-        volumes:
-            - .:/code
         depends_on:
             - redis
+        volumes:
+            - .:/code
 
     localstack:
         image: localstack/localstack

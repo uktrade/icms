@@ -4,6 +4,10 @@ from django.conf import settings
 
 
 def set_up_test_objects(context):
+    pass
+
+
+def before_scenario(context, scenario):
     context.BASE_URL = f'http://{settings.TEST_SITE_HOST}'
 
     context.PAGES_MAP = {
@@ -11,10 +15,6 @@ def set_up_test_objects(context):
         'Login page': context.BASE_URL,
         'workbasket': f'{context.BASE_URL}/workbasket',
     }
-
-
-def before_scenario(context, scenario):
-    set_up_test_objects(context)
 
 
 def after_feature(context, feature):

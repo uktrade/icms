@@ -23,10 +23,13 @@ def user_login(context, username, password):
 
 @then(u'the user is presented with an invalid login message')
 def login_error_is_displayed(context):
-    assert context.browser.find_element(By.ID, 'login-error'), "Login Error Message Not Found"
-    assert 'Invalid username or password' in context.browser.find_element(By.ID, 'login-error').text, "Login Error Message Is not the one we expected"
+    try:
+        assert context.browser.find_element(By.ID, 'login-error'), "Login Error Message Not Found"
+        assert 'Invalid username or password' in context.browser.find_element(By.ID, 'login-error').text, "Login Error Message Is not the one we expected"
+    except Exception as e:
+        raise e
 
 
 @when(u'the user logs in with invalid credentials')
 def user_login_invalid_credentials(context):
-    return user_login(context, 'admin', 'wrongpassword')
+    return user_login(context, 'app-admin', 'test')
