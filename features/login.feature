@@ -9,7 +9,8 @@ Feature: Login Functionality
         Then the login page is displayed
 
     Scenario: user sees error when entering invalid credentials
+        Given The user "app-user" is created in the system
         Given an anonymous user navigates to Login page
-        When the user logs in with invalid credentials
-        Then the user is presented with an invalid login message
+        When the user "app-user" logs in with invalid credentials
+        Then an invalid login message is visible
 

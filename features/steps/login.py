@@ -21,7 +21,7 @@ def user_login(context, username, password):
     submit_button.click()
 
 
-@then(u'the user is presented with an invalid login message')
+@then(u'an invalid login message is visible')
 def login_error_is_displayed(context):
     try:
         assert context.browser.find_element(By.ID, 'login-error'), "Login Error Message Not Found"
@@ -30,6 +30,6 @@ def login_error_is_displayed(context):
         raise e
 
 
-@when(u'the user logs in with invalid credentials')
-def user_login_invalid_credentials(context):
-    return user_login(context, 'app-admin', 'test')
+@when(u'the user "{user}" logs in with invalid credentials')
+def user_login_invalid_credentials(context, user):
+    return user_login(context, user, 'wrong-password')
