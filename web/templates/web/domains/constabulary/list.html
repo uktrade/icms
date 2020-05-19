@@ -1,0 +1,11 @@
+{% extends "model/list.html" %}
+
+{% block sidebar %}
+<ul class="menu-out">
+    <li> <a href="{{url('constabulary-new')}}">New Constabulary</a></li>
+</ul>
+{% endblock %}
+
+{% block empty_message %}
+        There aren't any constabularies that match your search
+{% endblock %}
