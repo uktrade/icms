@@ -1,7 +1,9 @@
 import structlog as logging
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
 
@@ -17,37 +19,37 @@ from .models import (Country, CountryGroup, CountryTranslation,
 
 logger = logging.getLogger(__name__)
 
+permissions = 'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
 
-class CountryListView(RequireRegisteredMixin, ListView):
+
+class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
     model = Country
-    template_name = 'web/country/list.html'
+    template_name = 'web/domains/country/list.html'
     filterset_class = CountryNameFilter
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+    permission_required = permissions
+    page_title = 'Editing All Countries'
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('country_groups')
 
 
 class CountryEditView(ModelUpdateView):
     model = Country
-    template_name = 'web/country/edit.html'
+    template_name = 'web/domains/country/edit.html'
     form_class = CountryEditForm
     success_url = reverse_lazy('country-list')
     cancel_url = success_url
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
-
-    def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+    permission_required = permissions
 
 
 class CountryCreateView(ModelCreateView):
     model = Country
-    template_name = 'web/country/edit.html'
+    template_name = 'web/domains/country/edit.html'
     form_class = CountryCreateForm
     success_url = reverse_lazy('country-list')
     cancel_url = success_url
     page_title = 'New Country'
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+    permission_required = permissions
 
 
 def search_countries(request, selected_countries):
@@ -65,17 +67,21 @@ def search_countries(request, selected_countries):
         'filter':
         CountryNameFilter(request.POST or {}, queryset=Country.objects.all()),
         'selected_countries':
-        selected_countries
+        selected_countries,
+        'page_title':
+        'Country Search'
     }
-    return render(request, 'web/country/search.html', context)
+
+    return TemplateResponse(request, 'web/domains/country/search.html',
+                            context).render()
 
 
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
-    template_name = 'web/country/groups/view.html'
+    template_name = 'web/domains/country/groups/view.html'
     form_class = CountryGroupEditForm
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_MANAGE'
+    cancel_url = reverse_lazy('country-group-view')
+    permission_required = permissions
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -89,16 +95,12 @@ class CountryGroupView(ModelDetailView):
         context['groups'] = CountryGroup.objects.all()
         return context
 
-    def get_page_title(self):
-        return f"Viewing '{self.object.name}'"
-
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     model = CountryGroup
-    template_name = 'web/country/groups/edit.html'
+    template_name = 'web/domains/country/groups/edit.html'
     form_class = CountryGroupEditForm
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_MANAGE'
+    permission_required = permissions
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -152,8 +154,15 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
-    def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+    def get_success_url(self):
+        view_name = 'country-group-view'
+        if self.object.id:
+            return reverse_lazy(view_name, args=(self.object.id, ))
+        else:
+            return reverse_lazy(view_name)
+
+    def get_cancel_url(self):
+        return self.get_success_url()
 
     @transaction.atomic
     def save(self, request, pk=None):
@@ -170,8 +179,7 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 
 
 class CountryGroupCreateView(CountryGroupEditView):
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_GROUP_CREATE'
+    permission_required = permissions
 
     def get_object(self):
         return CountryGroup()
@@ -180,43 +188,48 @@ class CountryGroupCreateView(CountryGroupEditView):
         return 'New Country Group'
 
 
-class CountryTranslationSetListView(PageTitleMixin, PostActionMixin, ListView):
+class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     model = CountryTranslationSet
-    template_name = 'web/country/translations/list.html'
+    form_class = CountryTranslationSetEditForm
+    template_name = 'web/domains/country/translations/list.html'
     page_title = 'Manage Country Translation Sets'
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+    permission_required = permissions
+    success_url = reverse_lazy('country-translation-set-list')
 
-    def get_form(self, request):
-        action = self.request.POST.get('action', None)
-        if action == 'save':
-            return CountryTranslationSetEditForm(self.request.POST)
-        else:
+    def archive(self, request):
+        translation_set = CountryTranslationSet.objects.get(
+            pk=request.POST.get('item'))
+        translation_set.archive()
+        messages.success(request, 'Record archived successfully')
+        return super().get(request)
+
+    def unarchive(self, request):
+        translation_set = CountryTranslationSet.objects.get(
+            pk=request.POST.get('item'))
+        translation_set.unarchive()
+        messages.success(request, 'Record restored successfully')
+        return super().get(request)
+
+    def get_form(self):
+        post = self.request.POST
+
+        if (not post) or post.get('action'):
             return CountryTranslationSetEditForm()
 
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['form'] = self.get_form(self.request)
+        return CountryTranslationSetEditForm(post)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_list'] = CountryTranslationSet.objects.all()
         return context
-
-    def save(self, request):
-        form = self.get_form(request)
-        logger.debug(form.data)
-        if form.is_valid():
-            instance = form.save()
-            logger.debug(instance.name)
-            return redirect(reverse('country-translation-set-list'))
-
-        return super().get(request)
 
 
 class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     model = CountryTranslationSet
-    template_name = 'web/country/translations/edit.html'
+    template_name = 'web/domains/country/translations/edit.html'
     form_class = CountryTranslationSetEditForm
     success_url = 'country-translation-set-edit'
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+    permission_required = permissions
 
     def get(self, request, pk=None):
         set = super().get_object()
@@ -240,8 +253,9 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
             'remaining': remaining_count
         }
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         country_list = Country.objects.filter(is_active=True).all()
         country_translations = CountryTranslation.objects.filter(
             translation_set=self.object).all()
@@ -255,7 +269,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
             'country_list':
             country_list,
             'missing_translations':
-            self.get_missing_translations(country_list, country_translations)
+            self.get_missing_translations(country_list, translations)
         })
         return context
 
@@ -264,19 +278,18 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         return reverse(self.success_url, args=[object.id])
 
     def get_page_title(self):
-        return f"Editing '{self.object.name}'"
+        return f"Editing {self.object.name} Translation Set"
 
-    def archive(self, request, pk=None):
-        super().archive(request)
+    def archive(self, request, pk):
+        super().get_object().archive()
         return redirect(reverse('country-translation-set-list'))
 
 
 class CountryTranslationCreateUpdateView(ModelUpdateView):
     model = CountryTranslation
-    template_name = 'web/country/translations/translation/edit.html'
+    template_name = 'web/domains/country/translations/translation/edit.html'
     form_class = CountryTranslationEditForm
-    permission_required = \
-        'web.COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE'
+    permission_required = permissions
 
     def get_object(self, queryset=None):
         try:
@@ -310,6 +323,9 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
                            self.translation_set.id,
                        ])
 
+    def get_cancel_url(self):
+        return self.get_success_url()
+
     def form_valid(self, form):
         form.instance.country_id = self.country.id
         form.instance.translation_set_id = self.translation_set.id
@@ -325,3 +341,6 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         self.set_data(request, **kwargs)
         self.object = self.get_object()
         return super().post(request, *args, **kwargs)
+
+    def get_page_title(self):
+        return f'Editing {self.translation_set.name} translation of {self.country.name}'

@@ -11,6 +11,10 @@ class CountryNameFilter(ModelSearchFilter):
                               lookup_expr='icontains',
                               label='Country Name')
 
+    @property
+    def qs(self):
+        return super().qs.filter(is_active=True)
+
     class Meta:
         model = Country
         fields = []

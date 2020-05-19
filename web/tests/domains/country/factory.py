@@ -2,6 +2,7 @@ import random
 
 import factory
 import factory.fuzzy
+
 from web.domains.country.models import (Country, CountryGroup,
                                         CountryTranslation,
                                         CountryTranslationSet)
@@ -23,17 +24,7 @@ class CountryGroupFactory(factory.django.DjangoModelFactory):
         model = CountryGroup
 
     name = factory.Faker('sentence', nb_words=2)
-    comments = factory.Faker('paragraph', nb=2)
-    countries = factory.Faker('pystr', max_chars=20)
-
-    @factory.post_generation
-    def countries(self, create, countries, **kwargs):
-        if not create:
-            return
-
-        if countries:
-            for country in countries:
-                self.countries.add(country)
+    comments = factory.Faker('paragraph', nb_sentences=2)
 
 
 class CountryTranslationSetFactory(factory.django.DjangoModelFactory):

@@ -11,6 +11,7 @@ class AuthTestCase(TestCase):
                                 password='test',
                                 password_disposition=User.FULL,
                                 is_superuser=False,
+                                account_status=User.ACTIVE,
                                 is_active=True)
 
     def grant(self, permission_codename):

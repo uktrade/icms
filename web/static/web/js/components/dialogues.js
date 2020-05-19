@@ -19,14 +19,14 @@ var Dialogue = function () {
 
     return {
         show : function(message, successCallback){
-            if ($('body').find('.modal-popover-container').length) {
+            if ($('body').find('.modal-popover-container:visible').length) {
                 // Don't create modal if one already exist.
                 console.log('Another dialogue is visible, not showing this one');
                 return;
             }
 
             var dialog = $(confirmationDialog).clone();
-            dialog.find('.modal-popover-text').text(message);
+            dialog.find('.modal-popover-text').html(message);
             $('body').append(dialog);
 
             $(dialog).find('.abort').click(function(e){

@@ -52,6 +52,18 @@ class CountryTranslationSet(Archivable, models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
+    def __str__(self):
+        if self.id:
+            return f'Country Translation Set ({self.name})'
+        else:
+            return 'Country Translation Set (new) '
+
+    class Meta:
+        ordering = (
+            '-is_active',
+            'name'
+        )
+
 
 class CountryTranslation(models.Model):
     translation = models.CharField(max_length=150, blank=False, null=False)

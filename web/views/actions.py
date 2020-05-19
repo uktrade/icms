@@ -98,4 +98,4 @@ class Unarchive(PostAction):
 
     def handle(self, request, view):
         self._get_item(request, view.model).unarchive()
-        messages.success(request, 'Record unarchived successfully')
+        messages.success(request, 'Record restored successfully')

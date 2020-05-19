@@ -121,4 +121,4 @@ def set_password(request):
 def change_password(request):
     form = update_password(request)
 
-    return render(request, 'web/user/password.html', {'form': form})
+    return render(request, 'web/domains/user/password.html', {'form': form})
