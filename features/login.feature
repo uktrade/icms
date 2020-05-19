@@ -5,7 +5,6 @@ Feature: Login Functionality
         Then the login page is displayed
 
     Scenario: non loggedin user redirected to login when opening any page other than home
-        Given The user "app-user" is created in the system
         Given an anonymous user navigates to workbasket
         Then the login page is displayed
 
