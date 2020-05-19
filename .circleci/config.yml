@@ -20,11 +20,11 @@ jobs:
                 command: make test
 
             - run:
-                name: run end to end tests
+                name: run functional tests
                 command: make behave
 
             - run:
-                name: Publish coverage
+                name: Publish unit test coverage
                 command: |
                     wget -O codecov.sh https://codecov.io/bash
                     bash ./codecov.sh -t ${CODECOV_TOKEN} -s test-reports -f "*.xml"
