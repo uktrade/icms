@@ -107,7 +107,7 @@ class ImporterCreateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.importer = ImporterFactory()
-        self.url = f'/importer/new/'
+        self.url = '/importer/new/'
         self.redirect_url = f'{LOGIN_URL}?next={self.url}'
 
     def test_anonymous_access_redirects(self):
