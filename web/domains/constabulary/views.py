@@ -16,7 +16,7 @@ permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ConstabularyListView(ModelFilterView):
-    template_name = 'web/constabulary/list.html'
+    template_name = 'web/domains/constabulary/list.html'
     model = Constabulary
     filterset_class = ConstabulariesFilter
     permission_required = permissions
@@ -40,7 +40,7 @@ class ConstabularyListView(ModelFilterView):
 
 
 class ConstabularyCreateView(ModelCreateView):
-    template_name = 'web/constabulary/edit.html'
+    template_name = 'web/domains/constabulary/edit.html'
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
@@ -72,7 +72,7 @@ class ConstabularyCreateView(ModelCreateView):
 
 
 class ConstabularyEditView(ModelUpdateView):
-    template_name = 'web/constabulary/edit.html'
+    template_name = 'web/domains/constabulary/edit.html'
     form_class = ConstabularyForm
     model = Constabulary
     success_url = reverse_lazy('constabulary-list')
