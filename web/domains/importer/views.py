@@ -16,6 +16,10 @@ permissions = [
 
 
 def has_permission(user):
+
+    if user.is_superuser:
+        return True
+
     for perm in permissions:
         if user.has_perm(perm):
             return True

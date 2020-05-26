@@ -23,6 +23,13 @@ class ImporterListViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
+    def test_superuser_access(self):
+        self.login()
+        self.user.is_superuser = True
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
     def test_admin_access(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
         response = self.client.get(self.url)
