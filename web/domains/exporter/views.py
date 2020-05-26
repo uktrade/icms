@@ -11,7 +11,7 @@ permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
 
 class ExporterListView(ModelFilterView):
-    template_name = 'web/exporter/list.html'
+    template_name = 'web/domains/exporter/list.html'
     filterset_class = ExporterFilter
     model = Exporter
     permission_required = permissions
@@ -24,7 +24,7 @@ class ExporterListView(ModelFilterView):
 
 
 class ExporterEditView(ModelUpdateView):
-    template_name = 'web/exporter/edit.html'
+    template_name = 'web/domains/exporter/edit.html'
     form_class = ExporterEditForm
     success_url = reverse_lazy('exporter-list')
     cancel_url = success_url
@@ -33,7 +33,7 @@ class ExporterEditView(ModelUpdateView):
 
 
 class ExporterCreateView(ModelCreateView):
-    template_name = 'web/exporter/create.html'
+    template_name = 'web/domains/exporter/create.html'
     form_class = ExporterEditForm
     success_url = reverse_lazy('exporter-list')
     cancel_url = success_url
@@ -43,7 +43,7 @@ class ExporterCreateView(ModelCreateView):
 
 
 class ExporterDetailView(ModelDetailView):
-    template_name = 'web/exporter/view.html'
+    template_name = 'web/domains/exporter/view.html'
     form_class = ExporterEditForm
     cancel_url = reverse_lazy('exporter-list')
     model = Exporter
