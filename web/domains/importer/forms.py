@@ -57,6 +57,11 @@ class ImporterFilter(ModelSearchFilter):
 class ImporterEditForm(ModelEditForm):
     type = ChoiceField(choices=Importer.TYPES)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].required=True
+
+
     class Meta:
         model = Importer
         fields = ['type', 'name', 'region_origin', 'comments']
