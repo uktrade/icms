@@ -69,6 +69,13 @@ class ReceivedMailshotsView(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
+    def test_superuser_access(self):
+        self.login()
+        self.user.is_superuser = True
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
     def test_exporter_access(self):
         self.login()
         exporter = ExporterFactory(is_active=True)
