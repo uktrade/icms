@@ -15,6 +15,7 @@ class ExporterListView(ModelFilterView):
     filterset_class = ExporterFilter
     model = Exporter
     permission_required = permissions
+    page_title = 'Maintain Exporters'
 
     class Display:
         fields = ['name']

@@ -59,8 +59,7 @@ class ImporterEditForm(ModelEditForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['name'].required=True
-
+        self.fields['name'].required = True
 
     class Meta:
         model = Importer
