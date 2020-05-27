@@ -1,8 +1,4 @@
-# NOQA: C0301
-from django.contrib.auth.models import Permission
-
 from web.domains.exporter.models import Exporter
-from web.domains.team.models import Role
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
 
@@ -122,61 +118,6 @@ class ExporterCreateViewTest(AuthTestCase):
         self.client.post(self.url, {'name': 'test exporter'})
         exporter = Exporter.objects.first()
         self.assertEqual(exporter.name, 'test exporter')
-
-    def test_agent_approve_reject_role_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-        role_name = f'Exporter Contacts:Approve/Reject Agents and Exporters:{exporter.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_agent_approve_reject_role_permissions_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-
-        codename = f'IMP_EXPORTER_CONTACTS:AGENT_APPROVER:{exporter.id}:IMP_CERT_AGENT_APPROVER'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:AGENT_APPROVER:{exporter.id}:IMP_CERT_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:AGENT_APPROVER:{exporter.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-
-    def test_application_edit_role_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-        role_name = f'Exporter Contacts:Edit Applications:{exporter.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_application_edit_role_permissions_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-        codename = f'IMP_EXPORTER_CONTACTS:EDIT_APPLICATION:{exporter.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:EDIT_APPLICATION:{exporter.id}:IMP_CERT_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:EDIT_APPLICATION:{exporter.id}:IMP_CERT_EDIT_APPLICATION'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-
-    def test_application_view_role_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-        role_name = f'Exporter Contacts:View Applications/Certificates:{exporter.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_application_view_role_permissions_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
-        exporter = Exporter.objects.first()
-        codename = f'IMP_EXPORTER_CONTACTS:VIEW_APPLICATION:{exporter.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:VIEW_APPLICATION:{exporter.id}:IMP_CERT_VIEW_APPLICATION'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_EXPORTER_CONTACTS:VIEW_APPLICATION:{exporter.id}:IMP_CERT_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
 
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)

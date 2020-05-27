@@ -1,14 +1,11 @@
 import structlog as logging
-from django.db import transaction
 from django.urls import reverse_lazy
 
-from web.auth import utils as auth_utils
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
-from .roles import IMPORTER_ROLES
 
 logger = logging.getLogger(__name__)
 
@@ -79,15 +76,6 @@ class ImporterCreateView(ModelCreateView):
 
     def has_permission(self):
         return has_permission(self.request.user)
-
-    @transaction.atomic
-    def form_valid(self, form):
-        """
-            Create new importer roles
-        """
-        response = super().form_valid(form)
-        auth_utils.create_team_roles(self.object, IMPORTER_ROLES)
-        return response
 
 
 class ImporterDetailView(ModelDetailView):

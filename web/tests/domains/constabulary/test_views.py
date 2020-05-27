@@ -1,7 +1,3 @@
-from django.contrib.auth.models import Permission
-
-from web.domains.constabulary.models import Constabulary
-from web.domains.team.models import Role
 from web.tests.auth import AuthTestCase
 
 from .factory import ConstabularyFactory
@@ -92,30 +88,6 @@ class ConstabularyCreateViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-
-    def test_firearms_authority_role_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(
-            self.url, {
-                'name': 'Testing',
-                'region': Constabulary.EAST_MIDLANDS,
-                'email': 'test@example.com'
-            })
-        constabulary = Constabulary.objects.first()
-        role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_firearms_authority_permission_created(self):
-        self.login_with_permissions(PERMISSIONS)
-        self.client.post(
-            self.url, {
-                'name': 'Testing',
-                'region': Constabulary.EAST_MIDLANDS,
-                'email': 'test@example.com'
-            })
-        constabulary = Constabulary.objects.first()
-        codename = f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{constabulary.id}:IMP_EDIT_FIREARMS_AUTHORITY'  # noqa: C0301
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
 
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)

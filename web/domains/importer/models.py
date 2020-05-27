@@ -1,11 +1,17 @@
 from django.db import models
+
+from web.domains.office.models import Office
 from web.domains.team.models import BaseTeam
 from web.domains.user.models import User
 from web.models.mixins import Archivable
-from web.domains.office.models import Office
+
+from .roles import IMPORTER_ROLES
 
 
 class Importer(Archivable, BaseTeam):
+
+    role_list = IMPORTER_ROLES
+
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
     ORGANISATION = "ORGANISATION"
