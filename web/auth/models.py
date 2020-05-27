@@ -8,7 +8,11 @@ class CustomBackend(ModelBackend):
         authenticated_user = super().authenticate(request, username, password)
 
         if authenticated_user is None:
-            unauthenticated_user = User.objects.get_by_natural_key(username)
+            try:
+                unauthenticated_user = User.objects.get_by_natural_key(username)
+            except Exception:
+                return None
+
             if unauthenticated_user is not None and \
                     unauthenticated_user.account_status != User.SUSPENDED:
                 unauthenticated_user.unsuccessful_login_attempts += 1
