@@ -10,12 +10,15 @@ def before_scenario(context, scenario):
         'ICMS homepage': context.BASE_URL,
         'Login page': context.BASE_URL,
         'workbasket': f'{context.BASE_URL}/workbasket',
+        'user home': f'{context.BASE_URL}/home',
+        'logout': f'{context.BASE_URL}/logout',
     }
 
     context.CREATED_USERS = {
         'app-user': {
             'username': 'app-user',
-            'password': 'app-user'
+            'password': 'app-user',
+            'first_name': 'app-user'
         }
     }
 
