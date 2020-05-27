@@ -1,10 +1,8 @@
 import structlog as logging
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.urls import reverse_lazy
 
-from web.domains.team.models import Role
+from web.auth import utils as auth_utils
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 
@@ -88,22 +86,7 @@ class ImporterCreateView(ModelCreateView):
             Create new importer roles
         """
         response = super().form_valid(form)
-        for r in IMPORTER_ROLES:
-            role = Role.objects.create(
-                name=r['name'].format(importer_id=self.object.id),
-                description=r['description'],
-                role_order=r['role_order'])
-
-            permissions = []
-            for p in r['permissions']:
-                permission = Permission.objects.create(
-                    codename=p['codename'].format(importer_id=self.object.id),
-                    name=p['name'],
-                    content_type=ContentType.objects.get_for_model(Importer))
-                permissions.append(permission)
-
-            role.permissions.add(*permissions)
-
+        auth_utils.create_team_roles(self.object, IMPORTER_ROLES)
         return response
 
 
