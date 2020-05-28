@@ -1,14 +1,11 @@
-from django.db import transaction
 from django.urls import reverse_lazy
 
-from web.auth import utils as auth_utils
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 from web.views.actions import Archive, Edit, Unarchive
 
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
-from .roles import CONSTABULARY_ROLES
 
 permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
 
@@ -45,15 +42,6 @@ class ConstabularyCreateView(ModelCreateView):
     cancel_url = success_url
     permission_required = permissions
     page_title = 'New Constabulary'
-
-    @transaction.atomic
-    def form_valid(self, form):
-        """
-            Create new constabulary role for firearms authority management for importers
-        """
-        response = super().form_valid(form)
-        auth_utils.create_team_roles(self.object, CONSTABULARY_ROLES)
-        return response
 
 
 class ConstabularyEditView(ModelUpdateView):

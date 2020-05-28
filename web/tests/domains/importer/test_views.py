@@ -1,8 +1,4 @@
-# NOQA: C0301
-from django.contrib.auth.models import Permission
-
 from web.domains.importer.models import Importer
-from web.domains.team.models import Role
 from web.tests.auth import AuthTestCase
 from web.tests.domains.constabulary.factory import ConstabularyFactory
 from web.tests.domains.importer.factory import ImporterFactory
@@ -12,6 +8,7 @@ ADMIN_PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
 SECTION5_AUTHORITY_PERMISSIONS = [
     'IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR:IMP_EDIT_SECTION5_AUTHORITY'
 ]
+CONSTABULARY_PERMISSION = 'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{id}:IMP_EDIT_FIREARMS_AUTHORITY'
 
 
 class ImporterListViewTest(AuthTestCase):
@@ -46,9 +43,12 @@ class ImporterListViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_constabulary_access(self):
-        self.login()
         constabulary = ConstabularyFactory(is_active=True)
         constabulary.members.add(self.user)
+        permission = CONSTABULARY_PERMISSION.format(id=constabulary.id)
+        self.login_with_permissions([
+            permission,
+        ])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
@@ -142,108 +142,6 @@ class ImporterCreateViewTest(AuthTestCase):
         })
         importer = Importer.objects.first()
         self.assertEqual(importer.name, 'test importer')
-
-    def test_agent_approve_reject_role_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.ORGANISATION,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        role_name = f'Importer Contacts:Approve/Reject Agents and Importers:{importer.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_agent_approve_reject_role_permissions_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.INDIVIDUAL,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:IMP_AGENT_APPROVER'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-
-    def test_application_edit_role_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.ORGANISATION,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        role_name = f'Importer Contacts:Edit Applications:{importer.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_application_edit_role_permissions_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.INDIVIDUAL,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:IMP_EDIT_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-
-    def test_application_vary_role_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.INDIVIDUAL,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        role_name = f'Importer Contacts:Vary Applications/Licences:{importer.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_application_vary_role_permissions_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.INDIVIDUAL,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:IMP_VARY_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-
-    def test_application_view_role_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.ORGANISATION,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        role_name = f'Importer Contacts:View Applications/Licences:{importer.id}'
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_application_view_role_permissions_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.INDIVIDUAL,
-            'name': 'test importer'
-        })
-        importer = Importer.objects.first()
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:IMP_VIEW_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
 
     def test_page_title(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)

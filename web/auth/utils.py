@@ -2,9 +2,7 @@ import random
 import string
 
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-
-from web.domains.team.models import Role
+from django.db.models import Q
 
 
 def generate_temp_password(length=8):
@@ -17,21 +15,51 @@ def generate_temp_password(length=8):
                                                  k=length))
 
 
-def create_team_roles(team, roles):
+def _get_user_permissions_query(user):
     """
-        Creates given roles and permissions for given team
+        Returns the queryset for filtering user permissions.
     """
-    for r in roles:
-        role = Role.objects.create(name=r['name'].format(id=team.id),
-                                   description=r['description'],
-                                   role_order=r['role_order'])
+    return Permission.objects.filter(
+        Q(group__in=user.groups.all()) | Q(user=user))
 
-        permissions = []
-        for p in r['permissions']:
-            permission = Permission.objects.create(
-                codename=p['codename'].format(id=team.id),
-                name=p['name'],
-                content_type=ContentType.objects.get_for_model(team))
-            permissions.append(permission)
 
-        role.permissions.add(*permissions)
+def get_user_permissions(user):
+    """
+        Returns a list of all permissions user was granted either
+        directly or via a group the user is in.
+    """
+    return _get_user_permissions_query(user).all()
+
+
+def has_any_permission(user, permissions=[]):
+    """
+        Checks if user has any of the given permissions
+    """
+    if user.is_superuser:
+        return True
+    return _get_user_permissions_query(user).filter(
+        codename__in=permissions).exists()
+
+
+def has_team_permission(user, teams, permission):
+    """
+        Check if user has given permission of given list of teams.
+
+        This only covers non-global Teams (Importers/Exporters
+        and their agents, constabularies, etc.)
+
+        Given permission includes the placeholder for id as '{id}'
+
+        A list of permissions will be constructed for each of the given teams
+        and user will be tested for these permissions
+    """
+    if user.is_superuser:
+        return True
+    if not teams:
+        return False
+
+    permissions = []
+    for team in teams:
+        permissions.append(permission.format(id=team.id))
+
+    return has_any_permission(user, permissions)
