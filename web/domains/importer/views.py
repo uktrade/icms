@@ -1,6 +1,7 @@
 import structlog as logging
 from django.urls import reverse_lazy
 
+from web.auth import utils as auth_utils
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
                        ModelUpdateView)
 
@@ -10,22 +11,19 @@ from .models import Importer
 logger = logging.getLogger(__name__)
 
 permissions = [
-    'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL',
-    'web.IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR:IMP_EDIT_SECTION5_AUTHORITY'
+    'IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL',
+    'IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR:IMP_EDIT_SECTION5_AUTHORITY'
 ]
 
 
 def has_permission(user):
-
-    if user.is_superuser:
-        return True
-
-    for perm in permissions:
-        if user.has_perm(perm):
-            return True
-
-    # check if constabulary contact
-    return user.constabulary_set.filter(is_active=True).count() > 0
+    return auth_utils.has_any_permission(
+        user, permissions
+    ) or auth_utils.has_team_permission(
+        user,
+        user.constabulary_set.filter(is_active=True).all(),
+        'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{id}:IMP_EDIT_FIREARMS_AUTHORITY'
+    )
 
 
 class ImporterListView(ModelFilterView):

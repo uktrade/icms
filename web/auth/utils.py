@@ -37,7 +37,7 @@ def has_any_permission(user, permissions=[]):
     """
     if user.is_superuser:
         return True
-    return _get_user_permissions_query().filter(
+    return _get_user_permissions_query(user).filter(
         codename__in=permissions).exists()
 
 

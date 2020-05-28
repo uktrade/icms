@@ -8,6 +8,7 @@ ADMIN_PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
 SECTION5_AUTHORITY_PERMISSIONS = [
     'IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR:IMP_EDIT_SECTION5_AUTHORITY'
 ]
+CONSTABULARY_PERMISSION = 'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{id}:IMP_EDIT_FIREARMS_AUTHORITY'
 
 
 class ImporterListViewTest(AuthTestCase):
@@ -42,9 +43,12 @@ class ImporterListViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_constabulary_access(self):
-        self.login()
         constabulary = ConstabularyFactory(is_active=True)
         constabulary.members.add(self.user)
+        permission = CONSTABULARY_PERMISSION.format(id=constabulary.id)
+        self.login_with_permissions([
+            permission,
+        ])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 

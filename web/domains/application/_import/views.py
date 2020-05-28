@@ -1,4 +1,6 @@
 from django.urls import reverse_lazy
+
+from web.auth import utils as auth_utils
 from web.views import ModelCreateView
 
 from .forms import NewImportApplicationForm
@@ -13,6 +15,30 @@ class ImportApplicationCreateView(ModelCreateView):
     cancel_url = success_url
     form_class = NewImportApplicationForm
     page_title = 'Create Import Application'
+
+    def has_permission(self):
+        user = self.request.user
+        importer_permission = 'IMP_IMPORTER_CONTACTS:EDIT_APP:{id}:IMP_EDIT_APP'
+        agent_permission = 'IMP_IMPORTER_AGENT_CONTACTS:EDIT_APP:{id}:IMP_EDIT_APP'
+        # TODO: Simplify and optimize importer and agent edit app permission check
+        # Will re-iterate with navigation ticket
+        return auth_utils.has_team_permission(
+            user,
+            user.own_importers.filter(is_active=True,
+                                      main_importer__isnull=True).all(),
+            importer_permission) or auth_utils.has_team_permission(
+                user,
+                user.own_importers.filter(is_active=True,
+                                          main_importer__isnull=False).all(),
+                agent_permission) or auth_utils.has_team_permission(
+                    user,
+                    user.importer_set.filter(is_active=True,
+                                             main_importer__isnull=True).all(),
+                    importer_permission) or auth_utils.has_team_permission(
+                        user,
+                        user.importer_set.filter(
+                            is_active=True, main_importer__isnull=False).all(),
+                        agent_permission)
 
     def get_form(self):
         if hasattr(self, 'form'):
@@ -35,6 +61,3 @@ class ImportApplicationCreateView(ModelCreateView):
         form.instance.created_by = request.user
 
         return super().post(request, *args, **kwargs)
-
-    def has_permission(self):
-        return True
