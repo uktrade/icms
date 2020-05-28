@@ -8,7 +8,7 @@ from .models import ImportApplication
 
 
 class ImportApplicationCreateView(ModelCreateView):
-    template_name = 'web/application/import/create.html'
+    template_name = 'web/domains/application/import/create.html'
     model = ImportApplication
     # TODO: Change to application form when created
     success_url = reverse_lazy('product-legislation-list')
