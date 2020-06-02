@@ -29,7 +29,7 @@
 
         <h4>Importer Access Requests</h4>
 
-        <table responsiveList class="setoutList">
+        <table responsiveList class="setoutList pending-import-requests">
             <thead>
                 <tr>
                     <th scope="col">Reference
@@ -47,7 +47,7 @@
                 </tr>
             </thead>
             {% for request in request.user.submitted_access_requests.importer_requests().filter(accessrequestprocess__access_request__status="SUBMITTED") %}
-            <tr >
+            <tr class="main-entry">
                 <td data-title="Reference" ><span  class="text-widget ">IAR/785</span></td>
                 <td data-title="Requested Date" ><span  class="text-widget ">{{request.submit_datetime}}</span></td>
                 <td data-title="Request Type" ><span  class="text-widget ">{{request.request_type_verbose}}</span></td>
@@ -75,7 +75,7 @@
 
         <h4>Exporter Access Requests</h4>
 
-        <table responsiveList class="setoutList">
+        <table responsiveList class="setoutList pending-export-requests">
             <thead>
                 <tr>
                     <th scope="col">Reference
@@ -93,7 +93,7 @@
                 </tr>
             </thead>
             {% for request in request.user.submitted_access_requests.exporter_requests().filter(accessrequestprocess__access_request__status="SUBMITTED") %}
-            <tr >
+            <tr class="main-entry">
                 <td data-title="Reference" ><span  class="text-widget ">EAR/379</span></td>
                 <td data-title="Requested Date" ><span  class="text-widget ">15-APR-2019 12:53</span></td>
                 <td data-title="Request Type" ><span  class="text-widget ">{{request.request_type_verbose}}</span></td>

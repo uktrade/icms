@@ -1,7 +1,7 @@
 from behave import then, when
 from selenium.webdriver.common.by import By
 from features.steps.shared import user_navigates_to_page
-from features.steps.login import login_page_is_displayed
+from features.steps.auth.login import login_page_is_displayed
 
 
 @when(u'the user click on logout button')
