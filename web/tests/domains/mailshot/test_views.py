@@ -8,7 +8,7 @@ from web.tests.domains.template.factory import TemplateFactory
 from .factory import MailshotFactory
 
 LOGIN_URL = '/'
-PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
+PERMISSIONS = ['MAILSHOT_ADMIN']
 
 
 class MailshotListViewTest(AuthTestCase):
@@ -239,7 +239,8 @@ class MailshotRetractViewTest(AuthTestCase):
 class MailshotDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.mailshot = MailshotFactory()  # Create a mailshot
+        self.mailshot = MailshotFactory(
+            is_to_importers=True, is_to_exporters=True)  # Create a mailshot
         self.mailshot.save()
         self.url = f'/mailshot/{self.mailshot.id}/'
         self.redirect_url = f'{LOGIN_URL}?next={self.url}'
@@ -254,8 +255,37 @@ class MailshotDetailViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    def test_authorized_access(self):
+    def test_superuser_access(self):
+        self.login()
+        self.user.is_superuser = True
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_mailshot_admin_access(self):
         self.login_with_permissions(PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_exporter_access(self):
+        self.login()
+        exporter = ExporterFactory(is_active=True)
+        exporter.members.add(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_organisation_importer_access(self):
+        self.login()
+        importer = ImporterFactory(type=Importer.ORGANISATION, is_active=True)
+        importer.members.add(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_individual_importer_access(self):
+        self.login()
+        ImporterFactory(type=Importer.INDIVIDUAL,
+                        user=self.user,
+                        is_active=True)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 

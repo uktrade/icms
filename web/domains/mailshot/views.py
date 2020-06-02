@@ -19,7 +19,7 @@ from .forms import (MailshotFilter, MailshotForm, MailshotReadonlyForm,
                     MailshotRetractForm, ReceivedMailshotsFilter)
 from .models import Mailshot
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.MAILSHOT_ADMIN'
 
 
 class ReceivedMailshotsView(ModelFilterView):
@@ -179,6 +179,20 @@ class MailshotDetailView(ModelDetailView):
     model = Mailshot
     cancel_url = reverse_lazy('mailshot-list')
     permission_required = permissions
+
+    def has_permission(self):
+        user = self.request.user
+        has_permission = super().has_permission()
+        if has_permission:
+            return True
+
+        mailshot = self.get_object()
+        if mailshot.is_to_importers and user.is_importer():
+            return True
+        if mailshot.is_to_exporters and user.is_exporter():
+            return True
+
+        return False
 
 
 class MailshotRetractView(ModelUpdateView):
