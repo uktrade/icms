@@ -11,7 +11,7 @@ from .forms import (ObsoleteCalibreGroupDisplayForm,
                     new_calibres_formset)
 from .models import ObsoleteCalibreGroup
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 logger = logging.getLogger(__name__)
 
