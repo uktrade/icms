@@ -27,6 +27,7 @@ def user_login(context, username, password):
 
 
 @given(u'an anonymous user navigates to {page}')
+@given(u'the user navigates to "{page}"')
 @when(u'the user navigates to "{page}"')
 def user_navigates_to_page(context, page):
     context.browser.get(context.PAGES_MAP[page])
@@ -58,15 +59,28 @@ def the_page_is_displayed(context, page):
     assert expected_url == page_url, f'expecting url to be {expected_url} but got {page_url}'
 
 
-def find_element_with_text(context, text, element='*'):
-    context.browser.find_element(By.XPATH, f'//{element}[contains(text(),"{text}")]')
-
-
 @then(u'the text "{text}" is visible')
 def text_is_visible(context, text):
-    find_element_with_text(context, text)
+    assert find_element_with_text(context, text), f'could not find text {text} in page'
 
 
 @then(u'a button with text "{text}" is visible')
 def button_with_text_is_visible(context, text):
     find_element_with_text(context, text, 'button')
+
+
+###
+# utils
+###
+
+
+def find_element_with_text(context, text, element='*'):
+    try:
+        return context.browser.find_element(By.XPATH, f'//{element}[contains(text(),"{text}")]')
+    except Exception as e:
+        print(e)
+        return None
+
+
+def to_boolean(str):
+    return str.lower() in ['true', '1', 't', 'y', 'yes']

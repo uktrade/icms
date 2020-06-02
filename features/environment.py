@@ -12,6 +12,7 @@ def before_scenario(context, scenario):
         'workbasket': f'{context.BASE_URL}/workbasket',
         'user home': f'{context.BASE_URL}/home',
         'logout': f'{context.BASE_URL}/logout',
+        'Request Importer/Exporter Access page': f'{context.BASE_URL}/access/request',
     }
 
     context.CREATED_USERS = {
@@ -19,7 +20,12 @@ def before_scenario(context, scenario):
             'username': 'app-user',
             'password': 'app-user',
             'first_name': 'app-user'
-        }
+        },
+        'app-importer': {
+            'username': 'app-importer',
+            'password': 'app-importer',
+            'first_name': 'app-importer'
+        },
     }
 
 

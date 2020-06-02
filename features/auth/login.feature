@@ -16,7 +16,7 @@ Feature: Login Functionality
 
     Scenario: user sees error when entering an invalid user
         Given an anonymous user navigates to Login page
-        When  the user "i-dont-exists" logs in with invalid credentials
+        When  the user "i-dont-exist" logs in with invalid credentials
         Then  an invalid login message is visible
 
     Scenario: user is redirected to "user home" page after login
