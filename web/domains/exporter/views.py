@@ -7,7 +7,7 @@ from web.views.actions import Archive, Edit, Unarchive
 from .forms import ExporterEditForm, ExporterFilter
 from .models import Exporter
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 
 class ExporterListView(ModelFilterView):
