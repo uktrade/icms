@@ -3,7 +3,7 @@ from web.tests.auth import AuthTestCase
 from .factory import ConstabularyFactory
 
 LOGIN_URL = '/'
-PERMISSIONS = ['IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL']
+PERMISSIONS = ['IMP_MAINTAIN_ALL']
 
 
 class ConstabularyListViewTest(AuthTestCase):
