@@ -11,19 +11,13 @@ from .models import Importer
 logger = logging.getLogger(__name__)
 
 permissions = [
-    'IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL',
-    'IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR:IMP_EDIT_SECTION5_AUTHORITY'
+    'IMP_MAINTAIN_ALL', 'IMP_EDIT_SECTION5_AUTHORITY',
+    'IMP_EDIT_FIREARMS_AUTHORITY'
 ]
 
 
 def has_permission(user):
-    return auth_utils.has_any_permission(
-        user, permissions
-    ) or auth_utils.has_team_permission(
-        user,
-        user.constabulary_set.filter(is_active=True).all(),
-        'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{id}:IMP_EDIT_FIREARMS_AUTHORITY'
-    )
+    return auth_utils.has_any_permission(user, permissions)
 
 
 class ImporterListView(ModelFilterView):
