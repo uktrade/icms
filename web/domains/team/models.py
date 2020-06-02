@@ -1,5 +1,4 @@
 from django.contrib.auth.models import Group, Permission
-from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 
 from web.domains.user.models import User
@@ -17,14 +16,7 @@ def _create_team_roles(team):
                                    description=r['description'],
                                    role_order=r['role_order'])
 
-        permissions = []
-        for p in r['permissions']:
-            permission = Permission.objects.create(
-                codename=p['codename'].format(id=team.id),
-                name=p['name'],
-                content_type=ContentType.objects.get_for_model(team))
-            permissions.append(permission)
-
+        permissions = Permission.objects.filter(codename__in=r['permissions'])
         role.permissions.add(*permissions)
 
 
