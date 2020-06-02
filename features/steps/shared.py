@@ -58,6 +58,7 @@ def the_page_is_displayed(context, page):
     expected_url = context.PAGES_MAP[page].strip('/')
     assert expected_url == page_url, f'expecting url to be {expected_url} but got {page_url}'
 
+
 @then(u'the text "{text}" is visible')
 def text_is_visible(context, text):
     assert find_element_with_text(context, text), f'could not find text {text} in page'
@@ -68,7 +69,10 @@ def button_with_text_is_visible(context, text):
     find_element_with_text(context, text, 'button')
 
 
-## utils
+###
+# utils
+###
+
 
 def find_element_with_text(context, text, element='*'):
     try:

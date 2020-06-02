@@ -1,6 +1,5 @@
 from behave import then, when, given
-from features.steps.shared import find_element_with_text, to_boolean, user_logs_in, user_navigates_to_page
-from selenium.webdriver.common.by import By
+from features.steps.shared import find_element_with_text, to_boolean
 
 
 @then(u'Request Importer/Exporter Access page is displayed')
@@ -8,21 +7,21 @@ def step_impl(context):
     assert find_element_with_text(context, 'Request Importer/Exporter Access', 'h2'), 'Page title not found'
 
 
-@when(u'user sets Access Request Type to "{text}"')
-def se(context, text):
+@when(u'user sets Access Request Type to "{text}"')  # NOQA: F811
+def step_impl(context, text):
     context.browser.find_element_by_xpath(f"//select[@name='request_type']/option[text()='{text}']").click()
 
 
-@then(u'the following fields visibility is set on the act as an importer/exporter form')
+@then(u'the following fields visibility is set on the act as an importer/exporter form')  # NOQA: F811
 def step_impl(context):
-    for text,is_visible in context.table:
+    for text, is_visible in context.table:
         label = find_element_with_text(context, text, 'label')
         assert label, f"label with text {text} not found"
 
-        assert label.is_displayed() ==  to_boolean(is_visible), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
+        assert label.is_displayed() == to_boolean(is_visible), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
 
 
-@given(u'user requests to act as an importer')
+@given(u'user requests to act as an importer')  # NOQA: F811
 @when(u'user requests to act as an importer')
 def step_impl(context):
     text = 'Request access to act as an Importer'
@@ -35,7 +34,7 @@ def step_impl(context):
     context.browser.find_element_by_css_selector('button[type=submit]').click()
 
 
-@given(u'user requests to act as an agent for an importer')
+@given(u'user requests to act as an agent for an importer')  # NOQA: F811
 @when(u'user requests to act as an agent for an importer')
 def step_impl(context):
     text = 'Request access to act as an Agent for an Importer'
@@ -50,7 +49,7 @@ def step_impl(context):
     context.browser.find_element_by_css_selector('button[type=submit]').click()
 
 
-@given(u'user requests to act as an agent for an exporter')
+@given(u'user requests to act as an agent for an exporter')  # NOQA: F811
 @when(u'user requests to act as an agent for an exporter')
 def step_impl(context):
     text = 'Request access to act as an Agent for an Exporter'
@@ -64,7 +63,7 @@ def step_impl(context):
     context.browser.find_element_by_css_selector('button[type=submit]').click()
 
 
-@when(u'user requests to act as an exporter')
+@when(u'user requests to act as an exporter')  # NOQA: F811
 @given(u'user requests to act as an exporter')
 def step_impl(context):
     text = 'Request access to act as an Exporter'
@@ -75,12 +74,17 @@ def step_impl(context):
 
     context.browser.find_element_by_css_selector('button[type=submit]').click()
 
-@then(u'a success message is displayed')
+
+@then(u'a success message is displayed')  # NOQA: F811
 def step_impl(context):
-     assert find_element_with_text(context, 'Your access request has been submitted to ILB', '*/div[contains(@class, "info-box-success") ]/p'), 'Success message not found'
+    assert find_element_with_text(
+        context,
+        'Your access request has been submitted to ILB',
+        '*/div[contains(@class, "info-box-success") ]/p'
+    ), 'Success message not found'
 
 
-@given(u'there are {count} Pending Access Requests to act as an importer')
+@given(u'there are {count} Pending Access Requests to act as an importer')  # NOQA: F811
 @then(u'there are {count} Pending Access Requests to act as an importer')
 def step_impl(context, count):
     elements = context.browser.find_elements_by_css_selector('.pending-import-requests .main-entry')
@@ -89,7 +93,7 @@ def step_impl(context, count):
     assert element_count == int(count), f'expecting {count} of elements in pending import requests but found {element_count}'
 
 
-@given(u'there are {count} Pending Access Requests to act as an exporter')
+@given(u'there are {count} Pending Access Requests to act as an exporter')  # NOQA: F811
 @then(u'there are {count} Pending Access Requests to act as an exporter')
 def step_impl(context, count):
     elements = context.browser.find_elements_by_css_selector('.pending-export-requests .main-entry')
