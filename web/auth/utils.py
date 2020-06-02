@@ -39,27 +39,3 @@ def has_any_permission(user, permissions=[]):
         return True
     return _get_user_permissions_query(user).filter(
         codename__in=permissions).exists()
-
-
-def has_team_permission(user, teams, permission):
-    """
-        Check if user has given permission of given list of teams.
-
-        This only covers non-global Teams (Importers/Exporters
-        and their agents, constabularies, etc.)
-
-        Given permission includes the placeholder for id as '{id}'
-
-        A list of permissions will be constructed for each of the given teams
-        and user will be tested for these permissions
-    """
-    if user.is_superuser:
-        return True
-    if not teams:
-        return False
-
-    permissions = []
-    for team in teams:
-        permissions.append(permission.format(id=team.id))
-
-    return has_any_permission(user, permissions)

@@ -41,10 +41,19 @@ class ConstabularyTest(TestCase):
         role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
         self.assertTrue(Role.objects.filter(name=role_name).exists())
 
-    def test_firearms_authority_permission_created(self):
+    def test_firearms_authority_role_has_permissions(self):
+        Permission.objects.create(codename='IMP_REGULATOR', content_type_id=15)
+        Permission.objects.create(codename='IMP_EDIT_FIREARMS_AUTHORITY',
+                                  content_type_id=15)
         constabulary = self.create_constabulary()
-        codename = f'IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR:{constabulary.id}:IMP_EDIT_FIREARMS_AUTHORITY'  # noqa: C0301
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
+        role_name = f'Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}'
+        permissions = Role.objects.get(name=role_name).permissions.all()
+        self.assertEqual(len(permissions), 2)
+        codenames = []
+        for p in permissions:
+            codenames.append(p.codename)
+        self.assertTrue('IMP_EDIT_FIREARMS_AUTHORITY' in codenames)
+        self.assertTrue('IMP_REGULATOR' in codenames)
 
     def test_region_verbose(self):
         constabulary = self.create_constabulary()
