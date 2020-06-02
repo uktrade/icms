@@ -6,7 +6,7 @@ from web.views.actions import Archive, Edit, Unarchive
 from .forms import ProductLegislationFilter, ProductLegislationForm
 from .models import ProductLegislation
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 
 class ProductLegislationListView(ModelFilterView):

@@ -7,7 +7,7 @@ from web.views.actions import Archive, Edit, Unarchive
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 
 class ConstabularyListView(ModelFilterView):

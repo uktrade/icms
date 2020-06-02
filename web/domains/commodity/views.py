@@ -8,7 +8,7 @@ from .forms import (CommodityEditForm, CommodityFilter, CommodityForm,
                     CommodityGroupForm)
 from .models import Commodity, CommodityGroup
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 
 class CommodityListView(ModelFilterView):

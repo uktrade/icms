@@ -13,7 +13,7 @@
             <a href="{{ url('workbasket') }}">Workbasket</a>
         </li>
 
-        {% if perms.web["IMP_ADMIN:DASHBOARD_USER:DASHBOARD_ACCESS_LHS"] %}
+        {% if perms.web["DASHBOARD_ACCESS_LHS"] %}
             <li class="top-menu-action">
                 <a href="">Dashboard</a>
             </li>
@@ -27,19 +27,19 @@
           <a href="{{url('mailshot-received')}}">Search Mailshots</a>
         </li>
 
-        {% if perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_SEARCH_CASES_LHS"] or
-  perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_CERT_SEARCH_CASES_LHS"] %}
+        {% if perms.web["IMP_SEARCH_CASES_LHS"] or
+  perms.web["IMP_CERT_SEARCH_CASES_LHS"] %}
             <li class="top-menu-dropdown">
                 <a class="dropdown-label" href="#">Search</a>
                 <ul class="menu-out flow-down top-menu-subcategory-list">
                     <li class="top-menu-subcategory">
                         <ul class="top-menu-subcategory-actions">
-                            {% if perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_SEARCH_CASES_LHS"] %}
+                            {% if perms.web["IMP_SEARCH_CASES_LHS"] %}
                                 <li class="top-menu-subcategory-action">
                                     <a href="">Search Import Applications</a>
                                 </li>
                             {% endif %} {% if
-          perms.web["IMP_ADMIN_SEARCH:SEARCH_CASES:IMP_CERT_SEARCH_CASES_LHS"] %}
+          perms.web["IMP_CERT_SEARCH_CASES_LHS"] %}
                             <li class="top-menu-subcategory-action">
                                 <a href="">Search Certificate Applications</a>
                             </li>
@@ -53,7 +53,7 @@
         <li class="top-menu-dropdown">
             <a class="dropdown-label" href="#">Admin</a>
             <ul class="menu-out flow-down top-menu-subcategory-list">
-                {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] %}
+                {% if perms.web["IMP_MAINTAIN_ALL"] %}
                     <li class="top-menu-subcategory">
                         <span class="top-menu-subcategory-prompt">Importers/Exporters</span>
 
@@ -66,7 +66,7 @@
                             </li>
                         </ul>
                     </li>
-                {% endif %} {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:MAILSHOT_ADMIN"] %}
+                {% endif %} {% if perms.web["MAILSHOT_ADMIN"] %}
                 <li class="top-menu-subcategory">
                     <ul class="top-menu-subcategory-actions">
                         <li class="top-menu-subcategory-action">
@@ -74,13 +74,13 @@
                         </li>
                     </ul>
                 </li>
-            {% endif %} {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] or
-      perms.web["COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_ADMIN_LHS"] %}
+            {% endif %} {% if perms.web["IMP_MAINTAIN_ALL"] or
+      perms.web["COUNTRY_ADMIN_LHS"] %}
                 <li class="top-menu-subcategory">
                     <span class="top-menu-subcategory-prompt">Reference Data</span>
 
                     <ul class="top-menu-subcategory-actions">
-                        {% if perms.web["IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL"] %}
+                        {% if perms.web["IMP_MAINTAIN_ALL"] %}
                             <li class="top-menu-subcategory-action">
                                 <a href="{{ url('commodity-list') }}">Commodities</a>
                             </li>
@@ -103,7 +103,7 @@
                                 <a href="{{ url('template-list') }}">Templates</a>
                             </li>
                         {% endif %} {% if
-          perms.web["COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_ADMIN_LHS"] %}
+          perms.web["COUNTRY_ADMIN_LHS"] %}
                         <li class="top-menu-subcategory-action">
                             <a href="{{ url('country-list') }}">Countries</a>
                         </li>
@@ -111,8 +111,8 @@
                     </ul>
                 </li>
             {% endif %} {% if request.user.team_set.count() > 0 or
-      perms.web["DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS"] or
-      perms.web["DIRECTORY_DTI_SUPER_USERS:CONTACT_ADMIN:WEB_USER_ACCOUNT_LHS"] %}
+      perms.web["WEB_USER_ACCOUNT_LHS"] or
+      perms.web["WEB_USER_ACCOUNT_LHS"] %}
                 <li class="top-menu-subcategory">
                     <ul class="top-menu-subcategory-actions">
                         {% if request.user.team_set.count() > 0 %}
@@ -120,9 +120,9 @@
                                 <a href="{{ url('team-list') }}">Teams</a>
                             </li>
                         {% endif %} {% if
-          perms.web["DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS"]
+          perms.web["WEB_USER_ACCOUNT_LHS"]
           or
-          perms.web["DIRECTORY_DTI_SUPER_USERS:CONTACT_ADMIN:WEB_USER_ACCOUNT_LHS"] %}
+          perms.web["WEB_USER_ACCOUNT_LHS"] %}
                         <li class="top-menu-subcategory-action">
                             <a href="{{ url('users-list') }}">Web User Accounts</a>
                         </li>

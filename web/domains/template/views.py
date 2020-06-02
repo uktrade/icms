@@ -6,7 +6,7 @@ from web.views.actions import Archive, Unarchive, Edit
 from .models import Template
 from .forms import TemplatesFilter, GenericTemplate, EndorsementCreateTemplateForm
 
-permissions = 'web.IMP_ADMIN:MAINTAIN_ALL:IMP_MAINTAIN_ALL'
+permissions = 'web.IMP_MAINTAIN_ALL'
 
 
 class TemplateListView(ModelFilterView):

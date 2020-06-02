@@ -38,48 +38,76 @@ class ImporterTest(TestCase):
         role_name = f'Importer Contacts:Approve/Reject Agents and Importers:{importer.id}'
         self.assertTrue(Role.objects.filter(name=role_name).exists())
 
-    def test_agent_approve_reject_role_permissions_created(self):
+    def test_agent_approve_reject_role_has_default_permissions(self):
+        Permission.objects.create(codename='IMP_AGENT_APPROVER',
+                                  content_type_id=15)
+        Permission.objects.create(codename='IMP_SEARCH_CASES_LHS',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MAILSHOT_RECIPIENT',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MANAGE_IMPORTER_ACCOUNT',
+                                  content_type_id=15)
         importer = self.create_importer()
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:IMP_AGENT_APPROVER'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:AGENT_APPROVER:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
+        role_name = f'Importer Contacts:Approve/Reject Agents and Importers:{importer.id}'
+        permissions = Role.objects.get(name=role_name).permissions.all()
+        self.assertEqual(len(permissions), 4)
+        codenames = []
+        for p in permissions:
+            codenames.append(p.codename)
+        self.assertTrue('IMP_AGENT_APPROVER' in codenames)
+        self.assertTrue('IMP_SEARCH_CASES_LHS' in codenames)
+        self.assertTrue('MAILSHOT_RECIPIENT' in codenames)
+        self.assertTrue('MANAGE_IMPORTER_ACCOUNT' in codenames)
 
     def test_application_edit_role_created(self):
         importer = self.create_importer()
         role_name = f'Importer Contacts:Edit Applications:{importer.id}'
         self.assertTrue(Role.objects.filter(name=role_name).exists())
 
-    def test_application_edit_role_permissions_created(self):
+    def test_application_edit_role_has_default_permissions(self):
+        Permission.objects.create(codename='IMP_EDIT_APP', content_type_id=15)
+        Permission.objects.create(codename='IMP_SEARCH_CASES_LHS',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MAILSHOT_RECIPIENT',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MANAGE_IMPORTER_ACCOUNT',
+                                  content_type_id=15)
         importer = self.create_importer()
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:IMP_EDIT_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:EDIT_APP:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
+        role_name = f'Importer Contacts:Edit Applications:{importer.id}'
+        permissions = Role.objects.get(name=role_name).permissions.all()
+        self.assertEqual(len(permissions), 4)
+        codenames = []
+        for p in permissions:
+            codenames.append(p.codename)
+        self.assertTrue('IMP_EDIT_APP' in codenames)
+        self.assertTrue('IMP_SEARCH_CASES_LHS' in codenames)
+        self.assertTrue('MAILSHOT_RECIPIENT' in codenames)
+        self.assertTrue('MANAGE_IMPORTER_ACCOUNT' in codenames)
 
     def test_application_vary_role_created(self):
         importer = self.create_importer()
         role_name = f'Importer Contacts:Vary Applications/Licences:{importer.id}'
         self.assertTrue(Role.objects.filter(name=role_name).exists())
 
-    def test_application_vary_role_permissions_created(self):
+    def test_application_vary_role_has_default_permissions(self):
+        Permission.objects.create(codename='IMP_VARY_APP', content_type_id=15)
+        Permission.objects.create(codename='IMP_SEARCH_CASES_LHS',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MAILSHOT_RECIPIENT',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MANAGE_IMPORTER_ACCOUNT',
+                                  content_type_id=15)
         importer = self.create_importer()
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:IMP_VARY_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VARY_APP:{importer.id}:MANAGE_IMPORTER_ACCOUNT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
+        role_name = f'Importer Contacts:Vary Applications/Licences:{importer.id}'
+        permissions = Role.objects.get(name=role_name).permissions.all()
+        self.assertEqual(len(permissions), 4)
+        codenames = []
+        for p in permissions:
+            codenames.append(p.codename)
+        self.assertTrue('IMP_VARY_APP' in codenames)
+        self.assertTrue('IMP_SEARCH_CASES_LHS' in codenames)
+        self.assertTrue('MAILSHOT_RECIPIENT' in codenames)
+        self.assertTrue('MANAGE_IMPORTER_ACCOUNT' in codenames)
 
     def test_application_view_role_created(self):
         importer = self.create_importer()
@@ -87,10 +115,18 @@ class ImporterTest(TestCase):
         self.assertTrue(Role.objects.filter(name=role_name).exists())
 
     def test_application_view_role_permissions_created(self):
+        Permission.objects.create(codename='IMP_VIEW_APP', content_type_id=15)
+        Permission.objects.create(codename='IMP_SEARCH_CASES_LHS',
+                                  content_type_id=15)
+        Permission.objects.create(codename='MAILSHOT_RECIPIENT',
+                                  content_type_id=15)
         importer = self.create_importer()
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:IMP_SEARCH_CASES_LHS'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:IMP_VIEW_APP'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
-        codename = f'IMP_IMPORTER_CONTACTS:VIEW_APP:{importer.id}:MAILSHOT_RECIPIENT'
-        self.assertTrue(Permission.objects.filter(codename=codename).exists())
+        role_name = f'Importer Contacts:View Applications/Licences:{importer.id}'
+        permissions = Role.objects.get(name=role_name).permissions.all()
+        self.assertEqual(len(permissions), 3)
+        codenames = []
+        for p in permissions:
+            codenames.append(p.codename)
+        self.assertTrue('IMP_VIEW_APP' in codenames)
+        self.assertTrue('IMP_SEARCH_CASES_LHS' in codenames)
+        self.assertTrue('MAILSHOT_RECIPIENT' in codenames)
