@@ -23,7 +23,7 @@ permissions = 'web.MAILSHOT_ADMIN'
 
 
 class ReceivedMailshotsView(ModelFilterView):
-    template_name = 'web/mailshot/received.html'
+    template_name = 'web/domains/mailshot/received.html'
     model = Mailshot
     filterset_class = ReceivedMailshotsFilter
     page_title = 'Received Mailshots'
@@ -55,7 +55,7 @@ class ReceivedMailshotsView(ModelFilterView):
 
 
 class MailshotListView(ModelFilterView):
-    template_name = 'web/mailshot/list.html'
+    template_name = 'web/domains/mailshot/list.html'
     model = Mailshot
     filterset_class = MailshotFilter
     permission_required = permissions
@@ -114,7 +114,7 @@ class MailshotCreateView(RequireRegisteredMixin, View):
 
 
 class MailshotEditView(PostActionMixin, ModelUpdateView):
-    template_name = 'web/mailshot/edit.html'
+    template_name = 'web/domains/mailshot/edit.html'
     form_class = MailshotForm
     model = Mailshot
     success_url = reverse_lazy('mailshot-list')
@@ -197,7 +197,7 @@ class MailshotDetailView(ModelDetailView):
 
 class MailshotRetractView(ModelUpdateView):
     RETRACT_TEMPLATE_CODE = 'RETRACT_MAILSHOT'
-    template_name = 'web/mailshot/retract.html'
+    template_name = 'web/domains/mailshot/retract.html'
     form_class = MailshotRetractForm
     model = Mailshot
     success_url = reverse_lazy('mailshot-list')
