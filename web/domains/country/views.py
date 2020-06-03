@@ -19,7 +19,7 @@ from .models import (Country, CountryGroup, CountryTranslation,
 
 logger = logging.getLogger(__name__)
 
-permissions = 'COUNTRY_MANAGE'
+permissions = 'web.COUNTRY_MANAGE'
 
 
 class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
