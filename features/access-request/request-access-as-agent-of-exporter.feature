@@ -1,5 +1,6 @@
 Feature: Request Importer/Exporter Access as an Agent for an Exporter Functionality
 
+    @access-request
     Scenario: Request to act as an agent for an exporter - correct fields are visible
         Given The user "app-importer" logs in
         Given the user navigates to "Request Importer/Exporter Access page"
@@ -13,12 +14,14 @@ Feature: Request Importer/Exporter Access as an Agent for an Exporter Functional
             | Agent name                                                  | True    |
             | Agent address                                               | True    |
 
+    @access-request
     Scenario: Request to act as an importer - success
         Given The user "app-importer" logs in
         Given the user navigates to "Request Importer/Exporter Access page"
         When  user requests to act as an agent for an exporter
         Then  a success message is displayed
 
+    @access-request
     Scenario: List pending requests to act as an importer
         Given The user "app-importer" logs in
         Given the user navigates to "Request Importer/Exporter Access page"

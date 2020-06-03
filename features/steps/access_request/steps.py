@@ -21,9 +21,9 @@ def step_impl(context):
         assert label.is_displayed() == to_boolean(is_visible), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
 
 
-@given(u'user requests to act as an importer')  # NOQA: F811
+@given(u'user requests to act as an importer')
 @when(u'user requests to act as an importer')
-def step_impl(context):
+def user_requests_to_act_as_an_importer(context):
     text = 'Request access to act as an Importer'
     context.browser.find_element_by_xpath(f"//select[@name='request_type']/option[text()='{text}']").click()
 

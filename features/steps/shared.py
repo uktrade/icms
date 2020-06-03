@@ -8,9 +8,21 @@ from web.models import User
 @when(u'the user "{user}" logs in')
 @given(u'the user "{user}" logs in')
 def user_logs_in(context, user):
-    given_the_user_is_created(context, user)
+
     user_navigates_to_page(context, 'Login page')
 
+    # ensure any user is logged out before loggin in again
+    # this is the fastest way to check for a logged in user
+    # if the login field is not present, then click logout
+    # this function is used on almost all scenarios, and the user will be loggout for most of them
+    # so checking for loggin field (present most times) will be faster than selenium waiting for
+    # logout element to appear throw NoSuchElement after timeout
+    try:
+        context.browser.find_element(By.ID, 'id_username')
+    except Exception:
+        context.browser.find_element(By.ID, 'btnLogout').click()
+
+    given_the_user_is_created(context, user)
     user_data = context.CREATED_USERS[user]
     user_login(context, user_data['username'], user_data['password'])
 
