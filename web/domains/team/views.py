@@ -59,14 +59,16 @@ class TeamEditView(ContactsManagementMixin, ModelUpdateView):
         return f"Editing '{self.object.name}'"
 
     def has_permission(self):
-        """ Allows going on to edit screen if user is part of the team """
-
+        """
+            Allow access if user is a part of the team as Resource Co-ordinator
+            or Team Coordinator(s)
+        """
         if self.request.user.is_superuser:
             return True
 
         team = self.get_object()
-        teams = self.request.user.team_set.all()
-        if team in teams:
-            return True
-
-        return False
+        coordinator_role = team.roles.get(
+            Q(name__contains=':Team Coordinator')
+            | Q(name__contains=':Resource Co-ordinator'))
+        return coordinator_role.user_set.filter(
+            pk=self.request.user.pk).exists()

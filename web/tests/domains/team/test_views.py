@@ -78,3 +78,29 @@ class TeamListViewTest(AuthTestCase):
         self.create_team_role('Team:Team Coordinators').user_set.add(self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data['page_title'], 'Search Teams')
+
+
+class TeamEditViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        self.team = TeamFactory(name='Test Team')
+        self.role = RoleFactory(name='Team:Resource Co-ordinator')
+        self.team.roles.add(self.role)
+        self.url = f'/teams/{self.team.id}/edit/'
+        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_coordinator_access(self):
+        self.login()
+        self.role.user_set.add(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
