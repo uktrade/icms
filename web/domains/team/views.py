@@ -11,7 +11,7 @@ from .models import Role, Team
 
 
 class TeamListView(ModelFilterView):
-    template_name = 'web/team/list.html'
+    template_name = 'web/domains/team/list.html'
     filterset_class = TeamsFilter
     model = Team
     page_title = 'Search Teams'
@@ -50,7 +50,7 @@ class TeamListView(ModelFilterView):
 
 
 class TeamEditView(ContactsManagementMixin, ModelUpdateView):
-    template_name = 'web/team/edit.html'
+    template_name = 'web/domains/team/edit.html'
     form_class = TeamEditForm
     success_url = reverse_lazy('team-list')
     model = Team
