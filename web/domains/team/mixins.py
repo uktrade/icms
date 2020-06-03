@@ -1,6 +1,6 @@
 import structlog as logging
 from django.db import transaction
-from django.shortcuts import render
+from django.template.response import TemplateResponse
 
 from web.domains.user.models import User
 from web.domains.user.views import PeopleSearchView
@@ -127,7 +127,8 @@ class ContactsManagementMixin(PostActionMixin):
         }
 
     def _render(self, context={}):
-        return render(self.request, self.template_name, context)
+        return TemplateResponse(self.request, self.template_name,
+                                context).render()
 
     def get_form(self, data=None, pk=None):
         logger.debug('Getting contacts for object pk: %s', pk)

@@ -4,7 +4,7 @@ from .factory import (CountryFactory, CountryGroupFactory,
                       CountryTranslationSetFactory)
 
 LOGIN_URL = '/'
-PERMISSIONS = ['COUNTRY_SUPER_USERS:COUNTRY_SET_SUPER_USER:COUNTRY_MANAGE']
+PERMISSIONS = ['COUNTRY_MANAGE']
 
 
 class CountryListViewTest(AuthTestCase):
