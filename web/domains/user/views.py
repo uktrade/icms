@@ -16,7 +16,7 @@ from .formset import (new_alternative_emails_formset,
                       new_personal_emails_formset, new_user_phones_formset)
 from .models import User
 
-permissions = 'web.DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS'
+permissions = 'web.WEB_USER_ACCOUNT_LHS'
 
 
 def details_update(request, action, pk):

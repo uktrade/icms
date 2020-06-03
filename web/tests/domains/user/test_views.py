@@ -5,7 +5,7 @@ from web.domains.user import User
 from .factory import UserFactory
 
 LOGIN_URL = '/'
-PERMISSIONS = ['DIRECTORY_DTI_SUPER_USERS:WUA_ADMIN:WEB_USER_ACCOUNT_LHS']
+PERMISSIONS = ['WEB_USER_ACCOUNT_LHS']
 
 
 class CurrentUserDetailsViewTest(AuthTestCase):
