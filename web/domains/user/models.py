@@ -3,6 +3,7 @@ import string
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from .managers import UserManager
 
 
 class User(AbstractUser):
@@ -19,6 +20,13 @@ class User(AbstractUser):
     TEMPORARY = 'TEMPORARY'
     FULL = 'FULL'
     PASSWORD_DISPOSITION = ((TEMPORARY, 'Temporary'), (FULL, 'Full'))
+
+    REQUIRED_FIELDS = [
+        'email', 'first_name', 'last_name', 'date_of_birth',
+        'security_question', 'security_answer'
+    ]
+
+    objects = UserManager()
 
     title = models.CharField(max_length=20, blank=False, null=True)
     preferred_first_name = models.CharField(max_length=4000,
