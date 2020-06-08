@@ -20,28 +20,7 @@ def _create_team_roles(team):
         role.permissions.add(*permissions)
 
 
-class Role(Group):
-    group = models.OneToOneField(Group,
-                                 on_delete=models.CASCADE,
-                                 parent_link=True,
-                                 related_name='roles')
-    description = models.CharField(max_length=4000, blank=True, null=True)
-    # Display order on the screen
-    role_order = models.IntegerField(blank=False, null=False)
-
-    def has_member(self, user):
-        return user in self.user_set.all()
-
-    @property
-    def short_name(self):
-        return self.name.split(':')[1]
-
-    class Meta:
-        ordering = ('role_order', )
-
-
 class BaseTeam(models.Model):
-    roles = models.ManyToManyField(Role)
     members = models.ManyToManyField(User)
     role_list = None  # List of roles with permissions to create for the team with each instance
 
@@ -58,9 +37,6 @@ class BaseTeam(models.Model):
                 _create_team_roles(self)
         return result
 
-    class Meta:
-        abstract = True
-
 
 class Team(BaseTeam):
     name = models.CharField(max_length=1000, blank=False, null=False)
@@ -68,3 +44,24 @@ class Team(BaseTeam):
 
     class Meta:
         ordering = ('name', )
+
+
+class Role(Group):
+    group = models.OneToOneField(Group,
+                                 on_delete=models.CASCADE,
+                                 parent_link=True,
+                                 related_name='roles')
+    description = models.CharField(max_length=4000, blank=True, null=True)
+    # Display order on the screen
+    role_order = models.IntegerField(blank=False, null=False)
+    team = models.ForeignKey(BaseTeam, on_delete=models.CASCADE)
+
+    def has_member(self, user):
+        return user in self.user_set.all()
+
+    @property
+    def short_name(self):
+        return self.name.split(':')[1]
+
+    class Meta:
+        ordering = ('role_order', )

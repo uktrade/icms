@@ -16,7 +16,7 @@ help: ## Show this screen
 ##@ Development
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations ${OPTS}
+	docker-compose run --rm web python ./manage.py makemigrations web
 
 migrate: ## execute db migration
 	unset UID && \
