@@ -17,16 +17,22 @@ def before_scenario(context, scenario):
     }
 
     context.CREATED_USERS = {
+        'app-admin': {
+            'username': 'app-admin',
+            'password': 'app-admin',
+            'first_name': 'app-admin',
+            'is_superuser': True
+        },
         'app-user': {
             'username': 'app-user',
             'password': 'app-user',
-            'first_name': 'app-user',
-            'is_superuser': True
+            'is_superuser': False
         },
         'app-importer': {
             'username': 'app-importer',
             'password': 'app-importer',
-            'first_name': 'app-importer'
+            'first_name': 'app-importer',
+            'is_superuser': False
         },
     }
 

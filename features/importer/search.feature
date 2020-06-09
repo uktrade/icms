@@ -1,11 +1,20 @@
 Feature: Importer Search Functionality
 
     @importer @search @importer-search
+    Scenario: normal user cannot access page
+        Given   The user "app-user" logs in
+        When   the user navigates to "Importer List page"
+        # Then pause
+        Then   the user sees a 403 error page
+
+
+
+    @importer @search @importer-search
     Scenario: show all status
         Given An importer with status "DRAFT" is created in the system
         And   An importer with status "ARCHIVED" is created in the system
         And   An importer with status "CURRENT" is created in the system
-        And   The user "app-user" logs in
+        And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
 
         When  the user selects to filter importers with status "Any"
@@ -18,7 +27,7 @@ Feature: Importer Search Functionality
         Given An importer with status "DRAFT" is created in the system
         And   An importer with status "ARCHIVED" is created in the system
         And   An importer with status "CURRENT" is created in the system
-        And   The user "app-user" logs in
+        And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
 
         When  the user selects to filter importers with status "draft"
@@ -34,7 +43,7 @@ Feature: Importer Search Functionality
         Given An importer with status "DRAFT" is created in the system
         And   An importer with status "ARCHIVED" is created in the system
         And   An importer with status "CURRENT" is created in the system
-        And   The user "app-user" logs in
+        And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
 
         When  the user selects to filter importers with status "archived"
@@ -50,7 +59,7 @@ Feature: Importer Search Functionality
         Given An importer with status "DRAFT" is created in the system
         And   An importer with status "ARCHIVED" is created in the system
         And   An importer with status "CURRENT" is created in the system
-        And   The user "app-user" logs in
+        And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
 
         When  the user selects to filter importers with status "current"

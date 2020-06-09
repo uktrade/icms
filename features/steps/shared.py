@@ -82,9 +82,15 @@ def button_with_text_is_visible(context, text):
     find_element_with_text(context, text, 'button')
 
 
+@then(u'pause')
 @then(u'pause for visual inspection')
 def pause(context):
     time.sleep(600)
+
+
+@then(u'the user sees a 403 error page')
+def step_impl(context):
+    text_is_visible(context, '403 Forbidden')
 
 
 ###
