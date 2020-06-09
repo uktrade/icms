@@ -13,13 +13,15 @@ def before_scenario(context, scenario):
         'user home': f'{context.BASE_URL}/home',
         'logout': f'{context.BASE_URL}/logout',
         'Request Importer/Exporter Access page': f'{context.BASE_URL}/access/request',
+        'Importer List page': f'{context.BASE_URL}/importer',
     }
 
     context.CREATED_USERS = {
         'app-user': {
             'username': 'app-user',
             'password': 'app-user',
-            'first_name': 'app-user'
+            'first_name': 'app-user',
+            'is_superuser': True
         },
         'app-importer': {
             'username': 'app-importer',

@@ -23,11 +23,26 @@ class Importer(Archivable, BaseTeam):
     NON_EUROPEAN = "O"
     REGIONS = ((UK, "UK"), (EUROPE, 'Europe'), (NON_EUROPEAN, 'Non-European'))
 
+    # Statuses
+    DRAFT = "DRAFT"
+    CURRENT = "CURRENT"
+    ARCHIVED = "ARCHIVED"
+    STATUSES = ((DRAFT, "Draft"), (CURRENT, 'Current'), (ARCHIVED, 'Archived'))
+
     is_active = models.BooleanField(blank=False, null=False, default=True)
+
     type = models.CharField(max_length=20,
                             choices=TYPES,
                             blank=False,
                             null=False)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUSES,
+        blank=True,
+        null=True
+    )
+
     # Organisation's name
     name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)

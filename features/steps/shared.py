@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 
 from web.tests.domains.user.factory import UserFactory
 from web.models import User
+import time
 
 
 @when(u'the user "{user}" logs in')
@@ -53,9 +54,9 @@ def given_the_user_is_created(context, user):
     UserFactory(
         username=user['username'],
         password=user['password'],
-        first_name=user['first_name'] or user['username'],
+        first_name=user['first_name'] if 'first_name' in user else user['username'],
         password_disposition=User.FULL,
-        is_superuser=False,
+        is_superuser=user['is_superuser'] if 'is_superuser' in user else False,
         account_status=User.ACTIVE,
         is_active=True
     )
@@ -79,6 +80,11 @@ def text_is_visible(context, text):
 @then(u'a button with text "{text}" is visible')
 def button_with_text_is_visible(context, text):
     find_element_with_text(context, text, 'button')
+
+
+@then(u'pause for visual inspection')
+def pause(context):
+    time.sleep(600)
 
 
 ###

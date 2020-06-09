@@ -25,7 +25,7 @@
           <div class="three columns"></div>
           <div class="six columns">
             <ul class="menu-out flow-across">
-              <button type="submit" name="" value="" class="primary-button button">
+              <button id="btn-submit-search" type="submit" name="" value="" class="primary-button button">
                 Search
               </button>
               </li>
@@ -47,7 +47,7 @@
 
     {% block results %}
 
-      <table responsiveList class="setoutList">
+      <table responsiveList class="setoutList" id="tbl-search-results">
         <thead>
           <tr>
             {{tables.headers(display)}}
@@ -59,7 +59,7 @@
         </thead>
 
         {% for item in (page.object_list if page else results) %}
-          <tr>
+          <tr class="result-row">
             {{tables.fields(item, display)}}
 
             {% if display.actions %}
