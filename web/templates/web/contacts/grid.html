@@ -68,8 +68,7 @@
 
                 </td>
                 {% for role in roles %}
-                {% set role_id=role.id|string %}
-                {% set has_role=True if user.id in role_members[role.id]  %}
+                {% set has_role=True if user.id|string in role_members[role.id|string]  %}
                 <td>
                     <div class="individual-input">
                         <label for="role{{role.id}}-input" class="radio-label">

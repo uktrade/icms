@@ -7,3 +7,12 @@
   {{fields.field(form.description)}} 
   {% include "web/contacts/tabs.html" %}
 {%endblock %}
+
+{% block actions %}
+  <li>
+    <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+  </li>
+  <li>
+    <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
+  </li>
+{% endblock %}
