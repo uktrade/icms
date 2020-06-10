@@ -49,7 +49,7 @@ django-celery-results = "*"
 celery = "*"
 redis = "*"
 django-htmlmin = "*"
-
+django-redis = "*"
 
 [requires]
 python_version = "3.7.6"
