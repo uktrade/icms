@@ -1,5 +1,6 @@
 import structlog as logging
 from django.db import transaction
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 
 from web.domains.user.models import User
@@ -146,4 +147,5 @@ class ContactsManagementMixin(PostActionMixin):
         team = form.save()
         self._save_members(team)
         self._save_role_members(team)
-        return self.get(request, *args, **kwargs)
+        self.object = team
+        return redirect(self.get_success_url())
