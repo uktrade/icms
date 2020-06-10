@@ -30,7 +30,7 @@ class ImporterListView(ModelFilterView):
         return has_permission(self.request.user)
 
     class Display:
-        fields = [('name', 'user', 'registered_number', 'entity_type')]
+        fields = [('name', 'user', 'registered_number', 'entity_type'), 'status']
         fields_config = {
             'name': {
                 'header': 'Importer Name'
@@ -43,7 +43,10 @@ class ImporterListView(ModelFilterView):
             },
             'entity_type': {
                 'header': 'Importer Entity Type'
-            }
+            },
+            'status': {
+                'header': 'Status'
+            },
         }
 
 
