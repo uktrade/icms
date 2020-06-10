@@ -3,6 +3,7 @@ from web.domains.team.models import Role
 
 from .factory import TeamFactory
 
+
 class RoleTest(TestCase):
     def create_role(self,
                     name='Test Team:Test Role',

@@ -154,8 +154,8 @@ class TeamEditViewTest(AuthTestCase):
 
     def test_add_member_saves_form_changes_to_session(self):
         self.login_as_coordinator()
-        user = UserFactory()
-        user2 = UserFactory()
+        UserFactory()
+        UserFactory()
         self.client.post(
             self.url, {
                 'action': 'add_member',
@@ -221,11 +221,10 @@ class TeamEditViewTest(AuthTestCase):
         role.user_set.add(user)
         role2.user_set.add(user)
         self.team.members.add(user)
-        self.client.post(
-            self.url, {
-                'action': 'save',
-                'name': 'Test Team',
-                'members': []
-            })
+        self.client.post(self.url, {
+            'action': 'save',
+            'name': 'Test Team',
+            'members': []
+        })
         self.assertTrue(user not in role.user_set.all())
         self.assertTrue(user not in role2.user_set.all())
