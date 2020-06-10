@@ -1,10 +1,14 @@
-{% macro page_link(request, label, page_no, active=True, class=None) %}
+{% macro page_link(request, label, page_no, active=True, class=None, is_post=False) %}
 <li class="{{class}} {% if not active %}disabled{% endif %}" 
   aria-disabled="{%if not active %}true{%endif%}">
     {% if active %}
-    <a class="button link-button" href="{{modify_query(request, page=page_no)}}">
-      {{label}}
-    </a>
+      {% if is_post %}
+        <button class="button link-button" type="submit" name="page" value="{{page_no}}" >{{label}}</>
+      {% else %}
+        <a class="button link-button" href="{{modify_query(request, page=page_no)}}">
+          {{label}}
+        </a>
+      {% endif %}
     {% else %}
       {{label}}
     {% endif %}

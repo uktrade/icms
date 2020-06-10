@@ -1,5 +1,5 @@
 <div class="tab-content big-tabs" aria-hidden="false">
-    {% if not contacts.members %}
+    {% if not members %}
     <div class="info-box info-box-info">
         There isn't anyone in this team
     </div>
@@ -9,7 +9,7 @@
             <tr>
                 <th>Central Contact Details</th>
 
-                {% for role in contacts.roles %}
+                {% for role in roles %}
                 <th>
                     <div class="individual-input input-group">
                         <div class="eleven-column-input">
@@ -25,7 +25,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for user in contacts.members %}
+            {% for user in members %}
             <tr>
                 <input type="hidden" name="members" value="{{user.id}}" />
                 <td style="white-space: nowrap">
@@ -67,9 +67,9 @@
                     </div>
 
                 </td>
-                {% for role in contacts.roles %}
+                {% for role in roles %}
                 {% set role_id=role.id|string %}
-                {% set has_role=True if user in contacts.role_members[role_id] else False %}
+                {% set has_role=True if user.id in role_members[role.id]  %}
                 <td>
                     <div class="individual-input">
                         <label for="role{{role.id}}-input" class="radio-label">

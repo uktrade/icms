@@ -139,12 +139,40 @@ class PeopleSearchView(ModelFilterView):
     template_name = 'web/domains/user/search-people.html'
     filterset_class = PeopleFilter
     model = User
-    config = {'title': 'Search People'}
+    permission_required = []
+    page_title = 'Search People'
+
+    def get_page(self):
+        return self.request.POST.get('page')
+
+    def get_filterset(self, **kwargs):
+        return self.filterset_class(self.request.POST or None,
+                                    queryset=self.get_queryset(),
+                                    **kwargs)
 
     class Display:
         fields = [('title', 'first_name', 'last_name'),
                   ('organisation', 'email'), 'work_address']
-        headers = ['Name', 'Job Details', 'Oragnisation Address']
+        fields_config = {
+            'title': {
+                'header': 'Name'
+            },
+            'first_name': {
+                'no_header': True
+            },
+            'last_name': {
+                'no_header': True
+            },
+            'organisation': {
+                'header': 'Job Details'
+            },
+            'email': {
+                'no_header': True
+            },
+            'work_address': {
+                'header': 'Organisation Address'
+            }
+        }
         select = True
 
 

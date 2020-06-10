@@ -51,55 +51,6 @@ class ContactsManagementMixin(PostActionMixin):
                 role_members[role_id] = members
         return role_members
 
-    def _fetch_role_members(self, role_members=None):
-        "Read role members from database"
-        result = {}
-        members = role_members or self._extract_role_members()
-        for role_id, user_ids in members.items():
-            logger.debug('Role: %s, Members: %s', role_id, user_ids)
-            result[role_id] = self._get_users_by_ids(user_ids)
-        logger.debug('Fetched role members: %s', result)
-        return result
-
-    def _get_roles(self, object):
-        if not object.id:  # New object
-            return Role.objects.none()
-
-        return object.roles.all()
-
-    def _get_data(self, object):
-        param = self._get_post_parameter_as_list
-        roles = self._get_roles(object)
-        members = self._get_users_by_ids(param('members'))
-        role_members = self._fetch_role_members()
-        return {
-            'members': members,
-            'roles': roles,
-            'role_members': role_members
-        }
-
-    def _get_initial_data(self, object):
-        if not object.id:  # New Object
-            return {}
-
-        roles = object.roles.all()
-        # TODO: might be slow, use Django api to fetch related efficientl
-        return {
-            'members': object.members.all(),
-            'roles': roles,
-            'role_members': self._get_role_members(roles)
-        }
-
-    def _save_to_session(self, role_id=None, pk=None):
-        put = self._add_to_session
-        param = self._get_post_parameter_as_list
-        form_data = self.get_form(self.request.POST, pk).data
-        put('form', form_data)
-        put('members', param('members'))
-        put('role_members', self._extract_role_members())
-        if role_id:
-            put('add_to_role', role_id)
-
     def _restore_from_session(self, new_members=[], pk=None):
         _pop = self._remove_from_session
         form_data = _pop('form')
@@ -130,15 +81,7 @@ class ContactsManagementMixin(PostActionMixin):
         return TemplateResponse(self.request, self.template_name,
                                 context).render()
 
-    def get_form(self, data=None, pk=None):
-        logger.debug('Getting contacts for object pk: %s', pk)
-        instance = None
-        if pk:
-            instance = super().get_object()
-
-        return super().get_form_class()(data, instance=instance)
-
-    def get(self, request, pk=None):
+    def _get(self, request, pk=None):
         "Initial get request"
         self._remove_from_session(request)  # clear session data if exists
         form = self.get_form(pk=pk)
@@ -148,11 +91,6 @@ class ContactsManagementMixin(PostActionMixin):
         })
 
     def search_people(self, request, pk=None):
-        return PeopleSearchView.as_view()(request)
-
-    def add_member(self, request, pk=None):
-        add_to_role = request.POST.get('add_to_role', None)
-        self._save_to_session(add_to_role, pk)
         return PeopleSearchView.as_view()(request)
 
     def add_people(self, request, pk=None):
@@ -176,8 +114,44 @@ class ContactsManagementMixin(PostActionMixin):
             for user_id in members:
                 role.user_set.add(user_id)
 
+    def _clear_session(self):
+        team = self.get_object()
+        return self._remove_from_session(f'team:{team.id}')
+
+    def _save_to_session(self, request):
+        put = self._add_to_session
+        team = self.get_object()
+        put(f'team:{team.id}', request.POST)
+
+    def get_data(self):
+        team = self.get_object()
+        roles = team.roles.all()
+        members = team.members.all()
+        role_members = {}
+        for role in roles:
+            role_members[role.id] = role.user_set.values_list('id', flat=True)
+
+        return {
+            'members': members,
+            'roles': roles,
+            'role_members': role_members
+        }
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update(self.get_data())
+        return context
+
+    def add_member(self, request, pk=None):
+        self._save_to_session(request)
+        return PeopleSearchView.as_view()(request)
+
+    def x_get(self, request, pk=None):
+        "Initial get request"
+        self._remove_from_session(request)  # clear session data if exists
+
     @transaction.atomic
-    def save(self, request, pk=None):
+    def _save(self, request, pk=None):
         logger.debug('Save: %s', pk)
         form = self.get_form(request.POST, pk)
         if not form.is_valid():  # render back to display errors

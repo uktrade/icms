@@ -3,6 +3,7 @@ import string
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 from .managers import UserManager
 
 
@@ -95,14 +96,18 @@ class User(AbstractUser):
             return True
 
         # Check if user is a member of any import/agent organisation
-        member_of_count = self.importer_set.filter(is_active=True).count()
+        from web.domains.importer.models import Importer
+        member_of_count = Importer.objects.filter(is_active=True,
+                                                  members=self).count()
         return member_of_count > 0
 
     def is_exporter(self):
         """
            Checks if user is a member of any export organisation
         """
-        return self.exporter_set.filter(is_active=True).count() > 0
+        from web.domains.exporter.models import Exporter
+        return Exporter.objects.filter(is_active=True,
+                                       members=self).count() > 0
 
     def set_temp_password(self, length=8):
         """

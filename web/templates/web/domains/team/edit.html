@@ -1,18 +1,9 @@
-{% extends "layout/no-sidebar.html" %}
+{% extends "model/edit.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block main_content %}
-{% call forms.form(method='post', csrf_input=csrf_input) -%}
-    {{fields.field(form.name)}} 
-    {{fields.field(form.description)}} 
-    {% include "web/contacts/tabs.html" %}
-{%- endcall %}
-
-
-<div class="content-actions">
-    <ul class="menu-out flow-across">
-        <li> <a href="{{url('team-list')}}" class="prev-link">Maintain Teams</a></li>
-    </ul>
-</div>
-{% endblock %}
+{% block fields %}
+  {{fields.field(form.name)}} 
+  {{fields.field(form.description)}} 
+  {% include "web/contacts/tabs.html" %}
+{%endblock %}

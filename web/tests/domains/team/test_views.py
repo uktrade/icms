@@ -13,8 +13,8 @@ class TeamListViewTest(AuthTestCase):
         """
             Creates a team with a role of given name
         """
-        role = RoleFactory(name=role_name)
         team = TeamFactory(name='Test Team')
+        role = RoleFactory(name=role_name, team=team)
         team.roles.add(role)
         return role
 

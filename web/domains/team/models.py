@@ -12,7 +12,8 @@ def _create_team_roles(team):
         return
 
     for r in team.role_list:
-        role = Role.objects.create(name=r['name'].format(id=team.id),
+        role = Role.objects.create(team=team,
+                                   name=r['name'].format(id=team.id),
                                    description=r['description'],
                                    role_order=r['role_order'])
 
@@ -21,7 +22,7 @@ def _create_team_roles(team):
 
 
 class BaseTeam(models.Model):
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(User, related_name='teams')
     role_list = None  # List of roles with permissions to create for the team with each instance
 
     @transaction.atomic
@@ -54,7 +55,7 @@ class Role(Group):
     description = models.CharField(max_length=4000, blank=True, null=True)
     # Display order on the screen
     role_order = models.IntegerField(blank=False, null=False)
-    team = models.ForeignKey(BaseTeam, on_delete=models.CASCADE)
+    team = models.ForeignKey(BaseTeam, on_delete=models.CASCADE, related_name='roles')
 
     def has_member(self, user):
         return user in self.user_set.all()

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from web.domains.team.models import Role
 
+from .factory import TeamFactory
 
 class RoleTest(TestCase):
     def create_role(self,
@@ -9,7 +10,8 @@ class RoleTest(TestCase):
                     role_order=1):
         return Role.objects.create(name=name,
                                    description=description,
-                                   role_order=role_order)
+                                   role_order=role_order,
+                                   team=TeamFactory())
 
     def test_create_role(self):
         role = self.create_role()
