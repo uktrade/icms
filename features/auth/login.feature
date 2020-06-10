@@ -12,9 +12,9 @@ Feature: Login Functionality
 
     @login
     Scenario: user sees error when entering invalid credentials
-        Given The user "app-user" is created in the system
+        Given The user "app-admin" is created in the system
         Given an anonymous user navigates to Login page
-        When  the user "app-user" logs in with invalid credentials
+        When  the user "app-admin" logs in with invalid credentials
         Then  an invalid login message is visible
 
     @login
@@ -25,11 +25,11 @@ Feature: Login Functionality
 
     @login
     Scenario: user is redirected to "user home" page after login
-        Given  the user "app-user" logs in
+        Given  the user "app-admin" logs in
         Then  the "user home" page is displayed
-        And   the text "Hi app-user, you are logged in" is visible
+        And   the text "Hi app-admin, you are logged in" is visible
 
     @login
     Scenario: User home page allow logging out
-        Given the user "app-user" logs in
+        Given the user "app-admin" logs in
         Then  a button with text "Logout" is visible

@@ -12,6 +12,11 @@ class ImporterFilter(ModelSearchFilter):
                                         choices=Importer.TYPES,
                                         label='Importer Entity Type')
 
+    status = ChoiceFilter(field_name='is_active',
+                          choices=((True, 'Current'), (False, 'Archived')),
+                          lookup_expr='exact',
+                          label='Status')
+
     name = CharFilter(lookup_expr='icontains',
                       label='Importer Name',
                       method='filter_importer_name')

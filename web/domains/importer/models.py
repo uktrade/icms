@@ -24,10 +24,12 @@ class Importer(Archivable, BaseTeam):
     REGIONS = ((UK, "UK"), (EUROPE, 'Europe'), (NON_EUROPEAN, 'Non-European'))
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
+
     type = models.CharField(max_length=20,
                             choices=TYPES,
                             blank=False,
                             null=False)
+
     # Organisation's name
     name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
@@ -64,6 +66,10 @@ class Importer(Archivable, BaseTeam):
             return LABEL + ' - ' + (self.name or self.user.full_name)
         else:
             return LABEL
+
+    @property
+    def status(self):
+        return 'Current' if self.is_active else 'Archived'
 
     @property
     def entity_type(self):
