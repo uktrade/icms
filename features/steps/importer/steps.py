@@ -10,7 +10,7 @@ def step_impl(context, imp_status):
         is_active = True
 
     if imp_status.lower() == 'archived':
-         is_active = False
+        is_active = False
 
     ImporterFactory(
         name=f'{imp_status} Importer',

@@ -52,7 +52,6 @@ class Importer(Archivable, BaseTeam):
                              null=True,
                              related_name='own_importers')
 
-
     def is_agent(self):
         return self.main_importer is not None
 
@@ -68,11 +67,9 @@ class Importer(Archivable, BaseTeam):
         else:
             return LABEL
 
-
     @property
     def status(self):
         return 'Current' if self.is_active else 'Archived'
-
 
     @property
     def entity_type(self):
