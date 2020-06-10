@@ -6,29 +6,31 @@ from selenium.webdriver.support.ui import Select
 
 @given(u'An importer with status "{imp_status}" is created in the system')  # NOQA: F811
 def step_impl(context, imp_status):
-    if imp_status.lower() == 'draft':
-        status = Importer.DRAFT
-
     if imp_status.lower() == 'current':
-        status = Importer.CURRENT
+        is_active = True
 
     if imp_status.lower() == 'archived':
-        status = Importer.ARCHIVED
+         is_active = False
 
     ImporterFactory(
         name=f'{imp_status} Importer',
         type=Importer.ORGANISATION,
-        status=status,
-        is_active=True
+        is_active=is_active
     )
 
 
 @when(u'the user selects to filter importers with status "{imp_status}"')  # NOQA: F811
 def step_impl(context, imp_status):
-    if imp_status.lower() == "any":
-        imp_status = ""
+    status = ""
+
+    if imp_status.lower() == "archived":
+        status = "False"
+
+    if imp_status.lower() == "current":
+        status = "True"
+
     select = Select(context.browser.find_element_by_id('id_status'))
-    select.select_by_value(imp_status.upper())
+    select.select_by_value(status)
 
 
 @when(u'submits the import search from')  # NOQA: F811
