@@ -7,7 +7,6 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
-from web.views.actions import View
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +34,7 @@ class ImporterListView(ModelFilterView):
         fields_config = {
             'name': {
                 'header': 'Importer Name',
+                'link': True,
             },
             'user': {
                 'no_header': True
@@ -49,7 +49,6 @@ class ImporterListView(ModelFilterView):
                 'header': 'Status'
             },
         }
-        actions = [View()]
 
 
 class ImporterEditView(ModelUpdateView):
