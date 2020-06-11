@@ -1,5 +1,4 @@
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import SuspiciousOperation
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
@@ -25,22 +24,22 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
-        if not action:
-            raise SuspiciousOperation('Invalid Request!')
-
-        for a in self.Display.actions:
+        actions = getattr(self.Display, 'actions', [])
+        for a in actions:
             if isinstance(a, PostAction) and a.action == action:
                 response = a.handle(request, self, *args, **kwargs)
                 if response:
                     return response
-                else:  # Render the same page
-                    return super().get(request, *args, **kwargs)
 
-        raise SuspiciousOperation('Invalid Request!')
+        # Render the same page
+        return super().get(request, *args, **kwargs)
 
-    def paginate(self, queryset):
+    def get_page(self):
+        return self.request.GET.get('page')
+
+    def _paginate(self, queryset):
         paginator = Paginator(queryset, self.paginate_by)
-        page = self.request.GET.get('page')
+        page = self.get_page()
 
         try:
             return paginator.page(page)
@@ -59,7 +58,7 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
         filterset = self.get_filterset()
         context['filter'] = filterset
         if self.paginate:
-            context['page'] = self.paginate(filterset.qs)
+            context['page'] = self._paginate(filterset.qs)
         else:
             context['results'] = filterset.qs
         return context

@@ -35,6 +35,7 @@
     make setup # only needed on first run or after freshly build containers
     make debug
     make local_S3 # only needed on first run or after freshly build containers
+    make createsuperuer # to create a superuser
 
 ### Local AWS S3
     Local development used [localstack](https://github.com/localstack/localstack) to emulate S3 locally

@@ -1,191 +1,151 @@
 import structlog as logging
 from django.db import transaction
+from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 
 from web.domains.user.models import User
 from web.domains.user.views import PeopleSearchView
+from web.utils.session import Session
 from web.views.mixins import PostActionMixin
-
-from .models import Role
 
 logger = logging.getLogger(__name__)
 
 
 class ContactsManagementMixin(PostActionMixin):
-    def _remove_from_session(self, name, default=None):
-        "Remvove data from session and return"
-        value = self.request.session.pop(name, default)
-        logger.debug('Removed from session: {name=%s, value=%s} ', name, value)
-        return value
+    def _search_people(self):
+        return PeopleSearchView.as_view()(self.request)
 
-    def _get_post_parameter(self, name):
-        return self.request.POST.get(name)
-
-    def _get_post_parameter_as_list(self, name):
-        return self.request.POST.getlist(name)
-
-    def _add_to_session(self, name, value):
-        "Add data to session"
-        self.request.session[name] = value
-        logger.debug('Saved to session: {name=%s, value=%s} ', name, value)
+    def _session(self):
+        return Session(self.request)
 
     def _get_users_by_ids(self, id_list=[]):
         return list(User.objects.filter(pk__in=id_list))
 
-    def _get_role_members(self, roles):
+    def _extract_role_members(self, data):
         role_members = {}
-        for role in roles:
-            members = []
-            for user in list(role.user_set.all()):
-                members.append(user)
-            role_members[str(role.id)] = members
-
-        return role_members
-
-    def _extract_role_members(self):
-        role_members = {}
-        for key in self.request.POST:
-            if ('role_members_') in key:
+        for key in data:
+            if 'role_members_' in key:
                 members = self.request.POST.getlist(key)
                 role_id = key.replace('role_members_', '')
                 role_members[role_id] = members
         return role_members
 
-    def _fetch_role_members(self, role_members=None):
-        "Read role members from database"
-        result = {}
-        members = role_members or self._extract_role_members()
-        for role_id, user_ids in members.items():
-            logger.debug('Role: %s, Members: %s', role_id, user_ids)
-            result[role_id] = self._get_users_by_ids(user_ids)
-        logger.debug('Fetched role members: %s', result)
-        return result
+    def _get_form(self, data=None):
+        form_class = self.get_form_class()
+        team = self.get_object()
+        return form_class(instance=team, data=data)
 
-    def _get_roles(self, object):
-        if not object.id:  # New object
-            return Role.objects.none()
+    def _load_data(self):
+        """
+            Load initial data from database
+        """
+        team = self.get_object()
+        roles = team.roles.all()
+        members = team.members.all()
+        role_members = {}
+        for role in roles:
+            # Create role_id -> member_ids mapping with ids as strings
+            role_members[str(role.id)] = list(
+                map(str, role.user_set.values_list('id', flat=True)))
 
-        return object.roles.all()
-
-    def _get_data(self, object):
-        param = self._get_post_parameter_as_list
-        roles = self._get_roles(object)
-        members = self._get_users_by_ids(param('members'))
-        role_members = self._fetch_role_members()
         return {
+            'form': self._get_form(),
             'members': members,
             'roles': roles,
             'role_members': role_members
         }
 
-    def _get_initial_data(self, object):
-        if not object.id:  # New Object
-            return {}
+    def _remove_from_session(self):
+        team = self.get_object()
+        return self._session().pop(f'team:{team.id}')
 
-        roles = object.roles.all()
-        # TODO: might be slow, use Django api to fetch related efficientl
+    def _restore_from_session(self, new_members=None):
+        """
+            Load data saved to session previously
+        """
+        team = self.get_object()
+        data = self._remove_from_session()
+        members = data.get('members')
+        members.extend(new_members)
+        members = self._get_users_by_ids(members)
+
         return {
-            'members': object.members.all(),
-            'roles': roles,
-            'role_members': self._get_role_members(roles)
+            'form': self._get_form(data.get('form')),
+            'members': members,
+            'roles': team.roles.all(),
+            'role_members': data.get('role_members')
         }
 
-    def _save_to_session(self, role_id=None, pk=None):
-        put = self._add_to_session
-        param = self._get_post_parameter_as_list
-        form_data = self.get_form(self.request.POST, pk).data
-        put('form', form_data)
-        put('members', param('members'))
-        put('role_members', self._extract_role_members())
-        if role_id:
-            put('add_to_role', role_id)
-
-    def _restore_from_session(self, new_members=[], pk=None):
-        _pop = self._remove_from_session
-        form_data = _pop('form')
-        form = self.get_form(data=form_data, pk=pk)
-        users = self._get_users_by_ids(_pop('members', []))
-        role_members = _pop('role_members', {})
-        role_id = _pop('add_to_role')
-        if role_id:
-            members = role_members.get(str(role_id)) or []
-            new_members.extend(members)
-            role_members[str(role_id)] = new_members
-            logger.debug('Role members: %s', role_members)
-        role_members = self._fetch_role_members(role_members)
-        new_members = self._get_users_by_ids(new_members)
-        for user in users:
-            if user not in new_members:
-                new_members.append(user)
-        return {
+    def _get_posted_context(self, form):
+        team = self.get_object()
+        data = self.request.POST
+        members = data.getlist('members')
+        members = self._get_users_by_ids(members)
+        response = {
             'form': form,
-            'contacts': {
-                'members': new_members,
-                'roles': self._get_roles(form.instance),
-                'role_members': role_members
-            }
+            'members': members,
+            'roles': team.roles.all(),
+            'role_members': self._extract_role_members(data)
         }
+        return response
 
-    def _render(self, context={}):
-        return TemplateResponse(self.request, self.template_name,
-                                context).render()
+    def _save_to_session(self):
+        team = self.get_object()
+        data = self.request.POST
+        self._session().put(
+            f'team:{team.id}', {
+                'form': self._get_form(data=data).data,
+                'members': data.getlist('members'),
+                'role_members': self._extract_role_members(data)
+            })
 
-    def get_form(self, data=None, pk=None):
-        logger.debug('Getting contacts for object pk: %s', pk)
-        instance = None
-        if pk:
-            instance = super().get_object()
+    def _render(self, request, context):
+        self.object = self.get_object()
+        data = super().get_context_data()
+        data.update(context)
+        return TemplateResponse(request, self.template_name, data)
 
-        return super().get_form_class()(data, instance=instance)
+    def search_people(self, request, *args, **kwargs):
+        return self._search_people()
 
-    def get(self, request, pk=None):
+    def add_people(self, request, *args, **kwargs):
+        """Handles new members added in search people page"""
+        new_members = request.POST.getlist('selected_items')
+        context = self._restore_from_session(new_members)
+        return self._render(request, context)
+
+    def add_member(self, request, *args, **kwargs):
+        """ Render search people page if add_member action is received """
+        self._save_to_session()
+        return self._search_people()
+
+    def get(self, request, *args, **kwargs):
         "Initial get request"
-        self._remove_from_session(request)  # clear session data if exists
-        form = self.get_form(pk=pk)
-        return self._render({
-            'contacts': self._get_initial_data(form.instance),
-            'form': form
-        })
+        self._remove_from_session()  # clear session data if exists
+        return self._render(request, self._load_data())
 
-    def search_people(self, request, pk=None):
-        return PeopleSearchView.as_view()(request)
-
-    def add_member(self, request, pk=None):
-        add_to_role = request.POST.get('add_to_role', None)
-        self._save_to_session(add_to_role, pk)
-        return PeopleSearchView.as_view()(request)
-
-    def add_people(self, request, pk=None):
-        # Handles new members added on search users
-        selected_users = self._get_post_parameter_as_list('selected_items')
-        data = self._restore_from_session(selected_users, pk=pk)
-        logger.debug('Members added to object pk: %s', pk)
-        return self._render(data)
-
-    def _save_members(self, object):
-        members = set(self._get_post_parameter_as_list('members'))
-        object.members.clear()
+    def _save_members(self, team):
+        members = set(self.request.POST.getlist('members'))
+        team.members.clear()
         for member_id in members:
-            object.members.add(member_id)
+            team.members.add(member_id)
 
-    def _save_role_members(self, object):
-        role_members = self._extract_role_members()
-        for role in self._get_roles(object):
+    def _save_role_members(self, team):
+        role_members = self._extract_role_members(self.request.POST)
+        for role in team.roles.all():
             members = role_members.get(str(role.id), [])
             role.user_set.clear()
             for user_id in members:
                 role.user_set.add(user_id)
 
     @transaction.atomic
-    def save(self, request, pk=None):
-        logger.debug('Save: %s', pk)
-        form = self.get_form(request.POST, pk)
+    def save(self, request, *args, **kwargs):
+        form = self._get_form(request.POST)
         if not form.is_valid():  # render back to display errors
-            return self._render({
-                'contacts': self._get_data(form.instance),
-                'form': form
-            })
-        object = form.save()
-        self._save_members(object)
-        self._save_role_members(object)
-        return self.get(request, pk)
+            return self._render(request, self._get_posted_context(form))
+
+        team = form.save()
+        self._save_members(team)
+        self._save_role_members(team)
+        self.object = team
+        return redirect(self.get_success_url())

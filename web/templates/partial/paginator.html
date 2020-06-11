@@ -8,12 +8,12 @@
   {% set previous_page_no=page.previous_page_number() if has_previous %}
   {% set next_page_no=page.next_page_number() if has_next %}
 
-  {{lists.page_link(request, '«', page_no=1, active=has_previous, class="page-skip first")}}
-  {{lists.page_link(request, '‹', page_no=previous_page_no, active=has_previous, class="page-skip previous")}}
+  {{lists.page_link(request, '«', page_no=1, active=has_previous, class="page-skip first", is_post=is_post)}}
+  {{lists.page_link(request, '‹', page_no=previous_page_no, active=has_previous, class="page-skip previous", is_post=is_post)}}
   <li class="current-page-text">
     Page {{page.number}}<span class="page-count"> of {{page.paginator.num_pages}}</span>
   </li>
-  {{lists.page_link(request, '›', page_no=next_page_no, active=has_next, class="page-skip next")}}
-  {{lists.page_link(request, '»', page_no=page.paginator.num_pages, active=has_next, class="page-skip last")}}
+  {{lists.page_link(request, '›', page_no=next_page_no, active=has_next, class="page-skip next", is_post=is_post)}}
+  {{lists.page_link(request, '»', page_no=page.paginator.num_pages, active=has_next, class="page-skip last", is_post=is_post)}}
 </ul>
 {% endif %}

@@ -16,9 +16,6 @@ def run_filter(data=None):
 class UserListFilterTest(TestCase):
     def setUp(self):
         # set default admin user password disposition as FULL
-        admin = User.objects.get(pk=-1)
-        admin.password_disposition = User.FULL
-        admin.save()
         UserFactory(username='aloy',
                     is_active=True,
                     email='aloy@example.com',

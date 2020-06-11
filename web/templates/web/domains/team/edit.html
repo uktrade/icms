@@ -1,18 +1,18 @@
-{% extends "layout/no-sidebar.html" %}
+{% extends "model/edit.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block main_content %}
-{% call forms.form(method='post', csrf_input=csrf_input) -%}
-    {{fields.field(form.name)}} 
-    {{fields.field(form.description)}} 
-    {% include "web/contacts/tabs.html" %}
-{%- endcall %}
+{% block fields %}
+  {{fields.field(form.name)}} 
+  {{fields.field(form.description)}} 
+  {% include "web/contacts/tabs.html" %}
+{%endblock %}
 
-
-<div class="content-actions">
-    <ul class="menu-out flow-across">
-        <li> <a href="{{url('team-list')}}" class="prev-link">Maintain Teams</a></li>
-    </ul>
-</div>
+{% block actions %}
+  <li>
+    <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+  </li>
+  <li>
+    <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
+  </li>
 {% endblock %}

@@ -53,6 +53,7 @@ class TeamEditView(ContactsManagementMixin, ModelUpdateView):
     template_name = 'web/domains/team/edit.html'
     form_class = TeamEditForm
     success_url = reverse_lazy('team-list')
+    cancel_url = success_url
     model = Team
 
     def get_page_title(self):

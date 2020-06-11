@@ -21,14 +21,14 @@
                 <div class="eight columns">
                     <ul class="menu-out flow-across">
                         {% block actions %}
-                            <li>
-                                <button type="submit" class="primary-button button">Save</button>
-                            </li>
-                            <li>
-                                <a href="{{view.cancel_url or view.get_cancel_url()}}" class="button link-button">Cancel</a>
-                            </li>
-                            {% endblock %}
-                        </ul>
+                          <li>
+                              <button type="submit" class="primary-button button">Save</button>
+                          </li>
+                          <li>
+                              <a href="{{view.cancel_url or view.get_cancel_url()}}" class="button link-button">Cancel</a>
+                          </li>
+                        {% endblock %}
+                      </ul>
                 </div>
                 <div class="one columns"></div>
             </div>
