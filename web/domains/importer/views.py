@@ -7,6 +7,7 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
+from web.views.actions import View
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class ImporterListView(ModelFilterView):
         fields = [('name', 'user', 'registered_number', 'entity_type'), 'status']
         fields_config = {
             'name': {
-                'header': 'Importer Name'
+                'header': 'Importer Name',
             },
             'user': {
                 'no_header': True
@@ -48,6 +49,7 @@ class ImporterListView(ModelFilterView):
                 'header': 'Status'
             },
         }
+        actions = [View()]
 
 
 class ImporterEditView(ModelUpdateView):
@@ -75,12 +77,13 @@ class ImporterCreateView(ModelCreateView):
 
 class ImporterDetailView(ModelDetailView):
     template_name = 'web/domains/importer/view.html'
+    form_class = ImporterDisplayForm
     model = Importer
 
     def has_permission(self):
         return has_permission(self.request.user)
 
     def get_context_data(self, object):
-        context = super().get_context_data()
+        context = super().get_context_data(object)
         context['form'] = ImporterDisplayForm(instance=object)
         return context

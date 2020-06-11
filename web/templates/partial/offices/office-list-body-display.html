@@ -1,0 +1,17 @@
+{% for office in office_list %}
+    <tr>
+        <td>
+            <span class="text-widget ">{{ office.address|nl2br }}</td>
+        </td>
+        <td>
+            <span class="text-widget ">{{ office.postcode }}</span>
+        </td>
+        <td>
+            <span class="text-widget ">{{ office.eori_number }}</span>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="3">There are no offices</td>
+    </tr>
+{% endfor %}
