@@ -2,6 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from django.conf import settings
 
+from web.domains.importer.models import Importer
+from web.domains.office.models import Office
+
 
 def before_scenario(context, scenario):
     context.BASE_URL = f'http://{settings.TEST_SITE_HOST}'
@@ -34,6 +37,27 @@ def before_scenario(context, scenario):
             'first_name': 'app-importer',
             'is_superuser': False
         },
+    }
+
+    context.OFFICES = {
+        'Elm Street Imports': [
+            {
+                'is_active': True,
+                'postcode': '43001 DreamLand',
+                'address': '1428 Elm Street',
+                'eori_number': None,
+                'address_entry_type': Office.EMPTY,
+            },
+        ]
+    }
+    context.IMPORTERS = {
+        'Elm Street Imports': {
+            'type': Importer.ORGANISATION,
+            'name': 'Elm Street Imports',
+            'region_origin': Importer.NON_EUROPEAN,
+            'is_active': True,
+            'offices': context.OFFICES['Elm Street Imports'],
+        }
     }
 
 

@@ -146,7 +146,7 @@ behave: down ## runs functional tests
 		dockerize -wait http://localhost:8080 -timeout 60s && \
 		DJANGO_SETTINGS_MODULE=config.settings.test \
 		DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
-		python manage.py behave --keepdb $(BEHAVE_OPTS)\
+		python manage.py behave --keepdb $(BEHAVE_OPTS) --junit-directory test-reports --junit\
 	"
 
 	docker-compose down

@@ -1,0 +1,29 @@
+<testsuite errors="0" failures="0" hostname="b204689319ac" name="auth.logout.Logout Functionality" skipped="0" tests="2" time="2.326094" timestamp="2020-06-12T13:49:46.519063"><testcase classname="auth.logout.Logout Functionality" name="a user can logout from user home page" status="passed" time="1.270422"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @logout
+  Scenario: a user can logout from user home page
+    Given the user "app-admin" logs in ... passed in 0.906s
+    When the user click on logout button ... passed in 0.170s
+    Then the login page is displayed ... passed in 0.021s
+    And the user is logged out ... passed in 0.174s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="auth.logout.Logout Functionality" name="a user can logout by clicking on the top menu logout link" status="passed" time="1.055672"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @logout
+  Scenario: a user can logout by clicking on the top menu logout link
+    Given the user "app-admin" logs in ... passed in 0.670s
+    When the user navigates to "logout" ... passed in 0.221s
+    Then the login page is displayed ... passed in 0.017s
+    And the user is logged out ... passed in 0.148s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

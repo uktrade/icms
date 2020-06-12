@@ -1,5 +1,5 @@
     <div class="row">
       {{ fields.label(field) }} {# three colums markup added by macro #}
-      <div class="eight columns">{{ fields.field_as_text(field) if field.value() is not none}}</div>
+      <div class="eight columns" data-label="{{ field.label }}">{{ fields.field_as_text(field) if field.value() is not none}}</div>
       <div class="one columns"></div>
     </div>

@@ -1,0 +1,65 @@
+<testsuite errors="0" failures="0" hostname="b204689319ac" name="access-request.request-access-as-importer.Request Importer/Exporter Access as an Importer Functionality" skipped="0" tests="4" time="11.42181" timestamp="2020-06-12T13:49:31.189508"><testcase classname="access-request.request-access-as-importer.Request Importer/Exporter Access as an Importer Functionality" name="Request import access page is displayed" status="passed" time="1.277031"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: Request import access page is displayed
+    Given The user "app-importer" logs in ... passed in 0.961s
+    When the user navigates to "Request Importer/Exporter Access page" ... passed in 0.286s
+    Then Request Importer/Exporter Access page is displayed ... passed in 0.029s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="access-request.request-access-as-importer.Request Importer/Exporter Access as an Importer Functionality" name="Request to act as an importer - correct fields are visible" status="passed" time="1.240146"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: Request to act as an importer - correct fields are visible
+    Given The user "app-importer" logs in ... passed in 0.752s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.254s
+    When user sets Access Request Type to "Request access to act as an Importer" ... passed in 0.044s
+    Then the following fields visibility is set on the act as an importer/exporter form ... passed in 0.191s
+      | Field                                                       | Visible |
+      | Access Request Type                                         | True    |
+      | Organisation name                                           | True    |
+      | Organisation address                                        | True    |
+      | What are you importing and where are you importing it from? | True    |
+      | Agent name                                                  | False   |
+      | Agent address                                               | False   |
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="access-request.request-access-as-importer.Request Importer/Exporter Access as an Importer Functionality" name="Request to act as an importer - success" status="passed" time="1.842696"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: Request to act as an importer - success
+    Given The user "app-importer" logs in ... passed in 0.753s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.331s
+    When user requests to act as an importer ... passed in 0.739s
+    Then a success message is displayed ... passed in 0.020s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="access-request.request-access-as-importer.Request Importer/Exporter Access as an Importer Functionality" name="List pending requests to act as an importer" status="passed" time="7.061937"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: List pending requests to act as an importer
+    Given The user "app-importer" logs in ... passed in 0.744s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.272s
+    Given there are 0 Pending Access Requests to act as an importer ... passed in 5.028s
+    Given user requests to act as an importer ... passed in 0.730s
+    When the user navigates to "Request Importer/Exporter Access page" ... passed in 0.267s
+    Then there are 1 Pending Access Requests to act as an importer ... passed in 0.021s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

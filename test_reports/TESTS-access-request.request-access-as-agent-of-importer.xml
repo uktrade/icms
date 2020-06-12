@@ -1,0 +1,52 @@
+<testsuite errors="0" failures="0" hostname="b204689319ac" name="access-request.request-access-as-agent-of-importer.Request Importer/Exporter Access as an Agent for an Importer Functionality" skipped="0" tests="3" time="10.779099" timestamp="2020-06-12T13:49:01.079596"><testcase classname="access-request.request-access-as-agent-of-importer.Request Importer/Exporter Access as an Agent for an Importer Functionality" name="Request to act as an agent for an importer - correct fields are visible" status="passed" time="1.530679"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: Request to act as an agent for an importer - correct fields are visible
+    Given The user "app-importer" logs in ... passed in 0.963s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.330s
+    When user sets Access Request Type to "Request access to act as an Agent for an Importer" ... passed in 0.052s
+    Then the following fields visibility is set on the act as an importer/exporter form ... passed in 0.185s
+      | Field                                                       | Visible |
+      | Access Request Type                                         | True    |
+      | Organisation name                                           | True    |
+      | Organisation address                                        | True    |
+      | What are you importing and where are you importing it from? | True    |
+      | Agent name                                                  | True    |
+      | Agent address                                               | True    |
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="access-request.request-access-as-agent-of-importer.Request Importer/Exporter Access as an Agent for an Importer Functionality" name="Request to act as an importer - success" status="passed" time="1.998214"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: Request to act as an importer - success
+    Given The user "app-importer" logs in ... passed in 0.809s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.267s
+    When user requests to act as an agent for an importer ... passed in 0.894s
+    Then a success message is displayed ... passed in 0.028s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="access-request.request-access-as-agent-of-importer.Request Importer/Exporter Access as an Agent for an Importer Functionality" name="List pending requests to act as an importer" status="passed" time="7.250206"><system-out>
+<![CDATA[
+@scenario.begin
+
+  @access-request
+  Scenario: List pending requests to act as an importer
+    Given The user "app-importer" logs in ... passed in 0.720s
+    Given the user navigates to "Request Importer/Exporter Access page" ... passed in 0.296s
+    Given there are 0 Pending Access Requests to act as an importer ... passed in 5.035s
+    Given user requests to act as an agent for an importer ... passed in 0.893s
+    When the user navigates to "Request Importer/Exporter Access page" ... passed in 0.286s
+    Then there are 1 Pending Access Requests to act as an importer ... passed in 0.020s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

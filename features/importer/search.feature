@@ -24,7 +24,7 @@ Feature: Importer Search Functionality
 
     @importer @search @importer-search
     Scenario: search by Archived status
-        Given   An importer with status "ARCHIVED" is created in the system
+        Given An importer with status "ARCHIVED" is created in the system
         And   An importer with status "CURRENT" is created in the system
         And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
