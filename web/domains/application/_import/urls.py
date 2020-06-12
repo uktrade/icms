@@ -8,5 +8,5 @@ from . import views
 urlpatterns = [
     path('apply/',
          views.ImportApplicationCreateView.as_view(),
-         name='import_application_new'),
+         name='new-import-application'),
 ]

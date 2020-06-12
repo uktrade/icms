@@ -1,0 +1,33 @@
+<h1>
+    <img alt="Department of International Trade" src="{{ static('web/img/dit-horizontal-white-logo.png') }}"/>
+</h1>
+<input type="checkbox" id="top-nav-toggle"/>
+<label for="top-nav-toggle" id="top-nav-toggle-label" class="icon-menu">
+    <span class="screen-reader-only">Show menu</span>
+</label>
+
+<ul class="dropdown-menu" id="top-menu">
+  {% if not request.user.is_anonymous %}
+
+    {{menu(request)|safe}}
+
+    <li class="icon-user" id="user-info">
+      <a class="dropdown-label" href="#">
+        {{ request.user.title }} {{ request.user.first_name }} {{ request.user.last_name }}
+      </a>
+      <ul class="menu-out flow-down top-menu-subcategory-list">
+        <li>
+          <ul class="menu-out">
+            <li><a href="{{ url('access:request') }}">Request Importer/Exporter Access</a></li>
+            <li><a href="{{ url('current-user-details') }}">My details</a></li>
+            <li><a href="{{ url('logout') }}">Log out</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  {% else %}
+    <li class="icon-user" id="user-info">
+      <a class="dropdown-label" href="{{ url('login') }}">Log in</a>
+    </li>
+  {% endif %}
+</ul>

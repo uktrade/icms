@@ -17,7 +17,7 @@ class NewImportApplicationFormTest(TestCase):
         self.type = ImportApplicationTypeFactory(is_active=True)
         self.office = OfficeFactory(is_active=True)
         self.request = RequestFactory().post(
-            reverse_lazy('import_application_new'))
+            reverse_lazy('new-import-application'))
         self.request.user = self.user
 
     def create_importer(self, main_importer=None):

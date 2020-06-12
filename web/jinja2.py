@@ -11,6 +11,8 @@ from django.utils.formats import get_format
 from jinja2 import Environment, evalcontextfilter
 from markupsafe import Markup, escape
 
+from web.menu import Menu
+
 
 @evalcontextfilter
 def nl2br(eval_ctx, value):
@@ -66,13 +68,18 @@ def modify_query(request, **new_params):
     return request.build_absolute_uri('?' + params.urlencode())
 
 
+def menu(request):
+    return Menu().as_html(request)
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update({
         'static': staticfiles_storage.url,
         'url': reverse,
         'get_messages': messages.get_messages,
-        'modify_query': modify_query
+        'modify_query': modify_query,
+        'menu': menu
     })
     env.filters['show_all_attrs'] = show_all_attrs
     env.filters['input_datetime'] = input_datetime
