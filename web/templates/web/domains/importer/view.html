@@ -5,16 +5,23 @@
 {% block page_title %}View Importer{% endblock %}
 {% block context_header %}View Importer{% endblock %}
 
+{% block content_actions %}
+    <div class="content-actions">
+        <ul class="menu-out flow-across">
+            <li>  <a href="{{ url('importer-list') }}" class="prev-link">Importers</a></li>
+        </ul>
+    </div>
+{% endblock %}
+
 {% block main_content %}
+    {% call forms.form(method='post', csrf_input=csrf_input) %}
+        {% with field=form.type %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+        {% with field=form.name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+        {% with field=form.region_origin %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+        {% with field=form.comments %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
 
-{% call forms.form(method='post', csrf_input=csrf_input) %}
-  {{fields.field(form.type)}}
-  {{fields.field(form.name)}}
-  {{fields.field(form.region_origin)}}
-  {{fields.field(form.comments)}}
-
-  {% include "partial/offices.html" %}
-{% endcall %}
-
-
+        {% with offices = form.instance.offices %}
+        {% include "partial/offices-display.html" %}
+        {% endwith %}
+    {% endcall %}
 {% endblock %}

@@ -13,7 +13,7 @@
     {{config.label | safe}}
   {% endif %}
   {% if config and config.link %}
-    <a href={{object.id}}>{{object[field]}}</a>
+    <a href={{object.id}} role="model-link">{{object[field]}}</a>
   {% else %}
     {{object[field]}}
   {% endif %}

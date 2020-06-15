@@ -46,6 +46,13 @@ def user_navigates_to_page(context, page):
     context.browser.get(context.PAGES_MAP[page])
 
 
+@given(u'the user "{user}" navigates to "{page}"')
+@when(u'the user "{user}" navigates to "{page}"')
+def specific_user_navigates_to_page(context, user, page):
+    user_logs_in(context, user)
+    user_navigates_to_page(context, page)
+
+
 @given(u'The user "{user}" is created in the system')
 def given_the_user_is_created(context, user):
     assert user in context.CREATED_USERS, f'User {user} not configured, add it to context.CREATED_USERS'

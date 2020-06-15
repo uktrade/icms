@@ -91,9 +91,18 @@
 {%- endmacro %}
 
 {% macro field_as_text(field) -%}
-  {% if field.field.widget.__class__.__name__ in ['TextInput', 'EmailInput', 'Textarea', 'DateInput', 'NumberInput'] %}
-    {{ field.value()|safe|nl2br }}
-  {% else %}
-    {{ field }}
-  {% endif %}
+    {% if field.field.widget.__class__.__name__ in ['TextInput', 'EmailInput', 'Textarea', 'DateInput', 'NumberInput'] %}
+        {{ field.value()|safe|nl2br }}
+
+    {% elif field.field.widget.__class__.__name__ in ['Select'] %}
+        {% for value, text in field.field.choices %}
+            {% if value == field.value() %}
+                {{ text }}
+            {% endif %}
+        {% endfor %}
+
+    {% else %}
+        {{ field }}
+
+    {% endif %}
 {% endmacro %}
