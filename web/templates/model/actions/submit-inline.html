@@ -1,0 +1,11 @@
+<button
+    role="action-button"
+    class="link-button button no-prompt-action tooltipstered {% if icon %}{{icon}}{% endif %}"
+    aria-label="{{label}}"
+    data-input_action="{{ action }}"
+    data-input_csrfmiddlewaretoken="{{ csrf_token }}"
+    data-input_item="{{ object.id }}"
+    {% if confirm %} data-confirm="{{confirm_message}}" {% endif %}
+>
+    {% if not icon_only %}{{label}}{% endif %}
+</button>

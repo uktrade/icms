@@ -8,16 +8,26 @@
   {% endif %}
 {%- endmacro %}
 
+{% macro _field_value(text, config) -%}
+  {% if config and config.bold %}<strong>{% endif -%}
+      {{ text }}
+  {% if config and config.bold %}</strong>{% endif -%}
+{% endmacro %}
+
 {% macro _field(object, field, config) -%}
   {% if config and config.label %}
     {{config.label | safe}}
   {% endif %}
   {% if config and config.link %}
     <a href={{object.id}} role="model-link">{{object[field]}}</a>
+  {% elif config and config.show_all %}
+    {% for entry in object[field].all() %}
+      {{ _field_value(entry, config)|nl2br }}
+    {% endfor %}
   {% else %}
-    {{object[field]}}
+    {{_field_value(object[field], config)}}
   {% endif %}
-{%- endmacro %}
+{% endmacro %}
 
 {% macro headers(display) -%}
   {% for f in display.fields %}

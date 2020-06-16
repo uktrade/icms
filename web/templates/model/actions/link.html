@@ -1,9 +1,7 @@
 <div class="container setoutForm">
   <div class="row">
     <div class="twelve columns">
-      <a href="{{href}}" class="link-button button {% if icon %}{{icon}}{% endif %}">
-        {{label}}  
-      </a>
+      {% include 'model/actions/link-inline.html' %}
     </div>
   </div>
 </div>

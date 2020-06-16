@@ -20,4 +20,4 @@ class Office(models.Model):
                                           default=EMPTY)
 
     def __str__(self):
-        return f'{self.address}'
+        return f"{self.address}\n{self.postcode}"

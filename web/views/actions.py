@@ -8,6 +8,10 @@ from web.models.mixins import Archivable
 
 
 class ListAction:
+    def __init__(self, inline=False, icon_only=False):
+        self.inline = inline
+        self.icon_only = icon_only
+
     def _get_item(self, request, model):
         _id = request.POST.get('item')
         return get_object_or_404(model, pk=_id)
@@ -18,12 +22,14 @@ class ListAction:
 
 class PostAction(ListAction):
     template = 'model/actions/submit.html'
+    template_inline = 'model/actions/submit-inline.html'
+
     confirm = True  # confirm action before submitting
 
     def as_html(self, object, csrf_token, **kwargs):
         return mark_safe(
             render_to_string(
-                self.template,
+                self.template_inline if self.inline else self.template,
                 self.get_context_data(object, csrf_token, **kwargs)))
 
     def get_context_data(self, object, csrf_token, **kwargs):
@@ -34,7 +40,8 @@ class PostAction(ListAction):
             'confirm': self.confirm,
             'confirm_message': getattr(self, 'confirm_message', None),
             'action': self.action,
-            'label': self.label
+            'label': self.label,
+            'icon_only': self.icon_only
         }
 
     def handle(self, request, view, *args):
@@ -43,20 +50,25 @@ class PostAction(ListAction):
 
 class LinkAction(ListAction):
     template = 'model/actions/link.html'
+    template_inline = 'model/actions/link-inline.html'
 
     def href(self, object):
         return f'{object.id}/'
 
     def as_html(self, object, *args):
         return mark_safe(
-            render_to_string(self.template, self.get_context_data(object)))
+            render_to_string(
+                self.template_inline if self.inline else self.template,
+                self.get_context_data(object))
+            )
 
     def get_context_data(self, object):
         return {
             'icon': self.icon or None,
             'object': object,
             'label': self.label,
-            'href': self.href(object)
+            'href': self.href(object),
+            'icon_only': self.icon_only
         }
 
 
@@ -99,3 +111,10 @@ class Unarchive(PostAction):
     def handle(self, request, view):
         self._get_item(request, view.model).unarchive()
         messages.success(request, 'Record restored successfully')
+
+class CreateAgent(LinkAction):
+    label = 'Create Agent'
+    icon = 'icon-user-plus'
+
+    def href(self, object):
+        return f'{object.id}/-- TODO --/'

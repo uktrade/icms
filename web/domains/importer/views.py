@@ -7,6 +7,7 @@ from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
+from web.views.actions import Archive, Edit, Unarchive, CreateAgent
 
 logger = logging.getLogger(__name__)
 
@@ -30,25 +31,32 @@ class ImporterListView(ModelFilterView):
         return has_permission(self.request.user)
 
     class Display:
-        fields = [('name', 'user', 'registered_number', 'entity_type'), 'status']
+        fields = ['status', ('name', 'user', 'registered_number', 'entity_type'), 'offices']
         fields_config = {
             'name': {
                 'header': 'Importer Name',
                 'link': True,
             },
             'user': {
-                'no_header': True
+                'no_header': True,
             },
             'registered_number': {
-                'header': 'Importer Reg No'
+                'header': 'Importer Reg No',
             },
             'entity_type': {
-                'header': 'Importer Entity Type'
+                'header': 'Importer Entity Type',
             },
             'status': {
-                'header': 'Status'
+                'header': 'Status',
+                'bold': True,
             },
+            'offices' : {
+                'header': 'Addresses',
+                'show_all': True,
+            }
         }
+        opts = {'inline': True, 'icon_only': True}
+        actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
 class ImporterEditView(ModelUpdateView):
