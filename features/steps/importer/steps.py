@@ -51,14 +51,14 @@ def step_impl(context, count):
 
 @then(u'the result at row "{row}" has the name "{name}"')  # NOQA: F811
 def step_impl(context, row, name):
-    element = context.browser.find_element_by_css_selector(f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(1)')
+    element = context.browser.find_element_by_css_selector(f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(2)')
 
     assert name in element.text, f'could not find {name} in {element.text}'
 
 
 @then(u'the result at row "{row}" has the status "{status}"')  # NOQA: F811
 def step_impl(context, row, status):
-    element = context.browser.find_element_by_css_selector(f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(2)')
+    element = context.browser.find_element_by_css_selector(f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(1)')
     assert status.lower() in element.text.lower(), f'could not find {status} in {element.text}'
 
 
