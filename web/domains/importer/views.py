@@ -50,7 +50,7 @@ class ImporterListView(ModelFilterView):
                 'header': 'Status',
                 'bold': True,
             },
-            'offices' : {
+            'offices': {
                 'header': 'Addresses',
                 'show_all': True,
             }

@@ -112,6 +112,7 @@ class Unarchive(PostAction):
         self._get_item(request, view.model).unarchive()
         messages.success(request, 'Record restored successfully')
 
+
 class CreateAgent(LinkAction):
     label = 'Create Agent'
     icon = 'icon-user-plus'
