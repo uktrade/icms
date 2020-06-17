@@ -62,6 +62,19 @@ def step_impl(context, row, status):
     assert status.lower() in element.text.lower(), f'could not find {status} in {element.text}'
 
 
+@then(u'the result at row "{row}" has the address "{address}"')  # NOQA: F811
+def step_impl(context, row, address):
+    element = context.browser.find_element_by_css_selector(f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(3)')
+    assert address.lower() in element.text.lower(), f'could not find {address} in {element.text}'
+
+
+@then(u'the result at row "{row}" has the action button "{action}"')  # NOQA: F811
+def step_impl(context, row, action):
+    context.browser.find_element_by_css_selector(
+        f'#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(4) [data-input_action="{action}"]'
+    )
+
+
 @given(u'the importer "{importer_name}" is created in the system')  # NOQA: F811
 def create_importer(context, importer_name):
     assert importer_name in context.IMPORTERS, f'importer {importer_name} not found. Add it to context.IMPORTERS'

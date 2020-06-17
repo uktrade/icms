@@ -68,7 +68,7 @@ class LinkAction(ListAction):
             'object': object,
             'label': self.label,
             'href': self.href(object),
-            'icon_only': self.icon_only
+            'icon_only': self.icon_only,
         }
 
 
