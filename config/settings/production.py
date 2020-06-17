@@ -41,7 +41,8 @@ ELASTIC_APM = {
     'SERVICE_NAME': 'ICMS',
     'SECRET_TOKEN': env.str('ELASTIC_APM_SECRET_TOKEN'),
     'SERVER_URL': env.str('ELASTIC_APM_URL'),
-    'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development')
+    'ENVIRONMENT': env.str('ELASTIC_APM_ENVIRONMENT', default='development'),
+    'SERVER_TIMEOUT': env.str('ELASTIC_APM_SERVER_TIMEOUT', default='20s')
 }
 
 # Django Compressor
