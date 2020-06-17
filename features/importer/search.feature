@@ -35,12 +35,15 @@ Feature: Importer Search Functionality
         Then  the importer search results contain "1" results
         And   the result at row "1" has the name "ARCHIVED Importer"
         And   the result at row "1" has the status "Archived"
+        And   the result at row "1" has the action button "unarchive"
+        And   the result at row "1" has the action button "create agent"
+        And   the result at row "1" has the action button "edit"
 
 
     @importer @search @importer-search
     Scenario: search by Current status
-        Given   An importer with status "ARCHIVED" is created in the system
-        And   An importer with status "CURRENT" is created in the system
+        Given An importer with status "ARCHIVED" is created in the system
+        And   the importer "Elm Street Imports" is created in the system
         And   The user "app-admin" logs in
         And   the user navigates to "Importer List page"
 
@@ -48,5 +51,9 @@ Feature: Importer Search Functionality
         And   submits the import search from
 
         Then  the importer search results contain "1" results
-        And   the result at row "1" has the name "CURRENT Importer"
+        And   the result at row "1" has the name "Elm Street Imports"
         And   the result at row "1" has the status "Current"
+        And   the result at row "1" has the address "1428 Elm Street"
+        And   the result at row "1" has the action button "archive"
+        And   the result at row "1" has the action button "create agent"
+        And   the result at row "1" has the action button "edit"
