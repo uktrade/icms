@@ -3,6 +3,10 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+{% block context_header %}
+    Editing importer {{ form.instance }}
+{% endblock %}
+
 {% block main_content %}
 
   {% if importer %}

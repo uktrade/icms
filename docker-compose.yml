@@ -40,6 +40,7 @@ services:
             - ELASTIC_APM_SECRET_TOKEN
             - ELASTIC_APM_ENVIRONMENT
             - ELASTIC_APM_URL
+            - DISABLE_DEBUG_TOOLBAR
         # tty: true
         ports:
             - "8080:8080"
