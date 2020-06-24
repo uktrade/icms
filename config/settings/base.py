@@ -236,3 +236,6 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+
+# Default domain is used in email templates to pint users to ICMS from emails
+DEFAULT_DOMAIN = env.str('ICMS_DEFAULT_DOMAIN', 'http://localhost:8080/')

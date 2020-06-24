@@ -45,7 +45,7 @@ def register(request):
                       is_primary=True,
                       portal_notifications=True).save()
         login(request, user)
-        notify.register(request, user, temp_pass)
+        notify.register(user, temp_pass)
         return redirect('set-password')
 
     return render(request, 'auth/registration.html', {
@@ -80,7 +80,7 @@ def reset_password(request):
         if form.is_valid():
             temp_pass = user.set_temp_password()
             user.save()
-            notify.register(request, user, temp_pass)
+            notify.register(user, temp_pass)
             return render(request,
                           'auth/reset-password/reset-password-success.html')
 

@@ -5,7 +5,6 @@ import structlog as logging
 from viewflow import flow
 from viewflow.base import Flow, this
 
-from web.domains import User
 from web.notify import notify
 
 from . import models, views
@@ -19,18 +18,12 @@ logger = logging.getLogger(__name__)
 __all__ = ['AccessRequestFlow']
 
 
-def send_admin_notification_email(activation):
-    ilb_admins = User.objects.filter(is_staff=True)
-    for admin in ilb_admins:
-        try:
-            notify.access_request_admin(admin,
-                                        activation.process.access_request)
-        except Exception as e:  # noqa
-            logger.exception('Failed to notify an ILB admin', e)
+def notify_officers(activation):
+    notify.access_requested(activation.process.access_request)
 
 
-def send_requester_notification_email(activation):
-    notify.access_request_requester(activation.process.access_request)
+def notify_access_request_closed(activation):
+    notify.access_request_closed(activation.process.access_request)
 
 
 def close_request(activation):
@@ -55,8 +48,7 @@ class AccessRequestFlow(Flow):
     request = flow.Start(views.AccessRequestCreateView).Next(
         this.notify_case_officers)
 
-    notify_case_officers = flow.Handler(send_admin_notification_email).Next(
-        this.review)
+    notify_case_officers = flow.Handler(notify_officers).Next(this.review)
 
     review = flow.View(views.AccessRequestReviewView).Next(
         this.check_approval_required)
@@ -90,10 +82,9 @@ class AccessRequestFlow(Flow):
     close_request = flow.View(views.CloseAccessRequestView).Assign(
         this.review.owner).Next(this.email_requester)
 
-    email_requester = flow.Handler(send_requester_notification_email).Next(
-        this.end)
+    email_requester = flow.Handler(notify_access_request_closed).Next(this.end)
 
     end = flow.End()
 
     def is_importer(self, activation):
-        return activation.process.access_request.requester_type == 'importer'
+        return activation.process.access_request.is_importer()

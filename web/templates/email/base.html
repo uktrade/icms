@@ -6,8 +6,28 @@
     <h4>ICMS System Message</h4>
   </p>
 
-  {% block message %} {% endblock %}
+  {% block main_content %}
 
+    {% block subject %}
+      <p>   
+        <h5>   
+          Subject: {{subject}}
+        </h5> 
+      </p>
+    {% endblock %}
+
+    {% block message %} {% endblock %}
+
+    {% block footer %}
+      <p>
+      If this email has been copied to you, you may click <a href="{{url}}">Import Case Management System</a> to logon as yourself.
+      </p>
+      <p>
+      For assistance or support email: <a href="mailto:enquiries.ilb@bis.gsi.gov.uk">enquiries.ilb@bis.gsi.gov.uk</a> or telephone -.
+      </p>
+    {% endblock %}
+
+  {% endblock %}
   </body>
 
 </html>

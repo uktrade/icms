@@ -121,9 +121,9 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     cancel_url = success_url
     permission_required = permissions
 
-    def handle_notification(self, request, mailshot):
+    def handle_notification(self, mailshot):
         if mailshot.is_email:
-            notify.mailshot(request, mailshot)
+            notify.mailshot(mailshot)
 
     def form_valid(self, form):
         """
@@ -135,7 +135,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         mailshot.published_by = self.request.user
         response = super().form_valid(form)
         if response.status_code == 302 and response.url == self.success_url:
-            self.handle_notification(self.request, mailshot)
+            self.handle_notification(mailshot)
         return response
 
     def save_draft(self, request, pk):
@@ -220,9 +220,9 @@ class MailshotRetractView(ModelUpdateView):
         self.view_form = MailshotReadonlyForm(instance=self.object)
         return form
 
-    def handle_notification(self, request, mailshot):
+    def handle_notification(self, mailshot):
         if mailshot.is_retraction_email:
-            notify.retract_mailshot(request, mailshot)
+            notify.retract_mailshot(mailshot)
 
     def form_valid(self, form):
         """
@@ -234,7 +234,7 @@ class MailshotRetractView(ModelUpdateView):
         mailshot.retracted_by = self.request.user
         response = super().form_valid(form)
         if response.status_code == 302 and response.url == self.success_url:
-            self.handle_notification(self.request, mailshot)
+            self.handle_notification(mailshot)
         return response
 
     def get_success_message(self, cleaned_data):

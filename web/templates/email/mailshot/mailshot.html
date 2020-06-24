@@ -1,17 +1,7 @@
 {% extends "email/base.html" %}
 
 {% block message %}
-
-  <p>   
-    <h5>   
-      Subject: {{subject}}
-    </h5> 
-  </p>
   <p>
     {{body}}
   </p> 
-  If this email has been copied to you, you may click <a href="{{url}}">Import Case Management System</a> to logon as yourself.
-  <br/>  
-  For assistance or support email: <a href="mailto:enquiries.ilb@bis.gsi.gov.uk">enquiries.ilb@bis.gsi.gov.uk</a> or telephone -.
-
 {% endblock %}

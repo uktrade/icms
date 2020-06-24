@@ -31,7 +31,10 @@ class ImporterListView(ModelFilterView):
         return has_permission(self.request.user)
 
     class Display:
-        fields = ['status', ('name', 'user', 'registered_number', 'entity_type'), 'offices']
+        fields = [
+            'status', ('name', 'user', 'registered_number', 'entity_type'),
+            'offices'
+        ]
         fields_config = {
             'name': {
                 'header': 'Importer Name',
@@ -56,7 +59,12 @@ class ImporterListView(ModelFilterView):
             }
         }
         opts = {'inline': True, 'icon_only': True}
-        actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
+        actions = [
+            Archive(**opts),
+            Unarchive(**opts),
+            CreateAgent(**opts),
+            Edit(**opts)
+        ]
 
 
 class ImporterEditView(ModelUpdateView):

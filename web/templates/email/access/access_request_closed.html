@@ -1,0 +1,15 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+  <p>
+    Your {{ access_request.request_type_short }} 
+    (requested {{ access_request.organisation_name }}: )
+    to act as an {{ access_request.requester_type }} has now been actioned.
+  </p>
+
+  <p>Request Outcome: {{ access_request.response }}</p>
+  {% if access_request.response_reason is not none %}
+    <p>Reason:<br/><br/>{{ access_request.response_reason }}</p>
+  {% endif %}
+  </p>
+{% endblock %}

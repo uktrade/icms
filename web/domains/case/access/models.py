@@ -101,16 +101,19 @@ class AccessRequest(models.Model):
     @property
     def request_type_short(self):
         if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
-            return "Import Access Request"
+            return "Importer Access Request"
         else:
             return "Exporter Access Request"
 
     @property
     def requester_type(self):
-        if self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]:
+        if self.is_importer():
             return "importer"
         else:
             return "exporter"
+
+    def is_importer(self):
+        return self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]
 
     def save(self):
         # Set submit_datetime on save

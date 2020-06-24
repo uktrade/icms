@@ -24,7 +24,7 @@ class ReIssuePassword(PostAction):
         user.account_status = User.ACTIVE
         user.account_status_by = request.user
         user.save()
-        notify.register(request, user, temp_pass)
+        notify.register(user, temp_pass)
         messages.success(request,
                          'Temporary password successfully issued for account')
 

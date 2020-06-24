@@ -30,7 +30,7 @@ class TestNotify(TestCase):
         self.factory = RequestFactory()
 
     def test_registration_email(self):
-        notify.register(self.factory.post('/register'), self.user, 'TestPasS')
+        notify.register(self.user, 'TestPasS')
         outbox = mail.outbox
         m = outbox[0]
         assert len(outbox) == 1
