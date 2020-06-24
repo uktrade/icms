@@ -1,25 +1,35 @@
-<h3>
-  {{type}} Approval Request
-</h3>
+{% with process=process.approval_request %}
+  {% include "web/domains/case/access/partials/access-request-display.html" %}
+{% endwith %}
+
+{% set approval_request=process.approval_request %}
+{% set type=process.approval_request.access_request.requester_type %}
+
+<legend>
+  <h3>
+    {{type}} Approval Request
+  </h3>
+</legend>
+
 <div class="container setoutForm noBottomMargin" >
   <div class="row">
     <div class="three columns" >
       <label id="pg55" for="g55" class="prompt west">Status</label>
     </div>
-    <div class="three columns" >
-      <span  class="text-widget noBottomMargin">
-        {{ approval_request.status}}
-      </span>
-    </div>
-    <div class="one columns" >
-      <label id="pg56" for="g56" class="prompt west">Approval Request Date</label>
-    </div>
-    <div class="two columns" >
-      <span  class="text-widget noBottomMargin">
+  <div class="three columns" >
+    <span  class="text-widget noBottomMargin">
+      {{ approval_request.status}}
+    </span>
+  </div>
+  <div class="one columns" >
+    <label id="pg56" for="g56" class="prompt west">Approval Request Date</label>
+  </div>
+  <div class="two columns" >
+    <span  class="text-widget noBottomMargin">
       {{ approval_request.request_date}}
-      </span>
-    </div>
-    <div class="three columns"></div>
+    </span>
+  </div>
+  <div class="three columns"></div>
   </div>
   <div class="row">
     <div class="three columns" >
@@ -29,7 +39,7 @@
     </div>
     <div class="six columns" >
       <span  class="text-widget ">
-      {{ approval_request.requested_from or 'All' }}
+        {{ approval_request.requested_from or 'All' }}
       </span>
     </div>
     <div class="three columns"></div>

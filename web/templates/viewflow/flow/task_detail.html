@@ -1,0 +1,31 @@
+{% extends 'layout/sidebar.html' %}
+
+{% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
+
+{% import 'viewflow/links.html' as links with context %}
+
+{% block main_content %}
+  <fieldset>
+    {% with process=activation.process %}
+      {% include activation.process.flow_class.process_template  %}
+    {% endwith %}
+
+    <div class="list-actions">
+      <div class="container">
+        <div class="row">
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              {% include "viewflow/partials/task_actions.html" %}
+            </ul>
+          </div>
+          <div class="four columns"></div>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+{% endblock %}
+
+
+{% block sidebar %}
+  {{links.task_execute(activation.task)}}
+{% endblock %}
