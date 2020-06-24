@@ -1,10 +1,9 @@
 import structlog as logging
 from django.urls import reverse_lazy
-from django.views.generic.base import View
 from django.shortcuts import render, redirect
 
 from web.auth import utils as auth_utils
-from web.views import (ModelCreateView, ModelDetailView, ModelFilterView)
+from web.views import (ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView)
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
@@ -63,7 +62,7 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(View):
+class ImporterEditView(ModelUpdateView):
     template_name = 'web/domains/importer/edit.html'
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
