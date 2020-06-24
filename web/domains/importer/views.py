@@ -1,13 +1,17 @@
 import structlog as logging
 from django.urls import reverse_lazy
+from django.views.generic.base import View
+from django.shortcuts import render, redirect
 
 from web.auth import utils as auth_utils
-from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
-                       ModelUpdateView)
+from web.views import (ModelCreateView, ModelDetailView, ModelFilterView)
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
 from web.views.actions import Archive, Edit, Unarchive, CreateAgent
+
+from web.domains.office.forms import OfficeEditForm
+from django.forms import formset_factory
 
 logger = logging.getLogger(__name__)
 
@@ -59,15 +63,55 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(ModelUpdateView):
+class ImporterEditView(View):
     template_name = 'web/domains/importer/edit.html'
-    form_class = ImporterEditForm
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
-    model = Importer
 
     def has_permission(self):
         return has_permission(self.request.user)
+
+    def get(self, request, pk, offices_form=None, form=None):
+        importer = Importer.objects.get(pk=pk)
+        if not form:
+            form = ImporterEditForm(instance=importer)
+
+        # should the offices formset be shown on the edit page
+        # if we received the form, then we displayed as we want to
+        # show the form and errors, otherwise
+        show_offices_form = True
+        if not offices_form:
+            Formset = formset_factory(OfficeEditForm, extra=1)
+            offices_form = Formset()
+            show_offices_form = False
+
+        return render(request, self.template_name, {
+            'form': form,
+            'offices_form': offices_form,
+            'success_url': self.success_url,
+            'cancel_url': self.cancel_url,
+            'view': self,
+            'show_offices_form': show_offices_form
+        })
+
+    def post(self, request, pk):
+        importer = Importer.objects.get(pk=pk)
+        form = ImporterEditForm(request.POST, instance=importer)
+
+        Formset = formset_factory(OfficeEditForm)
+        offices_form = Formset(request.POST)
+
+        if not offices_form.is_valid() or not form.is_valid():
+            return self.get(request, pk, offices_form=offices_form, form=form)
+
+        importer = form.save()
+
+        for form in offices_form:
+            office = form.save()
+            importer.offices.add(office)
+        importer.save()
+
+        return redirect('importer-view', pk=pk)
 
 
 class ImporterCreateView(ModelCreateView):

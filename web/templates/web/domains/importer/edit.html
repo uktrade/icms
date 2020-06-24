@@ -13,12 +13,59 @@
 
   {{super()}}
 
+
 {% endblock %}
 
-{% block additional_form_content %}
-    {% include "partial/offices.html" %}
+{% block additional_content %}
+
+    {% with offices = form.instance.offices %}
+      {% include "partial/offices-edit.html" %}
+    {% endwith %}
+    {#
     {% include "partial/firearms-authorities.html" %}
     {% include "partial/section5-authorities.html" %}
     {% include "partial/agents.html" %}
     {% include "web/contacts/tabs.html" %}
+    #}
+{% endblock %}
+
+
+
+{% block page_js %}
+    <script>
+
+        function updateidx() {
+          $('#tbl-offices .new-form-row').each(function(idx, el){
+              $(el).find('input, textarea').each(function(i, inp){
+                name = $(inp).attr('name')
+                arr = name.split('-');
+                arr[1] = idx;
+
+                $(inp).attr('name', arr.join('-'))
+              })
+            });
+        }
+
+        $('#btn-add-office').on('click', function(evt){
+            evt.preventDefault();
+
+            const tpl = $('#add-office-tpl').clone();
+            tpl.find('tr').first().addClass('new-form-row');
+            $('#tbl-offices tbody').append(tpl.html());
+
+            $('#id_form-TOTAL_FORMS').val($('#tbl-offices .new-form-row').length)
+
+            updateidx()
+        });
+
+        $('#tbl-offices').on( 'click', '[role=remove-address-row]', function(evt){
+          evt.preventDefault();
+          $(this).closest('tr').remove();
+
+          $('#id_form-TOTAL_FORMS').val($('#tbl-offices .new-form-row').length);
+
+          updateidx();
+
+        });
+    </script>
 {% endblock %}
