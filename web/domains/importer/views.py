@@ -10,7 +10,7 @@ from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
 from web.views.actions import Archive, Edit, Unarchive, CreateAgent
 
-from web.domains.office.forms import OfficeEditForm
+from web.domains.office.forms import OfficeEditForm, OfficeFormSet
 from django.forms import formset_factory
 
 logger = logging.getLogger(__name__)
@@ -81,7 +81,7 @@ class ImporterEditView(View):
         # show the form and errors, otherwise
         show_offices_form = True
         if not offices_form:
-            Formset = formset_factory(OfficeEditForm, extra=1)
+            Formset = formset_factory(OfficeEditForm)
             offices_form = Formset()
             show_offices_form = False
 
@@ -98,7 +98,7 @@ class ImporterEditView(View):
         importer = Importer.objects.get(pk=pk)
         form = ImporterEditForm(request.POST, instance=importer)
 
-        Formset = formset_factory(OfficeEditForm)
+        Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
         offices_form = Formset(request.POST)
 
         if not offices_form.is_valid() or not form.is_valid():
