@@ -36,3 +36,7 @@ Feature: Importer Edit Functionality
 
     @importer @edit @importer-edit
     Scenario: cannot add empty address
+    Given the user "app-admin" navigates to Importer edit page of "Elm Street Imports"
+    When  the user clicks on add office
+    And   the user submits the importer edit form
+    Then  the Importer edit page office form shows an error on the address field

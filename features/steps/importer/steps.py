@@ -99,7 +99,7 @@ def step_impl(context, importer_name):
     assert importer_name in context.IMPORTERS, f'importer {importer_name} not found. Add it to context.IMPORTERS'
 
     header = context.browser.find_element_by_css_selector('#context-header h2')
-    search = 'View Importer'
+    search = f'View Importer - {importer_name}'
     assert header.text == search, f'expecting header with text "{search}" but got {header.text}'
 
     importer_data = context.IMPORTERS[importer_name]
@@ -220,8 +220,16 @@ def step_impl(context, importer_name):
     el_text = context.browser.find_element_by_css_selector('#context-header h2').text
     assert f'View Importer - {importer_name}' == el_text
 
+
 @then(u'the count of addreses on the importer display page is "{count}"')  # NOQA: F811
 def step_impl(context, count):
     els = context.browser.find_elements_by_css_selector('#tbl-offices tbody tr')
 
     assert count == len(els)
+
+
+@then(u'the Importer edit page office form shows an error on the address field')  # NOQA: F811
+def step_impl(context):
+    el = context.browser.find_element_by_css_selector('#id_form-0-address + .error-message')
+
+    assert 'Cannot be empty' == el.text
