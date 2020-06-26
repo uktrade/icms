@@ -52,10 +52,11 @@
 
         $('#btn-add-office').on('click', function(evt){
             evt.preventDefault();
-
             const tpl = $('#add-office-tpl').clone();
             tpl.find('tr').first().addClass('new-form-row');
-            $('#tbl-offices tbody').append(tpl.html());
+            $('#tbl-offices tbody').append(
+              tpl.html().replace('<!--', '').replace('-->', '')
+            );
 
             $('#id_form-TOTAL_FORMS').val($('#tbl-offices .new-form-row').length)
 

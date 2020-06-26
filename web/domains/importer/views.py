@@ -3,13 +3,17 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 
 from web.auth import utils as auth_utils
+
 from web.views import (ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView)
+from web.views.actions import Archive, Edit, Unarchive, CreateAgent
+from web.views.mixins import PostActionMixin
 
 from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
 from .models import Importer
-from web.views.actions import Archive, Edit, Unarchive, CreateAgent
 
+from web.domains.office.models import Office
 from web.domains.office.forms import OfficeEditForm, OfficeFormSet
+
 from django.forms import formset_factory
 
 logger = logging.getLogger(__name__)
@@ -62,7 +66,7 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(ModelUpdateView):
+class ImporterEditView(ModelUpdateView, PostActionMixin):
     template_name = 'web/domains/importer/edit.html'
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
@@ -93,7 +97,7 @@ class ImporterEditView(ModelUpdateView):
             'show_offices_form': show_offices_form
         })
 
-    def post(self, request, pk):
+    def edit(self, request, pk):
         importer = Importer.objects.get(pk=pk)
         form = ImporterEditForm(request.POST, instance=importer)
 
@@ -111,6 +115,26 @@ class ImporterEditView(ModelUpdateView):
         importer.save()
 
         return redirect('importer-view', pk=pk)
+
+    def do_archive(self, request, is_active):
+        if 'item' not in request.POST:
+            raise NameError()
+
+        office = Office.objects.get(pk=int(request.POST.get('item', 0)))
+
+        if not office:
+            raise IndexError()
+
+        office.is_active = is_active
+        office.save()
+
+    def archive(self, request, pk):
+        self.do_archive(request, False)
+        return redirect('importer-edit', pk=pk)
+
+    def unarchive(self, request, pk):
+        self.do_archive(request, True)
+        return redirect('importer-edit', pk=pk)
 
 
 class ImporterCreateView(ModelCreateView):
