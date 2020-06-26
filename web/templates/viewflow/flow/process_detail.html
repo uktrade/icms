@@ -1,0 +1,10 @@
+{% extends 'layout/sidebar.html' %}
+
+{% set page_title=process %}
+
+{% block main_content %}
+    {% block process_detail %}
+      {% include process.flow_class.process_template %}
+    {% endblock %}
+  </fieldset>
+{% endblock %}

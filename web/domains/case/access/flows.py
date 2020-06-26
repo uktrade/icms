@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import structlog as logging
-from django.utils.decorators import method_decorator
 from viewflow import flow
 from viewflow.base import Flow, this
 
@@ -11,10 +10,13 @@ from web.notify import notify
 
 from . import models, views
 
+from .approval.flows import ApprovalRequestFlow
+from .approval import views as approval_views
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-__all__ = ['AccessRequestFlow', 'ApprovalRequestFlow']
+__all__ = ['AccessRequestFlow']
 
 
 def send_admin_notification_email(activation):
@@ -29,14 +31,6 @@ def send_admin_notification_email(activation):
 
 def send_requester_notification_email(activation):
     notify.access_request_requester(activation.process.access_request)
-
-
-def send_approval_request_email(activation):
-    pass
-
-
-def send_approval_request_response_email(activation):
-    pass
 
 
 def close_request(activation):
@@ -54,34 +48,8 @@ def has_approval(activation):
         'approval_request') and not access_request.approval_request.is_complete
 
 
-class ApprovalRequestFlow(Flow):
-    process_class = models.ApprovalRequestProcess
-
-    start = flow.StartSubprocess(func=this.start_func).Next(
-        this.notify_contacts)
-
-    notify_contacts = flow.Handler(send_approval_request_email).Next(
-        this.respond)
-
-    respond = flow.View(views.ApprovalRequestResponseView).Next(
-        this.notify_case_officers).Assign(lambda activation: activation.process
-                                          .approval_request.requested_from)
-
-    notify_case_officers = flow.Handler(
-        send_approval_request_response_email).Next(this.end)
-
-    end = flow.End()
-
-    @method_decorator(flow.flow_start_func)
-    def start_func(self, activation, parent_task):
-        activation.prepare(parent_task)
-        activation.process.approval_request = parent_task.process.access_request.approval_requests.first(
-        )
-        activation.done()
-        return activation
-
-
 class AccessRequestFlow(Flow):
+    process_template = "web/domains/case/access/partials/access-request-display.html"
     process_class = models.AccessRequestProcess
 
     request = flow.Start(views.AccessRequestCreateView).Next(
@@ -90,10 +58,8 @@ class AccessRequestFlow(Flow):
     notify_case_officers = flow.Handler(send_admin_notification_email).Next(
         this.review)
 
-    review = flow.View(
-        views.AccessRequestReviewView,
-        assign_view=views.AccessRequestTakeOwnershipView.as_view()).Next(
-            this.check_approval_required)
+    review = flow.View(views.AccessRequestReviewView).Next(
+        this.check_approval_required)
 
     check_approval_required = flow.If(
         cond=lambda act: act.process.approval_required).Then(
@@ -108,15 +74,13 @@ class AccessRequestFlow(Flow):
     link_exporter = flow.View(views.LinkExporterView).Next(
         this.request_approval).Assign(this.review.owner)
 
-    request_approval = flow.View(views.RequestApprovalView).Next(
+    request_approval = flow.View(approval_views.RequestApprovalView).Next(
         this.approval).Assign(this.review.owner)
 
-    approval = flow.Subprocess(
-        ApprovalRequestFlow.start,
-        detail_view=views.ApprovalProcessDetailView.as_view(),
-    ).Next(this.review_approval)
+    approval = flow.Subprocess(ApprovalRequestFlow.start).Next(
+        this.review_approval)
 
-    review_approval = flow.View(views.ApprovalRequestReviewView).Next(
+    review_approval = flow.View(approval_views.ApprovalRequestReviewView).Next(
         this.check_approval_restart).Assign(this.review.owner)
 
     check_approval_restart = flow.If(

@@ -1,10 +1,9 @@
-{% extends "layout/sidebar.html" %}
+{% extends "viewflow/flow/task.html" %}
 
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block page_title %}Importer/Exporter Access Request{% endblock %}
-{% block context_header %}Importer/Exporter Access Request{% endblock %}
+{% set requester_type = activation.process.access_request.requester_type %}
 
 {% block sidebar%}
     {% with process_id=activation.process.access_request.id,
@@ -14,9 +13,7 @@
     {% endwith %}
 {% endblock %}
 
-{% block main_content %}
-    {% set process, task, access_request = activation.process, activation.task, activation.process.access_request %}
-    {% set requester_type = activation.process.access_request.requester_type %}
+{% block task_detail %}
     <div class="info-box info-box-info">
       <p>
       The user specified below has requested access to act as an {{requester_type}}/agent. If you already know that this user should have these access rights you can
@@ -29,29 +26,20 @@
       the outcome of their request.</p>
     </div>
 
-    {% include "web/domains/case/access/partials/access-request-display.html" %}
+    {{super()}}
+{% endblock %}
 
-    <div class="container setoutForm" >
-      <div class="row">
 
-        <h3>
-          {{requester_type}} Access Approval
-        </h3>
-        {% call forms.form(method='post', csrf_input=csrf_input) %}
-          {{activation.management_form}}
-          <input type='hidden' name='_continue'>
-          <ul class="menu-out flow-across">
-            <li>
-              <button name="start_approval" class="button capitalize">
-                Start {{requester_type}} Access Approval
-              </button>
-            </li>
-          </ul>
-          <h3>Close Access Request</h3>
-          <div class="info-box info-box-success">
-            <button type="submit" name="close_request" />Close Access Request</button>
-          </div>
-        {% endcall %}
-      </div>
-    </div>
+{% block form_actions %}
+  <input type='hidden' name='_continue'>
+  <li>
+    <button name="start_approval" class="secondary-button button capitalize">
+      Start {{requester_type}} Access Approval
+    </button>
+  </li>
+  <li>
+    <button name="close_request" class="primary-button button capitalize">
+      Close Access Request
+    </button>
+  </li>
 {% endblock %}

@@ -5,15 +5,13 @@
 
 {% block main_content %}
 
-<div class="info-box info-box-info">
-  Import Access Request Details
+  <fieldset>
+    {% with process=activation.process %}
+      {% include "web/domains/case/access/partials/access-request-display.html" %}
+    {% endwith %}
+  </fieldset>
 
-  {% with access_request=activation.process.access_request %}
-    {% include "web/domains/case/access/partials/access-request-display.html" %}
-  {% endwith %}
-</div>
-
-{{super()}}
+  {{super()}}
 {%endblock %}
 
 {% block results %}

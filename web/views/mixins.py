@@ -1,9 +1,6 @@
 import structlog as logging
-from django.http import HttpResponseRedirect
 from django.views.generic.base import View
 from django.views.generic.list import ListView
-from viewflow.flow.views.start import BaseStartFlowMixin
-from viewflow.flow.views.task import BaseFlowMixin
 
 from web.auth.mixins import RequireRegisteredMixin
 
@@ -57,30 +54,3 @@ class PostActionMixin(RequireRegisteredMixin):
 
         # If action does not exist continue with regular post request
         return super().post(request, *args, **kwargs)
-
-
-class SimpleStartFlowMixin(BaseStartFlowMixin):
-    """StartFlowMixin without MessageUserMixin"""
-    def activation_done(self, *args, **kwargs):
-        """Finish task activation."""
-        self.activation.done()
-
-    def form_valid(self, *args, **kwargs):
-        """If the form is valid, save the associated model and finish the task."""
-        super().form_valid(*args, **kwargs)
-        self.activation_done(*args, **kwargs)
-        return HttpResponseRedirect(self.get_success_url())
-
-
-class SimpleFlowMixin(BaseFlowMixin):
-    """FlowMixin without MessageUserMixin."""
-    def activation_done(self, *args, **kwargs):
-        """Finish the task activation."""
-        self.activation.done()
-
-    def form_valid(self, form, **kwargs):
-        """If the form is valid, save the associated model and finish the task."""
-        super().form_valid(form, **kwargs)
-        form.save()
-        self.activation_done(form, **kwargs)
-        return HttpResponseRedirect(self.get_success_url())

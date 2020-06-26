@@ -1,0 +1,18 @@
+{%- macro _task_action_link(task, label, url_name="guess") %}
+  {% set url = flowurl(request, task, url_name=url_name) %}
+  {% if url %}
+    <ul class="menu-out">
+      <li>
+        <a href="{{url}}">{{label}}</a>
+      </li>
+    </ul>
+  {% endif %}
+{% endmacro -%}
+
+{%- macro task_detail(task) %}
+  {{_task_action_link(task, label='Manage', url_name="detail")}}
+{% endmacro -%}
+
+{%- macro task_execute(task) %}
+  {{_task_action_link(task, label=task.flow_task, url_name="execute")}}
+{% endmacro -%}

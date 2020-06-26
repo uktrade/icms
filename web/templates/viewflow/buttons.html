@@ -1,0 +1,21 @@
+{%- macro _task_action_button(task, label, url_name="guess") %}
+  {% set url = flowurl(request, task, url_name=url_name) %}
+  {% if url %}
+    <li>
+      <form method="post" action="{{url}}">
+        {{csrf_input}}
+        <button type="submit" class="secondary-button button" name="run_action">
+          {{label}}
+        </button>
+      </form>
+    </li>
+  {% endif %}
+{% endmacro -%}
+
+{%- macro task_assign(task) %}
+  {{_task_action_button(task, label='Take Ownership', url_name="assign")}}
+{% endmacro -%}
+
+{%- macro task_unassign(task) %}
+  {{_task_action_button(task, label='Release Ownership', url_name="unassign")}}
+{% endmacro -%}

@@ -1,0 +1,36 @@
+{% extends 'layout/sidebar.html' %}
+
+{% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
+
+{% import "forms/forms.html" as forms %}
+{% import "viewflow/links.html" as links with context %}
+
+{% block main_content %}
+  <fieldset>
+    {% with process=activation.process %}
+      {% include activation.process.flow_class.process_template  %}
+    {% endwith %}
+  </fieldset>
+
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    {% block form_content %}{% endblock %}
+    {{activation.management_form}}
+    <div class="list-actions">
+      <div class="container">
+        <div class="row">
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              {% block form_actions %}{% endblock %}
+            </ul>
+          </div>
+          <div class="four columns"></div>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+
+{% block sidebar %}
+  {{links.task_detail(activation.task)}}
+{% endblock %}
