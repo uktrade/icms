@@ -133,6 +133,7 @@ behave: down ## runs functional tests
 	# start containers
 	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
 	ICMS_DEBUG=True \
+	DISABLE_DEBUG_TOOLBAR=True \
 	docker-compose up -d
 
 	# load fixtures for intial data on test database

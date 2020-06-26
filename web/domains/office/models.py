@@ -19,5 +19,8 @@ class Office(models.Model):
                                           null=False,
                                           default=EMPTY)
 
+    def get_status(self):
+        return 'Current' if self.is_active else 'Archived'
+
     def __str__(self):
         return f"{self.address}\n{self.postcode}"

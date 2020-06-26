@@ -32,7 +32,7 @@ DEBUG_TOOLBAR_PANELS = [
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': lambda x: True
+    'SHOW_TOOLBAR_CALLBACK': lambda x: False if 'DISABLE_DEBUG_TOOLBAR' in os.environ else True
 }
 
 # SECURITY WARNING: keep the secret key used in production secret!
