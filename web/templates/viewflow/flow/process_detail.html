@@ -6,5 +6,6 @@
     {% block process_detail %}
       {% include process.flow_class.process_template %}
     {% endblock %}
-  </fieldset>
+
+    {% include "viewflow/partials/process_actions.html" %}
 {% endblock %}

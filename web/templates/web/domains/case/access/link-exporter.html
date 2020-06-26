@@ -1,14 +1,18 @@
 {% extends "web/domains/exporter/list.html" %}
 
 {% block main_content %}
-
-<div class="info-box info-box-info">
-  Export Access Request Details
-
-  {% with access_request=activation.process.access_request %}
+  {% with process=activation.process %}
     {% include "web/domains/case/access/partials/access-request-display.html" %}
   {% endwith %}
-</div>
 
-{{super()}}
+  {{super()}}
+{% endblock %}
+
+
+{% block results %}
+  <form method="post" action="" autocomplete="off" accept-charset="UTF-8" novalidate>
+    {{activation.management_form}}
+    <input type="hidden" name="_continue"></input>
+    {{super()}}
+  </form>
 {% endblock %}

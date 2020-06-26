@@ -1,5 +1,23 @@
 {% import "viewflow/buttons.html" as buttons with context %}
+{% import "viewflow/links.html" as links with context %}
 
-{{buttons.task_assign(activation.task)}}
-{{buttons.task_unassign(activation.task)}}
+{% set assign = buttons.task_assign(activation.task) %}
+{% set unassign=buttons.task_unassign(activation.task) %}
+{% set reassign=links.task_reassign(activation.task) %}
 
+{% if assign or unassign or reassign %}
+<div class="list-actions">
+  <div class="container">
+    <div class="row">
+      <div class="eight columns">
+        <ul class="menu-out flow-across">
+          {{assign}}
+          {{unassign}}
+          {{reassign}}
+        </ul>
+      </div>
+      <div class="four columns"></div>
+    </div>
+  </div>
+</div>
+{% endif %}

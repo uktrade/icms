@@ -5,15 +5,8 @@
 
 {% set requester_type = activation.process.access_request.requester_type %}
 
-{% block sidebar%}
-    {% with process_id=activation.process.access_request.id,
-            task_id=activation.task.id
-    %}
-        {% include "web/domains/case/access/case-fir-sidebar.html" %}
-    {% endwith %}
-{% endblock %}
 
-{% block task_detail %}
+{% block main_content %}
     <div class="info-box info-box-info">
       <p>
       The user specified below has requested access to act as an {{requester_type}}/agent. If you already know that this user should have these access rights you can
@@ -29,17 +22,36 @@
     {{super()}}
 {% endblock %}
 
+{% block sidebar%}
+    {% with process_id=activation.process.access_request.id,
+            task_id=activation.task.id
+    %}
+        {% include "web/domains/case/access/case-fir-sidebar.html" %}
+    {% endwith %}
+
+    {{super()}}
+{% endblock %}
 
 {% block form_actions %}
   <input type='hidden' name='_continue'>
   <li>
-    <button name="start_approval" class="secondary-button button capitalize">
-      Start {{requester_type}} Access Approval
+    <button 
+      type="submit" 
+      role="action-button"
+      data-confirm="Are you sure you want to open this Approval Request?" 
+      name="start_approval" 
+      class="primary-button button capitalize">
+        Start {{requester_type}} Access Approval
     </button>
   </li>
   <li>
-    <button name="close_request" class="primary-button button capitalize">
-      Close Access Request
+    <button 
+      type="submit" 
+      role="action-button" 
+      data-confirm="Are you sure you want to close this Access Request?"
+      name="close_request" 
+      class="secondary-button button capitalize">
+        Close Access Request
     </button>
   </li>
 {% endblock %}

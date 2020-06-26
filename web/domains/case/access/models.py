@@ -134,3 +134,4 @@ class AccessRequestProcess(Process):
     restart_approval = models.BooleanField(blank=False,
                                            null=False,
                                            default=False)
+    re_link = models.BooleanField(blank=False, null=False, default=False)

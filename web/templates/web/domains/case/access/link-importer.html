@@ -1,15 +1,9 @@
 {% extends "web/domains/importer/list.html" %}
 
-{% import "forms/fields.html" as fields %}
-{% import "forms/forms.html" as forms %}
-
 {% block main_content %}
-
-  <fieldset>
-    {% with process=activation.process %}
-      {% include "web/domains/case/access/partials/access-request-display.html" %}
-    {% endwith %}
-  </fieldset>
+  {% with process=activation.process %}
+    {% include "web/domains/case/access/partials/access-request-display.html" %}
+  {% endwith %}
 
   {{super()}}
 {%endblock %}

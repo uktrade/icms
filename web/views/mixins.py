@@ -2,8 +2,6 @@ import structlog as logging
 from django.views.generic.base import View
 from django.views.generic.list import ListView
 
-from web.auth.mixins import RequireRegisteredMixin
-
 logger = logging.get_logger(__name__)
 
 
@@ -36,7 +34,7 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
         return context
 
 
-class PostActionMixin(RequireRegisteredMixin):
+class PostActionMixin(object):
     """
     Handle post requests with action variable: Calls method with the same name
     as action variable to handle action

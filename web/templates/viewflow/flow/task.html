@@ -5,12 +5,15 @@
 {% import "forms/forms.html" as forms %}
 {% import "viewflow/links.html" as links with context %}
 
+{% set continue_button_label = "Continue" %}
+
 {% block main_content %}
-  <fieldset>
+
+  {% block process_details %}
     {% with process=activation.process %}
       {% include activation.process.flow_class.process_template  %}
     {% endwith %}
-  </fieldset>
+  {% endblock %}
 
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {% block form_content %}{% endblock %}
@@ -20,7 +23,11 @@
         <div class="row">
           <div class="eight columns">
             <ul class="menu-out flow-across">
-              {% block form_actions %}{% endblock %}
+              {% block form_actions %}
+                <li>
+                  <button type="submit" class="primary-button button" name="_continue">{{continue_button_label}}</button>
+                </li>
+              {% endblock %}
             </ul>
           </div>
           <div class="four columns"></div>

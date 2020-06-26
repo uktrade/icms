@@ -4364,6 +4364,10 @@ input[type='checkbox'] {
  * Buttons
  *
  ********************************************************************************************/
+a.button {
+  display: inline-block;
+}
+
 button,
 a.button,
 .button {

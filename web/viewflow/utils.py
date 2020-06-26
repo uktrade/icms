@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import structlog as logging
 from django.template import TemplateSyntaxError
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from viewflow.base import Flow
 from viewflow.compat import get_app_package
 from viewflow.models import AbstractProcess, AbstractTask
+
+logger = logging.getLogger(__name__)
 
 
 def get_url(ref, namespace, url_name=None, user=None):

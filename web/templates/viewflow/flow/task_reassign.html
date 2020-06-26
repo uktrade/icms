@@ -1,0 +1,38 @@
+{% extends 'viewflow/flow/task_detail.html' %}
+
+{% import 'forms/forms.html' as forms %}
+{% import 'forms/fields.html' as fields %}
+
+{% block main_content %}
+  {% with process=activation.process %}
+    {% include activation.process.flow_class.process_template  %}
+  {% endwith %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{fields.field(form.user)}}
+
+    {% block task_actions %}
+        <div class="list-actions">
+            <div class="container">
+            <div class="row">
+              <div class="eight columns">
+                <ul class="menu-out flow-across">
+                  <li>
+                    <button 
+                      type="submit"
+                      class="secondary-button button"
+                      name="run_action">
+                        Reassign
+                      </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="four columns"></div>
+            </div>
+          </div>
+        </div>
+    {% endblock %}
+
+  {% endcall %}
+
+{% endblock %}

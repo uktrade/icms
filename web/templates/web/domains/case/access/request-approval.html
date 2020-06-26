@@ -13,7 +13,11 @@
 {% endblock %}
 
 {% block form_actions %}
+  <input type="hidden" name="_continue">
   <li>
-    <button type="submit" class="primary-button button" name="_continue">Request Approval</button>
+    <button type="submit" class="primary-button button">Request Approval</button>
+  </li>
+  <li>
+    <button type="submit" class="secondary-button button" name="_re_link">Re-link</button>
   </li>
 {% endblock %}

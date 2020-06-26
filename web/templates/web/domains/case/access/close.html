@@ -9,6 +9,13 @@
 
 {% block form_actions %}
   <li>
-    <button type="submit" class="primary-button button" name="_continue">Close Request</button>
+    <button 
+      type="submit" 
+      role="action-button"
+      data-confirm="Are you sure you want to close this Access Request? This will email the requester with the status below."
+      class="primary-button button" 
+      name="_continue">
+        Close Request 
+    </button>
   </li>
 {% endblock %}

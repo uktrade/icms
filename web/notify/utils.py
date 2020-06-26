@@ -31,14 +31,14 @@ def get_role_member_notification_emails(role):
         Return a list of emails for all active members of given role
         with portal notifications enabled
     """
-    user_ids = role.members.filter(account_status=User.ACTIVE).value_list(
+    user_ids = role.user_set.filter(account_status=User.ACTIVE).values_list(
         'id', flat=True)
     personal = PersonalEmail.objects.filter(user_id__in=user_ids).filter(
-        portal_notifications=True).value_list('email', flat=True)
+        portal_notifications=True).values_list('email', flat=True)
     alternative = AlternativeEmail.objects.filter(user_id__in=user_ids).filter(
-        portal_notifications=True).value_list('email', flat=True)
+        portal_notifications=True).values_list('email', flat=True)
     queryset = personal.union(alternative)
-    return queryset.all()
+    return list(queryset.all())
 
 
 def get_notification_emails(user):

@@ -27,11 +27,9 @@ class ApprovalRequestFlow(Flow):
     notify_contacts = flow.Handler(send_approval_request_email).Next(
         this.respond)
 
-    respond = flow.View(
-        views.ApprovalRequestResponseView,
-        assign_view=views.ApprovalRequestReviewView.as_view()
-    ).Next(this.notify_case_officers).Assign(
-        lambda activation: activation.process.approval_request.requested_from)
+    respond = flow.View(views.ApprovalRequestResponseView, ).Next(
+        this.notify_case_officers).Assign(lambda activation: activation.process
+                                          .approval_request.requested_from)
 
     notify_case_officers = flow.Handler(
         send_approval_request_response_email).Next(this.end)

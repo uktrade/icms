@@ -3,21 +3,17 @@
 
 import structlog as logging
 from django.urls import include, path
-from viewflow.flow.viewset import FlowViewSet
+from web.viewflow.viewset import FlowViewSet
 
 from web.domains.case.fir.views import FurtherInformationRequestView
 from web.flows import AccessRequestFlow, ApprovalRequestFlow
 
 from . import views
-from .approval import views as approval_views
 
 logger = logging.getLogger(__name__)
 
 access_request_urls = FlowViewSet(AccessRequestFlow).urls
 approval_request_viewset = FlowViewSet(ApprovalRequestFlow)
-# Override default cancel view
-approval_request_viewset.cancel_process_view[
-    1] = approval_views.ApprovalRequestWithdrawView.as_view()
 approval_request_urls = approval_request_viewset.urls
 
 app_name = 'access'

@@ -4,6 +4,8 @@ $(document).ready(function() {
         evt.preventDefault();
       
         var $el = $(this)
+        var button_name = $el.attr('name') // Clicked button name attribute
+        var button_value = $el.attr('value') // Clicked button value attribute
         var url    = $el.attr('href');
         var data = $el.data()
         var method = data['method'] || 'POST'
@@ -22,6 +24,10 @@ $(document).ready(function() {
               if (url) {
                 $frm.attr('action', url);
               }
+            }
+
+            if(button_name) {
+              $frm.append('<input type="hidden" name="' + button_name + '" value="' + button_value + '" />')
             }
 
             // Add data attributes as hidden inputs
