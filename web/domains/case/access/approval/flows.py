@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import structlog as logging
 from django.utils.decorators import method_decorator
-from . import models, views
-from viewflow.base import Flow, this
 from viewflow import flow
+from viewflow.base import Flow, this
+
+from web.viewflow.nodes import View
+
+from . import models, views
 
 __all__ = ['ApprovalRequestFlow']
+
+logger = logging.getLogger(__name__)
 
 
 def send_approval_request_email(activation):
@@ -15,6 +20,11 @@ def send_approval_request_email(activation):
 
 def send_approval_request_response_email(activation):
     pass
+
+
+def get_team(process):
+    access_request = process.approval_request.access_request
+    return access_request.linked_importer or access_request.linked_exporter
 
 
 class ApprovalRequestFlow(Flow):
@@ -27,7 +37,7 @@ class ApprovalRequestFlow(Flow):
     notify_contacts = flow.Handler(send_approval_request_email).Next(
         this.respond)
 
-    respond = flow.View(views.ApprovalRequestResponseView, ).Next(
+    respond = View(views.ApprovalRequestResponseView).Team(get_team).Next(
         this.notify_case_officers).Assign(lambda activation: activation.process
                                           .approval_request.requested_from)
 

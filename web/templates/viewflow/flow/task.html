@@ -1,6 +1,4 @@
-{% extends 'layout/sidebar.html' %}
-
-{% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
+{% extends 'viewflow/base/task.html' %}
 
 {% import "forms/forms.html" as forms %}
 {% import "viewflow/links.html" as links with context %}
@@ -8,12 +6,7 @@
 {% set continue_button_label = "Continue" %}
 
 {% block main_content %}
-
-  {% block process_details %}
-    {% with process=activation.process %}
-      {% include activation.process.flow_class.process_template  %}
-    {% endwith %}
-  {% endblock %}
+  {{super()}}
 
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {% block form_content %}{% endblock %}

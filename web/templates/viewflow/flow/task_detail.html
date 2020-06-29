@@ -1,17 +1,14 @@
-{% extends 'layout/sidebar.html' %}
+{% extends 'viewflow/base/task.html' %}
 
 {% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
 
 {% import 'viewflow/links.html' as links with context %}
 
 {% block main_content %}
-    {% with process=activation.process %}
-      {% include activation.process.flow_class.process_template  %}
-    {% endwith %}
-
-    {% block task_actions %}
-      {% include "viewflow/partials/task_actions.html" %}
-    {% endblock %}
+  {{super()}}
+  {% block task_actions %}
+    {% include "viewflow/partials/task_actions.html" %}
+  {% endblock %}
 {% endblock %}
 
 {% block sidebar %}

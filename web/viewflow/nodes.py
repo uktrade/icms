@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from copy import copy
+
+import structlog as logging
 from django.conf.urls import url
 from django.urls import reverse
 from viewflow.activation import STATUS
@@ -8,12 +11,22 @@ from viewflow.flow import View as ViewflowView
 
 from .views import ReAssignTaskView
 
+logger = logging.getLogger(__name__)
+
 
 class View(ViewflowView):
     """
         Custom viewflow node with additional reassign view
+
+
+        In addition to Permission can check if user is in a given team.
+
+        Permissions are shared across all teams for  Importers, Exporter and Constabularies
+        additional check required for users performing these tasks
+
     """
     reassign_view_class = ReAssignTaskView
+    _team = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -60,3 +73,55 @@ class View(ViewflowView):
                                     url_type,
                                     namespace=namespace,
                                     **kwargs)
+
+    def Team(self, team):
+        """
+        Make task available for users in given team
+
+        Accepts team lookup kwargs or callable :: Process -> BaseTeam::
+
+            .Team(BaseTeamObject)
+            .Team(lambda process: process.access_request.linked_importer)
+        """
+        result = copy(self)
+
+        result._team = team
+        return result
+
+    def _is_team_member(self, user, task):
+        if user.is_superuser:
+            return True
+        process = task.flow_task.flow_class.process_class.objects.get(
+            pk=task.process.id)
+        if callable(self._team):
+            self._team = self._team(process)
+
+        return self._team.members.filter(pk=user.id).exists()
+
+    def can_assign(self, user, task):
+        """Check if user can assign the task."""
+        allowed = super().can_assign(user, task)
+        if self._team and allowed:
+            return self._is_team_member(user, task)
+        return allowed
+
+    def can_unassign(self, user, task):
+        """Check if user can unassign the task."""
+        allowed = super().can_assign(user, task)
+        if self._team and allowed:
+            return self._is_team_member(user)
+        return allowed
+
+    def can_execute(self, user, task):
+        """Check user permission to execute the task"""
+        allowed = super().can_execute(user, task)
+        if self._team and allowed:
+            return self._is_team_member(user)
+        return allowed
+
+    def can_view(self, user, task):
+        """Check if user has view task detail permission."""
+        allowed = super().can_view(user, task)
+        if self._team and allowed:
+            return self._is_team_member(user)
+        return allowed

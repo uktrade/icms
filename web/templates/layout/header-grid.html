@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <header id="menu-bar">
+    {% include "web/menu/menu.html" %}
+  </header>
+  <div class="has-context-header-grid" id="context-header">
+    <h2>
+      {% block context_header %}
+        {{context_header or title}} 
+      {% endblock %}
+    </h2>
+    <div class="container contextHeaderGrid">
+      {% block header_grid %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <div id="sidebar-substitute"></div>
+  <div id="sidebar">
+    {% block sidebar %}{% endblock %}
+  </div>
+  <div id="sidebar-background"></div>
+  <div id="content">
+    <div class="content-ie8-float">
+      {% block content_actions %}{%endblock%}
+      {% include "partial/mainstart.html" %}
+      {% block main_content %}{%endblock%}
+    </div>
+  </div>
+{% endblock %}
