@@ -43,6 +43,11 @@ def close_request(activation):
     activation.process.access_request.save()
 
 
+def case_officer_permission(activation):
+    return 'IMP_CASE_OFFICER' if activation.process.access_request.is_importer(
+    ) else 'IMP_CERT_CASE_OFFICER'
+
+
 def has_approval(activation):
     """
     Check if access_request has an approval process
@@ -63,9 +68,7 @@ class AccessRequestFlow(Flow):
     notify_case_officers = flow.Handler(notify_officers).Next(this.review)
 
     review = View(views.AccessRequestReviewView).Next(
-        this.check_approval_required).Permission(
-            lambda activation: 'IMP_CASE_OFFICER' if activation.process.
-            access_request.is_importer() else 'IMP_CERT_CASE_OFFICER')
+        this.check_approval_required).Permission(case_officer_permission)
 
     check_approval_required = flow.If(
         cond=lambda activation: activation.process.approval_required).Then(
@@ -78,17 +81,20 @@ class AccessRequestFlow(Flow):
         this.link_importer).Else(this.link_exporter)
 
     link_importer = View(views.LinkImporterView).Next(
-        this.request_approval).Assign(this.review.owner)
+        this.request_approval).Permission(case_officer_permission).Assign(
+            this.review.owner)
 
     link_exporter = View(views.LinkExporterView).Next(
-        this.request_approval).Assign(this.review.owner)
+        this.request_approval).Permission(case_officer_permission).Assign(
+            this.review.owner)
 
     # resets restart_approval flag
     restart_approval = flow.Handler(reset_restart_approval_flag).Next(
         this.request_approval)
 
     request_approval = View(approval_views.RequestApprovalView).Next(
-        this.check_re_link_required).Assign(this.review.owner)
+        this.check_re_link_required).Permission(
+            case_officer_permission).Assign(this.review.owner)
 
     check_re_link_required = flow.If(
         cond=lambda activation: activation.process.re_link).Then(
@@ -98,14 +104,16 @@ class AccessRequestFlow(Flow):
         this.review_approval)
 
     review_approval = View(approval_views.ApprovalRequestReviewView).Next(
-        this.check_approval_restart).Assign(this.review.owner)
+        this.check_approval_restart).Permission(
+            case_officer_permission).Assign(this.review.owner)
 
     check_approval_restart = flow.If(
         cond=lambda act: act.process.restart_approval).Then(
             this.restart_approval).Else(this.close_request)
 
-    close_request = View(views.CloseAccessRequestView).Assign(
-        this.review.owner).Next(this.email_requester)
+    close_request = View(views.CloseAccessRequestView).Permission(
+        case_officer_permission).Assign(this.review.owner).Next(
+            this.email_requester)
 
     email_requester = flow.Handler(notify_access_request_closed).Next(this.end)
 

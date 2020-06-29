@@ -14,6 +14,9 @@ from viewflow.flow.views import CancelProcessView as ViewflowCancelProcessView
 from viewflow.flow.views.mixins import MessageUserMixin
 from viewflow.models import Subprocess
 
+from web.auth.utils import get_users_with_permission
+from web.domains.user.models import User
+
 from .forms import ReAssignTaskForm
 
 logger = logging.getLogger(__name__)
@@ -97,16 +100,15 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
         else:
             return [self.template_name]
 
-    def get_users(self):
+    def get_user_queryset(self):
         """
         Get list of users to select from to assign the task to
         """
-        # TODO: get list of users the task can be available to
-        user = self.request.user
-        return [(user.id, str(user))]
+        return get_users_with_permission(
+            self.activation.task.owner_permission).filter(is_active=True)
 
     def get_form(self):
-        return ReAssignTaskForm(self.get_users(),
+        return ReAssignTaskForm(self.get_user_queryset(),
                                 data=self.request.POST or None)
 
     def get_context_data(self, **kwargs):
@@ -154,7 +156,8 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form))
 
         if '_reassign' or '_continue' in request.POST:
-            self.activation.reassign(self.request.user)
+            user = User.objects.get(pk=form.data.get('user'))
+            self.activation.reassign(user)
             self.success('Task {task} has been reassigned')
             return HttpResponseRedirect(self.get_success_url())
         else:
