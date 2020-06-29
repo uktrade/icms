@@ -19,7 +19,6 @@
 {% endblock %}
 
 {% block sidebar %}
-  {{super()}}
   {% set manage_url = flowurl(request, activation.task, url_name='detail') %}
   {% if manage_url %}
     </br>

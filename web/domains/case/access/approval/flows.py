@@ -27,6 +27,13 @@ def get_team(process):
     return access_request.linked_importer or access_request.linked_exporter
 
 
+def approver_permission(activation):
+    if activation.process.approval_request.access_request.is_importer():
+        return 'IMP_AGENT_APPROVER'
+    else:
+        return 'IMP_CERT_AGENT_APPROVER'
+
+
 class ApprovalRequestFlow(Flow):
     process_template = 'web/domains/case/access/partials/approval-request-display.html'
     process_class = models.ApprovalRequestProcess
@@ -38,8 +45,9 @@ class ApprovalRequestFlow(Flow):
         this.respond)
 
     respond = View(views.ApprovalRequestResponseView).Team(get_team).Next(
-        this.notify_case_officers).Assign(lambda activation: activation.process
-                                          .approval_request.requested_from)
+        this.notify_case_officers).Permission(
+            approver_permission).Assign(lambda activation: activation.process.
+                                        approval_request.requested_from)
 
     notify_case_officers = flow.Handler(
         send_approval_request_response_email).Next(this.end)

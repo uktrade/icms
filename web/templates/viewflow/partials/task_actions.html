@@ -2,7 +2,11 @@
   {% set url=flowurl(request, activation.task, url_name=url_name)%}
   {% if url %}
     <li>
-      <a href={{url}}>{{label}}</a>
+      {% if url == request.path %}
+        <span>{{label}}</span>
+      {% else %}
+        <a href={{url}}>{{label}}</a>
+      {% endif %}
     </li>
   {% endif %}
 {% endmacro %}
