@@ -1,1 +1,12 @@
-{% extends 'viewflow/flow/task_detail.html' %}
+{% extends 'viewflow/base/task_action.html' %}
+
+{% block task_actions %}
+  <li>
+    <button 
+      type="submit"
+      class="secondary-button button"
+      name="run_action">
+        Release Ownership
+    </button>
+  </li>
+{% endblock %}

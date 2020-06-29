@@ -2,27 +2,24 @@
 
 {% import 'forms/forms.html' as forms %}
 
-{% set subprocess = activation.subprocesses().first() %}
-
 {% block main_content %}
-	{% with process=subprocess %}
-		{% include subprocess.flow_class.process_template  %}
-	{% endwith %}
+  {{super()}}
 
-	<div class="list-actions">
-		<div class="container">
-			<div class="row">
-				<div class="eight columns">
-					<ul class="menu-out flow-across">
-						{% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-							<button type="submit" class="secondary-button button" name="action" value="withdraw">
-								Withdraw {{subprocess}}
-							</button>
-						{% endcall %}
-					</ul>
-				</div>
-				<div class="four columns"></div>
-			</div>
-		</div>
-	</div>
+  <h4>Subprocesses<h4>
+
+  <table class="setoutList" >
+    <thead>
+      <th>Process</th>
+      <th>Status</th>
+      <th></th>
+    </thead>
+    {% for process in activation.subprocesses() %}
+      <tr>
+        <td>{{process}}</td>
+        <td>{{process.status}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
 {% endblock %}
+

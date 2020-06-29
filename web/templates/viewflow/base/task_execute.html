@@ -1,4 +1,10 @@
-{% extends 'viewflow/base/task_execute.html' %}
+{% extends 'viewflow/base/task_action.html' %}
+
+{% block form_content %}
+  {{super()}}
+  {{activation.management_form}}
+  <input type='hidden' name='_continue'>
+{% endblock %}
 
 {% block sidebar %}
   {% set manage_url = flowurl(request, activation.task, url_name='detail') %}

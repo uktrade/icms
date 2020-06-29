@@ -5,18 +5,20 @@
 
 {% set requester_type = activation.process.access_request.requester_type %}
 
-
 {% block main_content %}
     <div class="info-box info-box-info">
       <p>
-      The user specified below has requested access to act as an {{requester_type}}/agent. If you already know that this user should have these access rights you can
-      simply add them to the appropriate {{requester_type}}/agent team (note - you may need to create the {{requester_type}}/agent entity first). Use the Link/Maintain link
-      below.
+        The user specified below has requested access to act as an {{requester_type}}/agent. 
+        If you already know that this user should have these access rights you can
+        simply add them to the appropriate {{requester_type}}/agent team 
+        (note - you may need to create the {{requester_type}}/agent entity first). 
+        Use Start Importer Access Approval button below.
       </p>
-      <p>If on the other hand this is a new access request then you can request approval from the main {{requester_type}} using the form below. Note - you will need to
-      link the {{requester_type}} on the access request to an {{requester_type}} within the ICMS system first.</p>
-      <p>Once the Access Request has been actioned you should close the request using the Close section below. An email will be sent to the requester stating
-      the outcome of their request.</p>
+      <p>
+        If on the other hand this is a new access request then you can request approval from 
+        the main {{requester_type}} using the form below. Note - you will need to
+        link the {{requester_type}} on the access request to an {{requester_type}} within the ICMS system first.
+      </p>
     </div>
 
     {{super()}}
@@ -32,8 +34,7 @@
     {{super()}}
 {% endblock %}
 
-{% block form_actions %}
-  <input type='hidden' name='_continue'>
+{% block task_actions %}
   <li>
     <button 
       type="submit" 

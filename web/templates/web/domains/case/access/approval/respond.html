@@ -2,9 +2,22 @@
 
 {% import "forms/fields.html" as fields %}
 
-{% set continue_button_label = "Respond" %}
-
 {% block form_content %}
+    {{super()}}
     {{fields.field(form.response)}}
     {{fields.field(form.response_reason)}}
+{% endblock %}
+
+
+{% block task_actions %}
+  <li>
+    <button 
+      type="submit" 
+      role="action-button" 
+      data-confirm="Are you sure?"
+      name="close_request" 
+      class="primary-button button">
+        Send Response
+    </button>
+  </li>
 {% endblock %}

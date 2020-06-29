@@ -26,7 +26,7 @@ class View(ViewflowView):
 
     """
     reassign_view_class = ReAssignTaskView
-    _team = None
+    team = None
 
     def __init__(self, *args, **kwargs):
         """
@@ -85,43 +85,47 @@ class View(ViewflowView):
         """
         result = copy(self)
 
-        result._team = team
+        result.team = team
         return result
+
+    def _get_team(self, task):
+        if callable(self.team):
+            process = task.flow_task.flow_class.process_class.objects.get(
+                pk=task.process.id)
+            return self.team(process)
+        return self.team
 
     def _is_team_member(self, user, task):
         if user.is_superuser:
             return True
-        process = task.flow_task.flow_class.process_class.objects.get(
-            pk=task.process.id)
-        if callable(self._team):
-            self._team = self._team(process)
 
-        return self._team.members.filter(pk=user.id).exists()
+        team = self._get_team(task)
+        return team.members.filter(pk=user.id).exists()
 
     def can_assign(self, user, task):
         """Check if user can assign the task."""
         allowed = super().can_assign(user, task)
-        if self._team and allowed:
+        if self.team and allowed:
             return self._is_team_member(user, task)
         return allowed
 
     def can_unassign(self, user, task):
         """Check if user can unassign the task."""
-        allowed = super().can_assign(user, task)
-        if self._team and allowed:
-            return self._is_team_member(user)
+        allowed = super().can_unassign(user, task)
+        if self.team and allowed:
+            return self._is_team_member(user, task)
         return allowed
 
     def can_execute(self, user, task):
         """Check user permission to execute the task"""
         allowed = super().can_execute(user, task)
-        if self._team and allowed:
-            return self._is_team_member(user)
+        if self.team and allowed:
+            return self._is_team_member(user, task)
         return allowed
 
     def can_view(self, user, task):
         """Check if user has view task detail permission."""
         allowed = super().can_view(user, task)
-        if self._team and allowed:
-            return self._is_team_member(user)
+        if self.team and allowed:
+            return self._is_team_member(user, task)
         return allowed

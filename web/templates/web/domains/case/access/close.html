@@ -3,11 +3,12 @@
 {% import "forms/fields.html" as fields %}
 
 {% block form_content %}
+    {{super()}}
     {{fields.field(form.response)}}
     {{fields.field(form.response_reason)}}
 {% endblock %}
 
-{% block form_actions %}
+{% block task_actions %}
   <li>
     <button 
       type="submit" 

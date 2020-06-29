@@ -5,19 +5,21 @@
 {% set access_request = activation.process.access_request %}
 
 {% block form_content %}
-  <h3>
+  {{super()}}
+  <h4>
     {{access_request.requester_type}} Access Approval
-  </h3>
+  </h4>
 
   {{ fields.field(form.requested_from) }}
 {% endblock %}
 
-{% block form_actions %}
-  <input type="hidden" name="_continue">
+{% block task_actions %}
   <li>
     <button type="submit" class="primary-button button">Request Approval</button>
   </li>
   <li>
-    <button type="submit" class="secondary-button button" name="_re_link">Re-link</button>
+    <button type="submit" class="secondary-button button capitalize" name="_re_link">
+      Relink {{access_request.requester_type}}
+    </button>
   </li>
 {% endblock %}

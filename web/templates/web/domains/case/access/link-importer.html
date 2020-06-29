@@ -5,6 +5,8 @@
     {% include "web/domains/case/access/partials/access-request-display.html" %}
   {% endwith %}
 
+  <h3>Link Importer</h3>
+
   {{super()}}
 {%endblock %}
 
@@ -14,4 +16,18 @@
     <input type="hidden" name="_continue"></input>
     {{super()}}
   </form>
+{% endblock %}
+
+{% block sidebar %}
+  {{super()}}
+  {% set manage_url = flowurl(request, activation.task, url_name='detail') %}
+  {% if manage_url %}
+    </br>
+    <h4>Task</h4>
+    <ul class="menu-out">
+      <li>
+        <a href="{{manage_url}}">Manage Task</a>
+      </li>
+    </ul>
+  {% endif %}
 {% endblock %}

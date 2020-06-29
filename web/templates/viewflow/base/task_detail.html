@@ -2,8 +2,6 @@
 
 {% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
 
-{% import 'viewflow/links.html' as links with context %}
-
 {% block main_content %}
   {% block process_details %}
     {% with process=activation.process %}
@@ -12,8 +10,13 @@
   {% endblock %}
 
   {% block task_details %}
-    <h3>Review</h3>
-    <div class="container setoutForm noBottomMargin" >
+    <h3>{{activation.task.flow_task}}</h3>
+    <div class="container" >
+      <div class="row">
+        <div class="nine columns" ></div>
+        <div class="three columns" >
+        </div>
+      </div>
       <div class="row">
         <div class="three columns" >
           <label class="prompt west">Status</label>
@@ -25,15 +28,19 @@
         </div>
         <div class="three columns"></div>
       </div>
-        <div class="row">
-          <div class="three columns" >
-            <label class="prompt west">Assigned To</label>
-          </div>
-          <div class="six columns">
-            <span>{{activation.task.owner}}</span>
-          </div>
-          <div class="three columns"></div>
+      <div class="row">
+        <div class="three columns" >
+          <label class="prompt west">Assigned To</label>
         </div>
+        <div class="six columns">
+          <span>{{activation.task.owner}}</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
     </div>
   {% endblock %}
+{% endblock %}
+
+{% block sidebar %}
+  {% include "viewflow/partials/task_actions.html" %}
 {% endblock %}
