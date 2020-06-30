@@ -163,18 +163,17 @@
                     {{process.created}}
                 </td>
                 <td>
+                  <a href="{{flowurl(request, process,url_name='detail', namespace='access')}}">
+                    Process
+                  </a>
                   {% for task in process.active_tasks() %}
                       {% with namespace = 'access' %}
                         {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
                       {% endwith %}
                     {% for subprocess in task.subprocess_set.all() %}
-                      <div class="container">
-                        <div class="row">
                           <a href="{{flowurl(request, subprocess,url_name='detail', namespace='access:approval' )}}">
                             Subprocess
                           </a>
-                        </div>
-                      </div>
                       {% for task in subprocess.active_tasks() %}
                         {% with namespace = 'access:approval' %}
                         {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
