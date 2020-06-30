@@ -16,7 +16,7 @@ def user_logs_in(context, user):
     # this is the fastest way to check for a logged in user
     # if the login field is not present, then click logout
     # this function is used on almost all scenarios, and the user will be loggout for most of them
-    # so checking for loggin field (present most times) will be faster than selenium waiting for
+    # so checking for login field (present most times) will be faster than selenium waiting for
     # logout element to appear throw NoSuchElement after timeout
     try:
         context.browser.find_element(By.ID, 'id_username')
@@ -32,7 +32,8 @@ def user_logs_in(context, user):
 def user_login(context, username, password):
     username_field = context.browser.find_element(By.ID, 'id_username')
     password_field = context.browser.find_element(By.ID, 'id_password')
-    submit_button = context.browser.find_element(By.XPATH, '//button[contains(text(),"Sign in")]')
+    submit_button = context.browser.find_element(
+        By.XPATH, '//button[contains(text(),"Sign in")]')
 
     username_field.send_keys(username)
     password_field.send_keys(password)
@@ -61,12 +62,12 @@ def given_the_user_is_created(context, user):
     UserFactory(
         username=user['username'],
         password=user['password'],
-        first_name=user['first_name'] if 'first_name' in user else user['username'],
+        first_name=user['first_name']
+        if 'first_name' in user else user['username'],
         password_disposition=User.FULL,
         is_superuser=user['is_superuser'] if 'is_superuser' in user else False,
         account_status=User.ACTIVE,
-        is_active=True
-    )
+        is_active=True)
 
 
 @then(u'the "{page}" page is displayed')
@@ -81,7 +82,8 @@ def the_page_is_displayed(context, page):
 
 @then(u'the text "{text}" is visible')
 def text_is_visible(context, text):
-    assert find_element_with_text(context, text), f'could not find text {text} in page'
+    assert find_element_with_text(context,
+                                  text), f'could not find text {text} in page'
 
 
 @then(u'a button with text "{text}" is visible')
@@ -107,7 +109,8 @@ def step_impl(context):
 
 def find_element_with_text(context, text, element='*'):
     try:
-        return context.browser.find_element(By.XPATH, f'//{element}[contains(text(),"{text}")]')
+        return context.browser.find_element(
+            By.XPATH, f'//{element}[contains(text(),"{text}")]')
     except Exception as e:
         print(e)
         return None

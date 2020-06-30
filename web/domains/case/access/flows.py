@@ -9,7 +9,6 @@ from web.notify import notify
 from web.viewflow.nodes import View
 
 from . import models, views
-from .approval import views as approval_views
 from .approval.flows import ApprovalRequestFlow
 
 # Get an instance of a logger
@@ -92,7 +91,7 @@ class AccessRequestFlow(Flow):
     restart_approval = flow.Handler(reset_restart_approval_flag).Next(
         this.request_approval)
 
-    request_approval = View(approval_views.RequestApprovalView).Next(
+    request_approval = View(views.RequestApprovalView).Next(
         this.check_re_link_required).Permission(
             case_officer_permission).Assign(this.review.owner)
 
@@ -103,7 +102,7 @@ class AccessRequestFlow(Flow):
     approval = flow.Subprocess(ApprovalRequestFlow.start, ).Next(
         this.review_approval)
 
-    review_approval = View(approval_views.ApprovalRequestReviewView).Next(
+    review_approval = View(views.ApprovalRequestReviewView).Next(
         this.check_approval_restart).Permission(
             case_officer_permission).Assign(this.review.owner)
 
