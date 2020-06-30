@@ -99,7 +99,7 @@ def step_impl(context, importer_name):
     assert importer_name in context.IMPORTERS, f'importer {importer_name} not found. Add it to context.IMPORTERS'
 
     header = context.browser.find_element_by_css_selector('#context-header h2')
-    search = 'View Importer'
+    search = f'View Importer - {importer_name}'
     assert header.text == search, f'expecting header with text "{search}" but got {header.text}'
 
     importer_data = context.IMPORTERS[importer_name]
@@ -160,3 +160,76 @@ def step_impl(context):
     value = "There are no offices"
     found_value = context.browser.find_element_by_css_selector(selector).text
     assert value == found_value, f'expecting to find "{value}" but got "{found_value}"'
+
+
+@when(u'the user "{user}" navigates to Importer edit page of "{importer_name}"')  # NOQA: F811
+@given(u'the user "{user}" navigates to Importer edit page of "{importer_name}"')  # NOQA: F811
+def step_impl(context, user, importer_name):
+    create_importer(context, importer_name)
+    specific_user_navigates_to_page(context, user, "Importer List page")
+    context.browser.execute_script("window.scrollBy(-15000,0);")
+    context.browser.find_element_by_css_selector('a.icon-pencil').click()
+
+
+@then(u'the following Importer edit page fields have the values')  # NOQA: F811
+def step_impl(context):
+    for field, value in context.table:
+        id = f'#id_{field.lower().replace(" ","_")}'
+
+        if field == 'Type' or field == 'Region origin':
+            found_value = (Select(context.browser.find_element_by_css_selector(id))).first_selected_option.text
+        else:
+            found_value = context.browser.find_element_by_css_selector(id).get_attribute('value')
+        assert value == found_value, f'expecting field "{field}" to be "{value}" but got "{found_value}"'
+
+
+@then(u'the following Importer edit page office data is showned')  # NOQA: F811
+def step_impl(context):
+    field_map = {  # field name to table column mapping
+        'Status': 1,
+        'Address': 2,
+        'Post Code': 3,
+        'ROI': 4
+    }
+    for row, field, value in context.table:
+        assert field in field_map, f'Unknown Office field {field}'
+        column = field_map[field]
+
+        selector = f'#tbl-offices tr:nth-child({row}) td:nth-child({column})'
+        found_value = context.browser.find_element_by_css_selector(selector).text
+        assert value == found_value, f'expecting to find "{value}" but got "{found_value}"'
+
+
+@when(u'the user clicks on add office')  # NOQA: F811
+def step_impl(context):
+    context.browser.find_element_by_id('btn-add-office').click()
+
+
+@when(u'the user enters "{address}" in the new office address fields')  # NOQA: F811
+def step_impl(context, address):
+    context.browser.find_element_by_css_selector('.new-form-row:last-child textarea').send_keys(address)
+
+
+@when(u'the user submits the importer edit form')  # NOQA: F811
+def step_impl(context):
+    context.browser.find_element_by_id('btn-submit').click()
+
+
+@then(u'the user is redirected to the importer display page of "{importer_name}"')  # NOQA: F811
+def step_impl(context, importer_name):
+    el_text = context.browser.find_element_by_css_selector('#context-header h2').text
+    assert f'View Importer - {importer_name}' == el_text
+
+
+@then(u'the count of addreses on the importer display page is "{count}"')  # NOQA: F811
+def step_impl(context, count):
+    els = context.browser.find_elements_by_css_selector('#tbl-offices tbody tr')
+
+    assert count == len(els)
+
+
+@then(u'the Importer edit page office form shows an error on the address field')  # NOQA: F811
+def step_impl(context):
+    el = context.browser.find_element_by_css_selector('#id_form-0-address + .error-message')
+
+    assert 'Cannot be empty' == el.text

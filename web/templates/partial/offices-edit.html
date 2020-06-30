@@ -1,0 +1,111 @@
+{% import "forms/fields.html" as fields %}
+
+<h3> Offices </h3>
+
+<div>
+{# we are using PostActionMixIn - make sure we have an action named edit, for default save button to work #}
+    <input type="hidden" name="action" value="edit">
+
+    {% with office_list = offices.all() %}
+    <table  class="setoutList" id="tbl-offices">
+         <thead>
+            <tr>
+                <th scope="col">Status </th>
+                <th scope="col">Address </th>
+                <th scope="col">Postcode </th>
+                <th scope="col">EORI Number </th>
+                <th scope="col">Actions </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for office in office_list %}
+                <tr>
+                    <td>{{ office.get_status() }}</td>
+                    <td>{{ office.address|nl2br() }}</td>
+                    <td>{{ office.postcode }}</td>
+                    <td>{{ office.eori_number }}</td>
+                    <td>
+                        {% if office.is_active %}
+                        <button role="action-button" class="link-button button no-prompt-action icon-bin"
+                        aria-label="Archive" data-input_action="archive" data-input_csrfmiddlewaretoken="{{ csrf_token }}"
+                        data-input_item="{{ office.id }}" data-confirm="Are you sure you want to archive this record?"></button>
+                        {% else %}
+                        <button role="action-button" class="link-button button no-prompt-action icon-undo2"
+                        aria-label="Unarchove" data-input_action="unarchive" data-input_csrfmiddlewaretoken="{{ csrf_token }}"
+                        data-input_item="{{ office.id }}" data-confirm="Are you sure you want to unarchive this record?"></button>
+                        {% endif %}
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+
+                    <input type="hidden" name="form-INITIAL_FORMS" value="0" id="id_form-INITIAL_FORMS">
+                    <input type="hidden" name="form-MIN_NUM_FORMS" value="0" id="id_form-MIN_NUM_FORMS">
+                    <input type="hidden" name="form-MAX_NUM_FORMS" value="1000" id="id_form-MAX_NUM_FORMS">
+
+
+
+                       {% if show_offices_form %}
+                            <input type="hidden" name="form-TOTAL_FORMS" value="{{ offices_form|count }}" id="id_form-TOTAL_FORMS">
+                            {% for form in offices_form%}
+                                <tr >
+                                    <td ><span  class="text-widget ">Pending</span></td>
+                                    {{ fields.inline_field(form.address) }}
+                                    {{ fields.inline_field(form.postcode) }}
+                                    {{ fields.inline_field(form.eori_number) }}
+                                    <td >
+                                        <ul class="menu-out grouped flow-across">
+                                            <li>
+                                                <button  type="button" class="link-button icon-search button no-prompt-action" aria-describedby="hint148-content" aria-label="Find Address"> </button>
+                                                <div id="hint148-content" role="tooltip" class="hint-content">Find Address</div>
+                                            </li>
+                                            <li>
+                                                <button type="button" role="remove-address-row"  class="link-button icon-bin button no-prompt-action" aria-describedby="hint149-content" aria-label="Archive"> </button>
+                                                <div id="hint149-content" role="tooltip" class="hint-content">Archive</div>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                    {% else %}
+                        <input type="hidden" name="form-TOTAL_FORMS" value="0" id="id_form-TOTAL_FORMS">
+                    {% endif %}
+        </tbody>
+    </table>
+
+<script type="text/template" id="add-office-tpl">
+<!--
+            <tr class="new-form-row">
+                <td ><span  class="text-widget ">Pending</span></td>
+                    {{ fields.inline_field(offices_form[0].address) }}
+                {{ fields.inline_field(offices_form[0].postcode) }}
+                {{ fields.inline_field(offices_form[0].eori_number) }}
+                <td >
+                    <ul class="menu-out grouped flow-across">
+                        <li>
+                            <button  type="button" class="link-button icon-search button no-prompt-action" aria-describedby="hint148-content" aria-label="Find Address"> </button>
+                            <div id="hint148-content" role="tooltip" class="hint-content">Find Address</div>
+                        </li>
+                        <li>
+                            <button type="button" role="remove-address-row" class="link-button icon-bin button no-prompt-action" aria-describedby="hint149-content" aria-label="Archive"> </button>
+                            <div id="hint149-content" role="tooltip" class="hint-content">Archive</div>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+-->
+</script>
+    <div class="list-actions">
+        <ul class="menu-out flow-across">
+            <li>
+                <button type="button" id="btn-add-office" class="small-button icon-office button"> Add Office </button>
+            </li>
+        </ul>
+    </div>
+    {% endwith %}
+</div>
+
+
+
+
