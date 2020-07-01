@@ -24,4 +24,8 @@ urlpatterns = [
     path('<int:importer_id>/agent/new/',
          views.ImporterCreateView.as_view(),
          name='importer-agent-new'),
+
+    path('lookup/postcode',
+         views.list_postcode_addresses,
+         name='importer-postcode-lookup'),
 ]

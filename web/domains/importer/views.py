@@ -1,6 +1,7 @@
 import structlog as logging
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 from web.auth import utils as auth_utils
 
@@ -15,6 +16,9 @@ from web.domains.office.models import Office
 from web.domains.office.forms import OfficeEditForm, OfficeFormSet
 
 from django.forms import formset_factory
+
+from web.address.address import find as postcode_lookup
+
 
 logger = logging.getLogger(__name__)
 
@@ -169,3 +173,9 @@ class ImporterDetailView(ModelDetailView):
         context = super().get_context_data(object)
         context['form'] = ImporterDisplayForm(instance=object)
         return context
+
+
+def list_postcode_addresses(request, ):
+    postcode = request.POST.get('postcode')
+
+    return JsonResponse(postcode_lookup(postcode), safe=False)
