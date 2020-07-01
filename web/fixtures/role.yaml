@@ -1,0 +1,1133 @@
+- model: auth.group
+  pk: 1
+  fields:
+    name: Advice Super Users:Advice Super Admin
+    permissions:
+    - 1003
+    - 1004
+    - 1079
+- model: auth.group
+  pk: 2
+  fields:
+    name: Advice Super Users:Team Coordinator
+    permissions: []
+- model: auth.group
+  pk: 3
+  fields:
+    name: Application Error Logging Users Static:Recipient of SMS and e-mail for domains
+      with no recipients
+    permissions: []
+- model: auth.group
+  pk: 4
+  fields:
+    name: Application Error Logging Users Static:ERROR_ADMIN
+    permissions:
+    - 1028
+    - 1031
+- model: auth.group
+  pk: 5
+  fields:
+    name: Application Error Logging Users Static:Resource Co-ordinator
+    permissions:
+    - 1030
+- model: auth.group
+  pk: 6
+  fields:
+    name: Country Super Users:Country Set Super User
+    permissions:
+    - 1007
+    - 1008
+    - 1009
+    - 1010
+- model: auth.group
+  pk: 7
+  fields:
+    name: Country Super Users:Team Coordinator
+    permissions: []
+- model: auth.group
+  pk: 8
+  fields:
+    name: Digital Certificate Management Team:Digital Certificate Manager
+    permissions:
+    - 1023
+- model: auth.group
+  pk: 9
+  fields:
+    name: Digital Certificate Management Team:Team Coordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 10
+  fields:
+    name: Directory Super Users:Address Administrator with Q.A. Function
+    permissions:
+    - 1001
+- model: auth.group
+  pk: 11
+  fields:
+    name: Directory Super Users:Admin Console
+    permissions:
+    - 1002
+    - 1085
+- model: auth.group
+  pk: 12
+  fields:
+    name: Directory Super Users:People and User Login Administrator with Q.A. Function
+    permissions:
+    - 1006
+    - 1068
+    - 1069
+    - 1071
+    - 1072
+    - 1073
+    - 1090
+- model: auth.group
+  pk: 13
+  fields:
+    name: Directory Super Users:Matrix Folder Administrator
+    permissions:
+    - 1054
+- model: auth.group
+  pk: 14
+  fields:
+    name: Directory Super Users:Organisation Importer
+    permissions:
+    - 1055
+    - 1060
+    - 1062
+- model: auth.group
+  pk: 15
+  fields:
+    name: Directory Super Users:Organisation Manual Creator
+    permissions:
+    - 1056
+    - 1058
+    - 1060
+    - 1062
+- model: auth.group
+  pk: 16
+  fields:
+    name: Directory Super Users:Organisation QA and Updater
+    permissions:
+    - 1057
+    - 1058
+    - 1060
+    - 1062
+- model: auth.group
+  pk: 17
+  fields:
+    name: Directory Super Users:Organisation Standard Editor
+    permissions:
+    - 1058
+    - 1060
+    - 1062
+- model: auth.group
+  pk: 18
+  fields:
+    name: Directory Super Users:Organisation Group Editor
+    permissions:
+    - 1059
+    - 1060
+    - 1071
+- model: auth.group
+  pk: 19
+  fields:
+    name: Directory Super Users:Organisation Automatic Updater
+    permissions:
+    - 1057
+    - 1058
+    - 1060
+    - 1061
+    - 1062
+- model: auth.group
+  pk: 20
+  fields:
+    name: Directory Super Users:Organisation Viewer
+    permissions:
+    - 1060
+    - 1062
+- model: auth.group
+  pk: 21
+  fields:
+    name: Directory Super Users:Email Domain Administrator
+    permissions:
+    - 1025
+    - 1026
+    - 1027
+- model: auth.group
+  pk: 22
+  fields:
+    name: Directory Super Users:Portal Folder Type Administrator
+    permissions:
+    - 1074
+- model: auth.group
+  pk: 23
+  fields:
+    name: Directory Super Users:Team Coordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 24
+  fields:
+    name: Directory Super Users:Role Control Administrator
+    permissions:
+    - 1080
+- model: auth.group
+  pk: 25
+  fields:
+    name: Directory Super Users:Web Organisation Admin (Legacy)
+    permissions:
+    - 1088
+    - 1089
+- model: auth.group
+  pk: 26
+  fields:
+    name: Directory Super Users:Web User Accounts Admin
+    permissions:
+    - 1090
+- model: auth.group
+  pk: 27
+  fields:
+    name: Super Users:Edit any Template Clause Set within any Template Clause Type
+    permissions:
+    - 1024
+    - 1086
+- model: auth.group
+  pk: 28
+  fields:
+    name: Super Users:Edit Any Team
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 29
+  fields:
+    name: Super Users:Team Coordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 30
+  fields:
+    name: Super Users:Send Emails to Selected Members of Selected Resource Types from
+      the Portal Administration Screen
+    permissions:
+    - 1053
+- model: auth.group
+  pk: 31
+  fields:
+    name: Super Users:Super User Proxy Login
+    permissions:
+    - 1090
+    - 1092
+- model: auth.group
+  pk: 32
+  fields:
+    name: ILB Admin Users:Dashboard User
+    permissions:
+    - 1011
+    - 1044
+    - 1075
+- model: auth.group
+  pk: 33
+  fields:
+    name: ILB Admin Users:Maintain All
+    permissions:
+    - 1043
+    - 1044
+    - 1049
+    - 1075
+- model: auth.group
+  pk: 34
+  fields:
+    name: ILB Admin Users:Resource Co-ordinator
+    permissions:
+    - 1006
+    - 1044
+- model: auth.group
+  pk: 35
+  fields:
+    name: ILB Search Users:Resource Co-ordinator
+    permissions:
+    - 1006
+    - 1044
+- model: auth.group
+  pk: 36
+  fields:
+    name: ILB Search Users:Search Cases
+    permissions:
+    - 1037
+    - 1038
+    - 1044
+    - 1045
+    - 1046
+- model: auth.group
+  pk: 37
+  fields:
+    name: ILB Case Officers:Import Application Case Officer
+    permissions:
+    - 1033
+    - 1044
+    - 1045
+    - 1046
+- model: auth.group
+  pk: 38
+  fields:
+    name: ILB Case Officers:Certificate Application Case Officer
+    permissions:
+    - 1035
+    - 1037
+    - 1038
+    - 1044
+- model: auth.group
+  pk: 39
+  fields:
+    name: ILB Case Officers:Resource Co-ordinator
+    permissions:
+    - 1006
+    - 1044
+    - 1075
+- model: auth.group
+  pk: 40
+  fields:
+    name: ILB External Users:Resource Co-ordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 41
+  fields:
+    name: ILB External Users:Verified Section 5 Authority Editor
+    permissions:
+    - 1042
+    - 1044
+- model: auth.group
+  pk: 42
+  fields:
+    name: ILB Support Users:Resource Co-ordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 43
+  fields:
+    name: ILB Support Users:Support User
+    permissions:
+    - 1033
+    - 1037
+    - 1038
+    - 1043
+    - 1044
+    - 1045
+    - 1046
+    - 1049
+    - 1070
+    - 1075
+- model: auth.group
+  pk: 44
+  fields:
+    name: Pay Admin Contacts:Administer Payments Manually
+    permissions:
+    - 1063
+    - 1065
+    - 1066
+- model: auth.group
+  pk: 45
+  fields:
+    name: Pay Admin Contacts:Team Coordinators
+    permissions:
+    - 1064
+- model: auth.group
+  pk: 46
+  fields:
+    name: Pay Admin Contacts:Statement Search and View
+    permissions:
+    - 1065
+    - 1066
+- model: auth.group
+  pk: 47
+  fields:
+    name: Portal Payment Testers:Payment Tester
+    permissions:
+    - 1067
+- model: auth.group
+  pk: 48
+  fields:
+    name: Portal Payment Testers:Team Coordinators
+    permissions:
+    - 1067
+- model: auth.group
+  pk: 49
+  fields:
+    name: Portal Dashboard Permissions:Access Dashboard
+    permissions:
+    - 1012
+- model: auth.group
+  pk: 50
+  fields:
+    name: Portal Dashboard Permissions:FOX Errors View
+    permissions:
+    - 1085
+- model: auth.group
+  pk: 51
+  fields:
+    name: Portal Dashboard Permissions:Inbound Emails View
+    permissions:
+    - 1013
+- model: auth.group
+  pk: 52
+  fields:
+    name: Portal Dashboard Permissions:Intruder Alerts View
+    permissions:
+    - 1014
+- model: auth.group
+  pk: 53
+  fields:
+    name: Portal Dashboard Permissions:Login Audit View
+    permissions:
+    - 1015
+- model: auth.group
+  pk: 54
+  fields:
+    name: Portal Dashboard Permissions:Outbound Emails View and Resend
+    permissions:
+    - 1025
+- model: auth.group
+  pk: 55
+  fields:
+    name: Portal Dashboard Permissions:Portal Parameters View
+    permissions:
+    - 1016
+- model: auth.group
+  pk: 56
+  fields:
+    name: Portal Dashboard Permissions:PL/SQL Errors View
+    permissions:
+    - 1017
+- model: auth.group
+  pk: 57
+  fields:
+    name: Portal Dashboard Permissions:Proxy Viewer
+    permissions:
+    - 1018
+- model: auth.group
+  pk: 58
+  fields:
+    name: Portal Dashboard Permissions:Team Coordinator
+    permissions:
+    - 1006
+- model: auth.group
+  pk: 59
+  fields:
+    name: Portal Dashboard Permissions:Roles View
+    permissions:
+    - 1019
+- model: auth.group
+  pk: 60
+  fields:
+    name: Portal Dashboard Permissions:Search Users View
+    permissions:
+    - 1022
+- model: auth.group
+  pk: 61
+  fields:
+    name: Portal Dashboard Permissions:Session Viewer
+    permissions:
+    - 1020
+- model: auth.group
+  pk: 62
+  fields:
+    name: Portal Dashboard Permissions:Statistics View
+    permissions:
+    - 1021
+- model: auth.group
+  pk: 63
+  fields:
+    name: Reporting Super Users:Report Administrator
+    permissions:
+    - 1077
+- model: auth.group
+  pk: 64
+  fields:
+    name: Reporting Super Users:Team Coordinator
+    permissions: []
+- model: auth.group
+  pk: 65
+  fields:
+    name: Mapsets Management:Mapset Superuser
+    permissions:
+    - 1052
+- model: auth.group
+  pk: 66
+  fields:
+    name: Mapsets Management:Resource Coordinator
+    permissions:
+    - 1084
+- model: auth.group
+  pk: 67
+  fields:
+    name: Workbasket Viewers:Team Coordinator
+    permissions: []
+- model: auth.group
+  pk: 68
+  fields:
+    name: Workbasket Viewers:Workbasket Viewee
+    permissions: []
+- model: auth.group
+  pk: 69
+  fields:
+    name: Workbasket Viewers:Workbasket Viewer
+    permissions:
+    - 1091
+- model: web.role
+  pk: 1
+  fields:
+    description: Users listed here can control all review advice teams
+    role_order: 20
+    team: 1
+    permissions:
+    - 1003
+    - 1004
+    - 1079
+- model: web.role
+  pk: 2
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 1
+    permissions: []
+- model: web.role
+  pk: 3
+  fields:
+    description: Make sure this person has an Email and a mobile number!
+    role_order: 30
+    team: 2
+    permissions: []
+- model: web.role
+  pk: 4
+  fields:
+    description: User's who can view errors from all domains.
+    role_order: 10
+    team: 2
+    permissions:
+    - 1028
+    - 1031
+- model: web.role
+  pk: 5
+  fields:
+    description: Can edit error logging admin users.
+    role_order: 20
+    team: 2
+    permissions:
+    - 1030
+- model: web.role
+  pk: 6
+  fields:
+    description: Users in this list are able to create online forms applications.
+    role_order: 20
+    team: 3
+    permissions:
+    - 1007
+    - 1008
+    - 1009
+    - 1010
+- model: web.role
+  pk: 7
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 3
+    permissions: []
+- model: web.role
+  pk: 8
+  fields:
+    description: People who manage digital certificates
+    role_order: 20
+    team: 4
+    permissions:
+    - 1023
+- model: web.role
+  pk: 9
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 4
+    permissions:
+    - 1006
+- model: web.role
+  pk: 10
+  fields:
+    description: Users in this list are required to check addresses input on the system
+      by other users. When poorly input addresses are found these should be rejected
+      so they do not appear on the search addresses screen.
+    role_order: 60
+    team: 5
+    permissions:
+    - 1001
+- model: web.role
+  pk: 11
+  fields:
+    description: Users can view the admin console
+    role_order: 90
+    team: 5
+    permissions:
+    - 1002
+    - 1085
+- model: web.role
+  pk: 12
+  fields:
+    description: Users in this list may correct existing person details (usually only
+      changeable by the person in question). Users here can also maintain Portal Login
+      User Accounts.
+    role_order: 40
+    team: 5
+    permissions:
+    - 1006
+    - 1068
+    - 1069
+    - 1071
+    - 1072
+    - 1073
+    - 1090
+- model: web.role
+  pk: 13
+  fields:
+    description: Users in this list can create and maintain matrix folders.
+    role_order: 70
+    team: 5
+    permissions:
+    - 1054
+- model: web.role
+  pk: 14
+  fields:
+    description: "Users in this list can import organisations details from Companies\
+      \ House.\n\t   They cannot create organsations that are not registered at Companies\
+      \ House\n\t   (i.e. partnerships or companies recorded at overseas registries\
+      \ only).\n\t   This exceptions need to be input by the \"Organisation Exceptions\
+      \ Manager\".\n\t   Note that overseas companies that have an Established Office\
+      \ in the UK\n\t   (e.g. a registered branch at C.H.) can still be imported from\
+      \ Companies House."
+    role_order: 30
+    team: 5
+    permissions:
+    - 1055
+    - 1060
+    - 1062
+- model: web.role
+  pk: 15
+  fields:
+    description: "Users in this list can import\n\t\t  organisations details from\
+      \ Companies House and update/maintain\n\t\t  existing organisation records.\
+      \ They can also create organisation\n\t\t  records manually  (i.e. partnerships\
+      \ or companies recorded at overseas\n\t\t  registries only). Only experienced/trained\
+      \ users should be added to this role."
+    role_order: 27
+    team: 5
+    permissions:
+    - 1056
+    - 1058
+    - 1060
+    - 1062
+- model: web.role
+  pk: 16
+  fields:
+    description: "Users in this list can import organisations details from Companies\
+      \ House and\n\t  update/maintain existing organisation records. Only experienced/trained\n\
+      \t  users should be added to this role. Users here cannot create organsations\n\
+      \t  that are not registered at Companies House (i.e. partnerships or companies\n\
+      \t  recorded at overseas registries only). This exceptions need to be input\
+      \ by the\n\t  \"Organisation Exceptions Manager\". Note that overseas companies\
+      \ that have an\n\t  Established Office in the UK (e.g. a registered branch at\
+      \ C.H.) can still be imported from Companies House."
+    role_order: 20
+    team: 5
+    permissions:
+    - 1057
+    - 1058
+    - 1060
+    - 1062
+- model: web.role
+  pk: 17
+  fields:
+    description: "Users in this list are able\n\t\t  to view organisation detail and\
+      \ edit current details. They\n\t\t  are not able to change name history or create\
+      \ new organisations."
+    role_order: 28
+    team: 5
+    permissions:
+    - 1058
+    - 1060
+    - 1062
+- model: web.role
+  pk: 18
+  fields:
+    description: Users in this list can view and maintain organisation group details.
+    role_order: 25
+    team: 5
+    permissions:
+    - 1059
+    - 1060
+    - 1071
+- model: web.role
+  pk: 19
+  fields:
+    description: "Users in this list are able\n\t\t  to view organisation detail and\
+      \ edit current details. They\n\t\t  may also change name history and previous\
+      \ details of an\n\t\t  organisations. Observations of an organisation may also\
+      \ be\n\t\t  viewed, and may be automatically corrected by this user."
+    role_order: 29
+    team: 5
+    permissions:
+    - 1057
+    - 1058
+    - 1060
+    - 1061
+    - 1062
+- model: web.role
+  pk: 20
+  fields:
+    description: Users in this list can only view organisation details
+    role_order: 26
+    team: 5
+    permissions:
+    - 1060
+    - 1062
+- model: web.role
+  pk: 21
+  fields:
+    description: Users in this list can maintain a list of rules that allow accounts
+      to be automatically issued and approved dependent on email domain.
+    role_order: 80
+    team: 5
+    permissions:
+    - 1025
+    - 1026
+    - 1027
+- model: web.role
+  pk: 22
+  fields:
+    description: Users in this list can create and maintain portal folder types.
+    role_order: 75
+    team: 5
+    permissions:
+    - 1074
+- model: web.role
+  pk: 23
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 5
+    permissions:
+    - 1006
+- model: web.role
+  pk: 24
+  fields:
+    description: Users can manager the wua control flag for different roles
+    role_order: 100
+    team: 5
+    permissions:
+    - 1080
+- model: web.role
+  pk: 25
+  fields:
+    description: Ability to maintain web organisation teams
+    role_order: 50
+    team: 5
+    permissions:
+    - 1088
+    - 1089
+- model: web.role
+  pk: 26
+  fields:
+    description: Users in this list may block, cancel, and re-issue the passwords
+      of web user accounts. Users with the 'People and User Login Administrator with
+      Q.A. Function' role automatically gain this role.
+    role_order: 45
+    team: 5
+    permissions:
+    - 1090
+- model: web.role
+  pk: 27
+  fields:
+    description: Users in this list can Edit any Template Clause Set within any Template
+      Clause Type
+    role_order: 40
+    team: 6
+    permissions:
+    - 1024
+    - 1086
+- model: web.role
+  pk: 28
+  fields:
+    description: User can edit any team
+    role_order: 20
+    team: 6
+    permissions:
+    - 1006
+- model: web.role
+  pk: 29
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 6
+    permissions:
+    - 1006
+- model: web.role
+  pk: 30
+  fields:
+    description: Users can send Emails to all members of selected resource type from
+      the portal administration screen
+    role_order: 50
+    team: 6
+    permissions:
+    - 1053
+- model: web.role
+  pk: 31
+  fields:
+    description: Users in this list can proxy login as other portal users.
+    role_order: 30
+    team: 6
+    permissions:
+    - 1090
+    - 1092
+- model: web.role
+  pk: 32
+  fields:
+    description: Users can access the ICMS data dashboard.
+    role_order: 30
+    team: 7
+    permissions:
+    - 1011
+    - 1044
+    - 1075
+- model: web.role
+  pk: 33
+  fields:
+    description: Users can maintain all reference data for the system (importers,
+      exporters, commodities, countries, categories etc).
+    role_order: 20
+    team: 7
+    permissions:
+    - 1043
+    - 1044
+    - 1049
+    - 1075
+- model: web.role
+  pk: 34
+  fields:
+    description: Has all permissions and can edit members of the team.
+    role_order: 10
+    team: 7
+    permissions:
+    - 1006
+    - 1044
+- model: web.role
+  pk: 35
+  fields:
+    description: Has all permissions and can edit members of the team.
+    role_order: 10
+    team: 8
+    permissions:
+    - 1006
+    - 1044
+- model: web.role
+  pk: 36
+  fields:
+    description: Users can search across all cases.
+    role_order: 20
+    team: 8
+    permissions:
+    - 1037
+    - 1038
+    - 1044
+    - 1045
+    - 1046
+- model: web.role
+  pk: 37
+  fields:
+    description: Users in this role have the ability to process import application
+      cases through the system.
+    role_order: 20
+    team: 9
+    permissions:
+    - 1033
+    - 1044
+    - 1045
+    - 1046
+- model: web.role
+  pk: 38
+  fields:
+    description: Users in this role have the ability to process certificate application
+      cases through the system.
+    role_order: 30
+    team: 9
+    permissions:
+    - 1035
+    - 1037
+    - 1038
+    - 1044
+- model: web.role
+  pk: 39
+  fields:
+    description: Has all permissions and can edit members of the team.
+    role_order: 10
+    team: 9
+    permissions:
+    - 1006
+    - 1044
+    - 1075
+- model: web.role
+  pk: 40
+  fields:
+    description: Has all permissions and can edit members of the team.
+    role_order: 10
+    team: 10
+    permissions:
+    - 1006
+- model: web.role
+  pk: 41
+  fields:
+    description: Users in this role have privileges to view and edit importer verified
+      section 5 authorities.
+    role_order: 20
+    team: 10
+    permissions:
+    - 1042
+    - 1044
+- model: web.role
+  pk: 42
+  fields:
+    description: Has all permissions and can edit members of the team.
+    role_order: 10
+    team: 11
+    permissions:
+    - 1006
+- model: web.role
+  pk: 43
+  fields:
+    description: Users in this role have all ICMS system privileges.
+    role_order: 20
+    team: 11
+    permissions:
+    - 1033
+    - 1037
+    - 1038
+    - 1043
+    - 1044
+    - 1045
+    - 1046
+    - 1049
+    - 1070
+    - 1075
+- model: web.role
+  pk: 44
+  fields:
+    description: "Users listed here are allowed to record/cancel payments to BERR\
+      \ in the event of a problem with epayment.\tThey may also view Statements."
+    role_order: 30
+    team: 12
+    permissions:
+    - 1063
+    - 1065
+    - 1066
+- model: web.role
+  pk: 45
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 12
+    permissions:
+    - 1064
+- model: web.role
+  pk: 46
+  fields:
+    description: Users listed here are allowed to search and view previous Statements
+      relating to Payments made through the Portal.
+    role_order: 20
+    team: 12
+    permissions:
+    - 1065
+    - 1066
+- model: web.role
+  pk: 47
+  fields:
+    description: Users listed here have access to the Payment Test Harness system
+      LHS.
+    role_order: 20
+    team: 13
+    permissions:
+    - 1067
+- model: web.role
+  pk: 48
+  fields:
+    description: Only users in this list may change entries to this contact-list/team.
+    role_order: 10
+    team: 13
+    permissions:
+    - 1067
+- model: web.role
+  pk: 49
+  fields:
+    description: Only users in this role may access the dashboard
+    role_order: 11
+    team: 14
+    permissions:
+    - 1012
+- model: web.role
+  pk: 50
+  fields:
+    description: Users in this role may view FOX errors.
+    role_order: 30
+    team: 14
+    permissions:
+    - 1085
+- model: web.role
+  pk: 51
+  fields:
+    description: Only users in this role may view the dashboard inbound emails page.
+    role_order: 60
+    team: 14
+    permissions:
+    - 1013
+- model: web.role
+  pk: 52
+  fields:
+    description: Only users in this role may view the dashboard intruder alerts page.
+    role_order: 85
+    team: 14
+    permissions:
+    - 1014
+- model: web.role
+  pk: 53
+  fields:
+    description: Only users in this role may view the dashboard login audit page.
+    role_order: 80
+    team: 14
+    permissions:
+    - 1015
+- model: web.role
+  pk: 54
+  fields:
+    description: Users in this role may view and resend outbound emails.
+    role_order: 55
+    team: 14
+    permissions:
+    - 1025
+- model: web.role
+  pk: 55
+  fields:
+    description: Only users in this role may view dashboard portal parameters.
+    role_order: 65
+    team: 14
+    permissions:
+    - 1016
+- model: web.role
+  pk: 56
+  fields:
+    description: Only users in this role may view PL/SQL errors.
+    role_order: 25
+    team: 14
+    permissions:
+    - 1017
+- model: web.role
+  pk: 57
+  fields:
+    description: Only users in this role may view proxy details within the web user
+      sessions page.
+    role_order: 20
+    team: 14
+    permissions:
+    - 1018
+- model: web.role
+  pk: 58
+  fields:
+    description: Only users in this role may change entries to this contact-list/team.
+    role_order: 10
+    team: 14
+    permissions:
+    - 1006
+- model: web.role
+  pk: 59
+  fields:
+    description: Only users in this role may view the dashboard roles page.
+    role_order: 75
+    team: 14
+    permissions:
+    - 1019
+- model: web.role
+  pk: 60
+  fields:
+    description: Only users in this role may view dashboard search users.
+    role_order: 70
+    team: 14
+    permissions:
+    - 1022
+- model: web.role
+  pk: 61
+  fields:
+    description: Only users in this role may view web user sessions.
+    role_order: 15
+    team: 14
+    permissions:
+    - 1020
+- model: web.role
+  pk: 62
+  fields:
+    description: Only users in this role may view dashboard statistics.
+    role_order: 90
+    team: 14
+    permissions:
+    - 1021
+- model: web.role
+  pk: 63
+  fields:
+    description: Users in this role can access the reports system using the left hand
+      side of the workbasket both to search reporting teams and view/schedule reports.
+    role_order: 20
+    team: 15
+    permissions:
+    - 1077
+- model: web.role
+  pk: 64
+  fields:
+    description: Administer this team.
+    role_order: 10
+    team: 15
+    permissions: []
+- model: web.role
+  pk: 65
+  fields:
+    description: Mapset Superusers can administer editing privileges on mapsets
+    role_order: 20
+    team: 16
+    permissions:
+    - 1052
+- model: web.role
+  pk: 66
+  fields:
+    description: Resource Coordinator for the SPIRE Mapsets Management system
+    role_order: 10
+    team: 16
+    permissions:
+    - 1084
+- model: web.role
+  pk: 67
+  fields:
+    description: "People in this role can edit this team.\n      Warning... team coordinators\
+      \ will be able to add anyone to the team to view their workbasket."
+    role_order: 10
+    team: 17
+    permissions: []
+- model: web.role
+  pk: 68
+  fields:
+    description: People in this role can have their workbaskets viewed by people in
+      the viewers role.
+    role_order: 30
+    team: 17
+    permissions: []
+- model: web.role
+  pk: 69
+  fields:
+    description: People in this role can view the workbasket of all people in the
+      Workbasket Viewee role.
+    role_order: 20
+    team: 17
+    permissions:
+    - 1091

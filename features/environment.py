@@ -15,7 +15,8 @@ def before_scenario(context, scenario):
         'workbasket': f'{context.BASE_URL}/workbasket',
         'user home': f'{context.BASE_URL}/home',
         'logout': f'{context.BASE_URL}/logout',
-        'Request Importer/Exporter Access page': f'{context.BASE_URL}/access/request',
+        'Request Importer/Exporter Access page':
+        f'{context.BASE_URL}/access/request',
         'Importer List page': f'{context.BASE_URL}/importer',
     }
 

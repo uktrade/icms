@@ -22,13 +22,15 @@ migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
 
+down: ## Stops and downs containers
+	docker-compose down
 
-loaddata: ## Load fixtures
+##@ Tests & Reports
+flake8: ## runs lint tests
 	unset UID && \
-	docker-compose run --rm web python ./manage.py loaddata --app web web/fixtures/web/*.json
+	ICMS_DEBUG=False \
+	docker-compose run --rm web python -m flake8
 
-dumpdata: ## dumps db data
-	unset UID && \
 	docker-compose run --rm web python ./manage.py dumpdata --format=json web  > test.json
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
@@ -138,13 +140,14 @@ behave: down ## runs functional tests
 
 	# load fixtures for intial data on test database
 	docker-compose exec web sh -c " \
+		dockerize -wait http://localhost:8080 -timeout 30s && \
 		DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-		python manage.py loaddata features/fixtures/initial-data.json \
+		python manage.py loaddata units.yaml permission.yaml team.yaml role.yaml \
 	"
 
 	# keep db as postgres since behave will prepend test_ to db when selectiong one to use
 	docker-compose exec web sh -c " \
-		dockerize -wait http://localhost:8080 -timeout 60s && \
+		dockerize -wait http://localhost:8080 -timeout 30s && \
 		DJANGO_SETTINGS_MODULE=config.settings.test \
 		DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
 		python manage.py behave --keepdb $(BEHAVE_OPTS) --junit-directory test-reports --junit\

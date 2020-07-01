@@ -23,6 +23,7 @@ factory-boy = "*"
 faker = "*"
 selenium = "*"
 behave-django = "*"
+pyyaml = "*"
 
 [packages]
 django = "==2.2.13"
