@@ -63,9 +63,16 @@ class Importer(Archivable, BaseTeam):
             LABEL = 'Importer'
 
         if self.id:
-            return LABEL + ' - ' + (self.name or self.user.full_name)
+            return LABEL + ' - ' + self.display_name
         else:
             return LABEL
+
+    @property
+    def display_name(self):
+        if self.type == self.ORGANISATION:
+            return self.name
+        else:
+            return self.user.full_name if self.user else 'None'
 
     @property
     def status(self):

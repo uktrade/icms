@@ -131,6 +131,9 @@ dmypy.json
 # localstack persistency data folder
 /.ls_data
 
+# sample data
+/anon_data*
+
 /node_modules
 
 # local docker-compose changes

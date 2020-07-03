@@ -1,0 +1,25 @@
+{% for agent in agent_list %}
+    <tr>
+        <td>
+            <span class="text-widget ">
+                <a href="{{url('importer-view', args=[agent.id])}}">{{ agent.display_name }}</a>
+                <br>{{ agent.entity_type }}
+            </span>
+        </td>
+        <td>
+            <span class="text-widget ">Care Of Importer</span>
+        </td>
+        <td>
+            <span class="text-widget ">
+                {# there should only ever be one active office for an agent #}
+                {% with office = agent.offices.filter(is_active=True).first() %}
+                    {{ office|nl2br }}
+                {% endwith %}
+            </span>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="3"><p>There are no agents</p></td>
+    </tr>
+{% endfor %}

@@ -18,7 +18,7 @@ Feature: Importer Display
         When "John" navigates to "importer-list"
         And  clicks on importer name "Elm Street Imports"
         Then "importer-view" page for importer "Elm Street Imports" is displayed
-        And context header reads "View Importer - Elm Street Imports" 
+        And context header reads "View Importer - Elm Street Imports"
         And importer name reads "Elm Street Imports"
 
     @importer @display @importer-display
@@ -32,7 +32,7 @@ Feature: Importer Display
         Then "importer-list" page is displayed
 
     @importer @display @importer-display
-    Scenario: User should see correct importer name 
+    Scenario: User should see correct importer name
         Given import organisation "Elm Street Imports" exists
         And "bren" is logged in
         And "bren" is a member of "ILB Admin Users"
@@ -45,7 +45,7 @@ Feature: Importer Display
             | Comments      |                    |
 
     @importer @display @importer-display
-    Scenario: User should see correct importer region origin 
+    Scenario: User should see correct importer region origin
         Given non-European importer "US Imports" exists
         And "bren" is logged in
         And "bren" is a member of "ILB Admin Users"
@@ -71,3 +71,27 @@ Feature: Importer Display
             | 1   | Post Code | 43001           |
             | 1   | ROI       | None            |
         And no archived importer office is displayed
+
+    @importer @display @importer-display
+    Scenario: User should see correct importer agents
+        Given importer "Hey Ltd" exists
+        And import organisation "Subcorp" exists
+        And importer "Subcorp" has an office with address "4 Beverly Hills" and postcode "90210"
+        And "Subcorp" is an agent of "Hey Ltd"
+        And user "Jane-user" exists with title "Ms" and first name "Jane" and last name "Doe"
+        And individual importer "Jane-importer" exists with user "Jane-user"
+        And importer "Jane-importer" has an office with address "1428 Elm Street" and postcode "43001"
+        And "Jane-importer" is an agent of "Hey Ltd"
+        And "Ashley" is logged in
+        And "Ashley" is a member of "ILB Admin Users"
+        And "Ashley" has "ILB Admin Users:Maintain All" role
+        When "Ashley" views importer "Hey Ltd"
+        Then importer agents read as follows
+            | Row | Field                                | Value                   |
+            | 1   | Importer Name / Importer Entity Type | Subcorp\s+Organisation  |
+            | 1   | Agent Type                           | Care Of Importer        |
+            | 1   | Address                              | 4 Beverly Hills\s+90210 |
+            | 2   | Importer Name / Importer Entity Type | Ms Jane Doe\s+Individual  |
+            | 2   | Agent Type                           | Care Of Importer        |
+            | 2   | Address                              | 1428 Elm Street\s+43001 |
+        And no archived importer agents are displayed

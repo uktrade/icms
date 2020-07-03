@@ -45,12 +45,25 @@ def assert_context_header(context, expected_header):
     assert header.text == expected_header, f'expecting header with text "{expected_header}" but got {header.text}'
 
 
-def create_active_user(username):
-    return UserFactory(username=username,
-                       is_active=True,
-                       is_superuser=False,
-                       account_status=User.ACTIVE,
-                       password_disposition=User.FULL)
+def create_active_user(username, title=None, first_name=None, last_name=None):
+    args = {
+        'username': username,
+        'is_active': True,
+        'is_superuser': False,
+        'account_status': User.ACTIVE,
+        'password_disposition': User.FULL,
+    }
+
+    if title is not None:
+        args['title'] = title
+
+    if first_name is not None:
+        args['first_name'] = first_name
+
+    if last_name is not None:
+        args['last_name'] = last_name
+
+    return UserFactory(**args)
 
 
 def find_element_by_text(context, text, element_type='*'):

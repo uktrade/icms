@@ -1,7 +1,10 @@
+import re
+
 from behave import given, then, when
 from features.steps import utils
 from selenium.webdriver.support.ui import Select
 from web.domains.importer.models import Importer
+from web.domains.user.models import User
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 
@@ -9,6 +12,17 @@ from web.tests.domains.office.factory import OfficeFactory
 @given('importer "{name}" exists')
 def create_importer(context, name):
     ImporterFactory(name=name, is_active=True)
+
+
+@given('individual importer "{importer_name}" exists with user "{user_name}"')
+def create_individual_importer(context, importer_name, user_name):
+    # individual importers in real life have an empty name field, but the BDD tests
+    # won't work like that since statements like 'Jane" is an agent of "Hey Ltd"'
+    # wouldn't work, we need somethign to match against.
+    #
+    # so give them a name, but link them to a user.
+    user = User.objects.get(username=user_name)
+    ImporterFactory(name=importer_name, type=Importer.INDIVIDUAL, is_active=True, user=user)
 
 
 @given('archived importer "{name}" exists')
@@ -35,6 +49,17 @@ def create_importer_office(context, name, address, postcode):
     importer = Importer.objects.get(name=name)
     importer.offices.add(
         OfficeFactory(is_active=True, address=address, postcode=postcode))
+
+
+@given(
+    '"{agent_name}" is an agent of "{importer_name}"'
+)
+def mark_as_agent(context, agent_name, importer_name):
+    agent = Importer.objects.get(name=agent_name)
+    importer = Importer.objects.get(name=importer_name)
+
+    agent.main_importer = importer
+    agent.save()
 
 
 @when('clicks on importer name "{name}"')
@@ -162,10 +187,39 @@ def importer_offices_read(context):
         assert field in field_map, f'Unknown Office field {field}'
         column = field_map[field]
 
-        selector = f'.tab-content[data-tab-key="CURRENT"] table tr:nth-child({row}) td:nth-child({column})'
+        selector = f'.tab-content[data-tab-group="tg-offices"][data-tab-key="CURRENT"] table tr:nth-child({row}) td:nth-child({column})'
         found_value = context.browser.find_element_by_css_selector(
             selector).text
         assert value == found_value, f'expecting to find "{value}" but got "{found_value}"'
+
+
+@then('importer agents read as follows')
+def importer_agents_read(context):
+    context.browser.find_element_by_id('tg-agents-CURRENT').click()
+
+    # field name to table column mapping
+    field_map = {
+        'Importer Name / Importer Entity Type': 1,
+        'Agent Type': 2,
+        'Address': 3
+    }
+
+    for row, field, value in context.table:
+        assert field in field_map, f'Unknown Agent field {field}'
+        column = field_map[field]
+
+        selector = f'.tab-content[data-tab-group="tg-agents"][data-tab-key="CURRENT"] table tr:nth-child({row}) td:nth-child({column})'
+        found_value = context.browser.find_element_by_css_selector(selector).text
+        assert re.match(value, found_value), f'expecting to match "{value}" but got "{found_value}"'
+
+
+@then('no archived importer agents are displayed')
+def no_archived_importer_agents_displayed(context):
+    context.browser.find_element_by_id('tg-agents-ARCHIVED').click()
+    selector = '.tab-content[data-tab-group="tg-agents"][data-tab-key="ARCHIVED"] table tr:nth-child(1) td:nth-child(1)'
+    value = "There are no agents"
+    found_value = context.browser.find_element_by_css_selector(selector).text
+    assert value == found_value, f'expecting to find "{value}" but got "{found_value}"'
 
 
 @then('importer edit offices read as follows')
@@ -189,7 +243,7 @@ def importer_edit_offices_read(context):
 @then('no archived importer office is displayed')
 def no_archived_importer_offices_displayed(context):
     context.browser.find_element_by_id('tg-offices-ARCHIVED').click()
-    selector = '.tab-content[data-tab-key="ARCHIVED"] table tr:nth-child(1) td:nth-child(1)'
+    selector = '.tab-content[data-tab-group="tg-offices"][data-tab-key="ARCHIVED"] table tr:nth-child(1) td:nth-child(1)'
     value = "There are no offices"
     found_value = context.browser.find_element_by_css_selector(selector).text
     assert value == found_value, f'expecting to find "{value}" but got "{found_value}"'

@@ -10,6 +10,11 @@ def create_user(context, username):
     utils.create_active_user(username)
 
 
+@given('user "{username}" exists with title "{title}" and first name "{first_name}" and last name "{last_name}"')
+def create_user_named(context, username, title, first_name, last_name):
+    utils.create_active_user(username=username, title=title, first_name=first_name, last_name=last_name)
+
+
 @when('navigates to "{url_name}"')
 @when('the user navigates to "{url_name}"')
 @when('an anonymous user navigates to "{url_name}"')

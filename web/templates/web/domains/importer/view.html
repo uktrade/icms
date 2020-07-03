@@ -23,5 +23,10 @@
         {% with offices = form.instance.offices %}
         {% include "partial/offices-display.html" %}
         {% endwith %}
+
+        {% with agents = form.instance.agents %}
+        {% include "partial/agents-display.html" %}
+        {% endwith %}
+
     {% endcall %}
 {% endblock %}
