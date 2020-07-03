@@ -17,15 +17,13 @@
 
 ## Development requirements
 
-[Docker Compose 1.23.2+](https://docs.docker.com/compose/)
+[Docker Compose 1.21.0+](https://docs.docker.com/compose/)
 
 
 
 ## Development installation
 
-  ICMS uses PRO version of [Viewflow](http://viewflow.io/), in order to fetch PRO package from private viewflow index `ICMS_VIEWFLOW_LICENSE` must be set.
-
-  Ask your teammates or Webops team for license number.
+  ICMS uses PRO version of [Viewflow](http://viewflow.io/), in order to fetch PRO package from private viewflow index `ICMS_VIEWFLOW_LICENSE` must be set. Get it from [Rattic](https://rattic.ci.uktrade.digital/) ("Viewflow License Key").
 
   `.env` file is ignored by git, make sure not to include this file in the repository and it is only used locally
 
@@ -34,15 +32,15 @@
     echo "ICMS_VIEWFLOW_LICENSE=<license_number>" > .env   #  use actual license number in place of <license_number>
     make setup # only needed on first run or after freshly build containers
     make debug
-    make local_S3 # only needed on first run or after freshly build containers
-    make createsuperuer # to create a superuser
+    make local_s3 # only needed on first run or after freshly build containers
+    make createsuperuser # to create a superuser
 
 ### Local AWS S3
     Local development used [localstack](https://github.com/localstack/localstack) to emulate S3 locally
 
     You will need aws cli tools installed and configured, if you have not done so run`aws configure` the values don't really matter but aws cli won't run without a configuration file created.
 
-    `make local_S3` will create an S3 bucket named `icms.dev` on the localstack S3 instance
+    `make local_s3` will create an S3 bucket named `icms.dev` on the localstack S3 instance
 
     localstack UI can be found on http://localhost:8081 and used to very the if S3 bucket is created
 
