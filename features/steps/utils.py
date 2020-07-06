@@ -48,6 +48,7 @@ def assert_context_header(context, expected_header):
 def create_active_user(username):
     return UserFactory(username=username,
                        is_active=True,
+                       is_superuser=False,
                        account_status=User.ACTIVE,
                        password_disposition=User.FULL)
 

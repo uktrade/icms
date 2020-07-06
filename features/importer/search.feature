@@ -1,6 +1,6 @@
 Feature: Importer Search
 
-    @importer @search @importer-search
+    @importer @403 @search @importer-search
     Scenario: User without access shouldn't see the list
         When "someone" logs in
         And  navigates to "importer-list"
