@@ -9,13 +9,13 @@
     </li>
 </ul>
 
-<div arial-labelledby="offices-current" class="tab-content " style="" data-tab-group="tg-offices" data-tab-key="CURRENT" aria-hidden="false">
+<div aria-labelledby="offices-current" class="tab-content " style="" data-tab-group="tg-offices" data-tab-key="CURRENT" aria-hidden="false">
     {% with office_list = offices.filter(is_active=True) %}
             {% include 'partial/offices/office-list-display.html' %}
     {% endwith %}
 </div>
 
-<div id="tcs1Kzx6n_plrnqVW43-tg-officesARCHIVED" arial-labelledby="tks1Kzx6n_plrnqVW43-tg-officesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-offices" data-tab-key="ARCHIVED" aria-hidden="true">
+<div id="tcs1Kzx6n_plrnqVW43-tg-officesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-officesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-offices" data-tab-key="ARCHIVED" aria-hidden="true">
     {% with office_list = offices.filter(is_active=False) %}
             {% include 'partial/offices/office-list-display.html' %}
     {% endwith %}
