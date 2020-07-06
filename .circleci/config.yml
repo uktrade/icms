@@ -21,7 +21,7 @@ jobs:
 
             - run:
                 name: run functional tests
-                command: make behave
+                command: scripts/run_bdd.sh
 
             - run:
                 name: Publish unit test coverage

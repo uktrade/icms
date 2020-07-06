@@ -31,13 +31,14 @@ DEBUG_TOOLBAR_PANELS = [
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': lambda x: False if 'DISABLE_DEBUG_TOOLBAR' in os.environ else True
+    'INTERCEPT_REDIRECTS':
+    False,
+    'SHOW_TOOLBAR_CALLBACK':
+    lambda x: False if 'DISABLE_DEBUG_TOOLBAR' in os.environ else True
 }
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str('ICMS_SECRET_KEY', default='development')
-DEBUG = env.bool('ICMS_DEBUG', True)
 
 # Email
 AWS_SES_ACCESS_KEY_ID = env.str('AWS_SES_ACCESS_KEY_ID', 'dev')

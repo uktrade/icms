@@ -1,120 +1,59 @@
-from behave import given, when, then
-from selenium.webdriver.common.by import By
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from web.tests.domains.user.factory import UserFactory
-from web.models import User
-import time
-
-
-@when(u'the user "{user}" logs in')
-@given(u'the user "{user}" logs in')
-def user_logs_in(context, user):
-
-    user_navigates_to_page(context, 'Login page')
-
-    # ensure any user is logged out before loggin in again
-    # this is the fastest way to check for a logged in user
-    # if the login field is not present, then click logout
-    # this function is used on almost all scenarios, and the user will be loggout for most of them
-    # so checking for login field (present most times) will be faster than selenium waiting for
-    # logout element to appear throw NoSuchElement after timeout
-    try:
-        context.browser.find_element(By.ID, 'id_username')
-    except Exception:
-        context.browser.find_element(By.ID, 'btnLogout').click()
-
-    given_the_user_is_created(context, user)
-    user_data = context.CREATED_USERS[user]
-    user_login(context, user_data['username'], user_data['password'])
+from behave import given, then, when
+from features.steps import utils
 
 
-@when(u'the user logs in with {username} and {password}')
-def user_login(context, username, password):
-    username_field = context.browser.find_element(By.ID, 'id_username')
-    password_field = context.browser.find_element(By.ID, 'id_password')
-    submit_button = context.browser.find_element(
-        By.XPATH, '//button[contains(text(),"Sign in")]')
-
-    username_field.send_keys(username)
-    password_field.send_keys(password)
-    submit_button.click()
+@given('user "{username}" exists')
+def create_user(context, username):
+    utils.create_active_user(username)
 
 
-@given(u'an anonymous user navigates to {page}')
-@given(u'the user navigates to "{page}"')
-@when(u'the user navigates to "{page}"')
-def user_navigates_to_page(context, page):
-    context.browser.get(context.PAGES_MAP[page])
+@when('navigates to "{url_name}"')
+@when('the user navigates to "{url_name}"')
+@when('an anonymous user navigates to "{url_name}"')
+def navigate(context, url_name):
+    utils.go_to_page(context, url_name)
 
 
-@given(u'the user "{user}" navigates to "{page}"')
-@when(u'the user "{user}" navigates to "{page}"')
-def specific_user_navigates_to_page(context, user, page):
-    user_logs_in(context, user)
-    user_navigates_to_page(context, page)
+@when('"{username}" navigates to "{url_name}"')
+def user_navigates(context, username, url_name):
+    utils.go_to_page(context, url_name)
 
 
-@given(u'The user "{user}" is created in the system')
-def given_the_user_is_created(context, user):
-    assert user in context.CREATED_USERS, f'User {user} not configured, add it to context.CREATED_USERS'
-
-    user = context.CREATED_USERS[user]
-    UserFactory(
-        username=user['username'],
-        password=user['password'],
-        first_name=user['first_name']
-        if 'first_name' in user else user['username'],
-        password_disposition=User.FULL,
-        is_superuser=user['is_superuser'] if 'is_superuser' in user else False,
-        account_status=User.ACTIVE,
-        is_active=True)
+@then('"{url_name}" page is displayed')
+def page_displayed(context, url_name):
+    utils.assert_on_page(context, url_name)
 
 
-@then(u'the "{page}" page is displayed')
-def the_page_is_displayed(context, page):
-
-    assert page in context.PAGES_MAP, f'{page} alias not defined, add it to context.PAGES_MAP'
-
-    page_url = context.browser.current_url.strip('/')
-    expected_url = context.PAGES_MAP[page].strip('/')
-    assert expected_url == page_url, f'expecting url to be {expected_url} but got {page_url}'
+@then(u'the user is logged out')
+def user_is_logged_out(context):
+    # try to navigate to workbasket
+    # ensure the login page is displayed
+    utils.go_to_page(context, 'workbasket')
+    utils.assert_on_page(context, 'login')
 
 
-@then(u'the text "{text}" is visible')
+@given('"{username}" is logged in')
+@when('"{username}" logs in')
+def login(context, username):
+    utils.create_active_user(username)
+    utils.go_to_page(context, 'login')
+    utils.login(context, username, 'test')
+
+
+@then('context header reads "{expected_header}"')
+def context_header_is(context, expected_header):
+    utils.assert_context_header(context, expected_header)
+
+
+@then(u'text "{text}" is visible')
 def text_is_visible(context, text):
-    assert find_element_with_text(context,
-                                  text), f'could not find text {text} in page'
+    assert utils.find_element_by_text(
+        context, text), f'could not find text {text} in page'
 
 
-@then(u'a button with text "{text}" is visible')
-def button_with_text_is_visible(context, text):
-    find_element_with_text(context, text, 'button')
-
-
-@then(u'pause')
-@then(u'pause for visual inspection')
-def pause(context):
-    time.sleep(600)
-
-
-@then(u'the user sees a 403 error page')
-def step_impl(context):
+@then(u'403 error page is displayed')
+def check_unauhorised_page(context):
     text_is_visible(context, '403 Forbidden')
-
-
-###
-# utils
-###
-
-
-def find_element_with_text(context, text, element='*'):
-    try:
-        return context.browser.find_element(
-            By.XPATH, f'//{element}[contains(text(),"{text}")]')
-    except Exception as e:
-        print(e)
-        return None
-
-
-def to_boolean(str):
-    return str.lower() in ['true', '1', 't', 'y', 'yes']

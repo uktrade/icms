@@ -1,3 +1,8 @@
+- model: contenttypes.contenttype
+  pk: 15
+  fields:
+    app_label: web
+    model: test
 - model: auth.permission
   pk: 1001
   fields:
