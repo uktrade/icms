@@ -118,7 +118,9 @@ bdd: ## runs functional tests
 	DJANGO_SETTINGS_MODULE=config.settings.test \
 	docker-compose exec web sh -c "\
 		dockerize -wait tcp://web:8080 -timeout 20s && \
-		python manage.py behave ${BEHAVE_OPTS} --no-capture --no-input  --settings=config.settings.test \
+		python manage.py behave ${BEHAVE_OPTS} \
+		--no-capture --no-input  --settings=config.settings.test \
+		--junit-directory test-repots --junit \
 	"
 
 ##@ Releases
