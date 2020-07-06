@@ -6,6 +6,7 @@ from .base import *  # NOQA”
 env = environ.Env()
 
 ALLOWED_HOSTS = env.list('ICMS_ALLOWED_HOSTS', default=['localhost', 'web'])
+DEBUG = env.bool('ICMS_DEBUG', True)
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

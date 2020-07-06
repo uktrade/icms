@@ -1,8 +1,7 @@
 from .non_prod_base import *  # NOQA
 import environ
 
-
-INSTALLED_APPS += [  # NOQA
+INSTALLED_APPS += [  # noqa
     "behave_django",
 ]
 
@@ -19,5 +18,5 @@ CELERY_TASK_ALWAYS_EAGER = True
 
 # SELENIUM
 SELENIUM_BROWSER = 'chrome'
-SELENIUM_HUB_HOST = 'selenium-hub:4444'
-TEST_SITE_HOST = 'web:8080'
+SELENIUM_HUB_HOST = 'selenium-hub'
+SELENIUM_HOST = 'web'

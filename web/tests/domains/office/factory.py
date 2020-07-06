@@ -14,3 +14,4 @@ class OfficeFactory(factory.django.DjangoModelFactory):
 
     is_active = random.choice([True, False])
     address = fake.address()
+    postcode = None

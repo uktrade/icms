@@ -1,59 +1,67 @@
-Feature: Importer Search Functionality
+Feature: Importer Search
+
+    @importer @403 @search @importer-search
+    Scenario: User without access shouldn't see the list
+        When "someone" logs in
+        And  navigates to "importer-list"
+        Then 403 error page is displayed
 
     @importer @search @importer-search
-    Scenario: normal user cannot access page
-        Given   The user "app-user" logs in
-        When   the user navigates to "Importer List page"
-        # Then pause
-        Then   the user sees a 403 error page
-
-
-
-    @importer @search @importer-search
-    Scenario: show all status
-        Given   An importer with status "ARCHIVED" is created in the system
-        And   An importer with status "CURRENT" is created in the system
-        And   The user "app-admin" logs in
-        And   the user navigates to "Importer List page"
-
-        When  the user selects to filter importers with status "Any"
-        And   submits the import search from
-
-        Then  the importer search results contain "2" results
+    Scenario: Users should see all active and archived importers
+        Given archived importer "Old Toby Imports Ltd" exists
+        And importer "Longbottom Imports" exists
+        And "Saruman" is logged in
+        And "Saruman" is a member of "ILB Admin Users"
+        And "Saruman" has "ILB Admin Users:Maintain All" role
+        When  "Sauron" navigates to "importer-list"
+        And  filters importers by status "Any"
+        Then importer search has "2" results
 
 
     @importer @search @importer-search
-    Scenario: search by Archived status
-        Given An importer with status "ARCHIVED" is created in the system
-        And   An importer with status "CURRENT" is created in the system
-        And   The user "app-admin" logs in
-        And   the user navigates to "Importer List page"
-
-        When  the user selects to filter importers with status "archived"
-        And   submits the import search from
-
-        Then  the importer search results contain "1" results
-        And   the result at row "1" has the name "ARCHIVED Importer"
-        And   the result at row "1" has the status "Archived"
-        And   the result at row "1" has the action button "unarchive"
-        And   the result at row "1" has the action button "create agent"
-        And   the result at row "1" has the action button "edit"
-
+    Scenario: User should only see archived importers if filtered by archived
+        Given archived importer "Dissolved Importers Ltd" exists
+        And   importer "Agile Importers" exists
+        And   "an admin" is logged in
+        And   "an admin" is a member of "ILB Admin Users"
+        And   "an admin" has "ILB Admin Users:Maintain All" role
+        When  "an admin" navigates to "importer-list"
+        And   filters importers by status "Archived"
+        Then  importer search has "1" results
+        And   importer name at row "1" is "Dissolved Importers Ltd"
+        And   importer status at row "1" is "Archived"
 
     @importer @search @importer-search
-    Scenario: search by Current status
-        Given An importer with status "ARCHIVED" is created in the system
-        And   the importer "Elm Street Imports" is created in the system
-        And   The user "app-admin" logs in
-        And   the user navigates to "Importer List page"
+    Scenario: User should only see active importers if filtered by current
+        Given archived importer "Dissolved Importers Ltd" exists
+        And   importer "Agile Importers" exists
+        And   "an admin" is logged in
+        And   "an admin" is a member of "ILB Admin Users"
+        And   "an admin" has "ILB Admin Users:Maintain All" role
+        When  "an admin" navigates to "importer-list"
+        And   filters importers by status "Current"
+        Then  importer search has "1" results
+        And   importer name at row "1" is "Agile Importers"
+        And   importer status at row "1" is "Current"
 
-        When  the user selects to filter importers with status "current"
-        And   submits the import search from
+    @importer @search @importer-search
+    Scenario: User should see correct actions with archived importer
+        Given archived importer "Dissolved Importers Ltd" exists
+        And   "an admin" is logged in
+        And   "an admin" is a member of "ILB Admin Users"
+        And   "an admin" has "ILB Admin Users:Maintain All" role
+        When  "an admin" navigates to "importer-list"
+        Then   importer at row "1" has action "unarchive"
+        And   importer at row "1" has action "create agent"
+        And   importer at row "1" has action "edit"
 
-        Then  the importer search results contain "1" results
-        And   the result at row "1" has the name "Elm Street Imports"
-        And   the result at row "1" has the status "Current"
-        And   the result at row "1" has the address "1428 Elm Street"
-        And   the result at row "1" has the action button "archive"
-        And   the result at row "1" has the action button "create agent"
-        And   the result at row "1" has the action button "edit"
+    @importer @search @importer-search
+    Scenario: User should see correct actions with active importer
+        Given importer "Agile Importers Ltd" exists
+        And   "an admin" is logged in
+        And   "an admin" is a member of "ILB Admin Users"
+        And   "an admin" has "ILB Admin Users:Maintain All" role
+        When  "an admin" navigates to "importer-list"
+        Then   importer at row "1" has action "archive"
+        And   importer at row "1" has action "create agent"
+        And   importer at row "1" has action "edit"

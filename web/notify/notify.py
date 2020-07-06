@@ -47,16 +47,16 @@ def register(user, password):
 def access_requested(access_request):
     logger.debug('Notifying case officers for new access request',
                  access_request=access_request)
-    if access_request.is_importer():
-        recipients = utils.get_import_case_officers_emails()
-    else:
-        recipients = utils.get_export_case_officers_emails()
-
     subject = f'Access Request {access_request.id}'
-    send_notification(subject,
-                      'email/access/access_requested.html',
-                      context={'subject': subject},
-                      recipients=recipients)
+    html_message = _render_email('email/access/access_requested.html',
+                                 context={'subject': subject})
+    message_text = html2text.html2text(html_message)
+    if access_request.is_importer():
+        email.send_to_import_case_officers.delay(subject, message_text,
+                                                 html_message)
+    else:
+        email.send_to_export_case_officers.delay(subject, message_text,
+                                                 html_message)
 
 
 def access_request_closed(access_request):

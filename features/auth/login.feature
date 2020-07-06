@@ -1,35 +1,28 @@
-Feature: Login Functionality
+Feature: Login
 
     @login
-    Scenario: non loggedin user redirected to login when opening homepage
-        Given an anonymous user navigates to ICMS homepage
-        Then  the login page is displayed
+    Scenario: anonymous users are redirected to login when accessing homepage
+        When an anonymous user navigates to "home"
+        Then  "login" page is displayed
 
     @login
-    Scenario: non loggedin user redirected to login when opening any page other than home
-        Given an anonymous user navigates to workbasket
-        Then  the login page is displayed
+    Scenario: anonymous user is redirected to login when accessing workbasket
+        When an anonymous user navigates to "workbasket"
+        Then  "login" page is displayed
 
     @login
-    Scenario: user sees error when entering invalid credentials
-        Given The user "app-admin" is created in the system
-        Given an anonymous user navigates to Login page
-        When  the user "app-admin" logs in with invalid credentials
-        Then  an invalid login message is visible
+    Scenario: user sees invalid credentials error message
+        Given user "John" exists
+        When  "John" attempts login with invalid credentials
+        Then  an invalid credentials message is displayed
 
     @login
-    Scenario: user sees error when entering an invalid user
-        Given an anonymous user navigates to Login page
-        When  the user "i-dont-exist" logs in with invalid credentials
-        Then  an invalid login message is visible
+    Scenario: user sees error message with invalid username
+        When  "a ghost" attempts login
+        Then  an invalid credentials message is displayed
 
     @login
-    Scenario: user is redirected to "user home" page after login
-        Given  the user "app-admin" logs in
-        Then  the "user home" page is displayed
-        And   the text "Hi app-admin, you are logged in" is visible
+    Scenario: user is redirected to home page after login
+        When "test" logs in
+        Then "home" page is displayed
 
-    @login
-    Scenario: User home page allow logging out
-        Given the user "app-admin" logs in
-        Then  a button with text "Logout" is visible

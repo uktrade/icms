@@ -5,7 +5,8 @@ from django.http import JsonResponse
 
 from web.auth import utils as auth_utils
 
-from web.views import (ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView)
+from web.views import (ModelCreateView, ModelDetailView, ModelFilterView,
+                       ModelUpdateView)
 from web.views.actions import Archive, Edit, Unarchive, CreateAgent
 from web.views.mixins import PostActionMixin
 
@@ -18,7 +19,6 @@ from web.domains.office.forms import OfficeEditForm, OfficeFormSet
 from django.forms import formset_factory
 
 from web.address.address import find as postcode_lookup
-
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class ImporterListView(ModelFilterView):
         ]
 
 
-class ImporterEditView(ModelUpdateView, PostActionMixin):
+class ImporterEditView(PostActionMixin, ModelUpdateView):
     template_name = 'web/domains/importer/edit.html'
     success_url = reverse_lazy('importer-list')
     cancel_url = success_url
@@ -100,14 +100,15 @@ class ImporterEditView(ModelUpdateView, PostActionMixin):
             offices_form = Formset()
             show_offices_form = False
 
-        return render(request, self.template_name, {
-            'form': form,
-            'offices_form': offices_form,
-            'success_url': self.success_url,
-            'cancel_url': self.cancel_url,
-            'view': self,
-            'show_offices_form': show_offices_form
-        })
+        return render(
+            request, self.template_name, {
+                'form': form,
+                'offices_form': offices_form,
+                'success_url': self.success_url,
+                'cancel_url': self.cancel_url,
+                'view': self,
+                'show_offices_form': show_offices_form
+            })
 
     def edit(self, request, pk):
         importer = Importer.objects.get(pk=pk)

@@ -22,16 +22,11 @@ migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
 
-down: ## Stops and downs containers
-	docker-compose down
-
 ##@ Tests & Reports
 flake8: ## runs lint tests
 	unset UID && \
 	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m flake8
-
-	docker-compose run --rm web python ./manage.py dumpdata --format=json web  > test.json
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
@@ -74,20 +69,18 @@ shell: ## Starts the Python interactive interpreter
 
 all: requirements requirements-web
 
-setup: ## sets up system for first use, you might want to run load data after
+setup: ## sets up system for first use
 	make requirements migrations migrate
 
 local_s3: ## creates s3 buckets on localstack container
 	aws --endpoint-url=http://localhost:4572 s3 mb s3://icms.local
 	aws --endpoint-url=http://localhost:4572 s3api put-bucket-acl --bucket icms.local --acl public-read
 
-
-
 ##@ Server
 debug: ## runs sytem in debug mode
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose up &
+	docker-compose up
 
 run: ## Run with Gunicorn and Whitenoise serving static files
 	unset UID && \
@@ -107,13 +100,7 @@ run: ## Run with Gunicorn and Whitenoise serving static files
 	docker-compose up
 
 down: ## Stops and downs containers
-	docker-compose down
-
-##@ Tests & Reports
-flake8: ## runs lint tests
-	unset UID && \
-	ICMS_DEBUG=False \
-	docker-compose run --rm web python -m flake8
+	docker-compose down --remove-orphans
 
 test: ## run tests
 	mkdir -p test-reports
@@ -127,34 +114,14 @@ accessibility: ## Generate accessibility reports
 	unset UID && \
 	docker-compose run --rm pa11y node index.js
 
-
-behave: down ## runs functional tests
-	# recreate test database
-	docker-compose run --rm web sh -c "echo 'drop  database test_postgres; create database test_postgres;' | python manage.py dbshell"
-
-	# start containers
-	DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-	ICMS_DEBUG=True \
-	DISABLE_DEBUG_TOOLBAR=True \
-	docker-compose up -d
-
-	# load fixtures for intial data on test database
-	docker-compose exec web sh -c " \
-		dockerize -wait http://localhost:8080 -timeout 30s && \
-		DATABASE_URL='postgres://postgres:password@db:5432/test_postgres' \
-		python manage.py loaddata units.yaml permission.yaml team.yaml role.yaml \
+bdd: ## runs functional tests
+	DJANGO_SETTINGS_MODULE=config.settings.test \
+	docker-compose exec web sh -c "\
+		dockerize -wait tcp://web:8080 -timeout 20s && \
+		python manage.py behave ${BEHAVE_OPTS} \
+		--no-capture --no-input  --settings=config.settings.test \
+		--junit-directory test-reports --junit \
 	"
-
-	# keep db as postgres since behave will prepend test_ to db when selectiong one to use
-	docker-compose exec web sh -c " \
-		dockerize -wait http://localhost:8080 -timeout 30s && \
-		DJANGO_SETTINGS_MODULE=config.settings.test \
-		DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
-		python manage.py behave --keepdb $(BEHAVE_OPTS) --junit-directory test-reports --junit\
-	"
-
-	docker-compose down
-
 
 ##@ Releases
 
