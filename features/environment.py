@@ -29,3 +29,8 @@ def before_feature(context, feature):
     configure(context)
     # Load permission data
     context.fixtures = ['permission.yaml']
+
+
+def after_step(context, step):
+    if step.status == 'failed':
+        context.browser.save_screenshot(f'/code/test-reports/bdd-screenshots/{context.scenario.name}-{step.name}.png')

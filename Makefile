@@ -70,6 +70,9 @@ shell: ## Starts the Python interactive interpreter
 all: requirements requirements-web
 
 setup: ## sets up system for first use
+	# doing this here gives it the right permissions, e.g. the local user.
+	# that avoids problems with it being owned by root if docker creates it.
+	mkdir -p test-reports/bdd-screenshots
 	make requirements migrations migrate
 
 local_s3: ## creates s3 buckets on localstack container
@@ -103,7 +106,6 @@ down: ## Stops and downs containers
 	docker-compose down --remove-orphans
 
 test: ## run tests
-	mkdir -p test-reports
 	unset UID && \
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
