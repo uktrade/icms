@@ -1,0 +1,26 @@
+--extra-index-url https://pypi.viewflow.io/${ICMS_VIEWFLOW_LICENSE}/simple/
+celery==4.4.6
+django-celery-results==1.2.1
+django-compressor==2.4
+django-environ==0.4.5
+django-filter==2.3.0
+django-htmlmin==0.11.0
+django-material-pro==1.6.7
+django-phonenumber-field==4.0.0
+django-recaptcha==2.0.6
+django-redis==4.12.1
+django-ses==1.0.1
+django-structlog==1.6.0
+django-viewflow-pro==1.6.2
+Django==2.2.13
+elastic-apm==5.8.0
+gunicorn==20.0.4
+html2text==2020.1.16
+humanize==2.5.0
+Jinja2==2.11.2
+phonenumbers==8.12.6
+psycopg2==2.8.5
+redis==3.5.3
+requests==2.24.0
+s3chunkuploader==0.12
+whitenoise==5.1.0

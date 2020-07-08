@@ -6,16 +6,15 @@ ARG ICMS_VIEWFLOW_LICENSE
 RUN mkdir /code
 RUN mkdir /deps
 WORKDIR /code
-COPY Pipfile Pipfile.lock /code/
+COPY requirements-*.txt /code/
 
 RUN [ ! -z "${ICMS_VIEWFLOW_LICENSE}" ] || { echo "Viewflow license key cannot be empty"; exit 1; }
 
 # Install dependencies
 RUN \
   apk add --no-cache postgresql-libs openssl gcc musl-dev postgresql-dev npm postgresql-client && \
-  python3 -m pip install --upgrade pip && \
-  python3 -m pip install pipenv && \
-  python3 -m pipenv install --system --dev --deploy
+  pip3 install --upgrade pip && \
+  pip3 install -r requirements-dev.txt
 
 # Install dockerize
 RUN \
@@ -23,5 +22,4 @@ RUN \
   && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
   && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-COPY . /code/
 CMD scripts/entry.sh

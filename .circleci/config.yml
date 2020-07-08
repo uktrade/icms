@@ -12,8 +12,12 @@ jobs:
                 command:  make build
 
             - run:
-                name: run coding standards compliance test
-                command: make flake8
+                name: run black (code formatting check)
+                command: make docker_black
+
+            - run:
+                name: run flake8 (coding standards compliance test)
+                command: make docker_flake8
 
             - run:
                 name: run unit tests
@@ -28,6 +32,3 @@ jobs:
                 command: |
                     wget -O codecov.sh https://codecov.io/bash
                     bash ./codecov.sh -t ${CODECOV_TOKEN} -s test-reports -f "*.xml"
-
-
-
