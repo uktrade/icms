@@ -147,43 +147,11 @@
 
             </thead>
             {% for process in object_list %}
-            <tr>
-                <td>
-                    {{process.id}}
-                </td>
-                <td>
-                  {{process.summary()}}
-                </td>
-                <td>
-                  {{process.access_request.organisation_name}} <br/> {{process.access_request.organisation_address}}
-                </td>
-                <td>
-                    Submitted
-                    <br>
-                    {{process.created}}
-                </td>
-                <td>
-                  <a href="{{flowurl(request, process,url_name='detail', namespace='access')}}">
-                    Process
-                  </a>
-                  {% for task in process.active_tasks() %}
-                      {% with namespace = 'access' %}
-                        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
-                      {% endwith %}
-                    {% for subprocess in task.subprocess_set.all() %}
-                          <a href="{{flowurl(request, subprocess,url_name='detail', namespace='access:approval' )}}">
-                            Subprocess
-                          </a>
-                      {% for task in subprocess.active_tasks() %}
-                        {% with namespace = 'access:approval' %}
-                        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
-                        {% endwith %}
-                      {% endfor %}
-                    {% endfor %}
-                  {% endfor %}
-
-                </td>
-            </tr>
+              {% if process.approval_request %}
+                {% include "web/domains/workbasket/partials/approval-request.html" %}
+              {% else %}
+                {% include "web/domains/workbasket/partials/access-request.html" %}
+              {% endif %}
             {% endfor %}
 
         </table>

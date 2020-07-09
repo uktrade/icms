@@ -1,6 +1,20 @@
 {% extends "web/domains/importer/list.html" %}
 
 {% block main_content %}
+
+  <div class="info-box info-box-info">
+    <p>
+      The user specified below has requested access to act as an importer/agent. 
+      If you already know that this user should have these access rights you can
+      simply add them to the appropriate importer/agent team 
+      (note - you may need to create the importer/agent entity first). 
+    </p>
+    <p>
+      You will need to link the importer on the access request to an importer
+      within the ICMS system first. Use the "Link Importer" button below
+    </p>
+  </div>
+
   {% with process=activation.process %}
     {% include "web/domains/case/access/partials/access-request-display.html" %}
   {% endwith %}

@@ -9,6 +9,7 @@ from web.domains.exporter.views import ExporterListView
 from web.domains.importer.views import ImporterListView
 from web.viewflow.mixins import SimpleStartFlowMixin
 from web.views import ModelCreateView
+from web.views.actions import Edit
 
 from . import forms
 from .actions import LinkExporter, LinkImporter
@@ -34,11 +35,17 @@ def clean_extra_request_data(access_request):
         raise ValueError("Unknown access request type")
 
 
-class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
-    template_name = "web/domains/case/access/request-access.html"
-    form_class = forms.AccessRequestForm
+class ImporterAccessRequestCreateView(SimpleStartFlowMixin, FormView):
+    template_name = "web/domains/case/access/request-importer-access.html"
+    form_class = forms.ImporterAccessRequestForm
 
     def get_success_url(self):
+        user = self.request.user
+        if user.is_importer() or user.is_exporter():
+            return reverse("workbasket")
+
+        # A new user who is not a member of any importer/exporter
+        # is redirected to a different success page
         return reverse("access:requested")
 
     def form_valid(self, form):
@@ -51,18 +58,63 @@ class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
         return super().form_valid(form)
 
 
+class ExporterAccessRequestCreateView(ImporterAccessRequestCreateView):
+    template_name = "web/domains/case/access/request-exporter-access.html"
+    form_class = forms.ExporterAccessRequestForm
+
+
 class AccessRequestCreatedView(TemplateView):
     template_name = "web/domains/case/access/request-access-success.html"
 
 
-class AccessRequestReviewView(UpdateProcessView):
+class AccessRequestReviewView(FlowMixin, ModelCreateView):
     template_name = "web/domains/case/access/review.html"
+    permission_required = []
+    model = ApprovalRequest
+
+    def get_success_url(self):
+        process = self.activation.process
+        if process.approval_required:
+            return reverse("workbasket")
+        return super().get_success_url()
+
+    def get_form(self):
+        access_request = self.activation.process.access_request
+        team = access_request.linked_importer or access_request.linked_exporter
+        return forms.ApprovalRequestForm(team, data=self.request.POST or None)
+
+    def _re_link(self):
+        process = self.activation.process
+        process.re_link = True
+        process.save()
+        self.activation.done()
+        return redirect(self.get_success_url())
+
+    def _close_request(self):
+        process = self.activation.process
+        process.approval_required = False
+        process.save()
+        self.activation.done()
+        return redirect(self.get_success_url())
+
+    def form_valid(self, form):
+        """
+            Save approval request
+        """
+        process = self.activation.process
+        process.approval_required = True
+        process.save()
+        access_request = process.access_request
+        approval_request = form.instance
+        approval_request.access_request = access_request
+        approval_request.requested_by = self.request.user
+        return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
-        process = self.activation.process
-        if "start_approval" in request.POST:
-            process.approval_required = True
-        process.save()
+        if "_close_request" in request.POST:
+            return self._close_request()
+        elif "_re_link" in request.POST:
+            return self._re_link()
         return super().post(request, *args, **kwargs)
 
 
@@ -78,7 +130,12 @@ class LinkImporterView(FlowMixin, ImporterListView):
         return f"{self.activation.process} - {self.activation.flow_task}"
 
     class Display(ImporterListView.Display):
-        actions = [LinkImporter()]
+        actions = [LinkImporter(), Edit()]
+
+    def has_permission(self):
+        # Viewflow protects this view,
+        # no need to permissions of actual ImporterListView
+        return True
 
 
 class LinkExporterView(FlowMixin, ExporterListView):
@@ -90,54 +147,30 @@ class LinkExporterView(FlowMixin, ExporterListView):
     template_name = "web/domains/case/access/link-exporter.html"
 
     class Display(ExporterListView.Display):
-        actions = [LinkExporter()]
+        actions = [LinkExporter(), Edit()]
+
+    def has_permission(self):
+        # Viewflow protects this view,
+        # no need to permissions of actual ExporterListView
+        return True
 
 
 class CloseAccessRequestView(UpdateProcessView):
     template_name = "web/domains/case/access/close.html"
     form_class = forms.CloseAccessRequestForm
 
-    def get_success_url(self):
-        return reverse("workbasket")
-
-
-class RequestApprovalView(FlowMixin, ModelCreateView):
-    template_name = "web/domains/case/access/request-approval.html"
-    permission_required = []
-    model = ApprovalRequest
-
-    def get_form(self):
-        access_request = self.activation.process.access_request
-        team = access_request.linked_importer or access_request.linked_exporter
-        return forms.ApprovalRequestForm(team, data=self.request.POST or None)
-
-    def form_valid(self, form):
-        """
-            Save approval request
-        """
+    def _restart_approval(self):
         process = self.activation.process
-        process.save()
-        access_request = process.access_request
-        approval_request = form.instance
-        approval_request.access_request = access_request
-        approval_request.requested_by = self.request.user
-        return super().form_valid(form)
-
-    def _re_link(self):
-        process = self.activation.process
-        process.re_link = True
+        process.restart_approval = True
         process.save()
         self.activation.done()
         return redirect(self.get_success_url())
 
-    def post(self, request, *args, **kwargs):
-        if "_re_link" in request.POST:
-            return self._re_link()
-        return super().post(request, *args, **kwargs)
-
-
-class ApprovalRequestReviewView(UpdateProcessView):
-    template_name = "web/domains/case/access/review-approval.html"
+    def get_success_url(self):
+        process = self.activation.process
+        if process.restart_approval:
+            return super().get_success_url()
+        return reverse("workbasket")
 
     def get_approval_process(self):
         """
@@ -151,7 +184,8 @@ class ApprovalRequestReviewView(UpdateProcessView):
             .order_by("-created")
             .first()
         )
-        return approval_task.activate().subprocesses().first()
+        if approval_task:
+            return approval_task.activate().subprocesses().first()
 
     def get_context_data(self, *args, **kwargs):
         """
@@ -162,8 +196,6 @@ class ApprovalRequestReviewView(UpdateProcessView):
         return context
 
     def post(self, request, *args, **kwargs):
-        process = self.activation.process
-        if "start_approval" in request.POST:
-            process.restart_approval = True
-        process.save()
+        if "_restart_approval" in request.POST:
+            return self._restart_approval()
         return super().post(request, *args, **kwargs)

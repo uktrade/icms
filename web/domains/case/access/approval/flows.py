@@ -28,10 +28,10 @@ def get_team(process):
 
 
 def approver_permission(activation):
-    if activation.process.approval_request.access_request.is_importer():
-        return "IMP_AGENT_APPROVER"
+    if activation.process.approval_request.access_request.is_importer_request():
+        return "web.IMP_AGENT_APPROVER"
     else:
-        return "IMP_CERT_AGENT_APPROVER"
+        return "web.IMP_CERT_AGENT_APPROVER"
 
 
 class ApprovalRequestFlow(Flow):

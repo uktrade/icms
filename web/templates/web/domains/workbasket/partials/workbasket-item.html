@@ -24,7 +24,11 @@
         </thead>
         <tr >
           <td >
-            <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace, user=request.user)}}"/>Manage</a>
+            {% if namespace == 'access' %}
+            <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace ~ ':' ~ process.access_request.requester_type, user=request.user)}}"/>Resume Task</a>
+            {% else %}
+            <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace, user=request.user)}}"/>Resume Task</a>
+            {% endif %}
           </td>
           <td >
             <button role="action-button" type="button" data-action="action-remove-new-indicator" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">

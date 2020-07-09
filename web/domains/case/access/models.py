@@ -15,16 +15,22 @@ class AccessRequest(models.Model):
 
     # Request types
     IMPORTER = "MAIN_IMPORTER_ACCESS"
+    IMPORTER_DESC = "Request access to act as an Importer"
     IMPORTER_AGENT = "AGENT_IMPORTER_ACCESS"
+    IMPORTER_AGENT_DESC = "Request access to act as an Agent for an Importer"
     EXPORTER = "MAIN_EXPORTER_ACCESS"
+    EXPORTER_DESC = "Request access to act as an Exporter"
     EXPORTER_AGENT = "AGENT_EXPORTER_ACCESS"
+    EXPORTER_AGENT_DESC = "Request access to act as an Agent for an Exporter"
 
     REQUEST_TYPES = (
-        (IMPORTER, "Request access to act as an Importer"),
-        (IMPORTER_AGENT, "Request access to act as an Agent for an Importer"),
-        (EXPORTER, "Request access to act as an Exporter"),
-        (EXPORTER_AGENT, "Request access to act as an Agent for an Exporter"),
+        (IMPORTER, IMPORTER_DESC),
+        (IMPORTER_AGENT, IMPORTER_AGENT_DESC),
+        (EXPORTER, EXPORTER_DESC),
+        (EXPORTER_AGENT, EXPORTER_AGENT_DESC),
     )
+    IMPORTER_REQUEST_TYPES = ((IMPORTER, IMPORTER_DESC), (IMPORTER_AGENT, IMPORTER_AGENT_DESC))
+    EXPORTER_REQUEST_TYPES = ((EXPORTER, EXPORTER_DESC), (EXPORTER_AGENT, EXPORTER_AGENT_DESC))
 
     # Access Request status
     SUBMITTED = "SUBMITTED"
@@ -90,23 +96,40 @@ class AccessRequest(models.Model):
 
     @property
     def requester_type(self):
-        if self.is_importer():
+        if self.is_importer_request():
             return "importer"
         else:
             return "exporter"
 
-    def is_importer(self):
+    def is_importer_request(self):
         return self.request_type in [self.IMPORTER, self.IMPORTER_AGENT]
 
-    def save(self):
+    def is_exporter_request(self):
+        return self.request_type in [self.EXPORTER, self.EXPORTER_AGENT]
+
+    def is_agent_request(self):
+        return self.request_type in [self.IMPORTER_AGENT, self.EXPORTER_AGENT]
+
+    def save(self, *args, **kwargs):
         # Set submit_datetime on save
         # audo_now=True causes field to be non-editable
         # and prevents from being added to a form
         self.submit_datetime = datetime.datetime.now()
-        super().save()
+        super().save(*args, **kwargs)
 
 
-class AccessRequestProcess(Process):
+class ImporterAccessRequestProcess(Process):
+    access_request = models.ForeignKey(AccessRequest, null=True, on_delete=models.SET_NULL)
+    approval_required = models.BooleanField(blank=False, null=False, default=False)
+
+    restart_approval = models.BooleanField(blank=False, null=False, default=False)
+    re_link = models.BooleanField(blank=False, null=False, default=False)
+
+
+class ExporterAccessRequestProcess(Process):
+    # Importer and exporter access request flows can't share
+    # the same model as view permissions for access and importer case officers
+    # are seperate
     access_request = models.ForeignKey(AccessRequest, null=True, on_delete=models.SET_NULL)
     approval_required = models.BooleanField(blank=False, null=False, default=False)
 

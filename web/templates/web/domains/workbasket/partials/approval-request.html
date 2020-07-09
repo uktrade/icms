@@ -1,0 +1,29 @@
+<tr>
+  <td>
+    {{process.id}}
+  </td>
+  <td>
+    {{process.summary()}}
+  </td>
+  <td>
+    {{process.approval_request.access_request.organisation_name}} 
+    <br/> 
+    {{process.approval_request.access_request.organisation_address}}
+  </td>
+  <td>
+    {{process.status}}
+    <br>
+    {{process.created}}
+  </td>
+  <td>
+    <a href="{{flowurl(request, process,url_name='detail', namespace='access:approval')}}">
+      Manage Process
+    </a>
+    {% for task in process.active_tasks() %}
+      {% with namespace = 'access:approval' %}
+        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
+      {% endwith %}
+    {% endfor %}
+
+  </td>
+</tr>

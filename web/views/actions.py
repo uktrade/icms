@@ -57,7 +57,7 @@ class LinkAction(ListAction):
     def href(self, object):
         return f"{object.id}/"
 
-    def as_html(self, object, *args):
+    def as_html(self, object, *args, **kwargs):
         return mark_safe(
             render_to_string(
                 self.template_inline if self.inline else self.template,

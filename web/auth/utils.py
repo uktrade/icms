@@ -18,12 +18,14 @@ def generate_temp_password(length=8):
     return "".join(random.SystemRandom().choices(string.ascii_letters + string.digits, k=length))
 
 
-def get_users_with_permission(codename):
+def get_users_with_permission(permission_name):
     """
         Return all users who has given permission
+
+        permission is in app_label.codename format
     """
-    logger.debug("Searching users with permission", permission=codename)
-    if codename:
+    if permission_name:
+        app_label, codename = permission_name.split(".")
         permission = Permission.objects.get(codename=codename)
         users = User.objects.filter(
             Q(groups__permissions=permission) | Q(user_permissions=permission)
@@ -33,11 +35,12 @@ def get_users_with_permission(codename):
     return users
 
 
-def get_team_members_with_permission(team, codename):
+def get_team_members_with_permission(team, permission_name):
     """
         Return all members of given team who has given permission
     """
-    if codename:
+    if permission_name:
+        app_label, codename = permission_name.split(".")
         permission = Permission.objects.get(codename=codename)
         users = team.members.filter(
             Q(groups__permissions=permission) | Q(user_permissions=permission)

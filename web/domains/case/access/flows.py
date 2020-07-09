@@ -14,19 +14,10 @@ from .approval.flows import ApprovalRequestFlow
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-__all__ = ["AccessRequestFlow"]
+__all__ = ["ImporterAccessRequestFlow", "ExporterAccessRequestFlow"]
 
-
-def reset_re_link_flag(activation):
-    process = activation.process
-    process.re_link = False
-    process.save()
-
-
-def reset_restart_approval_flag(activation):
-    process = activation.process
-    process.restart_approval = False
-    process.save()
+IMP_CASE_OFFICER = "web.IMP_CASE_OFFICER"
+IMP_CERT_CASE_OFFICER = "web.IMP_CERT_CASE_OFFICER"
 
 
 def notify_officers(activation):
@@ -37,112 +28,156 @@ def notify_access_request_closed(activation):
     notify.access_request_closed(activation.process.access_request)
 
 
-def close_request(activation):
-    activation.process.access_request.status = models.AccessRequest.CLOSED
-    activation.process.access_request.save()
-
-
-def case_officer_permission(activation):
-    return (
-        "IMP_CASE_OFFICER"
-        if activation.process.access_request.is_importer()
-        else "IMP_CERT_CASE_OFFICER"
-    )
-
-
-def has_approval(activation):
+def assign_link_task(activation):
     """
-    Check if access_request has an approval process
+        Assign "link_importer" & "link_exporter" tasks' owner
+        to "review" task owner if importer relink action is taken at review task
     """
-    access_request = activation.process.access_request
-    return (
-        hasattr(access_request, "approval_request")
-        and not access_request.approval_request.is_complete
-    )
+    task = activation.task
+    process = activation.task.process
+    previous = task.previous.first()
+    if previous.flow_task.name == "check_re_link_required":
+        # reset re_link flag
+        process.re_link = False
+        process.save()
+        review_task = previous.previous.first()
+        activation.assign(review_task.owner)
+        activation.prepare()
 
 
-class AccessRequestFlow(Flow):
+def assign_review_task(activation):
+    """
+        Assign "review" task's owner
+        to "close_request" task owner if
+        restart approval action is taken at close request task
+    """
+    task = activation.task
+    process = activation.task.process
+    previous = task.previous.first()
+    if previous.flow_task.name == "check_approval_restart":
+        # reset approval restart flag
+        process.restart_approval = False
+        process.save()
+        close_task = previous.previous.first()
+        activation.assign(close_task.owner)
+        activation.prepare()
+    else:
+        activation.assign(previous.owner)
+        activation.prepare()
+
+
+class ImporterAccessRequestFlow(Flow):
     process_template = "web/domains/case/access/partials/access-request-display.html"
-    process_class = models.AccessRequestProcess
+    process_class = models.ImporterAccessRequestProcess
 
-    request = flow.Start(views.AccessRequestCreateView).Next(this.notify_case_officers)
+    # Performed by importers or their agents
+    request = flow.Start(views.ImporterAccessRequestCreateView).Next(this.notify_case_officers)
 
-    notify_case_officers = flow.Handler(notify_officers).Next(this.review)
+    notify_case_officers = flow.Handler(notify_officers).Next(this.link_importer)
 
-    review = (
-        View(views.AccessRequestReviewView)
-        .Next(this.check_approval_required)
-        .Permission(case_officer_permission)
-    )
-
-    check_approval_required = (
-        flow.If(cond=lambda activation: activation.process.approval_required)
-        .Then(this.check_requester_type)
-        .Else(this.close_request)
-    )
-
-    # resets re_link flag
-    re_link = flow.Handler(reset_re_link_flag).Next(this.check_requester_type)
-
-    check_requester_type = (
-        flow.If(this.is_importer).Then(this.link_importer).Else(this.link_exporter)
-    )
-
+    # Performed by case officers
+    # point of return if relink importer action is taken on review
     link_importer = (
         View(views.LinkImporterView)
-        .Next(this.request_approval)
-        .Permission(case_officer_permission)
-        .Assign(this.review.owner)
+        .Permission(IMP_CASE_OFFICER)
+        .Next(this.review)
+        .onCreate(assign_link_task)
     )
 
-    link_exporter = (
-        View(views.LinkExporterView)
-        .Next(this.request_approval)
-        .Permission(case_officer_permission)
-        .Assign(this.review.owner)
-    )
-
-    # resets restart_approval flag
-    restart_approval = flow.Handler(reset_restart_approval_flag).Next(this.request_approval)
-
-    request_approval = (
-        View(views.RequestApprovalView)
+    # point to return if restart approval action is taken on close request
+    review = (
+        View(views.AccessRequestReviewView)
         .Next(this.check_re_link_required)
-        .Permission(case_officer_permission)
-        .Assign(this.review.owner)
+        .Permission(IMP_CASE_OFFICER)
+        .onCreate(assign_review_task)
     )
 
     check_re_link_required = (
         flow.If(cond=lambda activation: activation.process.re_link)
-        .Then(this.re_link)
-        .Else(this.approval)
+        .Then(this.link_importer)
+        .Else(this.check_approval_required)
     )
 
-    approval = flow.Subprocess(ApprovalRequestFlow.start,).Next(this.review_approval)
+    check_approval_required = (
+        flow.If(cond=lambda activation: activation.process.approval_required)
+        .Then(this.approval)
+        .Else(this.close_request)
+    )
 
-    review_approval = (
-        View(views.ApprovalRequestReviewView)
-        .Next(this.check_approval_restart)
-        .Permission(case_officer_permission)
+    approval = flow.Subprocess(ApprovalRequestFlow.start,).Next(this.close_request)
+
+    close_request = (
+        View(views.CloseAccessRequestView)
+        .Permission(IMP_CASE_OFFICER)
         .Assign(this.review.owner)
+        .Next(this.check_approval_restart)
     )
 
     check_approval_restart = (
         flow.If(cond=lambda act: act.process.restart_approval)
-        .Then(this.restart_approval)
-        .Else(this.close_request)
-    )
-
-    close_request = (
-        View(views.CloseAccessRequestView)
-        .Permission(case_officer_permission)
-        .Assign(this.review.owner)
-        .Next(this.email_requester)
+        .Then(this.review)
+        .Else(this.email_requester)
     )
 
     email_requester = flow.Handler(notify_access_request_closed).Next(this.end)
 
     end = flow.End()
 
-    def is_importer(self, activation):
-        return activation.process.access_request.is_importer()
+
+class ExporterAccessRequestFlow(Flow):
+    process_template = "web/domains/case/access/partials/access-request-display.html"
+    process_class = models.ExporterAccessRequestProcess
+
+    # Performed by exporters or their agents
+    request = flow.Start(views.ExporterAccessRequestCreateView).Next(this.notify_case_officers)
+
+    notify_case_officers = flow.Handler(notify_officers).Next(this.link_exporter)
+
+    # Performed by case officers
+
+    # point to return if re link action taken on review
+    link_exporter = (
+        View(views.LinkExporterView)
+        .Next(this.review)
+        .Permission(IMP_CERT_CASE_OFFICER)
+        .onCreate(assign_link_task)
+    )
+
+    # point to return if restart approval action is taken on close request task
+    review = (
+        View(views.AccessRequestReviewView)
+        .Next(this.check_re_link_required)
+        .Permission(IMP_CERT_CASE_OFFICER)
+        .onCreate(assign_review_task)
+    )
+
+    check_re_link_required = (
+        flow.If(cond=lambda activation: activation.process.re_link)
+        .Then(this.link_exporter)
+        .Else(this.check_approval_required)
+    )
+
+    check_approval_required = (
+        flow.If(cond=lambda activation: activation.process.approval_required)
+        .Then(this.approval)
+        .Else(this.close_request)
+    )
+
+    approval = flow.Subprocess(ApprovalRequestFlow.start,).Next(this.close_request)
+
+    close_request = (
+        View(views.CloseAccessRequestView)
+        .Permission(IMP_CERT_CASE_OFFICER)
+        .Assign(this.review.owner)
+        .Next(this.check_approval_restart)
+    )
+
+    check_approval_restart = (
+        flow.If(cond=lambda act: act.process.restart_approval)
+        .Then(this.review)
+        .Else(this.email_requester)
+    )
+
+    email_requester = flow.Handler(notify_access_request_closed).Next(this.end)
+
+    end = flow.End()

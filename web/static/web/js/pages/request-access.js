@@ -1,68 +1,48 @@
-document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
-    "use strict";
-    var reasonRowClasses = getClasses('id_request_reason');
-    var agentNameRowClasses = getClasses('id_agent_name');
-    var agentAddressRowClasses = getClasses('id_agent_address');
+$(document).ready(function() {
 
-    reasonRowClasses.add('hidden');
-    agentNameRowClasses.add('hidden');
-    agentAddressRowClasses.add('hidden');
+    var path= window.location.pathname;
+    var request_type = $('select#id_request_type')
+    var agent_name = $('.row_id_agent_name');
+    var agent_address = $('.row_id_agent_address');
 
-    var container = document.getElementById('form-container');
-    container.classList.remove('hidden');
 
-    // which fields to show on the form based on the request type:
-    var uiConfig = {
-        'MAIN_IMPORTER_ACCESS': [1, 0, 0],
-        'AGENT_IMPORTER_ACCESS': [1, 1, 1],
-        'MAIN_EXPORTER_ACCESS': [0, 0, 0],
-        'AGENT_EXPORTER_ACCESS': [0, 1, 1],
-    };
+    function hide_agent_inputs() {
+      console.log('hiding')
+      console.log(agent_name)
+        agent_name.hide()
+        agent_address.hide()
+    }
+    function show_agent_inputs() {
+      console.log('showing')
+        agent_name.show()
+        agent_address.show()
+    }
 
-    var dropdown = document.getElementById('id_request_type');
-    dropdown.onchange = function () {
-        showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, agentAddressRowClasses);
+    function toggle_agent(request_type) {
+      console.log(request_type)
+      if (request_type == 'MAIN_IMPORTER_ACCESS' || request_type == 'MAIN_EXPORTER_ACCESS') {
+        hide_agent_inputs()
+      } else {
+        show_agent_inputs()
+      }
+    }
 
-        container.scrollIntoView(true);
+    function on_request_type_change(evt) {
+      /*
+       * Show/hide agent name/address inputs based  on selected request type
+       * */
+      toggle_agent(request_type.val())
+    }
 
-        doRemoveOptionalLabels();
-    };
 
-    if (dropdown.value !== '') {
-        // this is a POST request
-        showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, agentAddressRowClasses);
-        doRemoveOptionalLabels();
-        container.scrollIntoView(true);
+    function initialise() {
+      var type = request_type.val()
+      toggle_agent(type)
+    }
+
+    
+    if(path=='/access/exporter/request/' || path=='/access/importer/request/') {
+      initialise()
+      request_type.change(on_request_type_change);
     }
 });
-
-function showOrHide(uiConfig, dropdown, reasonRowClasses, agentNameRowClasses, agentAddressRowClasses) {
-    "use strict";
-    if (dropdown.options.length === 5) {
-        dropdown.remove(0);
-    }
-
-    uiConfig[dropdown.value][0] ? reasonRowClasses.remove('hidden') : reasonRowClasses.add('hidden');
-    uiConfig[dropdown.value][1] ? agentNameRowClasses.remove('hidden') : agentNameRowClasses.add('hidden');
-    uiConfig[dropdown.value][2] ? agentAddressRowClasses.remove('hidden') : agentAddressRowClasses.add('hidden');
-}
-
-function getClasses(id) {
-    "use strict";
-    return document.getElementById(id).parentElement.parentElement.classList;
-}
-
-function doRemoveOptionalLabels() {
-    "use strict";
-    removeOptionalLabels();
-    removeOptionalLabels(); // needs two calls, for some unknown reason, to fully do the job ...
-}
-
-function removeOptionalLabels() {
-    "use strict";
-    var optionalTags = document.getElementsByClassName("mand-label");
-    for (var i = 0; i < optionalTags.length; i++) {
-        optionalTags[i].parentNode.removeChild(optionalTags[i]);
-    }
-}
-

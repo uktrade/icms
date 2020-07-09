@@ -1,0 +1,65 @@
+{% extends "layout/no-sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% block page_title %}Request Exporter Access{% endblock %}
+{% block context_header %}Request Exporter Access{% endblock %}
+
+{% block main_content %}
+<div class="no-sidebar" id="content">
+    <div id="content-ie8-float">
+        <div class="content-actions"></div>
+
+        {% include "web/domains/case/access/partials/pending-requests.html" %}
+
+        <h3>New Access Request</h3>
+        <div class="info-box info-box-info">
+
+            <p>
+              Enter the details below and submit your request to ILB. 
+              You will receive an email notification when your request has been processed (usually within 1 working day).
+            </p>
+            <p>
+              When you are requesting access as an agent, the importer/exporter will be asked to approve your access.
+            </p>
+
+        </div>
+        <div id="form-container">
+            {% call forms.form(method='post', csrf_input=csrf_input) %}
+              {{activation.management_form}}
+
+              {% block form_fields %}
+                {{fields.field(form.request_type)}}
+                {{fields.field(form.organisation_name)}}
+                {{fields.field(form.organisation_address)}}
+                {{fields.field(form.agent_name)}}
+                {{fields.field(form.agent_address)}}
+              {% endblock %}
+
+            <div class="clearBoth"></div>
+                <div class="container">
+                  <div class="row">
+                    <div class="four columns"> </div>
+                    <div class="four columns">
+                      <ul class="menu-out flow-across">
+                        <li>
+                          <button type="submit" class="primary-button button">
+                            Save
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="four columns"> </div>
+                  </div>
+                </div>
+            {% endcall %}
+        </div>
+        <div class="content-actions"></div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+    {{ super() }}
+    <script src="{{ static('web/js/pages/request-access.js') }}" type="text/javascript"></script>
+{% endblock %}

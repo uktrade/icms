@@ -1,5 +1,13 @@
-from behave import then, when
+from behave import given, then, when
 from features.steps import utils
+from web.domains.case.access import flows
+from web.domains.case.access.approval.flows import ApprovalRequestFlow
+from web.domains.case.access.models import AccessRequest
+from web.domains.importer.models import Importer
+from web.domains.team.models import Role
+from web.domains.user.models import User
+from web.tests.domains.case.access import factory
+from web.tests.domains.case.access.approval.factory import ApprovalRequestTaskFactory
 
 
 def fill_organisation_name(context, name):
@@ -26,27 +34,101 @@ def submit_access_request_form(context):
     context.browser.find_element_by_css_selector("button[type=submit]").click()
 
 
-@when('sets Access Request Type to "{text}"')
+@given("an importer access request task exists")
+def create_importer_access_request_task(context):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.IMPORTER)
+    factory.ImporterAccessRequestTaskFactory(process__access_request=access_request)
+
+
+@given("an exporter access request task exists")
+def create_exporter_access_request(context):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.EXPORTER)
+    factory.ExporterAccessRequestTaskFactory(process__access_request=access_request)
+
+
+@given('an importer access request task owned by "{username}" exists')
+def assign_importer_access_request_task(context, username):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.IMPORTER)
+    factory.ImporterAccessRequestTaskFactory(
+        owner=User.objects.get(username=username), process__access_request=access_request
+    )
+
+
+@given('an exporter access request task owned by "{username}" exists')
+def assign_exporter_access_request_task(context, username):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.EXPORTER)
+    factory.ExporterAccessRequestTaskFactory(
+        owner=User.objects.get(username=username), process__access_request=access_request
+    )
+
+
+@given('an importer access request "{flow_task}" task owned by "{username}" exists')
+def create_importer_access_request_named_task(context, flow_task, username):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.IMPORTER)
+    factory.ImporterAccessRequestTaskFactory(
+        flow_task=flows.ImporterAccessRequestFlow._meta.node(flow_task),
+        owner=User.objects.get(username=username),
+        process__access_request=access_request,
+    )
+
+
+@given('an exporter access request "{flow_task}" task owned by "{username}" exists')
+def create_exporter_access_request_named_task(context, flow_task, username):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.EXPORTER)
+    factory.ExporterAccessRequestTaskFactory(
+        flow_task=flows.ExporterAccessRequestFlow._meta.node(flow_task),
+        owner=User.objects.get(username=username),
+        process__access_request=access_request,
+    )
+
+
+@given("an importer agent access request task exists")
+def create_importer_agent_access_request(context):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.IMPORTER_AGENT)
+    factory.ImporterAccessRequestTaskFactory(process__access_request=access_request)
+
+
+@given("an exporter agent access request task exists")
+def create_exporter_agent_access_request(context):
+    access_request = factory.AccessRequestFactory(request_type=AccessRequest.EXPORTER_AGENT)
+    factory.ExporterAccessRequestTaskFactory(process__access_request=access_request)
+
+
+@given('an approval request "{flow_task}" task owned by "{username}" exists')
+def create_approval_request_named_task(context, flow_task, username):
+    ApprovalRequestTaskFactory(
+        flow_task=ApprovalRequestFlow._meta.node(flow_task),
+        owner=User.objects.get(username=username),
+    )
+
+
+@given('"{username}" has approver role for importer "{name}"')
+def assign_importer_approver_role(context, username, name):
+    user = User.objects.get(username=username)
+    importer = Importer.objects.get(name=name)
+    role = Role.objects.get(
+        name=f"Importer Contacts:Approve/Reject Agents and Importers:{importer.pk}"
+    )
+    role.user_set.add(user)
+
+
+@when('sets access request type to "{text}"')
 def set_access_request_type(context, text):
     context.browser.find_element_by_xpath(
         f"//select[@name='request_type']/option[text()='{text}']"
     ).click()
 
 
-@then("following fields are visible on access request form")
-def fields_visible(context):
-    for text, is_visible in context.table:
-        label = utils.find_element_by_text(context, text, "label")
-        assert label, f"label with text {text} not found"
-
-        assert label.is_displayed() == utils.to_boolean(
-            is_visible
-        ), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
+@when('sets access request close response to "{text}"')
+def set_access_request_close_response(context, text):
+    context.browser.find_element_by_xpath(
+        f"//select[@id='id_response']/option[text()='{text}']"
+    ).click()
 
 
 @when("the user requests to act as an importer")
 def request_importer_access(context):
-    utils.go_to_page(context, "access:request")
+    utils.go_to_page(context, "access:importer:request")
     option = "Request access to act as an Importer"
     set_access_request_type(context, option)
 
@@ -58,7 +140,7 @@ def request_importer_access(context):
 
 @when("the user requests to act as an exporter")
 def request_exporter_access(context):
-    utils.go_to_page(context, "access:request")
+    utils.go_to_page(context, "access:exporter:request")
     option = "Request access to act as an Exporter"
     set_access_request_type(context, option)
 
@@ -69,7 +151,7 @@ def request_exporter_access(context):
 
 @when("the user requests to act as an agent of an importer")
 def request_importer_agent_access(context):
-    utils.go_to_page(context, "access:request")
+    utils.go_to_page(context, "access:importer:request")
     option = "Request access to act as an Agent for an Importer"
     set_access_request_type(context, option)
 
@@ -83,7 +165,7 @@ def request_importer_agent_access(context):
 
 @when("the user requests to act as an agent of an exporter")
 def request_exporter_agent_access(context):
-    utils.go_to_page(context, "access:request")
+    utils.go_to_page(context, "access:exporter:request")
     option = "Request access to act as an Agent for an Exporter"
     set_access_request_type(context, option)
 
@@ -92,6 +174,17 @@ def request_exporter_agent_access(context):
     fill_agent_name(context, "dude export agents ltd.")
     fill_agent_address(context, "Manchester")
     submit_access_request_form(context)
+
+
+@then("following fields are visible on access request form")
+def fields_visible(context):
+    for text, is_visible in context.table:
+        label = utils.find_element_by_text(context, text, "label")
+        assert label, f"label with text {text} not found"
+
+        assert label.is_displayed() == utils.to_boolean(
+            is_visible
+        ), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
 
 
 @then("a success message is displayed")

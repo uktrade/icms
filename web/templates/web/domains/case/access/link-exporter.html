@@ -1,9 +1,26 @@
 {% extends "web/domains/exporter/list.html" %}
 
 {% block main_content %}
+
+  <div class="info-box info-box-info">
+    <p>
+      The user specified below has requested access to act as an exporter/agent. 
+      If you already know that this user should have these access rights you can
+      simply add them to the appropriate exporter/agent team 
+      (note - you may need to create the exporter/agent entity first). 
+    </p>
+    <p>
+      You will need to link the exporter on the access request to an exporter
+      within the ICMS system first. Use the "Link Exporter" button below
+    </p>
+  </div>
+
+
   {% with process=activation.process %}
     {% include "web/domains/case/access/partials/access-request-display.html" %}
   {% endwith %}
+
+  <h3>Link Exporter</h3>
 
   {{super()}}
 {% endblock %}

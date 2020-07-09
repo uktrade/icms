@@ -1,0 +1,54 @@
+<table responsiveList class="setoutList">
+  <thead>
+    <tr>
+      <th scope="col">Reference
+      </th>
+      <th scope="col">Requested Date
+      </th>
+      <th scope="col">Request Type
+      </th>
+      <th scope="col">Importer Name / Address
+      </th>
+      <th scope="col">Agent Name / Address
+      </th>
+      <th scope="col">Further Information Requests
+      </th>
+    </tr>
+  </thead>
+  {% for request in requests %}
+  <tr class="main-entry">
+    <td>
+      <span class="text-widget ">{{request.pk}}</span>
+    </td>
+    <td>
+      <span class="text-widget ">{{request.submit_datetime}}</span>
+    </td>
+    <td>
+      <span class="text-widget ">{{request.request_type_verbose}}</span>
+    </td>
+    <td>
+      <p class="text-widget">{{request.organisation_name}}</p>
+      <p class="test-widget">{{request.organisation_address}}</p>
+    </td>
+    <td>
+      <p class="text-widget"> {{request.agent_name}}</p>
+      <p class="test-widget">{{request.agent_address}}</p>
+    </td>
+    <td>
+      <table class="setoutList nestedList">
+        <thead>
+          <tr>
+            <th colspan="2" class="listPrompt">Further Information Requests</th>
+          </tr>
+          <tr>
+            <th scope="col">Requested
+            </th>
+            <th scope="col">Respond
+            </th>
+          </tr>
+        </thead>
+      </table>
+    </td>
+  </tr>
+  {% endfor %}
+</table>

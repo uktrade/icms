@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from selenium.webdriver.common.by import By
-from web.domains.team.models import Role, Team
 from web.domains.user.models import User
 from web.tests.domains.user.factory import UserFactory
 
@@ -79,21 +78,3 @@ def find_element_by_text(context, text, element_type="*"):
 
 def to_boolean(str):
     return str.lower() in ["true", "1", "t", "y", "yes"]
-
-
-def add_user_to_team(username, team_name):
-    """
-        Add user with given username to the team with given team_name
-    """
-    team = Team.objects.get(name=team_name)
-    user = User.objects.get(username=username)
-    team.members.add(user)
-
-
-def give_role(username, role_name):
-    """
-        Give user with given username the role with fiven role_name
-    """
-    role = Role.objects.get(name=role_name)
-    user = User.objects.get(username=username)
-    role.user_set.add(user)

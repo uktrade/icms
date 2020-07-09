@@ -2,7 +2,8 @@ import structlog as logging
 from django.views.generic.list import ListView
 
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case.access.flows import AccessRequestFlow
+from web.domains.case.access.flows import ImporterAccessRequestFlow, ExporterAccessRequestFlow
+from web.domains.case.access.approval.flows import ApprovalRequestFlow
 
 from viewflow.models import Process
 
@@ -14,4 +15,7 @@ class Workbasket(RequireRegisteredMixin, ListView):
     permission_required = []
 
     def get_queryset(self):
-        return Process.objects.filter_available([AccessRequestFlow], self.request.user)
+        return Process.objects.filter_available(
+            [ImporterAccessRequestFlow, ExporterAccessRequestFlow, ApprovalRequestFlow],
+            self.request.user,
+        )

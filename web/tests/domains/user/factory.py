@@ -16,7 +16,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("pystr", max_chars=20)
     title = factory.Faker("pystr", max_chars=5)
     password = factory.PostGenerationMethodCall("set_password", "test")
-    is_superuser = random.choice([True, False])
+    is_superuser = False
     is_staff = random.choice([True, False])
     is_active = random.choice([True, False])
     account_status = factory.fuzzy.FuzzyChoice(User.STATUSES, getter=lambda r: r[0])

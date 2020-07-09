@@ -10,7 +10,7 @@ from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case.access.models import (
     AccessRequest,
-    AccessRequestProcess,
+    ImporterAccessRequestProcess,
     FurtherInformationRequest,
 )
 from web.domains.file.models import File
@@ -272,7 +272,7 @@ class FurtherInformationRequestView(PostActionMixin, View):
             selected_fir - id of the FIR the user is editing (or None)
             form - the form the user has submitted (or None, if present the form is returned instead of creating a new one)
         """
-        process = AccessRequestProcess.objects.get(pk=process_id)
+        process = ImporterAccessRequestProcess.objects.get(pk=process_id)
         items = (
             process.access_request.further_information_requests.exclude(
                 status=FurtherInformationRequest.DELETED

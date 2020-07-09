@@ -1,13 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from django.contrib.auth.models import Permission
+
 from behave import given, then, when
 from features.steps import utils
+from web.domains.user.models import User
 
 
 @given('user "{username}" exists')
 def create_user(context, username):
     utils.create_active_user(username)
+
+
+@given('"{username}" has permission "{codename}"')
+def grant_permission_to_user(context, username, codename):
+    permission = Permission.objects.get(codename=codename)
+    user = User.objects.get(username=username)
+    user.user_permissions.add(permission)
 
 
 @given(
@@ -29,6 +39,31 @@ def navigate(context, url_name):
 @when('"{username}" navigates to "{url_name}"')
 def user_navigates(context, username, url_name):
     utils.go_to_page(context, url_name)
+
+
+@when('clicks on link "{text}"')
+def clicks_on_link(context, text):
+    utils.find_element_by_text(context, text, "a").click()
+
+
+@when('clicks on button "{text}"')
+def clicks_on_button(context, text):
+    utils.find_element_by_text(context, text, "button").click()
+
+
+@then('button "{text}" is visible')
+def button_visible(context, text):
+    assert utils.find_element_by_text(context, text, "button"), f"button {text} not found!"
+
+
+@then('section title "{text}" is visible')
+def section_title_visible(context, text):
+    assert utils.find_element_by_text(context, text, "h3"), f"section title {text} not found!"
+
+
+@then('link "{text}" is visible')
+def link_visible(context, text):
+    assert utils.find_element_by_text(context, text, "a"), f"link {text} not found!"
 
 
 @then('"{url_name}" page is displayed')

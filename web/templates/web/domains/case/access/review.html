@@ -3,35 +3,27 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% set requester_type = activation.process.access_request.requester_type %}
+{% set access_request = activation.process.access_request %}
+{% set requester_type = access_request.requester_type %}
 
 {% block main_content %}
     <div class="info-box info-box-info">
       <p>
-        The user specified below has requested access to act as an {{requester_type}}/agent. 
-        If you already know that this user should have these access rights you can
-        simply add them to the appropriate {{requester_type}}/agent team 
-        (note - you may need to create the {{requester_type}}/agent entity first). 
-        Use Start Importer Access Approval button below.
-      </p>
-      <p>
-        If on the other hand this is a new access request then you can request approval from 
-        the main {{requester_type}} using the form below. Note - you will need to
-        link the {{requester_type}} on the access request to an {{requester_type}} within the ICMS system first.
+        If this is a new access request then you can request approval from 
+        the main {{requester_type}} using the form below. 
       </p>
     </div>
 
     {{super()}}
 {% endblock %}
 
-{% block sidebar%}
-    {% with process_id=activation.process.access_request.id,
-            task_id=activation.task.id
-    %}
-        {% include "web/domains/case/access/case-fir-sidebar.html" %}
-    {% endwith %}
+{% block form_content %}
+  {{super()}}
+  <h4>
+    {{access_request.requester_type}} Access Approval
+  </h4>
 
-    {{super()}}
+  {{ fields.field(form.requested_from) }}
 {% endblock %}
 
 {% block task_actions %}
@@ -50,9 +42,18 @@
       type="submit" 
       role="action-button" 
       data-confirm="Are you sure you want to close this Access Request?"
-      name="close_request" 
+      name="_close_request" 
+      class="secondary-button button">
+        Proceed to Close
+    </button>
+  </li>
+  <li>
+    <button 
+      type="submit" 
+      role="action-button" 
+      name="_re_link" 
       class="secondary-button button capitalize">
-        Close Access Request
+        Relink {{requester_type}}
     </button>
   </li>
 {% endblock %}

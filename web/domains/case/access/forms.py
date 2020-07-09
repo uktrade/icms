@@ -1,35 +1,88 @@
+import structlog as logging
 from django.core.exceptions import ValidationError
 from django.forms.widgets import Select, Textarea
 
-from web.forms import ModelEditForm, ViewFlowForm
+from web.forms import ModelEditForm
 
 from .approval.models import ApprovalRequest
 from .models import AccessRequest
 
+logger = logging.getLogger(__name__)
 
-class AccessRequestForm(ViewFlowForm, ModelEditForm):
-    def validate_fields(self, fields, cleaned_data):
-        for field in fields:
-            if cleaned_data[field] == "":
-                self.add_error(field, "You must enter this item")
+
+def is_valid(form, data, fields):
+    """
+        Check if fields in given list is entered by user
+    """
+    valid = True
+    for field in fields:
+        logger.debug(f"field {field}: {data[field]}")
+        if not data[field]:
+            valid = False
+            form.add_error(field, "You must enter this item")
+
+    logger.debug(f"Form valid? {valid}")
+    return valid
+
+
+def is_agent_request(request_type):
+    return request_type in [AccessRequest.IMPORTER_AGENT, AccessRequest.EXPORTER_AGENT]
+
+
+class ExporterAccessRequestForm(ModelEditForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["request_type"].widget = Select(choices=AccessRequest.EXPORTER_REQUEST_TYPES)
 
     def clean(self):
         cleaned_data = super().clean()
         request_type = cleaned_data["request_type"]
-        if request_type == AccessRequest.IMPORTER:
-            self.validate_fields(["request_reason"], cleaned_data)
-        elif request_type == AccessRequest.IMPORTER_AGENT:
-            self.validate_fields(["request_reason", "agent_name", "agent_address"], cleaned_data)
-        elif request_type == AccessRequest.EXPORTER:
-            pass
-        elif request_type == AccessRequest.EXPORTER_AGENT:
-            self.validate_fields(["agent_name", "agent_address"], cleaned_data)
-        else:
-            raise ValidationError("Unknown access request type")
+        if is_agent_request(request_type):
+            logger.debug("Validating agent")
+            # Only validate agent_name and agent_address if this is an agent request
+            if not is_valid(self, cleaned_data, ["agent_name", "agent_address"]):
+                raise ValidationError("")
+        return cleaned_data
 
     class Meta:
         model = AccessRequest
 
+        fields = [
+            "request_type",
+            "organisation_name",
+            "organisation_address",
+            "agent_name",
+            "agent_address",
+        ]
+
+        labels = {"request_type": "Access Request Type"}
+
+        widgets = {
+            "organisation_address": Textarea({"rows": 5}),
+            "agent_address": Textarea({"rows": 5}),
+        }
+
+        config = {
+            "__all__": {
+                "show_optional_indicator": False,
+                "label": {"cols": "four"},
+                "input": {"cols": "four"},
+                "padding": {"right": "four"},
+            }
+        }
+
+
+class ImporterAccessRequestForm(ExporterAccessRequestForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["request_type"].widget = Select(choices=AccessRequest.IMPORTER_REQUEST_TYPES)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not is_valid(self, cleaned_data, ["request_reason"]):
+            raise ValidationError("")
+
+    class Meta(ExporterAccessRequestForm.Meta):
         fields = [
             "request_type",
             "organisation_name",
@@ -39,25 +92,11 @@ class AccessRequestForm(ViewFlowForm, ModelEditForm):
             "agent_address",
         ]
 
-        labels = {
-            "request_type": "Access Request Type",
-            "request_reason": "What are you importing and where are you importing it from?",
-        }
+        labels = ExporterAccessRequestForm.Meta.labels
+        labels["request_reason"] = "What are you importing and where are you importing it from?"
 
-        widgets = {
-            "request_type": Select(choices=AccessRequest.REQUEST_TYPES),
-            "organisation_address": Textarea({"rows": 5}),
-            "request_reason": Textarea({"rows": 5}),
-            "agent_address": Textarea({"rows": 5}),
-        }
-
-        config = {
-            "__all__": {
-                "label": {"cols": "four"},
-                "input": {"cols": "four"},
-                "padding": {"right": "four"},
-            }
-        }
+        widgets = ExporterAccessRequestForm.Meta.widgets
+        widgets["request_reason"] = Textarea({"rows": 5})
 
 
 class CloseAccessRequestForm(ModelEditForm):

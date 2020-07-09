@@ -55,6 +55,13 @@ def mark_as_agent(context, agent_name, importer_name):
     agent.save()
 
 
+@given('"{username}" is a member of importer "{name}"')
+def add_importer_member(context, username, name):
+    importer = Importer.objects.get(name=name)
+    user = User.objects.get(username=username)
+    importer.members.add(user)
+
+
 @when('clicks on importer name "{name}"')
 def clicks_on_importer_name(context, name):
     utils.find_element_by_text(context, name, "a[@role = 'model-link']").click()
@@ -269,7 +276,7 @@ def check_action_at_row(context, row, action):
     )
 
 
-@then('the result at row "{row}" has the address "{address}"')  # NOQA: F811
+@then('the result at row "{row}" has the address "{address}"')
 def step_impl(context, row, address):
     element = context.browser.find_element_by_css_selector(
         f"#tbl-search-results .result-row:nth-child({int(row)}) td:nth-child(3)"
