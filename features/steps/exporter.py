@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from behave import given
 from web.domains.exporter.models import Exporter
 from web.domains.user.models import User

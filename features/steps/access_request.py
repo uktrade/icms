@@ -7,7 +7,10 @@ from web.domains.importer.models import Importer
 from web.domains.team.models import Role
 from web.domains.user.models import User
 from web.tests.domains.case.access import factory
-from web.tests.domains.case.access.approval.factory import ApprovalRequestTaskFactory
+from web.tests.domains.case.access.approval.factory import (
+    ApprovalRequestFactory,
+    ApprovalRequestTaskFactory,
+)
 
 
 def fill_organisation_name(context, name):
@@ -94,10 +97,16 @@ def create_exporter_agent_access_request(context):
     factory.ExporterAccessRequestTaskFactory(process__access_request=access_request)
 
 
-@given('an approval request "{flow_task}" task owned by "{username}" exists')
-def create_approval_request_named_task(context, flow_task, username):
+@given('approval request to importer "{name}" exists for user "{username}"')
+def create_importer_approval_request_task(context, name, username):
+    importer = Importer.objects.get(name=name)
+    access_request = factory.AccessRequestFactory(
+        request_type=AccessRequest.IMPORTER, linked_importer=importer
+    )
+    approval_request = ApprovalRequestFactory(access_request=access_request)
     ApprovalRequestTaskFactory(
-        flow_task=ApprovalRequestFlow._meta.node(flow_task),
+        flow_task=ApprovalRequestFlow.respond,
+        process__approval_request=approval_request,
         owner=User.objects.get(username=username),
     )
 
@@ -106,9 +115,8 @@ def create_approval_request_named_task(context, flow_task, username):
 def assign_importer_approver_role(context, username, name):
     user = User.objects.get(username=username)
     importer = Importer.objects.get(name=name)
-    role = Role.objects.get(
-        name=f"Importer Contacts:Approve/Reject Agents and Importers:{importer.pk}"
-    )
+    role_name = f"Importer Contacts:Approve/Reject Agents and Importers:{importer.pk}"
+    role = Role.objects.get(name=role_name)
     role.user_set.add(user)
 
 
@@ -121,6 +129,13 @@ def set_access_request_type(context, text):
 
 @when('sets access request close response to "{text}"')
 def set_access_request_close_response(context, text):
+    context.browser.find_element_by_xpath(
+        f"//select[@id='id_response']/option[text()='{text}']"
+    ).click()
+
+
+@when('sets approval request response to "{text}"')
+def set_approval_request_response(context, text):
     context.browser.find_element_by_xpath(
         f"//select[@id='id_response']/option[text()='{text}']"
     ).click()
@@ -184,7 +199,7 @@ def fields_visible(context):
 
         assert label.is_displayed() == utils.to_boolean(
             is_visible
-        ), f"expeting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
+        ), f"expecting {text} visibility to be {is_visible} but it is {label.is_displayed()}"
 
 
 @then("a success message is displayed")

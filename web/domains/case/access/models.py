@@ -129,7 +129,7 @@ class ImporterAccessRequestProcess(Process):
 class ExporterAccessRequestProcess(Process):
     # Importer and exporter access request flows can't share
     # the same model as view permissions for access and importer case officers
-    # are seperate
+    # are separate
     access_request = models.ForeignKey(AccessRequest, null=True, on_delete=models.SET_NULL)
     approval_required = models.BooleanField(blank=False, null=False, default=False)
 

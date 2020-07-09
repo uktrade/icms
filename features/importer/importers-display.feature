@@ -11,7 +11,7 @@ Feature: Importer Display
 
     @importer @display @importer-display
     Scenario: User should see importer details when importer name is clicked
-        Given importer "Elm Street Imports" exists
+        Given import organisation "Elm Street Imports" exists
         And "John" is logged in
         And "John" is a member of "ILB Admin Users"
         And "John" has "ILB Admin Users:Maintain All" role
@@ -74,7 +74,7 @@ Feature: Importer Display
 
     @importer @display @importer-display
     Scenario: User should see correct importer agents
-        Given importer "Hey Ltd" exists
+        Given import organisation "Hey Ltd" exists
         And import organisation "Subcorp" exists
         And importer "Subcorp" has an office with address "4 Beverly Hills" and postcode "90210"
         And "Subcorp" is an agent of "Hey Ltd"

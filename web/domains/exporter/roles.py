@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # NOQA: C0301
+"""
+    Below list of roles are default for exporters and are created
+    on time of exporter creation.
+"""
 
 EXPORTER_ROLES = [
     {
@@ -11,6 +15,7 @@ EXPORTER_ROLES = [
             "IMP_CERT_AGENT_APPROVER",
             "IMP_CERT_SEARCH_CASES_LHS",
             "MAILSHOT_RECIPIENT",
+            "view_approvalrequestprocess",
         ],
     },
     {

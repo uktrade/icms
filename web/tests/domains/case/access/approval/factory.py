@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import factory
 from django.utils import timezone
 from viewflow.models import Task

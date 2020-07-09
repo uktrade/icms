@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from behave import given
 from behave_django.decorators import fixtures
 from web.domains.team.models import Role, Team

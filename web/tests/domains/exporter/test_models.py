@@ -37,13 +37,14 @@ class ExporterTest(TestCase):
         exporter = self.create_exporter()
         role_name = f"Exporter Contacts:Approve/Reject Agents and Exporters:{exporter.id}"
         permissions = Role.objects.get(name=role_name).permissions.all()
-        self.assertEqual(len(permissions), 3)
+        self.assertEqual(len(permissions), 4)
         codenames = []
         for p in permissions:
             codenames.append(p.codename)
         self.assertTrue("IMP_CERT_AGENT_APPROVER" in codenames)
         self.assertTrue("IMP_CERT_SEARCH_CASES_LHS" in codenames)
         self.assertTrue("MAILSHOT_RECIPIENT" in codenames)
+        self.assertTrue("view_approvalrequestprocess" in codenames)
 
     def test_application_edit_role_created(self):
         exporter = self.create_exporter()

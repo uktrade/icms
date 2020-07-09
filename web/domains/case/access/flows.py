@@ -47,8 +47,7 @@ def assign_link_task(activation):
 
 def assign_review_task(activation):
     """
-        Assign "review" task's owner
-        to "close_request" task owner if
+        Assign "review" task's owner to "close_request" task owner if
         restart approval action is taken at close request task
     """
     task = activation.task

@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # NOQA: C0301
+"""
+    Below list of roles are default for importers and are created
+    on time of importer creation.
+"""
 
 IMPORTER_ROLES = [
     {
@@ -12,6 +16,7 @@ IMPORTER_ROLES = [
             "IMP_SEARCH_CASES_LHS",
             "MAILSHOT_RECIPIENT",
             "MANAGE_IMPORTER_ACCOUNT",
+            "view_approvalrequestprocess",
         ],
     },
     {

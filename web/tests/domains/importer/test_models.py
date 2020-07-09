@@ -41,7 +41,7 @@ class ImporterTest(TestCase):
         importer = self.create_importer()
         role_name = f"Importer Contacts:Approve/Reject Agents and Importers:{importer.id}"
         permissions = Role.objects.get(name=role_name).permissions.all()
-        self.assertEqual(len(permissions), 4)
+        self.assertEqual(len(permissions), 5)
         codenames = []
         for p in permissions:
             codenames.append(p.codename)
@@ -49,6 +49,7 @@ class ImporterTest(TestCase):
         self.assertTrue("IMP_SEARCH_CASES_LHS" in codenames)
         self.assertTrue("MAILSHOT_RECIPIENT" in codenames)
         self.assertTrue("MANAGE_IMPORTER_ACCOUNT" in codenames)
+        self.assertTrue("view_approvalrequestprocess" in codenames)
 
     def test_application_edit_role_created(self):
         importer = self.create_importer()
