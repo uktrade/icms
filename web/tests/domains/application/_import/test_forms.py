@@ -16,8 +16,7 @@ class NewImportApplicationFormTest(TestCase):
         self.user = UserFactory(is_active=True)
         self.type = ImportApplicationTypeFactory(is_active=True)
         self.office = OfficeFactory(is_active=True)
-        self.request = RequestFactory().post(
-            reverse_lazy('new-import-application'))
+        self.request = RequestFactory().post(reverse_lazy("new-import-application"))
         self.request.user = self.user
 
     def create_importer(self, main_importer=None):
@@ -28,12 +27,14 @@ class NewImportApplicationFormTest(TestCase):
 
     def test_main_importer_form_valid(self):
         importer = self.create_importer()
-        form = NewImportApplicationForm(self.request,
-                                        data={
-                                            'application_type': self.type.pk,
-                                            'importer': importer.pk,
-                                            'importer_office': self.office.pk
-                                        })
+        form = NewImportApplicationForm(
+            self.request,
+            data={
+                "application_type": self.type.pk,
+                "importer": importer.pk,
+                "importer_office": self.office.pk,
+            },
+        )
         self.assertTrue(form.is_valid())
 
     def test_importer_agent_form_valid(self):
@@ -41,45 +42,42 @@ class NewImportApplicationFormTest(TestCase):
         office = OfficeFactory(is_active=True)
         main_importer.offices.add(office)
         agent = self.create_importer(main_importer=main_importer)
-        form = NewImportApplicationForm(self.request,
-                                        data={
-                                            'application_type': self.type.pk,
-                                            'importer': main_importer.pk,
-                                            'importer_office': office.pk,
-                                            'agent': agent.pk
-                                        })
-        self.assertTrue(form.fields['agent'])
+        form = NewImportApplicationForm(
+            self.request,
+            data={
+                "application_type": self.type.pk,
+                "importer": main_importer.pk,
+                "importer_office": office.pk,
+                "agent": agent.pk,
+            },
+        )
+        self.assertTrue(form.fields["agent"])
         self.assertTrue(form.is_valid())
 
     def test_agent_is_in_the_form(self):
         main_importer = ImporterFactory(is_active=True, main_importer=None)
         self.create_importer(main_importer=main_importer)  # Create agent
-        form = NewImportApplicationForm(self.request,
-                                        data={
-                                            'application_type': self.type.pk,
-                                            'importer': main_importer.pk
-                                        })
+        form = NewImportApplicationForm(
+            self.request, data={"application_type": self.type.pk, "importer": main_importer.pk}
+        )
 
-        self.assertTrue(form.fields['agent'])
+        self.assertTrue(form.fields["agent"])
 
     def test_derogations_application_now_allowed_for_agents(self):
         main_importer = ImporterFactory(is_active=True, main_importer=None)
         self.create_importer(main_importer=main_importer)  # Create agent
         derogations_application = ImportApplicationTypeFactory(
-            type='Derogation from Sanctions Import Ban')
-        form = NewImportApplicationForm(self.request,
-                                        data={
-                                            'application_type':
-                                            derogations_application.pk,
-                                            'importer':
-                                            main_importer.pk
-                                        })
-        self.assertFalse('agent' in form.fields.keys())
+            type="Derogation from Sanctions Import Ban"
+        )
+        form = NewImportApplicationForm(
+            self.request,
+            data={"application_type": derogations_application.pk, "importer": main_importer.pk},
+        )
+        self.assertFalse("agent" in form.fields.keys())
 
     def test_invalid_form_message(self):
-        form = NewImportApplicationForm(
-            self.request, data={'application_type': self.type.pk})
+        form = NewImportApplicationForm(self.request, data={"application_type": self.type.pk})
         logger.debug(form.errors)
         self.assertEqual(len(form.errors), 2)
-        message = form.errors['importer'][0]
-        self.assertEqual(message, 'You must enter this item')
+        message = form.errors["importer"][0]
+        self.assertEqual(message, "You must enter this item")

@@ -19,11 +19,11 @@ class View(_View):
 
 
 class Retract(Edit):
-    icon = 'icon-bin'
-    label = 'Retract'
+    icon = "icon-bin"
+    label = "Retract"
 
     def href(self, object):
-        return reverse_lazy('mailshot-retract', args=(object.id, ))
+        return reverse_lazy("mailshot-retract", args=(object.id,))
 
     def display(self, mailshot):
         return mailshot.status == Mailshot.PUBLISHED

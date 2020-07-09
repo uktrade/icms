@@ -4,30 +4,29 @@ from web.domains.case.fir.models import FurtherInformationRequest
 
 
 class FurtherInformationRequestForm(ModelEditForm):
-
     def get_top_buttons(self):
         """
         buttons to show on the form's top row
         """
-        return ['save']
+        return ["save"]
 
     def get_bottom_buttons(self):
         """
         buttons to show on the form's bottom row
         """
-        return ['send', 'delete']
+        return ["send", "delete"]
 
     class Meta:
         model = FurtherInformationRequest
-        fields = ['status', 'request_subject', 'email_cc_address_list', 'request_detail']
+        fields = ["status", "request_subject", "email_cc_address_list", "request_detail"]
         labels = {
-            'email_cc_address_list': 'Request CC Email Addresses',
-            'files': 'Documents',
-            'requested_datetime': 'Request Date',
+            "email_cc_address_list": "Request CC Email Addresses",
+            "files": "Documents",
+            "requested_datetime": "Request Date",
         }
 
         help_texts = {
-               'email_cc_address_list': """
+            "email_cc_address_list": """
                 You may enter a list of email addresses to CC this email to.
                 <br>
                 Use a semicolon (<strong>;</strong>) to seperate multiple addresses.
@@ -38,33 +37,29 @@ class FurtherInformationRequestForm(ModelEditForm):
 
         # From action configuration, here we can configure what button appear where on the FIR form, its style and action
         actions = {
-            'save': {
-                'css': 'icon-floppy-disk',  # css classes to add (eg: icon classes)
-                'action': 'save',           # action name (input field will be created with this value)
-                'label': 'Save',            # text to show
+            "save": {
+                "css": "icon-floppy-disk",  # css classes to add (eg: icon classes)
+                "action": "save",  # action name (input field will be created with this value)
+                "label": "Save",  # text to show
             },
-            'send': {
-                'css': 'primary-button',
-                'action': 'send',
-                'label': 'Send Request',
-                'confirm_message': 'You sure?',
+            "send": {
+                "css": "primary-button",
+                "action": "send",
+                "label": "Send Request",
+                "confirm_message": "You sure?",
             },
-            'delete': {
-                'css': '',
-                'action': 'Delete',
-                'label': 'Delete',
-                'confirm_message': 'Are you sure you want to delete this Further Information Request?',
+            "delete": {
+                "css": "",
+                "action": "Delete",
+                "label": "Delete",
+                "confirm_message": "Are you sure you want to delete this Further Information Request?",
             },
-            'edit': {
-                'css': 'icon-pencil',
-                'action': 'edit',
-                'label': 'Edit',
-            },
-            'withdraw': {
-                'css': '',
-                'action': 'withdraw',
-                'label': 'Withdraw Request',
-                'confirm_message': 'Are you sure you want to withdraw this Further Information Request?',
+            "edit": {"css": "icon-pencil", "action": "edit", "label": "Edit",},
+            "withdraw": {
+                "css": "",
+                "action": "withdraw",
+                "label": "Withdraw Request",
+                "confirm_message": "Are you sure you want to withdraw this Further Information Request?",
             },
         }
 
@@ -72,7 +67,7 @@ class FurtherInformationRequestForm(ModelEditForm):
 class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelDisplayForm):
 
     requested_datetime = forms.CharField(
-        label=FurtherInformationRequestForm.Meta.labels['requested_datetime']
+        label=FurtherInformationRequestForm.Meta.labels["requested_datetime"]
     )
     requested_by = forms.CharField()
 
@@ -81,7 +76,7 @@ class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelD
         buttons to show on the form's top row
         """
         if self.instance.status == FurtherInformationRequest.DRAFT:
-            return ['edit']
+            return ["edit"]
 
         return []
 
@@ -90,27 +85,16 @@ class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelD
         buttons to show on the form's bottom row
         """
         if self.instance.status == FurtherInformationRequest.OPEN:
-            return ['withdraw']
+            return ["withdraw"]
 
         return []
 
     class Meta(FurtherInformationRequestForm.Meta):
         config = {
-                'requested_datetime': {
-                    'padding': {'right': None},
-                    'label': {
-                        'cols': 'three'
-                    },
-                    'input': {
-                        'cols': 'two'
-                    },
-                },
-                'requested_by': {
-                    'label': {
-                        'cols': 'two'
-                    },
-                    'input': {
-                        'cols': 'two'
-                    },
-                }
+            "requested_datetime": {
+                "padding": {"right": None},
+                "label": {"cols": "three"},
+                "input": {"cols": "two"},
+            },
+            "requested_by": {"label": {"cols": "two"}, "input": {"cols": "two"},},
         }

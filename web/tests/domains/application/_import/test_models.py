@@ -1,8 +1,6 @@
 from django.test import TestCase
-from web.domains.application._import.models import (ImportApplication,
-                                                    ImportApplicationType)
-from web.tests.domains.application._import.factory import \
-    ImportApplicationTypeFactory
+from web.domains.application._import.models import ImportApplication, ImportApplicationType
+from web.tests.domains.application._import.factory import ImportApplicationTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.template.factory import TemplateFactory
@@ -13,11 +11,11 @@ class ImportApplicationTypeTest(TestCase):
     def create_application_type(self):
         return ImportApplicationType.objects.create(
             is_active=True,
-            type_code='TEST',
-            type='TEST',
-            sub_type_code='TEST',
-            sub_type='TEST',
-            licence_type_code='TEST',
+            type_code="TEST",
+            type="TEST",
+            sub_type_code="TEST",
+            sub_type="TEST",
+            licence_type_code="TEST",
             sigl_flag=True,
             chief_flag=True,
             paper_licence_flag=False,
@@ -33,31 +31,34 @@ class ImportApplicationTypeTest(TestCase):
             usage_auto_category_desc_flag=True,
             case_checklist_flag=True,
             importer_printable=True,
-            declaration_template=TemplateFactory(is_active=True))
+            declaration_template=TemplateFactory(is_active=True),
+        )
 
     def test_create_application_type(self):
         application_type = self.create_application_type()
         self.assertTrue(isinstance(application_type, ImportApplicationType))
-        self.assertEqual(application_type.type_code, 'TEST')
-        self.assertEqual(application_type.sub_type_code, 'TEST')
+        self.assertEqual(application_type.type_code, "TEST")
+        self.assertEqual(application_type.sub_type_code, "TEST")
 
     def test_string_representation(self):
         application_type = self.create_application_type()
         self.assertEqual(
-            application_type.__str__(),
-            f'{application_type.type} ({application_type.sub_type})')
+            application_type.__str__(), f"{application_type.type} ({application_type.sub_type})"
+        )
 
 
 class ImportApplicationTest(TestCase):
     def create_import_application(self):
-        importer = ImporterFactory(offices=(OfficeFactory(is_active=True),
-                                            OfficeFactory(is_active=True)))
+        importer = ImporterFactory(
+            offices=(OfficeFactory(is_active=True), OfficeFactory(is_active=True))
+        )
         return ImportApplication.objects.create(
             is_active=True,
             application_type=ImportApplicationTypeFactory(),
             created_by=UserFactory(is_active=True),
             importer=importer,
-            importer_office=importer.offices.first())
+            importer_office=importer.offices.first(),
+        )
 
     def test_create_import_application(self):
         application = self.create_import_application()

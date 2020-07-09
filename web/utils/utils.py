@@ -6,14 +6,14 @@ logger = logging.getLogger(__name__)
 
 
 def url_path_join(*args):
-    clean_args = [x.rstrip('/') for x in args]
+    clean_args = [x.rstrip("/") for x in args]
     return "/".join(clean_args)
 
 
 def merge_dictionaries(a, b):
-    '''recursively merges dict's. not just simple a['key'] = b['key'], if
+    """recursively merges dict's. not just simple a['key'] = b['key'], if
   both a and bhave a key who's value is a dict then dict_merge is called
-  on both values and the result stored in the returned dictionary.'''
+  on both values and the result stored in the returned dictionary."""
     if not b:
         return a
     if not isinstance(b, dict):
@@ -27,13 +27,27 @@ def merge_dictionaries(a, b):
     return result
 
 
-class FilevalidationService():
+class FilevalidationService:
     """
         Basic file validation service
     """
+
     EXTENSION_BLACKLIST = [
-        'bat', 'bin', 'com', 'dll', 'exe', 'htm', 'html', 'msc', 'msi', 'msp',
-        'ocx', 'scr', 'wsc', 'wsf', 'wsh'
+        "bat",
+        "bin",
+        "com",
+        "dll",
+        "exe",
+        "htm",
+        "html",
+        "msc",
+        "msi",
+        "msp",
+        "ocx",
+        "scr",
+        "wsc",
+        "wsf",
+        "wsh",
     ]
 
     def has_valid_extenstion(self, file):
@@ -49,7 +63,7 @@ class FilevalidationService():
         """
         file_name, file_extension = os.path.splitext(file.name)
 
-        return file_extension.strip('.') not in self.EXTENSION_BLACKLIST
+        return file_extension.strip(".") not in self.EXTENSION_BLACKLIST
 
     def is_valid(self, file):
         """

@@ -10,9 +10,8 @@ logger = logging.get_logger(__name__)
 
 
 class Workbasket(RequireRegisteredMixin, ListView):
-    template_name = 'web/domains/workbasket/workbasket.html'
+    template_name = "web/domains/workbasket/workbasket.html"
     permission_required = []
 
     def get_queryset(self):
-        return Process.objects.filter_available([AccessRequestFlow],
-                                                self.request.user)
+        return Process.objects.filter_available([AccessRequestFlow], self.request.user)

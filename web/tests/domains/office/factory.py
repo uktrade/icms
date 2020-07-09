@@ -5,7 +5,7 @@ from web.domains.office.models import Office
 
 from faker import Faker
 
-fake = Faker('en_GB')
+fake = Faker("en_GB")
 
 
 class OfficeFactory(factory.django.DjangoModelFactory):

@@ -9,8 +9,8 @@ from .models import ApprovalRequest
 class ApprovalRequestResponseForm(ModelEditForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['response'].required = True
+        self.fields["response"].required = True
 
     class Meta:
         model = ApprovalRequest
-        fields = ['response', 'response_reason']
+        fields = ["response", "response_reason"]

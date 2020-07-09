@@ -23,8 +23,7 @@ def random_file_name(request, original_file_name, random_salt_max=10000):
     salt = random.randint(0, random_salt_max)
 
     return url_path_join(
-        getattr(settings, 'S3_DOCUMENT_ROOT_DIRECTORY', ''),
-        f'{miliseconds}_{salt}{file_extension}'
+        getattr(settings, "S3_DOCUMENT_ROOT_DIRECTORY", ""), f"{miliseconds}_{salt}{file_extension}"
     )
 
 
@@ -32,10 +31,11 @@ class InvalidFileException(Exception):
     pass
 
 
-class S3UploadService():
+class S3UploadService:
     """
         utilitarian class to handle file upload upload logic
     """
+
     def __init__(self, s3_client, virus_scanner, file_validator=None):
         """
         Initializes the class
@@ -67,24 +67,29 @@ class S3UploadService():
         """
 
         # upload to /documents/fir/<fir id>
-        logger.debug('Processing Uploaded File %s' % uploaded_file.name)
-        s3_file = self.s3_client.get_object(Bucket=bucket,
-                                            Key=uploaded_file.name)
-        s3_file_content = s3_file['Body'].read()
+        logger.debug("Processing Uploaded File %s" % uploaded_file.name)
+        s3_file = self.s3_client.get_object(Bucket=bucket, Key=uploaded_file.name)
+        s3_file_content = s3_file["Body"].read()
 
         try:
             if not self.virus_scanner.is_safe(s3_file_content):
-                raise InfectedFileException(f"'{uploaded_file.original_name}' failed virus scanning")
+                raise InfectedFileException(
+                    f"'{uploaded_file.original_name}' failed virus scanning"
+                )
 
             if not self.file_validator.is_valid(uploaded_file):
-                raise InvalidFileException(f"'{uploaded_file.original_name}' is not an allowed file")
+                raise InvalidFileException(
+                    f"'{uploaded_file.original_name}' is not an allowed file"
+                )
 
             # move file to final destination
-            new_file_path = url_path_join(destination, os.path.basename(uploaded_file.name)).lstrip('/')
+            new_file_path = url_path_join(destination, os.path.basename(uploaded_file.name)).lstrip(
+                "/"
+            )
             self.s3_client.copy_object(
                 Bucket=bucket,
                 CopySource=url_path_join(bucket, uploaded_file.name),
-                Key=new_file_path
+                Key=new_file_path,
             )
 
             return new_file_path

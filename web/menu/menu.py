@@ -14,7 +14,7 @@ def url(view_name):
     if view_name:
         return reverse(view_name)
 
-    return ''
+    return ""
 
 
 def has_view_access(request, view_name):
@@ -30,10 +30,11 @@ def has_view_access(request, view_name):
     return view.has_permission()
 
 
-class MenuItem():
+class MenuItem:
     """
         Base class for all menu items
     """
+
     def __init__(self, label=None):
         self.label = label
 
@@ -44,13 +45,13 @@ class MenuItem():
         return True
 
     def as_html(self, request):
-        return ''
+        return ""
 
     def html(self, request):
         if self.has_access(request):
             return self.as_html(request)
 
-        return ''
+        return ""
 
 
 class MenuLink(MenuItem):
@@ -105,7 +106,7 @@ class SubMenu(MenuItem):
         return False
 
     def as_html(self, request):
-        links = ''
+        links = ""
         for link in self.links or []:
             links += link.html(request)
 
@@ -135,7 +136,7 @@ class MenuDropDown(MenuItem):
         return False
 
     def as_html(self, request):
-        sub_menu_items = ''
+        sub_menu_items = ""
         for sub_menu in self.sub_menu_list or []:
             sub_menu_items += sub_menu.html(request)
 
@@ -149,65 +150,62 @@ class MenuDropDown(MenuItem):
         """
 
 
-class Menu():
+class Menu:
     items = [
-        MenuLink(label='Workbasket', view='workbasket'),
-        MenuLink(label='Dashboard'),
-        MenuLink(label='Reports'),
-        MenuLink(label='Search Mailshots', view='mailshot-received'),
+        MenuLink(label="Workbasket", view="workbasket"),
+        MenuLink(label="Dashboard"),
+        MenuLink(label="Reports"),
+        MenuLink(label="Search Mailshots", view="mailshot-received"),
         MenuDropDown(
-            label='Search',
+            label="Search",
             sub_menu_list=[
-                SubMenu(links=[
-                    SubMenuLink(label='Search Import Applications'),
-                    SubMenuLink(label='Search Certificate Applications'),
-                ]),
-            ]),
-        MenuDropDown(label='Admin',
-                     sub_menu_list=[
-                         SubMenu(label='Importers/Exporters',
-                                 links=[
-                                     SubMenuLink(label='Importers',
-                                                 view='importer-list'),
-                                     SubMenuLink(label='Exporters',
-                                                 view='exporter-list'),
-                                 ]),
-                         SubMenu(label='Mailshot',
-                                 links=[
-                                     SubMenuLink(label='Mailshots',
-                                                 view='mailshot-list'),
-                                 ]),
-                         SubMenu(label='Reference Data',
-                                 links=[
-                                     SubMenuLink(label='Commodities',
-                                                 view='commodity-list'),
-                                     SubMenuLink(label='Constabularies',
-                                                 view='constabulary-list'),
-                                     SubMenuLink(label='Obsolete Calibres',
-                                                 view='obsolete-calibre-list'),
-                                     SubMenuLink(
-                                         label='Product legislation',
-                                         view='product-legislation-list'),
-                                     SubMenuLink(label='Templates',
-                                                 view='template-list'),
-                                     SubMenuLink(label='Countries',
-                                                 view='country-list'),
-                                 ]),
-                         SubMenu(label='Teams/Users',
-                                 links=[
-                                     SubMenuLink(label='Teams',
-                                                 view='team-list'),
-                                     SubMenuLink(label='Web User Accounts',
-                                                 view='users-list'),
-                                 ])
-                     ]),
-        MenuButton(label='New Import Application',
-                   view='new-import-application'),
-        MenuButton(label='New Export Application')
+                SubMenu(
+                    links=[
+                        SubMenuLink(label="Search Import Applications"),
+                        SubMenuLink(label="Search Certificate Applications"),
+                    ]
+                ),
+            ],
+        ),
+        MenuDropDown(
+            label="Admin",
+            sub_menu_list=[
+                SubMenu(
+                    label="Importers/Exporters",
+                    links=[
+                        SubMenuLink(label="Importers", view="importer-list"),
+                        SubMenuLink(label="Exporters", view="exporter-list"),
+                    ],
+                ),
+                SubMenu(
+                    label="Mailshot", links=[SubMenuLink(label="Mailshots", view="mailshot-list"),]
+                ),
+                SubMenu(
+                    label="Reference Data",
+                    links=[
+                        SubMenuLink(label="Commodities", view="commodity-list"),
+                        SubMenuLink(label="Constabularies", view="constabulary-list"),
+                        SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-list"),
+                        SubMenuLink(label="Product legislation", view="product-legislation-list"),
+                        SubMenuLink(label="Templates", view="template-list"),
+                        SubMenuLink(label="Countries", view="country-list"),
+                    ],
+                ),
+                SubMenu(
+                    label="Teams/Users",
+                    links=[
+                        SubMenuLink(label="Teams", view="team-list"),
+                        SubMenuLink(label="Web User Accounts", view="users-list"),
+                    ],
+                ),
+            ],
+        ),
+        MenuButton(label="New Import Application", view="new-import-application"),
+        MenuButton(label="New Export Application"),
     ]
 
     def as_html(self, request):
-        html = ''
+        html = ""
         for item in self.items:
             html += item.html(request)
         return html

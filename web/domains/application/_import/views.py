@@ -5,26 +5,25 @@ from web.views import ModelCreateView
 from .forms import NewImportApplicationForm
 from .models import ImportApplication
 
-permissions = 'web.IMP_EDIT_APP'
+permissions = "web.IMP_EDIT_APP"
 
 
 class ImportApplicationCreateView(ModelCreateView):
-    template_name = 'web/domains/application/import/create.html'
+    template_name = "web/domains/application/import/create.html"
     model = ImportApplication
     # TODO: Change to application form when created
-    success_url = reverse_lazy('product-legislation-list')
+    success_url = reverse_lazy("product-legislation-list")
     cancel_url = success_url
     form_class = NewImportApplicationForm
-    page_title = 'Create Import Application'
+    page_title = "Create Import Application"
     permission_required = permissions
 
     def get_form(self):
-        if hasattr(self, 'form'):
+        if hasattr(self, "form"):
             return self.form
 
         if self.request.POST:
-            self.form = NewImportApplicationForm(self.request,
-                                                 data=self.request.POST)
+            self.form = NewImportApplicationForm(self.request, data=self.request.POST)
         else:
             self.form = NewImportApplicationForm(self.request)
 
@@ -32,7 +31,7 @@ class ImportApplicationCreateView(ModelCreateView):
 
     def post(self, request, *args, **kwargs):
         if request.POST:
-            if request.POST.get('change', None):
+            if request.POST.get("change", None):
                 return super().get(request, *args, **kwargs)
 
         form = self.get_form()

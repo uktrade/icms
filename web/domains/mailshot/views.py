@@ -15,18 +15,23 @@ from web.views.mixins import PostActionMixin
 
 from .actions import Edit, Retract
 from .actions import View as Display
-from .forms import (MailshotFilter, MailshotForm, MailshotReadonlyForm,
-                    MailshotRetractForm, ReceivedMailshotsFilter)
+from .forms import (
+    MailshotFilter,
+    MailshotForm,
+    MailshotReadonlyForm,
+    MailshotRetractForm,
+    ReceivedMailshotsFilter,
+)
 from .models import Mailshot
 
-permissions = 'web.MAILSHOT_ADMIN'
+permissions = "web.MAILSHOT_ADMIN"
 
 
 class ReceivedMailshotsView(ModelFilterView):
-    template_name = 'web/domains/mailshot/received.html'
+    template_name = "web/domains/mailshot/received.html"
     model = Mailshot
     filterset_class = ReceivedMailshotsFilter
-    page_title = 'Received Mailshots'
+    page_title = "Received Mailshots"
 
     def has_permission(self):
         user = self.request.user
@@ -36,88 +41,65 @@ class ReceivedMailshotsView(ModelFilterView):
         return super().get_filterset(user=self.request.user)
 
     class Display:
-        fields = ['id', 'published', 'title', 'description']
+        fields = ["id", "published", "title", "description"]
         fields_config = {
-            'id': {
-                'header': 'Reference'
-            },
-            'published': {
-                'header': 'Published'
-            },
-            'title': {
-                'header': 'Title',
-            },
-            'description': {
-                'header': 'Description'
-            }
+            "id": {"header": "Reference"},
+            "published": {"header": "Published"},
+            "title": {"header": "Title",},
+            "description": {"header": "Description"},
         }
         actions = [Display()]
 
 
 class MailshotListView(ModelFilterView):
-    template_name = 'web/domains/mailshot/list.html'
+    template_name = "web/domains/mailshot/list.html"
     model = Mailshot
     filterset_class = MailshotFilter
     permission_required = permissions
-    page_title = 'Maintain Mailshots'
+    page_title = "Maintain Mailshots"
 
     class Display:
         fields = [
-            'id', 'status_verbose', ('retracted', 'published', 'started'),
-            'title', 'description'
+            "id",
+            "status_verbose",
+            ("retracted", "published", "started"),
+            "title",
+            "description",
         ]
         fields_config = {
-            'id': {
-                'header': 'Reference'
-            },
-            'started': {
-                'header': 'Activity',
-                'label': '<strong>Started</strong>'
-            },
-            'published': {
-                'no_header': True,
-                'label': '<strong>Published</strong>'
-            },
-            'retracted': {
-                'no_header': True,
-                'label': '<strong>Retracted</strong>'
-            },
-            'title': {
-                'header': 'Title'
-            },
-            'status_verbose': {
-                'header': 'Status'
-            },
-            'description': {
-                'header': 'Description'
-            }
+            "id": {"header": "Reference"},
+            "started": {"header": "Activity", "label": "<strong>Started</strong>"},
+            "published": {"no_header": True, "label": "<strong>Published</strong>"},
+            "retracted": {"no_header": True, "label": "<strong>Retracted</strong>"},
+            "title": {"header": "Title"},
+            "status_verbose": {"header": "Status"},
+            "description": {"header": "Description"},
         }
         actions = [Edit(), Display(), Retract()]
 
 
 class MailshotCreateView(RequireRegisteredMixin, View):
-    MAILSHOT_TEMPLATE_CODE = 'PUBLISH_MAILSHOT'
+    MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
     permission_required = permissions
 
     def get(self, request):
         """
             Create a draft mailshot and redirect to edit
         """
-        template = Template.objects.get(
-            template_code=self.MAILSHOT_TEMPLATE_CODE)
+        template = Template.objects.get(template_code=self.MAILSHOT_TEMPLATE_CODE)
         mailshot = Mailshot()
         mailshot.email_subject = template.template_title
         mailshot.email_body = template.template_content
         mailshot.created_by = request.user
         mailshot.save()
-        return redirect(reverse_lazy('mailshot-edit', args=(mailshot.id, )))
+        return redirect(reverse_lazy("mailshot-edit", args=(mailshot.id,)))
 
 
 class MailshotEditView(PostActionMixin, ModelUpdateView):
-    template_name = 'web/domains/mailshot/edit.html'
+    template_name = "web/domains/mailshot/edit.html"
     form_class = MailshotForm
     model = Mailshot
-    success_url = reverse_lazy('mailshot-list')
+    success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = permissions
 
@@ -155,15 +137,15 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         mailshot = Mailshot.objects.get(pk=pk)
         mailshot.status = Mailshot.CANCELLED
         mailshot.save()
-        messages.success(request, 'Mailshot cancelled successfully')
+        messages.success(request, "Mailshot cancelled successfully")
         return redirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
-        action = self.request.POST.get('action')
-        if action and action == 'save_draft':
+        action = self.request.POST.get("action")
+        if action and action == "save_draft":
             return super().get_success_message(cleaned_data)
 
-        return f'{self.object} published successfully'
+        return f"{self.object} published successfully"
 
     def get_queryset(self):
         """
@@ -174,10 +156,10 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
 
 class MailshotDetailView(ModelDetailView):
-    template_name = 'model/view.html'
+    template_name = "model/view.html"
     form_class = MailshotForm
     model = Mailshot
-    cancel_url = reverse_lazy('mailshot-list')
+    cancel_url = reverse_lazy("mailshot-list")
     permission_required = permissions
 
     def has_permission(self):
@@ -196,20 +178,19 @@ class MailshotDetailView(ModelDetailView):
 
 
 class MailshotRetractView(ModelUpdateView):
-    RETRACT_TEMPLATE_CODE = 'RETRACT_MAILSHOT'
-    template_name = 'web/domains/mailshot/retract.html'
+    RETRACT_TEMPLATE_CODE = "RETRACT_MAILSHOT"
+    template_name = "web/domains/mailshot/retract.html"
     form_class = MailshotRetractForm
     model = Mailshot
-    success_url = reverse_lazy('mailshot-list')
+    success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = permissions
 
     def __init__(self, *args, **kwargs):
-        template = Template.objects.get(
-            template_code=self.RETRACT_TEMPLATE_CODE)
+        template = Template.objects.get(template_code=self.RETRACT_TEMPLATE_CODE)
         self.initial = {
-            'retract_email_subject': template.template_title,
-            'retract_email_body': template.template_content
+            "retract_email_subject": template.template_title,
+            "retract_email_body": template.template_content,
         }
 
     def get_form(self, *args, **kwargs):
@@ -238,7 +219,7 @@ class MailshotRetractView(ModelUpdateView):
         return response
 
     def get_success_message(self, cleaned_data):
-        return f'{self.object} retracted successfully'
+        return f"{self.object} retracted successfully"
 
     def get_queryset(self):
         """

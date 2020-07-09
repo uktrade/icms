@@ -19,7 +19,7 @@ def require_registered(function):
             return decorated_view_func(request)  # return redirect to login
 
         if request.user.password_disposition != User.FULL:
-            return redirect('set-password')
+            return redirect("set-password")
         else:
             return function(request, *args, **kwargs)
 

@@ -8,6 +8,7 @@ from viewflow.flow.views.task import BaseFlowMixin
 
 class SimpleStartFlowMixin(BaseStartFlowMixin):
     """StartFlowMixin without MessageUserMixin"""
+
     def activation_done(self):
         """Finish task activation."""
         self.activation.done()
@@ -23,6 +24,7 @@ class SimpleStartFlowMixin(BaseStartFlowMixin):
 
 class SimpleFlowMixin(BaseFlowMixin):
     """FlowMixin without MessageUserMixin."""
+
     def activation_done(self):
         """Finish the task activation."""
         self.activation.done()

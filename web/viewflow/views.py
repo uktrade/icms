@@ -14,8 +14,7 @@ from viewflow.flow.views import CancelProcessView as ViewflowCancelProcessView
 from viewflow.flow.views.mixins import MessageUserMixin
 from viewflow.models import Subprocess
 
-from web.auth.utils import (get_team_members_with_permission,
-                            get_users_with_permission)
+from web.auth.utils import get_team_members_with_permission, get_users_with_permission
 from web.domains.user.models import User
 
 from .forms import ReAssignTaskForm
@@ -32,6 +31,7 @@ class CancelProcessView(ViewflowCancelProcessView):
         users
 
     """
+
     def _unassign_tasks(self, process):
         """
             Unassign all active subprocess tasks
@@ -76,11 +76,12 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
 
     Get confirmation from user, re-assigns task and redirects to task detail
     """
+
     def __init__(self, *args, **kwargs):
-        self.team = kwargs.pop('team', None)
+        self.team = kwargs.pop("team", None)
         super().__init__(*args, **kwargs)
 
-    action_name = 'reassign'
+    action_name = "reassign"
 
     def get_template_names(self):
         """List of template names to be used for a task reassign page
@@ -95,12 +96,11 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
             flow_task = self.activation.flow_task
             opts = self.activation.flow_class._meta
 
-            return ('{}/{}/{}_reassign.html'.format(opts.app_label,
-                                                    opts.flow_label,
-                                                    flow_task.name),
-                    '{}/{}/task_reassign.html'.format(opts.app_label,
-                                                      opts.flow_label),
-                    'viewflow/flow/task_reassign.html')
+            return (
+                "{}/{}/{}_reassign.html".format(opts.app_label, opts.flow_label, flow_task.name),
+                "{}/{}/task_reassign.html".format(opts.app_label, opts.flow_label),
+                "viewflow/flow/task_reassign.html",
+            )
         else:
             return [self.template_name]
 
@@ -110,14 +110,12 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
         """
         permission = self.activation.task.owner_permission
         if self.team:
-            return get_team_members_with_permission(
-                self.team, permission).filter(is_active=True)
+            return get_team_members_with_permission(self.team, permission).filter(is_active=True)
         else:
             return get_users_with_permission(permission).filter(is_active=True)
 
     def get_form(self):
-        return ReAssignTaskForm(self.get_user_queryset(),
-                                data=self.request.POST or None)
+        return ReAssignTaskForm(self.get_user_queryset(), data=self.request.POST or None)
 
     def get_context_data(self, **kwargs):
         """Context for a reassign view.
@@ -125,8 +123,8 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
         :keyword users: list of users the task can be assigned to
         """
         context = super().get_context_data(**kwargs)
-        context['activation'] = self.activation
-        context['form'] = self.get_form()
+        context["activation"] = self.activation
+        context["form"] = self.get_form()
         return context
 
     def get_success_url(self):
@@ -134,16 +132,16 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
 
         url = self.activation.flow_task.get_task_url(
             self.activation.task,
-            url_type='guess',
+            url_type="guess",
             user=self.request.user,
-            namespace=self.request.resolver_match.namespace)
+            namespace=self.request.resolver_match.namespace,
+        )
 
-        back = self.request.GET.get('back', None)
-        if back and not is_safe_url(url=back,
-                                    allowed_hosts={self.request.get_host()}):
-            back = '/'
+        back = self.request.GET.get("back", None)
+        if back and not is_safe_url(url=back, allowed_hosts={self.request.get_host()}):
+            back = "/"
 
-        if '_continue' in self.request.POST and back:
+        if "_continue" in self.request.POST and back:
             url = "{}?back={}".format(url, urlquote(back))
         elif back:
             url = back
@@ -163,10 +161,10 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
         if not form.is_valid():
             return self.render_to_response(self.get_context_data(form=form))
 
-        if '_reassign' or '_continue' in request.POST:
-            user = User.objects.get(pk=form.data.get('user'))
+        if "_reassign" or "_continue" in request.POST:
+            user = User.objects.get(pk=form.data.get("user"))
             self.activation.reassign(user)
-            self.success('Task {task} has been reassigned')
+            self.success("Task {task} has been reassigned")
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.get(request, *args, **kwargs)
@@ -180,16 +178,17 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
             raise PermissionDenied
 
         if not self.activation.reassign.can_proceed():
-            self.error('Task {task} cannot be reassigned')
+            self.error("Task {task} cannot be reassigned")
             return redirect(
                 self.activation.flow_task.get_task_url(
                     self.activation.task,
-                    url_type='detail',
+                    url_type="detail",
                     user=request.user,
-                    namespace=self.request.resolver_match.namespace))
+                    namespace=self.request.resolver_match.namespace,
+                )
+            )
 
-        if not self.activation.flow_task.can_execute(request.user,
-                                                     self.activation.task):
+        if not self.activation.flow_task.can_execute(request.user, self.activation.task):
             raise PermissionDenied
 
         return super(ReAssignTaskView, self).dispatch(request, *args, **kwargs)

@@ -13,738 +13,1832 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
+        ("auth", "0011_update_proxy_permissions"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
-                ('first_name', models.CharField(blank=True, max_length=30, verbose_name='first name')),
-                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
-                ('email', models.EmailField(blank=True, max_length=254, verbose_name='email address')),
-                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
-                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
-                ('title', models.CharField(max_length=20, null=True)),
-                ('preferred_first_name', models.CharField(blank=True, max_length=4000, null=True)),
-                ('middle_initials', models.CharField(blank=True, max_length=40, null=True)),
-                ('organisation', models.CharField(max_length=4000, null=True)),
-                ('department', models.CharField(max_length=4000, null=True)),
-                ('job_title', models.CharField(max_length=320, null=True)),
-                ('location_at_address', models.CharField(blank=True, max_length=4000, null=True)),
-                ('work_address', models.CharField(max_length=300, null=True)),
-                ('date_of_birth', models.DateField(null=True)),
-                ('security_question', models.CharField(max_length=4000, null=True)),
-                ('security_answer', models.CharField(max_length=4000, null=True)),
-                ('share_contact_details', models.BooleanField(default=False)),
-                ('account_status', models.CharField(choices=[('NEW', 'New'), ('BLOCKED', 'Blocked'), ('SUSPENDED', 'Suspended'), ('CANCELLED', 'Cancelled'), ('ACTIVE', 'Active')], default='ACTIVE', max_length=20)),
-                ('account_status_date', models.DateField(blank=True, null=True)),
-                ('password_disposition', models.CharField(blank=True, choices=[('TEMPORARY', 'Temporary'), ('FULL', 'Full')], max_length=20, null=True)),
-                ('unsuccessful_login_attempts', models.PositiveSmallIntegerField(default=0)),
-                ('account_status_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='users_changed', to='web.User')),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(blank=True, null=True, verbose_name="last login"),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                (
+                    "username",
+                    models.CharField(
+                        error_messages={"unique": "A user with that username already exists."},
+                        help_text="Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.",
+                        max_length=150,
+                        unique=True,
+                        validators=[django.contrib.auth.validators.UnicodeUsernameValidator()],
+                        verbose_name="username",
+                    ),
+                ),
+                (
+                    "first_name",
+                    models.CharField(blank=True, max_length=30, verbose_name="first name"),
+                ),
+                (
+                    "last_name",
+                    models.CharField(blank=True, max_length=150, verbose_name="last name"),
+                ),
+                (
+                    "email",
+                    models.EmailField(blank=True, max_length=254, verbose_name="email address"),
+                ),
+                (
+                    "is_staff",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates whether the user can log into this admin site.",
+                        verbose_name="staff status",
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(
+                        default=True,
+                        help_text="Designates whether this user should be treated as active. Unselect this instead of deleting accounts.",
+                        verbose_name="active",
+                    ),
+                ),
+                (
+                    "date_joined",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="date joined"
+                    ),
+                ),
+                ("title", models.CharField(max_length=20, null=True)),
+                ("preferred_first_name", models.CharField(blank=True, max_length=4000, null=True)),
+                ("middle_initials", models.CharField(blank=True, max_length=40, null=True)),
+                ("organisation", models.CharField(max_length=4000, null=True)),
+                ("department", models.CharField(max_length=4000, null=True)),
+                ("job_title", models.CharField(max_length=320, null=True)),
+                ("location_at_address", models.CharField(blank=True, max_length=4000, null=True)),
+                ("work_address", models.CharField(max_length=300, null=True)),
+                ("date_of_birth", models.DateField(null=True)),
+                ("security_question", models.CharField(max_length=4000, null=True)),
+                ("security_answer", models.CharField(max_length=4000, null=True)),
+                ("share_contact_details", models.BooleanField(default=False)),
+                (
+                    "account_status",
+                    models.CharField(
+                        choices=[
+                            ("NEW", "New"),
+                            ("BLOCKED", "Blocked"),
+                            ("SUSPENDED", "Suspended"),
+                            ("CANCELLED", "Cancelled"),
+                            ("ACTIVE", "Active"),
+                        ],
+                        default="ACTIVE",
+                        max_length=20,
+                    ),
+                ),
+                ("account_status_date", models.DateField(blank=True, null=True)),
+                (
+                    "password_disposition",
+                    models.CharField(
+                        blank=True,
+                        choices=[("TEMPORARY", "Temporary"), ("FULL", "Full")],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("unsuccessful_login_attempts", models.PositiveSmallIntegerField(default=0)),
+                (
+                    "account_status_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="users_changed",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-is_active', 'first_name'),
-            },
+            options={"ordering": ("-is_active", "first_name"),},
         ),
         migrations.CreateModel(
-            name='AccessRequest',
+            name="AccessRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('reference', models.CharField(max_length=50)),
-                ('request_type', models.CharField(choices=[('MAIN_IMPORTER_ACCESS', 'Request access to act as an Importer'), ('AGENT_IMPORTER_ACCESS', 'Request access to act as an Agent for an Importer'), ('MAIN_EXPORTER_ACCESS', 'Request access to act as an Exporter'), ('AGENT_EXPORTER_ACCESS', 'Request access to act as an Agent for an Exporter')], max_length=30)),
-                ('status', models.CharField(choices=[('SUBMITTED', 'Submitted'), ('CLOSED', 'Closed')], default='SUBMITTED', max_length=30)),
-                ('organisation_name', models.CharField(max_length=100)),
-                ('organisation_address', models.CharField(max_length=500, null=True)),
-                ('request_reason', models.CharField(blank=True, max_length=1000, null=True)),
-                ('agent_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('agent_address', models.CharField(blank=True, max_length=500, null=True)),
-                ('submit_datetime', models.DateTimeField()),
-                ('last_update_datetime', models.DateTimeField(auto_now=True)),
-                ('closed_datetime', models.DateTimeField(blank=True, null=True)),
-                ('response', models.CharField(choices=[('APPROVED', 'Approved'), ('REFUSED', 'Refused')], max_length=20, null=True)),
-                ('response_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('closed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='closed_access_requests', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("reference", models.CharField(max_length=50)),
+                (
+                    "request_type",
+                    models.CharField(
+                        choices=[
+                            ("MAIN_IMPORTER_ACCESS", "Request access to act as an Importer"),
+                            (
+                                "AGENT_IMPORTER_ACCESS",
+                                "Request access to act as an Agent for an Importer",
+                            ),
+                            ("MAIN_EXPORTER_ACCESS", "Request access to act as an Exporter"),
+                            (
+                                "AGENT_EXPORTER_ACCESS",
+                                "Request access to act as an Agent for an Exporter",
+                            ),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("SUBMITTED", "Submitted"), ("CLOSED", "Closed")],
+                        default="SUBMITTED",
+                        max_length=30,
+                    ),
+                ),
+                ("organisation_name", models.CharField(max_length=100)),
+                ("organisation_address", models.CharField(max_length=500, null=True)),
+                ("request_reason", models.CharField(blank=True, max_length=1000, null=True)),
+                ("agent_name", models.CharField(blank=True, max_length=100, null=True)),
+                ("agent_address", models.CharField(blank=True, max_length=500, null=True)),
+                ("submit_datetime", models.DateTimeField()),
+                ("last_update_datetime", models.DateTimeField(auto_now=True)),
+                ("closed_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "response",
+                    models.CharField(
+                        choices=[("APPROVED", "Approved"), ("REFUSED", "Refused")],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("response_reason", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "closed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="closed_access_requests",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='BaseTeam',
+            name="BaseTeam",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('members', models.ManyToManyField(to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("members", models.ManyToManyField(to="web.User")),
             ],
         ),
         migrations.CreateModel(
-            name='CaseNote',
+            name="CaseNote",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(choices=[('DRAFT', 'Draft'), ('DELETED', 'Deleted'), ('COMPLETED', 'Completed')], default='DRAFT', max_length=20)),
-                ('note', models.TextField(blank=True, null=True)),
-                ('create_datetime', models.DateTimeField(auto_now_add=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='created_import_case_notes', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("DRAFT", "Draft"),
+                            ("DELETED", "Deleted"),
+                            ("COMPLETED", "Completed"),
+                        ],
+                        default="DRAFT",
+                        max_length=20,
+                    ),
+                ),
+                ("note", models.TextField(blank=True, null=True)),
+                ("create_datetime", models.DateTimeField(auto_now_add=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="created_import_case_notes",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Commodity',
+            name="Commodity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('start_datetime', models.DateTimeField(auto_now_add=True)),
-                ('end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('commodity_code', models.CharField(max_length=10)),
-                ('validity_start_date', models.DateField(null=True)),
-                ('validity_end_date', models.DateField(blank=True, null=True)),
-                ('quantity_threshold', models.IntegerField(blank=True, null=True)),
-                ('sigl_product_type', models.CharField(blank=True, max_length=3, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("start_datetime", models.DateTimeField(auto_now_add=True)),
+                ("end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("commodity_code", models.CharField(max_length=10)),
+                ("validity_start_date", models.DateField(null=True)),
+                ("validity_end_date", models.DateField(blank=True, null=True)),
+                ("quantity_threshold", models.IntegerField(blank=True, null=True)),
+                ("sigl_product_type", models.CharField(blank=True, max_length=3, null=True)),
             ],
-            options={
-                'ordering': ('-is_active', 'commodity_code'),
-            },
+            options={"ordering": ("-is_active", "commodity_code"),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='CommodityGroup',
+            name="CommodityGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('start_datetime', models.DateTimeField()),
-                ('end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('group_type', models.CharField(choices=[('AUTO', 'Auto'), ('CATEGORY', 'Category')], default='AUTO', max_length=20)),
-                ('group_code', models.CharField(max_length=25)),
-                ('group_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('group_description', models.CharField(blank=True, max_length=4000, null=True)),
-                ('commodities', models.ManyToManyField(blank=True, to='web.Commodity')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("start_datetime", models.DateTimeField()),
+                ("end_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "group_type",
+                    models.CharField(
+                        choices=[("AUTO", "Auto"), ("CATEGORY", "Category")],
+                        default="AUTO",
+                        max_length=20,
+                    ),
+                ),
+                ("group_code", models.CharField(max_length=25)),
+                ("group_name", models.CharField(blank=True, max_length=100, null=True)),
+                ("group_description", models.CharField(blank=True, max_length=4000, null=True)),
+                ("commodities", models.ManyToManyField(blank=True, to="web.Commodity")),
             ],
-            options={
-                'ordering': ('-is_active', 'group_code'),
-            },
+            options={"ordering": ("-is_active", "group_code"),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='CommodityType',
+            name="CommodityType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type_code', models.CharField(max_length=20)),
-                ('type', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("type_code", models.CharField(max_length=20)),
+                ("type", models.CharField(max_length=50)),
             ],
         ),
         migrations.CreateModel(
-            name='Country',
+            name="Country",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=4000)),
-                ('is_active', models.BooleanField(default=True)),
-                ('type', models.CharField(choices=[('SOVEREIGN_TERRITORY', 'Sovereign Territory'), ('SYSTEM', 'System')], max_length=30)),
-                ('commission_code', models.CharField(max_length=20)),
-                ('hmrc_code', models.CharField(max_length=20)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=4000)),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("SOVEREIGN_TERRITORY", "Sovereign Territory"),
+                            ("SYSTEM", "System"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("commission_code", models.CharField(max_length=20)),
+                ("hmrc_code", models.CharField(max_length=20)),
             ],
-            options={
-                'ordering': ('name',),
-            },
+            options={"ordering": ("name",),},
         ),
         migrations.CreateModel(
-            name='CountryGroup',
+            name="CountryGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=4000)),
-                ('comments', models.CharField(blank=True, max_length=4000, null=True)),
-                ('countries', models.ManyToManyField(blank=True, related_name='country_groups', to='web.Country')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=4000)),
+                ("comments", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "countries",
+                    models.ManyToManyField(
+                        blank=True, related_name="country_groups", to="web.Country"
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('name',),
-            },
+            options={"ordering": ("name",),},
         ),
         migrations.CreateModel(
-            name='CountryTranslationSet',
+            name="CountryTranslationSet",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('is_active', models.BooleanField(default=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("is_active", models.BooleanField(default=True)),
             ],
-            options={
-                'ordering': ('-is_active', 'name'),
-            },
+            options={"ordering": ("-is_active", "name"),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='File',
+            name="File",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('filename', models.CharField(max_length=300, null=True)),
-                ('content_type', models.CharField(max_length=100, null=True)),
-                ('browser_content_type', models.CharField(max_length=100, null=True)),
-                ('description', models.CharField(blank=True, max_length=300, null=True)),
-                ('file_size', models.IntegerField(null=True)),
-                ('path', models.CharField(blank=True, max_length=4000, null=True)),
-                ('error_message', models.CharField(blank=True, max_length=4000, null=True)),
-                ('created_datetime', models.DateTimeField(auto_now_add=True, null=True)),
-                ('created_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("filename", models.CharField(max_length=300, null=True)),
+                ("content_type", models.CharField(max_length=100, null=True)),
+                ("browser_content_type", models.CharField(max_length=100, null=True)),
+                ("description", models.CharField(blank=True, max_length=300, null=True)),
+                ("file_size", models.IntegerField(null=True)),
+                ("path", models.CharField(blank=True, max_length=4000, null=True)),
+                ("error_message", models.CharField(blank=True, max_length=4000, null=True)),
+                ("created_datetime", models.DateTimeField(auto_now_add=True, null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        null=True, on_delete=django.db.models.deletion.PROTECT, to="web.User"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FurtherInformationRequest',
+            name="FurtherInformationRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(choices=[('DRAFT', 'Draft'), ('CLOSED', 'CLOSED'), ('DELETED', 'Deleted'), ('OPEN', 'Open'), ('RESPONDED', 'Responded')], default='DRAFT', max_length=20)),
-                ('request_subject', models.CharField(max_length=100, null=True)),
-                ('request_detail', models.TextField(null=True)),
-                ('email_cc_address_list', models.CharField(blank=True, max_length=4000, null=True)),
-                ('requested_datetime', models.DateTimeField(auto_now_add=True, null=True)),
-                ('response_detail', models.CharField(max_length=4000, null=True)),
-                ('response_datetime', models.DateTimeField(blank=True, null=True)),
-                ('closed_datetime', models.DateTimeField(blank=True, null=True)),
-                ('deleted_datetime', models.DateTimeField(blank=True, null=True)),
-                ('closed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='closed_import_information_requests', to='web.User')),
-                ('deleted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='deleted_import_information_requests', to='web.User')),
-                ('files', models.ManyToManyField(blank=True, to='web.File')),
-                ('requested_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='requested_further_import_information', to='web.User')),
-                ('response_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='responded_import_information_requests', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("DRAFT", "Draft"),
+                            ("CLOSED", "CLOSED"),
+                            ("DELETED", "Deleted"),
+                            ("OPEN", "Open"),
+                            ("RESPONDED", "Responded"),
+                        ],
+                        default="DRAFT",
+                        max_length=20,
+                    ),
+                ),
+                ("request_subject", models.CharField(max_length=100, null=True)),
+                ("request_detail", models.TextField(null=True)),
+                ("email_cc_address_list", models.CharField(blank=True, max_length=4000, null=True)),
+                ("requested_datetime", models.DateTimeField(auto_now_add=True, null=True)),
+                ("response_detail", models.CharField(max_length=4000, null=True)),
+                ("response_datetime", models.DateTimeField(blank=True, null=True)),
+                ("closed_datetime", models.DateTimeField(blank=True, null=True)),
+                ("deleted_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "closed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="closed_import_information_requests",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "deleted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="deleted_import_information_requests",
+                        to="web.User",
+                    ),
+                ),
+                ("files", models.ManyToManyField(blank=True, to="web.File")),
+                (
+                    "requested_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="requested_further_import_information",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "response_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="responded_import_information_requests",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ObsoleteCalibreGroup',
+            name="ObsoleteCalibreGroup",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('is_active', models.BooleanField(default=True)),
-                ('order', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("is_active", models.BooleanField(default=True)),
+                ("order", models.IntegerField()),
             ],
-            options={
-                'ordering': ('order', '-is_active'),
-            },
+            options={"ordering": ("order", "-is_active"),},
             bases=(web.models.mixins.Archivable, web.models.mixins.Sortable, models.Model),
         ),
         migrations.CreateModel(
-            name='Office',
+            name="Office",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('postcode', models.CharField(blank=True, max_length=30, null=True)),
-                ('address', models.CharField(max_length=4000, null=True)),
-                ('eori_number', models.CharField(blank=True, max_length=20, null=True)),
-                ('address_entry_type', models.CharField(default='EMPTY', max_length=10)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("postcode", models.CharField(blank=True, max_length=30, null=True)),
+                ("address", models.CharField(max_length=4000, null=True)),
+                ("eori_number", models.CharField(blank=True, max_length=20, null=True)),
+                ("address_entry_type", models.CharField(default="EMPTY", max_length=10)),
             ],
         ),
         migrations.CreateModel(
-            name='ProductLegislation',
+            name="ProductLegislation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=500)),
-                ('is_active', models.BooleanField(default=True)),
-                ('is_biocidal', models.BooleanField(default=False)),
-                ('is_eu_cosmetics_regulation', models.BooleanField(default=False)),
-                ('is_biocidal_claim', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=500)),
+                ("is_active", models.BooleanField(default=True)),
+                ("is_biocidal", models.BooleanField(default=False)),
+                ("is_eu_cosmetics_regulation", models.BooleanField(default=False)),
+                ("is_biocidal_claim", models.BooleanField(default=False)),
             ],
-            options={
-                'ordering': ('-is_active', 'name'),
-            },
+            options={"ordering": ("-is_active", "name"),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='Unit',
+            name="Unit",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('unit_type', models.CharField(max_length=20)),
-                ('description', models.CharField(max_length=100)),
-                ('short_description', models.CharField(max_length=30)),
-                ('hmrc_code', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("unit_type", models.CharField(max_length=20)),
+                ("description", models.CharField(max_length=100)),
+                ("short_description", models.CharField(max_length=30)),
+                ("hmrc_code", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Constabulary',
+            name="Constabulary",
             fields=[
-                ('baseteam_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='web.BaseTeam')),
-                ('name', models.CharField(max_length=50)),
-                ('region', models.CharField(choices=[('EM', 'East Midlands'), ('ER', 'Eastern'), ('IM', 'Isle of Man'), ('LO', 'London'), ('NE', 'North East'), ('NW', 'North WEST'), ('RU', 'Royal Ulster'), ('SC', 'Scotland'), ('SE', 'South East'), ('SW', 'South West'), ('WM', 'West Midlands')], max_length=3)),
-                ('email', models.EmailField(max_length=254)),
-                ('is_active', models.BooleanField(default=True)),
+                (
+                    "baseteam_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.BaseTeam",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "region",
+                    models.CharField(
+                        choices=[
+                            ("EM", "East Midlands"),
+                            ("ER", "Eastern"),
+                            ("IM", "Isle of Man"),
+                            ("LO", "London"),
+                            ("NE", "North East"),
+                            ("NW", "North WEST"),
+                            ("RU", "Royal Ulster"),
+                            ("SC", "Scotland"),
+                            ("SE", "South East"),
+                            ("SW", "South West"),
+                            ("WM", "West Midlands"),
+                        ],
+                        max_length=3,
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                ("is_active", models.BooleanField(default=True)),
             ],
-            options={
-                'ordering': ('-is_active', 'name'),
-            },
-            bases=(web.models.mixins.Archivable, 'web.baseteam'),
+            options={"ordering": ("-is_active", "name"),},
+            bases=(web.models.mixins.Archivable, "web.baseteam"),
         ),
         migrations.CreateModel(
-            name='Importer',
+            name="Importer",
             fields=[
-                ('baseteam_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='web.BaseTeam')),
-                ('is_active', models.BooleanField(default=True)),
-                ('type', models.CharField(choices=[('INDIVIDUAL', 'Individual'), ('ORGANISATION', 'Organisation')], max_length=20)),
-                ('name', models.CharField(blank=True, max_length=4000, null=True)),
-                ('registered_number', models.CharField(blank=True, max_length=15, null=True)),
-                ('eori_number', models.CharField(blank=True, max_length=20, null=True)),
-                ('region_origin', models.CharField(blank=True, choices=[(None, 'UK'), ('E', 'Europe'), ('O', 'Non-European')], max_length=1, null=True)),
-                ('comments', models.CharField(blank=True, max_length=4000, null=True)),
-                ('main_importer', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agents', to='web.Importer')),
-                ('offices', models.ManyToManyField(to='web.Office')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='own_importers', to='web.User')),
+                (
+                    "baseteam_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.BaseTeam",
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("INDIVIDUAL", "Individual"), ("ORGANISATION", "Organisation")],
+                        max_length=20,
+                    ),
+                ),
+                ("name", models.CharField(blank=True, max_length=4000, null=True)),
+                ("registered_number", models.CharField(blank=True, max_length=15, null=True)),
+                ("eori_number", models.CharField(blank=True, max_length=20, null=True)),
+                (
+                    "region_origin",
+                    models.CharField(
+                        blank=True,
+                        choices=[(None, "UK"), ("E", "Europe"), ("O", "Non-European")],
+                        max_length=1,
+                        null=True,
+                    ),
+                ),
+                ("comments", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "main_importer",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agents",
+                        to="web.Importer",
+                    ),
+                ),
+                ("offices", models.ManyToManyField(to="web.Office")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="own_importers",
+                        to="web.User",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-is_active', 'name'),
-            },
-            bases=(web.models.mixins.Archivable, 'web.baseteam'),
+            options={"ordering": ("-is_active", "name"),},
+            bases=(web.models.mixins.Archivable, "web.baseteam"),
         ),
         migrations.CreateModel(
-            name='Team',
+            name="Team",
             fields=[
-                ('baseteam_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='web.BaseTeam')),
-                ('name', models.CharField(max_length=1000)),
-                ('description', models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "baseteam_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.BaseTeam",
+                    ),
+                ),
+                ("name", models.CharField(max_length=1000)),
+                ("description", models.CharField(blank=True, max_length=4000, null=True)),
             ],
-            options={
-                'ordering': ('name',),
-            },
-            bases=('web.baseteam',),
+            options={"ordering": ("name",),},
+            bases=("web.baseteam",),
         ),
         migrations.CreateModel(
-            name='VariationRequest',
+            name="VariationRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(choices=[('DRAFT', 'Draft'), ('OPEN', 'Open'), ('CANCELLED', 'Cancelled'), ('REJECTED', 'Rejected'), ('ACCEPTED', 'Accepted'), ('WITHDRAWN', 'Withdrawn'), ('DELETED', 'Deleted'), ('CLOSED', 'Closed')], max_length=30)),
-                ('extension_flag', models.BooleanField(default=False)),
-                ('requested_datetime', models.DateTimeField(auto_now_add=True, null=True)),
-                ('what_varied', models.CharField(blank=True, max_length=4000, null=True)),
-                ('why_varied', models.CharField(blank=True, max_length=4000, null=True)),
-                ('when_varied', models.DateField(blank=True, null=True)),
-                ('reject_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('closed_datetime', models.DateTimeField(blank=True, null=True)),
-                ('closed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='closed_variations', to='web.User')),
-                ('requested_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='requested_variations', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("DRAFT", "Draft"),
+                            ("OPEN", "Open"),
+                            ("CANCELLED", "Cancelled"),
+                            ("REJECTED", "Rejected"),
+                            ("ACCEPTED", "Accepted"),
+                            ("WITHDRAWN", "Withdrawn"),
+                            ("DELETED", "Deleted"),
+                            ("CLOSED", "Closed"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("extension_flag", models.BooleanField(default=False)),
+                ("requested_datetime", models.DateTimeField(auto_now_add=True, null=True)),
+                ("what_varied", models.CharField(blank=True, max_length=4000, null=True)),
+                ("why_varied", models.CharField(blank=True, max_length=4000, null=True)),
+                ("when_varied", models.DateField(blank=True, null=True)),
+                ("reject_reason", models.CharField(blank=True, max_length=4000, null=True)),
+                ("closed_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "closed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="closed_variations",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "requested_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="requested_variations",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UpdateRequest',
+            name="UpdateRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(max_length=30)),
-                ('request_subject', models.CharField(max_length=100, null=True)),
-                ('request_detail', models.TextField(null=True)),
-                ('email_cc_address_list', models.CharField(blank=True, max_length=4000, null=True)),
-                ('response_detail', models.TextField(null=True)),
-                ('request_datetime', models.DateTimeField(blank=True, null=True)),
-                ('response_datetime', models.DateTimeField(blank=True, null=True)),
-                ('closed_datetime', models.DateTimeField(blank=True, null=True)),
-                ('closed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='closed_import_application_updates', to='web.User')),
-                ('requested_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='requested_import_application_updates', to='web.User')),
-                ('response_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='responded_import_application_updates', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("status", models.CharField(max_length=30)),
+                ("request_subject", models.CharField(max_length=100, null=True)),
+                ("request_detail", models.TextField(null=True)),
+                ("email_cc_address_list", models.CharField(blank=True, max_length=4000, null=True)),
+                ("response_detail", models.TextField(null=True)),
+                ("request_datetime", models.DateTimeField(blank=True, null=True)),
+                ("response_datetime", models.DateTimeField(blank=True, null=True)),
+                ("closed_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "closed_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="closed_import_application_updates",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "requested_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="requested_import_application_updates",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "response_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="responded_import_application_updates",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Template',
+            name="Template",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_datetime', models.DateTimeField(auto_now_add=True)),
-                ('end_datetime', models.DateTimeField(blank=True, null=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('template_name', models.CharField(max_length=100)),
-                ('template_code', models.CharField(blank=True, max_length=50, null=True)),
-                ('template_type', models.CharField(choices=[('ENDORSEMENT', 'Endorsement'), ('LETTER_TEMPLATE', 'Letter template'), ('EMAIL_TEMPLATE', 'Email template'), ('CFS_TRANSLATION', 'CFS translation'), ('DECLARATION', 'Declaration'), ('CFS_SCHEDULE', 'CFS schedule'), ('LETTER_FRAGMENT', 'Letter fragment'), ('CFS_DECLARATION_TRANSLATION', 'CFS declaration translation'), ('CFS_SCHEDULE_TRANSLATION', 'CFS schedule translation')], max_length=50)),
-                ('application_domain', models.CharField(choices=[('CA', 'Certificate Applications'), ('IMA', 'Import Applications'), ('IAR', 'Access Requests')], max_length=20)),
-                ('template_title', models.CharField(max_length=4000, null=True)),
-                ('template_content', models.TextField(null=True)),
-                ('countries', models.ManyToManyField(to='web.Country')),
-                ('country_translation_set', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.CountryTranslationSet')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("start_datetime", models.DateTimeField(auto_now_add=True)),
+                ("end_datetime", models.DateTimeField(blank=True, null=True)),
+                ("is_active", models.BooleanField(default=True)),
+                ("template_name", models.CharField(max_length=100)),
+                ("template_code", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "template_type",
+                    models.CharField(
+                        choices=[
+                            ("ENDORSEMENT", "Endorsement"),
+                            ("LETTER_TEMPLATE", "Letter template"),
+                            ("EMAIL_TEMPLATE", "Email template"),
+                            ("CFS_TRANSLATION", "CFS translation"),
+                            ("DECLARATION", "Declaration"),
+                            ("CFS_SCHEDULE", "CFS schedule"),
+                            ("LETTER_FRAGMENT", "Letter fragment"),
+                            ("CFS_DECLARATION_TRANSLATION", "CFS declaration translation"),
+                            ("CFS_SCHEDULE_TRANSLATION", "CFS schedule translation"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "application_domain",
+                    models.CharField(
+                        choices=[
+                            ("CA", "Certificate Applications"),
+                            ("IMA", "Import Applications"),
+                            ("IAR", "Access Requests"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("template_title", models.CharField(max_length=4000, null=True)),
+                ("template_content", models.TextField(null=True)),
+                ("countries", models.ManyToManyField(to="web.Country")),
+                (
+                    "country_translation_set",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="web.CountryTranslationSet",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-is_active', 'template_name'),
-            },
+            options={"ordering": ("-is_active", "template_name"),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='Role',
+            name="Role",
             fields=[
-                ('group', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='roles', serialize=False, to='auth.Group')),
-                ('description', models.CharField(blank=True, max_length=4000, null=True)),
-                ('role_order', models.IntegerField()),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.BaseTeam')),
+                (
+                    "group",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        related_name="roles",
+                        serialize=False,
+                        to="auth.Group",
+                    ),
+                ),
+                ("description", models.CharField(blank=True, max_length=4000, null=True)),
+                ("role_order", models.IntegerField()),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="web.BaseTeam"
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('role_order',),
-            },
-            bases=('auth.group',),
-            managers=[
-                ('objects', django.contrib.auth.models.GroupManager()),
+            options={"ordering": ("role_order",),},
+            bases=("auth.group",),
+            managers=[("objects", django.contrib.auth.models.GroupManager()),],
+        ),
+        migrations.CreateModel(
+            name="PhoneNumber",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("phone", models.CharField(max_length=60)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("WORK", "Work"),
+                            ("FAX", "Fax"),
+                            ("MOBILE", "Mobile"),
+                            ("HOME", "Home"),
+                            ("MINICOM", "Minicom"),
+                        ],
+                        default="WORK",
+                        max_length=30,
+                    ),
+                ),
+                ("comment", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="phone_numbers",
+                        to="web.User",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PhoneNumber',
+            name="PersonalEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('phone', models.CharField(max_length=60)),
-                ('type', models.CharField(choices=[('WORK', 'Work'), ('FAX', 'Fax'), ('MOBILE', 'Mobile'), ('HOME', 'Home'), ('MINICOM', 'Minicom')], default='WORK', max_length=30)),
-                ('comment', models.CharField(blank=True, max_length=4000, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='phone_numbers', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("WORK", "Work"), ("HOME", "Home")], default="WORK", max_length=30
+                    ),
+                ),
+                ("portal_notifications", models.BooleanField(default=False)),
+                ("comment", models.CharField(blank=True, max_length=4000, null=True)),
+                ("is_primary", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="personal_emails",
+                        to="web.User",
+                    ),
+                ),
             ],
+            options={"abstract": False,},
         ),
         migrations.CreateModel(
-            name='PersonalEmail',
+            name="ObsoleteCalibre",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254)),
-                ('type', models.CharField(choices=[('WORK', 'Work'), ('HOME', 'Home')], default='WORK', max_length=30)),
-                ('portal_notifications', models.BooleanField(default=False)),
-                ('comment', models.CharField(blank=True, max_length=4000, null=True)),
-                ('is_primary', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='personal_emails', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("is_active", models.BooleanField(default=True)),
+                ("order", models.IntegerField()),
+                (
+                    "calibre_group",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="calibres",
+                        to="web.ObsoleteCalibreGroup",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ObsoleteCalibre',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('is_active', models.BooleanField(default=True)),
-                ('order', models.IntegerField()),
-                ('calibre_group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='calibres', to='web.ObsoleteCalibreGroup')),
-            ],
-            options={
-                'ordering': ('order',),
-            },
+            options={"ordering": ("order",),},
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
-            name='Mailshot',
+            name="Mailshot",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(default='DRAFT', max_length=20)),
-                ('title', models.CharField(max_length=200, null=True)),
-                ('description', models.CharField(max_length=4000, null=True)),
-                ('is_email', models.BooleanField(default=True)),
-                ('email_subject', models.CharField(max_length=78, null=True)),
-                ('email_body', models.CharField(max_length=4000, null=True)),
-                ('is_retraction_email', models.BooleanField(default=True)),
-                ('retract_email_subject', models.CharField(max_length=78, null=True)),
-                ('retract_email_body', models.CharField(max_length=4000, null=True)),
-                ('is_to_importers', models.BooleanField(default=False)),
-                ('is_to_exporters', models.BooleanField(default=False)),
-                ('create_datetime', models.DateTimeField(auto_now_add=True)),
-                ('published_datetime', models.DateTimeField(null=True)),
-                ('retracted_datetime', models.DateTimeField(null=True)),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='created_mailshots', to='web.User')),
-                ('files', models.ManyToManyField(to='web.File')),
-                ('published_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='published_mailshots', to='web.User')),
-                ('retracted_by', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='retracted_mailshots', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("status", models.CharField(default="DRAFT", max_length=20)),
+                ("title", models.CharField(max_length=200, null=True)),
+                ("description", models.CharField(max_length=4000, null=True)),
+                ("is_email", models.BooleanField(default=True)),
+                ("email_subject", models.CharField(max_length=78, null=True)),
+                ("email_body", models.CharField(max_length=4000, null=True)),
+                ("is_retraction_email", models.BooleanField(default=True)),
+                ("retract_email_subject", models.CharField(max_length=78, null=True)),
+                ("retract_email_body", models.CharField(max_length=4000, null=True)),
+                ("is_to_importers", models.BooleanField(default=False)),
+                ("is_to_exporters", models.BooleanField(default=False)),
+                ("create_datetime", models.DateTimeField(auto_now_add=True)),
+                ("published_datetime", models.DateTimeField(null=True)),
+                ("retracted_datetime", models.DateTimeField(null=True)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="created_mailshots",
+                        to="web.User",
+                    ),
+                ),
+                ("files", models.ManyToManyField(to="web.File")),
+                (
+                    "published_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="published_mailshots",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "retracted_by",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="retracted_mailshots",
+                        to="web.User",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-id',),
-            },
+            options={"ordering": ("-id",),},
         ),
         migrations.CreateModel(
-            name='ImportCase',
+            name="ImportCase",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('IN_PROGRESS', 'In Progress'), ('SUBMITTED', 'Submitted'), ('PROCESSING', 'Processing'), ('COMPLETED', 'Completed'), ('WITHDRAWN', 'Withdrawn'), ('STOPPED', 'Stopped'), ('REVOKED', 'Revoked'), ('VARIATION_REQUESTED', 'Variation Requested'), ('DELETED', 'Deleted')], max_length=30)),
-                ('reference', models.CharField(blank=True, max_length=50, null=True)),
-                ('variation_no', models.IntegerField(default=0)),
-                ('legacy_case_flag', models.BooleanField(default=False)),
-                ('chief_usage_status', models.CharField(blank=True, choices=[('C', 'Cancelled'), ('E', 'Exhausted'), ('D', 'Expired'), ('S', 'S')], max_length=1, null=True)),
-                ('under_appeal_flag', models.BooleanField(default=False)),
-                ('decision', models.CharField(blank=True, choices=[('REFUSE', 'Refuse'), ('APPROVE', 'Approve')], max_length=10, null=True)),
-                ('variation_decision', models.CharField(blank=True, choices=[('REFUSE', 'Refuse'), ('APPROVE', 'Approve')], max_length=10, null=True)),
-                ('refuse_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('variation_refuse_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('issue_date', models.DateField(blank=True, null=True)),
-                ('licence_start_date', models.DateField(blank=True, null=True)),
-                ('licence_end_date', models.DateField(blank=True, null=True)),
-                ('licence_extended_flag', models.BooleanField(default=False)),
-                ('last_update_datetime', models.DateTimeField(auto_now=True)),
-                ('case_notes', models.ManyToManyField(to='web.CaseNote')),
-                ('further_information_requests', models.ManyToManyField(to='web.FurtherInformationRequest')),
-                ('last_updated_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='updated_import_cases', to='web.User')),
-                ('update_requests', models.ManyToManyField(to='web.UpdateRequest')),
-                ('variation_requests', models.ManyToManyField(to='web.VariationRequest')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("IN_PROGRESS", "In Progress"),
+                            ("SUBMITTED", "Submitted"),
+                            ("PROCESSING", "Processing"),
+                            ("COMPLETED", "Completed"),
+                            ("WITHDRAWN", "Withdrawn"),
+                            ("STOPPED", "Stopped"),
+                            ("REVOKED", "Revoked"),
+                            ("VARIATION_REQUESTED", "Variation Requested"),
+                            ("DELETED", "Deleted"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("reference", models.CharField(blank=True, max_length=50, null=True)),
+                ("variation_no", models.IntegerField(default=0)),
+                ("legacy_case_flag", models.BooleanField(default=False)),
+                (
+                    "chief_usage_status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("C", "Cancelled"),
+                            ("E", "Exhausted"),
+                            ("D", "Expired"),
+                            ("S", "S"),
+                        ],
+                        max_length=1,
+                        null=True,
+                    ),
+                ),
+                ("under_appeal_flag", models.BooleanField(default=False)),
+                (
+                    "decision",
+                    models.CharField(
+                        blank=True,
+                        choices=[("REFUSE", "Refuse"), ("APPROVE", "Approve")],
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                (
+                    "variation_decision",
+                    models.CharField(
+                        blank=True,
+                        choices=[("REFUSE", "Refuse"), ("APPROVE", "Approve")],
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                ("refuse_reason", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "variation_refuse_reason",
+                    models.CharField(blank=True, max_length=4000, null=True),
+                ),
+                ("issue_date", models.DateField(blank=True, null=True)),
+                ("licence_start_date", models.DateField(blank=True, null=True)),
+                ("licence_end_date", models.DateField(blank=True, null=True)),
+                ("licence_extended_flag", models.BooleanField(default=False)),
+                ("last_update_datetime", models.DateTimeField(auto_now=True)),
+                ("case_notes", models.ManyToManyField(to="web.CaseNote")),
+                (
+                    "further_information_requests",
+                    models.ManyToManyField(to="web.FurtherInformationRequest"),
+                ),
+                (
+                    "last_updated_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="updated_import_cases",
+                        to="web.User",
+                    ),
+                ),
+                ("update_requests", models.ManyToManyField(to="web.UpdateRequest")),
+                ("variation_requests", models.ManyToManyField(to="web.VariationRequest")),
             ],
         ),
         migrations.CreateModel(
-            name='ImportApplicationType',
+            name="ImportApplicationType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField()),
-                ('type_code', models.CharField(max_length=30)),
-                ('type', models.CharField(max_length=70)),
-                ('sub_type_code', models.CharField(max_length=30)),
-                ('sub_type', models.CharField(blank=True, max_length=70, null=True)),
-                ('licence_type_code', models.CharField(max_length=20)),
-                ('sigl_flag', models.BooleanField()),
-                ('chief_flag', models.BooleanField()),
-                ('chief_licence_prefix', models.CharField(blank=True, max_length=10, null=True)),
-                ('paper_licence_flag', models.BooleanField()),
-                ('electronic_licence_flag', models.BooleanField()),
-                ('cover_letter_flag', models.BooleanField()),
-                ('cover_letter_schedule_flag', models.BooleanField()),
-                ('category_flag', models.BooleanField()),
-                ('sigl_category_prefix', models.CharField(blank=True, max_length=100, null=True)),
-                ('chief_category_prefix', models.CharField(blank=True, max_length=10, null=True)),
-                ('default_licence_length_months', models.IntegerField(blank=True, null=True)),
-                ('endorsements_flag', models.BooleanField()),
-                ('default_commodity_desc', models.CharField(blank=True, max_length=200, null=True)),
-                ('quantity_unlimited_flag', models.BooleanField()),
-                ('unit_list_csv', models.CharField(blank=True, max_length=200, null=True)),
-                ('exp_cert_upload_flag', models.BooleanField()),
-                ('supporting_docs_upload_flag', models.BooleanField()),
-                ('multiple_commodities_flag', models.BooleanField()),
-                ('guidance_file_url', models.CharField(blank=True, max_length=4000, null=True)),
-                ('licence_category_description', models.CharField(blank=True, max_length=1000, null=True)),
-                ('usage_auto_category_desc_flag', models.BooleanField()),
-                ('case_checklist_flag', models.BooleanField()),
-                ('importer_printable', models.BooleanField()),
-                ('commodity_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='web.CommodityType')),
-                ('consignment_country_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='import_application_types_to', to='web.CountryGroup')),
-                ('declaration_template', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='declaration_application_types', to='web.Template')),
-                ('default_commodity_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='web.CommodityGroup')),
-                ('endorsements', models.ManyToManyField(related_name='endorsement_application_types', to='web.Template')),
-                ('master_country_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='import_application_types', to='web.CountryGroup')),
-                ('origin_country_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='import_application_types_from', to='web.CountryGroup')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField()),
+                ("type_code", models.CharField(max_length=30)),
+                ("type", models.CharField(max_length=70)),
+                ("sub_type_code", models.CharField(max_length=30)),
+                ("sub_type", models.CharField(blank=True, max_length=70, null=True)),
+                ("licence_type_code", models.CharField(max_length=20)),
+                ("sigl_flag", models.BooleanField()),
+                ("chief_flag", models.BooleanField()),
+                ("chief_licence_prefix", models.CharField(blank=True, max_length=10, null=True)),
+                ("paper_licence_flag", models.BooleanField()),
+                ("electronic_licence_flag", models.BooleanField()),
+                ("cover_letter_flag", models.BooleanField()),
+                ("cover_letter_schedule_flag", models.BooleanField()),
+                ("category_flag", models.BooleanField()),
+                ("sigl_category_prefix", models.CharField(blank=True, max_length=100, null=True)),
+                ("chief_category_prefix", models.CharField(blank=True, max_length=10, null=True)),
+                ("default_licence_length_months", models.IntegerField(blank=True, null=True)),
+                ("endorsements_flag", models.BooleanField()),
+                ("default_commodity_desc", models.CharField(blank=True, max_length=200, null=True)),
+                ("quantity_unlimited_flag", models.BooleanField()),
+                ("unit_list_csv", models.CharField(blank=True, max_length=200, null=True)),
+                ("exp_cert_upload_flag", models.BooleanField()),
+                ("supporting_docs_upload_flag", models.BooleanField()),
+                ("multiple_commodities_flag", models.BooleanField()),
+                ("guidance_file_url", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "licence_category_description",
+                    models.CharField(blank=True, max_length=1000, null=True),
+                ),
+                ("usage_auto_category_desc_flag", models.BooleanField()),
+                ("case_checklist_flag", models.BooleanField()),
+                ("importer_printable", models.BooleanField()),
+                (
+                    "commodity_type",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="web.CommodityType",
+                    ),
+                ),
+                (
+                    "consignment_country_group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_application_types_to",
+                        to="web.CountryGroup",
+                    ),
+                ),
+                (
+                    "declaration_template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="declaration_application_types",
+                        to="web.Template",
+                    ),
+                ),
+                (
+                    "default_commodity_group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="web.CommodityGroup",
+                    ),
+                ),
+                (
+                    "endorsements",
+                    models.ManyToManyField(
+                        related_name="endorsement_application_types", to="web.Template"
+                    ),
+                ),
+                (
+                    "master_country_group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_application_types",
+                        to="web.CountryGroup",
+                    ),
+                ),
+                (
+                    "origin_country_group",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_application_types_from",
+                        to="web.CountryGroup",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('type', 'sub_type'),
-            },
+            options={"ordering": ("type", "sub_type"),},
         ),
         migrations.CreateModel(
-            name='ExportCase',
+            name="ExportCase",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('IN_PROGRESS', 'In Progress'), ('SUBMITTED', 'Submitted'), ('PROCESSING', 'Processing'), ('COMPLETED', 'Completed'), ('WITHDRAWN', 'Withdrawn'), ('STOPPED', 'Stopped'), ('REVOKED', 'Revoked'), ('VARIATION', 'Case Variation'), ('DELETED', 'Deleted')], max_length=30)),
-                ('reference', models.CharField(blank=True, max_length=50, null=True)),
-                ('variation_no', models.IntegerField(default=0)),
-                ('decision', models.CharField(blank=True, choices=[('REFUSE', 'Refuse'), ('APPROVE', 'Approve')], max_length=10, null=True)),
-                ('refuse_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('last_update_datetime', models.DateTimeField(auto_now=True)),
-                ('case_notes', models.ManyToManyField(to='web.CaseNote')),
-                ('further_information_requests', models.ManyToManyField(to='web.FurtherInformationRequest')),
-                ('last_updated_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='updated_export_cases', to='web.User')),
-                ('update_requests', models.ManyToManyField(to='web.UpdateRequest')),
-                ('variation_requests', models.ManyToManyField(to='web.VariationRequest')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("IN_PROGRESS", "In Progress"),
+                            ("SUBMITTED", "Submitted"),
+                            ("PROCESSING", "Processing"),
+                            ("COMPLETED", "Completed"),
+                            ("WITHDRAWN", "Withdrawn"),
+                            ("STOPPED", "Stopped"),
+                            ("REVOKED", "Revoked"),
+                            ("VARIATION", "Case Variation"),
+                            ("DELETED", "Deleted"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("reference", models.CharField(blank=True, max_length=50, null=True)),
+                ("variation_no", models.IntegerField(default=0)),
+                (
+                    "decision",
+                    models.CharField(
+                        blank=True,
+                        choices=[("REFUSE", "Refuse"), ("APPROVE", "Approve")],
+                        max_length=10,
+                        null=True,
+                    ),
+                ),
+                ("refuse_reason", models.CharField(blank=True, max_length=4000, null=True)),
+                ("last_update_datetime", models.DateTimeField(auto_now=True)),
+                ("case_notes", models.ManyToManyField(to="web.CaseNote")),
+                (
+                    "further_information_requests",
+                    models.ManyToManyField(to="web.FurtherInformationRequest"),
+                ),
+                (
+                    "last_updated_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="updated_export_cases",
+                        to="web.User",
+                    ),
+                ),
+                ("update_requests", models.ManyToManyField(to="web.UpdateRequest")),
+                ("variation_requests", models.ManyToManyField(to="web.VariationRequest")),
             ],
         ),
         migrations.CreateModel(
-            name='ExportApplicationType',
+            name="ExportApplicationType",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('type_code', models.CharField(max_length=30)),
-                ('type', models.CharField(max_length=70)),
-                ('allow_multiple_products', models.BooleanField()),
-                ('generate_cover_letter', models.BooleanField()),
-                ('allow_hse_authorization', models.BooleanField()),
-                ('country_group', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='web.CountryGroup')),
-                ('country_group_for_manufacture', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='manufacture_export_application_types', to='web.CountryGroup')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("type_code", models.CharField(max_length=30)),
+                ("type", models.CharField(max_length=70)),
+                ("allow_multiple_products", models.BooleanField()),
+                ("generate_cover_letter", models.BooleanField()),
+                ("allow_hse_authorization", models.BooleanField()),
+                (
+                    "country_group",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="web.CountryGroup"
+                    ),
+                ),
+                (
+                    "country_group_for_manufacture",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="manufacture_export_application_types",
+                        to="web.CountryGroup",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CountryTranslation',
+            name="CountryTranslation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('translation', models.CharField(max_length=150)),
-                ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.Country')),
-                ('translation_set', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='web.CountryTranslationSet')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("translation", models.CharField(max_length=150)),
+                (
+                    "country",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="web.Country"
+                    ),
+                ),
+                (
+                    "translation_set",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="web.CountryTranslationSet"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ConstabularyEmail',
+            name="ConstabularyEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('status', models.CharField(default='DRAFT', max_length=30)),
-                ('email_cc_address_list', models.CharField(blank=True, max_length=4000, null=True)),
-                ('email_subject', models.CharField(max_length=100, null=True)),
-                ('email_body', models.TextField(max_length=4000, null=True)),
-                ('email_response', models.TextField(blank=True, max_length=4000, null=True)),
-                ('email_sent_datetime', models.DateTimeField(blank=True, null=True)),
-                ('email_closed_datetime', models.DateTimeField(blank=True, null=True)),
-                ('case', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='web.ImportCase')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("status", models.CharField(default="DRAFT", max_length=30)),
+                ("email_cc_address_list", models.CharField(blank=True, max_length=4000, null=True)),
+                ("email_subject", models.CharField(max_length=100, null=True)),
+                ("email_body", models.TextField(max_length=4000, null=True)),
+                ("email_response", models.TextField(blank=True, max_length=4000, null=True)),
+                ("email_sent_datetime", models.DateTimeField(blank=True, null=True)),
+                ("email_closed_datetime", models.DateTimeField(blank=True, null=True)),
+                (
+                    "case",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="web.ImportCase"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='commoditygroup',
-            name='commodity_type',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='web.CommodityType'),
+            model_name="commoditygroup",
+            name="commodity_type",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="web.CommodityType",
+            ),
         ),
         migrations.AddField(
-            model_name='commoditygroup',
-            name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.Unit'),
+            model_name="commoditygroup",
+            name="unit",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="web.Unit"
+            ),
         ),
         migrations.CreateModel(
-            name='CFSScheduleTranslationParagraph',
+            name="CFSScheduleTranslationParagraph",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order', models.IntegerField()),
-                ('name', models.CharField(max_length=100)),
-                ('content', models.TextField(null=True)),
-                ('template', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='paragraphs', to='web.Template')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("order", models.IntegerField()),
+                ("name", models.CharField(max_length=100)),
+                ("content", models.TextField(null=True)),
+                (
+                    "template",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="paragraphs",
+                        to="web.Template",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('order',),
-            },
+            options={"ordering": ("order",),},
         ),
         migrations.AddField(
-            model_name='casenote',
-            name='files',
-            field=models.ManyToManyField(to='web.File'),
+            model_name="casenote", name="files", field=models.ManyToManyField(to="web.File"),
         ),
         migrations.CreateModel(
-            name='ApprovalRequest',
+            name="ApprovalRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(blank=True, choices=[('DRAFT', 'DRAFT'), ('OPEN', 'OPEN'), ('CANCELLED', 'CANCELLED'), ('COMPLETED', 'COMPLETED')], default='OPEN', max_length=20, null=True)),
-                ('request_date', models.DateTimeField(auto_now_add=True, null=True)),
-                ('response', models.CharField(blank=True, choices=[('APPROVE', 'Approve'), ('REFUSE', 'Refuse')], max_length=20, null=True)),
-                ('response_date', models.DateTimeField(blank=True, null=True)),
-                ('response_reason', models.CharField(blank=True, max_length=4000, null=True)),
-                ('access_request', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='approval_requests', to='web.AccessRequest')),
-                ('requested_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='approval_requests', to='web.User')),
-                ('requested_from', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assigned_approval_requests', to='web.User')),
-                ('response_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='responded_approval_requests', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("DRAFT", "DRAFT"),
+                            ("OPEN", "OPEN"),
+                            ("CANCELLED", "CANCELLED"),
+                            ("COMPLETED", "COMPLETED"),
+                        ],
+                        default="OPEN",
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("request_date", models.DateTimeField(auto_now_add=True, null=True)),
+                (
+                    "response",
+                    models.CharField(
+                        blank=True,
+                        choices=[("APPROVE", "Approve"), ("REFUSE", "Refuse")],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("response_date", models.DateTimeField(blank=True, null=True)),
+                ("response_reason", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "access_request",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="approval_requests",
+                        to="web.AccessRequest",
+                    ),
+                ),
+                (
+                    "requested_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="approval_requests",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "requested_from",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="assigned_approval_requests",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "response_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="responded_approval_requests",
+                        to="web.User",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ('-request_date',),
-            },
+            options={"ordering": ("-request_date",),},
         ),
         migrations.CreateModel(
-            name='AlternativeEmail',
+            name="AlternativeEmail",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254)),
-                ('type', models.CharField(choices=[('WORK', 'Work'), ('HOME', 'Home')], default='WORK', max_length=30)),
-                ('portal_notifications', models.BooleanField(default=False)),
-                ('comment', models.CharField(blank=True, max_length=4000, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='alternative_emails', to='web.User')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("WORK", "Work"), ("HOME", "Home")], default="WORK", max_length=30
+                    ),
+                ),
+                ("portal_notifications", models.BooleanField(default=False)),
+                ("comment", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="alternative_emails",
+                        to="web.User",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
+            options={"abstract": False,},
         ),
         migrations.AddField(
-            model_name='accessrequest',
-            name='further_information_requests',
-            field=models.ManyToManyField(to='web.FurtherInformationRequest'),
+            model_name="accessrequest",
+            name="further_information_requests",
+            field=models.ManyToManyField(to="web.FurtherInformationRequest"),
         ),
         migrations.AddField(
-            model_name='accessrequest',
-            name='last_updated_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='updated_access_requests', to='web.User'),
+            model_name="accessrequest",
+            name="last_updated_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="updated_access_requests",
+                to="web.User",
+            ),
         ),
         migrations.AddField(
-            model_name='accessrequest',
-            name='submitted_by',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='submitted_access_requests', to='web.User'),
+            model_name="accessrequest",
+            name="submitted_by",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="submitted_access_requests",
+                to="web.User",
+            ),
         ),
         migrations.CreateModel(
-            name='Section5Authority',
+            name="Section5Authority",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('reference', models.CharField(max_length=50, null=True)),
-                ('postcode', models.CharField(blank=True, max_length=30, null=True)),
-                ('address', models.CharField(max_length=300, null=True)),
-                ('address_entry_type', models.CharField(max_length=10, null=True)),
-                ('start_date', models.DateField(null=True)),
-                ('end_date', models.DateField(null=True)),
-                ('further_details', models.CharField(blank=True, max_length=4000, null=True)),
-                ('files', models.ManyToManyField(to='web.File')),
-                ('linked_offices', models.ManyToManyField(to='web.Office')),
-                ('importer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='section5_authorities', to='web.Importer')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("reference", models.CharField(max_length=50, null=True)),
+                ("postcode", models.CharField(blank=True, max_length=30, null=True)),
+                ("address", models.CharField(max_length=300, null=True)),
+                ("address_entry_type", models.CharField(max_length=10, null=True)),
+                ("start_date", models.DateField(null=True)),
+                ("end_date", models.DateField(null=True)),
+                ("further_details", models.CharField(blank=True, max_length=4000, null=True)),
+                ("files", models.ManyToManyField(to="web.File")),
+                ("linked_offices", models.ManyToManyField(to="web.Office")),
+                (
+                    "importer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="section5_authorities",
+                        to="web.Importer",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ImportApplication',
+            name="ImportApplication",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('applicant_reference', models.CharField(blank=True, max_length=500, null=True)),
-                ('submit_datetime', models.DateTimeField(blank=True, null=True)),
-                ('create_datetime', models.DateTimeField(auto_now_add=True)),
-                ('agent_office', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='agent_office_import_applications', to='web.Office')),
-                ('application_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='web.ImportApplicationType')),
-                ('case', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='application', to='web.ImportCase')),
-                ('consignment_country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='import_applications_to', to='web.Country')),
-                ('contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='contact_import_applications', to='web.User')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='created_import_applications', to='web.User')),
-                ('importer_office', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='office_import_applications', to='web.Office')),
-                ('origin_country', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='import_applications_from', to='web.Country')),
-                ('submitted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='submitted_import_applications', to='web.User')),
-                ('agent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='agent_import_applications', to='web.Importer')),
-                ('importer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='import_applications', to='web.Importer')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("applicant_reference", models.CharField(blank=True, max_length=500, null=True)),
+                ("submit_datetime", models.DateTimeField(blank=True, null=True)),
+                ("create_datetime", models.DateTimeField(auto_now_add=True)),
+                (
+                    "agent_office",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="agent_office_import_applications",
+                        to="web.Office",
+                    ),
+                ),
+                (
+                    "application_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="web.ImportApplicationType"
+                    ),
+                ),
+                (
+                    "case",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="application",
+                        to="web.ImportCase",
+                    ),
+                ),
+                (
+                    "consignment_country",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_applications_to",
+                        to="web.Country",
+                    ),
+                ),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="contact_import_applications",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="created_import_applications",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "importer_office",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="office_import_applications",
+                        to="web.Office",
+                    ),
+                ),
+                (
+                    "origin_country",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_applications_from",
+                        to="web.Country",
+                    ),
+                ),
+                (
+                    "submitted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="submitted_import_applications",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "agent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="agent_import_applications",
+                        to="web.Importer",
+                    ),
+                ),
+                (
+                    "importer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="import_applications",
+                        to="web.Importer",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='FirearmsAuthority',
+            name="FirearmsAuthority",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('reference', models.CharField(max_length=50, null=True)),
-                ('certificate_type', models.CharField(choices=[('DEACTIVATED', 'Deactivation Certificate'), ('FIREARMS', 'Firearms Certificate'), ('RFD', 'Registered Firearms Dealer Certificate'), ('SHOTGUN', 'Shotgun Certificate')], max_length=20, null=True)),
-                ('postcode', models.CharField(blank=True, max_length=30, null=True)),
-                ('address', models.CharField(max_length=300, null=True)),
-                ('address_entry_type', models.CharField(max_length=10, null=True)),
-                ('start_date', models.DateField(null=True)),
-                ('end_date', models.DateField(null=True)),
-                ('further_details', models.CharField(blank=True, max_length=4000, null=True)),
-                ('files', models.ManyToManyField(to='web.File')),
-                ('linked_offices', models.ManyToManyField(to='web.Office')),
-                ('importer', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='firearms_authorities', to='web.Importer')),
-                ('issuing_constabulary', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='web.Constabulary')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("reference", models.CharField(max_length=50, null=True)),
+                (
+                    "certificate_type",
+                    models.CharField(
+                        choices=[
+                            ("DEACTIVATED", "Deactivation Certificate"),
+                            ("FIREARMS", "Firearms Certificate"),
+                            ("RFD", "Registered Firearms Dealer Certificate"),
+                            ("SHOTGUN", "Shotgun Certificate"),
+                        ],
+                        max_length=20,
+                        null=True,
+                    ),
+                ),
+                ("postcode", models.CharField(blank=True, max_length=30, null=True)),
+                ("address", models.CharField(max_length=300, null=True)),
+                ("address_entry_type", models.CharField(max_length=10, null=True)),
+                ("start_date", models.DateField(null=True)),
+                ("end_date", models.DateField(null=True)),
+                ("further_details", models.CharField(blank=True, max_length=4000, null=True)),
+                ("files", models.ManyToManyField(to="web.File")),
+                ("linked_offices", models.ManyToManyField(to="web.Office")),
+                (
+                    "importer",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="firearms_authorities",
+                        to="web.Importer",
+                    ),
+                ),
+                (
+                    "issuing_constabulary",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="web.Constabulary",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Exporter',
+            name="Exporter",
             fields=[
-                ('baseteam_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='web.BaseTeam')),
-                ('is_active', models.BooleanField(default=True)),
-                ('name', models.CharField(max_length=4000)),
-                ('registered_number', models.CharField(blank=True, max_length=15, null=True)),
-                ('comments', models.CharField(blank=True, max_length=4000, null=True)),
-                ('main_exporter', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='agents', to='web.Exporter')),
-                ('offices', models.ManyToManyField(to='web.Office')),
+                (
+                    "baseteam_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.BaseTeam",
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("name", models.CharField(max_length=4000)),
+                ("registered_number", models.CharField(blank=True, max_length=15, null=True)),
+                ("comments", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "main_exporter",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="agents",
+                        to="web.Exporter",
+                    ),
+                ),
+                ("offices", models.ManyToManyField(to="web.Office")),
             ],
-            options={
-                'ordering': ('-is_active', 'name'),
-            },
-            bases=(web.models.mixins.Archivable, 'web.baseteam'),
+            options={"ordering": ("-is_active", "name"),},
+            bases=(web.models.mixins.Archivable, "web.baseteam"),
         ),
         migrations.CreateModel(
-            name='ExportApplication',
+            name="ExportApplication",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_active', models.BooleanField(default=True)),
-                ('submit_datetime', models.DateTimeField(blank=True, null=True)),
-                ('create_datetime', models.DateTimeField(auto_now_add=True)),
-                ('application_type', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='web.ExportApplicationType')),
-                ('case', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='application', to='web.ExportCase')),
-                ('contact', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='contact_export_applications', to='web.User')),
-                ('countries', models.ManyToManyField(to='web.Country')),
-                ('created_by', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='created_export_applications', to='web.User')),
-                ('exporter_office', models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, related_name='office_export_applications', to='web.Office')),
-                ('submitted_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='submitted_export_application', to='web.User')),
-                ('exporter', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='export_applications', to='web.Exporter')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("is_active", models.BooleanField(default=True)),
+                ("submit_datetime", models.DateTimeField(blank=True, null=True)),
+                ("create_datetime", models.DateTimeField(auto_now_add=True)),
+                (
+                    "application_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="web.ExportApplicationType"
+                    ),
+                ),
+                (
+                    "case",
+                    models.OneToOneField(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="application",
+                        to="web.ExportCase",
+                    ),
+                ),
+                (
+                    "contact",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="contact_export_applications",
+                        to="web.User",
+                    ),
+                ),
+                ("countries", models.ManyToManyField(to="web.Country")),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="created_export_applications",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "exporter_office",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="office_export_applications",
+                        to="web.Office",
+                    ),
+                ),
+                (
+                    "submitted_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="submitted_export_application",
+                        to="web.User",
+                    ),
+                ),
+                (
+                    "exporter",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="export_applications",
+                        to="web.Exporter",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='accessrequest',
-            name='linked_exporter',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='access_requests', to='web.Exporter'),
+            model_name="accessrequest",
+            name="linked_exporter",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="access_requests",
+                to="web.Exporter",
+            ),
         ),
         migrations.AddField(
-            model_name='accessrequest',
-            name='linked_importer',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='access_requests', to='web.Importer'),
+            model_name="accessrequest",
+            name="linked_importer",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="access_requests",
+                to="web.Importer",
+            ),
         ),
     ]

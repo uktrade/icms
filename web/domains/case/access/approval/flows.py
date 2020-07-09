@@ -9,7 +9,7 @@ from web.viewflow.nodes import View
 
 from . import models, views
 
-__all__ = ['ApprovalRequestFlow']
+__all__ = ["ApprovalRequestFlow"]
 
 logger = logging.getLogger(__name__)
 
@@ -29,35 +29,36 @@ def get_team(process):
 
 def approver_permission(activation):
     if activation.process.approval_request.access_request.is_importer():
-        return 'IMP_AGENT_APPROVER'
+        return "IMP_AGENT_APPROVER"
     else:
-        return 'IMP_CERT_AGENT_APPROVER'
+        return "IMP_CERT_AGENT_APPROVER"
 
 
 class ApprovalRequestFlow(Flow):
-    process_template = 'web/domains/case/access/partials/approval-request-display.html'
+    process_template = "web/domains/case/access/partials/approval-request-display.html"
     process_class = models.ApprovalRequestProcess
 
-    start = flow.StartSubprocess(func=this.start_func).Next(
-        this.notify_contacts)
+    start = flow.StartSubprocess(func=this.start_func).Next(this.notify_contacts)
 
-    notify_contacts = flow.Handler(send_approval_request_email).Next(
-        this.respond)
+    notify_contacts = flow.Handler(send_approval_request_email).Next(this.respond)
 
-    respond = View(views.ApprovalRequestResponseView).Team(get_team).Next(
-        this.notify_case_officers).Permission(
-            approver_permission).Assign(lambda activation: activation.process.
-                                        approval_request.requested_from)
+    respond = (
+        View(views.ApprovalRequestResponseView)
+        .Team(get_team)
+        .Next(this.notify_case_officers)
+        .Permission(approver_permission)
+        .Assign(lambda activation: activation.process.approval_request.requested_from)
+    )
 
-    notify_case_officers = flow.Handler(
-        send_approval_request_response_email).Next(this.end)
+    notify_case_officers = flow.Handler(send_approval_request_response_email).Next(this.end)
 
     end = flow.End()
 
     @method_decorator(flow.flow_start_func)
     def start_func(self, activation, parent_task):
         activation.prepare(parent_task)
-        activation.process.approval_request = parent_task.process.access_request.approval_requests.first(
+        activation.process.approval_request = (
+            parent_task.process.access_request.approval_requests.first()
         )
         activation.done()
         return activation

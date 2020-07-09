@@ -35,11 +35,11 @@ def clean_extra_request_data(access_request):
 
 
 class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
-    template_name = 'web/domains/case/access/request-access.html'
+    template_name = "web/domains/case/access/request-access.html"
     form_class = forms.AccessRequestForm
 
     def get_success_url(self):
-        return reverse('access:requested')
+        return reverse("access:requested")
 
     def form_valid(self, form):
         access_request = form.save(commit=False)
@@ -52,15 +52,15 @@ class AccessRequestCreateView(SimpleStartFlowMixin, FormView):
 
 
 class AccessRequestCreatedView(TemplateView):
-    template_name = 'web/domains/case/access/request-access-success.html'
+    template_name = "web/domains/case/access/request-access-success.html"
 
 
 class AccessRequestReviewView(UpdateProcessView):
-    template_name = 'web/domains/case/access/review.html'
+    template_name = "web/domains/case/access/review.html"
 
     def post(self, request, *args, **kwargs):
         process = self.activation.process
-        if 'start_approval' in request.POST:
+        if "start_approval" in request.POST:
             process.approval_required = True
         process.save()
         return super().post(request, *args, **kwargs)
@@ -71,10 +71,11 @@ class LinkImporterView(FlowMixin, ImporterListView):
         Displays importer list view for searching and linking
         importers to access requests.
     """
-    template_name = 'web/domains/case/access/link-importer.html'
+
+    template_name = "web/domains/case/access/link-importer.html"
 
     def get_page_title(self):
-        return f'{self.activation.process} - {self.activation.flow_task}'
+        return f"{self.activation.process} - {self.activation.flow_task}"
 
     class Display(ImporterListView.Display):
         actions = [LinkImporter()]
@@ -85,22 +86,23 @@ class LinkExporterView(FlowMixin, ExporterListView):
         Displays exporter list view for searching and linking
         exporter to access requests.
     """
-    template_name = 'web/domains/case/access/link-exporter.html'
+
+    template_name = "web/domains/case/access/link-exporter.html"
 
     class Display(ExporterListView.Display):
         actions = [LinkExporter()]
 
 
 class CloseAccessRequestView(UpdateProcessView):
-    template_name = 'web/domains/case/access/close.html'
+    template_name = "web/domains/case/access/close.html"
     form_class = forms.CloseAccessRequestForm
 
     def get_success_url(self):
-        return reverse('workbasket')
+        return reverse("workbasket")
 
 
 class RequestApprovalView(FlowMixin, ModelCreateView):
-    template_name = 'web/domains/case/access/request-approval.html'
+    template_name = "web/domains/case/access/request-approval.html"
     permission_required = []
     model = ApprovalRequest
 
@@ -129,13 +131,13 @@ class RequestApprovalView(FlowMixin, ModelCreateView):
         return redirect(self.get_success_url())
 
     def post(self, request, *args, **kwargs):
-        if '_re_link' in request.POST:
+        if "_re_link" in request.POST:
             return self._re_link()
         return super().post(request, *args, **kwargs)
 
 
 class ApprovalRequestReviewView(UpdateProcessView):
-    template_name = 'web/domains/case/access/review-approval.html'
+    template_name = "web/domains/case/access/review-approval.html"
 
     def get_approval_process(self):
         """
@@ -144,8 +146,11 @@ class ApprovalRequestReviewView(UpdateProcessView):
         process = self.activation.process
         flow_class = self.activation.flow_class
         flow_task = flow_class.approval
-        approval_task = flow_class.task_class._default_manager.filter(
-            process=process, flow_task=flow_task).order_by('-created').first()
+        approval_task = (
+            flow_class.task_class._default_manager.filter(process=process, flow_task=flow_task)
+            .order_by("-created")
+            .first()
+        )
         return approval_task.activate().subprocesses().first()
 
     def get_context_data(self, *args, **kwargs):
@@ -153,12 +158,12 @@ class ApprovalRequestReviewView(UpdateProcessView):
             Adds latest approval process into context
         """
         context = super().get_context_data(*args, **kwargs)
-        context['approval_process'] = self.get_approval_process()
+        context["approval_process"] = self.get_approval_process()
         return context
 
     def post(self, request, *args, **kwargs):
         process = self.activation.process
-        if 'start_approval' in request.POST:
+        if "start_approval" in request.POST:
             process.restart_approval = True
         process.save()
         return super().post(request, *args, **kwargs)

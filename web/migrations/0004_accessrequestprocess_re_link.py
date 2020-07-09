@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('web', '0003_auto_20200610_1749'),
+        ("web", "0003_auto_20200610_1749"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='accessrequestprocess',
-            name='re_link',
+            model_name="accessrequestprocess",
+            name="re_link",
             field=models.BooleanField(default=False),
         ),
     ]

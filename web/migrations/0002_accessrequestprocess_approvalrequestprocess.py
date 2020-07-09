@@ -7,33 +7,63 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('viewflow', '0009_merge'),
-        ('web', '0001_initial'),
+        ("viewflow", "0009_merge"),
+        ("web", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ApprovalRequestProcess',
+            name="ApprovalRequestProcess",
             fields=[
-                ('subprocess_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='viewflow.Subprocess')),
-                ('approval_request', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.ApprovalRequest')),
+                (
+                    "subprocess_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="viewflow.Subprocess",
+                    ),
+                ),
+                (
+                    "approval_request",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="web.ApprovalRequest",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('viewflow.subprocess',),
+            options={"abstract": False,},
+            bases=("viewflow.subprocess",),
         ),
         migrations.CreateModel(
-            name='AccessRequestProcess',
+            name="AccessRequestProcess",
             fields=[
-                ('process_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='viewflow.Process')),
-                ('approval_required', models.BooleanField(default=False)),
-                ('restart_approval', models.BooleanField(default=False)),
-                ('access_request', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='web.AccessRequest')),
+                (
+                    "process_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="viewflow.Process",
+                    ),
+                ),
+                ("approval_required", models.BooleanField(default=False)),
+                ("restart_approval", models.BooleanField(default=False)),
+                (
+                    "access_request",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="web.AccessRequest",
+                    ),
+                ),
             ],
-            options={
-                'abstract': False,
-            },
-            bases=('viewflow.process',),
+            options={"abstract": False,},
+            bases=("viewflow.process",),
         ),
     ]

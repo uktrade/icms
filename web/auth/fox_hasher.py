@@ -17,6 +17,7 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
     A subclass of PBKDF2SHA1PasswordHasher that iterates 10000 times as legacy
     ICMS app
     """
+
     algorithm = "fox_pbkdf2_sha1"
     iterations = 10000
 
@@ -52,7 +53,7 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
         key = bytearray()
         i = 1
         while len(key) < keylen:
-            T = U = prf(salt + struct.pack('>i', i))
+            T = U = prf(salt + struct.pack(">i", i))
             for _ in range(iters - 1):
                 U = prf(U)
                 T = bytearray(x ^ y for x, y in zip(T, U))
@@ -70,12 +71,12 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
     def encode(self, password, salt, iterations=None):
         assert password is not None
         iterations = iterations or self.iterations
-        id_salt_pair = salt.split(':')
+        id_salt_pair = salt.split(":")
         id = id_salt_pair[0]
         base_salt = id_salt_pair[1]
-        password_bytes = bytearray(id + password, 'utf-8')
+        password_bytes = bytearray(id + password, "utf-8")
         salt_bytes = bytearray.fromhex(base_salt)
-        hash = self.encrypt(password_bytes, salt_bytes, iterations, 16, 'sha1')
+        hash = self.encrypt(password_bytes, salt_bytes, iterations, 16, "sha1")
         return "%s$%d$%s$%s" % (self.algorithm, iterations, salt, hash)
 
     def harden_runtime(self, password, encoded):

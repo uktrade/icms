@@ -21,5 +21,4 @@ class ObsoleteCalibreFactory(factory.django.DjangoModelFactory):
     name = factory.fuzzy.FuzzyText(length=5)
     is_active = random.choice([True, False])
     order = factory.Sequence(lambda n: n)
-    calibre_group = factory.SubFactory(ObsoleteCalibreGroupFactory,
-                                       is_active=True)
+    calibre_group = factory.SubFactory(ObsoleteCalibreGroupFactory, is_active=True)

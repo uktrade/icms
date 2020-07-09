@@ -8,7 +8,7 @@ class ExporterFactory(factory.django.DjangoModelFactory):
         model = Exporter
 
     is_active = random.choice([True, False])
-    name = factory.Faker('sentence', nb_words=4)
+    name = factory.Faker("sentence", nb_words=4)
     main_exporter = None
 
     @factory.post_generation

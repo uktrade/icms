@@ -8,19 +8,16 @@ class Office(models.Model):
     MANUAL = "MANUAL"
     SEARCH = "SEARCH"
     EMPTY = "EMPTY"
-    ENTRY_TYPES = ((MANUAL, 'Manual'), (SEARCH, 'Search'), (EMPTY, 'Empty'))
+    ENTRY_TYPES = ((MANUAL, "Manual"), (SEARCH, "Search"), (EMPTY, "Empty"))
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     postcode = models.CharField(max_length=30, blank=True, null=True)
     address = models.CharField(max_length=4000, blank=False, null=True)
     eori_number = models.CharField(max_length=20, blank=True, null=True)
-    address_entry_type = models.CharField(max_length=10,
-                                          blank=False,
-                                          null=False,
-                                          default=EMPTY)
+    address_entry_type = models.CharField(max_length=10, blank=False, null=False, default=EMPTY)
 
     def get_status(self):
-        return 'Current' if self.is_active else 'Archived'
+        return "Current" if self.is_active else "Archived"
 
     def __str__(self):
         return f"{self.address}\n{self.postcode}"

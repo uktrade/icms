@@ -1,11 +1,11 @@
 from web.tests.auth import AuthTestCase
 
-LOGIN_URL = '/'
+LOGIN_URL = "/"
 
 
 class ImportAppplicationCreateViewTest(AuthTestCase):
-    url = '/import/apply/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/import/apply/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -18,7 +18,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_importer_contact_access(self):
-        self.login_with_permissions(['IMP_EDIT_APP'])
+        self.login_with_permissions(["IMP_EDIT_APP"])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 

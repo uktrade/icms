@@ -6,7 +6,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('apply/',
-         views.ImportApplicationCreateView.as_view(),
-         name='new-import-application'),
+    path("apply/", views.ImportApplicationCreateView.as_view(), name="new-import-application"),
 ]

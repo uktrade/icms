@@ -21,49 +21,39 @@ class Importer(Archivable, BaseTeam):
     UK = None
     EUROPE = "E"
     NON_EUROPEAN = "O"
-    REGIONS = ((UK, "UK"), (EUROPE, 'Europe'), (NON_EUROPEAN, 'Non-European'))
+    REGIONS = ((UK, "UK"), (EUROPE, "Europe"), (NON_EUROPEAN, "Non-European"))
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    type = models.CharField(max_length=20,
-                            choices=TYPES,
-                            blank=False,
-                            null=False)
+    type = models.CharField(max_length=20, choices=TYPES, blank=False, null=False)
 
     # Organisation's name
     name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
     eori_number = models.CharField(max_length=20, blank=True, null=True)
-    region_origin = models.CharField(max_length=1,
-                                     choices=REGIONS,
-                                     blank=True,
-                                     null=True)
+    region_origin = models.CharField(max_length=1, choices=REGIONS, blank=True, null=True)
     comments = models.CharField(max_length=4000, blank=True, null=True)
     offices = models.ManyToManyField(Office)
     # Having a main importer means importer is an agent
-    main_importer = models.ForeignKey("self",
-                                      on_delete=models.SET_NULL,
-                                      blank=True,
-                                      null=True,
-                                      related_name='agents')
-    user = models.ForeignKey(User,
-                             on_delete=models.SET_NULL,
-                             blank=True,
-                             null=True,
-                             related_name='own_importers')
+    main_importer = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="agents"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=True, null=True, related_name="own_importers"
+    )
 
     def is_agent(self):
         return self.main_importer is not None
 
     def __str__(self):
-        LABEL = ''
+        LABEL = ""
         if self.is_agent():
-            LABEL = 'Importer Agent'
+            LABEL = "Importer Agent"
         else:
-            LABEL = 'Importer'
+            LABEL = "Importer"
 
         if self.id:
-            return LABEL + ' - ' + self.display_name
+            return LABEL + " - " + self.display_name
         else:
             return LABEL
 
@@ -72,11 +62,11 @@ class Importer(Archivable, BaseTeam):
         if self.type == self.ORGANISATION:
             return self.name
         else:
-            return self.user.full_name if self.user else 'None'
+            return self.user.full_name if self.user else "None"
 
     @property
     def status(self):
-        return 'Current' if self.is_active else 'Archived'
+        return "Current" if self.is_active else "Archived"
 
     @property
     def entity_type(self):
@@ -84,6 +74,6 @@ class Importer(Archivable, BaseTeam):
 
     class Meta:
         ordering = (
-            '-is_active',
-            'name',
+            "-is_active",
+            "name",
         )

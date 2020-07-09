@@ -17,22 +17,15 @@ logger = logging.get_logger(__name__)
 
 class MailshotFilter(ModelSearchFilter):
 
-    id = CharFilter(field_name='id',
-                    lookup_expr='icontains',
-                    label='Reference')
+    id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
 
-    title = CharFilter(field_name='title',
-                       lookup_expr='icontains',
-                       label='Title')
+    title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
 
-    description = CharFilter(field_name='description',
-                             lookup_expr='icontains',
-                             label='Description')
+    description = CharFilter(field_name="description", lookup_expr="icontains", label="Description")
 
-    status = ChoiceFilter(field_name='status',
-                          lookup_expr='exact',
-                          choices=Mailshot.STATUSES,
-                          label='Status')
+    status = ChoiceFilter(
+        field_name="status", lookup_expr="exact", choices=Mailshot.STATUSES, label="Status"
+    )
 
     class Meta:
         model = Mailshot
@@ -41,20 +34,14 @@ class MailshotFilter(ModelSearchFilter):
 
 class ReceivedMailshotsFilter(ModelSearchFilter):
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
+        self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
 
-    id = CharFilter(field_name='id',
-                    lookup_expr='icontains',
-                    label='Reference')
+    id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
 
-    title = CharFilter(field_name='title',
-                       lookup_expr='icontains',
-                       label='Title')
+    title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
 
-    description = CharFilter(field_name='description',
-                             lookup_expr='icontains',
-                             label='Description')
+    description = CharFilter(field_name="description", lookup_expr="icontains", label="Description")
 
     @property
     def qs(self):
@@ -81,60 +68,59 @@ class ReceivedMailshotsFilter(ModelSearchFilter):
 
 class MailshotForm(ModelEditForm):
 
-    RECIPIENT_CHOICES = (('importers', 'Importers and Agents'),
-                         ('exporters', 'Exporters and Agents'))
+    RECIPIENT_CHOICES = (
+        ("importers", "Importers and Agents"),
+        ("exporters", "Exporters and Agents"),
+    )
 
     reference = CharField(disabled=True, required=False)
     status = CharField(disabled=True, required=False)
-    recipients = MultipleChoiceField(choices=RECIPIENT_CHOICES,
-                                     widget=CheckboxSelectMultiple())
+    recipients = MultipleChoiceField(choices=RECIPIENT_CHOICES, widget=CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['reference'].initial = self.instance.id
-        self.fields['status'].initial = self.instance.status_verbose
+        self.fields["reference"].initial = self.instance.id
+        self.fields["status"].initial = self.instance.status_verbose
         recipients = []
         if self.instance.is_to_importers:
-            recipients.append('importers')
+            recipients.append("importers")
         if self.instance.is_to_exporters:
-            recipients.append('exporters')
-        self.fields['recipients'].initial = recipients
+            recipients.append("exporters")
+        self.fields["recipients"].initial = recipients
 
     def clean_recipients(self):
-        recipients = self.cleaned_data['recipients']
-        self.instance.is_to_importers = 'importers' in recipients
-        self.instance.is_to_exporters = 'exporters' in recipients
-        return self.cleaned_data['recipients']
+        recipients = self.cleaned_data["recipients"]
+        self.instance.is_to_importers = "importers" in recipients
+        self.instance.is_to_exporters = "exporters" in recipients
+        return self.cleaned_data["recipients"]
 
     class Meta:
         model = Mailshot
         fields = [
-            'reference', 'status', 'title', 'description', 'is_email',
-            'email_subject', 'email_body', 'recipients'
+            "reference",
+            "status",
+            "title",
+            "description",
+            "is_email",
+            "email_subject",
+            "email_body",
+            "recipients",
         ]
         widgets = {
-            'description': Textarea({
-                'rows': 4,
-                'cols': 50
-            }),
-            'email_body': Textarea({
-                'rows': 4,
-                'cols': 50
-            })
+            "description": Textarea({"rows": 4, "cols": 50}),
+            "email_body": Textarea({"rows": 4, "cols": 50}),
         }
         labels = {
-            'is_email': 'Send Emails',
-            'email_subject': 'Email Subject',
-            'email_body': 'Email Body',
+            "is_email": "Send Emails",
+            "email_subject": "Email Subject",
+            "email_body": "Email Body",
         }
         help_texts = {
-            'title':
-            "The mailshot title will appear in the recipient's workbasket.",
-            'is_email':
-            "Optionally send emails to the selected recipients. \
-            Note that uploaded documents will not be attached to the email."
+            "title": "The mailshot title will appear in the recipient's workbasket.",
+            "is_email": "Optionally send emails to the selected recipients. \
+            Note that uploaded documents will not be attached to the email.",
         }
-        config = {'__all__': {'show_optional_indicator': False}}
+        config = {"__all__": {"show_optional_indicator": False}}
 
 
 class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):
@@ -144,18 +130,12 @@ class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):
 class MailshotRetractForm(ModelEditForm):
     class Meta:
         model = Mailshot
-        fields = [
-            'is_retraction_email', 'retract_email_subject',
-            'retract_email_body'
-        ]
+        fields = ["is_retraction_email", "retract_email_subject", "retract_email_body"]
         widgets = {
-            'retract_email_body': Textarea({
-                'rows': 4,
-                'cols': 50
-            }),
+            "retract_email_body": Textarea({"rows": 4, "cols": 50}),
         }
         labels = {
-            'is_retraction_email': 'Send Emails',
-            'retract_email_subject': 'Email Subject',
-            'retract_email_body': 'Email Body',
+            "is_retraction_email": "Send Emails",
+            "retract_email_subject": "Email Subject",
+            "retract_email_body": "Email Body",
         }

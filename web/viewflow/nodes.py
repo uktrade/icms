@@ -25,6 +25,7 @@ class View(ViewflowView):
         additional check required for users performing these tasks
 
     """
+
     reassign_view_class = ReAssignTaskView
     team = None
 
@@ -34,45 +35,40 @@ class View(ViewflowView):
 
         :keyword reassign_view: Overrides defeault ReAssignView for the node
         """
-        self._reassign_view = kwargs.pop('reassign_view', None)
+        self._reassign_view = kwargs.pop("reassign_view", None)
         super().__init__(*args, **kwargs)
 
     @property
     def reassign_view(self):
         """View to reassign task to another user"""
-        return self._reassign_view if self._reassign_view else self.reassign_view_class.as_view(
-        )
+        return self._reassign_view if self._reassign_view else self.reassign_view_class.as_view()
 
     def urls(self):
         """Add /reassign/ task url"""
         urls = super().urls()
         urls.append(
-            url(r'^(?P<process_pk>\d+)/{}/(?P<task_pk>\d+)/reassign/$'.format(
-                self.name),
-                self.reassign_view, {'flow_task': self},
-                name="{}__reassign".format(self.name)))
+            url(
+                r"^(?P<process_pk>\d+)/{}/(?P<task_pk>\d+)/reassign/$".format(self.name),
+                self.reassign_view,
+                {"flow_task": self},
+                name="{}__reassign".format(self.name),
+            )
+        )
         return urls
 
-    def get_task_url(self, task, url_type='guess', namespace='', **kwargs):
+    def get_task_url(self, task, url_type="guess", namespace="", **kwargs):
         """
             Handle `reassign` url_type
         """
 
-        user = kwargs.get('user', None)
+        user = kwargs.get("user", None)
 
-        if url_type == 'reassign':
+        if url_type == "reassign":
             if task.status == STATUS.ASSIGNED and self.can_execute(user, task):
-                url_name = '{}:{}__reassign'.format(namespace, self.name)
-                return reverse(url_name,
-                               kwargs={
-                                   'process_pk': task.process_id,
-                                   'task_pk': task.pk
-                               })
+                url_name = "{}:{}__reassign".format(namespace, self.name)
+                return reverse(url_name, kwargs={"process_pk": task.process_id, "task_pk": task.pk})
 
-        return super().get_task_url(task,
-                                    url_type,
-                                    namespace=namespace,
-                                    **kwargs)
+        return super().get_task_url(task, url_type, namespace=namespace, **kwargs)
 
     def Team(self, team):
         """
@@ -90,8 +86,7 @@ class View(ViewflowView):
 
     def _get_team(self, task):
         if callable(self.team):
-            process = task.flow_task.flow_class.process_class.objects.get(
-                pk=task.process.id)
+            process = task.flow_task.flow_class.process_class.objects.get(pk=task.process.id)
             return self.team(process)
         return self.team
 

@@ -1,2 +1,2 @@
-from .models import User # NOQA
-from .models import PersonalEmail # NOQA
+from .models import User  # NOQA
+from .models import PersonalEmail  # NOQA

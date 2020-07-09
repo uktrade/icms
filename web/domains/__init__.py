@@ -1,1 +1,1 @@
-from .user.models import User # NOQA
+from .user.models import User  # NOQA

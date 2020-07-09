@@ -1,1 +1,1 @@
-from .auth import * # NOQA
+from .auth import *  # NOQA

@@ -6,10 +6,10 @@ from web.domains.case.access.models import AccessRequest
 class AccessRequesModelsTest(TestCase):
     def test_requester_type(self):
         expected_results = {
-            AccessRequest.IMPORTER: 'importer',
-            AccessRequest.IMPORTER_AGENT: 'importer',
-            AccessRequest.EXPORTER: 'exporter',
-            AccessRequest.EXPORTER_AGENT: 'exporter',
+            AccessRequest.IMPORTER: "importer",
+            AccessRequest.IMPORTER_AGENT: "importer",
+            AccessRequest.EXPORTER: "exporter",
+            AccessRequest.EXPORTER_AGENT: "exporter",
         }
         access_request = AccessRequest()
         for k, v in expected_results.items():

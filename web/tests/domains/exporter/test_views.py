@@ -2,13 +2,13 @@ from web.domains.exporter.models import Exporter
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
 
-LOGIN_URL = '/'
-PERMISSIONS = ['IMP_MAINTAIN_ALL']
+LOGIN_URL = "/"
+PERMISSIONS = ["IMP_MAINTAIN_ALL"]
 
 
 class ExporterListViewTest(AuthTestCase):
-    url = '/exporter/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/exporter/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -35,8 +35,7 @@ class ExporterListViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Maintain Exporters')
+        self.assertEqual(response.context_data["page_title"], "Maintain Exporters")
 
     def test_anonymous_post_access_redirects(self):
         response = self.client.post(self.url)
@@ -53,15 +52,15 @@ class ExporterListViewTest(AuthTestCase):
 
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        page = response.context_data['page']
+        page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
         for i in range(53):
             ExporterFactory(is_active=True)
         self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url + '?page=2')
-        page = response.context_data['page']
+        response = self.client.get(self.url + "?page=2")
+        page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 3)
 
 
@@ -69,8 +68,8 @@ class ExporterEditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.exporter = ExporterFactory()
-        self.url = f'/exporter/{self.exporter.id}/edit/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/exporter/{self.exporter.id}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -90,13 +89,12 @@ class ExporterEditViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Editing {self.exporter}")
+        self.assertEqual(response.context_data["page_title"], f"Editing {self.exporter}")
 
 
 class ExporterCreateViewTest(AuthTestCase):
-    url = '/exporter/new/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/exporter/new/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -115,12 +113,11 @@ class ExporterCreateViewTest(AuthTestCase):
 
     def test_exporter_created(self):
         self.login_with_permissions(PERMISSIONS)
-        self.client.post(self.url, {'name': 'test exporter'})
+        self.client.post(self.url, {"name": "test exporter"})
         exporter = Exporter.objects.first()
-        self.assertEqual(exporter.name, 'test exporter')
+        self.assertEqual(exporter.name, "test exporter")
 
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Create Exporter')
+        self.assertEqual(response.context_data["page_title"], "Create Exporter")

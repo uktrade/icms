@@ -7,16 +7,16 @@ INSTALLED_APPS += [  # noqa
 
 env = environ.Env()
 
-SECRET_KEY = env.str('ICMS_SECRET_KEY', default='test')
+SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
 
 # Email
-AWS_SES_ACCESS_KEY_ID = env.str('AWS_SES_ACCESS_KEY_ID', 'test')
-AWS_SES_SECRET_ACCESS_KEY = env.str('AWS_SES_SECRET_ACCESS_KEY', 'test')
-EMAIL_FROM = env.str('ICMS_EMAIL_FROM', 'test@example.com')
+AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", "test")
+AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", "test")
+EMAIL_FROM = env.str("ICMS_EMAIL_FROM", "test@example.com")
 
 CELERY_TASK_ALWAYS_EAGER = True
 
 # SELENIUM
-SELENIUM_BROWSER = 'chrome'
-SELENIUM_HUB_HOST = 'selenium-hub'
-SELENIUM_HOST = 'web'
+SELENIUM_BROWSER = "chrome"
+SELENIUM_HUB_HOST = "selenium-hub"
+SELENIUM_HOST = "web"

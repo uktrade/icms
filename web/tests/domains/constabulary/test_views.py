@@ -2,13 +2,13 @@ from web.tests.auth import AuthTestCase
 
 from .factory import ConstabularyFactory
 
-LOGIN_URL = '/'
-PERMISSIONS = ['IMP_MAINTAIN_ALL']
+LOGIN_URL = "/"
+PERMISSIONS = ["IMP_MAINTAIN_ALL"]
 
 
 class ConstabularyListViewTest(AuthTestCase):
-    url = '/constabulary/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/constabulary/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -28,8 +28,7 @@ class ConstabularyListViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Maintain Constabularies')
+        self.assertEqual(response.context_data["page_title"], "Maintain Constabularies")
 
     def test_anonymous_post_access_redirects(self):
         response = self.client.post(self.url)
@@ -43,10 +42,7 @@ class ConstabularyListViewTest(AuthTestCase):
     def test_archive_constabulary(self):
         self.login_with_permissions(PERMISSIONS)
         self.constabulary = ConstabularyFactory(is_active=True)
-        response = self.client.post(self.url, {
-            'action': 'archive',
-            'item': self.constabulary.id
-        })
+        response = self.client.post(self.url, {"action": "archive", "item": self.constabulary.id})
         self.assertEqual(response.status_code, 200)
         self.constabulary.refresh_from_db()
         self.assertFalse(self.constabulary.is_active)
@@ -58,21 +54,21 @@ class ConstabularyListViewTest(AuthTestCase):
 
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        page = response.context_data['page']
+        page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
         for i in range(65):
             ConstabularyFactory(is_active=True)
         self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url + '?page=2')
-        page = response.context_data['page']
+        response = self.client.get(self.url + "?page=2")
+        page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 15)
 
 
 class ConstabularyCreateViewTest(AuthTestCase):
-    url = '/constabulary/new/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/constabulary/new/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -92,16 +88,15 @@ class ConstabularyCreateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'New Constabulary')
+        self.assertEqual(response.context_data["page_title"], "New Constabulary")
 
 
 class ConstabularyUpdateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.constabulary = ConstabularyFactory()  # Create a constabulary
-        self.url = f'/constabulary/{self.constabulary.id}/edit/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/constabulary/{self.constabulary.id}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -121,16 +116,15 @@ class ConstabularyUpdateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Editing {self.constabulary}")
+        self.assertEqual(response.context_data["page_title"], f"Editing {self.constabulary}")
 
 
 class ConstabularyDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.constabulary = ConstabularyFactory()
-        self.url = f'/constabulary/{self.constabulary.id}/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/constabulary/{self.constabulary.id}/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -150,5 +144,4 @@ class ConstabularyDetailViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Viewing {self.constabulary}")
+        self.assertEqual(response.context_data["page_title"], f"Viewing {self.constabulary}")

@@ -20,79 +20,62 @@ class AccessRequest(models.Model):
     EXPORTER_AGENT = "AGENT_EXPORTER_ACCESS"
 
     REQUEST_TYPES = (
-        (IMPORTER, 'Request access to act as an Importer'),
-        (IMPORTER_AGENT, 'Request access to act as an Agent for an Importer'),
-        (EXPORTER, 'Request access to act as an Exporter'),
-        (EXPORTER_AGENT, 'Request access to act as an Agent for an Exporter'),
+        (IMPORTER, "Request access to act as an Importer"),
+        (IMPORTER_AGENT, "Request access to act as an Agent for an Importer"),
+        (EXPORTER, "Request access to act as an Exporter"),
+        (EXPORTER_AGENT, "Request access to act as an Agent for an Exporter"),
     )
 
     # Access Request status
-    SUBMITTED = 'SUBMITTED'
-    CLOSED = 'CLOSED'
-    STATUSES = ((SUBMITTED, 'Submitted'), (CLOSED, 'Closed'))
+    SUBMITTED = "SUBMITTED"
+    CLOSED = "CLOSED"
+    STATUSES = ((SUBMITTED, "Submitted"), (CLOSED, "Closed"))
 
     # Access Request response
-    APPROVED = 'APPROVED'
-    REFUSED = 'REFUSED'
-    RESPONSES = ((APPROVED, 'Approved'), (REFUSED, 'Refused'))
+    APPROVED = "APPROVED"
+    REFUSED = "REFUSED"
+    RESPONSES = ((APPROVED, "Approved"), (REFUSED, "Refused"))
 
     objects = AccessRequestQuerySet.as_manager()
     reference = models.CharField(max_length=50, blank=False, null=False)
-    request_type = models.CharField(max_length=30,
-                                    choices=REQUEST_TYPES,
-                                    blank=False,
-                                    null=False)
-    status = models.CharField(max_length=30,
-                              choices=STATUSES,
-                              blank=False,
-                              null=False,
-                              default=SUBMITTED)
-    organisation_name = models.CharField(max_length=100,
-                                         blank=False,
-                                         null=False)
-    organisation_address = models.CharField(max_length=500,
-                                            blank=False,
-                                            null=True)
+    request_type = models.CharField(max_length=30, choices=REQUEST_TYPES, blank=False, null=False)
+    status = models.CharField(
+        max_length=30, choices=STATUSES, blank=False, null=False, default=SUBMITTED
+    )
+    organisation_name = models.CharField(max_length=100, blank=False, null=False)
+    organisation_address = models.CharField(max_length=500, blank=False, null=True)
     request_reason = models.CharField(max_length=1000, blank=True, null=True)
     agent_name = models.CharField(max_length=100, blank=True, null=True)
     agent_address = models.CharField(max_length=500, blank=True, null=True)
     submit_datetime = models.DateTimeField(blank=False, null=False)
-    submitted_by = models.ForeignKey(User,
-                                     on_delete=models.PROTECT,
-                                     blank=False,
-                                     null=False,
-                                     related_name='submitted_access_requests')
-    last_update_datetime = models.DateTimeField(auto_now=True,
-                                                blank=False,
-                                                null=False)
-    last_updated_by = models.ForeignKey(User,
-                                        on_delete=models.PROTECT,
-                                        blank=True,
-                                        null=True,
-                                        related_name='updated_access_requests')
+    submitted_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name="submitted_access_requests",
+    )
+    last_update_datetime = models.DateTimeField(auto_now=True, blank=False, null=False)
+    last_updated_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="updated_access_requests",
+    )
     closed_datetime = models.DateTimeField(blank=True, null=True)
-    closed_by = models.ForeignKey(User,
-                                  on_delete=models.PROTECT,
-                                  blank=True,
-                                  null=True,
-                                  related_name='closed_access_requests')
-    response = models.CharField(max_length=20,
-                                choices=RESPONSES,
-                                blank=False,
-                                null=True)
+    closed_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="closed_access_requests"
+    )
+    response = models.CharField(max_length=20, choices=RESPONSES, blank=False, null=True)
     response_reason = models.CharField(max_length=4000, blank=True, null=True)
-    linked_importer = models.ForeignKey(Importer,
-                                        on_delete=models.PROTECT,
-                                        blank=True,
-                                        null=True,
-                                        related_name='access_requests')
-    linked_exporter = models.ForeignKey(Exporter,
-                                        on_delete=models.PROTECT,
-                                        blank=True,
-                                        null=True,
-                                        related_name='access_requests')
-    further_information_requests = models.ManyToManyField(
-        FurtherInformationRequest)
+    linked_importer = models.ForeignKey(
+        Importer, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
+    )
+    linked_exporter = models.ForeignKey(
+        Exporter, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
+    )
+    further_information_requests = models.ManyToManyField(FurtherInformationRequest)
 
     @property
     def request_type_verbose(self):
@@ -124,14 +107,8 @@ class AccessRequest(models.Model):
 
 
 class AccessRequestProcess(Process):
-    access_request = models.ForeignKey(AccessRequest,
-                                       null=True,
-                                       on_delete=models.SET_NULL)
-    approval_required = models.BooleanField(blank=False,
-                                            null=False,
-                                            default=False)
+    access_request = models.ForeignKey(AccessRequest, null=True, on_delete=models.SET_NULL)
+    approval_required = models.BooleanField(blank=False, null=False, default=False)
 
-    restart_approval = models.BooleanField(blank=False,
-                                           null=False,
-                                           default=False)
+    restart_approval = models.BooleanField(blank=False, null=False, default=False)
     re_link = models.BooleanField(blank=False, null=False, default=False)

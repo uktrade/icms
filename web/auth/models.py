@@ -13,8 +13,10 @@ class CustomBackend(ModelBackend):
             except Exception:
                 return None
 
-            if unauthenticated_user is not None and \
-                    unauthenticated_user.account_status != User.SUSPENDED:
+            if (
+                unauthenticated_user is not None
+                and unauthenticated_user.account_status != User.SUSPENDED
+            ):
                 unauthenticated_user.unsuccessful_login_attempts += 1
                 if unauthenticated_user.unsuccessful_login_attempts > 4:
                     unauthenticated_user.account_status = User.SUSPENDED

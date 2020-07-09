@@ -6,24 +6,24 @@ from .models import Constabulary
 
 
 class ConstabulariesFilter(ModelSearchFilter):
-    name = CharFilter(field_name='name',
-                      lookup_expr='icontains',
-                      label='Constabulary Name')
+    name = CharFilter(field_name="name", lookup_expr="icontains", label="Constabulary Name")
 
-    region = ChoiceFilter(field_name='region',
-                          choices=Constabulary.REGIONS,
-                          lookup_expr='icontains',
-                          label='Constabulary Region')
+    region = ChoiceFilter(
+        field_name="region",
+        choices=Constabulary.REGIONS,
+        lookup_expr="icontains",
+        label="Constabulary Region",
+    )
 
-    email = CharFilter(field_name='email',
-                       lookup_expr='icontains',
-                       label='Email Address')
+    email = CharFilter(field_name="email", lookup_expr="icontains", label="Email Address")
 
-    archived = BooleanFilter(field_name='is_active',
-                             lookup_expr='exact',
-                             widget=CheckboxInput,
-                             label='Search Archived',
-                             exclude=True)
+    archived = BooleanFilter(
+        field_name="is_active",
+        lookup_expr="exact",
+        widget=CheckboxInput,
+        label="Search Archived",
+        exclude=True,
+    )
 
     class Meta:
         model = Constabulary
@@ -33,5 +33,5 @@ class ConstabulariesFilter(ModelSearchFilter):
 class ConstabularyForm(ModelEditForm):
     class Meta:
         model = Constabulary
-        fields = ['name', 'region', 'email']
-        widgets = {'region': Select(choices=Constabulary.REGIONS)}
+        fields = ["name", "region", "email"]
+        widgets = {"region": Select(choices=Constabulary.REGIONS)}

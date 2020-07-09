@@ -2,13 +2,13 @@ from web.tests.auth import AuthTestCase
 
 from .factory import ObsoleteCalibreGroupFactory
 
-LOGIN_URL = '/'
-PERMISSIONS = ['IMP_MAINTAIN_ALL']
+LOGIN_URL = "/"
+PERMISSIONS = ["IMP_MAINTAIN_ALL"]
 
 
 class ObsoleteCalibreGroupListView(AuthTestCase):
-    url = '/firearms/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/firearms/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -28,13 +28,12 @@ class ObsoleteCalibreGroupListView(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Maintain Obsolete Calibres')
+        self.assertEqual(response.context_data["page_title"], "Maintain Obsolete Calibres")
 
     def test_page_results(self):
         for i in range(58):
             ObsoleteCalibreGroupFactory(is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        results = response.context_data['results']
+        results = response.context_data["results"]
         self.assertEqual(len(results), 58)

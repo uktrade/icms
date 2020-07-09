@@ -2,15 +2,15 @@ from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import ImporterFactory
 
-LOGIN_URL = '/'
-ADMIN_PERMISSIONS = ['IMP_MAINTAIN_ALL']
-SECTION5_AUTHORITY_PERMISSIONS = ['IMP_EDIT_SECTION5_AUTHORITY']
-FIREARMS_AUTHORITY_PERMISSIONS = ['IMP_EDIT_FIREARMS_AUTHORITY']
+LOGIN_URL = "/"
+ADMIN_PERMISSIONS = ["IMP_MAINTAIN_ALL"]
+SECTION5_AUTHORITY_PERMISSIONS = ["IMP_EDIT_SECTION5_AUTHORITY"]
+FIREARMS_AUTHORITY_PERMISSIONS = ["IMP_EDIT_FIREARMS_AUTHORITY"]
 
 
 class ImporterListViewTest(AuthTestCase):
-    url = '/importer/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/importer/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -47,8 +47,7 @@ class ImporterListViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Maintain Importers')
+        self.assertEqual(response.context_data["page_title"], "Maintain Importers")
 
     def test_anonymous_post_access_redirects(self):
         response = self.client.post(self.url)
@@ -66,15 +65,15 @@ class ImporterListViewTest(AuthTestCase):
 
         self.login_with_permissions(ADMIN_PERMISSIONS)
         response = self.client.get(self.url)
-        page = response.context_data['page']
+        page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
         for i in range(53):
             ImporterFactory(is_active=True)
         self.login_with_permissions(ADMIN_PERMISSIONS)
-        response = self.client.get(self.url + '?page=2')
-        page = response.context_data['page']
+        response = self.client.get(self.url + "?page=2")
+        page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 3)
 
 
@@ -82,8 +81,8 @@ class ImporterEditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.importer = ImporterFactory()
-        self.url = f'/importer/{self.importer.id}/edit/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/importer/{self.importer.id}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -107,8 +106,8 @@ class ImporterEditViewTest(AuthTestCase):
 
 
 class ImporterCreateViewTest(AuthTestCase):
-    url = '/importer/new/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/importer/new/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -127,15 +126,11 @@ class ImporterCreateViewTest(AuthTestCase):
 
     def test_importer_created(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {
-            'type': Importer.ORGANISATION,
-            'name': 'test importer'
-        })
+        self.client.post(self.url, {"type": Importer.ORGANISATION, "name": "test importer"})
         importer = Importer.objects.first()
-        self.assertEqual(importer.name, 'test importer')
+        self.assertEqual(importer.name, "test importer")
 
     def test_page_title(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Create Importer')
+        self.assertEqual(response.context_data["page_title"], "Create Importer")

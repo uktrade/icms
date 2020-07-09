@@ -2,7 +2,7 @@ from django.forms.widgets import DateInput
 
 
 class DateInput(DateInput):
-    template_name = 'forms/widgets/date.html'
+    template_name = "forms/widgets/date.html"
 
 
 #  class Textarea(Textarea):

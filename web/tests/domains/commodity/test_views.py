@@ -2,13 +2,13 @@ from web.tests.auth import AuthTestCase
 
 from .factory import CommodityFactory, CommodityGroupFactory
 
-LOGIN_URL = '/'
-PERMISSIONS = ['IMP_MAINTAIN_ALL']
+LOGIN_URL = "/"
+PERMISSIONS = ["IMP_MAINTAIN_ALL"]
 
 
 class CommodityListView(AuthTestCase):
-    url = '/commodity/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/commodity/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -28,8 +28,7 @@ class CommodityListView(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'Maintain Commodities')
+        self.assertEqual(response.context_data["page_title"], "Maintain Commodities")
 
     def test_number_of_pages(self):
         # Create 51 product legislation as paging lists 50 items per page
@@ -38,21 +37,21 @@ class CommodityListView(AuthTestCase):
 
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        page = response.context_data['page']
+        page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
         for i in range(55):
             CommodityFactory(is_active=True)
         self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url + '?page=2')
-        page = response.context_data['page']
+        response = self.client.get(self.url + "?page=2")
+        page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 5)
 
 
 class CommodityCreateViewTest(AuthTestCase):
-    url = '/commodity/new/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/commodity/new/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -72,15 +71,15 @@ class CommodityCreateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'], 'New Commodity')
+        self.assertEqual(response.context_data["page_title"], "New Commodity")
 
 
 class CommodityUpdateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.commodity = CommodityFactory()  # Create a commodity
-        self.url = f'/commodity/{self.commodity.id}/edit/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/commodity/{self.commodity.id}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -100,16 +99,15 @@ class CommodityUpdateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Editing {self.commodity}")
+        self.assertEqual(response.context_data["page_title"], f"Editing {self.commodity}")
 
 
 class CommodityDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.commodity = CommodityFactory()
-        self.url = f'/commodity/{self.commodity.id}/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/commodity/{self.commodity.id}/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -129,13 +127,12 @@ class CommodityDetailViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Viewing {self.commodity}")
+        self.assertEqual(response.context_data["page_title"], f"Viewing {self.commodity}")
 
 
 class CommodityGroupCreateViewTest(AuthTestCase):
-    url = '/commodity/group/new/'
-    redirect_url = f'{LOGIN_URL}?next={url}'
+    url = "/commodity/group/new/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -155,16 +152,15 @@ class CommodityGroupCreateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         'New Commodity Group')
+        self.assertEqual(response.context_data["page_title"], "New Commodity Group")
 
 
 class CommodityGroupUpdateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.commodity_group = CommodityGroupFactory()
-        self.url = f'/commodity/group/{self.commodity_group.id}/edit/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/commodity/group/{self.commodity_group.id}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -184,16 +180,15 @@ class CommodityGroupUpdateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Editing {self.commodity_group}")
+        self.assertEqual(response.context_data["page_title"], f"Editing {self.commodity_group}")
 
 
 class CommodityGroupDetailView(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.commodity_group = CommodityGroupFactory()
-        self.url = f'/commodity/group/{self.commodity_group.id}/'
-        self.redirect_url = f'{LOGIN_URL}?next={self.url}'
+        self.url = f"/commodity/group/{self.commodity_group.id}/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -213,5 +208,4 @@ class CommodityGroupDetailView(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data['page_title'],
-                         f"Viewing {self.commodity_group}")
+        self.assertEqual(response.context_data["page_title"], f"Viewing {self.commodity_group}")

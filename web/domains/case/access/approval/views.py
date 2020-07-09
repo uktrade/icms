@@ -8,7 +8,7 @@ from . import forms, models
 
 
 class ApprovalRequestResponseView(UpdateProcessView):
-    template_name = 'web/domains/case/access/approval/respond.html'
+    template_name = "web/domains/case/access/approval/respond.html"
     form_class = forms.ApprovalRequestResponseForm
 
     def post(self, request, *args, **kwargs):
@@ -17,4 +17,4 @@ class ApprovalRequestResponseView(UpdateProcessView):
         return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('workbasket')
+        return reverse("workbasket")

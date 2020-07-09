@@ -15,7 +15,7 @@ def after_feature(context, feature):
 
 def configure(context):
     browser = DesiredCapabilities.CHROME
-    if 'firefox' == settings.SELENIUM_BROWSER:
+    if "firefox" == settings.SELENIUM_BROWSER:
         browser = DesiredCapabilities.FIREFOX
 
     context.browser = webdriver.Remote(
@@ -28,9 +28,11 @@ def configure(context):
 def before_feature(context, feature):
     configure(context)
     # Load permission data
-    context.fixtures = ['permission.yaml']
+    context.fixtures = ["permission.yaml"]
 
 
 def after_step(context, step):
-    if step.status == 'failed':
-        context.browser.save_screenshot(f'/code/test-reports/bdd-screenshots/{context.scenario.name}-{step.name}.png')
+    if step.status == "failed":
+        context.browser.save_screenshot(
+            f"/code/test-reports/bdd-screenshots/{context.scenario.name}-{step.name}.png"
+        )

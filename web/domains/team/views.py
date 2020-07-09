@@ -11,10 +11,10 @@ from .models import Role, Team
 
 
 class TeamListView(ModelFilterView):
-    template_name = 'web/domains/team/list.html'
+    template_name = "web/domains/team/list.html"
     filterset_class = TeamsFilter
     model = Team
-    page_title = 'Search Teams'
+    page_title = "Search Teams"
     paginate = False
 
     def get_queryset(self):
@@ -28,10 +28,14 @@ class TeamListView(ModelFilterView):
         if user.is_superuser:
             return teams_query
 
-        return teams_query.filter(roles__in=Role.objects.filter(
-            group__in=user.groups.filter(
-                Q(name__contains=':Team Coordinator')
-                | Q(name__contains=':Resource Co-ordinator')).all()))
+        return teams_query.filter(
+            roles__in=Role.objects.filter(
+                group__in=user.groups.filter(
+                    Q(name__contains=":Team Coordinator")
+                    | Q(name__contains=":Resource Co-ordinator")
+                ).all()
+            )
+        )
 
     def has_permission(self):
         """
@@ -44,15 +48,15 @@ class TeamListView(ModelFilterView):
         return self.get_queryset().exists()
 
     class Display:
-        fields = ['name']
-        fields_config = {'name': {'header': 'Name'}}
+        fields = ["name"]
+        fields_config = {"name": {"header": "Name"}}
         actions = [Edit()]
 
 
 class TeamEditView(ContactsManagementMixin, ModelUpdateView):
-    template_name = 'web/domains/team/edit.html'
+    template_name = "web/domains/team/edit.html"
     form_class = TeamEditForm
-    success_url = reverse_lazy('team-list')
+    success_url = reverse_lazy("team-list")
     cancel_url = success_url
     model = Team
 
@@ -69,7 +73,6 @@ class TeamEditView(ContactsManagementMixin, ModelUpdateView):
 
         team = self.get_object()
         coordinator_role = team.roles.get(
-            Q(name__contains=':Team Coordinator')
-            | Q(name__contains=':Resource Co-ordinator'))
-        return coordinator_role.user_set.filter(
-            pk=self.request.user.pk).exists()
+            Q(name__contains=":Team Coordinator") | Q(name__contains=":Resource Co-ordinator")
+        )
+        return coordinator_role.user_set.filter(pk=self.request.user.pk).exists()

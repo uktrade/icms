@@ -8,23 +8,13 @@ from web.utils import merge_dictionaries as m
 logger = logging.getLogger(__name__)
 
 default_field_config = {
-    'label': {
-        'cols': 'three',
-        'prompt': 'west'
-    },
-    'input': {
-        'cols': 'six'
-    },
-    'padding': {
-        'right': 'three'
-    },
-    'show_optional_indicator': True
+    "label": {"cols": "three", "prompt": "west"},
+    "input": {"cols": "six"},
+    "padding": {"right": "three"},
+    "show_optional_indicator": True,
 }
 
-default_filter_config = m(default_field_config,
-                          {'__all__': {
-                              'show_optional_indicator': False
-                          }})
+default_filter_config = m(default_field_config, {"__all__": {"show_optional_indicator": False}})
 
 
 class ProcessConfigMixin:
@@ -32,14 +22,15 @@ class ProcessConfigMixin:
     Adds form config to each form field.
     If it doesn't exit Uses default config
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        meta = getattr(self, 'Meta', None)
+        meta = getattr(self, "Meta", None)
         if meta:
             # Add config if not present
-            config = getattr(meta, 'config', self._default_config)
+            config = getattr(meta, "config", self._default_config)
             config = deepcopy(config)
-            __all__ = config.pop('__all__', None)
+            __all__ = config.pop("__all__", None)
             fields = self._get_fields()
             for key in fields.keys():
                 conf = config.pop(key, None)
@@ -50,6 +41,7 @@ class ProcessConfigMixin:
 
 class ReadonlyFormMixin(ProcessConfigMixin, Form):
     """ Makes forms read only, prevents changing any data"""
+
     _default_config = default_field_config
 
     def __init__(self, *args, **kwargs):
@@ -66,6 +58,7 @@ class ReadonlyFormMixin(ProcessConfigMixin, Form):
 
 class FormFieldConfigMixin(ProcessConfigMixin):
     """ Adds configuration for fields in the form from Form's inner Meta"""
+
     _default_config = default_field_config
 
     def _get_fields(self):
@@ -74,6 +67,7 @@ class FormFieldConfigMixin(ProcessConfigMixin):
 
 class FiltersFieldConfigMixin(ProcessConfigMixin):
     """Adds configuration for fields from filterset's inner Meta"""
+
     _default_config = default_filter_config
 
     def _get_fields(self):

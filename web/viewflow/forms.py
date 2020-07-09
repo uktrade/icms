@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class ReAssignTaskForm(FormFieldConfigMixin, Form):
-    user = ModelChoiceField(queryset=None, label='Assign To', required=True)
+    user = ModelChoiceField(queryset=None, label="Assign To", required=True)
 
     def __init__(self, users_queryset, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['user'].queryset = users_queryset
+        self.fields["user"].queryset = users_queryset
 
     class Meta:
         fields = []
-        labels = {'user': 'Assign To'}
+        labels = {"user": "Assign To"}

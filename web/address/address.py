@@ -11,17 +11,16 @@ logger = logging.getLogger(__name__)
 def find(post_code):
     post_code = post_code.replace(" ", "")
     URL = "https://api.getaddress.io/find/{}?expand=true".format(post_code)
-    logger.debug('Searching for postcode: %s', post_code)
-    response = requests.get(
-        URL.format(post_code), auth=('api-key', settings.ADDRESS_API_KEY))
+    logger.debug("Searching for postcode: %s", post_code)
+    response = requests.get(URL.format(post_code), auth=("api-key", settings.ADDRESS_API_KEY))
 
     if response.status_code == 200:
-        address = response.json()['addresses']
+        address = response.json()["addresses"]
         return address
 
-    error_message = response.json()['Message']
+    error_message = response.json()["Message"]
 
-    logger.debug('Postcode seach error: %s', error_message)
+    logger.debug("Postcode seach error: %s", error_message)
     logger.debug(response)
 
     # Errors

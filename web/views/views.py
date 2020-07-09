@@ -14,17 +14,16 @@ from .mixins import DataDisplayConfigMixin, PageTitleMixin
 
 @require_registered
 def home(request):
-    return render(request, 'web/home.html')
+    return render(request, "web/home.html")
 
 
-class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
-                      ListView):
+class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin, ListView):
     paginate_by = 50
     paginate = True
 
     def post(self, request, *args, **kwargs):
-        action = request.POST.get('action')
-        actions = getattr(self.Display, 'actions', [])
+        action = request.POST.get("action")
+        actions = getattr(self.Display, "actions", [])
         for a in actions:
             if isinstance(a, PostAction) and a.action == action:
                 response = a.handle(request, self, *args, **kwargs)
@@ -35,7 +34,7 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
         return super().get(request, *args, **kwargs)
 
     def get_page(self):
-        return self.request.GET.get('page')
+        return self.request.GET.get("page")
 
     def _paginate(self, queryset):
         paginator = Paginator(queryset, self.paginate_by)
@@ -49,42 +48,40 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin,
             return paginator.page(paginator.num_pages)
 
     def get_filterset(self, **kwargs):
-        return self.filterset_class(self.request.GET or None,
-                                    queryset=self.get_queryset(),
-                                    **kwargs)
+        return self.filterset_class(
+            self.request.GET or None, queryset=self.get_queryset(), **kwargs
+        )
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         filterset = self.get_filterset()
-        context['filter'] = filterset
+        context["filter"] = filterset
         if self.paginate:
-            context['page'] = self._paginate(filterset.qs)
+            context["page"] = self._paginate(filterset.qs)
         else:
-            context['results'] = filterset.qs
+            context["results"] = filterset.qs
         return context
 
 
-class ModelCreateView(RequireRegisteredMixin, PageTitleMixin,
-                      SuccessMessageMixin, CreateView):
-    template_name = 'model/edit.html'
+class ModelCreateView(RequireRegisteredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
+    template_name = "model/edit.html"
 
     def get_success_message(self, cleaned_data):
-        return f'{self.object} created successfully.'
+        return f"{self.object} created successfully."
 
 
-class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin,
-                      SuccessMessageMixin, UpdateView):
-    template_name = 'model/edit.html'
+class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
+    template_name = "model/edit.html"
 
     def get_success_message(self, cleaned_data):
-        return f'{self.object} updated successfully'
+        return f"{self.object} updated successfully"
 
     def get_page_title(self):
         return f"Editing {self.object}"
 
 
 class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
-    template_name = 'model/view.html'
+    template_name = "model/view.html"
 
     def _readonly(self, form):
         for key in form.fields.keys():
@@ -98,7 +95,7 @@ class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
 
     def get_context_data(self, object):
         context = super().get_context_data()
-        context['form'] = self.get_form(instance=object)
+        context["form"] = self.get_form(instance=object)
         return context
 
     def get_page_title(self):

@@ -11,44 +11,48 @@ from web.auth.mixins import RequireRegisteredMixin
 from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
 from web.views.mixins import PageTitleMixin, PostActionMixin
 
-from .forms import (CountryCreateForm, CountryEditForm, CountryGroupEditForm,
-                    CountryNameFilter, CountryTranslationEditForm,
-                    CountryTranslationSetEditForm)
-from .models import (Country, CountryGroup, CountryTranslation,
-                     CountryTranslationSet)
+from .forms import (
+    CountryCreateForm,
+    CountryEditForm,
+    CountryGroupEditForm,
+    CountryNameFilter,
+    CountryTranslationEditForm,
+    CountryTranslationSetEditForm,
+)
+from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
 
 logger = logging.getLogger(__name__)
 
-permissions = 'web.COUNTRY_MANAGE'
+permissions = "web.COUNTRY_MANAGE"
 
 
 class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
     model = Country
-    template_name = 'web/domains/country/list.html'
+    template_name = "web/domains/country/list.html"
     filterset_class = CountryNameFilter
     permission_required = permissions
-    page_title = 'Editing All Countries'
+    page_title = "Editing All Countries"
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('country_groups')
+        return super().get_queryset().prefetch_related("country_groups")
 
 
 class CountryEditView(ModelUpdateView):
     model = Country
-    template_name = 'web/domains/country/edit.html'
+    template_name = "web/domains/country/edit.html"
     form_class = CountryEditForm
-    success_url = reverse_lazy('country-list')
+    success_url = reverse_lazy("country-list")
     cancel_url = success_url
     permission_required = permissions
 
 
 class CountryCreateView(ModelCreateView):
     model = Country
-    template_name = 'web/domains/country/edit.html'
+    template_name = "web/domains/country/edit.html"
     form_class = CountryCreateForm
-    success_url = reverse_lazy('country-list')
+    success_url = reverse_lazy("country-list")
     cancel_url = success_url
-    page_title = 'New Country'
+    page_title = "New Country"
     permission_required = permissions
 
 
@@ -64,23 +68,19 @@ def search_countries(request, selected_countries):
 
     """
     context = {
-        'filter':
-        CountryNameFilter(request.POST or {}, queryset=Country.objects.all()),
-        'selected_countries':
-        selected_countries,
-        'page_title':
-        'Country Search'
+        "filter": CountryNameFilter(request.POST or {}, queryset=Country.objects.all()),
+        "selected_countries": selected_countries,
+        "page_title": "Country Search",
     }
 
-    return TemplateResponse(request, 'web/domains/country/search.html',
-                            context).render()
+    return TemplateResponse(request, "web/domains/country/search.html", context).render()
 
 
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
-    template_name = 'web/domains/country/groups/view.html'
+    template_name = "web/domains/country/groups/view.html"
     form_class = CountryGroupEditForm
-    cancel_url = reverse_lazy('country-group-view')
+    cancel_url = reverse_lazy("country-group-view")
     permission_required = permissions
 
     def get_object(self):
@@ -92,13 +92,13 @@ class CountryGroupView(ModelDetailView):
 
     def get_context_data(self, object):
         context = super().get_context_data(object)
-        context['groups'] = CountryGroup.objects.all()
+        context["groups"] = CountryGroup.objects.all()
         return context
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     model = CountryGroup
-    template_name = 'web/domains/country/groups/edit.html'
+    template_name = "web/domains/country/groups/edit.html"
     form_class = CountryGroupEditForm
     permission_required = permissions
 
@@ -109,7 +109,7 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         return CountryGroup.objects.first()
 
     def _get_posted_countries(self):
-        countries = self.request.POST.getlist('countries')
+        countries = self.request.POST.getlist("countries")
         return Country.objects.filter(pk__in=countries)
 
     def _get_countries(self):
@@ -119,19 +119,21 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
                 return self.object.countries.all()
             else:
                 return Country.objects.none()
-        elif request.POST.get('action') == 'accept_countries':
-            country_selection = request.POST.getlist('country-selection')
+        elif request.POST.get("action") == "accept_countries":
+            country_selection = request.POST.getlist("country-selection")
             return Country.objects.filter(pk__in=country_selection)
         else:
             return self._get_posted_countries()
 
     def get_context_data(self):
         context = super().get_context_data()
-        context.update({
-            'groups': CountryGroup.objects.all(),
-            'countries': self._get_countries(),
-            'form': self.form
-        })
+        context.update(
+            {
+                "groups": CountryGroup.objects.all(),
+                "countries": self._get_countries(),
+                "form": self.form,
+            }
+        )
         return context
 
     def _render(self):
@@ -155,9 +157,9 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         return self._render()
 
     def get_success_url(self):
-        view_name = 'country-group-view'
+        view_name = "country-group-view"
         if self.object.id:
-            return reverse_lazy(view_name, args=(self.object.id, ))
+            return reverse_lazy(view_name, args=(self.object.id,))
         else:
             return reverse_lazy(view_name)
 
@@ -169,10 +171,9 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         form = CountryGroupEditForm(request.POST, instance=self.get_object())
         if form.is_valid():
             country_group = form.save()
-            countries = request.POST.getlist('countries')
+            countries = request.POST.getlist("countries")
             country_group.countries.set(countries)
-            return redirect(
-                reverse('country-group-view', args=[country_group.id]))
+            return redirect(reverse("country-group-view", args=[country_group.id]))
 
         self.form = form
         return self._render()
@@ -185,56 +186,54 @@ class CountryGroupCreateView(CountryGroupEditView):
         return CountryGroup()
 
     def get_page_title(self):
-        return 'New Country Group'
+        return "New Country Group"
 
 
 class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     model = CountryTranslationSet
     form_class = CountryTranslationSetEditForm
-    template_name = 'web/domains/country/translations/list.html'
-    page_title = 'Manage Country Translation Sets'
+    template_name = "web/domains/country/translations/list.html"
+    page_title = "Manage Country Translation Sets"
     permission_required = permissions
-    success_url = reverse_lazy('country-translation-set-list')
+    success_url = reverse_lazy("country-translation-set-list")
 
     def archive(self, request):
-        translation_set = CountryTranslationSet.objects.get(
-            pk=request.POST.get('item'))
+        translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
         translation_set.archive()
-        messages.success(request, 'Record archived successfully')
+        messages.success(request, "Record archived successfully")
         return super().get(request)
 
     def unarchive(self, request):
-        translation_set = CountryTranslationSet.objects.get(
-            pk=request.POST.get('item'))
+        translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
         translation_set.unarchive()
-        messages.success(request, 'Record restored successfully')
+        messages.success(request, "Record restored successfully")
         return super().get(request)
 
     def get_form(self):
         post = self.request.POST
 
-        if (not post) or post.get('action'):
+        if (not post) or post.get("action"):
             return CountryTranslationSetEditForm()
 
         return CountryTranslationSetEditForm(post)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object_list'] = CountryTranslationSet.objects.all()
+        context["object_list"] = CountryTranslationSet.objects.all()
         return context
 
 
 class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     model = CountryTranslationSet
-    template_name = 'web/domains/country/translations/edit.html'
+    template_name = "web/domains/country/translations/edit.html"
     form_class = CountryTranslationSetEditForm
-    success_url = 'country-translation-set-edit'
+    success_url = "country-translation-set-edit"
     permission_required = permissions
 
     def get(self, request, pk=None):
         set = super().get_object()
         if not set.is_active:
-            return redirect(reverse('country-translation-set-list'))
+            return redirect(reverse("country-translation-set-list"))
 
         return super().get(request)
 
@@ -248,29 +247,24 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
                 else:
                     remaining_count += 1
 
-        return {
-            'countries': missing_translations,
-            'remaining': remaining_count
-        }
+        return {"countries": missing_translations, "remaining": remaining_count}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         country_list = Country.objects.filter(is_active=True).all()
-        country_translations = CountryTranslation.objects.filter(
-            translation_set=self.object).all()
+        country_translations = CountryTranslation.objects.filter(translation_set=self.object).all()
         translations = {}
         for translation in country_translations:
             translations[translation.country.id] = translation.translation
 
-        context.update({
-            'translations':
-            translations,
-            'country_list':
-            country_list,
-            'missing_translations':
-            self.get_missing_translations(country_list, translations)
-        })
+        context.update(
+            {
+                "translations": translations,
+                "country_list": country_list,
+                "missing_translations": self.get_missing_translations(country_list, translations),
+            }
+        )
         return context
 
     def get_success_url(self):
@@ -282,46 +276,39 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
 
     def archive(self, request, pk):
         super().get_object().archive()
-        return redirect(reverse('country-translation-set-list'))
+        return redirect(reverse("country-translation-set-list"))
 
 
 class CountryTranslationCreateUpdateView(ModelUpdateView):
     model = CountryTranslation
-    template_name = 'web/domains/country/translations/translation/edit.html'
+    template_name = "web/domains/country/translations/translation/edit.html"
     form_class = CountryTranslationEditForm
     permission_required = permissions
 
     def get_object(self, queryset=None):
         try:
             return CountryTranslation.objects.filter(
-                translation_set=self.translation_set,
-                country=self.country).get()
+                translation_set=self.translation_set, country=self.country
+            ).get()
         except ObjectDoesNotExist:
             return None
 
     def get_form(self):
         translation = self.get_object()
-        logger.debug('Translation: %s', translation)
+        logger.debug("Translation: %s", translation)
         return self.form_class(self.request.POST or None, instance=translation)
 
     def set_data(self, request, set_pk, country_pk, **kwargs):
-        self.translation_set = \
-            CountryTranslationSet.objects.filter(pk=set_pk).get()
+        self.translation_set = CountryTranslationSet.objects.filter(pk=set_pk).get()
         self.country = Country.objects.filter(pk=country_pk).get()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context.update({
-            'translation_set': self.translation_set,
-            'country': self.country
-        })
+        context.update({"translation_set": self.translation_set, "country": self.country})
         return context
 
     def get_success_url(self):
-        return reverse('country-translation-set-edit',
-                       args=[
-                           self.translation_set.id,
-                       ])
+        return reverse("country-translation-set-edit", args=[self.translation_set.id,])
 
     def get_cancel_url(self):
         return self.get_success_url()
@@ -343,4 +330,4 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         return super().post(request, *args, **kwargs)
 
     def get_page_title(self):
-        return f'Editing {self.translation_set.name} translation of {self.country.name}'
+        return f"Editing {self.translation_set.name} translation of {self.country.name}"

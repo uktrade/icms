@@ -16,21 +16,21 @@ access_request_urls = FlowViewSet(AccessRequestFlow).urls
 approval_request_viewset = FlowViewSet(ApprovalRequestFlow)
 approval_request_urls = approval_request_viewset.urls
 
-app_name = 'access'
+app_name = "access"
 
 urlpatterns = [
-    path('<process_id>/fir/',
-         FurtherInformationRequestView.as_view(),
-         name="fir"),
-    path('', include(access_request_urls)),
-    path('approval/', include((approval_request_urls, 'approval'))),
-    path('<process_id>/review/<task_id>/link-importer/',
-         views.LinkImporterView.as_view(),
-         name="link-importer"),
-    path('<process_id>/review/<task_id>/link-exporter/',
-         views.LinkExporterView.as_view(),
-         name="link-exporter"),
-    path("requested/",
-         views.AccessRequestCreatedView.as_view(),
-         name="requested")
+    path("<process_id>/fir/", FurtherInformationRequestView.as_view(), name="fir"),
+    path("", include(access_request_urls)),
+    path("approval/", include((approval_request_urls, "approval"))),
+    path(
+        "<process_id>/review/<task_id>/link-importer/",
+        views.LinkImporterView.as_view(),
+        name="link-importer",
+    ),
+    path(
+        "<process_id>/review/<task_id>/link-exporter/",
+        views.LinkExporterView.as_view(),
+        name="link-exporter",
+    ),
+    path("requested/", views.AccessRequestCreatedView.as_view(), name="requested"),
 ]

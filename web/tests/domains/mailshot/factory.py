@@ -11,10 +11,9 @@ class MailshotFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Mailshot
 
-    title = factory.Faker('sentence', nb_words=4)
-    description = factory.Faker('sentence')
-    status = factory.fuzzy.FuzzyChoice(Mailshot.STATUSES,
-                                       getter=lambda r: r[0])
+    title = factory.Faker("sentence", nb_words=4)
+    description = factory.Faker("sentence")
+    status = factory.fuzzy.FuzzyChoice(Mailshot.STATUSES, getter=lambda r: r[0])
     is_email = random.choice([True, False])
     is_retraction_email = random.choice([True, False])
     is_to_importers = random.choice([True, False])

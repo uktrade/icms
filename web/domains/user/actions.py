@@ -9,11 +9,11 @@ from .models import User
 
 
 class ReIssuePassword(PostAction):
-    action = 're_issue_password'
-    label = 'Re-Issue Password'
+    action = "re_issue_password"
+    label = "Re-Issue Password"
     confirm = False
-    confirm_message = ''
-    icon = 'icon-key'
+    confirm_message = ""
+    icon = "icon-key"
 
     def display(self, user):
         return user.account_status in [User.ACTIVE, User.SUSPENDED]
@@ -25,16 +25,15 @@ class ReIssuePassword(PostAction):
         user.account_status_by = request.user
         user.save()
         notify.register(user, temp_pass)
-        messages.success(request,
-                         'Temporary password successfully issued for account')
+        messages.success(request, "Temporary password successfully issued for account")
 
 
 class CancelUser(PostAction):
-    action = 'cancel'
-    label = 'Cancel'
+    action = "cancel"
+    label = "Cancel"
     confirm = True
-    confirm_message = 'Are you sure you want to cancel this account?'
-    icon = 'icon-bin'
+    confirm_message = "Are you sure you want to cancel this account?"
+    icon = "icon-bin"
 
     def display(self, user):
         return user.account_status != User.CANCELLED
@@ -44,15 +43,15 @@ class CancelUser(PostAction):
         user.account_status = User.CANCELLED
         user.account_status_by = request.user
         user.save()
-        messages.success(request, 'Account cancelled successfully')
+        messages.success(request, "Account cancelled successfully")
 
 
 class ActivateUser(PostAction):
-    action = 'activate'
-    label = 'Activate'
+    action = "activate"
+    label = "Activate"
     confirm = True
-    confirm_message = 'Are you sure you want to activate this account?'
-    icon = 'icon-eye'
+    confirm_message = "Are you sure you want to activate this account?"
+    icon = "icon-eye"
 
     def display(self, user):
         return user.account_status == User.BLOCKED
@@ -62,15 +61,15 @@ class ActivateUser(PostAction):
         user.account_status = User.ACTIVE
         user.account_status_by = request.user
         user.save()
-        messages.success(request, 'Account cancelled successfully')
+        messages.success(request, "Account cancelled successfully")
 
 
 class BlockUser(PostAction):
-    action = 'block'
-    label = 'Block'
+    action = "block"
+    label = "Block"
     confirm = True
-    confirm_message = 'Are you sure you want to block this account?'
-    icon = 'icon-eye-blocked'
+    confirm_message = "Are you sure you want to block this account?"
+    icon = "icon-eye-blocked"
 
     def display(self, user):
         return user.account_status == User.ACTIVE
@@ -80,4 +79,4 @@ class BlockUser(PostAction):
         user.account_status = User.BLOCKED
         user.account_status_by = request.user
         user.save()
-        messages.success(request, 'Account blocked successfully')
+        messages.success(request, "Account blocked successfully")

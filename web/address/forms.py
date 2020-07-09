@@ -8,37 +8,29 @@ from web.views.utils import countries
 
 
 class PostCodeSearchForm(FormFieldConfigMixin, Form):
-    post_code = CharField(required=True, label=_('Postcode'))
+    post_code = CharField(required=True, label=_("Postcode"))
     country = CharField(
         required=False,
         widget=Select(choices=countries.get()),
-        help_text="Choose a country to begin manually entering the address")
+        help_text="Choose a country to begin manually entering the address",
+    )
 
     class Meta:
         config = {
-            '__all__': {
-                'show_optional_indicator': False,
-                'label': {
-                    'cols': 'three',
-                    'prompt': 'north'
-                },
-                'input': {
-                    'cols': 'eight'
-                }
+            "__all__": {
+                "show_optional_indicator": False,
+                "label": {"cols": "three", "prompt": "north"},
+                "input": {"cols": "eight"},
             }
         }
 
 
 class ManualAddressEntryForm(FormFieldConfigMixin, Form):
-    country = CharField(widget=TextInput({'readonly': 'readonly'}))
-    address = CharField(max_length=4000,
-                        widget=Textarea({
-                            'rows': 6,
-                            'cols': 50
-                        }))
+    country = CharField(widget=TextInput({"readonly": "readonly"}))
+    address = CharField(max_length=4000, widget=Textarea({"rows": 6, "cols": 50}))
 
     def clean_address(self):
         return validators.validate_manual_address(self)
 
     class Meta:
-        config = {'__all__': {'show_optional_indicator': False}}
+        config = {"__all__": {"show_optional_indicator": False}}

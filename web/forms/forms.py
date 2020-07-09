@@ -3,8 +3,7 @@ import datetime
 from django.forms import ModelForm
 from django_filters import FilterSet
 
-from .mixins import (FiltersFieldConfigMixin, FormFieldConfigMixin,
-                     ReadonlyFormMixin)
+from .mixins import FiltersFieldConfigMixin, FormFieldConfigMixin, ReadonlyFormMixin
 
 
 class ModelSearchFilter(FiltersFieldConfigMixin, FilterSet):
@@ -21,4 +20,5 @@ class ModelDisplayForm(ReadonlyFormMixin, ModelForm):
 
 class ViewFlowForm(object):
     datetime_now = datetime.datetime.now().strftime(
-        '%d-%b-%Y %H:%M:%S')  # use instead of ViewFlow management form
+        "%d-%b-%Y %H:%M:%S"
+    )  # use instead of ViewFlow management form

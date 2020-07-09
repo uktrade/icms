@@ -12,17 +12,19 @@ def _create_team_roles(team):
         return
 
     for r in team.role_list:
-        role = Role.objects.create(team=team,
-                                   name=r['name'].format(id=team.id),
-                                   description=r['description'],
-                                   role_order=r['role_order'])
+        role = Role.objects.create(
+            team=team,
+            name=r["name"].format(id=team.id),
+            description=r["description"],
+            role_order=r["role_order"],
+        )
 
-        permissions = Permission.objects.filter(codename__in=r['permissions'])
+        permissions = Permission.objects.filter(codename__in=r["permissions"])
         role.permissions.add(*permissions)
 
 
 class BaseTeam(models.Model):
-    members = models.ManyToManyField(User, related_name='teams')
+    members = models.ManyToManyField(User, related_name="teams")
     role_list = None  # List of roles with permissions to create for the team with each instance
 
     @transaction.atomic
@@ -44,25 +46,24 @@ class Team(BaseTeam):
     description = models.CharField(max_length=4000, blank=True, null=True)
 
     class Meta:
-        ordering = ('name', )
+        ordering = ("name",)
 
 
 class Role(Group):
-    group = models.OneToOneField(Group,
-                                 on_delete=models.CASCADE,
-                                 parent_link=True,
-                                 related_name='roles')
+    group = models.OneToOneField(
+        Group, on_delete=models.CASCADE, parent_link=True, related_name="roles"
+    )
     description = models.CharField(max_length=4000, blank=True, null=True)
     # Display order on the screen
     role_order = models.IntegerField(blank=False, null=False)
-    team = models.ForeignKey(BaseTeam, on_delete=models.CASCADE, related_name='roles')
+    team = models.ForeignKey(BaseTeam, on_delete=models.CASCADE, related_name="roles")
 
     def has_member(self, user):
         return user in self.user_set.all()
 
     @property
     def short_name(self):
-        return self.name.split(':')[1]
+        return self.name.split(":")[1]
 
     class Meta:
-        ordering = ('role_order', )
+        ordering = ("role_order",)

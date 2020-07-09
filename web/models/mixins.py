@@ -12,7 +12,6 @@ class Archivable(object):
 
 
 class Sortable(object):
-
     @transaction.atomic
     def swap_order(self, swap_with):
         current_order = self.order

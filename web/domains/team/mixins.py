@@ -24,9 +24,9 @@ class ContactsManagementMixin(PostActionMixin):
     def _extract_role_members(self, data):
         role_members = {}
         for key in data:
-            if 'role_members_' in key:
+            if "role_members_" in key:
                 members = self.request.POST.getlist(key)
-                role_id = key.replace('role_members_', '')
+                role_id = key.replace("role_members_", "")
                 role_members[role_id] = members
         return role_members
 
@@ -45,19 +45,18 @@ class ContactsManagementMixin(PostActionMixin):
         role_members = {}
         for role in roles:
             # Create role_id -> member_ids mapping with ids as strings
-            role_members[str(role.id)] = list(
-                map(str, role.user_set.values_list('id', flat=True)))
+            role_members[str(role.id)] = list(map(str, role.user_set.values_list("id", flat=True)))
 
         return {
-            'form': self._get_form(),
-            'members': members,
-            'roles': roles,
-            'role_members': role_members
+            "form": self._get_form(),
+            "members": members,
+            "roles": roles,
+            "role_members": role_members,
         }
 
     def _remove_from_session(self):
         team = self.get_object()
-        return self._session().pop(f'team:{team.id}')
+        return self._session().pop(f"team:{team.id}")
 
     def _restore_from_session(self, new_members=None):
         """
@@ -65,27 +64,27 @@ class ContactsManagementMixin(PostActionMixin):
         """
         team = self.get_object()
         data = self._remove_from_session()
-        members = data.get('members')
+        members = data.get("members")
         members.extend(new_members)
         members = self._get_users_by_ids(members)
 
         return {
-            'form': self._get_form(data.get('form')),
-            'members': members,
-            'roles': team.roles.all(),
-            'role_members': data.get('role_members')
+            "form": self._get_form(data.get("form")),
+            "members": members,
+            "roles": team.roles.all(),
+            "role_members": data.get("role_members"),
         }
 
     def _get_posted_context(self, form):
         team = self.get_object()
         data = self.request.POST
-        members = data.getlist('members')
+        members = data.getlist("members")
         members = self._get_users_by_ids(members)
         response = {
-            'form': form,
-            'members': members,
-            'roles': team.roles.all(),
-            'role_members': self._extract_role_members(data)
+            "form": form,
+            "members": members,
+            "roles": team.roles.all(),
+            "role_members": self._extract_role_members(data),
         }
         return response
 
@@ -93,11 +92,13 @@ class ContactsManagementMixin(PostActionMixin):
         team = self.get_object()
         data = self.request.POST
         self._session().put(
-            f'team:{team.id}', {
-                'form': self._get_form(data=data).data,
-                'members': data.getlist('members'),
-                'role_members': self._extract_role_members(data)
-            })
+            f"team:{team.id}",
+            {
+                "form": self._get_form(data=data).data,
+                "members": data.getlist("members"),
+                "role_members": self._extract_role_members(data),
+            },
+        )
 
     def _render(self, request, context):
         self.object = self.get_object()
@@ -110,7 +111,7 @@ class ContactsManagementMixin(PostActionMixin):
 
     def add_people(self, request, *args, **kwargs):
         """Handles new members added in search people page"""
-        new_members = request.POST.getlist('selected_items')
+        new_members = request.POST.getlist("selected_items")
         context = self._restore_from_session(new_members)
         return self._render(request, context)
 
@@ -125,7 +126,7 @@ class ContactsManagementMixin(PostActionMixin):
         return self._render(request, self._load_data())
 
     def _save_members(self, team):
-        members = set(self.request.POST.getlist('members'))
+        members = set(self.request.POST.getlist("members"))
         team.members.clear()
         for member_id in members:
             team.members.add(member_id)
