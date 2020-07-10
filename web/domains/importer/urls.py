@@ -9,7 +9,7 @@ urlpatterns = [
     path("", views.ImporterListView.as_view(), name="importer-list"),
     path("<int:pk>/edit/", views.ImporterEditView.as_view(), name="importer-edit"),
     path("new/", views.ImporterCreateView.as_view(), name="importer-new"),
-    path("<int:pk>/", views.ImporterDetailView.as_view(), name="importer-view"),
+    path("<int:pk>/", views.importer_detail_view, name="importer-view"),
     # Importer Agents
     path(
         "<int:importer_id>/agent/<int:pk>/edit",

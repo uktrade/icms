@@ -9,16 +9,17 @@ from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 
 
+# TODO: migrate tests over to 'import organisation "{name}" exists'
 @given('importer "{name}" exists')
 def create_importer(context, name):
-    ImporterFactory(name=name, is_active=True)
+    ImporterFactory(name=name, type=Importer.ORGANISATION, is_active=True)
 
 
 @given('individual importer "{importer_name}" exists with user "{user_name}"')
 def create_individual_importer(context, importer_name, user_name):
-    # individual importers in real life have an empty name field, but the BDD tests
-    # won't work like that since statements like 'Jane" is an agent of "Hey Ltd"'
-    # wouldn't work, we need somethign to match against.
+    # individual importers in real life have an empty name field, but the BDD
+    # tests won't work like that since statements like 'Jane" is an agent of
+    # "Hey Ltd"' wouldn't work, we need something to match against.
     #
     # so give them a name, but link them to a user.
     user = User.objects.get(username=user_name)
@@ -27,12 +28,14 @@ def create_individual_importer(context, importer_name, user_name):
 
 @given('archived importer "{name}" exists')
 def create_archived_importer(context, name):
-    ImporterFactory(name=name, is_active=False)
+    ImporterFactory(name=name, type=Importer.ORGANISATION, is_active=False)
 
 
 @given('non-European importer "{name}" exists')
 def create_non_european_importer(context, name):
-    ImporterFactory(name=name, region_origin=Importer.NON_EUROPEAN, is_active=True)
+    ImporterFactory(
+        name=name, type=Importer.ORGANISATION, region_origin=Importer.NON_EUROPEAN, is_active=True
+    )
 
 
 @given('import organisation "{name}" exists')

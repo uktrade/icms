@@ -131,6 +131,10 @@ class PhoneNumber(models.Model):
     comment = models.CharField(max_length=4000, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="phone_numbers")
 
+    @property
+    def entity_type(self):
+        return dict(PhoneNumber.TYPES)[self.type]
+
 
 class Email(models.Model):
     WORK = "WORK"

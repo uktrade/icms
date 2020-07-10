@@ -9,7 +9,13 @@ from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUp
 from web.views.actions import Archive, Edit, Unarchive, CreateAgent
 from web.views.mixins import PostActionMixin
 
-from .forms import ImporterDisplayForm, ImporterEditForm, ImporterFilter
+from .forms import (
+    ImporterOrganisationDisplayForm,
+    ImporterOrganisationEditForm,
+    ImporterIndividualEditForm,
+    ImporterIndividualDisplayForm,
+    ImporterFilter,
+)
 from .models import Importer
 
 from web.domains.office.models import Office
@@ -37,6 +43,7 @@ class ImporterListView(ModelFilterView):
     def has_permission(self):
         return has_permission(self.request.user)
 
+    # TODO: figure out why individual importers don't get a link to view them
     class Display:
         fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
         fields_config = {
@@ -62,7 +69,10 @@ class ImporterEditView(PostActionMixin, ModelUpdateView):
     def get(self, request, pk, offices_form=None, form=None):
         importer = Importer.objects.get(pk=pk)
         if not form:
-            form = ImporterEditForm(instance=importer)
+            if importer.is_organisation():
+                form = ImporterOrganisationEditForm(instance=importer)
+            else:
+                form = ImporterIndividualEditForm(instance=importer)
 
         # should the offices formset be shown on the edit page
         # if we received the form, then we displayed as we want to
@@ -88,7 +98,13 @@ class ImporterEditView(PostActionMixin, ModelUpdateView):
 
     def edit(self, request, pk):
         importer = Importer.objects.get(pk=pk)
-        form = ImporterEditForm(request.POST, instance=importer)
+
+        if importer.is_organisation():
+            form_class = ImporterOrganisationEditForm
+        else:
+            form_class = ImporterIndividualEditForm
+
+        form = form_class(request.POST, instance=importer)
 
         Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
         offices_form = Formset(request.POST)
@@ -128,7 +144,9 @@ class ImporterEditView(PostActionMixin, ModelUpdateView):
 
 class ImporterCreateView(ModelCreateView):
     template_name = "web/domains/importer/create.html"
-    form_class = ImporterEditForm
+    # TODO: this is tricky, organisation/individual have completely
+    # different fields..need to dynamically switch which form we're using
+    form_class = ImporterOrganisationEditForm
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
     page_title = "Create Importer"
@@ -138,9 +156,9 @@ class ImporterCreateView(ModelCreateView):
         return has_permission(self.request.user)
 
 
-class ImporterDetailView(ModelDetailView):
+class ImporterOrganisationDetailView(ModelDetailView):
     template_name = "web/domains/importer/view.html"
-    form_class = ImporterDisplayForm
+    form_class = ImporterOrganisationDisplayForm
     model = Importer
 
     def has_permission(self):
@@ -148,8 +166,49 @@ class ImporterDetailView(ModelDetailView):
 
     def get_context_data(self, object):
         context = super().get_context_data(object)
-        context["form"] = ImporterDisplayForm(instance=object)
+        context["form"] = ImporterOrganisationDisplayForm(instance=object)
         return context
+
+
+class ImporterIndividualDetailView(ModelDetailView):
+    template_name = "web/domains/importer/view.html"
+    form_class = ImporterIndividualDisplayForm
+    model = Importer
+
+    def has_permission(self):
+        return has_permission(self.request.user)
+
+    def get_context_data(self, object):
+        context = super().get_context_data(object)
+
+        form = ImporterIndividualDisplayForm(instance=object)
+        user = object.user
+
+        if user:
+            form.initial["user_title"] = user.title
+            form.initial["user_first_name"] = user.first_name
+            form.initial["user_last_name"] = user.last_name
+            form.initial["user_email"] = user.email
+            form.initial["user_tel_no"] = "\n".join(
+                f"{x.phone} ({x.entity_type})" for x in user.phone_numbers.all()
+            )
+
+        context["form"] = form
+
+        return context
+
+
+def importer_detail_view(request, pk):
+    importer = Importer.objects.get(pk=pk)
+
+    # there might be a better way to dynamically switch which view we're using
+    # depending on the object type, but this works
+    if importer.is_organisation():
+        view = ImporterOrganisationDetailView.as_view()
+    else:
+        view = ImporterIndividualDetailView.as_view()
+
+    return view(request, pk=pk)
 
 
 def list_postcode_addresses(request,):

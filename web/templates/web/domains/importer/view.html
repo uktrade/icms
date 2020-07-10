@@ -15,18 +15,39 @@
 
 {% block main_content %}
     {% call forms.form(method='post', csrf_input=csrf_input) %}
+
+        {% if form.instance.is_agent() %}
+            <div class="info-box info-box-info">
+                This importer is an agent of
+                <a href="{{url('importer-view', args=[form.instance.main_importer.id])}}">
+                    {{ form.instance.main_importer.display_name }}</a>.
+            </div>
+        {% endif %}
+
         {% with field=form.type %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-        {% with field=form.name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-        {% with field=form.region_origin %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+
+        {% if form.instance.is_organisation() %}
+            {% with field=form.name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+            {% with field=form.region_origin %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+        {% else %}
+            {% with field=form.user_title %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+            {% with field=form.user_first_name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+            {% with field=form.user_last_name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+            {% with field=form.user_email %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+            {% with field=form.user_tel_no %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
+        {% endif %}
+
         {% with field=form.comments %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
 
         {% with offices = form.instance.offices %}
         {% include "partial/offices-display.html" %}
         {% endwith %}
 
-        {% with agents = form.instance.agents %}
-        {% include "partial/agents-display.html" %}
-        {% endwith %}
+        {% if not form.instance.is_agent() %}
+            {% with agents = form.instance.agents %}
+            {% include "partial/agents-display.html" %}
+            {% endwith %}
+        {% endif %}
 
     {% endcall %}
 {% endblock %}

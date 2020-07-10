@@ -1,4 +1,4 @@
-from django.forms.fields import ChoiceField
+from django.forms.fields import ChoiceField, CharField
 from django_filters import CharFilter, ChoiceFilter
 from web.forms import ModelEditForm, ModelSearchFilter
 from web.forms.mixins import ReadonlyFormMixin
@@ -59,7 +59,7 @@ class ImporterFilter(ModelSearchFilter):
         fields = []
 
 
-class ImporterEditForm(ModelEditForm):
+class ImporterOrganisationEditForm(ModelEditForm):
     type = ChoiceField(choices=Importer.TYPES)
 
     def __init__(self, *args, **kwargs):
@@ -72,5 +72,36 @@ class ImporterEditForm(ModelEditForm):
         labels = {"type": "Entity Type"}
 
 
-class ImporterDisplayForm(ReadonlyFormMixin, ImporterEditForm):
+class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ImporterOrganisationEditForm):
     pass
+
+
+class ImporterIndividualEditForm(ModelEditForm):
+    type = ChoiceField(choices=Importer.TYPES)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["user"].required = True
+
+    class Meta:
+        model = Importer
+        fields = ["type", "user", "comments"]
+
+
+class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelEditForm):
+    type = ChoiceField(choices=Importer.TYPES)
+
+    # ImporterIndividualDetailView fills these out
+    user_title = CharField(label="Title")
+    user_first_name = CharField(label="Forename")
+    user_last_name = CharField(label="Surname")
+    user_email = CharField(label="Email")
+    user_tel_no = CharField(label="Telephone No")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["user"].required = True
+
+    class Meta:
+        model = Importer
+        fields = ["type", "user", "comments"]
