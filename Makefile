@@ -122,7 +122,7 @@ test: ## run tests
 	ICMS_DEBUG=False \
 	TEST_TARGET='web/tests' \
 	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml $(TEST_TARGET)
+	docker-compose run --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml --dist=loadfile --tx=4*popen $(TEST_TARGET)
 
 accessibility: ## Generate accessibility reports
 	unset UID && \
