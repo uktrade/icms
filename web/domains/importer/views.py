@@ -43,12 +43,11 @@ class ImporterListView(ModelFilterView):
     def has_permission(self):
         return has_permission(self.request.user)
 
-    # TODO: figure out why individual importers don't get a link to view them
     class Display:
         fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
         fields_config = {
             "name": {"header": "Importer Name", "link": True,},
-            "user": {"no_header": True,},
+            "user": {"no_header": True, "link": True},
             "registered_number": {"header": "Importer Reg No",},
             "entity_type": {"header": "Importer Entity Type",},
             "status": {"header": "Status", "bold": True,},
