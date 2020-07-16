@@ -1,0 +1,65 @@
+from django.db import models
+from django.conf import settings
+
+
+class Process(models.Model):
+    """Base class for all processes."""
+
+    process_type = models.CharField(max_length=50)
+
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    finished = models.DateTimeField(blank=True, null=True)
+
+    def get_task(self, expected_state: str, task_type: str) -> "Task":
+        """Get the latest active task of the given type attached to this
+        process, while also checking the process is in the expected state.
+
+
+        NOTE: this function only makes sense if there is at most one active task
+        of the type. If the process can have multiple active tasks of the same
+        type, you cannot use this function.
+
+        Raises an exception if anything goes wrong.
+        """
+
+        if not self.is_active:
+            raise Exception("Process is not active")
+
+        if self.status != expected_state:
+            raise Exception(f"Process is in the wrong state: {self.status}")
+
+        tasks = self.tasks.filter(is_active=True, task_type=task_type).order_by("created")
+
+        if len(tasks) != 1:
+            raise Exception(f"Expected one active task, got {len(tasks)}")
+
+        return tasks[0]
+
+
+class Task(models.Model):
+    """A task. A process can have as many tasks as it wants attached to it, and
+    tasks maintain a "previous" link to track the task ordering.
+
+    NOTE: a task can have multiple child tasks, but only one parent task.
+    """
+
+    process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="tasks")
+
+    task_type = models.CharField(max_length=30)
+
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    created = models.DateTimeField(auto_now_add=True)
+    finished = models.DateTimeField(blank=True, null=True)
+
+    previous = models.ForeignKey("self", related_name="next", null=True, on_delete=models.CASCADE)
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        db_index=True,
+        on_delete=models.CASCADE,
+        related_name="+",
+    )

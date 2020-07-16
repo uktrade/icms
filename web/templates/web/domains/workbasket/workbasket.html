@@ -147,13 +147,17 @@
 
             </thead>
             {% for process in object_list %}
-              {% if process.approval_request %}
-                {% include "web/domains/workbasket/partials/approval-request.html" %}
-              {% elif process.access_request %}
-                {% include "web/domains/workbasket/partials/access-request.html" %}
-              {% elif process.parent_process %}
-                {% include "web/domains/workbasket/partials/fir.html" %}
-              {% endif %}
+              {# TODO: left in place to see what templates they use, remove as these are converted #}
+              {#   {% if process.approval_request %} #}
+              {#     {% include "web/domains/workbasket/partials/approval-request.html" %} #}
+              {#   {% elif process.access_request %} #}
+              {#     {% include "web/domains/workbasket/partials/access-request.html" %} #}
+              {#   {% elif process.parent_process %} #}
+              {#     {% include "web/domains/workbasket/partials/fir.html" %} #}
+              {#   {% endif %} #}
+
+              {% include process.get_workbasket_template() %}
+
             {% endfor %}
 
         </table>

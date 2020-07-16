@@ -1,0 +1,25 @@
+<tr>
+  <td>
+    {# TODO: is the id useful to show anyone...? case ref maybe? #}
+    {{process.id}}
+  </td>
+  <td>
+    {# TODO: do something better (process.get_summary()?) #}
+    {{process.process_type}}
+  </td>
+  <td>
+    {{ process.exporter }}
+  </td>
+  <td>
+    {{process.status}}
+    <br>
+    {{process.created}}
+  </td>
+  <td>
+    {# NOTE: process.tasks has been filtered by is_active=True already #}
+    {% for task in process.tasks.all() %}
+      {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
+    {% endfor %}
+
+  </td>
+</tr>

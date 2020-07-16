@@ -1,16 +1,12 @@
 {% extends 'layout/sidebar.html' %}
 
-{% set page_title=(activation.process ~ ' - ' ~ activation.task.flow_task ) %}
-
 {% block main_content %}
   {% block process_details %}
-    {% with process=activation.process %}
-      {% include activation.process.flow_class.process_template  %}
-    {% endwith %}
+    {% include process_template %}
   {% endblock %}
 
   {% block task_details %}
-    <h3>{{activation.task.flow_task}}</h3>
+    <h3>{{task.task_type}}</h3>
     <div class="container" >
       <div class="row">
         <div class="nine columns" ></div>
@@ -22,8 +18,8 @@
           <label class="prompt west">Status</label>
         </div>
         <div class="six columns">
-          <div class="status {{activation.task.status|lower}}">
-            <div class="individual-input"><span class="text-widget ">{{activation.task.status}}</span></div>
+          <div class="status">
+            <div class="individual-input"><span class="text-widget ">Active</span></div>
           </div>
         </div>
         <div class="three columns"></div>
@@ -33,14 +29,10 @@
           <label class="prompt west">Assigned To</label>
         </div>
         <div class="six columns">
-          <span>{{activation.task.owner}}</span>
+          <span>{{task.owner}}</span>
         </div>
         <div class="three columns"></div>
       </div>
     </div>
   {% endblock %}
-{% endblock %}
-
-{% block sidebar %}
-  {% include "viewflow/partials/task_actions.html" %}
 {% endblock %}

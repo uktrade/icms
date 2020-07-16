@@ -30,6 +30,7 @@ class ImportApplicationCreateView(ModelCreateView):
         return self.form
 
     def post(self, request, *args, **kwargs):
+        # see web/static/web/js/main.js::initialize
         if request.POST:
             if request.POST.get("change", None):
                 return super().get(request, *args, **kwargs)

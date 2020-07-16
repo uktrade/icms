@@ -64,7 +64,7 @@ class CountryEditViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "Editing Country (Astoria)")
+        self.assertEqual(response.context_data["page_title"], "Editing Astoria")
 
 
 class CountryCreateViewTest(AuthTestCase):

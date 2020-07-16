@@ -201,7 +201,7 @@ class Menu:
             ],
         ),
         MenuButton(label="New Import Application", view="new-import-application"),
-        MenuButton(label="New Export Application"),
+        MenuButton(label="New Certificate Application", view="export:create"),
     ]
 
     def as_html(self, request):

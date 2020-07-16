@@ -1,6 +1,6 @@
 import structlog as logging
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UsernameField
+import django.contrib.auth.forms as auth_forms
 from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
@@ -16,8 +16,8 @@ from web.forms.widgets import DateInput
 logger = logging.get_logger(__name__)
 
 
-class LoginForm(AuthenticationForm):
-    username = UsernameField(widget=TextInput(attrs={"autofocus": True}))
+class LoginForm(auth_forms.AuthenticationForm):
+    username = auth_forms.UsernameField(widget=TextInput(attrs={"autofocus": True}))
     password = CharField(strip=False, widget=PasswordInput)
     error_status = None
 
@@ -134,7 +134,7 @@ class ResetPasswordSecondForm(Form):
             self.add_error(None, "Invalid details")
 
 
-class PasswordChangeForm(PasswordChangeForm):
+class PasswordChangeForm(auth_forms.PasswordChangeForm):
     new_password1 = CharField(label="New password", strip=False, widget=PasswordInput())
     new_password2 = CharField(label="Confirm New Password", strip=False, widget=PasswordInput())
     old_password = CharField(strip=False, widget=PasswordInput())

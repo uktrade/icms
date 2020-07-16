@@ -20,6 +20,10 @@ jobs:
                 command: make docker_flake8
 
             - run:
+                name: run mypy
+                command: make mypy
+
+            - run:
                 name: run unit tests
                 command: make test
 

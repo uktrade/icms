@@ -25,7 +25,7 @@ class CountryTest(TestCase):
 
     def test_string_representation(self):
         country = self.create_country()
-        self.assertEqual(country.__str__(), f"Country ({country.name})")
+        self.assertEqual(country.__str__(), f"{country.name}")
 
 
 class CountryGroupTest(TestCase):

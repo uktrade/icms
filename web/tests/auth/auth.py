@@ -20,7 +20,7 @@ class AuthTestCase(TestCase):
         )
 
     def grant(self, permission_codename):
-        # FIXME: Migrated permissions with django has a fixed content type 15.
+        # TODO: Migrated permissions with django has a fixed content type 15.
         # Create a proxy Permission model for handling permission constants
         # modelless permissions instances.
         # see: https://stackoverflow.com/questions/13932774/how-can-i-use-django-permissions-without-defining-a-content-type-or-model

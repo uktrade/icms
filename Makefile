@@ -53,13 +53,23 @@ docker_black: ## run Black in check mode
 	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m black --check .
 
+mypy: ## run mypy
+	unset UID && \
+	ICMS_DEBUG=False \
+	docker-compose run --rm web mypy web config
+
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
 	docker-compose run --rm web python ./manage.py sqlsequencereset web
 
 createsuperuser: ## create django super user
 	unset UID && \
-	docker-compose run --rm web python ./manage.py createsuperuser
+	docker-compose run --rm web python ./manage.py createsuperuser \
+	--username admin --email admin@blaa.com \
+	--first_name admin --last_name admin \
+	--date_of_birth 2000-1-1 \
+	--security_question admin \
+	--security_answer admin
 
 clean: ## removes python cache files from project
 	unset UID && \

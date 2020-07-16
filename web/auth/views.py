@@ -1,6 +1,6 @@
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.views import LoginView
+import django.contrib.auth.views as auth_views
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.shortcuts import redirect, render
@@ -18,7 +18,7 @@ from .forms import (
 )
 
 
-class LoginView(LoginView):
+class LoginView(auth_views.LoginView):
     form_class = LoginForm
     template_name = "auth/login.html"
     redirect_authenticated_user = True

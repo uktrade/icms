@@ -1,7 +1,7 @@
 <div class="container" >
   <div class="row">
     <div class="six columns break-word">
-      <div class="individual-input" ><span  class="text-widget ">{{task.flow_task}}</span></div>
+      <div class="individual-input" ><span class="text-widget ">{{task.task_type}}</span></div>
     </div>
     <div class="six columns">
 
@@ -22,15 +22,19 @@
             </th>
           </tr>
         </thead>
-        <tr >
-          <td >
+        <tr>
+          <td>
+            {# TODO: leaving these in until access requests are converted away from viewflow }
             {% if namespace == 'access' %}
             <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace ~ ':' ~ process.access_request.requester_type, user=request.user)}}"/>Resume Task</a>
             {% else %}
             <a data-csrf="{{ csrf_token }}" href="{{task.flow_task.get_task_url(task, namespace=namespace, user=request.user)}}"/>Resume Task</a>
             {% endif %}
+            #}
+            <a href="{{process.get_task_url(task=task, user=request.user)}}"/>Resume Task</a>
+
           </td>
-          <td >
+          <td>
             <button role="action-button" type="button" data-action="action-remove-new-indicator" class="label small-label green-label button" style="float: right" aria-describedby="hint164-content">
               New
             </button>
@@ -41,8 +45,8 @@
           <td></td>
           <td ><span  class="text-widget "></span></td>
         </tr>
-        <tr >
-          <td >
+        <tr>
+          <td>
             <a
               href="#"
               role="action-button"
@@ -54,7 +58,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td ><span  class="text-widget "></span></td>
+            <td><span  class="text-widget "></span></td>
         </tr>
       </table>
     </div>

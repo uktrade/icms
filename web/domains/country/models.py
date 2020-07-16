@@ -16,9 +16,9 @@ class Country(models.Model):
 
     def __str__(self):
         if self.id:
-            return f"Country ({self.name})"
+            return f"{self.name}"
         else:
-            return "Country (new) "
+            return "(new)"
 
     @property
     def name_slug(self):

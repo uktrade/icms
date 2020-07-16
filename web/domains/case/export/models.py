@@ -1,5 +1,9 @@
 from django.db import models
+from django.urls import reverse
 
+from web.flow.models import Process
+
+from web.domains.workbasket.base import WorkbasketBase
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
 from web.domains.country.models import Country, CountryGroup
@@ -9,6 +13,8 @@ from web.domains.user.models import User
 
 
 class ExportApplicationType(models.Model):
+    CERT_FREE_SALE = 1
+    CERT_MANUFACTURE = 2
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type_code = models.CharField(max_length=30, blank=False, null=False)
@@ -27,8 +33,14 @@ class ExportApplicationType(models.Model):
         related_name="manufacture_export_application_types",
     )
 
+    def __str__(self):
+        return f"{self.type}"
 
-class ExportApplication(models.Model):
+    class Meta:
+        ordering = ("type",)
+
+
+class ExportApplication(WorkbasketBase, Process):
     IN_PROGRESS = "IN_PROGRESS"
     SUBMITTED = "SUBMITTED"
     PROCESSING = "PROCESSING"
@@ -56,8 +68,9 @@ class ExportApplication(models.Model):
     APPROVE = "APPROVE"
     DECISIONS = ((REFUSE, "Refuse"), (APPROVE, "Approve"))
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30, choices=STATUSES, blank=False, null=False)
+    status = models.CharField(
+        max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
+    )
     reference = models.CharField(max_length=50, blank=True, null=True)
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
@@ -110,6 +123,7 @@ class ExportApplication(models.Model):
         related_name="contact_export_applications",
     )
     countries = models.ManyToManyField(Country)
+
     agent = models.ForeignKey(
         Exporter,
         on_delete=models.PROTECT,
@@ -124,3 +138,31 @@ class ExportApplication(models.Model):
         null=True,
         related_name="agent_office_export_applications",
     )
+
+    case_notes = models.ManyToManyField(CaseNote)
+
+    def get_workbasket_template(self):
+        return "web/domains/workbasket/partials/export-case.html"
+
+
+class CertificateOfManufactureApplication(ExportApplication):
+    PROCESS_TYPE = "CertificateOfManufactureApplication"
+
+    is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
+    is_manufacturer = models.BooleanField(null=True)
+
+    product_name = models.CharField(max_length=1000, blank=False)
+    chemical_name = models.CharField(max_length=500, blank=False)
+    manufacturing_process = models.TextField(max_length=4000, blank=False)
+
+    def get_task_url(self, task, user):
+        if task.task_type == "prepare":
+            return reverse("export:com_edit", kwargs={"pk": self.pk})
+        elif task.task_type == "process":
+            # TODO: implement when case processing flow is implemented
+            return "/"
+        else:
+            raise Exception(f"Unknown task_type {task.task_type}")
+
+
+# TODO: add certificate of free sale model
