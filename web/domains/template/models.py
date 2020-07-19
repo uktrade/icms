@@ -84,9 +84,9 @@ class Template(Archivable, models.Model):
         else:
             return label
 
-    def get_content(self, replacements={}):
+    def get_content(self, replacements=None):
         """
-        returns the template content with the placeholders replaced with their value
+        Returns the template content with the placeholders replaced with their value
 
         calling this function with replacements={'foo': 'bar'} will return the template content
         with all occurences of [[foo]] replaced with bar
@@ -96,10 +96,33 @@ class Template(Archivable, models.Model):
         if content is None:
             return ""
 
+        if replacements is None:
+            return content
+
         for replacement, value in replacements.items():
-            content = re.sub(r"\[\[%s\]\]" % replacement, value, content)
+            content = re.sub(r"\[\[{}\]\]".format(replacement), str(value), content)
 
         return content
+
+    def get_title(self, replacements=None):
+        """
+        Returns the template title with the placeholders replaced with their value
+
+        calling this function with replacements={'foo': 'bar'} will return the template title
+        with all occurences of [[foo]] replaced with bar
+        """
+        title = self.template_title
+
+        if title is None:
+            return ""
+
+        if replacements is None:
+            return title
+
+        for replacement, value in replacements.items():
+            title = re.sub(r"\[\[{}\]\]".format(replacement), str(value), title)
+
+        return title
 
     @staticmethod
     def get_choice_entry(items, search):

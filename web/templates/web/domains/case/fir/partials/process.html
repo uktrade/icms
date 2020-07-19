@@ -1,0 +1,113 @@
+{% set fir = process.fir %}
+
+<h4>Further Information Request</h4>
+
+<div class="container" >
+
+  <div class="row">
+    <div class="three columns">
+      <label>Status</label>
+    </div>
+    <div class="six columns">
+      <div class="status {{process.status|lower}}">
+        <div><span class="text-widget ">{{fir.status}}</span></div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns" >
+      <label class="prompt west">Request Date</label>
+    </div>
+    <div class="three columns" >
+      <span class="text-widget ">{{ fir.requested_datetime }}</span>
+    </div>
+    <div class="three columns" >
+      <label>Requested By</label>
+    </div>
+    <div class="three columns" >
+      <span>{{ fir.requested_by}}</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="three columns" >
+      <label>Request Subject</label>
+    </div>
+    <div class="six columns" >
+      <span>{{ fir.request_subject }}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns" >
+      <label>Request CC Email Addresses</label>
+    </div>
+    <div class="six columns" >
+      <span>{{fir.email_cc_address_list}}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns" >
+      <label>Request Details</label>
+    </div>
+    <div class="six columns" >
+      <span>{{fir.request_detail}}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {% if fir.response_datetime %}
+
+  <h5>Response</h5>
+
+  <div class="row">
+    <div class="three columns" >
+      <label class="prompt west">Response Date</label>
+    </div>
+    <div class="three columns" >
+      <span class="text-widget ">{{ fir.response_datetime }}</span>
+    </div>
+    <div class="three columns" >
+      <label>Responded By</label>
+    </div>
+    <div class="three columns" >
+      <span>{{ fir.response_by}}</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="three columns" >
+      <label>Response Detail</label>
+    </div>
+    <div class="six columns" >
+      <span>{{fir.response_detail}}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {% endif %}
+
+  {% if fir.closed_datetime %}
+
+  <div class="row">
+    <div class="three columns" >
+      <label class="prompt west">Closed Date</label>
+    </div>
+    <div class="three columns" >
+      <span class="text-widget ">{{ fir.closed_datetime }}</span>
+    </div>
+    <div class="three columns" >
+      <label>Closed By</label>
+    </div>
+    <div class="three columns" >
+      <span>{{ fir.closed_by}}</span>
+    </div>
+  </div>
+
+  {% endif %}
+</div>

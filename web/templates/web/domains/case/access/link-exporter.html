@@ -17,7 +17,7 @@
 
 
   {% with process=activation.process %}
-    {% include "web/domains/case/access/partials/access-request-display.html" %}
+    {% include "web/domains/case/access/partials/process.html" %}
   {% endwith %}
 
   <h3>Link Exporter</h3>
@@ -32,4 +32,25 @@
     <input type="hidden" name="_continue"></input>
     {{super()}}
   </form>
+{% endblock %}
+
+
+{% block sidebar %}
+
+  {# exporter list sidebar#}
+
+  {{super()}}
+
+  {% include "web/domains/case/access/partials/sidebar.html" %}
+
+  {% set manage_url = flowurl(request, activation.task, url_name='detail') %}
+  {% if manage_url %}
+    </br>
+    <h4>Task</h4>
+    <ul class="menu-out">
+      <li>
+        <a href="{{manage_url}}">Manage Task</a>
+      </li>
+    </ul>
+  {% endif %}
 {% endblock %}

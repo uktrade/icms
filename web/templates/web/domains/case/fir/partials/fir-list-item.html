@@ -1,0 +1,37 @@
+<fieldset>
+    <legend><strong>FIR {{ idx }} </strong></legend>
+
+      {% set edit_task = process.edit_task() %}
+      {% set cancel_url=flowurl(request, process, namespace='fir', url_name='action_cancel') %}
+
+      {% if process.fir.is_draft() %}
+        <ul class="menu-out case-item-title-actions flow-across">
+          {% if edit_task %}
+          <li>
+            <a 
+              href="{{flowurl(request, edit_task, url_name='execute', namespace='fir')}}" 
+              class="small-button button icon-pencil">
+              Edit
+            </a>
+          </li>
+          {% endif %}
+          
+          {% if cancel_url %}
+          <li>
+            <a 
+              href="{{cancel_url}}" 
+              class="small-button button icon-bin">Delete</a>
+          </li>
+          {% endif %}
+
+        </ul>
+      {% endif %}
+
+    <div class="container setoutForm">
+
+      {% include "web/domains/case/fir/partials/process.html" %}
+
+      TODO:Uploaded files
+
+    </div>
+</fieldset>

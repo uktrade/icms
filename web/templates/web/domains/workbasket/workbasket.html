@@ -149,8 +149,10 @@
             {% for process in object_list %}
               {% if process.approval_request %}
                 {% include "web/domains/workbasket/partials/approval-request.html" %}
-              {% else %}
+              {% elif process.access_request %}
                 {% include "web/domains/workbasket/partials/access-request.html" %}
+              {% elif process.parent_process %}
+                {% include "web/domains/workbasket/partials/fir.html" %}
               {% endif %}
             {% endfor %}
 

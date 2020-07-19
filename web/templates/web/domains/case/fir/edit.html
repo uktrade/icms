@@ -1,0 +1,30 @@
+{% extends "viewflow/flow/task.html" %}
+
+{% import "forms/fields.html" as fields %}
+
+
+{% block process_details %}
+  {# do not show process details on this page #}
+{% endblock %}
+
+{% block form_content %}
+  {{super()}}
+  <h3>Further Information Request</h3>
+  {{ fields.field(form.request_subject) }}
+  {{ fields.field(form.email_cc_address_list) }}
+  {{ fields.field(form.request_detail) }}
+{% endblock %}
+
+
+{% block task_actions %}
+  <li>
+    <button type="submit" class="primary-button button">
+      Request
+    </button>
+  </li>
+  <li>
+    <button type="submit" name="_save_draft" class="button">
+      Save Draft
+    </button>
+  </li>
+{% endblock %}

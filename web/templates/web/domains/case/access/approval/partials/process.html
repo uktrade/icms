@@ -1,5 +1,5 @@
 {% with process=process.approval_request %}
-  {% include "web/domains/case/access/partials/access-request-display.html" %}
+  {% include "web/domains/case/access/partials/process.html" %}
 {% endwith %}
 {% set approval_request=process.approval_request %}
 {% set type=process.approval_request.access_request.requester_type %}

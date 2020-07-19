@@ -17,7 +17,7 @@ from viewflow.models import Subprocess
 from web.auth.utils import get_team_members_with_permission, get_users_with_permission
 from web.domains.user.models import User
 
-from .forms import ReAssignTaskForm
+from . import signals, forms
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,9 @@ class CancelProcessView(ViewflowCancelProcessView):
             # Finish parent task if this is a sub process
             self._finish_parent_task(process.parent_task)
 
-        return super().post(request, *args, **kwargs)
+        response = super().post(request, *args, **kwargs)
+        signals.flow_cancelled.send(sender=process.flow_class, process=process)
+        return response
 
 
 class ReAssignTaskView(MessageUserMixin, TemplateView):
@@ -115,7 +117,7 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
             return get_users_with_permission(permission).filter(is_active=True)
 
     def get_form(self):
-        return ReAssignTaskForm(self.get_user_queryset(), data=self.request.POST or None)
+        return forms.ReAssignTaskForm(self.get_user_queryset(), data=self.request.POST or None)
 
     def get_context_data(self, **kwargs):
         """Context for a reassign view.

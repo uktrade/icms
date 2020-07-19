@@ -35,7 +35,7 @@ def approver_permission(activation):
 
 
 class ApprovalRequestFlow(Flow):
-    process_template = "web/domains/case/access/partials/approval-request-display.html"
+    process_template = "web/domains/case/access/approval/partials/process.html"
     process_class = models.ApprovalRequestProcess
 
     start = flow.StartSubprocess(func=this.start_func).Next(this.notify_contacts)

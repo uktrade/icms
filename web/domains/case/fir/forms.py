@@ -1,24 +1,48 @@
-from django import forms
-from web.forms import ModelDisplayForm, ModelEditForm
+import structlog as logging
+from django.forms.widgets import Textarea
+from django.utils import timezone
+
 from web.domains.case.fir.models import FurtherInformationRequest
+from web.forms import ModelEditForm
+
+logger = logging.getLogger(__name__)
 
 
 class FurtherInformationRequestForm(ModelEditForm):
-    def get_top_buttons(self):
-        """
-        buttons to show on the form's top row
-        """
-        return ["save"]
+    """
+        Request form for FIRs.
 
-    def get_bottom_buttons(self):
+        Takes an optional user keyword arg to set fir requested by
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+    def _is_draft(self):
         """
-        buttons to show on the form's bottom row
+        Check submitted data to determine if saving as draft
         """
-        return ["send", "delete"]
+        return "_save_draft" in self.data
+
+    def save(self, commit=True):
+        """
+            Set request status/date before save
+        """
+        # TODO: Skip form validations if saving as draft?
+        fir = super().save(commit=False)
+        fir.requested_by = self.user
+        if not self._is_draft():
+            fir.status = FurtherInformationRequest.OPEN
+
+        if commit:
+            fir.save()
+
+        return fir
 
     class Meta:
         model = FurtherInformationRequest
-        fields = ["status", "request_subject", "email_cc_address_list", "request_detail"]
+        fields = ["request_subject", "email_cc_address_list", "request_detail"]
         labels = {
             "email_cc_address_list": "Request CC Email Addresses",
             "files": "Documents",
@@ -32,69 +56,36 @@ class FurtherInformationRequestForm(ModelEditForm):
                 Use a semicolon (<strong>;</strong>) to seperate multiple addresses.
                 <br>
                 <br>
-                E.g. <span style="white-space:nowrap;">john@smith.com <strong>;</strong> jane@smith.com</span>"""
-        }
-
-        # From action configuration, here we can configure what button appear where on the FIR form, its style and action
-        actions = {
-            "save": {
-                "css": "icon-floppy-disk",  # css classes to add (eg: icon classes)
-                "action": "save",  # action name (input field will be created with this value)
-                "label": "Save",  # text to show
-            },
-            "send": {
-                "css": "primary-button",
-                "action": "send",
-                "label": "Send Request",
-                "confirm_message": "You sure?",
-            },
-            "delete": {
-                "css": "",
-                "action": "Delete",
-                "label": "Delete",
-                "confirm_message": "Are you sure you want to delete this Further Information Request?",
-            },
-            "edit": {"css": "icon-pencil", "action": "edit", "label": "Edit",},
-            "withdraw": {
-                "css": "",
-                "action": "withdraw",
-                "label": "Withdraw Request",
-                "confirm_message": "Are you sure you want to withdraw this Further Information Request?",
-            },
+                E.g. <span style="white-space:nowrap;">john@smith.com <strong>;</strong> \
+                jane@smith.com</span>"""
         }
 
 
-class FurtherInformationRequestDisplayForm(FurtherInformationRequestForm, ModelDisplayForm):
+class FurtherInformationRequestResponseForm(ModelEditForm):
+    def __init__(self, response_by, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.response_by = response_by
 
-    requested_datetime = forms.CharField(
-        label=FurtherInformationRequestForm.Meta.labels["requested_datetime"]
-    )
-    requested_by = forms.CharField()
-
-    def get_top_buttons(self):
+    def save(self, commit=True):
         """
-        buttons to show on the form's top row
+            Set response status/date before save
         """
-        if self.instance.status == FurtherInformationRequest.DRAFT:
-            return ["edit"]
+        fir = super().save(commit=False)
+        fir.response_datetime = timezone.now()
+        fir.status = FurtherInformationRequest.RESPONDED
+        fir.response_by = self.response_by
+        if commit:
+            fir.save()
+        return fir
 
-        return []
-
-    def get_bottom_buttons(self):
-        """
-        buttons to show on the form's bottom row
-        """
-        if self.instance.status == FurtherInformationRequest.OPEN:
-            return ["withdraw"]
-
-        return []
-
-    class Meta(FurtherInformationRequestForm.Meta):
-        config = {
-            "requested_datetime": {
-                "padding": {"right": None},
-                "label": {"cols": "three"},
-                "input": {"cols": "two"},
-            },
-            "requested_by": {"label": {"cols": "two"}, "input": {"cols": "two"},},
+    class Meta:
+        model = FurtherInformationRequest
+        fields = [
+            "response_detail",
+        ]
+        labels = {
+            "response_detail": "Response Details",
+        }
+        widgets = {
+            "response_detail": Textarea({"rows": 5}),
         }

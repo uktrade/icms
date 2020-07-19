@@ -16,9 +16,6 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["ImporterAccessRequestFlow", "ExporterAccessRequestFlow"]
 
-IMP_CASE_OFFICER = "web.IMP_CASE_OFFICER"
-IMP_CERT_CASE_OFFICER = "web.IMP_CERT_CASE_OFFICER"
-
 
 def notify_officers(activation):
     notify.access_requested(activation.process.access_request)
@@ -66,7 +63,7 @@ def assign_review_task(activation):
 
 
 class ImporterAccessRequestFlow(Flow):
-    process_template = "web/domains/case/access/partials/access-request-display.html"
+    process_template = "web/domains/case/access/partials/process.html"
     process_class = models.ImporterAccessRequestProcess
 
     # Performed by importers or their agents
@@ -78,7 +75,7 @@ class ImporterAccessRequestFlow(Flow):
     # point of return if relink importer action is taken on review
     link_importer = (
         View(views.LinkImporterView)
-        .Permission(IMP_CASE_OFFICER)
+        .Permission(models.ImporterAccessRequestProcess.IMP_CASE_OFFICER)
         .Next(this.review)
         .onCreate(assign_link_task)
     )
@@ -87,7 +84,7 @@ class ImporterAccessRequestFlow(Flow):
     review = (
         View(views.AccessRequestReviewView)
         .Next(this.check_re_link_required)
-        .Permission(IMP_CASE_OFFICER)
+        .Permission(models.ImporterAccessRequestProcess.IMP_CASE_OFFICER)
         .onCreate(assign_review_task)
     )
 
@@ -103,11 +100,11 @@ class ImporterAccessRequestFlow(Flow):
         .Else(this.close_request)
     )
 
-    approval = flow.Subprocess(ApprovalRequestFlow.start,).Next(this.close_request)
+    approval = flow.Subprocess(ApprovalRequestFlow.start).Next(this.close_request)
 
     close_request = (
         View(views.CloseAccessRequestView)
-        .Permission(IMP_CASE_OFFICER)
+        .Permission(models.ImporterAccessRequestProcess.IMP_CASE_OFFICER)
         .Assign(this.review.owner)
         .Next(this.check_approval_restart)
     )
@@ -124,7 +121,7 @@ class ImporterAccessRequestFlow(Flow):
 
 
 class ExporterAccessRequestFlow(Flow):
-    process_template = "web/domains/case/access/partials/access-request-display.html"
+    process_template = "web/domains/case/access/partials/process.html"
     process_class = models.ExporterAccessRequestProcess
 
     # Performed by exporters or their agents
@@ -138,7 +135,7 @@ class ExporterAccessRequestFlow(Flow):
     link_exporter = (
         View(views.LinkExporterView)
         .Next(this.review)
-        .Permission(IMP_CERT_CASE_OFFICER)
+        .Permission(models.ExporterAccessRequestProcess.IMP_CERT_CASE_OFFICER)
         .onCreate(assign_link_task)
     )
 
@@ -146,7 +143,7 @@ class ExporterAccessRequestFlow(Flow):
     review = (
         View(views.AccessRequestReviewView)
         .Next(this.check_re_link_required)
-        .Permission(IMP_CERT_CASE_OFFICER)
+        .Permission(models.ExporterAccessRequestProcess.IMP_CERT_CASE_OFFICER)
         .onCreate(assign_review_task)
     )
 
@@ -162,11 +159,11 @@ class ExporterAccessRequestFlow(Flow):
         .Else(this.close_request)
     )
 
-    approval = flow.Subprocess(ApprovalRequestFlow.start,).Next(this.close_request)
+    approval = flow.Subprocess(ApprovalRequestFlow.start).Next(this.close_request)
 
     close_request = (
         View(views.CloseAccessRequestView)
-        .Permission(IMP_CERT_CASE_OFFICER)
+        .Permission(models.ExporterAccessRequestProcess.IMP_CERT_CASE_OFFICER)
         .Assign(this.review.owner)
         .Next(this.check_approval_restart)
     )

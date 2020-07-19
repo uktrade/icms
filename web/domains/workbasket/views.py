@@ -1,11 +1,11 @@
 import structlog as logging
 from django.views.generic.list import ListView
+from viewflow.models import Process
 
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case.access.flows import ImporterAccessRequestFlow, ExporterAccessRequestFlow
 from web.domains.case.access.approval.flows import ApprovalRequestFlow
-
-from viewflow.models import Process
+from web.domains.case.access.flows import ExporterAccessRequestFlow, ImporterAccessRequestFlow
+from web.domains.case.fir.flows import FurtherInformationRequestFlow
 
 logger = logging.get_logger(__name__)
 
@@ -16,6 +16,11 @@ class Workbasket(RequireRegisteredMixin, ListView):
 
     def get_queryset(self):
         return Process.objects.filter_available(
-            [ImporterAccessRequestFlow, ExporterAccessRequestFlow, ApprovalRequestFlow],
+            [
+                ImporterAccessRequestFlow,
+                ExporterAccessRequestFlow,
+                ApprovalRequestFlow,
+                FurtherInformationRequestFlow,
+            ],
             self.request.user,
         )

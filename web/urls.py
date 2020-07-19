@@ -21,6 +21,7 @@ urlpatterns = [
     path("importer/", include("web.domains.importer.urls")),
     path("exporter/", include("web.domains.exporter.urls")),
     path("access/", include("web.domains.case.access.urls", namespace="access")),
+    path("fir/", include("web.domains.case.fir.urls", namespace="fir")),
     path("import/", include("web.domains.application._import.urls")),
     path("mailshot/", include("web.domains.mailshot.urls")),
 ]

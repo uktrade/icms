@@ -16,7 +16,7 @@
   </div>
 
   {% with process=activation.process %}
-    {% include "web/domains/case/access/partials/access-request-display.html" %}
+    {% include "web/domains/case/access/partials/process.html" %}
   {% endwith %}
 
   <h3>Link Importer</h3>
@@ -33,6 +33,12 @@
 {% endblock %}
 
 {% block sidebar %}
+
+  {# importer list sidebar #}
+  {{super}}
+
+  {% include "web/domains/case/access/partials/sidebar.html" %}
+
   {% set manage_url = flowurl(request, activation.task, url_name='detail') %}
   {% if manage_url %}
     </br>

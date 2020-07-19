@@ -1,0 +1,21 @@
+{% extends "viewflow/flow/task.html" %}
+
+{% import "forms/fields.html" as fields %}
+
+{% block form_content %}
+    {{super()}}
+    {{fields.field(form.response_detail)}}
+{% endblock %}
+
+
+{% block task_actions %}
+  <li>
+    <button 
+      type="submit" 
+      role="action-button" 
+      data-confirm="Are you sure you would like to submit this further information response?"
+      class="primary-button button">
+        Submit Response
+    </button>
+  </li>
+{% endblock %}

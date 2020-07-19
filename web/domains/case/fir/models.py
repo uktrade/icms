@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from viewflow.models import Process
 
 from web.domains.file.models import File
 from web.domains.user.models import User
@@ -69,6 +72,14 @@ class FurtherInformationRequest(models.Model):
     )
     files = models.ManyToManyField(File, blank=True)
 
+    def is_draft(self):
+        return self.status == self.DRAFT
+
+    def delete(self):
+        self.status = self.DELETED
+        self.is_active = False
+        self.save()
+
     def date_created_formatted(self):
         """
             returns a formatted datetime
@@ -77,3 +88,28 @@ class FurtherInformationRequest(models.Model):
 
     def has_deleted_files(self):
         return self.files.all().filter(is_active=False).count() > 0
+
+
+class FurtherInformationRequestProcess(Process):
+    """
+        Further information request process
+    """
+
+    fir = models.ForeignKey(FurtherInformationRequest, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    parent_process = GenericForeignKey("content_type", "object_id")
+
+    def edit_task(self):
+        """
+            Return complete request task of fir for editing draft FIRs
+        """
+        # Lazy import to prevent circular dependency
+        from .flows import FurtherInformationRequestFlow
+
+        task = (
+            self.active_tasks()
+            .filter(flow_task=FurtherInformationRequestFlow.complete_request)
+            .last()
+        )
+        return task

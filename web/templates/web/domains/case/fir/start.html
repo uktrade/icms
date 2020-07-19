@@ -1,0 +1,47 @@
+{% extends "model/edit.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block main_content %}
+
+  {% with process = parent_process %}
+    {% include parent_process.flow_class.process_template %}
+  {% endwith %}
+
+
+  <h3>Further Information Request</h3>
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    {{ fields.field(form.request_subject) }}
+    {{ fields.field(form.email_cc_address_list) }}
+    {{ fields.field(form.request_detail) }}
+
+    {% with fir=form.instance %}
+      {% include "web/domains/case/fir/partials/file-upload.html" %}
+    {% endwith %}
+
+    <div class="section-break"></div>
+    <div class="clearBoth"></div>
+    <div class="container">
+      <div class="row">
+        <div class="three columns"> </div>
+        <div class="five columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">
+                Request
+              </button>
+            </li>
+            <li>
+              <button type="submit" name="_save_draft" class="button">
+                Save Draft
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="four columns"> </div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}

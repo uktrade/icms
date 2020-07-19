@@ -1,0 +1,33 @@
+{% extends "layout/sidebar.html" %}
+
+{% block page_title %}Manage {{parent_process}}{% endblock %}
+{% block context_header %}Manage {{parent_process}}{% endblock %}
+
+{% block main_content %}
+
+   <div class="info-box info-box-info">
+        <p>This screen is used to send a request to the access request applicant for further information.</p>
+        <p>An email will be sent to the person who submitted the access request, who will need to log in and supply further information. When they submit their response, ILB admins will be notified via email.</p>
+    </div>
+
+    <div class="list-actions">
+        <ul class="menu-out flow-across">
+            <li>
+              {% set new_fir = request.resolver_match.namespace ~ ":fir-new"  %}
+              <a href="{{url(new_fir, args=(parent_process.pk,))}}" class="small-button icon-plus button">New FIR</a>
+            </li>
+        </ul>
+    </div>
+
+    {% for process in fir_list.all() %}
+        {% with idx=loop.index %}
+            {% include "web/domains/case/fir/partials/fir-list-item.html" %}
+        {% endwith %}
+    {% endfor%}
+
+{% endblock %}
+
+
+{% block sidebar %}
+  {% include "web/domains/case/fir/partials/sidebar.html" %}
+{% endblock %}
