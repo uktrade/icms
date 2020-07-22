@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "viewflow",
     "django_filters",
+    "django_select2",
     "django.forms",
     "django_celery_results",
     "django.contrib.admin",
@@ -223,3 +224,7 @@ SESSION_CACHE_ALIAS = "default"
 
 # Default domain is used in email templates to pint users to ICMS from emails
 DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", "http://localhost:8080/")
+
+SELECT2_CACHE_BACKEND = "default"
+SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
+SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")

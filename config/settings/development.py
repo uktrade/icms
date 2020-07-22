@@ -61,16 +61,17 @@ LOGGING = {
     },
 }
 
-NPM_STATIC_FILES_LOCATION = os.path.join("web", "static", "3rdparty")
+NPM_STATIC_FILES_LOCATION = "web/static/3rdparty"
 
 NPM_FILE_PATTERNS = {
-    "jquery": [os.path.join("dist", "jquery.min.js")],
+    "jquery": ["dist/jquery.min.js"],
     "jquery-ui-dist": ["jquery-ui.min.js"],
-    "html5shiv": [os.path.join("dist", "html5shiv.min.js")],
-    "jquery.formset": [os.path.join("src", "jquery.formset.js")],
-    "jodit": [os.path.join("build", "jodit.min.*")],
+    "html5shiv": ["dist/html5shiv.min.js"],
+    "jquery.formset": ["src/jquery.formset.js"],
+    "jodit": ["build/jodit.min.*"],
     "jquery-fontspy": ["jQuery-FontSpy.js"],
-    "sticky-kit": [os.path.join("dist", "sticky-kit.min.js")],
+    "select2": ["dist/css/select2.min.css", "dist/js/select2.min.js"],
+    "sticky-kit": ["dist/sticky-kit.min.js"],
 }
 
 # Django Compressor - uncomment to activate (also set ICMS_DEBUG to False, to trigger compression of js on system start)

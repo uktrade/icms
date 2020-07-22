@@ -9,6 +9,7 @@ django-material-pro==1.6.7
 django-phonenumber-field==4.0.0
 django-recaptcha==2.0.6
 django-redis==4.12.1
+django-select2==7.4.2
 django-ses==1.0.1
 django-structlog==1.6.0
 django-viewflow-pro==1.6.2
