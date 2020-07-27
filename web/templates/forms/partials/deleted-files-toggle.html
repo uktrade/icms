@@ -1,0 +1,26 @@
+<label 
+  id="lbl_show_deleted_files" 
+  for="div_ind_input" 
+  class="prompt west">
+  Show Deleted Files
+</label>
+
+<div id="div_ind_input" class="individual-input">
+  <div class="container" aria-labelledby="lbl_show_deleted_files">
+    <label for="chk_show_deleted_toggle" class="radio-label">
+
+      <input 
+        id="chk_show_deleted_toggle" 
+        role="deleted-files-control" 
+        type="checkbox" 
+        aria-describedby="div_toggle_notice">
+
+    </label>
+
+    <div class="screen-reader-only" aria-hidden="true" id="div_toggle_notice">
+      Changing this item will display/hide deleted files.
+    </div>
+
+  </div>
+</div>
+

@@ -1,9 +1,30 @@
-{% extends 'viewflow/base/task_action.html' %}
+{% extends 'viewflow/base/task_detail.html' %}
+{% import 'forms/forms.html' as forms %}
 
-{% block form_content %}
+{% block main_content %}
   {{super()}}
-  {{activation.management_form}}
-  <input type='hidden' name='_continue'>
+
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
+    <input type='hidden' name='_continue'>
+    {{activation.management_form}}
+    {% block form_content %}{% endblock %}
+
+    <div class="list-actions">
+      <div class="container">
+        <div class="row">
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              {% block task_actions %}
+              {% endblock %}
+            </ul>
+          </div>
+          <div class="four columns"></div>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
 {% endblock %}
 
 {% block sidebar %}

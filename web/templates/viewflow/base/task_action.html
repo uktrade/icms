@@ -5,6 +5,7 @@
   {{super()}}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
     {% block form_content %}{% endblock %}
 
     <div class="list-actions">

@@ -50,23 +50,20 @@ class S3UploadService:
         self.virus_scanner = virus_scanner
         self.file_validator = file_validator
 
-    def process_uploaded_file(self, bucket, uploaded_file, destination):
+    def process_uploaded_file(self, bucket, uploaded_file):
         """
         Processes an uploaded file.
         1. Runs virus scan on file
-        2. Validates the file according to bussiness logic
-        3. if all passes moves the file to its destination
+        2. Validates the file name and extensions
 
         Arguments:
             bucket {string} -- S3 bucket name
             uploaded_file {storages.backends.s3boto3.S3Boto3StorageFile} -- the file object in request.FILES
-            destination {string} -- destination path (key) where to put the uploaded file
 
         Throws:
             InfectedFileException -- if file fails to pass virus scan
         """
 
-        # upload to /documents/fir/<fir id>
         logger.debug("Processing Uploaded File %s" % uploaded_file.name)
         s3_file = self.s3_client.get_object(Bucket=bucket, Key=uploaded_file.name)
         s3_file_content = s3_file["Body"].read()
@@ -82,18 +79,17 @@ class S3UploadService:
                     f"'{uploaded_file.original_name}' is not an allowed file"
                 )
 
+            return url_path_join(bucket, uploaded_file.name)
+
             # move file to final destination
-            new_file_path = url_path_join(destination, os.path.basename(uploaded_file.name)).lstrip(
-                "/"
-            )
-            self.s3_client.copy_object(
-                Bucket=bucket,
-                CopySource=url_path_join(bucket, uploaded_file.name),
-                Key=new_file_path,
-            )
-
-            return new_file_path
-
+            #  new_file_path = url_path_join(destination, os.path.basename(uploaded_file.name)).lstrip(
+            #      "/"
+            #  )
+            #  self.s3_client.copy_object(
+            #      Bucket=bucket,
+            #      CopySource=url_path_join(bucket, uploaded_file.name),
+            #      Key=new_file_path,
+            #  )
         except Exception as e:
             logger.warning(str(e))
             raise e
@@ -101,4 +97,3 @@ class S3UploadService:
             # delete uploaded file as it is no longer needed.
             # it either failed validation or virus scanning or has been copied to the right place
             self.s3_client.delete_object(Bucket=bucket, Key=uploaded_file.name)
-            pass

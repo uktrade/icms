@@ -8,7 +8,7 @@
   </li>
   <li>
     {% set total_ifr = firs.count() %}
-    {% set open_fir = firs.filter(status="OPEN").count() %}
+    {% set open_fir = firs.exclude(status="CLOSED").count() %}
     <a href="{{url(namespace ~ ':fir-list', args=(process.pk,))}}"
        class="{% if route == 'fir' %}current-page{% endif %}">
       Further Information Requests ({{ "%s/%s" % (open_fir, total_ifr) }})

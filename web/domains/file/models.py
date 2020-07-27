@@ -1,16 +1,17 @@
 import logging
+
 import humanize
-
-from django.db import models
 from django.conf import settings
-from web.domains.user.models import User
-from web.utils import url_path_join
+from django.db import models
 
+from web.domains.user.models import User
+from web.models.mixins import Archivable
+from web.utils import url_path_join
 
 logger = logging.getLogger(__name__)
 
 
-class File(models.Model):
+class File(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     filename = models.CharField(max_length=300, blank=False, null=True)
     content_type = models.CharField(max_length=100, blank=False, null=True)

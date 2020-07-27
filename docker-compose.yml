@@ -41,6 +41,9 @@ services:
             - ELASTIC_APM_ENVIRONMENT
             - ELASTIC_APM_URL
             - DISABLE_DEBUG_TOOLBAR
+            - CLAM_AV_USERNAME
+            - CLAM_AV_PASSWORD
+            - CLAM_AV_URL
         # tty: true
         ports:
             - "8080:8080"

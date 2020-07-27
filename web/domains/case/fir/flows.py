@@ -39,23 +39,26 @@ class FurtherInformationRequestFlow(Flow):
     process_template = "web/domains/case/fir/partials/process.html"
     process_class = models.FurtherInformationRequestProcess
 
-    request = flow.StartFunction(this.start_fir).Next(this.check_draft)
+    start = flow.StartFunction(this.start_fir).Next(this.check_draft)
 
-    # If draft create a task for fir requester to finish fir request
+    # If draft, create a task for fir requester to finish the request
     check_draft = (
-        flow.If(cond=lambda activation: activation.process.further_information_request.is_draft())
+        flow.If(cond=lambda activation: activation.process.fir.is_draft())
         .Then(this.complete_request)
         .Else(this.notify_contacts)
     )
 
+    # for case officer to finish the request if saved as draft
     complete_request = (
         View(views.FutherInformationRequestEditView)
         .Next(this.notify_contacts)
-        .Assign(this.request.owner)
+        .Assign(this.start.owner)
     )
 
+    # notify importer/exporter contacts for new fir via email
     notify_contacts = flow.Handler(send_fir_email).Next(this.respond)
 
+    # for importer/exporter contacts to send further information back
     respond = (
         View(views.FurtherInformationRequestResponseView)
         .Team(lambda p: p.parent_process.get_fir_response_team())
@@ -63,8 +66,10 @@ class FurtherInformationRequestFlow(Flow):
         .Permission(lambda a: a.process.parent_process.get_fir_response_permission())
     )
 
+    # notify case officers of the response
     notify_case_officers = flow.Handler(send_fir_response_email).Next(this.review)
 
+    # for case officer to review and close the fir
     review = (
         View(views.FurtherInformationRequestReviewView)
         .Permission(lambda a: a.process.parent_process.get_fir_starter_permission())
@@ -78,18 +83,16 @@ class FurtherInformationRequestFlow(Flow):
         activation.prepare()
         activation.process.parent_process = parent_process
         activation.task.owner = further_information_request.requested_by
-        activation.process.further_information_request = further_information_request
+        activation.process.fir = further_information_request
         activation.done()
 
 
 @receiver(flow_cancelled, sender=FurtherInformationRequestFlow)
 def delete_fir(sender, **kwargs):
     """
-        Set FIR status to DELETED
+        Set FIR status to DELETED and deactivate if process is cancelled
     """
     logger.debug("Cancel received", sender=sender, kwargs=kwargs)
     process = kwargs.get("process")
-    fir = process.further_information_request
-    fir.status = models.FurtherInformationRequest.DELETED
-    fir.is_active = False
-    fir.save()
+    fir = process.fir
+    fir.delete()

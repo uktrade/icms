@@ -86,9 +86,6 @@ class FurtherInformationRequest(models.Model):
         """
         return self.requested_datetime.strftime("%d-%b-%Y %H:%M:%S")
 
-    def has_deleted_files(self):
-        return self.files.all().filter(is_active=False).count() > 0
-
 
 class FurtherInformationRequestProcess(Process):
     """
@@ -100,10 +97,11 @@ class FurtherInformationRequestProcess(Process):
     object_id = models.PositiveIntegerField()
     parent_process = GenericForeignKey("content_type", "object_id")
 
-    def edit_task(self):
+    def complete_request(self):
         """
-            Return complete request task of fir for editing draft FIRs
+            Return complete_request task of fir process for editing draft FIRs
         """
+
         # Lazy import to prevent circular dependency
         from .flows import FurtherInformationRequestFlow
 
@@ -112,4 +110,14 @@ class FurtherInformationRequestProcess(Process):
             .filter(flow_task=FurtherInformationRequestFlow.complete_request)
             .last()
         )
+        return task
+
+    def review(self):
+        """
+            Return review task of fir process for closing FIRs
+        """
+        # Lazy import to prevent circular dependency
+        from .flows import FurtherInformationRequestFlow
+
+        task = self.active_tasks().filter(flow_task=FurtherInformationRequestFlow.review).last()
         return task

@@ -4815,6 +4815,12 @@ ul.fileList {
     opacity: 0;
 }
 
+.fileUploadLink {
+    color: #0869AA;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .file-list .deleted-file {
     display: none;;
 }

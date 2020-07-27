@@ -2,6 +2,7 @@
 
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+{% import "forms/files.html" as _files %}
 
 {% block main_content %}
 
@@ -16,9 +17,7 @@
     {{ fields.field(form.email_cc_address_list) }}
     {{ fields.field(form.request_detail) }}
 
-    {% with fir=form.instance %}
-      {% include "web/domains/case/fir/partials/file-upload.html" %}
-    {% endwith %}
+    {{ _files.uploader(files, form.fields.files, readonly=False) }}
 
     <div class="section-break"></div>
     <div class="clearBoth"></div>
@@ -28,8 +27,12 @@
         <div class="five columns">
           <ul class="menu-out flow-across">
             <li>
-              <button type="submit" class="primary-button button">
-                Request
+              <button 
+                type="submit" 
+                role="action-button" 
+                data-confirm="Are you sure you want to send this further information request?" 
+                class="primary-button button">
+                Send Request
               </button>
             </li>
             <li>

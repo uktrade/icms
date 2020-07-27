@@ -2,13 +2,13 @@
   {% set process = parent_process %}
   {% set current_task = process.active_tasks().filter(owner=request.user).last() %}
   {% set task_url = flowurl(request, current_task) %}
-  {% set firs = parent_process.fir_processes.exclude(fir__status="DELETED")  %}
+  {% set firs = parent_process.fir_processes.filter(fir__is_active=True)  %}
   <li>
-    {% set total_ifr = firs.count() %}
-    {% set open_fir = firs.filter(status="OPEN").count() %}
+    {% set total_fir = firs.count() %}
+    {% set open_fir = firs.exclude(status="CLOSED").count() %}
     <a href=""
        class="current-page">
-      Further Information Requests ({{ "%s/%s" % (open_fir, total_ifr) }})
+      Further Information Requests ({{ "%s/%s" % (open_fir, total_fir) }})
     </a>
     <li>
       <a href="{{task_url}}"> 

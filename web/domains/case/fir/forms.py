@@ -45,7 +45,6 @@ class FurtherInformationRequestForm(ModelEditForm):
         fields = ["request_subject", "email_cc_address_list", "request_detail"]
         labels = {
             "email_cc_address_list": "Request CC Email Addresses",
-            "files": "Documents",
             "requested_datetime": "Request Date",
         }
 

@@ -199,7 +199,7 @@ class ExporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
     def get_fir_response_team(self):
         return self.access_request.linked_exporter
 
-    def get_fir_review_permission(self):
+    def get_fir_starter_permission(self):
         return self.IMP_CERT_CASE_OFFICER
 
     def get_fir_response_permission(self):

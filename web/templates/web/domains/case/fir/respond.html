@@ -1,10 +1,13 @@
 {% extends "viewflow/flow/task.html" %}
 
 {% import "forms/fields.html" as fields %}
+{% import "forms/files.html" as _files %}
 
 {% block form_content %}
     {{super()}}
     {{fields.field(form.response_detail)}}
+
+    {{ _files.uploader(files, field=form.fields.files, readonly=False) }}
 {% endblock %}
 
 

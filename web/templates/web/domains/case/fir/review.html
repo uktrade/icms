@@ -1,6 +1,13 @@
 {% extends "viewflow/flow/task.html" %}
 
 {% import "forms/fields.html" as fields %}
+{% import "forms/files.html" as _files %}
+
+
+{% block form_content %}
+    <div class="section-break"></div>
+    {{ _files.uploader(files, field=form.fields.files, readonly=False) }}
+{% endblock %}
 
 {% block task_actions %}
   <li>

@@ -161,7 +161,7 @@ S3_APPEND_DATETIME_ON_UPLOAD = True
 AWS_STORAGE_BUCKET_NAME = "icms.local"
 AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
 S3_GENERATE_OBJECT_KEY_FUNCTION = "web.utils.s3upload.random_file_name"
-S3_DOCUMENT_ROOT_DIRECTORY = "tmp"
+S3_DOCUMENT_ROOT_DIRECTORY = "documents"
 # END TODO
 
 AWS_BASE_URL = "http://localhost:4572/"  # base url used for file downloads
