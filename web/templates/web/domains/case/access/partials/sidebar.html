@@ -1,17 +1,26 @@
+{% set process = activation.process %}
+{% set namespace = request.resolver_match.namespace  %}
+{% set access_request = process.access_request %}
+
 <ul class="menu-out">
-  {% set process = activation.process %}
-  {% set namespace = request.resolver_match.namespace  %}
-  {% set firs = process.fir_processes.filter(fir__is_active=True)  %}
   <h4>Access Request</h4>
+
   <li>
     <a href="" class="current-page" >{{activation.flow_task}}</a>
   </li>
-  <li>
-    {% set total_ifr = firs.count() %}
-    {% set open_fir = firs.exclude(status="CLOSED").count() %}
-    <a href="{{url(namespace ~ ':fir-list', args=(process.pk,))}}"
-       class="{% if route == 'fir' %}current-page{% endif %}">
-      Further Information Requests ({{ "%s/%s" % (open_fir, total_ifr) }})
-    </a>
-  </li>
+
+  {# Show FIR in sidebar only if access request is linked #}
+  {% if access_request.linked_importer or access_request.linked_exporter %}
+
+    {% set firs = process.fir_processes.filter(fir__is_active=True)  %}
+    <li>
+      {% set total_ifr = firs.count() %}
+      {% set open_fir = firs.exclude(fir__status="CLOSED").count() %}
+      <a href="{{url(namespace ~ ':fir-list', args=(process.pk,))}}"
+         class="{% if route == 'fir' %}current-page{% endif %}">
+        Further Information Requests ({{ "%s/%s" % (open_fir, total_ifr) }})
+      </a>
+    </li>
+
+  {% endif %}
 </ul>

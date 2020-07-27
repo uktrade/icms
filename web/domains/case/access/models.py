@@ -31,7 +31,7 @@ def _render_template_content(request, template, access_request):
 
 
 def _render_template_title(template, access_request):
-    # TODO: IAR or EAR
+    # TODO: Use reference here, currently using access_id as reference is not generated
     return template.get_title({"REQUEST_REFERENCE": access_request.id})
 
 
@@ -155,28 +155,25 @@ class ImporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
     re_link = models.BooleanField(blank=False, null=False, default=False)
     fir_processes = GenericRelation(FurtherInformationRequestProcess)
 
-    def get_fir_response_team(self):
-        return self.access_request.linked_importer
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.template = _get_fir_template()
 
-    def get_fir_starter_permission(self):
-        return self.IMP_CASE_OFFICER
+    def fir_content(self, request):
+        return {
+            "request_subject": _render_template_title(self.template, self.access_request),
+            "request_detail": _render_template_content(request, self.template, self.access_request),
+        }
 
-    def get_fir_response_permission(self):
-        return self.IMP_AGENT_APPROVER
+    def fir_config(self):
+        return {
+            "requester_permission": self.IMP_CASE_OFFICER,
+            "responder_permission": self.IMP_AGENT_APPROVER,
+            "responder_team": self.access_request.linked_importer,
+            "namespace": "access:importer",
+        }
 
-    def get_fir_template(self):
-        return _get_fir_template()
-
-    def render_template_content(self, template, request):
-        return _render_template_content(request, template, self.access_request)
-
-    def render_template_title(self, template, request):
-        return _render_template_title(template, self.access_request)
-
-    def get_process_namespace(self):
-        return "access:importer"
-
-    def add_fir(self, fir):
+    def on_fir_create(self, fir):
         self.access_request.further_information_requests.add(fir)
 
 
@@ -196,26 +193,23 @@ class ExporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
     re_link = models.BooleanField(blank=False, null=False, default=False)
     fir_processes = GenericRelation(FurtherInformationRequestProcess)
 
-    def get_fir_response_team(self):
-        return self.access_request.linked_exporter
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.template = _get_fir_template()
 
-    def get_fir_starter_permission(self):
-        return self.IMP_CERT_CASE_OFFICER
+    def fir_content(self, request):
+        return {
+            "request_subject": _render_template_title(self.template, self.access_request),
+            "request_detail": _render_template_content(request, self.template, self.access_request),
+        }
 
-    def get_fir_response_permission(self):
-        return self.IMP_CERT_AGENT_APPROVER
+    def fir_config(self):
+        return {
+            "requester_permission": self.IMP_CERT_CASE_OFFICER,
+            "responder_permission": self.IMP_CERT_AGENT_APPROVER,
+            "responder_team": self.access_request.linked_exporter,
+            "namespace": "access:exporter",
+        }
 
-    def get_fir_template(self):
-        return _get_fir_template()
-
-    def render_template_content(self, template, request):
-        return _render_template_content(request, template, self.access_request)
-
-    def render_template_title(self, template, request):
-        return _render_template_title(template, self.access_request)
-
-    def get_process_namespace(self):
-        return "access:exporter"
-
-    def add_fir(self, fir):
+    def on_fir_create(self, fir):
         self.access_request.further_information_requests.add(fir)

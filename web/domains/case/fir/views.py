@@ -15,7 +15,7 @@ from . import forms, models
 logger = logging.getLogger(__name__)
 
 
-def get_parent_process(request):
+def _parent_process(request):
     """
         Resolve parent process from url parameter parent_process_pk
 
@@ -32,11 +32,12 @@ def get_parent_process(request):
     return parent_process
 
 
-def get_fir_list_url(parent_process):
+def _fir_list_url(parent_process):
     """
         Return url for FIR list page of parent process
     """
-    return reverse(f"{parent_process.get_process_namespace()}:fir-list", args=(parent_process.pk,),)
+    namespace = parent_process.fir_config()["namespace"]
+    return reverse(f"{namespace}:fir-list", args=(parent_process.pk,),)
 
 
 class FurtherInformationRequestListView(ListView):
@@ -49,13 +50,22 @@ class FurtherInformationRequestListView(ListView):
 
     def get_queryset(self):
         # Filter by parent process
-        parent_process = get_parent_process(self.request)
+        parent_process = _parent_process(self.request)
         return parent_process.fir_processes.filter(fir__is_active=True)
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["parent_process"] = get_parent_process(self.request)
+        context["parent_process"] = _parent_process(self.request)
         return context
+
+    def post(self, request, *args, **kwargs):
+        if "_withdraw" in request.POST:
+            process_id = request.POST.get("_process_id")
+            fir_process = self.get_queryset().get(pk=process_id)
+            fir_process.withdraw_request()
+            return super().get(request, *args, **kwargs)
+
+        return super().post(request, *args, **kwargs)
 
     class Meta:
         model = models.FurtherInformationRequestProcess
@@ -74,51 +84,46 @@ class FurtherInformationRequestStartView(PermissionRequiredMixin, FileUploadMixi
         """
             Check parent process for permission
         """
-        return get_parent_process(self.request).get_fir_starter_permission()
+        return _parent_process(self.request).fir_config()["requester_permission"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["parent_process"] = get_parent_process(self.request)
+        context["parent_process"] = _parent_process(self.request)
         return context
 
     def get_form(self):
         request = self.request
-        parent_process = get_parent_process(self.request)
+        parent_process = _parent_process(request)
         if request.POST:
-            return self.form_class(user=self.request.user, data=request.POST)
+            return self.form_class(user=request.user, data=request.POST)
 
         # initial request
-        template = parent_process.get_fir_template()
-        initial = {
-            "request_detail": parent_process.render_template_content(template, self.request),
-            "request_subject": parent_process.render_template_title(template, self.request),
-        }
-        return self.form_class(user=self.request.user, initial=initial)
+        fir_content = parent_process.fir_content(request)
+        return self.form_class(user=request.user, initial=fir_content)
 
     def _start_process(self, fir):
         """
-            Trigger FIR flow start task
+            Trigger FIR flow start task and return new process intance
         """
         # Lazy import as flows.py imports views.py as well, causing a circular
         # dependency
         from .flows import FurtherInformationRequestFlow
 
-        parent_process = get_parent_process(self.request)
-        parent_process.add_fir(fir)
+        parent_process = _parent_process(self.request)
+        parent_process.on_fir_create(fir)
 
         # Start a new FIR flow
-        FurtherInformationRequestFlow.start.run(get_parent_process(self.request), fir)
+        return FurtherInformationRequestFlow.start.run(parent_process, fir)
 
-    @transaction.atomic
     def form_valid(self, form):
         """
             If the form is valid set parent process and start FIR process
         """
-        fir = form.save()
-        fir.files.set(self.get_files())
-        self._start_process(fir)
-        parent_process = get_parent_process(self.request)
-        return redirect(get_fir_list_url(parent_process))
+        with transaction.atomic():
+            fir = form.save()
+            fir.files.set(self.get_files())
+            self._start_process(fir)
+            return redirect(_fir_list_url(_parent_process(self.request)))
 
 
 class FutherInformationRequestEditView(FileUploadMixin, UpdateProcessView):
@@ -137,18 +142,19 @@ class FutherInformationRequestEditView(FileUploadMixin, UpdateProcessView):
         return self.form_class(instance=fir, data=self.request.POST or None)
 
     def get_success_url(self):
-        return get_fir_list_url(self.activation.process.parent_process)
+        return _fir_list_url(self.activation.process.parent_process)
 
     def form_valid(self, form):
         """
             Prevent proceeding with Viewflow if saving as draft
         """
-        fir = form.save()
-        fir.files.set(self.get_files())
-        if fir.is_draft():
-            return redirect(self.get_success_url())
+        with transaction.atomic():
+            fir = form.save()
+            fir.files.set(self.get_files())
+            if fir.is_draft():
+                return redirect(self.get_success_url())
 
-        return super().form_valid(form)
+            return super().form_valid(form)
 
 
 class FurtherInformationRequestResponseView(FileUploadMixin, UpdateProcessView):
@@ -166,17 +172,25 @@ class FurtherInformationRequestResponseView(FileUploadMixin, UpdateProcessView):
     def get_file_queryset(self):
         return self.get_form().instance.files
 
+    def form_valid(self, form):
+        with transaction.atomic():
+            fir = form.save()
+            fir.files.set(self.get_files())
+            return super().form_valid(form)
+
 
 class FurtherInformationRequestReviewView(FileUploadMixin, UpdateProcessView):
     template_name = "web/domains/case/fir/review.html"
 
     def form_valid(self, form):
-        fir = form.instance.fir
-        fir.close()
-        return super().form_valid(form)
+        with transaction.atomic():
+            fir = form.instance.fir
+            fir.close(self.request.user)
+            fir.files.set(self.get_files())
+            return super().form_valid(form)
 
     def get_file_queryset(self):
         return self.get_form().instance.fir.files
 
     def get_success_url(self):
-        return get_fir_list_url(self.activation.process.parent_process)
+        return _fir_list_url(self.activation.process.parent_process)

@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import structlog as logging
 from django.template import TemplateSyntaxError
 from django.urls import reverse
 from django.utils.module_loading import import_string
+from viewflow.activation import STATUS
 from viewflow.base import Flow
 from viewflow.compat import get_app_package
 from viewflow.models import AbstractProcess, AbstractTask
@@ -50,3 +49,14 @@ def get_url(ref, namespace, url_name=None, user=None):
         import_string("{}.flows.{}".format(app_package, flow_class_path))
         url_ref = "{}:{}".format(namespace, url_name if url_name else "index")
         return reverse(url_ref)
+
+
+def unassign_process_tasks(process):
+    """
+        Unassign all assigned process tasks
+
+    """
+    assigned_tasks = process.task_set.filter(status=STATUS.ASSIGNED)
+    for task in assigned_tasks:
+        activation = task.activate()
+        activation.unassign()

@@ -1,11 +1,17 @@
+import structlog as logging
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
+from viewflow.activation import STATUS
 from viewflow.models import Process
 
 from web.domains.file.models import File
 from web.domains.user.models import User
+from web.viewflow import signals
+from web.viewflow import utils as viewflow_utils
+
+logger = logging.getLogger(__name__)
 
 
 class FurtherInformationRequest(models.Model):
@@ -84,6 +90,10 @@ class FurtherInformationRequest(models.Model):
         self.closed_by = user
         self.save()
 
+    def make_draft(self):
+        self.status = self.DRAFT
+        self.save()
+
     def date_created_formatted(self):
         """
             returns a formatted datetime
@@ -101,28 +111,26 @@ class FurtherInformationRequestProcess(Process):
     object_id = models.PositiveIntegerField()
     parent_process = GenericForeignKey("content_type", "object_id")
 
+    def _active_task(self, flow_task):
+        return self.active_tasks().filter(flow_task=flow_task).last()
+
     def send_request_task(self):
         """
-            Return send_request task of fir process for editing draft FIRs.
+            Return active `send_request task` of fir process for editing draft FIRs.
         """
-
-        # Lazy import to prevent circular dependency
-        from .flows import FurtherInformationRequestFlow
-
-        task = (
-            self.active_tasks().filter(flow_task=FurtherInformationRequestFlow.send_request).last()
-        )
-        return task
+        return self._active_task(self.flow_class.send_request)
 
     def review_task(self):
         """
-            Return review task of fir process for closing FIRs.
+            Return active `review` task of fir process
         """
-        # Lazy import to prevent circular dependency
-        from .flows import FurtherInformationRequestFlow
+        return self._active_task(self.flow_class.review)
 
-        task = self.active_tasks().filter(flow_task=FurtherInformationRequestFlow.review).last()
-        return task
+    def respond_task(self):
+        """
+            Return active `respond` task of fir process
+        """
+        return self._active_task(self.flow_class.respond)
 
     @property
     def parent_display(self):
@@ -130,3 +138,42 @@ class FurtherInformationRequestProcess(Process):
             Text representation of parent process. Used in FIR emails.
         """
         return self.parent_process
+
+    def cancel_process(self):
+        """
+            Unassign all tasks of FIR process and cancel it
+        """
+        with transaction.atomic():
+            viewflow_utils.unassign_process_tasks(self)
+            self.status = STATUS.CANCELED
+            self.finished = timezone.now()
+            self.save()
+            signals.flow_cancelled.send(sender=self.flow_class, process=self)
+
+    def withdraw_request(self):
+        """
+            Withdraws sent request and sets FIR status to DRAFT.
+
+            Also creates a task for requester to complete the draft request.
+        """
+        respond_task = self.respond_task()
+        if not respond_task:
+            return
+
+        with transaction.atomic():
+            activation = respond_task.activate()
+            # cancel respond task
+            activation.cancel()
+
+            # TODO: What is token for? Currently all looks to be "start" in  the database
+            # Create new task for sending request
+            activation.create_task(
+                self.flow_class.send_request, activation, respond_task.token
+            ).save()
+            self.fir.make_draft()
+
+    def config(self, key):
+        """
+            Return FIR config parameter from parent process
+        """
+        return self.parent_process.fir_config()[key]

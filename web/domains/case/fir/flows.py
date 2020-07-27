@@ -24,6 +24,18 @@ def notify_responded(activation):
     notify.further_information_responded(activation.process)
 
 
+def requester_permission(activation):
+    return activation.process.config("requester_permission")
+
+
+def responder_permission(activation):
+    return activation.process.config("responder_permission")
+
+
+def responder_team(activation):
+    return activation.process.config("reponder_team")
+
+
 class FurtherInformationRequestFlow(Flow):
     """
         Further Information Request
@@ -36,7 +48,6 @@ class FurtherInformationRequestFlow(Flow):
 
     """
 
-    DRAFT = models.FurtherInformationRequest.DRAFT
     process_template = "web/domains/case/fir/partials/process.html"
     process_class = models.FurtherInformationRequestProcess
 
@@ -44,7 +55,7 @@ class FurtherInformationRequestFlow(Flow):
 
     # If draft, create a task for fir requester to finish the request
     check_draft = (
-        flow.If(cond=lambda activation: activation.process.fir.is_draft())
+        flow.If(cond=lambda act: act.process.fir.is_draft())
         .Then(this.send_request)
         .Else(this.notify_contacts)
     )
@@ -54,6 +65,7 @@ class FurtherInformationRequestFlow(Flow):
         View(views.FutherInformationRequestEditView)
         .Next(this.notify_contacts)
         .Assign(this.start.owner)
+        .Permission(requester_permission)
     )
 
     # notify importer/exporter contacts for new fir via email
@@ -62,9 +74,9 @@ class FurtherInformationRequestFlow(Flow):
     # for importer/exporter contacts to send further information back
     respond = (
         View(views.FurtherInformationRequestResponseView)
-        .Team(lambda p: p.parent_process.get_fir_response_team())
+        .Team(responder_team)
         .Next(this.notify_case_officers)
-        .Permission(lambda a: a.process.parent_process.get_fir_response_permission())
+        .Permission(responder_permission)
     )
 
     # notify case officers of the response
@@ -73,9 +85,9 @@ class FurtherInformationRequestFlow(Flow):
     # for case officer to review and close the fir
     review = (
         View(views.FurtherInformationRequestReviewView)
-        .Permission(lambda a: a.process.parent_process.get_fir_starter_permission())
-        .Assign(this.send_request.owner)
         .Next(this.end)
+        .Assign(this.send_request.owner)
+        .Permission(requester_permission)
     )
 
     end = flow.End()
@@ -87,6 +99,7 @@ class FurtherInformationRequestFlow(Flow):
         activation.task.owner = further_information_request.requested_by
         activation.process.fir = further_information_request
         activation.done()
+        return activation.process
 
 
 @receiver(flow_cancelled, sender=FurtherInformationRequestFlow)

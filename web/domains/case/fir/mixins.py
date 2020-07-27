@@ -1,60 +1,42 @@
 class FurtherInformationProcessMixin:
     """
         A process mixin to be used by processes that needs parallel Further Information
-        Request flows
-
-
-        See: web/domains/case/access/models.py for example usage with
-        Importer/Exporter Access Requests
+        Request flows.
     """
 
-    def get_fir_response_permission(self):
+    def fir_config(self):
         """
-            Returns permission required to respond to a Further Information Request
+            Returns configuration required for FIR processes to run.
+
+            Example Config:
+
+            {
+                'requester_permission': 'web.IMP_CASE_OFFICER',
+                'responder_permission': 'web.IMP_EDIT_APP',
+                'responder_team': 'web.IMP_EDIT_APP',
+                'namespace': 'access:importer'
+            }
+
         """
         raise NotImplementedError
 
-    def get_fir_response_team(self):
+    def fir_content(self, request):
         """
-            Returns the team FIR is to be requested from
+            Returns initial FIR content for requester to edit.
 
-            Team in addition with response permission protects FIR response task
+            Example:
+
+            {
+                'request_subject': 'subject',
+                'request_detail': 'detail',
+            }
         """
         raise NotImplementedError
 
-    def get_fir_starter_permission(self):
+    def on_fir_create(self, fir):
         """
-            Returns permission required to start/review/close fir
-        """
-        raise NotImplementedError
-
-    def get_fir_template(self):
-        """
-            Returns template to populate initial request subject  and request detail
-        """
-        raise NotImplementedError
-
-    def get_process_namespace(self):
-        """
-            Returns namespace for process
-        """
-        raise NotImplementedError
-
-    def render_template_content(self, template, request):
-        """
-            Render template content with placeholder variables
-        """
-        raise NotImplementedError
-
-    def render_template_title(self, template, request):
-        """
-            Renders template title  with placeholder variables
-        """
-        raise NotImplementedError
-
-    def add_fir(self, fir):
-        """
-            Invoked when a new FIR process is started
+            Invoked when a new FIR process is started.
+            Returns a FurtherInformationRequest instance
 
             Parameter: fir - New Furhter Information Request
         """

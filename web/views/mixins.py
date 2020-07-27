@@ -1,7 +1,8 @@
 import structlog as logging
 from django.conf import settings
 from django.http import HttpResponseBadRequest
-from django.views.generic.base import ContextMixin, View
+from django.views.generic.base import View
+from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from s3chunkuploader.file_handler import s3_client
 
@@ -66,7 +67,7 @@ class PostActionMixin(object):
         return super().post(request, *args, **kwargs)
 
 
-class FileUploadMixin(ContextMixin, View):
+class FileUploadMixin(FormView):
     """
         FormView mixin for processing file uploads.
     """

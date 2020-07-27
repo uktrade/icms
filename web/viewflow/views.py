@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import structlog as logging
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -8,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from django.views.generic import TemplateView
 from six.moves.urllib.parse import quote as urlquote
-from viewflow.activation import STATUS
+from viewflow import STATUS
 from viewflow.decorators import flow_view
 from viewflow.flow.views import CancelProcessView as ViewflowCancelProcessView
 from viewflow.flow.views.mixins import MessageUserMixin
@@ -17,7 +15,7 @@ from viewflow.models import Subprocess
 from web.auth.utils import get_team_members_with_permission, get_users_with_permission
 from web.domains.user.models import User
 
-from . import signals, forms
+from . import forms, signals, utils
 
 logger = logging.getLogger(__name__)
 
@@ -25,49 +23,43 @@ logger = logging.getLogger(__name__)
 class CancelProcessView(ViewflowCancelProcessView):
     """
         A customised Viewflow cancel process view to allow cancelling process
-        by unassigning all process tasks
+        by unassigning all process tasks.
 
         Viewflow doesn't allow cancelling of processes with active tasks assigned to
-        users
+        users.
 
     """
 
-    def _unassign_tasks(self, process):
-        """
-            Unassign all active subprocess tasks
-
-        """
-        assigned_tasks = process.task_set.filter(status=STATUS.ASSIGNED)
-        for task in assigned_tasks:
-            activation = task.activate()
-            activation.unassign()
-
     def _finish_parent_task(self, task):
         """
-            Finish subprocess parent task when subprocess in cancelled
+            Finish subprocess parent task when subprocess in cancelled.
         """
         activation = task.activate()
         activation.done()
 
     def post(self, request, *args, **kwargs):
         """
-            Cancel process. Unassign all process tasks before
-            cancelling
+            Cancel process. Unassign all process tasks before cancelling.
 
             If a this is a subprocess finish parent task of the parent process
             (Subprocesses in Viewflow are children of tasks in a parent process)
+
+
+            Sends a flow_cancelled signal if successfull.
         """
 
         process = self.get_object()
         # Viewflow doesn't allow cancelling unless all
         # process tasks are unassigned
-        self._unassign_tasks(process)
+        utils.unassign_process_tasks(process)
         if isinstance(process, Subprocess):
             # Finish parent task if this is a sub process
             self._finish_parent_task(process.parent_task)
 
         response = super().post(request, *args, **kwargs)
-        signals.flow_cancelled.send(sender=process.flow_class, process=process)
+        process.refresh_from_db()
+        if process.status == STATUS.CANCELED:
+            signals.flow_cancelled.send(sender=process.flow_class, process=process)
         return response
 
 

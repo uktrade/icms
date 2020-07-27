@@ -129,7 +129,7 @@ def retract_mailshot(mailshot):
 
 def further_information_requested(fir_process):
     logger.debug("Notifying for new FIR", process=fir_process)
-    team = fir_process.parent_process.get_fir_response_team()
+    team = fir_process.config("responder_team")
     fir = fir_process.fir
     if isinstance(team, Exporter):
         recipients = utils.get_team_member_emails_with_permission(team, "web.IMP_EDIT_APP")
@@ -149,7 +149,7 @@ def further_information_requested(fir_process):
 
 def further_information_responded(fir_process):
     logger.debug("Notifying case officers for FIR response", process=fir_process)
-    team = fir_process.parent_process.get_fir_response_team()
+    team = fir_process.config("responder_team")
     subject = f"FIR Reponse - {fir_process.parent_display}"
     if isinstance(team, Exporter):
         send_export_case_officer_notification(

@@ -1,4 +1,6 @@
 import structlog as logging
+from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -199,3 +201,14 @@ class CloseAccessRequestView(UpdateProcessView):
         if "_restart_approval" in request.POST:
             return self._restart_approval()
         return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        process = self.activation.process
+        open_firs = process.fir_processes.filter(finished__isnull=True)
+        if open_firs.exists():
+            with transaction.atomic():
+                for fir_process in open_firs:
+                    fir_process.cancel_process()
+                    messages.success(self.request, "Cancelled FIRs")
+
+        return super().form_valid(form)

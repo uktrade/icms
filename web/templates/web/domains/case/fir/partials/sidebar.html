@@ -5,7 +5,7 @@
   {% set firs = parent_process.fir_processes.filter(fir__is_active=True)  %}
   <li>
     {% set total_fir = firs.count() %}
-    {% set open_fir = firs.exclude(status="CLOSED").count() %}
+    {% set open_fir = firs.exclude(fir__status="CLOSED").count() %}
     <a href=""
        class="current-page">
       Further Information Requests ({{ "%s/%s" % (open_fir, total_fir) }})
