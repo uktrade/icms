@@ -5,8 +5,8 @@
 <fieldset>
     <legend><strong>FIR {{ idx }} </strong></legend>
 
-      {% set edit_task = process.complete_request() %}
-      {% set review_task = process.review() %}
+      {% set edit_task = process.send_request_task() %}
+      {% set review_task = process.review_task() %}
       {% set cancel_url=flowurl(request, process, namespace='fir', url_name='action_cancel') %}
 
       {% if fir.is_draft() %}

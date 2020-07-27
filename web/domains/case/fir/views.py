@@ -3,7 +3,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.utils import timezone
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
 from viewflow.flow.views import UpdateProcessView
@@ -173,9 +172,7 @@ class FurtherInformationRequestReviewView(FileUploadMixin, UpdateProcessView):
 
     def form_valid(self, form):
         fir = form.instance.fir
-        fir.closed_datetime = timezone.now()
-        fir.closed_by = self.request.user
-        fir.save()
+        fir.close()
         return super().form_valid(form)
 
     def get_file_queryset(self):

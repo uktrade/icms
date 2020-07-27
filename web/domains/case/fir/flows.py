@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from viewflow import flow
 from viewflow.base import Flow, this
 
+from web.notify import notify
 from web.viewflow.nodes import View
 from web.viewflow.signals import flow_cancelled
 
@@ -15,12 +16,12 @@ __all__ = ["FurtherInformationRequestFlow"]
 logger = logging.getLogger(__name__)
 
 
-def send_fir_email(activation):
-    pass
+def notify_started(activation):
+    notify.further_information_requested(activation.process)
 
 
-def send_fir_response_email(activation):
-    pass
+def notify_responded(activation):
+    notify.further_information_responded(activation.process)
 
 
 class FurtherInformationRequestFlow(Flow):
@@ -44,19 +45,19 @@ class FurtherInformationRequestFlow(Flow):
     # If draft, create a task for fir requester to finish the request
     check_draft = (
         flow.If(cond=lambda activation: activation.process.fir.is_draft())
-        .Then(this.complete_request)
+        .Then(this.send_request)
         .Else(this.notify_contacts)
     )
 
     # for case officer to finish the request if saved as draft
-    complete_request = (
+    send_request = (
         View(views.FutherInformationRequestEditView)
         .Next(this.notify_contacts)
         .Assign(this.start.owner)
     )
 
     # notify importer/exporter contacts for new fir via email
-    notify_contacts = flow.Handler(send_fir_email).Next(this.respond)
+    notify_contacts = flow.Handler(notify_started).Next(this.respond)
 
     # for importer/exporter contacts to send further information back
     respond = (
@@ -67,12 +68,13 @@ class FurtherInformationRequestFlow(Flow):
     )
 
     # notify case officers of the response
-    notify_case_officers = flow.Handler(send_fir_response_email).Next(this.review)
+    notify_case_officers = flow.Handler(notify_responded).Next(this.review)
 
     # for case officer to review and close the fir
     review = (
         View(views.FurtherInformationRequestReviewView)
         .Permission(lambda a: a.process.parent_process.get_fir_starter_permission())
+        .Assign(this.send_request.owner)
         .Next(this.end)
     )
 

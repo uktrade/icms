@@ -1,30 +1,24 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import itertools
 
 from django.conf import settings
 from django.core.mail import send_mail
 
+from web.auth import utils as auth_utils
 from web.domains.team.models import Role
 from web.domains.user.models import AlternativeEmail, PersonalEmail, User
 
 
-def send_email(
-    subject, message, recipients, html_message=None,
-):
+def send_email(subject, message, recipients, html_message=None):
     """
         Sends emails to given recipients.
     """
     send_mail(subject, message, settings.EMAIL_FROM, recipients, html_message=html_message)
 
 
-def get_role_member_notification_emails(role):
+def get_user_emails_by_ids(user_ids):
     """
-        Return a list of emails for all active members of given role
-        with portal notifications enabled
+        Return a list emails for given users' ids
     """
-    user_ids = role.user_set.filter(account_status=User.ACTIVE).values_list("id", flat=True)
     personal = (
         PersonalEmail.objects.filter(user_id__in=user_ids)
         .filter(portal_notifications=True)
@@ -37,6 +31,15 @@ def get_role_member_notification_emails(role):
     )
     queryset = personal.union(alternative)
     return list(queryset.all())
+
+
+def get_role_member_notification_emails(role):
+    """
+        Return a list of emails for all active members of given role
+        with portal notifications enabled
+    """
+    user_ids = role.user_set.filter(account_status=User.ACTIVE).values_list("id", flat=True)
+    return get_user_emails_by_ids(user_ids)
 
 
 def get_notification_emails(user):
@@ -73,9 +76,10 @@ def get_export_case_officers_emails():
     )
 
 
-def get_app_url(request):
+def get_team_member_emails_with_permission(team, permission):
     """
-        Returns app's base url with scheme and host
-        e.g. http://example.com[:port]
+        Return list of emails for team members with given permission
     """
-    return "{0}://{1}".format(request.scheme, request.get_host())
+    users = auth_utils.get_team_members_with_permission(team, permission)
+    user_ids = users.filter(account_status=User.ACTIVE).values_list("id", flat=True)
+    return get_user_emails_by_ids(user_ids)

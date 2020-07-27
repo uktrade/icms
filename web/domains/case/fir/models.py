@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 from viewflow.models import Process
 
 from web.domains.file.models import File
@@ -80,6 +78,12 @@ class FurtherInformationRequest(models.Model):
         self.is_active = False
         self.save()
 
+    def close(self, user):
+        self.status = self.CLOSED
+        self.closed_datetime = timezone.now()
+        self.closed_by = user
+        self.save()
+
     def date_created_formatted(self):
         """
             returns a formatted datetime
@@ -97,27 +101,32 @@ class FurtherInformationRequestProcess(Process):
     object_id = models.PositiveIntegerField()
     parent_process = GenericForeignKey("content_type", "object_id")
 
-    def complete_request(self):
+    def send_request_task(self):
         """
-            Return complete_request task of fir process for editing draft FIRs
+            Return send_request task of fir process for editing draft FIRs.
         """
 
         # Lazy import to prevent circular dependency
         from .flows import FurtherInformationRequestFlow
 
         task = (
-            self.active_tasks()
-            .filter(flow_task=FurtherInformationRequestFlow.complete_request)
-            .last()
+            self.active_tasks().filter(flow_task=FurtherInformationRequestFlow.send_request).last()
         )
         return task
 
-    def review(self):
+    def review_task(self):
         """
-            Return review task of fir process for closing FIRs
+            Return review task of fir process for closing FIRs.
         """
         # Lazy import to prevent circular dependency
         from .flows import FurtherInformationRequestFlow
 
         task = self.active_tasks().filter(flow_task=FurtherInformationRequestFlow.review).last()
         return task
+
+    @property
+    def parent_display(self):
+        """
+            Text representation of parent process. Used in FIR emails.
+        """
+        return self.parent_process

@@ -36,3 +36,7 @@ LOGGING = {
         "web": {"handlers": ["console"], "level": "DEBUG",},
     },
 }
+
+# used in email content
+ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", "enquiries.ilb@icms.trade.dev.uktrade.io")
+ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", "N/A")
