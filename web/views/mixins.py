@@ -14,13 +14,8 @@ from web.utils.virus import ClamAV, InfectedFileException
 logger = logging.getLogger(__name__)
 
 
-logger = logging.get_logger(__name__)
-
-
 class PageTitleMixin(View):
-    """
-    Adds page title attribute of view to context
-    """
+    """Adds page title attribute of view to context"""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -36,9 +31,7 @@ class PageTitleMixin(View):
 
 
 class DataDisplayConfigMixin(PageTitleMixin, ListView):
-    """
-    Adds display configuration for listed object
-    """
+    """Adds display configuration for listed object"""
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -49,10 +42,8 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
 
 
 class PostActionMixin(object):
-    """
-    Handle post requests with action variable: Calls method with the same name
-    as action variable to handle action
-    """
+    """Handle post requests with action variable: Calls method with the same
+       name as action variable to handle action"""
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
@@ -68,17 +59,16 @@ class PostActionMixin(object):
 
 
 class FileUploadMixin(FormView):
-    """
-        FormView mixin for processing file uploads.
-    """
+    """FormView mixin for processing file uploads."""
+
+    # TODO: once the model is saved the files should be moved into
+    #       its' destination folder
 
     _uploaded_file = None
     file_queryset = None
 
     def _create_file_entry(self, uploaded_file, **kwargs):
-        """
-            Create a file entry in the db for uploaded file
-        """
+        """Create a file entry in the db for uploaded file"""
         return File.objects.create(
             filename=uploaded_file.original_name,
             file_size=uploaded_file.file_size,
@@ -89,17 +79,15 @@ class FileUploadMixin(FormView):
         )
 
     def _upload(self, request):
-        """
-            Validates and virus scans the file uploaded to S3.
+        """Validates and virus scans the file uploaded to S3.
 
-            A file is entry is created even if file validation is failed
-            and file is deleted.
+           A file is entry is created even if file validation is failed
+           and file is deleted.
 
-            File is uploaded by S3 Chunk Uploader.
+           File is uploaded by S3 Chunk Uploader.
 
-            Invoked when post request received with paremter action="upload"
-            see: web.view.mixins.PostActionMixin
-        """
+           Invoked when post request received with paremter action="upload"
+           see: web.view.mixins.PostActionMixin"""
         data = request.POST
         if not data:
             return HttpResponseBadRequest("Invalid body received")
@@ -146,9 +134,7 @@ class FileUploadMixin(FormView):
         return super().get(request)
 
     def post(self, request, *args, **kwargs):
-        """
-            Handle file actions
-        """
+        """Handle file actions"""
         if "_upload" in request.POST:
             return self._upload(request)
 
@@ -162,9 +148,7 @@ class FileUploadMixin(FormView):
         return super().post(request, *args, **kwargs)
 
     def get_file_queryset(self):
-        """
-            Override this method or set file_queryset attribute of the view
-        """
+        """Override this method or set file_queryset attribute of the view"""
         if self.file_queryset:
             return self.file_queryset
 

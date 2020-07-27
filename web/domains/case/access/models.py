@@ -1,23 +1,23 @@
-import datetime
-
+import structlog as logging
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.utils import timezone
 from viewflow.models import Process
 
+from web.domains.case.fir.mixins import FurtherInformationProcessMixin
+from web.domains.case.fir.models import FurtherInformationRequest, FurtherInformationRequestProcess
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.domains.user.models import User
 
-from ..fir.mixins import FurtherInformationProcessMixin
-from ..fir.models import FurtherInformationRequest, FurtherInformationRequestProcess
 from .managers import AccessRequestQuerySet
+
+logger = logging.getLogger(__name__)
 
 
 def _get_fir_template():
-    """
-        Fetch template for initial FIR request details
-    """
+    """Fetch template for initial FIR request details"""
     return Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
 
 
@@ -138,7 +138,7 @@ class AccessRequest(models.Model):
         # Set submit_datetime on save
         # audo_now=True causes field to be non-editable
         # and prevents from being added to a form
-        self.submit_datetime = datetime.datetime.now()
+        self.submit_datetime = timezone.now()
         super().save(*args, **kwargs)
 
 
@@ -155,14 +155,11 @@ class ImporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
     re_link = models.BooleanField(blank=False, null=False, default=False)
     fir_processes = GenericRelation(FurtherInformationRequestProcess)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.template = _get_fir_template()
-
     def fir_content(self, request):
+        template = _get_fir_template()
         return {
-            "request_subject": _render_template_title(self.template, self.access_request),
-            "request_detail": _render_template_content(request, self.template, self.access_request),
+            "request_subject": _render_template_title(template, self.access_request),
+            "request_detail": _render_template_content(request, template, self.access_request),
         }
 
     def fir_config(self):
@@ -193,14 +190,11 @@ class ExporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
     re_link = models.BooleanField(blank=False, null=False, default=False)
     fir_processes = GenericRelation(FurtherInformationRequestProcess)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.template = _get_fir_template()
-
     def fir_content(self, request):
+        template = _get_fir_template()
         return {
-            "request_subject": _render_template_title(self.template, self.access_request),
-            "request_detail": _render_template_content(request, self.template, self.access_request),
+            "request_subject": _render_template_title(template, self.access_request),
+            "request_detail": _render_template_content(request, template, self.access_request),
         }
 
     def fir_config(self):

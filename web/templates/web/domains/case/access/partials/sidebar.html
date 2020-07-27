@@ -1,6 +1,6 @@
 {% set process = activation.process %}
-{% set namespace = request.resolver_match.namespace  %}
 {% set access_request = process.access_request %}
+{% set namespace = request.resolver_match.namespace  %}
 
 <ul class="menu-out">
   <h4>Access Request</h4>
@@ -15,7 +15,7 @@
     {% set firs = process.fir_processes.filter(fir__is_active=True)  %}
     <li>
       {% set total_ifr = firs.count() %}
-      {% set open_fir = firs.exclude(fir__status="CLOSED").count() %}
+      {% set open_fir = firs.exclude(status="CLOSED").count() %}
       <a href="{{url(namespace ~ ':fir-list', args=(process.pk,))}}"
          class="{% if route == 'fir' %}current-page{% endif %}">
         Further Information Requests ({{ "%s/%s" % (open_fir, total_ifr) }})

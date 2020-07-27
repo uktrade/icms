@@ -1,4 +1,3 @@
-import structlog as logging
 from django.dispatch import receiver
 from django.utils.decorators import method_decorator
 from viewflow import flow
@@ -11,9 +10,6 @@ from web.viewflow.signals import flow_cancelled
 from . import models, views
 
 __all__ = ["FurtherInformationRequestFlow"]
-
-
-logger = logging.getLogger(__name__)
 
 
 def notify_started(activation):
@@ -32,21 +28,27 @@ def responder_permission(activation):
     return activation.process.config("responder_permission")
 
 
-def responder_team(activation):
-    return activation.process.config("reponder_team")
+def responder_team(process):
+    return process.config("responder_team")
+
+
+def assign_review_task(activation):
+    """Assign 'respond' tasks owner to 'review' task owner"""
+    # Two previous calls as previous of review is email handler and handlers don't have owner
+    # instead step before it. Previous can be start, or send_request if send directly by case officer
+    # without savin as draft )
+    previous = activation.task.previous.first().previous.first()
+    activation.assign(previous.owner)
 
 
 class FurtherInformationRequestFlow(Flow):
-    """
-        Further Information Request
+    """Further Information Request
 
-        FIRs are used as parallel flows of different flows and depends on the parent process
-        for FIR view permissions.
+    FIRs are used as parallel flows of different flows and depends on the parent process
+    for FIR view permissions.
 
-        Parent process must use .mixins.FurtherInformationRequestMixin for the functional
-        interface to read necessary permissions for FIR.
-
-    """
+    Parent process must use .mixins.FurtherInformationRequestMixin for the functional
+    interface to read necessary permissions for FIR."""
 
     process_template = "web/domains/case/fir/partials/process.html"
     process_class = models.FurtherInformationRequestProcess
@@ -86,8 +88,8 @@ class FurtherInformationRequestFlow(Flow):
     review = (
         View(views.FurtherInformationRequestReviewView)
         .Next(this.end)
-        .Assign(this.send_request.owner)
         .Permission(requester_permission)
+        .onCreate(assign_review_task)
     )
 
     end = flow.End()
@@ -104,10 +106,7 @@ class FurtherInformationRequestFlow(Flow):
 
 @receiver(flow_cancelled, sender=FurtherInformationRequestFlow)
 def delete_fir(sender, **kwargs):
-    """
-        Set FIR status to DELETED and deactivate if process is cancelled
-    """
-    logger.debug("Cancel received", sender=sender, kwargs=kwargs)
+    """Set FIR status to DELETED and deactivate if process is cancelled"""
     process = kwargs.get("process")
     fir = process.fir
     fir.delete()

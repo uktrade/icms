@@ -15,10 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class FurtherInformationRequest(models.Model):
-    """
-    Further information requests for cases requested from
-    applicant by case officers
-    """
+    """Further information requests for cases requested from
+       applicant by case officers"""
 
     DRAFT = "DRAFT"
     CLOSED = "CLOSED"
@@ -95,16 +93,12 @@ class FurtherInformationRequest(models.Model):
         self.save()
 
     def date_created_formatted(self):
-        """
-            returns a formatted datetime
-        """
+        """Returns a formatted datetime"""
         return self.requested_datetime.strftime("%d-%b-%Y %H:%M:%S")
 
 
 class FurtherInformationRequestProcess(Process):
-    """
-        Further information request process
-    """
+    """Further information request process"""
 
     fir = models.ForeignKey(FurtherInformationRequest, on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -115,34 +109,24 @@ class FurtherInformationRequestProcess(Process):
         return self.active_tasks().filter(flow_task=flow_task).last()
 
     def send_request_task(self):
-        """
-            Return active `send_request task` of fir process for editing draft FIRs.
-        """
+        """Return active `send_request task` of fir process for editing draft FIRs."""
         return self._active_task(self.flow_class.send_request)
 
     def review_task(self):
-        """
-            Return active `review` task of fir process
-        """
+        """Return active `review` task of fir process"""
         return self._active_task(self.flow_class.review)
 
     def respond_task(self):
-        """
-            Return active `respond` task of fir process
-        """
+        """Return active `respond` task of fir process"""
         return self._active_task(self.flow_class.respond)
 
     @property
     def parent_display(self):
-        """
-            Text representation of parent process. Used in FIR emails.
-        """
+        """Text representation of parent process. Used in FIR emails."""
         return self.parent_process
 
     def cancel_process(self):
-        """
-            Unassign all tasks of FIR process and cancel it
-        """
+        """Unassign all tasks of FIR process and cancel it"""
         with transaction.atomic():
             viewflow_utils.unassign_process_tasks(self)
             self.status = STATUS.CANCELED
@@ -151,18 +135,17 @@ class FurtherInformationRequestProcess(Process):
             signals.flow_cancelled.send(sender=self.flow_class, process=self)
 
     def withdraw_request(self):
-        """
-            Withdraws sent request and sets FIR status to DRAFT.
-
-            Also creates a task for requester to complete the draft request.
-        """
+        """Withdraws sent request and creates a task for request to complete the FIR.
+           Also sets FIR status to DRAFT."""
         respond_task = self.respond_task()
         if not respond_task:
             return
 
         with transaction.atomic():
             activation = respond_task.activate()
-            # cancel respond task
+            # unassign  & cancel respond task
+            if respond_task.status == STATUS.ASSIGNED:
+                activation.unassign()
             activation.cancel()
 
             # TODO: What is token for? Currently all looks to be "start" in  the database
@@ -173,7 +156,5 @@ class FurtherInformationRequestProcess(Process):
             self.fir.make_draft()
 
     def config(self, key):
-        """
-            Return FIR config parameter from parent process
-        """
+        """Return FIR config parameter from parent process"""
         return self.parent_process.fir_config()[key]

@@ -10,8 +10,8 @@ from . import utils
 
 
 @app.task(name="web.notify.email.send_email")
-def send_email(subject, message, recipients, html_message=None):
-    utils.send_email(subject, message, recipients, html_message=html_message)
+def send_email(subject, message, recipients, html_message=None, cc_list=None):
+    utils.send_email(subject, message, recipients, html_message=html_message, cc_list=cc_list)
 
 
 def send_to_importers(subject, message, html_message=None):

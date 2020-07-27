@@ -1,18 +1,9 @@
+{# FIR start view is a Django form view, not a viewflow view. activation is not available at start view #}
+{% set parent_process = parent_process or activation.process.parent_process %}
+
 <ul class="menu-out">
-  {% set process = parent_process %}
-  {% set current_task = process.active_tasks().filter(owner=request.user).last() %}
-  {% set task_url = flowurl(request, current_task) %}
-  {% set firs = parent_process.fir_processes.filter(fir__is_active=True)  %}
-  <li>
-    {% set total_fir = firs.count() %}
-    {% set open_fir = firs.exclude(fir__status="CLOSED").count() %}
-    <a href=""
-       class="current-page">
-      Further Information Requests ({{ "%s/%s" % (open_fir, total_fir) }})
-    </a>
-    <li>
-      <a href="{{task_url}}"> 
-        &lt Back to Task
-      </a>
-    </li>
+  <a 
+    href="{{ flowurl(request, parent_process, namespace=parent_process.fir_config()['namespace'], url_name='detail')}}">
+    {{parent_process}}
+  </a>
 </ul>

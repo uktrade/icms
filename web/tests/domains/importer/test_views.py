@@ -34,12 +34,12 @@ class ImporterListViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def x_test_external_user_access(self):
+    def test_external_user_access(self):
         self.login_with_permissions(SECTION5_AUTHORITY_PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def x_test_constabulary_access(self):
+    def test_constabulary_access(self):
         self.login_with_permissions(FIREARMS_AUTHORITY_PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)

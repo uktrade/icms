@@ -21,32 +21,24 @@ logger = logging.getLogger(__name__)
 
 
 class CancelProcessView(ViewflowCancelProcessView):
-    """
-        A customised Viewflow cancel process view to allow cancelling process
+    """A customised Viewflow cancel process view to allow cancelling process
         by unassigning all process tasks.
 
         Viewflow doesn't allow cancelling of processes with active tasks assigned to
-        users.
-
-    """
+        users."""
 
     def _finish_parent_task(self, task):
-        """
-            Finish subprocess parent task when subprocess in cancelled.
-        """
+        """Finish subprocess parent task when subprocess in cancelled."""
         activation = task.activate()
         activation.done()
 
     def post(self, request, *args, **kwargs):
-        """
-            Cancel process. Unassign all process tasks before cancelling.
+        """Cancel process. Unassign all process tasks before cancelling.
 
-            If a this is a subprocess finish parent task of the parent process
-            (Subprocesses in Viewflow are children of tasks in a parent process)
+           If a this is a subprocess finish parent task of the parent process
+           (Subprocesses in Viewflow are children of tasks in a parent process)
 
-
-            Sends a flow_cancelled signal if successfull.
-        """
+           Sends a flow_cancelled signal if successfull."""
 
         process = self.get_object()
         # Viewflow doesn't allow cancelling unless all
@@ -64,12 +56,11 @@ class CancelProcessView(ViewflowCancelProcessView):
 
 
 class ReAssignTaskView(MessageUserMixin, TemplateView):
-    """
-    Default re-assign view for flow task.
+    """Default re-assign view for flow task.
+
     Only allows re-assigning to users the task are available to
 
-    Get confirmation from user, re-assigns task and redirects to task detail
-    """
+    Get confirmation from user, re-assigns task and redirects to task detail"""
 
     def __init__(self, *args, **kwargs):
         self.team = kwargs.pop("team", None)
@@ -84,8 +75,7 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
 
             [<app_label>/<flow_label>/<task_name>_reassign.html,
              <app_label>/<flow_label>/task_reassign.html,
-             'viewflow/flow/task_reassign.html']
-        """
+             'viewflow/flow/task_reassign.html']"""
         if self.template_name is None:
             flow_task = self.activation.flow_task
             opts = self.activation.flow_class._meta
@@ -99,9 +89,7 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
             return [self.template_name]
 
     def get_user_queryset(self):
-        """
-        Get list of users to select from to assign the task to
-        """
+        """Get list of users to select from to assign the task to"""
         permission = self.activation.task.owner_permission
         if self.team:
             return get_team_members_with_permission(self.team, permission).filter(is_active=True)
@@ -114,8 +102,7 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
     def get_context_data(self, **kwargs):
         """Context for a reassign view.
 
-        :keyword users: list of users the task can be assigned to
-        """
+        :keyword users: list of users the task can be assigned to"""
         context = super().get_context_data(**kwargs)
         context["activation"] = self.activation
         context["form"] = self.get_form()

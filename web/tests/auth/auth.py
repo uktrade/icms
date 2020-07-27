@@ -7,6 +7,8 @@ from web.tests.domains.user.factory import UserFactory
 
 
 class AuthTestCase(TestCase):
+    fixtures = ["permission.yaml"]
+
     def setUp(self):
         self.user = UserFactory(
             username="test_user",
@@ -18,9 +20,11 @@ class AuthTestCase(TestCase):
         )
 
     def grant(self, permission_codename):
-        permission = Permission.objects.create(
-            name=permission_codename, codename=permission_codename, content_type_id=15
-        )
+        # FIXME: Migrated permissions with django has a fixed content type 15.
+        # Create a proxy Permission model for handling permission constants
+        # modelless permissions instances.
+        # see: https://stackoverflow.com/questions/13932774/how-can-i-use-django-permissions-without-defining-a-content-type-or-model
+        permission = Permission.objects.get(codename=permission_codename)
         self.user.user_permissions.add(permission)
 
     def login(self):

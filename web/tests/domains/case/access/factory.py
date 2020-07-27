@@ -82,7 +82,7 @@ class ImporterAccessRequestProcessFactory(factory.django.DjangoModelFactory):
 
     access_request = factory.SubFactory(
         AccessRequestFactory,
-        request_type=random.choices([AccessRequest.IMPORTER, AccessRequest.IMPORTER_AGENT]),
+        request_type=random.choice([AccessRequest.IMPORTER, AccessRequest.IMPORTER_AGENT]),
     )
     flow_class = ImporterAccessRequestFlow
     approval_required = False
@@ -96,7 +96,7 @@ class ExporterAccessRequestProcessFactory(factory.django.DjangoModelFactory):
 
     access_request = factory.SubFactory(
         AccessRequestFactory,
-        request_type=random.choices([AccessRequest.EXPORTER, AccessRequest.EXPORTER_AGENT]),
+        request_type=random.choice([AccessRequest.EXPORTER, AccessRequest.EXPORTER_AGENT]),
     )
     flow_class = ExporterAccessRequestFlow
     approval_required = False
@@ -116,8 +116,8 @@ class ImporterAccessRequestTaskFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def run_activation(self, create, extracted, **kwargs):
-        activation = self.activate()
         if self.owner:
+            activation = self.activate()
             activation.assign(self.owner)
 
 

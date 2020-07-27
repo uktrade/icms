@@ -1,5 +1,4 @@
 import structlog as logging
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, reverse
@@ -8,6 +7,7 @@ from django.views.generic.list import ListView
 from viewflow.flow.views import UpdateProcessView
 from viewflow.models import Process
 
+from web.auth.mixins import RequireRegisteredMixin
 from web.views.mixins import FileUploadMixin
 
 from . import forms, models
@@ -24,12 +24,37 @@ def _parent_process(request):
     """
     kwargs = request.resolver_match.kwargs
     parent_process_pk = kwargs.get("parent_process_pk")
+    logger.debug(f"Parent process: {parent_process_pk}")
     base_process = get_object_or_404(Process, pk=parent_process_pk)
     parent_process = get_object_or_404(base_process.flow_class.process_class, pk=parent_process_pk)
     # If parent process is finished no new FIR is to be allowed
     if parent_process.finished:
         raise Http404("Parent process not found")
     return parent_process
+
+
+def _process(view):
+    """
+        Resolve FIR process from url parameter process_pk
+    """
+    return models.FurtherInformationRequestProcess.objects.get(
+        pk=view.request.resolver_match.kwargs.get("process_pk")
+    )
+    return _process
+
+
+def _check_requester_permission(view):
+    """
+        Check if user has reqeuster permission
+    """
+    return view.request.user.has_perm(_process(view).config("requester_permission"))
+
+
+def _check_responder_permission(view):
+    """
+        Check if user has reqeuster permission
+    """
+    return view.request.user.has_perm(_process(view).config("responder_permission"))
 
 
 def _fir_list_url(parent_process):
@@ -40,7 +65,7 @@ def _fir_list_url(parent_process):
     return reverse(f"{namespace}:fir-list", args=(parent_process.pk,),)
 
 
-class FurtherInformationRequestListView(ListView):
+class FurtherInformationRequestListView(RequireRegisteredMixin, ListView):
     """
         List of FIRs for given parent process
     """
@@ -67,11 +92,15 @@ class FurtherInformationRequestListView(ListView):
 
         return super().post(request, *args, **kwargs)
 
+    def has_permission(self):
+        perm_code = _parent_process(self.request).fir_config()["requester_permission"]
+        return self.request.user.has_perm(perm_code)
+
     class Meta:
         model = models.FurtherInformationRequestProcess
 
 
-class FurtherInformationRequestStartView(PermissionRequiredMixin, FileUploadMixin, FormView):
+class FurtherInformationRequestStartView(RequireRegisteredMixin, FileUploadMixin, FormView):
     """
     Creates a new FIR and associates it with the parent process,
     then display FIR form for new FIR
@@ -84,7 +113,8 @@ class FurtherInformationRequestStartView(PermissionRequiredMixin, FileUploadMixi
         """
             Check parent process for permission
         """
-        return _parent_process(self.request).fir_config()["requester_permission"]
+        perm = _parent_process(self.request).fir_config()["requester_permission"]
+        return self.request.user.has_perm(perm)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -126,13 +156,16 @@ class FurtherInformationRequestStartView(PermissionRequiredMixin, FileUploadMixi
             return redirect(_fir_list_url(_parent_process(self.request)))
 
 
-class FutherInformationRequestEditView(FileUploadMixin, UpdateProcessView):
+class FutherInformationRequestEditView(RequireRegisteredMixin, FileUploadMixin, UpdateProcessView):
     """
         Edit or submit an existing FIR draft
     """
 
     template_name = "web/domains/case/fir/edit.html"
     form_class = forms.FurtherInformationRequestForm
+
+    def has_permission(self):
+        return _check_requester_permission(self)
 
     def get_file_queryset(self):
         return self.get_form().instance.files
@@ -157,9 +190,14 @@ class FutherInformationRequestEditView(FileUploadMixin, UpdateProcessView):
             return super().form_valid(form)
 
 
-class FurtherInformationRequestResponseView(FileUploadMixin, UpdateProcessView):
+class FurtherInformationRequestResponseView(
+    RequireRegisteredMixin, FileUploadMixin, UpdateProcessView
+):
     template_name = "web/domains/case/fir/respond.html"
     form_class = forms.FurtherInformationRequestResponseForm
+
+    def has_permission(self):
+        return _check_responder_permission(self)
 
     def get_form(self):
         return self.form_class(
@@ -179,8 +217,13 @@ class FurtherInformationRequestResponseView(FileUploadMixin, UpdateProcessView):
             return super().form_valid(form)
 
 
-class FurtherInformationRequestReviewView(FileUploadMixin, UpdateProcessView):
+class FurtherInformationRequestReviewView(
+    RequireRegisteredMixin, FileUploadMixin, UpdateProcessView
+):
     template_name = "web/domains/case/fir/review.html"
+
+    def has_permission(self):
+        return _check_requester_permission(self)
 
     def form_valid(self, form):
         with transaction.atomic():

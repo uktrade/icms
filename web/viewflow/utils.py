@@ -11,16 +11,14 @@ logger = logging.getLogger(__name__)
 
 
 def get_url(ref, namespace, url_name=None, user=None):
-    """
-        Viewflow's flowurl Django template tag can not be used with ICMS as ICMS
+    """Viewflow's flowurl Django template tag can not be used with ICMS as ICMS
         use Jinja2 templates.
 
         This function is adapted from Viewflow sourcecode of flowurl
         template tag.
 
         See:
-        https://github.com/viewflow/viewflow/blob/57eafb964c0d599fba239144e02f739c8c91bb60/viewflow/templatetags/viewflow.py
-    """
+        https://github.com/viewflow/viewflow/blob/57eafb964c0d599fba239144e02f739c8c91bb60/viewflow/templatetags/viewflow.py"""
 
     if isinstance(ref, Flow):
         url_ref = "{}:{}".format(namespace, url_name if url_name else "index")
@@ -52,10 +50,7 @@ def get_url(ref, namespace, url_name=None, user=None):
 
 
 def unassign_process_tasks(process):
-    """
-        Unassign all assigned process tasks
-
-    """
+    """Unassign all assigned process tasks"""
     assigned_tasks = process.task_set.filter(status=STATUS.ASSIGNED)
     for task in assigned_tasks:
         activation = task.activate()
