@@ -1,6 +1,6 @@
 from django.test import TestCase
-from web.domains.application._import.models import ImportApplication, ImportApplicationType
-from web.tests.domains.application._import.factory import ImportApplicationTypeFactory
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.tests.domains.case._import.factory import ImportApplicationTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.template.factory import TemplateFactory
@@ -56,6 +56,7 @@ class ImportApplicationTest(TestCase):
             is_active=True,
             application_type=ImportApplicationTypeFactory(),
             created_by=UserFactory(is_active=True),
+            last_updated_by=UserFactory(is_active=True),
             importer=importer,
             importer_office=importer.offices.first(),
         )
