@@ -110,3 +110,17 @@ class ExportApplication(models.Model):
         related_name="contact_export_applications",
     )
     countries = models.ManyToManyField(Country)
+    agent = models.ForeignKey(
+        Exporter,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="agent_export_applications",
+    )
+    agent_office = models.ForeignKey(
+        Office,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="agent_office_export_applications",
+    )
