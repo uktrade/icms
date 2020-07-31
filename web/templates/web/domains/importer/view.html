@@ -49,5 +49,9 @@
             {% endwith %}
         {% endif %}
 
+        {% with read_only = True %}
+            {% include "partial/contacts/contacts.html" %}
+        {% endwith %}
+
     {% endcall %}
 {% endblock %}

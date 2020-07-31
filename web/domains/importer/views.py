@@ -5,9 +5,9 @@ from django.http import JsonResponse
 
 from web.auth import utils as auth_utils
 
+from web.domains.team.mixins import ContactsManagementMixin
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive, CreateAgent
-from web.views.mixins import PostActionMixin
 
 from .forms import (
     ImporterOrganisationDisplayForm,
@@ -57,22 +57,22 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(PostActionMixin, ModelUpdateView):
+class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
     template_name = "web/domains/importer/edit.html"
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
+    model = Importer
 
     def has_permission(self):
         return has_permission(self.request.user)
 
-    def get(self, request, pk, offices_form=None, form=None):
-        importer = Importer.objects.get(pk=pk)
-        if not form:
-            if importer.is_organisation():
-                form = ImporterOrganisationEditForm(instance=importer)
-            else:
-                form = ImporterIndividualEditForm(instance=importer)
+    def get_form_class(self):
+        importer = self.get_object()
+        if importer.is_organisation():
+            return ImporterOrganisationEditForm
+        return ImporterIndividualEditForm
 
+    def get(self, request, pk, offices_form=None, form=None):
         # should the offices formset be shown on the edit page
         # if we received the form, then we displayed as we want to
         # show the form and errors, otherwise
@@ -81,42 +81,44 @@ class ImporterEditView(PostActionMixin, ModelUpdateView):
             Formset = formset_factory(OfficeEditForm)
             offices_form = Formset()
             show_offices_form = False
+        contact_context_data = super().get(request).context_data
+        if self.extra_context is not None:
+            contact_context_data.update(self.extra_context)
 
         return render(
             request,
             self.template_name,
             {
-                "form": form,
                 "offices_form": offices_form,
                 "success_url": self.success_url,
                 "cancel_url": self.cancel_url,
                 "view": self,
                 "show_offices_form": show_offices_form,
+                **contact_context_data,
             },
         )
 
+    def add_people(self, *args, **kwargs):
+        template_response = super().add_people(*args, **kwargs)
+        self.extra_context = template_response.context_data
+        return self.get(*args, **kwargs)
+
     def edit(self, request, pk):
-        importer = Importer.objects.get(pk=pk)
-
-        if importer.is_organisation():
-            form_class = ImporterOrganisationEditForm
-        else:
-            form_class = ImporterIndividualEditForm
-
-        form = form_class(request.POST, instance=importer)
-
         Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
         offices_form = Formset(request.POST)
 
+        form_class = self.get_form_class()
+        form = form_class(request.POST, instance=self.get_object())
+
         if not offices_form.is_valid() or not form.is_valid():
-            return self.get(request, pk, offices_form=offices_form, form=form)
+            return self.get(request, pk, offices_form=offices_form)
 
         importer = form.save()
 
         for form in offices_form:
             office = form.save()
             importer.offices.add(office)
-        importer.save()
+        super().save(request=request)
 
         return redirect("importer-view", pk=pk)
 
@@ -155,7 +157,7 @@ class ImporterCreateView(ModelCreateView):
         return has_permission(self.request.user)
 
 
-class ImporterOrganisationDetailView(ModelDetailView):
+class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterOrganisationDisplayForm
     model = Importer
@@ -163,13 +165,17 @@ class ImporterOrganisationDetailView(ModelDetailView):
     def has_permission(self):
         return has_permission(self.request.user)
 
-    def get_context_data(self, object):
-        context = super().get_context_data(object)
-        context["form"] = ImporterOrganisationDisplayForm(instance=object)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object)
         return context
 
+    # required by ContactsManagementMixin.get
+    def get_form_class(self, *args, **kwargs):
+        return self.form_class
 
-class ImporterIndividualDetailView(ModelDetailView):
+
+class ImporterIndividualDetailView(ContactsManagementMixin, ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterIndividualDisplayForm
     model = Importer
@@ -195,6 +201,10 @@ class ImporterIndividualDetailView(ModelDetailView):
         context["form"] = form
 
         return context
+
+    # required by ContactsManagementMixin.get
+    def get_form_class(self, *args, **kwargs):
+        return self.form_class
 
 
 def importer_detail_view(request, pk):

@@ -25,15 +25,15 @@
     {% with offices = form.instance.offices %}
       {% include "partial/offices-edit.html" %}
     {% endwith %}
+
+    {% include "partial/contacts/contacts.html" %}
+
     {#
     {% include "partial/firearms-authorities.html" %}
     {% include "partial/section5-authorities.html" %}
     {% include "partial/agents.html" %}
-    {% include "web/contacts/tabs.html" %}
     #}
 {% endblock %}
-
-
 
 {% block page_js %}
     <script id="office-postcode-lookup-ui" type="text/html">

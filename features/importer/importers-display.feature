@@ -95,3 +95,28 @@ Feature: Importer Display
             | 2   | Agent Type                           | Care Of Importer        |
             | 2   | Address                              | 1428 Elm Street\s+43001 |
         And no archived importer agents are displayed
+
+    @importer @display @importer-display
+    Scenario: User should see correct contacts
+        Given importer "Hey Ltd" exists
+        And user "thecat" exists
+        And "thecat" is a member of importer "Hey Ltd"
+        And "bren" is logged in
+        And "bren" is a member of "ILB Admin Users"
+        And "bren" has "ILB Admin Users:Maintain All" role
+        When "bren" views importer "Hey Ltd"
+        Then importer contacts table read as follows
+            | Header                     | Contact            |
+            | Central Contact Details    | thecat@example.com |
+            | View Applications/Licences |                    |
+            | Edit Applications          |                    |
+            | Vary Applications/Licences |                    |
+
+    @importer @display @importer-display
+    Scenario: User should see no contact
+        Given importer "Hey Ltd" exists
+        And "bren" is logged in
+        And "bren" is a member of "ILB Admin Users"
+        And "bren" has "ILB Admin Users:Maintain All" role
+        When "bren" views importer "Hey Ltd"
+        Then text "There isn't anyone in this team" is visible

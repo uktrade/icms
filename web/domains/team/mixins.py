@@ -102,7 +102,7 @@ class ContactsManagementMixin(PostActionMixin):
 
     def _render(self, request, context):
         self.object = self.get_object()
-        data = super().get_context_data()
+        data = super().get_context_data(object=self.object)
         data.update(context)
         return TemplateResponse(request, self.template_name, data)
 

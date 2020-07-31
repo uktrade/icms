@@ -292,3 +292,18 @@ def check_importer_office_errror(context, error):
     el = context.browser.find_element_by_css_selector("#id_form-0-address + .error-message")
 
     assert error == el.text
+
+
+@then("importer contacts table read as follows")
+def importer_contact_read(context):
+    for i, expected_column in enumerate(context.table):
+        expected_header = expected_column["Header"]
+        expected_value = expected_column["Contact"]
+
+        selector = f"#team-members thead tr th:nth-of-type({i+1})"
+        header = context.browser.find_element_by_css_selector(selector).text
+        assert expected_header in header, header
+
+        selector = f"#team-members tbody tr:nth-of-type(1) td:nth-of-type({i+1})"
+        contact = context.browser.find_element_by_css_selector(selector).text
+        assert expected_value in contact, contact

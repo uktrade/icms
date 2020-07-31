@@ -1,4 +1,4 @@
-<div class="tab-content big-tabs" aria-hidden="false">
+<div id="team-members" class="tab-content big-tabs" aria-hidden="false">
     {% if not members %}
     <div class="info-box info-box-info">
         There isn't anyone in this team
@@ -57,6 +57,7 @@
                                 <span class="text-widget"></span>
                             </div>
                         </div>
+                        {% if not read_only %}
                         <div class="row">
                             <div class="twelve columns">
                                 <button type="button" class="icon-user-minus link-button inline-link-button button no-prompt-action" aria-describedby="remove_from_team_hint" aria-label="Remove">
@@ -64,6 +65,7 @@
                                 <div id="remove_from_team_hint" role="tooltip" class="hint-content">Remove from this team</div>
                             </div>
                         </div>
+                        {% endif %}
                     </div>
 
                 </td>
@@ -72,7 +74,13 @@
                 <td>
                     <div class="individual-input">
                         <label for="role{{role.id}}-input" class="radio-label">
-                            <input id="role{{role.id}}-input" name="role_members_{{role.id}}" value="{{user.id}}" type="checkbox" {% if has_role %}checked="checked"{% endif %} />
+                          <input id="role{{role.id}}-input"
+                                 name="role_members_{{role.id}}"
+                                 value="{{user.id}}"
+                                 type="checkbox"
+                                 {% if has_role %}checked="checked"{% endif %}
+                                 {% if read_only %}disabled=disabled{% endif %}
+                          />
                         </label>
                     </div>
                 </td>
@@ -81,6 +89,7 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if not read_only %}
     <div class="list-actions">
         <ul class="menu-out flow-across">
             <li>
@@ -89,4 +98,5 @@
             </li>
         </ul>
     </div>
+    {% endif %}
 </div>
