@@ -38,6 +38,7 @@ class ImporterListView(ModelFilterView):
     template_name = "web/domains/importer/list.html"
     filterset_class = ImporterFilter
     model = Importer
+    queryset = Importer.objects.prefetch_related("offices").select_related("main_importer")
     page_title = "Maintain Importers"
 
     def has_permission(self):

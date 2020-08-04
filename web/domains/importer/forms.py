@@ -26,7 +26,7 @@ class ImporterFilter(ModelSearchFilter):
     # Filter base queryset to only get importers that are not agents.
     @property
     def qs(self):
-        return super().qs.select_related("user").filter(main_importer__isnull=True)
+        return super().qs.filter(main_importer__isnull=True)
 
     def filter_importer_name(self, queryset, name, value):
         if not value:
