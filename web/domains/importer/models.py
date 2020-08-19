@@ -30,16 +30,30 @@ class Importer(Archivable, BaseTeam):
     # these are only set for organisations
     name = models.CharField(max_length=4000, blank=True, null=True)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
-    eori_number = models.CharField(max_length=20, blank=True, null=True)
+    eori_number = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        verbose_name="EORI Number",
+        help_text="EORI number should include the GB prefix",
+    )
+    eori_number_ni = models.CharField(
+        max_length=20, blank=True, null=True, verbose_name="NI EORI Number"
+    )
     region_origin = models.CharField(max_length=1, choices=REGIONS, blank=True, null=True)
 
     # only set for individuals
     user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, blank=True, null=True, related_name="own_importers"
+        User,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="own_importers",
+        verbose_name="Person",
     )
 
     # set for both
-    comments = models.CharField(max_length=4000, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
     offices = models.ManyToManyField(Office)
 
     # Having a main importer means importer is an agent
