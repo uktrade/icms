@@ -11,13 +11,12 @@ from captcha.fields import ReCaptchaField
 from web.domains.user import User
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
-from web.forms.mixins import FormFieldConfigMixin
 from web.forms.widgets import DateInput
 
 logger = logging.get_logger(__name__)
 
 
-class LoginForm(FormFieldConfigMixin, AuthenticationForm):
+class LoginForm(AuthenticationForm):
     username = UsernameField(widget=TextInput(attrs={"autofocus": True}))
     password = CharField(strip=False, widget=PasswordInput)
     error_status = None
@@ -30,18 +29,8 @@ class LoginForm(FormFieldConfigMixin, AuthenticationForm):
         elif user.password_disposition != "FULL":
             return redirect("set-password")
 
-    class Meta:
-        config = {
-            "__all__": {
-                "label": {"cols": "three",},
-                "input": {"cols": "nine"},
-                "padding": {"right": None},
-                "show_optional_indicator": False,
-            }
-        }
 
-
-class RegistrationForm(FormFieldConfigMixin, ModelForm):
+class RegistrationForm(ModelForm):
     # Pre-defined security question options
     FIRST_SCHOOL = "What is the name of your first school?"
     BEST_FRIEND = "What is the name of your childhood best friend?"
@@ -110,38 +99,17 @@ class RegistrationForm(FormFieldConfigMixin, ModelForm):
             "date_of_birth": DateInput(),
         }
 
-        config = {
-            "__all__": {
-                "label": {"cols": "four"},
-                "input": {"cols": "six"},
-                "padding": {"right": "two"},
-            }
-        }
 
-
-class CaptchaForm(FormFieldConfigMixin, Form):
+class CaptchaForm(Form):
     captcha = ReCaptchaField(label="Security Check")
 
-    class Meta:
-        config = RegistrationForm.Meta.config
 
-
-class ResetPasswordForm(FormFieldConfigMixin, Form):
+class ResetPasswordForm(Form):
     login_id = CharField()
     captcha = ReCaptchaField()
 
-    class Meta:
-        config = {
-            "__all__": {
-                "label": {"cols": "four",},
-                "input": {"cols": "four"},
-                "padding": {"right": "four"},
-                "show_optional_indicator": False,
-            }
-        }
 
-
-class ResetPasswordSecondForm(FormFieldConfigMixin, Form):
+class ResetPasswordSecondForm(Form):
     question = CharField(widget=TextInput(attrs={"readonly": "readonly"}))
     security_answer = CharField(label="Answer")
     date_of_birth = DateField(widget=DateInput())
@@ -165,11 +133,8 @@ class ResetPasswordSecondForm(FormFieldConfigMixin, Form):
         except ValidationError:
             self.add_error(None, "Invalid details")
 
-    class Meta:
-        config = ResetPasswordForm.Meta.config
 
-
-class PasswordChangeForm(FormFieldConfigMixin, PasswordChangeForm):
+class PasswordChangeForm(PasswordChangeForm):
     new_password1 = CharField(label="New password", strip=False, widget=PasswordInput())
     new_password2 = CharField(label="Confirm New Password", strip=False, widget=PasswordInput())
     old_password = CharField(strip=False, widget=PasswordInput())
@@ -184,6 +149,3 @@ class PasswordChangeForm(FormFieldConfigMixin, PasswordChangeForm):
 
     def clean_security_answer(self):
         return validators.validate_security_answer(self)
-
-    class Meta:
-        config = ResetPasswordForm.Meta.config

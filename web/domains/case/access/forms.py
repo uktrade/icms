@@ -62,15 +62,6 @@ class ExporterAccessRequestForm(ModelEditForm):
             "agent_address": Textarea({"rows": 5}),
         }
 
-        config = {
-            "__all__": {
-                "show_optional_indicator": False,
-                "label": {"cols": "four"},
-                "input": {"cols": "four"},
-                "padding": {"right": "four"},
-            }
-        }
-
 
 class ImporterAccessRequestForm(ExporterAccessRequestForm):
     def __init__(self, *args, **kwargs):
@@ -122,4 +113,3 @@ class ApprovalRequestForm(ModelEditForm):
         labels = {"requested_from": "Contact"}
 
         widgets = {"requested_from": Select()}
-        config = {"__all__": {"show_optional_indicator": False,}}

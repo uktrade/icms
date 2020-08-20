@@ -38,14 +38,6 @@ class ProductLegislationFilter(ModelSearchFilter):
     class Meta:
         model = ProductLegislation
         fields = []
-        config = {
-            "__all__": {
-                "label": {"cols": "twelve", "prompt": "north"},
-                "input": {"cols": "twelve"},
-                "padding": None,
-                "show_optional_indicator": False,
-            }
-        }
 
 
 class ProductLegislationForm(ModelEditForm):
@@ -65,4 +57,3 @@ class ProductLegislationForm(ModelEditForm):
             may be added to the issued certificate schedule when the applicant \
             selects EU Cosmetics Regulation legislation",
         }
-        config = {"__all__": {"show_optional_indicator": False}}

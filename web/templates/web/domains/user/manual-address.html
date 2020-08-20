@@ -11,8 +11,9 @@
 </div>
 
 {% call forms.form(method='post',csrf_input=csrf_input) -%}
-  {{fields.field(form.country)}}
-  {{fields.field(form.address)}}
+  {% for field in form %}
+    {{ fields.field(field, show_optional_indicator=false) }}
+  {% endfor %}
   <div class="container">
     <div class="row">
       <div class="three columns"></div>

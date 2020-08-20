@@ -53,8 +53,8 @@
                        method='post',
                        container_class='login-form',
                        csrf_input=csrf_input)  -%}
-      {{fields.field(form.username)}}
-      {{fields.field(form.password)}}
+      {{fields.field(form.username, input_cols='nine')}}
+      {{fields.field(form.password, input_cols='nine')}}
 
       {% if next %}
       <input type="hidden" name="next" value="{{next}}">

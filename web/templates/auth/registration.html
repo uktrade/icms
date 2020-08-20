@@ -16,20 +16,20 @@
 
 
 {% call forms.form(action=url('register'), method='post', csrf_input=csrf_input) -%}
-    {{fields.field(form.email)}}
-    {{fields.field(form.confirm_email)}}
-    {{fields.field(form.title)}}
-    {{fields.field(form.first_name)}}
-    {{fields.field(form.last_name)}}
-    {{fields.field(form.telephone_number)}}
-    {{fields.field(form.organisation)}}
-    {{fields.field(form.date_of_birth)}}
-    {{fields.field(form.security_question_list)}}
-    {{fields.field(form.security_question)}}
-    {{fields.field(form.security_answer)}}
-    {{fields.field(form.security_answer_repeat)}}
+    {{fields.field(form.email, label_cols='four')}}
+    {{fields.field(form.confirm_email, label_cols='four')}}
+    {{fields.field(form.title, label_cols='four')}}
+    {{fields.field(form.first_name, label_cols='four')}}
+    {{fields.field(form.last_name, label_cols='four')}}
+    {{fields.field(form.telephone_number, label_cols='four')}}
+    {{fields.field(form.organisation, label_cols='four')}}
+    {{fields.field(form.date_of_birth, label_cols='four')}}
+    {{fields.field(form.security_question_list, label_cols='four')}}
+    {{fields.field(form.security_question, label_cols='four')}}
+    {{fields.field(form.security_answer, label_cols='four')}}
+    {{fields.field(form.security_answer_repeat, label_cols='four')}}
     <p>Please complete security check displayed below. This is to stop automatic registrations.</p>
-    {{fields.field(captcha_form.captcha)}}
+    {{fields.field(captcha_form.captcha, label_cols='four')}}
     <div class="clearBoth"></div>
     <div class="container">
       <div class="row">

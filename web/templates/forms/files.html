@@ -2,23 +2,12 @@
   {# 
     A file uploader which can be used in forms to upload files
     for different models
-
-    Uses field's configuration (see web.form.mixins.FormFieldConfigMixin)
-    for responsive styling
   #}
 
-  {% if field %}
-    {% set config = field.config %}
-    {% set label_cols = config.label.cols %}
-    {% set label_prompt = config.label.prompt %}
-    {% set input_cols = config.input.cols %}
-    {% set padding_right = config.padding.right %}
-  {% else %}
-    {% set label_cols = 'three' %}
-    {% set label_prompt = 'west' %}
-    {% set input_cols = 'six' %}
-    {% set padding_right = 'three' %}
-  {% endif %}
+  {% set label_cols = 'three' %}
+  {% set label_prompt = 'west' %}
+  {% set input_cols = 'six' %}
+  {% set padding_right = 'three' %}
 
   <div class="row">
     <div class="{{label_cols}} columns">

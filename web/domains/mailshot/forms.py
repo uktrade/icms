@@ -120,7 +120,6 @@ class MailshotForm(ModelEditForm):
             "is_email": "Optionally send emails to the selected recipients. \
             Note that uploaded documents will not be attached to the email.",
         }
-        config = {"__all__": {"show_optional_indicator": False}}
 
 
 class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):

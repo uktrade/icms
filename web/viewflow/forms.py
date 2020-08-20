@@ -4,12 +4,10 @@
 import structlog as logging
 from django.forms import Form, ModelChoiceField
 
-from web.forms.mixins import FormFieldConfigMixin
-
 logger = logging.getLogger(__name__)
 
 
-class ReAssignTaskForm(FormFieldConfigMixin, Form):
+class ReAssignTaskForm(Form):
     user = ModelChoiceField(queryset=None, label="Assign To", required=True)
 
     def __init__(self, users_queryset, *args, **kwargs):

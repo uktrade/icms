@@ -16,7 +16,7 @@
 
     {% call forms.form() -%}
       {% for field in filter.form.fields %}
-        {{fields.field(filter.form[field])}}
+        {{fields.field(filter.form[field], show_optional_indicator=False)}}
       {% endfor %}
 
       <div class="clearBoth"></div>

@@ -62,14 +62,6 @@ class CommodityForm(ModelEditForm):
         }
         widgets = {"validity_start_date": DateInput, "validity_end_date": DateInput}
 
-        config = {
-            "quantity_threshold": {
-                "label": {"cols": "three",},
-                "input": {"cols": "two"},
-                "padding": {"right": "seven"},
-            }
-        }
-
 
 class CommodityEditForm(CommodityForm):
     def __init__(self, *args, **kwargs):

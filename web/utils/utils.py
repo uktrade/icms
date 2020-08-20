@@ -1,6 +1,5 @@
 import os
 import logging
-from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 
@@ -8,23 +7,6 @@ logger = logging.getLogger(__name__)
 def url_path_join(*args):
     clean_args = [x.rstrip("/") for x in args]
     return "/".join(clean_args)
-
-
-def merge_dictionaries(a, b):
-    """recursively merges dict's. not just simple a['key'] = b['key'], if
-  both a and bhave a key who's value is a dict then dict_merge is called
-  on both values and the result stored in the returned dictionary."""
-    if not b:
-        return a
-    if not isinstance(b, dict):
-        return b
-    result = deepcopy(a)
-    for k, v in b.items():
-        if k in result and isinstance(result[k], dict):
-            result[k] = merge_dictionaries(result[k], v)
-        else:
-            result[k] = deepcopy(v)
-    return result
 
 
 class FilevalidationService:

@@ -91,13 +91,6 @@ class UserDetailsUpdateForm(ModelEditForm):
             ),
             "work_address": _("Edit work address"),
         }
-        config = {
-            "__all__": {
-                "label": {"cols": "four",},
-                "input": {"cols": "four"},
-                "padding": {"right": "four"},
-            }
-        }
 
 
 class PhoneNumberForm(ModelEditForm):

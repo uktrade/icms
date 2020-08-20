@@ -1,14 +1,14 @@
 from django.forms import ModelForm
 from django_filters import FilterSet
 
-from .mixins import FiltersFieldConfigMixin, FormFieldConfigMixin, ReadonlyFormMixin
+from .mixins import ReadonlyFormMixin
 
 
-class ModelSearchFilter(FiltersFieldConfigMixin, FilterSet):
+class ModelSearchFilter(FilterSet):
     pass
 
 
-class ModelEditForm(FormFieldConfigMixin, ModelForm):
+class ModelEditForm(ModelForm):
     pass
 
 

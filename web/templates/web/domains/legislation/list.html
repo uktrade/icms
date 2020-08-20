@@ -8,11 +8,9 @@
     <div class="section-break"></div>
     <h4> Filter </h4>
     {% call forms.form(action=url('product-legislation-list'))%}
-      {{fields.field(filter.form.name)}}
-      {{fields.field(filter.form.is_biocidal)}}
-      {{fields.field(filter.form.is_biocidal_claim)}}
-      {{fields.field(filter.form.is_eu_cosmetics_regulation)}}
-      {{fields.field(filter.form.status)}}
+      {% for field in filter.form %}
+        {{ fields.field(field, show_optional_indicator=false, prompt='north', label_cols='twelve', input_cols='twelve') }}
+      {% endfor %}
       <div class="clearBoth"></div>
       <div class="container">
         <div class="row">

@@ -11,7 +11,7 @@
         <div class="six columns">
             <h3>UK Address</h3>
             {% call forms.form(method='post', csrf_input=csrf_input) -%}
-              {{fields.field(postcode_form.post_code)}}
+              {{ fields.field(postcode_form.post_code, show_optional_indicator=false, prompt='north') }}
               <div class="container">
                 <div class="row">
                   <div class="three columns"></div>
@@ -39,7 +39,7 @@
                 <h3>International/Manual Address</h3>
                 {{csrf_input}}
                 <input type="hidden" name="action" value="manual_address" />
-                {{fields.field(postcode_form.country)}}
+                {{ fields.field(postcode_form.country, show_optional_indicator=False, prompt='north') }}
             </form>
         </div>
     </div>
