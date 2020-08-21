@@ -1,11 +1,11 @@
+from django.forms import ModelForm
 from django.forms.widgets import Select, CheckboxInput
-from django_filters import CharFilter, ChoiceFilter, BooleanFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django_filters import CharFilter, ChoiceFilter, BooleanFilter, FilterSet
 
 from .models import Constabulary
 
 
-class ConstabulariesFilter(ModelSearchFilter):
+class ConstabulariesFilter(FilterSet):
     name = CharFilter(field_name="name", lookup_expr="icontains", label="Constabulary Name")
 
     region = ChoiceFilter(
@@ -30,7 +30,7 @@ class ConstabulariesFilter(ModelSearchFilter):
         fields = []
 
 
-class ConstabularyForm(ModelEditForm):
+class ConstabularyForm(ModelForm):
     class Meta:
         model = Constabulary
         fields = ["name", "region", "email"]

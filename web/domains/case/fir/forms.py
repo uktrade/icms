@@ -1,15 +1,15 @@
 import structlog as logging
 from django.core.validators import validate_email
+from django.forms import ModelForm
 from django.forms.widgets import Textarea
 from django.utils import timezone
 
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.forms import ModelEditForm
 
 logger = logging.getLogger(__name__)
 
 
-class FurtherInformationRequestForm(ModelEditForm):
+class FurtherInformationRequestForm(ModelForm):
     """Request form for FIRs.
        Takes an optional user keyword arg to set fir requested by"""
 
@@ -63,7 +63,7 @@ class FurtherInformationRequestForm(ModelEditForm):
         }
 
 
-class FurtherInformationRequestResponseForm(ModelEditForm):
+class FurtherInformationRequestResponseForm(ModelForm):
     def __init__(self, response_by, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.response_by = response_by

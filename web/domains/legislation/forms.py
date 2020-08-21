@@ -1,10 +1,10 @@
-from django_filters import CharFilter, ChoiceFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django.forms import ModelForm
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from .models import ProductLegislation
 
 
-class ProductLegislationFilter(ModelSearchFilter):
+class ProductLegislationFilter(FilterSet):
     name = CharFilter(field_name="name", lookup_expr="icontains", label="Legislation Name")
 
     is_biocidal = ChoiceFilter(
@@ -40,7 +40,7 @@ class ProductLegislationFilter(ModelSearchFilter):
         fields = []
 
 
-class ProductLegislationForm(ModelEditForm):
+class ProductLegislationForm(ModelForm):
     class Meta:
         model = ProductLegislation
         fields = ["name", "is_biocidal", "is_biocidal_claim", "is_eu_cosmetics_regulation"]

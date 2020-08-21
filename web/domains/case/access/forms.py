@@ -1,8 +1,7 @@
 import structlog as logging
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm
 from django.forms.widgets import Select, Textarea
-
-from web.forms import ModelEditForm
 
 from .approval.models import ApprovalRequest
 from .models import AccessRequest
@@ -29,7 +28,7 @@ def is_agent_request(request_type):
     return request_type in [AccessRequest.IMPORTER_AGENT, AccessRequest.EXPORTER_AGENT]
 
 
-class ExporterAccessRequestForm(ModelEditForm):
+class ExporterAccessRequestForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["request_type"].widget = Select(choices=AccessRequest.EXPORTER_REQUEST_TYPES)
@@ -90,14 +89,14 @@ class ImporterAccessRequestForm(ExporterAccessRequestForm):
         widgets["request_reason"] = Textarea({"rows": 5})
 
 
-class CloseAccessRequestForm(ModelEditForm):
+class CloseAccessRequestForm(ModelForm):
     class Meta:
         model = AccessRequest
 
         fields = ["response", "response_reason"]
 
 
-class ApprovalRequestForm(ModelEditForm):
+class ApprovalRequestForm(ModelForm):
     def __init__(self, team, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields[

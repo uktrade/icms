@@ -1,11 +1,11 @@
+from django.forms import ModelForm
 from django.forms.widgets import Select, Textarea
-from django_filters import CharFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django_filters import CharFilter, FilterSet
 
 from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
 
 
-class CountryNameFilter(ModelSearchFilter):
+class CountryNameFilter(FilterSet):
     country_name = CharFilter(field_name="name", lookup_expr="icontains", label="Country Name")
 
     @property
@@ -17,7 +17,7 @@ class CountryNameFilter(ModelSearchFilter):
         fields = []
 
 
-class CountryCreateForm(ModelEditForm):
+class CountryCreateForm(ModelForm):
     class Meta:
         model = Country
         fields = ["name", "type", "commission_code", "hmrc_code"]
@@ -36,7 +36,7 @@ class CountryEditForm(CountryCreateForm):
         fields = ["name", "type", "commission_code", "hmrc_code"]
 
 
-class CountryGroupEditForm(ModelEditForm):
+class CountryGroupEditForm(ModelForm):
     class Meta:
         model = CountryGroup
         fields = ["name", "comments"]
@@ -44,14 +44,14 @@ class CountryGroupEditForm(ModelEditForm):
         widgets = {"comments": Textarea({"rows": 5, "cols": 20})}
 
 
-class CountryTranslationSetEditForm(ModelEditForm):
+class CountryTranslationSetEditForm(ModelForm):
     class Meta:
         model = CountryTranslationSet
         fields = ["name"]
         labels = {"name": "Translation Set Name"}
 
 
-class CountryTranslationEditForm(ModelEditForm):
+class CountryTranslationEditForm(ModelForm):
     class Meta:
         model = CountryTranslation
         fields = ["translation"]

@@ -1,13 +1,12 @@
 from django.db.models import Q
-from django.forms import ModelChoiceField
+from django.forms import ModelChoiceField, ModelForm
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
-from web.forms import ModelEditForm
 
 from .models import ImportApplication, ImportApplicationType
 
 
-class NewImportApplicationForm(ModelEditForm):
+class NewImportApplicationForm(ModelForm):
 
     application_type = ModelChoiceField(
         queryset=ImportApplicationType.objects.filter(is_active=True),

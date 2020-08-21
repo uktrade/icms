@@ -1,13 +1,12 @@
-from django.forms.fields import ChoiceField, CharField
-from django_filters import CharFilter, ChoiceFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django.forms import ChoiceField, CharField, ModelForm
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 from web.forms.mixins import ReadonlyFormMixin
 from django.db.models import Q
 
 from .models import Importer
 
 
-class ImporterFilter(ModelSearchFilter):
+class ImporterFilter(FilterSet):
     importer_entity_type = ChoiceFilter(
         field_name="type", choices=Importer.TYPES, label="Importer Entity Type"
     )
@@ -59,7 +58,7 @@ class ImporterFilter(ModelSearchFilter):
         fields = []
 
 
-class ImporterOrganisationEditForm(ModelEditForm):
+class ImporterOrganisationEditForm(ModelForm):
     type = ChoiceField(choices=Importer.TYPES)
 
     def __init__(self, *args, **kwargs):
@@ -76,7 +75,7 @@ class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ImporterOrganisationEdi
     pass
 
 
-class ImporterIndividualEditForm(ModelEditForm):
+class ImporterIndividualEditForm(ModelForm):
     type = ChoiceField(choices=Importer.TYPES)
 
     def __init__(self, *args, **kwargs):
@@ -88,7 +87,7 @@ class ImporterIndividualEditForm(ModelEditForm):
         fields = ["type", "user", "comments"]
 
 
-class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelEditForm):
+class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):
     type = ChoiceField(choices=Importer.TYPES)
 
     # ImporterIndividualDetailView fills these out

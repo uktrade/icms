@@ -1,12 +1,11 @@
-from django.forms.fields import CharField
+from django.forms import CharField, ModelForm
 from django.forms.widgets import Textarea
-from django_filters import CharFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django_filters import CharFilter, FilterSet
 
 from .models import Team
 
 
-class TeamsFilter(ModelSearchFilter):
+class TeamsFilter(FilterSet):
     name = CharFilter(field_name="name", lookup_expr="icontains", label="Name")
 
     class Meta:
@@ -14,7 +13,7 @@ class TeamsFilter(ModelSearchFilter):
         fields = []
 
 
-class TeamEditForm(ModelEditForm):
+class TeamEditForm(ModelForm):
     name = CharField()
 
     class Meta:

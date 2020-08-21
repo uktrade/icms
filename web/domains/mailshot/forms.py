@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import structlog as logging
-from django.forms import CharField, MultipleChoiceField
+from django.forms import CharField, ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple, Textarea
 
-from django_filters import CharFilter, ChoiceFilter
-from web.forms import ModelEditForm, ModelSearchFilter
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.forms.mixins import ReadonlyFormMixin
 
@@ -15,7 +14,7 @@ from .models import Mailshot
 logger = logging.get_logger(__name__)
 
 
-class MailshotFilter(ModelSearchFilter):
+class MailshotFilter(FilterSet):
 
     id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
 
@@ -32,7 +31,7 @@ class MailshotFilter(ModelSearchFilter):
         fields = []
 
 
-class ReceivedMailshotsFilter(ModelSearchFilter):
+class ReceivedMailshotsFilter(FilterSet):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
         super().__init__(*args, **kwargs)
@@ -66,7 +65,7 @@ class ReceivedMailshotsFilter(ModelSearchFilter):
         fields = []
 
 
-class MailshotForm(ModelEditForm):
+class MailshotForm(ModelForm):
 
     RECIPIENT_CHOICES = (
         ("importers", "Importers and Agents"),
@@ -126,7 +125,7 @@ class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):
     pass
 
 
-class MailshotRetractForm(ModelEditForm):
+class MailshotRetractForm(ModelForm):
     class Meta:
         model = Mailshot
         fields = ["is_retraction_email", "retract_email_subject", "retract_email_body"]

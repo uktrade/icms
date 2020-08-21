@@ -1,13 +1,13 @@
 from django.db.models import Count
-from django.forms import BaseInlineFormSet, inlineformset_factory
+from django.forms import BaseInlineFormSet, inlineformset_factory, ModelForm
 from django.forms.widgets import CheckboxInput, HiddenInput
-from django_filters import BooleanFilter, CharFilter
-from web.forms import ModelEditForm, ModelSearchFilter, ModelDisplayForm
+from django_filters import BooleanFilter, CharFilter, FilterSet
+from web.forms.mixins import ReadonlyFormMixin
 
 from .models import ObsoleteCalibre, ObsoleteCalibreGroup
 
 
-class ObsoleteCalibreGroupFilter(ModelSearchFilter):
+class ObsoleteCalibreGroupFilter(FilterSet):
     group_name = CharFilter(
         field_name="name", lookup_expr="icontains", label="Obsolete Calibre Group Name"
     )
@@ -43,19 +43,19 @@ class ObsoleteCalibreGroupFilter(ModelSearchFilter):
         fields = []
 
 
-class ObsoleteCalibreGroupEditForm(ModelEditForm):
+class ObsoleteCalibreGroupEditForm(ModelForm):
     class Meta:
         model = ObsoleteCalibreGroup
         fields = ["name"]
         labels = {"name": "Group Name"}
 
 
-class ObsoleteCalibreGroupDisplayForm(ModelDisplayForm):
+class ObsoleteCalibreGroupDisplayForm(ReadonlyFormMixin, ModelForm):
     class Meta(ObsoleteCalibreGroupEditForm.Meta):
         pass
 
 
-class ObsoleteCalibreForm(ModelEditForm):
+class ObsoleteCalibreForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

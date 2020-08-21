@@ -1,4 +1,3 @@
-from web.forms import ModelEditForm
 from django import forms
 from web.domains.office.models import Office
 
@@ -14,7 +13,7 @@ class OfficeFormSet(forms.BaseFormSet):
                 form.add_error("address", "Cannot be empty")
 
 
-class OfficeEditForm(ModelEditForm):
+class OfficeEditForm(forms.ModelForm):
     address = forms.CharField(
         widget=forms.Textarea({"rows": 3, "required": "required"}), required=True, strip=True
     )
