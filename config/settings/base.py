@@ -228,3 +228,5 @@ DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", "http://localhost:8080/")
 SELECT2_CACHE_BACKEND = "default"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
+
+COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
