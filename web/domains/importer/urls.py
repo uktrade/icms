@@ -3,12 +3,24 @@
 
 from django.urls import path
 
-from . import views
+from web.domains.importer import views
+from web.domains.importer.forms import ImporterIndividualForm, ImporterOrganisationForm
 
 urlpatterns = [
     path("", views.ImporterListView.as_view(), name="importer-list"),
     path("<int:pk>/edit/", views.ImporterEditView.as_view(), name="importer-edit"),
-    path("new/", views.ImporterCreateView.as_view(), name="importer-new"),
+    path(
+        "individual/create/",
+        views.ImporterCreateView.as_view(),
+        {"form_class": ImporterIndividualForm},
+        name="importer-individual-create",
+    ),
+    path(
+        "organisation/create/",
+        views.ImporterCreateView.as_view(),
+        {"form_class": ImporterOrganisationForm},
+        name="importer-organisation-create",
+    ),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),
     # Importer Agents
     path(

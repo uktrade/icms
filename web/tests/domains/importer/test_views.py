@@ -105,8 +105,8 @@ class ImporterEditViewTest(AuthTestCase):
         self.assertTrue(f"Editing {self.importer}", response.content)
 
 
-class ImporterCreateViewTest(AuthTestCase):
-    url = "/importer/new/"
+class IndividualImporterCreateViewTest(AuthTestCase):
+    url = "/importer/individual/create/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
@@ -126,11 +126,34 @@ class ImporterCreateViewTest(AuthTestCase):
 
     def test_importer_created(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
-        self.client.post(self.url, {"type": Importer.ORGANISATION, "name": "test importer"})
+        response = self.client.post(self.url, {"eori_number": "GBPR", "user": self.user.pk})
+        self.assertRedirects(response, "/importer/")
         importer = Importer.objects.first()
-        self.assertEqual(importer.name, "test importer")
+        self.assertEqual(importer.user, self.user, msg=importer)
 
-    def test_page_title(self):
+
+class OrganisationImporterCreateViewTest(AuthTestCase):
+    url = "/importer/organisation/create/"
+    redirect_url = f"{LOGIN_URL}?next={url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "Create Importer")
+        self.assertEqual(response.status_code, 200)
+
+    def test_importer_created(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.post(self.url, {"eori_number": "GB", "name": "test importer"})
+        self.assertRedirects(response, "/importer/")
+        importer = Importer.objects.first()
+        self.assertEqual(importer.name, "test importer", msg=importer)

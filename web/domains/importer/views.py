@@ -1,29 +1,26 @@
 import structlog as logging
-from django.urls import reverse_lazy
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-
-from web.auth import utils as auth_utils
-
-from web.domains.team.mixins import ContactsManagementMixin
-from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
-from web.views.actions import Archive, Edit, Unarchive, CreateAgent
-
-from .forms import (
-    ImporterOrganisationDisplayForm,
-    ImporterOrganisationEditForm,
-    ImporterIndividualEditForm,
-    ImporterIndividualDisplayForm,
-    ImporterFilter,
-)
-from .models import Importer
-
-from web.domains.office.models import Office
-from web.domains.office.forms import OfficeEditForm, OfficeFormSet
-
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import formset_factory
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 
 from web.address.address import find as postcode_lookup
+from web.auth import utils as auth_utils
+from web.domains.importer.forms import (
+    ImporterFilter,
+    ImporterIndividualDisplayForm,
+    ImporterIndividualEditForm,
+    ImporterOrganisationDisplayForm,
+    ImporterOrganisationEditForm,
+)
+from web.domains.importer.models import Importer
+from web.domains.office.forms import OfficeEditForm, OfficeFormSet
+from web.domains.office.models import Office
+from web.domains.team.mixins import ContactsManagementMixin
+from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views.actions import Archive, CreateAgent, Edit, Unarchive
 
 logger = logging.getLogger(__name__)
 
@@ -144,18 +141,18 @@ class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
         return redirect("importer-edit", pk=pk)
 
 
-class ImporterCreateView(ModelCreateView):
+class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = "web/domains/importer/create.html"
-    # TODO: this is tricky, organisation/individual have completely
-    # different fields..need to dynamically switch which form we're using
-    form_class = ImporterOrganisationEditForm
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
-    page_title = "Create Importer"
-    model = Importer
 
     def has_permission(self):
         return has_permission(self.request.user)
+
+    def get_form_class(self):
+        """`form_class` is passed in the view as an extra arguments in the urls."""
+        self.form_class = self.kwargs["form_class"]
+        return self.form_class
 
 
 class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):

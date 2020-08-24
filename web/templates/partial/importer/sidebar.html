@@ -1,0 +1,18 @@
+{% block sidebar %}
+  <h4>Importer</h4>
+  <h5>Search</h5>
+  <ul class="menu-out">
+    <li>
+        <a href="{{ url('importer-list') }}">Access Requests</a>
+    </li>
+  </ul>
+  <h5>Create</h5>
+  <ul class="menu-out">
+    <li>
+      <a href="{{ url('importer-individual-create') }}">Main Individual Importer</a>
+    </li>
+    <li>
+      <a href="{{ url('importer-organisation-create') }}">Main Organisation Importer</a>
+    </li>
+  </ul>
+{% endblock %}

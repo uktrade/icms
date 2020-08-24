@@ -1,9 +1,67 @@
+from django.core.exceptions import ValidationError
 from django.forms import ChoiceField, CharField, ModelForm
 from django_filters import CharFilter, ChoiceFilter, FilterSet
-from web.forms.mixins import ReadonlyFormMixin
 from django.db.models import Q
 
-from .models import Importer
+from web.domains.importer.fields import PersonWidget
+from web.domains.importer.models import Importer
+from web.forms.mixins import ReadonlyFormMixin
+
+
+class ImporterIndividualForm(ModelForm):
+    class Meta:
+        model = Importer
+        fields = ["user", "eori_number", "eori_number_ni", "region_origin", "comments"]
+        widgets = {"user": PersonWidget}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["user"].required = True
+        self.fields["eori_number"].required = True
+
+    def clean(self):
+        """Set type as individual as Importer can be an organisation too."""
+        self.instance.type = Importer.INDIVIDUAL
+        return super().clean()
+
+    def clean_eori_number(self):
+        """Make sure eori number starts with GBPR."""
+        eori_number = self.cleaned_data["eori_number"]
+        prefix = "GBPR"
+        if eori_number.startswith(prefix):
+            return eori_number
+        raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
+
+
+class ImporterOrganisationForm(ModelForm):
+    class Meta:
+        model = Importer
+        fields = [
+            "name",
+            "registered_number",
+            "eori_number",
+            "eori_number_ni",
+            "region_origin",
+            "comments",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].required = True
+        self.fields["eori_number"].required = True
+
+    def clean(self):
+        """Set type as organisation as Importer can be an individual too."""
+        self.instance.type = Importer.ORGANISATION
+        return super().clean()
+
+    def clean_eori_number(self):
+        """Make sure eori number starts with GB."""
+        eori_number = self.cleaned_data["eori_number"]
+        prefix = "GB"
+        if eori_number.startswith(prefix):
+            return eori_number
+        raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
 
 
 class ImporterFilter(FilterSet):
