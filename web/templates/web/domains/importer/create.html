@@ -14,14 +14,25 @@
 {% import "forms/fields.html" as fields %}
 
 {% block fields %}
+  {% include "web/domains/importer/company_list.html" %}
+
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {% for field in form %}
-        {{ fields.field(field) }}
+      {% with lookup = field.name in ['name', 'registered_number'] %}
+        {{ fields.field(field, lookup=lookup) }}
+      {% endwith %}
     {% endfor %}
   {% endcall %}
+
+  {% with offices = [] %}
+    {% include "partial/offices-edit.html" %}
+  {% endwith %}
 {% endblock %}
 
 {% block page_js %}
+  {% include "partial/offices/formset-script.html" %}
+  {% include "web/domains/importer/search-companies.html" %}
+
   {{ form.media.js }}
   {{ super() }}
 {% endblock %}

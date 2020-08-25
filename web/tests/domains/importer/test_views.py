@@ -1,4 +1,5 @@
 from web.domains.importer.models import Importer
+from web.domains.office.models import Office
 from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import ImporterFactory
 
@@ -126,10 +127,21 @@ class IndividualImporterCreateViewTest(AuthTestCase):
 
     def test_importer_created(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
-        response = self.client.post(self.url, {"eori_number": "GBPR", "user": self.user.pk})
+        data = {
+            "eori_number": "GBPR",
+            "user": self.user.pk,
+            "form-TOTAL_FORMS": 1,
+            "form-INITIAL_FORMS": 0,
+            "form-0-address": "3 avenue des arbres, Pommier",
+            "form-0-postcode": "42000",
+        }
+        response = self.client.post(self.url, data)
         self.assertRedirects(response, "/importer/")
         importer = Importer.objects.first()
         self.assertEqual(importer.user, self.user, msg=importer)
+
+        office = Office.objects.first()
+        self.assertEqual(office.postcode, "42000")
 
 
 class OrganisationImporterCreateViewTest(AuthTestCase):
@@ -153,7 +165,13 @@ class OrganisationImporterCreateViewTest(AuthTestCase):
 
     def test_importer_created(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
-        response = self.client.post(self.url, {"eori_number": "GB", "name": "test importer"})
+        data = {
+            "eori_number": "GB",
+            "name": "test importer",
+            "form-TOTAL_FORMS": 0,
+            "form-INITIAL_FORMS": 0,
+        }
+        response = self.client.post(self.url, data)
         self.assertRedirects(response, "/importer/")
         importer = Importer.objects.first()
         self.assertEqual(importer.name, "test importer", msg=importer)

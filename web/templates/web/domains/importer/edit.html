@@ -22,7 +22,7 @@
 
 {% block additional_content %}
 
-    {% with offices = form.instance.offices %}
+    {% with offices = form.instance.offices.all() %}
       {% include "partial/offices-edit.html" %}
     {% endwith %}
 

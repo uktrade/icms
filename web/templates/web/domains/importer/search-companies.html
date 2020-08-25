@@ -1,0 +1,74 @@
+<script>
+  $('.icon-search').on('click', function(evt) {
+      evt.preventDefault();
+      $ta = $(this).closest('div').prev().find('input');
+      companyInfo = {};
+
+      data = {
+          query: $ta.val(),
+          csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+      }
+
+      $ui = $('.modal-popover-container');
+      $ui.show();
+
+      $('.body-company').on('click', '.select-company', function(evt) {
+          evt.stopImmediatePropagation();
+          data = companyInfo[this.text];
+          $('#id_name').val(data['title']);
+          $('#id_registered_number').val(this.text);
+
+          $('#btn-add-office').click();
+          officeFormId = $('#id_form-TOTAL_FORMS').val() - 1;
+          address = data['address'];
+          addressWithoutPostcode = [address['premises'], address['address_line_1'], address['locality']];
+          addressWithoutPostcode = addressWithoutPostcode.join('\n');
+          $('textarea[name=form-' + officeFormId + '-address]').val(addressWithoutPostcode)
+          $('input[name=form-' + officeFormId + '-postcode]').val(address['postal_code'])
+
+          $('.body-company').empty();
+          $ui.hide();
+          return false;
+      });
+      message = 'No companies were found returned matching your search, please try again.';
+      htmlNoResult = [
+          '<tr>' +
+          '<td colspan="3">' + message + '</td>' +
+          '</tr>'
+      ];
+
+      $.ajax({
+        method: 'POST',
+        url: '{{ url("importer-company-lookup") }}',
+        data: data,
+        success: function(data, status, xhr) {
+          $('.body-company').empty();
+          if (data['total_results'] === 0) {
+              $('.body-company').append(htmlNoResult.join(''));
+          }
+
+          for (row of data['items']) {
+              status = row['company_status'];
+              companyNumber = row['companyNumber'];
+              companyInfo[companyNumber] = row;
+
+              if (status === 'active') {
+                  companyNumber = '<a href="#" class="select-company">' + row['companyNumber'] + '</a>';
+              }
+
+              html = [
+                  '<tr>' +
+                  '<td>' + companyNumber + '</td>' +
+                  '<td>' + row['title'] + '</td>' +
+                  '<td>' + row['company_status'] + '</td>' +
+                  '</tr>'
+              ];
+              $('.body-company').append(html.join(''));
+          }
+        },
+        error: function() {
+            $('.body-company').append(htmlNoResult.join(''));
+        }
+      })
+  });
+</script>

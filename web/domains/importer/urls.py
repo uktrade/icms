@@ -34,4 +34,5 @@ urlpatterns = [
         name="importer-agent-new",
     ),
     path("lookup/postcode", views.list_postcode_addresses, name="importer-postcode-lookup"),
+    path("lookup/company", views.list_companies, name="importer-company-lookup"),
 ]

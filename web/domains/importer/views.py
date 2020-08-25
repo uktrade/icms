@@ -8,6 +8,7 @@ from django.views.generic import CreateView
 
 from web.address.address import find as postcode_lookup
 from web.auth import utils as auth_utils
+from web.company.companieshouse import api_get_companies
 from web.domains.importer.forms import (
     ImporterFilter,
     ImporterIndividualDisplayForm,
@@ -142,6 +143,39 @@ class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         self.form_class = self.kwargs["form_class"]
         return self.form_class
 
+    def get_context_data(self, *args, **kwargs):
+        offices_form = kwargs.get("offices_form")
+        if not offices_form:
+            Formset = formset_factory(OfficeEditForm, extra=0)
+            offices_form = Formset()
+
+        kwargs.update(
+            {"offices_form": offices_form,}
+        )
+        return super().get_context_data(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
+        offices_form = Formset(self.request.POST)
+
+        form = self.get_form()
+        if form.is_valid() and offices_form.is_valid():
+            return self.form_valid(form, offices_form)
+        return self.form_invalid(form, offices_form)
+
+    def form_valid(self, form, offices_form):
+        self.object = form.save()
+        for form in offices_form:
+            office = form.save()
+            self.object.offices.add(office)
+        self.object.save()
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form, offices_form):
+        self.object = None
+        return self.render_to_response(self.get_context_data(form=form, offices_form=offices_form))
+
 
 class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):
     template_name = "web/domains/importer/view.html"
@@ -210,3 +244,10 @@ def list_postcode_addresses(request,):
     postcode = request.POST.get("postcode")
 
     return JsonResponse(postcode_lookup(postcode), safe=False)
+
+
+def list_companies(request):
+    query = request.POST.get("query")
+    companies = api_get_companies(query)
+
+    return JsonResponse(companies, safe=False)

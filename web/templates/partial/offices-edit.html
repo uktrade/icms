@@ -6,7 +6,6 @@
 {# we are using PostActionMixIn - make sure we have an action named edit, for default save button to work #}
     <input type="hidden" name="action" value="edit">
 
-    {% with office_list = offices.all() %}
     <table  class="setoutList" id="tbl-offices">
          <thead>
             <tr>
@@ -18,7 +17,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for office in office_list %}
+            {% for office in offices %}
                 <tr>
                     <td>{{ office.get_status() }}</td>
                     <td>{{ office.address|nl2br() }}</td>
@@ -92,5 +91,4 @@
             </li>
         </ul>
     </div>
-    {% endwith %}
 </div>
