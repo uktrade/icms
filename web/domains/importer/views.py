@@ -71,29 +71,17 @@ class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
         return ImporterIndividualEditForm
 
     def get(self, request, pk, offices_form=None, form=None):
-        # should the offices formset be shown on the edit page
-        # if we received the form, then we displayed as we want to
-        # show the form and errors, otherwise
-        show_offices_form = True
+        # if offices_form is set it means either form or offices form contain errors
+        # if offices_form is not set it is initialised
         if not offices_form:
-            Formset = formset_factory(OfficeEditForm)
+            Formset = formset_factory(OfficeEditForm, extra=0)
             offices_form = Formset()
-            show_offices_form = False
         contact_context_data = super().get(request).context_data
         if self.extra_context is not None:
             contact_context_data.update(self.extra_context)
 
         return render(
-            request,
-            self.template_name,
-            {
-                "offices_form": offices_form,
-                "success_url": self.success_url,
-                "cancel_url": self.cancel_url,
-                "view": self,
-                "show_offices_form": show_offices_form,
-                **contact_context_data,
-            },
+            request, self.template_name, {"offices_form": offices_form, **contact_context_data,},
         )
 
     def add_people(self, *args, **kwargs):

@@ -39,38 +39,27 @@
 
             {% endfor %}
 
-
-                    <input type="hidden" name="form-INITIAL_FORMS" value="0" id="id_form-INITIAL_FORMS">
-                    <input type="hidden" name="form-MIN_NUM_FORMS" value="0" id="id_form-MIN_NUM_FORMS">
-                    <input type="hidden" name="form-MAX_NUM_FORMS" value="1000" id="id_form-MAX_NUM_FORMS">
-
-
-
-                       {% if show_offices_form %}
-                            <input type="hidden" name="form-TOTAL_FORMS" value="{{ offices_form|count }}" id="id_form-TOTAL_FORMS">
-                            {% for form in offices_form%}
-                                <tr >
-                                    <td ><span  class="text-widget ">Pending</span></td>
-                                    {{ fields.inline_field(form.address) }}
-                                    {{ fields.inline_field(form.postcode) }}
-                                    {{ fields.inline_field(form.eori_number) }}
-                                    <td >
-                                        <ul class="menu-out grouped flow-across">
-                                            <li>
-                                                <button  type="button" class="link-button icon-search button no-prompt-action" aria-describedby="hint148-content" aria-label="Find Address"> </button>
-                                                <div id="hint148-content" role="tooltip" class="hint-content">Find Address</div>
-                                            </li>
-                                            <li>
-                                                <button type="button" role="remove-address-row"  class="link-button icon-bin button no-prompt-action" aria-describedby="hint149-content" aria-label="Archive"> </button>
-                                                <div id="hint149-content" role="tooltip" class="hint-content">Archive</div>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                    {% else %}
-                        <input type="hidden" name="form-TOTAL_FORMS" value="0" id="id_form-TOTAL_FORMS">
-                    {% endif %}
+            {{ offices_form.management_form }}
+            {% for form in offices_form %}
+                <tr >
+                    <td ><span  class="text-widget ">Pending</span></td>
+                    {{ fields.inline_field(form.address) }}
+                    {{ fields.inline_field(form.postcode) }}
+                    {{ fields.inline_field(form.eori_number) }}
+                    <td >
+                        <ul class="menu-out grouped flow-across">
+                            <li>
+                                <button  type="button" class="link-button icon-search button no-prompt-action" aria-describedby="hint148-content" aria-label="Find Address"> </button>
+                                <div id="hint148-content" role="tooltip" class="hint-content">Find Address</div>
+                            </li>
+                            <li>
+                                <button type="button" role="remove-address-row"  class="link-button icon-bin button no-prompt-action" aria-describedby="hint149-content" aria-label="Archive"> </button>
+                                <div id="hint149-content" role="tooltip" class="hint-content">Archive</div>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 
@@ -78,9 +67,9 @@
 <!--
             <tr class="new-form-row">
                 <td ><span  class="text-widget ">Pending</span></td>
-                    {{ fields.inline_field(offices_form[0].address) }}
-                {{ fields.inline_field(offices_form[0].postcode) }}
-                {{ fields.inline_field(offices_form[0].eori_number) }}
+                {% for field in offices_form.empty_form %}
+                  {{ fields.inline_field(field) }}
+                {% endfor %}
                 <td >
                     <ul class="menu-out grouped flow-across">
                         <li>
@@ -105,7 +94,3 @@
     </div>
     {% endwith %}
 </div>
-
-
-
-
