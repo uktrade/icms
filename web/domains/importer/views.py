@@ -177,6 +177,21 @@ class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         return self.render_to_response(self.get_context_data(form=form, offices_form=offices_form))
 
 
+class AgentCreateView(ImporterCreateView):
+    def has_permission(self):
+        return has_permission(self.request.user)
+
+    def get_context_data(self, *args, **kwargs):
+        kwargs["page_title"] = "Agent"
+        kwargs["importer"] = Importer.objects.get(pk=self.kwargs["importer_id"])
+        return super().get_context_data(*args, **kwargs)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["main_importer"] = self.kwargs["importer_id"]
+        return initial
+
+
 class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterOrganisationDisplayForm

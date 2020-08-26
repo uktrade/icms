@@ -3,6 +3,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 from web.models.mixins import Archivable
 
@@ -121,4 +122,4 @@ class CreateAgent(LinkAction):
     icon = "icon-user-plus"
 
     def href(self, object):
-        return f"{object.id}/-- TODO --/"
+        return reverse("importer-agent-individual-create", kwargs={"importer_id": object.id})

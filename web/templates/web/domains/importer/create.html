@@ -4,7 +4,7 @@
   {{ super() }}
 {% endblock %}
 
-{% block context_header %}Create Importer{% endblock %}
+{% block context_header %}Create {{ page_title|default("Importer") }}{% endblock %}
 
 {% block sidebar %}
     {% include "partial/importer/sidebar.html" %}
@@ -15,6 +15,13 @@
 
 {% block fields %}
   {% include "web/domains/importer/company_list.html" %}
+
+  {% if page_title == "Agent" %}
+  <div class="info-box info-box-info">
+      <div class="screen-reader-only">Information box,</div>
+      This importer will be an agent of {{ importer.display_name }}.
+  </div>
+  {% endif %}
 
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {% for field in form %}

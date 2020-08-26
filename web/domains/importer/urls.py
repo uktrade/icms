@@ -4,7 +4,12 @@
 from django.urls import path
 
 from web.domains.importer import views
-from web.domains.importer.forms import ImporterIndividualForm, ImporterOrganisationForm
+from web.domains.importer.forms import (
+    AgentIndividualForm,
+    AgentOrganisationForm,
+    ImporterIndividualForm,
+    ImporterOrganisationForm,
+)
 
 urlpatterns = [
     path("", views.ImporterListView.as_view(), name="importer-list"),
@@ -29,9 +34,16 @@ urlpatterns = [
         name="importer-agent-edit",
     ),
     path(
-        "<int:importer_id>/agent/new/",
-        views.ImporterCreateView.as_view(),
-        name="importer-agent-new",
+        "<int:importer_id>/agent/individual/create/",
+        views.AgentCreateView.as_view(),
+        {"form_class": AgentIndividualForm},
+        name="importer-agent-individual-create",
+    ),
+    path(
+        "<int:importer_id>/agent/organisation/create/",
+        views.AgentCreateView.as_view(),
+        {"form_class": AgentOrganisationForm},
+        name="importer-agent-organisation-create",
     ),
     path("lookup/postcode", views.list_postcode_addresses, name="importer-postcode-lookup"),
     path("lookup/company", views.list_companies, name="importer-company-lookup"),

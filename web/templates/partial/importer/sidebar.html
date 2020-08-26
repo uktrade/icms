@@ -6,7 +6,18 @@
         <a href="{{ url('importer-list') }}">Access Requests</a>
     </li>
   </ul>
-  <h5>Create</h5>
+  {% if page_title == "Agent" %}
+    <h5>Create Agent</h5>
+    <ul class="menu-out">
+      <li>
+        <a href="{{ url('importer-agent-individual-create', args=[view.kwargs.importer_id]) }}">Individual Agent</a>
+      </li>
+      <li>
+        <a href="{{ url('importer-agent-organisation-create', args=[view.kwargs.importer_id]) }}">Organisation Agent</a>
+      </li>
+    </ul>
+  {% endif %}
+  <h5>Create Importer</h5>
   <ul class="menu-out">
     <li>
       <a href="{{ url('importer-individual-create') }}">Main Individual Importer</a>

@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import ChoiceField, CharField, ModelForm
+from django.forms import ChoiceField, CharField, ModelChoiceField, ModelForm
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django.db.models import Q
 
@@ -162,3 +162,49 @@ class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):
     class Meta:
         model = Importer
         fields = ["type", "user", "comments"]
+
+
+class AgentIndividualForm(ModelForm):
+    main_importer = ModelChoiceField(
+        queryset=Importer.objects.none(), label="Importer", disabled=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        importer = Importer.objects.filter(pk=self.initial["main_importer"])
+        self.fields["main_importer"].queryset = importer
+        self.fields["main_importer"].required = True
+        self.fields["user"].required = True
+
+    class Meta(ImporterIndividualForm.Meta):
+        fields = ["main_importer", "user", "comments"]
+        widgets = {"user": PersonWidget}
+
+    def clean(self):
+        self.instance.type = Importer.INDIVIDUAL
+        return super().clean()
+
+
+class AgentOrganisationForm(ModelForm):
+    main_importer = ModelChoiceField(
+        queryset=Importer.objects.none(), label="Importer", disabled=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        importer = Importer.objects.filter(pk=self.initial["main_importer"])
+        self.fields["main_importer"].queryset = importer
+        self.fields["main_importer"].required = True
+        self.fields["name"].required = True
+
+    class Meta(ImporterOrganisationForm.Meta):
+        fields = [
+            "main_importer",
+            "name",
+            "registered_number",
+            "comments",
+        ]
+
+    def clean(self):
+        self.instance.type = Importer.ORGANISATION
+        return super().clean()

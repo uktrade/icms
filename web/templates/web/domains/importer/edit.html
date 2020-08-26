@@ -26,6 +26,12 @@
       {% include "partial/offices-edit.html" %}
     {% endwith %}
 
+    {% if not form.instance.is_agent() %}
+      {% with agents = form.instance.agents %}
+        {% include "partial/agents-edit.html" %}
+      {% endwith %}
+    {% endif %}
+
     {% include "partial/contacts/contacts.html" %}
 
     {#

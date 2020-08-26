@@ -175,3 +175,86 @@ class OrganisationImporterCreateViewTest(AuthTestCase):
         self.assertRedirects(response, "/importer/")
         importer = Importer.objects.first()
         self.assertEqual(importer.name, "test importer", msg=importer)
+
+
+class IndividualAgentCreateViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        base_url = "/importer/{importer_id}/agent/individual/create/"
+
+        self.importer = ImporterFactory()
+        self.url = base_url.format(importer_id=self.importer.pk)
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_agent_created(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        data = {
+            "main_importer": self.importer.pk,
+            "eori_number": "GBPR",
+            "user": self.user.pk,
+            "form-TOTAL_FORMS": 1,
+            "form-INITIAL_FORMS": 0,
+            "form-0-address": "3 avenue des arbres, Pommier",
+            "form-0-postcode": "42000",
+        }
+        response = self.client.post(self.url, data)
+        self.assertRedirects(response, "/importer/")
+        importer = Importer.objects.filter(main_importer__isnull=False).first()
+        self.assertEqual(importer.user, self.user, msg=importer)
+
+        office = Office.objects.first()
+        self.assertEqual(office.postcode, "42000")
+
+
+class OrganisationAgentCreateViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        base_url = "/importer/{importer_id}/agent/organisation/create/"
+
+        self.importer = ImporterFactory()
+        self.url = base_url.format(importer_id=self.importer.pk)
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_agent_created(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        data = {
+            "main_importer": self.importer.pk,
+            "eori_number": "GB",
+            "name": "test importer",
+            "form-TOTAL_FORMS": 0,
+            "form-INITIAL_FORMS": 0,
+        }
+        response = self.client.post(self.url, data)
+        self.assertRedirects(response, "/importer/")
+        importer = Importer.objects.filter(main_importer__isnull=False).first()
+        self.assertEqual(importer.name, "test importer", msg=importer)
