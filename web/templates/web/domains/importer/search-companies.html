@@ -49,11 +49,11 @@
 
           for (row of data['items']) {
               status = row['company_status'];
-              companyNumber = row['companyNumber'];
+              companyNumber = row['company_number'];
               companyInfo[companyNumber] = row;
 
               if (status === 'active') {
-                  companyNumber = '<a href="#" class="select-company">' + row['companyNumber'] + '</a>';
+                  companyNumber = '<a href="#" class="select-company">' + companyNumber + '</a>';
               }
 
               html = [
