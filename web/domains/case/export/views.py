@@ -1,12 +1,12 @@
 import structlog as logging
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
+
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
-from django.views import generic
 
 from web.views import ModelCreateView
 from web.flow.models import Task
@@ -94,69 +94,51 @@ class ExportApplicationCreateView(ModelCreateView):
 
             Task.objects.create(process=appl, task_type="prepare", owner=self.request.user)
 
-            return redirect(reverse("export:com_edit", kwargs={"pk": appl.pk}))
+            return redirect(reverse("export:com-edit", kwargs={"pk": appl.pk}))
 
 
-# FIXME: split into view_com / edit_com, make function-based
-class PrepareCertManufactureView(PermissionRequiredMixin, generic.UpdateView):
-    model = CertificateOfManufactureApplication
-    form_class = forms.PrepareCertManufactureForm
-    template_name = "web/domains/case/export/prepare-com.html"
-    process_template = "web/domains/case/export/partials/process.html"
-    permission_required = permissions
+@login_required
+@permission_required(permissions, raise_exception=True)
+def edit_com(request, pk):
+    process = get_object_or_404(klass=CertificateOfManufactureApplication, pk=pk)
+    if request.POST:
+        form = forms.PrepareCertManufactureForm(request, data=request.POST, instance=process)
+    else:
+        form = forms.PrepareCertManufactureForm(
+            request, instance=process, initial={"contact": request.user},
+        )
+    context = {
+        "process_template": "web/domains/case/export/partials/process.html",
+        "process": process,
+        "task": process.get_task(ExportApplication.IN_PROGRESS, "prepare"),
+        "form": form,
+    }
 
-    # FIXME: get/post need to do the same checks as get_context_data is doing?
+    if form.is_valid():
+        process = form.save()
+        url = reverse("export:com-submit", kwargs={"pk": pk})
+        return HttpResponseRedirect(url)
 
-    def get_success_url(self):
-        return reverse("export:com_submit", kwargs={"pk": self.kwargs.get("pk")})
-
-    def get_context_data(self, **kwargs):
-        process = self.get_object()
-        task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
-
-        context = super().get_context_data(**kwargs)
-
-        context["process_template"] = self.process_template
-        context["process"] = process
-        context["task"] = task
-
-        return context
-
-    def get_form(self):
-        if self.request.POST:
-            form = self.form_class(
-                self.request, data=self.request.POST, instance=self.get_object(),
-            )
-        else:
-            form = self.form_class(
-                self.request, instance=self.get_object(), initial={"contact": self.request.user},
-            )
-
-        return form
+    return render(
+        request=request, template_name="web/domains/case/export/prepare-com.html", context=context
+    )
 
 
-# FIXME: make function-based, rename submit_com
-class SubmitCertManufactureView(PermissionRequiredMixin, generic.UpdateView):
-    model = CertificateOfManufactureApplication
-    template_name = "web/domains/case/export/submit-com.html"
-    form_class = forms.SubmitCertManufactureForm
-    process_template = "web/domains/case/export/partials/process.html"
-    permission_required = permissions
-    success_url = reverse_lazy("home")
-
-    def post(self, request, *args, **kwargs):
+@login_required
+@permission_required(permissions, raise_exception=True)
+def submit_com(request, pk):
+    if request.POST:
+        form = forms.SubmitCertManufactureForm(request, data=request.POST)
         go_back_to_edit = "_edit_application" in request.POST
-
         if go_back_to_edit:
-            return redirect(reverse("export:com_edit", kwargs={"pk": kwargs["pk"]}))
+            return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
+    else:
+        form = forms.SubmitCertManufactureForm(request)
 
-        return super().post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        process = self.get_object()
-        task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
-
+    if form.is_valid():
         with transaction.atomic():
+            process = CertificateOfManufactureApplication.objects.select_for_update().get(pk=pk)
+            task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
             process.status = ExportApplication.SUBMITTED
             process.save()
 
@@ -167,28 +149,18 @@ class SubmitCertManufactureView(PermissionRequiredMixin, generic.UpdateView):
             # TODO: set owner when case processing workflow is done
             Task.objects.create(process=process, task_type="process", previous=task)
 
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(reverse_lazy("home"))
 
-    def get_form(self):
-        if self.request.POST:
-            form = self.form_class(self.request, data=self.request.POST)
-        else:
-            form = self.form_class(self.request)
+    process = get_object_or_404(CertificateOfManufactureApplication, pk=pk)
+    task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
+    context = {
+        "process_template": "web/domains/case/export/partials/process.html",
+        "process": process,
+        "task": task,
+        "exporter_name": process.exporter.name,
+        "form": form,
+    }
 
-        return form
-
-    # FIXME: get/post need to do the same checks as get_context_data is doing?
-
-    def get_context_data(self, **kwargs):
-        process = self.get_object()
-        task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
-
-        context = super().get_context_data(**kwargs)
-
-        context["process_template"] = self.process_template
-        context["process"] = process
-        context["task"] = task
-
-        context["exporter_name"] = process.exporter.name
-
-        return context
+    return render(
+        request=request, template_name="web/domains/case/export/submit-com.html", context=context
+    )

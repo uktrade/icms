@@ -157,7 +157,7 @@ class CertificateOfManufactureApplication(ExportApplication):
 
     def get_task_url(self, task, user):
         if task.task_type == "prepare":
-            return reverse("export:com_edit", kwargs={"pk": self.pk})
+            return reverse("export:com-edit", kwargs={"pk": self.pk})
         elif task.task_type == "process":
             # TODO: implement when case processing flow is implemented
             return "/"

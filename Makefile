@@ -145,6 +145,7 @@ bdd: ## runs functional tests
 		python manage.py behave ${BEHAVE_OPTS} \
 		--no-capture --no-input  --settings=config.settings.test \
 		--junit-directory test-reports --junit \
+		--tags ~@skip \
 	"
 
 ##@ Releases

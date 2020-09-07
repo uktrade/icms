@@ -1,3 +1,4 @@
+@skip
 Feature: Exporter Access Request Flow
 
     @access-request @exporter-access-request
