@@ -12,7 +12,7 @@ RUN [ ! -z "${ICMS_VIEWFLOW_LICENSE}" ] || { echo "Viewflow license key cannot b
 
 # Install dependencies
 RUN \
-  apk add --no-cache postgresql-libs openssl gcc musl-dev postgresql-dev npm postgresql-client && \
+  apk add --no-cache postgresql-libs openssl build-base musl-dev postgresql-dev npm postgresql-client libffi-dev && \
   pip3 install --upgrade pip && \
   pip3 install -r requirements-dev.txt
 
