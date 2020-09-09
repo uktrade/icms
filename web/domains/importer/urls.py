@@ -28,10 +28,14 @@ urlpatterns = [
     ),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),
     # Importer Agents
+    path("agent/<int:pk>/edit/", views.AgentEditView.as_view(), name="importer-agent-edit",),
     path(
-        "<int:importer_id>/agent/<int:pk>/edit",
-        views.ImporterEditView.as_view(),
-        name="importer-agent-edit",
+        "agent/<int:pk>/archive/", views.AgentArchiveView.as_view(), name="importer-agent-archive",
+    ),
+    path(
+        "agent/<int:pk>/unarchive/",
+        views.AgentUnArchiveView.as_view(),
+        name="importer-agent-unarchive",
     ),
     path(
         "<int:importer_id>/agent/individual/create/",

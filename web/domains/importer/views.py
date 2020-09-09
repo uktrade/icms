@@ -2,14 +2,16 @@ import structlog as logging
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.forms import formset_factory
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, View
 
 from web.address.address import find as postcode_lookup
 from web.auth import utils as auth_utils
 from web.company.companieshouse import api_get_companies
 from web.domains.importer.forms import (
+    AgentIndividualForm,
+    AgentOrganisationForm,
     ImporterFilter,
     ImporterIndividualDisplayForm,
     ImporterIndividualEditForm,
@@ -190,6 +192,45 @@ class AgentCreateView(ImporterCreateView):
         initial = super().get_initial()
         initial["main_importer"] = self.kwargs["importer_id"]
         return initial
+
+
+class AgentEditView(ImporterEditView):
+    queryset = Importer.objects.filter(main_importer__isnull=False)
+    template_name = "web/domains/importer/create.html"
+
+    def get_form_class(self):
+        agent = self.get_object()
+        if agent.is_organisation():
+            return AgentOrganisationForm
+        return AgentIndividualForm
+
+
+class AgentArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    queryset = Importer.objects.filter(main_importer__isnull=False)
+    http_method_names = ["get"]
+
+    def has_permission(self):
+        return has_permission(self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
+        agent.is_active = False
+        agent.save()
+        return redirect(reverse_lazy("importer-agent-edit", kwargs=kwargs))
+
+
+class AgentUnArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    queryset = Importer.objects.filter(main_importer__isnull=False)
+    http_method_names = ["get"]
+
+    def has_permission(self):
+        return has_permission(self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
+        agent.is_active = True
+        agent.save()
+        return redirect(reverse_lazy("importer-agent-edit", kwargs=kwargs))
 
 
 class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):

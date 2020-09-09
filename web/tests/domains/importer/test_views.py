@@ -258,3 +258,103 @@ class OrganisationAgentCreateViewTest(AuthTestCase):
         self.assertRedirects(response, "/importer/")
         importer = Importer.objects.filter(main_importer__isnull=False).first()
         self.assertEqual(importer.name, "test importer", msg=importer)
+
+
+class AgentEditViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        importer = ImporterFactory()
+        self.agent = ImporterFactory(is_active=True, type="ORGANISATION", main_importer=importer)
+
+        self.url = f"/importer/agent/{self.agent.pk}/edit/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        data = {
+            "type": "ORGANISATION",
+            "action": "edit",
+            "name": self.agent.name,
+            "registered_number": "quarante-deux",
+            "comments": "Alter agent",
+            "form-TOTAL_FORMS": 0,
+            "form-INITIAL_FORMS": 0,
+        }
+        response = self.client.post(self.url, data)
+        with open("response.html", "wb") as f:
+            f.write(response.content)
+        self.assertRedirects(response, f"/importer/{self.agent.pk}/")
+        self.agent.refresh_from_db()
+        self.assertEqual(self.agent.comments, "Alter agent")
+        self.assertEqual(self.agent.registered_number, "quarante-deux")
+
+
+class AgentArchiveViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        importer = ImporterFactory()
+        self.agent = ImporterFactory(main_importer=importer)
+
+        self.url = f"/importer/agent/{self.agent.pk}/archive/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.get(self.url)
+        self.agent.refresh_from_db()
+        self.assertEqual(self.agent.is_active, False)
+        self.assertRedirects(response, f"/importer/agent/{self.agent.pk}/edit/")
+
+
+class AgentUnarchiveViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+        importer = ImporterFactory()
+        self.agent = ImporterFactory(main_importer=importer)
+
+        self.url = f"/importer/agent/{self.agent.pk}/unarchive/"
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_anonymous_access_redirects(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.redirect_url)
+
+    def test_forbidden_access(self):
+        self.login()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_authorized_access(self):
+        self.agent.is_active = False
+        self.agent.save()
+        self.login_with_permissions(ADMIN_PERMISSIONS)
+        response = self.client.get(self.url)
+        self.agent.refresh_from_db()
+        self.assertEqual(self.agent.is_active, True)
+        self.assertRedirects(response, f"/importer/agent/{self.agent.pk}/edit/")

@@ -17,6 +17,20 @@
                 {% endwith %}
             </span>
         </td>
+        <td>
+          {% if agent.is_active %}
+            <a class="link-button button icon-pencil"
+               href="{{ url('importer-agent-edit', args=[agent.pk]) }}">
+            </a>
+            <a class="link-button button icon-bin"
+               href="{{ url('importer-agent-archive', args=[agent.pk]) }}">
+            </a>
+          {% else %}
+            <a class="link-button button icon-undo"
+               href="{{ url('importer-agent-unarchive', args=[agent.pk]) }}">
+            </a>
+          {% endif %}
+        </td>
     </tr>
 {% else %}
     <tr>
