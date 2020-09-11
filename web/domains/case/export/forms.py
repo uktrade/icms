@@ -121,7 +121,7 @@ class PrepareCertManufactureForm(ModelForm):
             "countries": s2forms.Select2MultipleWidget,
         }
 
-    def __init__(self, request, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["contact"].required = True

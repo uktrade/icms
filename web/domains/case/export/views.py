@@ -3,7 +3,6 @@ import structlog as logging
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -11,10 +10,9 @@ from django.utils import timezone
 from web.views import ModelCreateView
 from web.flow.models import Task
 
-from .forms import NewExportApplicationForm
+from .forms import NewExportApplicationForm, PrepareCertManufactureForm, SubmitCertManufactureForm
 from .models import ExportApplication, ExportApplicationType, CertificateOfManufactureApplication
 
-from . import forms
 
 logger = logging.get_logger(__name__)
 
@@ -100,67 +98,73 @@ class ExportApplicationCreateView(ModelCreateView):
 @login_required
 @permission_required(permissions, raise_exception=True)
 def edit_com(request, pk):
-    process = get_object_or_404(klass=CertificateOfManufactureApplication, pk=pk)
-    if request.POST:
-        form = forms.PrepareCertManufactureForm(request, data=request.POST, instance=process)
-    else:
-        form = forms.PrepareCertManufactureForm(
-            request, instance=process, initial={"contact": request.user},
+    with transaction.atomic():
+        appl = get_object_or_404(
+            CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
         )
-    context = {
-        "process_template": "web/domains/case/export/partials/process.html",
-        "process": process,
-        "task": process.get_task(ExportApplication.IN_PROGRESS, "prepare"),
-        "form": form,
-    }
 
-    if form.is_valid():
-        process = form.save()
-        url = reverse("export:com-submit", kwargs={"pk": pk})
-        return HttpResponseRedirect(url)
+        task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
 
-    return render(
-        request=request, template_name="web/domains/case/export/prepare-com.html", context=context
-    )
+        if request.POST:
+            form = PrepareCertManufactureForm(data=request.POST, instance=appl)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(reverse("export:com-submit", kwargs={"pk": pk}))
+
+        else:
+            form = PrepareCertManufactureForm(instance=appl, initial={"contact": request.user})
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": appl,
+            "task": task,
+            "form": form,
+        }
+
+        return render(request, "web/domains/case/export/prepare-com.html", context)
 
 
 @login_required
 @permission_required(permissions, raise_exception=True)
 def submit_com(request, pk):
-    if request.POST:
-        form = forms.SubmitCertManufactureForm(request, data=request.POST)
-        go_back_to_edit = "_edit_application" in request.POST
-        if go_back_to_edit:
-            return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
-    else:
-        form = forms.SubmitCertManufactureForm(request)
+    with transaction.atomic():
+        appl = get_object_or_404(
+            CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
+        )
 
-    if form.is_valid():
-        with transaction.atomic():
-            process = CertificateOfManufactureApplication.objects.select_for_update().get(pk=pk)
-            task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
-            process.status = ExportApplication.SUBMITTED
-            process.save()
+        task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
 
-            task.is_active = False
-            task.finished = timezone.now()
-            task.save()
+        if request.POST:
+            form = SubmitCertManufactureForm(request, data=request.POST)
+            go_back_to_edit = "_edit_application" in request.POST
 
-            # TODO: set owner when case processing workflow is done
-            Task.objects.create(process=process, task_type="process", previous=task)
+            if go_back_to_edit:
+                return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
 
-        return HttpResponseRedirect(reverse_lazy("home"))
+            if form.is_valid():
+                appl.status = ExportApplication.SUBMITTED
+                appl.save()
 
-    process = get_object_or_404(CertificateOfManufactureApplication, pk=pk)
-    task = process.get_task(ExportApplication.IN_PROGRESS, "prepare")
-    context = {
-        "process_template": "web/domains/case/export/partials/process.html",
-        "process": process,
-        "task": task,
-        "exporter_name": process.exporter.name,
-        "form": form,
-    }
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
 
-    return render(
-        request=request, template_name="web/domains/case/export/submit-com.html", context=context
-    )
+                # TODO: set owner when case processing workflow is done
+                Task.objects.create(process=appl, task_type="process", previous=task)
+
+                return redirect(reverse("home"))
+
+        else:
+            form = SubmitCertManufactureForm(request)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": appl,
+            "task": task,
+            "exporter_name": appl.exporter.name,
+            "form": form,
+        }
+
+        return render(request, "web/domains/case/export/submit-com.html", context)

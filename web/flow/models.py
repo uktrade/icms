@@ -16,6 +16,8 @@ class Process(models.Model):
         """Get the latest active task of the given type attached to this
         process, while also checking the process is in the expected state.
 
+        NOTE: This locks the task row for update, so make sure there is an
+        active transaction.
 
         NOTE: this function only makes sense if there is at most one active task
         of the type. If the process can have multiple active tasks of the same
@@ -30,7 +32,11 @@ class Process(models.Model):
         if self.status != expected_state:
             raise Exception(f"Process is in the wrong state: {self.status}")
 
-        tasks = self.tasks.filter(is_active=True, task_type=task_type).order_by("created")
+        tasks = (
+            self.tasks.filter(is_active=True, task_type=task_type)
+            .order_by("created")
+            .select_for_update()
+        )
 
         if len(tasks) != 1:
             raise Exception(f"Expected one active task, got {len(tasks)}")

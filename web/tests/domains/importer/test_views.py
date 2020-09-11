@@ -296,8 +296,6 @@ class AgentEditViewTest(AuthTestCase):
             "form-INITIAL_FORMS": 0,
         }
         response = self.client.post(self.url, data)
-        with open("response.html", "wb") as f:
-            f.write(response.content)
         self.assertRedirects(response, f"/importer/{self.agent.pk}/")
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.comments, "Alter agent")
