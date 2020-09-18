@@ -1,11 +1,13 @@
 import structlog as logging
 
-
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+from django.views.generic import DetailView
 
 from web.views import ModelCreateView
 from web.flow.models import Task
@@ -17,6 +19,7 @@ from .models import ExportApplication, ExportApplicationType, CertificateOfManuf
 logger = logging.get_logger(__name__)
 
 permissions = "web.IMP_CERT_EDIT_APPLICATION"
+export_case_officer_permission = "web.export_case_officer"
 
 
 class ExportApplicationCreateView(ModelCreateView):
@@ -168,3 +171,35 @@ def submit_com(request, pk):
         }
 
         return render(request, "web/domains/case/export/submit-com.html", context)
+
+
+@login_required
+@permission_required(export_case_officer_permission, raise_exception=True)
+@require_POST
+def take_ownership(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
+        application.get_task(ExportApplication.SUBMITTED, "process")
+        application.case_owner = request.user
+        application.save()
+
+    return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required(export_case_officer_permission, raise_exception=True)
+@require_POST
+def release_ownership(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
+        application.get_task(ExportApplication.SUBMITTED, "process")
+        application.case_owner = None
+        application.save()
+
+    return redirect(reverse("workbasket"))
+
+
+class Management(PermissionRequiredMixin, DetailView):
+    model = ExportApplication
+    permission_required = export_case_officer_permission
+    template_name = "web/domains/case/export/management.html"

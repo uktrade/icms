@@ -1,0 +1,42 @@
+{% extends "layout/sidebar.html" %}
+
+{% block context_header %}
+Export case management
+{% endblock %}
+
+{% block sidebar %}
+  <h4>Export Case</h4>
+  <h5>Case ref: xxx</h5>
+  <ul class="menu-out">
+    <li>
+      <a href="#">Summary</a>
+    </li>
+    <li>
+      <a href="#">Application Withdrawals (x/x)</a>
+    </li>
+    <li>
+      <a href="#">Application Updates (x/x)</a>
+    </li>
+    <li>
+      <a href="#">Further Information Requests (x/x)</a>
+    </li>
+    <li>
+      <a href="#">Case Notes (x/x)</a>
+    </li>
+    <li>
+      <a href="#">Response Preparation</a>
+    </li>
+    <li>
+      <a href="#">Authorisation</a>
+    </li>
+  </ul>
+{% endblock %}
+
+{% block content_actions %}
+  <form method="post" action="{{ url('export:case-release-ownership', args=[object.pk]) }}" class="form-inline">
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}

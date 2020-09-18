@@ -63,5 +63,22 @@
       </table>
     </div>
   </div>
+  {% if process.status == "SUBMITTED" and request.user.is_export_case_officer() %}
+  <hr/>
+  <div class="row">
+    <div class="six columns break-word">
+      <div class="individual-input" ><span class="text-widget ">Application Processing</span></div>
+    </div>
+    <div class="six columns">
+      {% if not process.case_owner %}
+        <form method="post" action="{{ url('export:case-take-ownership', args=[process.pk]) }}">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+            <button type="submit" class="button link-button-no-padding">Take Ownership</button>
+        </form>
+      {% elif process.case_owner == request.user %}
+        <a href="{{ url('export:case-management', args=[process.pk]) }}">Manage</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 </div>
-<hr/>

@@ -103,6 +103,9 @@ class User(AbstractUser):
 
         return Exporter.objects.filter(is_active=True, members=self).count() > 0
 
+    def is_export_case_officer(self):
+        return self.has_perm("web.export_case_officer")
+
     def set_temp_password(self, length=8):
         """
         Generates a random alphanumerical password of given length.

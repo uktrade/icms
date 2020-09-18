@@ -4395,6 +4395,11 @@ button:hover,
     outline: none;
 }
 
+.link-button-no-padding:hover {
+    background: none;
+}
+
+
 button:active,
 .button:active {
     background: #f7f7f7;
@@ -4607,6 +4612,7 @@ span.big-grouped-button-label {
 
 /* Link buttons */
 button.link-button,
+button.link-button-no-padding,
 a.button.link-button,
 .button.link-button {
     border: none;
@@ -4614,6 +4620,12 @@ a.button.link-button,
     background: none;
     box-shadow: none;
     color: #0979C6;
+}
+
+button.link-button-no-padding {
+    text-decoration: underline;
+    margin: 0 !important;
+    padding: 0;
 }
 
 /* No-prompt actions (icon only) */
@@ -4767,6 +4779,10 @@ fieldset {
 .status.draft .text-widget, .status.deleted .text-widget {
     background-color: #E6E6E6;
     border-color: #C2C2C2;
+}
+
+form.form-inline {
+  display: inline;
 }
 
 form .display input,
