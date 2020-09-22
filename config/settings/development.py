@@ -42,6 +42,8 @@ SECRET_KEY = env.str("ICMS_SECRET_KEY", default="development")
 AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", "dev")
 AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", "dev")
 EMAIL_FROM = env.str("ICMS_EMAIL_FROM", "enquiries.ilb@icms.trade.dev.uktrade.io")
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 
 # Loging
 LOGGING = {

@@ -1,18 +1,23 @@
 import structlog as logging
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView
 
+from web.domains.template.models import Template
+from web.notify.email import send_email
 from web.views import ModelCreateView
 from web.flow.models import Task
 
-from .forms import NewExportApplicationForm, PrepareCertManufactureForm, SubmitCertManufactureForm
+from .forms import (
+    CloseCaseForm,
+    NewExportApplicationForm,
+    PrepareCertManufactureForm,
+    SubmitCertManufactureForm,
+)
 from .models import ExportApplication, ExportApplicationType, CertificateOfManufactureApplication
 
 
@@ -199,7 +204,39 @@ def release_ownership(request, pk):
     return redirect(reverse("workbasket"))
 
 
-class Management(PermissionRequiredMixin, DetailView):
-    model = ExportApplication
-    permission_required = export_case_officer_permission
-    template_name = "web/domains/case/export/management.html"
+@login_required
+@permission_required(export_case_officer_permission, raise_exception=True)
+def management(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(klass=ExportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(ExportApplication.SUBMITTED, "process")
+        form = CloseCaseForm()
+        context = {
+            "object": application,
+            "task": task,
+            "form": form,
+        }
+        if request.POST:
+            application.status = ExportApplication.STOPPED
+            application.save()
+
+            task.is_active = False
+            task.finished = timezone.now()
+            task.save()
+
+            if request.POST.get("send_email"):
+                template = Template.objects.get(template_code="STOP_CASE")
+                subject = template.get_title({"CASE_REFERENCE": application.pk})
+                body = template.get_content({"CASE_REFERENCE": application.pk})
+                recipients = [application.contact.email]
+                recipients.extend(
+                    application.exporter.baseteam_ptr.members.values_list("email", flat=True)
+                )
+                recipients = set(recipients)
+                send_email(subject, body, recipients)
+
+            return redirect(reverse("workbasket"))
+
+    return render(
+        request=request, template_name="web/domains/case/export/management.html", context=context
+    )

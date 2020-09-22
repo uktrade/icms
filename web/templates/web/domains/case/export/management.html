@@ -9,7 +9,7 @@ Export case management
   <h5>Case ref: xxx</h5>
   <ul class="menu-out">
     <li>
-      <a href="#">Summary</a>
+      <a href="{{ url('export:case-management', args=[object.pk]) }}">Summary</a>
     </li>
     <li>
       <a href="#">Application Withdrawals (x/x)</a>
@@ -34,9 +34,22 @@ Export case management
 
 {% block content_actions %}
   <form method="post" action="{{ url('export:case-release-ownership', args=[object.pk]) }}" class="form-inline">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      {{ csrf_input }}
       <button type="submit">Release Ownership</button>
   </form>
   <a href="#" class="button">Reassign</a>
   <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block main_content %}
+<h3>Case Summary</h3>
+<h4>Case Stopping</h4>
+Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.
+<div class="container">
+<form method="post" action="{{ url('export:case-management', args=[object.pk]) }}" class="form-inline">
+  {{ csrf_input }}
+  {{ form.as_p() }}
+  <button type="submit">Stop Case</button>
+</form>
+</div>
 {% endblock %}

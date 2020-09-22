@@ -12,6 +12,6 @@ urlpatterns = [
     path(
         "case/<int:pk>/release_ownership/", views.release_ownership, name="case-release-ownership",
     ),
-    path("case/<int:pk>/management/", views.Management.as_view(), name="case-management"),
+    path("case/<int:pk>/management/", views.management, name="case-management"),
     # TODO: add certificate of free sale URLs
 ]
