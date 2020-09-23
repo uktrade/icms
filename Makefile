@@ -62,6 +62,9 @@ mypy: ## run mypy
 	ICMS_DEBUG=False \
 	docker-compose run --rm web mypy web config
 
+pip-check:
+	docker-compose run --rm web pip-check
+
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
 	docker-compose run --rm web python ./manage.py sqlsequencereset web
@@ -97,6 +100,10 @@ shell: ## Starts the Python interactive interpreter
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
 	docker-compose run --rm web python ./manage.py shell
+
+psql: ## Starts psql
+	@unset UID && \
+	PGPASSWORD=password psql -h localhost -U postgres
 
 # TODO: does this make sense...?
 all: requirements-web

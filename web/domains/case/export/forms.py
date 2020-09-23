@@ -14,6 +14,8 @@ from django.utils.safestring import mark_safe
 
 from django_select2 import forms as s2forms
 
+from guardian.shortcuts import get_objects_for_user
+
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -56,8 +58,19 @@ class NewExportApplicationForm(ModelForm):
 
     def _update_exporters(self, request, application_type):
         exporters = Exporter.objects.filter(is_active=True)
+
+        # FIXME: debug stuff, remove
+        logger.debug(
+            "exporters for user:"
+            + str(get_objects_for_user(request.user, "web.is_contact_of_exporter", Exporter)),
+        )
+
+        # FIXME: use django-guardian here and filter on user having
+        # web.is_contact_of_exporter permissions (get exporters where
+        # that is the case)
         main_exporters = Q(members=request.user, main_exporter__isnull=True)
         agent_exporters = Q(pk__in=self._get_agent_exporter_ids(request.user))
+
         exporters = exporters.filter(main_exporters | agent_exporters)
 
         self.fields["exporter"].queryset = exporters

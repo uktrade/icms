@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "compressor",
     "phonenumber_field",
     "viewflow",
+    "guardian",
     "django_filters",
     "django_select2",
     "django.forms",
@@ -111,7 +112,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth user model
 AUTH_USER_MODEL = "web.user"
 
-AUTHENTICATION_BACKENDS = ["web.auth.models.CustomBackend"]
+AUTHENTICATION_BACKENDS = [
+    "web.auth.models.CustomBackend",
+    "guardian.backends.ObjectPermissionBackend",
+]
 
 # Date formats
 DATE_INPUT_FORMATS = ["%d-%b-%Y"]  # input formats
@@ -230,3 +234,8 @@ SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
 
 COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
+
+# guardian config
+
+GUARDIAN_MONKEY_PATCH = False
+GUARDIAN_RENDER_403 = True

@@ -2,6 +2,7 @@ import structlog as logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
@@ -31,7 +32,6 @@ from .models import ExportApplication, ExportApplicationType, CertificateOfManuf
 
 logger = logging.get_logger(__name__)
 
-permissions = "web.IMP_CERT_EDIT_APPLICATION"
 export_case_officer_permission = "web.export_case_officer"
 
 
@@ -42,7 +42,7 @@ class ExportApplicationCreateView(ModelCreateView):
     cancel_url = reverse_lazy("workbasket")
     form_class = NewExportApplicationForm
     page_title = "Create Certificate Application"
-    permission_required = permissions
+    permission_required = "web.exporter_access"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,7 +112,7 @@ class ExportApplicationCreateView(ModelCreateView):
 
 
 @login_required
-@permission_required(permissions, raise_exception=True)
+@permission_required("web.exporter_access", raise_exception=True)
 def edit_com(request, pk):
     with transaction.atomic():
         appl = get_object_or_404(
@@ -120,6 +120,9 @@ def edit_com(request, pk):
         )
 
         task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
+            raise PermissionDenied
 
         if request.POST:
             form = PrepareCertManufactureForm(data=request.POST, instance=appl)
@@ -143,7 +146,7 @@ def edit_com(request, pk):
 
 
 @login_required
-@permission_required(permissions, raise_exception=True)
+@permission_required("web.exporter_access", raise_exception=True)
 def submit_com(request, pk):
     with transaction.atomic():
         appl = get_object_or_404(
@@ -151,6 +154,9 @@ def submit_com(request, pk):
         )
 
         task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
+            raise PermissionDenied
 
         if request.POST:
             form = SubmitCertManufactureForm(request, data=request.POST)

@@ -151,6 +151,14 @@ class MenuDropDown(MenuItem):
 
 
 class Menu:
+    # TODO: note that the decision whether to show a view or not depends
+    # entirely on each view referenced here being class-based view and a
+    # subclass of PermissionRequiredMixin (see has_view_access, above).
+    #
+    # if we ever want to use function-based views for anything referenced from
+    # here, implement a "check" argument for the Menu* classes, which is a
+    # function used to call which returns True if the menu item should be shown
+    # for the current user
     items = [
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Dashboard"),

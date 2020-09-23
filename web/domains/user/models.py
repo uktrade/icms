@@ -4,10 +4,12 @@ import string
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from guardian.mixins import GuardianUserMixin
+
 from .managers import UserManager
 
 
-class User(AbstractUser):
+class User(AbstractUser, GuardianUserMixin):
     # Statuses
     NEW = "NEW"
     BLOCKED = "BLOCKED"
