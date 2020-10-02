@@ -44,7 +44,7 @@ class ApprovalRequestFlow(Flow):
 
     respond = (
         View(views.ApprovalRequestResponseView)
-        .Team(get_team)
+        # .Team(get_team)
         .Next(this.notify_case_officers)
         .Permission(approver_permission)
         .Assign(lambda activation: activation.process.approval_request.requested_from)

@@ -21,7 +21,6 @@ from web.domains.importer.forms import (
 from web.domains.importer.models import Importer
 from web.domains.office.forms import OfficeEditForm, OfficeFormSet
 from web.domains.office.models import Office
-from web.domains.team.mixins import ContactsManagementMixin
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, CreateAgent, Edit, Unarchive
 
@@ -58,7 +57,7 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(ContactsManagementMixin, ModelUpdateView):
+class ImporterEditView(ModelUpdateView):
     template_name = "web/domains/importer/edit.html"
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
@@ -233,7 +232,7 @@ class AgentUnArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return redirect(reverse_lazy("importer-agent-edit", kwargs=kwargs))
 
 
-class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):
+class ImporterOrganisationDetailView(ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterOrganisationDisplayForm
     model = Importer
@@ -246,12 +245,8 @@ class ImporterOrganisationDetailView(ContactsManagementMixin, ModelDetailView):
         context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object)
         return context
 
-    # required by ContactsManagementMixin.get
-    def get_form_class(self, *args, **kwargs):
-        return self.form_class
 
-
-class ImporterIndividualDetailView(ContactsManagementMixin, ModelDetailView):
+class ImporterIndividualDetailView(ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterIndividualDisplayForm
     model = Importer
@@ -277,10 +272,6 @@ class ImporterIndividualDetailView(ContactsManagementMixin, ModelDetailView):
         context["form"] = form
 
         return context
-
-    # required by ContactsManagementMixin.get
-    def get_form_class(self, *args, **kwargs):
-        return self.form_class
 
 
 def importer_detail_view(request, pk):

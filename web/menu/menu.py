@@ -192,11 +192,8 @@ class Menu:
                     ],
                 ),
                 SubMenu(
-                    label="Teams/Users",
-                    links=[
-                        SubMenuLink(label="Teams", view="team-list"),
-                        SubMenuLink(label="Web User Accounts", view="users-list"),
-                    ],
+                    label="Users",
+                    links=[SubMenuLink(label="Web User Accounts", view="users-list"),],
                 ),
             ],
         ),

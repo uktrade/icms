@@ -35,22 +35,6 @@ def get_users_with_permission(permission_name):
     return users
 
 
-def get_team_members_with_permission(team, permission_name):
-    """
-        Return all members of given team who has given permission
-    """
-    if permission_name:
-        app_label, codename = permission_name.split(".")
-        permission = Permission.objects.get(codename=codename)
-        users = team.members.filter(
-            Q(groups__permissions=permission) | Q(user_permissions=permission)
-        )
-    else:
-        users = team.members
-
-    return users
-
-
 def _get_user_permissions_query(user):
     """
         Returns the queryset for filtering user permissions.

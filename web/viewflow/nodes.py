@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from copy import copy
-
 import structlog as logging
 from django.conf.urls import url
 from django.urls import reverse
@@ -69,58 +64,3 @@ class View(ViewflowView):
                 return reverse(url_name, kwargs={"process_pk": task.process_id, "task_pk": task.pk})
 
         return super().get_task_url(task, url_type, namespace=namespace, **kwargs)
-
-    def Team(self, team):
-        """
-        Make task available for users in given team
-
-        Accepts team lookup kwargs or callable :: Process -> BaseTeam::
-
-            .Team(BaseTeamObject)
-            .Team(lambda process: process.access_request.linked_importer)
-        """
-        result = copy(self)
-
-        result.team = team
-        return result
-
-    def _get_team(self, task):
-        if callable(self.team):
-            process = task.flow_task.flow_class.process_class.objects.get(pk=task.process.id)
-            return self.team(process)
-        return self.team
-
-    def _is_team_member(self, user, task):
-        if user.is_superuser:
-            return True
-
-        team = self._get_team(task)
-        return team.members.filter(pk=user.id).exists()
-
-    def can_assign(self, user, task):
-        """Check if user can assign the task."""
-        allowed = super().can_assign(user, task)
-        if self.team and allowed:
-            return self._is_team_member(user, task)
-        return allowed
-
-    def can_unassign(self, user, task):
-        """Check if user can unassign the task."""
-        allowed = super().can_unassign(user, task)
-        if self.team and allowed:
-            return self._is_team_member(user, task)
-        return allowed
-
-    def can_execute(self, user, task):
-        """Check user permission to execute the task"""
-        allowed = super().can_execute(user, task)
-        if self.team and allowed:
-            return self._is_team_member(user, task)
-        return allowed
-
-    def can_view(self, user, task):
-        """Check if user has view task detail permission."""
-        allowed = super().can_view(user, task)
-        if self.team and allowed:
-            return self._is_team_member(user, task)
-        return allowed

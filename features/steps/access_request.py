@@ -4,7 +4,6 @@ from web.domains.case.access import flows
 from web.domains.case.access.approval.flows import ApprovalRequestFlow
 from web.domains.case.access.models import AccessRequest
 from web.domains.importer.models import Importer
-from web.domains.team.models import Role
 from web.domains.user.models import User
 from web.tests.domains.case.access import factory
 from web.tests.domains.case.access.approval.factory import (
@@ -109,15 +108,6 @@ def create_importer_approval_request_task(context, name, username):
         process__approval_request=approval_request,
         owner=User.objects.get(username=username),
     )
-
-
-@given('"{username}" has approver role for importer "{name}"')
-def assign_importer_approver_role(context, username, name):
-    user = User.objects.get(username=username)
-    importer = Importer.objects.get(name=name)
-    role_name = f"Importer Contacts:Approve/Reject Agents and Importers:{importer.pk}"
-    role = Role.objects.get(name=role_name)
-    role.user_set.add(user)
 
 
 @when('sets access request type to "{text}"')

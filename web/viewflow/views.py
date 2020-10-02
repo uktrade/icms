@@ -12,7 +12,7 @@ from viewflow.flow.views import CancelProcessView as ViewflowCancelProcessView
 from viewflow.flow.views.mixins import MessageUserMixin
 from viewflow.models import Subprocess
 
-from web.auth.utils import get_team_members_with_permission, get_users_with_permission
+from web.auth.utils import get_users_with_permission
 from web.domains.user.models import User
 
 from . import forms, signals, utils
@@ -92,7 +92,8 @@ class ReAssignTaskView(MessageUserMixin, TemplateView):
         """Get list of users to select from to assign the task to"""
         permission = self.activation.task.owner_permission
         if self.team:
-            return get_team_members_with_permission(self.team, permission).filter(is_active=True)
+            # return get_team_members_with_permission(self.team, permission).filter(is_active=True)
+            pass
         else:
             return get_users_with_permission(permission).filter(is_active=True)
 

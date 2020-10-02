@@ -12,7 +12,6 @@ urlpatterns = [
     path("workbasket/", include("web.domains.workbasket.urls")),
     path("user/", include("web.domains.user.urls")),
     path("template/", include("web.domains.template.urls")),
-    path("teams/", include("web.domains.team.urls")),
     path("constabulary/", include("web.domains.constabulary.urls")),
     path("commodity/", include("web.domains.commodity.urls")),
     path("country/", include("web.domains.country.urls")),

@@ -1,14 +1,9 @@
 from django.db import models
 from web.domains.office.models import Office
-from web.domains.team.models import BaseTeam
 from web.models.mixins import Archivable
 
-from .roles import EXPORTER_ROLES
 
-
-class Exporter(Archivable, BaseTeam):
-    role_list = EXPORTER_ROLES
-
+class Exporter(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     name = models.CharField(max_length=4000, blank=False, null=False)
     registered_number = models.CharField(max_length=15, blank=True, null=True)

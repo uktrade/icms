@@ -3,9 +3,7 @@ import itertools
 from django.conf import settings
 from django.core.mail.message import EmailMultiAlternatives
 
-from web.auth import utils as auth_utils
-from web.domains.team.models import Role
-from web.domains.user.models import AlternativeEmail, PersonalEmail, User
+from web.domains.user.models import AlternativeEmail, PersonalEmail
 
 
 def send_email(subject, message, recipients, html_message=None, cc_list=None):
@@ -38,13 +36,6 @@ def get_user_emails_by_ids(user_ids):
     return list(queryset.all())
 
 
-def get_role_member_notification_emails(role):
-    """Return a list of emails for all active members of given role
-        with portal notifications enabled"""
-    user_ids = role.user_set.filter(account_status=User.ACTIVE).values_list("id", flat=True)
-    return get_user_emails_by_ids(user_ids)
-
-
 def get_notification_emails(user):
     """Returns user's personal and alternative email addresses
        with portal notifications enabled"""
@@ -61,20 +52,11 @@ def get_notification_emails(user):
 
 def get_import_case_officers_emails():
     """Return a list of emails for import case officers"""
-    return get_role_member_notification_emails(
-        Role.objects.get(name="ILB Case Officers:Import Application Case Officer")
-    )
+    # TODO: get list of people in "import case officers" group, return their emails
+    raise NotImplementedError
 
 
 def get_export_case_officers_emails():
     """Return a list of emails for export case officers"""
-    return get_role_member_notification_emails(
-        Role.objects.get(name="ILB Case Officers:Certificate Application Case Officer")
-    )
-
-
-def get_team_member_emails_with_permission(team, permission):
-    """Return list of emails for team members with given permission"""
-    users = auth_utils.get_team_members_with_permission(team, permission)
-    user_ids = users.filter(account_status=User.ACTIVE).values_list("id", flat=True)
-    return get_user_emails_by_ids(user_ids)
+    # TODO: get list of people in "export case officers" group, return their emails
+    raise NotImplementedError

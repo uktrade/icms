@@ -30,7 +30,8 @@ class NewImportApplicationForm(ModelForm):
         """ Get ids for main importers of given agents"""
         agents = (
             Importer.objects.filter(is_active=True)
-            .filter(members=user)
+            # TODO: use django-guardian
+            # .filter(members=user)
             .filter(main_importer__isnull=False)
         )
         ids = []
@@ -43,10 +44,12 @@ class NewImportApplicationForm(ModelForm):
             return
 
         # User is a member of main importer's team, no agent.
-        if user in importer.members.all():
-            return
+        # TODO: use django-guardian
+        # if user in importer.members.all():
+        #     return
 
-        agents = importer.agents.filter(is_active=True).filter(members=user)
+        # TODO: use django-guardian
+        agents = importer.agents.filter(is_active=True)  # .filter(members=user)
         field = ModelChoiceField(queryset=agents)
         # Add field configuration to agent as it is a dynamic field
         # and configuration won't be applied as the other fields.
@@ -59,7 +62,9 @@ class NewImportApplicationForm(ModelForm):
 
     def _update_importers(self, request, application_type):
         importers = Importer.objects.filter(is_active=True)
-        main_importers = Q(members=request.user, main_importer__isnull=True)
+        # TODO: use django-guardian
+        # main_importers = Q(members=request.user, main_importer__isnull=True)
+        main_importers = Q(main_importer__isnull=True)
         agent_importers = Q(pk__in=self._get_agent_importer_ids(request.user))
 
         if application_type.type == "Derogation from Sanctions Import Ban":

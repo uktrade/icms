@@ -7,7 +7,7 @@ from web.tests.domains.user.factory import UserFactory
 
 
 class AuthTestCase(TestCase):
-    fixtures = ["permission.yaml"]
+    fixtures = ["permissions.yaml"]
 
     def setUp(self):
         self.user = UserFactory(

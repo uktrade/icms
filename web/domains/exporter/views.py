@@ -1,6 +1,5 @@
 from django.urls import reverse_lazy
 
-from web.domains.team.mixins import ContactsManagementMixin
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 
@@ -23,7 +22,7 @@ class ExporterListView(ModelFilterView):
         actions = [Archive(), Unarchive(), Edit()]
 
 
-class ExporterEditView(ContactsManagementMixin, ModelUpdateView):
+class ExporterEditView(ModelUpdateView):
     template_name = "web/domains/exporter/edit.html"
     form_class = ExporterEditForm
     success_url = reverse_lazy("exporter-list")

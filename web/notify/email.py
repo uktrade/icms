@@ -26,19 +26,23 @@ def send_to_importers(subject, message, html_message=None):
                     html_message=html_message,
                 )
         else:  # Importer organisation
-            for user in importer.members.filter(account_status=User.ACTIVE):
-                send_email.delay(
-                    subject, message, utils.get_notification_emails(user), html_message=html_message
-                )
+            # TODO: use django-guardian
+            # for user in importer.members.filter(account_status=User.ACTIVE):
+            #     send_email.delay(
+            #         subject, message, utils.get_notification_emails(user), html_message=html_message
+            #     )
+            pass
 
 
 def send_to_exporters(subject, message, html_message=None):
     exporters = Exporter.objects.filter(is_active=True)
     for exporter in exporters:
-        for user in exporter.members.filter(account_status=User.ACTIVE):
-            send_email.delay(
-                subject, message, utils.get_notification_emails(user), html_message=html_message
-            )
+        # TODO: use django-guardian
+        # for user in exporter.members.filter(account_status=User.ACTIVE):
+        #     send_email.delay(
+        #         subject, message, utils.get_notification_emails(user), html_message=html_message
+        #     )
+        pass
 
 
 @app.task(name="web.notify.email.send_to_import_case_officers")

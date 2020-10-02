@@ -76,9 +76,8 @@ class FurtherInformationRequestFlow(Flow):
     # for importer/exporter contacts to send further information back
     respond = (
         View(views.FurtherInformationRequestResponseView)
-        .Team(responder_team)
-        .Next(this.notify_case_officers)
-        .Permission(responder_permission)
+        # .Team(responder_team)
+        .Next(this.notify_case_officers).Permission(responder_permission)
     )
 
     # notify case officers of the response

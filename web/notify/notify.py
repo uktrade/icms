@@ -2,8 +2,6 @@ import html2text
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from web.domains.exporter.models import Exporter
-
 from . import email, utils
 
 
@@ -112,31 +110,27 @@ def retract_mailshot(mailshot):
 
 
 def further_information_requested(fir_process):
-    team = fir_process.config("responder_team")
-    fir = fir_process.fir
-    if isinstance(team, Exporter):
-        recipients = utils.get_team_member_emails_with_permission(
-            team, "web.IMP_CERT_EDIT_APPLICATION"
-        )
-    else:
-        recipients = utils.get_team_member_emails_with_permission(team, "web.IMP_EDIT_APP")
+    # TODO: implement in new way
+    raise NotImplementedError
 
-    send_notification(
-        f"{fir.request_subject}",
-        "email/fir/requested.html",
-        context={"subject": fir.request_subject, "request_detail": fir.request_detail},
-        recipients=recipients,
-    )
+    # send_notification(
+    #     f"{fir.request_subject}",
+    #     "email/fir/requested.html",
+    #     context={"subject": fir.request_subject, "request_detail": fir.request_detail},
+    #     recipients=recipients,
+    # )
 
 
 def further_information_responded(fir_process):
-    team = fir_process.config("responder_team")
-    subject = f"FIR Reponse - {fir_process.parent_display}"
-    if isinstance(team, Exporter):
-        send_export_case_officer_notification(
-            subject, "email/fir/responded.html", context={"process": fir_process}
-        )
-    else:
-        send_import_case_officer_notification(
-            subject, "email/fir/responded.html", context={"process": fir_process}
-        )
+    # TODO: implement in new way
+    raise NotImplementedError
+
+    # subject = f"FIR Reponse - {fir_process.parent_display}"
+    # if isinstance(team, Exporter):
+    #     send_export_case_officer_notification(
+    #         subject, "email/fir/responded.html", context={"process": fir_process}
+    #     )
+    # else:
+    #     send_import_case_officer_notification(
+    #         subject, "email/fir/responded.html", context={"process": fir_process}
+    #     )

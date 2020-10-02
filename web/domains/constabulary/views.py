@@ -2,7 +2,6 @@ from django.urls import reverse_lazy
 
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
-from web.domains.team.mixins import ContactsManagementMixin
 
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
@@ -37,7 +36,7 @@ class ConstabularyCreateView(ModelCreateView):
     page_title = "New Constabulary"
 
 
-class ConstabularyEditView(ContactsManagementMixin, ModelUpdateView):
+class ConstabularyEditView(ModelUpdateView):
     template_name = "web/domains/constabulary/edit.html"
     form_class = ConstabularyForm
     model = Constabulary

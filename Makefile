@@ -25,6 +25,10 @@ black_format: ## run Black in reformat mode
 	unset UID && .venv/bin/python -m black .
 
 ##@ Development
+showmigrations: ## make db migrations
+	unset UID && \
+	docker-compose run --rm web python ./manage.py showmigrations
+
 migrations: ## make db migrations
 	unset UID && \
 	docker-compose run --rm web python ./manage.py makemigrations web
@@ -128,11 +132,7 @@ down: ## Stops and downs containers
 	docker-compose down --remove-orphans
 
 test: ## run tests
-	unset UID && \
-	ICMS_DEBUG=False \
-	TEST_TARGET='web/tests' \
-	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose run --rm web python -m pytest -p no:sugar --cov=web --cov=config --cov-report xml:test-reports/cov.xml --dist=loadfile --tx=4*popen $(TEST_TARGET)
+	./run-tests.sh
 
 accessibility: ## Generate accessibility reports
 	unset UID && \

@@ -1,8 +1,6 @@
-from django.contrib.auth.models import Permission
 from django.test import TestCase
 
 from web.domains.constabulary.models import Constabulary
-from web.domains.team.models import Role
 
 
 class ConstabularyTest(TestCase):
@@ -34,24 +32,6 @@ class ConstabularyTest(TestCase):
         constabulary = self.create_constabulary()
         constabulary.unarchive()
         self.assertTrue(constabulary.is_active)
-
-    def test_firearms_authority_role_created(self):
-        constabulary = self.create_constabulary()
-        role_name = f"Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}"
-        self.assertTrue(Role.objects.filter(name=role_name).exists())
-
-    def test_firearms_authority_role_has_permissions(self):
-        Permission.objects.create(codename="IMP_REGULATOR", content_type_id=15)
-        Permission.objects.create(codename="IMP_EDIT_FIREARMS_AUTHORITY", content_type_id=15)
-        constabulary = self.create_constabulary()
-        role_name = f"Constabulary Contacts:Verified Firearms Authority Editor:{constabulary.id}"
-        permissions = Role.objects.get(name=role_name).permissions.all()
-        self.assertEqual(len(permissions), 2)
-        codenames = []
-        for p in permissions:
-            codenames.append(p.codename)
-        self.assertTrue("IMP_EDIT_FIREARMS_AUTHORITY" in codenames)
-        self.assertTrue("IMP_REGULATOR" in codenames)
 
     def test_region_verbose(self):
         constabulary = self.create_constabulary()

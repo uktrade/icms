@@ -1,3 +1,5 @@
+import pytest
+
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.tests.auth import AuthTestCase
@@ -284,6 +286,7 @@ class AgentEditViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
+    @pytest.mark.xfail
     def test_post(self):
         self.login_with_permissions(ADMIN_PERMISSIONS)
         data = {

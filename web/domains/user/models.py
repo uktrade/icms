@@ -90,18 +90,24 @@ class User(AbstractUser):
             return True
 
         # Check if user is a member of any import/agent organisation
-        from web.domains.importer.models import Importer
+        # from web.domains.importer.models import Importer
 
-        member_of_count = Importer.objects.filter(is_active=True, members=self).count()
-        return member_of_count > 0
+        # TODO: replace this with django-guardian
+        # member_of_count = Importer.objects.filter(is_active=True, members=self).count()
+        # return member_of_count > 0
+
+        return False
 
     def is_exporter(self):
         """
            Checks if user is a member of any export organisation
         """
-        from web.domains.exporter.models import Exporter
+        # from web.domains.exporter.models import Exporter
 
-        return Exporter.objects.filter(is_active=True, members=self).count() > 0
+        # TODO: replace this with django-guardian
+        # return Exporter.objects.filter(is_active=True, members=self).count() > 0
+
+        return False
 
     def is_export_case_officer(self):
         return self.has_perm("web.export_case_officer")

@@ -1,12 +1,8 @@
 from django.db import models
-from web.domains.team.models import BaseTeam
 from web.models.mixins import Archivable
-from .roles import CONSTABULARY_ROLES
 
 
-class Constabulary(Archivable, BaseTeam):
-    role_list = CONSTABULARY_ROLES
-
+class Constabulary(Archivable, models.Model):
     EAST_MIDLANDS = "EM"
     EASTERN = "ER"
     ISLE_OF_MAN = "IM"
