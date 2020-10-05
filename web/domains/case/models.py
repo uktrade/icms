@@ -4,6 +4,13 @@ from web.domains.user.models import User
 
 # from config.settings.base import DATETIME_FORMAT
 
+CASE_NOTE_DRAFT = "DRAFT"
+CASE_NOTE_COMPLETED = "COMPLETED"
+CASE_NOTE_STATUSES = (
+    (CASE_NOTE_DRAFT, "Draft"),
+    (CASE_NOTE_COMPLETED, "Completed"),
+)
+
 
 class VariationRequest(models.Model):
     """Variation requests for licenses or certificates issued requested by
@@ -89,16 +96,26 @@ class UpdateRequest(models.Model):
     )
 
 
-class CaseNote(models.Model):
+class CaseNoteStatuses(models.Manager):
+    def draft(self):
+        return self.filter(is_active=True, status=CASE_NOTE_DRAFT)
 
-    DRAFT = "DRAFT"
-    DELETED = "DELETED"
-    COMPLETED = "COMPLETED"
-    STATUSES = ((DRAFT, "Draft"), (DELETED, "Deleted"), (COMPLETED, "Completed"))
+    def completed(self):
+        return self.filter(is_active=True, status=CASE_NOTE_COMPLETED)
+
+    def active(self):
+        return self.filter(is_active=True)
+
+    def inactive(self):
+        return self.filter(is_active=False)
+
+
+class CaseNote(models.Model):
+    objects = CaseNoteStatuses()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     status = models.CharField(
-        max_length=20, choices=STATUSES, blank=False, null=False, default=DRAFT
+        max_length=20, choices=CASE_NOTE_STATUSES, blank=False, null=False, default=CASE_NOTE_DRAFT
     )
     note = models.TextField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
@@ -110,3 +127,6 @@ class CaseNote(models.Model):
         related_name="created_import_case_notes",
     )
     files = models.ManyToManyField(File)
+
+    class Meta:
+        ordering = ["-create_datetime"]

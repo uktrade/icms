@@ -2189,6 +2189,22 @@ del {
     text-decoration: line-through;
 }
 
+dt {
+  float: left;
+  width: 15%;
+  padding: 0.5em 2em 0 0;
+  margin: 0;
+  text-align: right;
+}
+
+dd {
+  float: left;
+  width: 70%;
+  padding: 0.5em 0;
+  margin: 0
+}
+
+
 abbr[title],
 dfn[title] {
     border-bottom: 1px dotted;

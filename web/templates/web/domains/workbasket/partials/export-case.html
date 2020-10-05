@@ -13,7 +13,7 @@
   <td>
     {{process.status}}
     <br>
-    {{process.created}}
+    {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>
   <td>
     {# NOTE: process.tasks has been filtered by is_active=True already #}

@@ -1,0 +1,31 @@
+{% extends "layout/sidebar.html" %}
+
+
+{% block header %}
+  <header id="menu-bar">
+    {% include "web/menu/menu.html" %}
+  </header>
+  <div class="has-context-header-grid" id="context-header">
+    <h2>
+      {{title}} {# same as page title if not specified #}
+    </h2>
+    <div class="container contextHeaderGrid">
+      {% with process=object %}
+        {% include 'web/domains/case/export/partials/process.html' %}
+      {% endwith %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block content_actions %}
+  <form method="post" action="{{ url('export:case-release-ownership', args=[object.pk]) }}" class="form-inline">
+      {{ csrf_input }}
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/export/sidebar.html' %}
+{% endblock %}

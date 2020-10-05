@@ -1,0 +1,59 @@
+<fieldset>
+  <legend class="bold">
+    Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+  </legend>
+
+  <a href="{{ url('export:case-notes-edit', kwargs={'pk': object.pk, 'note_pk': note.pk }) }}"
+     class="button small-button icon-pencil">
+     Edit
+  </a>
+  {% if note.status != 'DELETED' %}
+    <form method="post"
+          action="{{ url('export:case-notes-archive', kwargs={'pk': object.pk, 'note_pk': note.pk }) }}"
+          class="form-inline">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+        <button type="submit" class="small-button icon-bin">Delete</button>
+    </form>
+  {% endif %}
+  <div class="row">
+    <div class="two columns"></div>
+    <div class="eight columns">
+      <dl>
+        <dt class="bold">Status</dt>
+        <dd class="status {{ note.status.lower() }}"><span class="text-widget">{{ note.get_status_display() }}</span></dd>
+        <dt class="bold">Case Note</dt>
+        <dd>{{ note.note|default('N/A', true) }}</dd>
+        <dt class="bold">Documents</dt>
+        <dd>
+          {% if note.files.exists() %}
+            <table class="setoutList">
+              <thead>
+                <tr>
+                  <th scope="col">File</th>
+                  <th scope="col">Created By</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for document in note.files.all() %}
+                <tr>
+                  <td>
+                    {{ document.filename }}<br />
+                    <span class="extra-info">{{ document.file_size }}</span>
+                  </td>
+                  <td>
+                    {{ document.created_by }}<br />
+                    <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            N/A
+          {% endif %}
+        </dd>
+      </dl>
+    </div>
+    <div class="two columns"></div>
+  </div>
+</fieldset>

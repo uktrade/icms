@@ -11,7 +11,14 @@ from web.utils import url_path_join
 logger = logging.getLogger(__name__)
 
 
+class ActiveManager(models.Manager):
+    def active(self):
+        return self.filter(is_active=True)
+
+
 class File(Archivable, models.Model):
+    objects = ActiveManager()
+
     is_active = models.BooleanField(blank=False, null=False, default=True)
     filename = models.CharField(max_length=300, blank=False, null=True)
     content_type = models.CharField(max_length=100, blank=False, null=True)
@@ -22,6 +29,9 @@ class File(Archivable, models.Model):
     error_message = models.CharField(max_length=4000, blank=True, null=True)
     created_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=False, null=True)
+
+    class Meta:
+        ordering = ["-created_datetime"]
 
     def date_created_formatted(self):
         """
