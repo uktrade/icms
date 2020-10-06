@@ -95,6 +95,8 @@ class ExportApplicationCreateView(ModelCreateView):
             elif data["application_type"].pk == ExportApplicationType.CERT_MANUFACTURE:
                 model_class = CertificateOfManufactureApplication
 
+            # TODO: check user has access to the exporter
+            # (request.user.has_perm("web.is_contact_of_exporter", exporter))
             appl = model_class(
                 process_type=model_class.PROCESS_TYPE,
                 application_type=data["application_type"],
