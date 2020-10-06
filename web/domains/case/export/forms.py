@@ -1,6 +1,5 @@
 import structlog as logging
 
-from django.db.models import Q
 from django.forms import (
     BooleanField,
     CheckboxInput,
@@ -44,34 +43,31 @@ class NewExportApplicationForm(ModelForm):
     )
 
     def _get_agent_exporter_ids(self, user):
-        """Get ids for main exporters of given agents. """
+        """Get ids for main exporters of the given agent. """
 
-        agents = Exporter.objects.filter(is_active=True, members=user, main_exporter__isnull=False)
+        active_exporters = Exporter.objects.filter(is_active=True)
 
-        ids = [agent.main_exporter_id for agent in agents]
+        exporters = get_objects_for_user(
+            user, "web.is_agent_of_exporter", active_exporters, with_superuser=False,
+        )
 
-        return ids
+        return set([exporter.pk for exporter in exporters])
 
     def _update_offices(self, exporter):
         if exporter in self.fields["exporter"].queryset:
             self.fields["exporter_office"].queryset = exporter.offices.filter(is_active=True)
 
     def _update_exporters(self, request, application_type):
-        exporters = Exporter.objects.filter(is_active=True)
+        main_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
 
-        # FIXME: debug stuff, remove
-        logger.debug(
-            "exporters for user:"
-            + str(get_objects_for_user(request.user, "web.is_contact_of_exporter", Exporter)),
+        main_exporters = get_objects_for_user(
+            request.user, "web.is_contact_of_exporter", main_exporters, with_superuser=False,
         )
 
-        # FIXME: use django-guardian here and filter on user having
-        # web.is_contact_of_exporter permissions (get exporters where
-        # that is the case)
-        main_exporters = Q(members=request.user, main_exporter__isnull=True)
-        agent_exporters = Q(pk__in=self._get_agent_exporter_ids(request.user))
+        main_exporter_ids = set([exporter.pk for exporter in main_exporters])
+        agent_exporter_ids = self._get_agent_exporter_ids(request.user)
 
-        exporters = exporters.filter(main_exporters | agent_exporters)
+        exporters = Exporter.objects.filter(pk__in=(main_exporter_ids | agent_exporter_ids))
 
         self.fields["exporter"].queryset = exporters
 

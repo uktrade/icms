@@ -3,7 +3,7 @@ from web.domains.office.models import Office
 from web.models.mixins import Archivable
 
 
-# TODO: explore if we should use the "direct foreign keys" for djang-guardian
+# TODO: explore if we should use the "direct foreign keys" for django-guardian
 # for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
 class Exporter(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
@@ -41,5 +41,6 @@ class Exporter(Archivable, models.Model):
         # object-level permissions
         permissions = [
             ("is_contact_of_exporter", "Is contact of this exporter"),
+            # NOTE: this is given on the "main exporter" object, not on the "agent" object
             ("is_agent_of_exporter", "Is agent of this exporter"),
         ]
