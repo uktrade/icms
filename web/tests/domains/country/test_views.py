@@ -3,7 +3,7 @@ from web.tests.auth import AuthTestCase
 from .factory import CountryFactory, CountryGroupFactory, CountryTranslationSetFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["COUNTRY_MANAGE"]
+PERMISSIONS = ["reference_data_access"]
 
 
 class CountryListViewTest(AuthTestCase):

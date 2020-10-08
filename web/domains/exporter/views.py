@@ -6,14 +6,12 @@ from web.views.actions import Archive, Edit, Unarchive
 from .forms import ExporterEditForm, ExporterFilter
 from .models import Exporter
 
-permissions = "web.IMP_MAINTAIN_ALL"
-
 
 class ExporterListView(ModelFilterView):
     template_name = "web/domains/exporter/list.html"
     filterset_class = ExporterFilter
     model = Exporter
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "Maintain Exporters"
 
     class Display:
@@ -28,7 +26,7 @@ class ExporterEditView(ModelUpdateView):
     success_url = reverse_lazy("exporter-list")
     cancel_url = success_url
     model = Exporter
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class ExporterCreateView(ModelCreateView):
@@ -37,7 +35,7 @@ class ExporterCreateView(ModelCreateView):
     success_url = reverse_lazy("exporter-list")
     cancel_url = success_url
     model = Exporter
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "Create Exporter"
 
 
@@ -46,4 +44,4 @@ class ExporterDetailView(ModelDetailView):
     form_class = ExporterEditForm
     cancel_url = reverse_lazy("exporter-list")
     model = Exporter
-    permission_required = permissions
+    permission_required = "web.reference_data_access"

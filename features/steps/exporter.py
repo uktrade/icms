@@ -1,4 +1,6 @@
 from behave import given
+from guardian.shortcuts import assign_perm
+
 from web.domains.exporter.models import Exporter
 from web.domains.user.models import User
 from web.tests.domains.exporter.factory import ExporterFactory
@@ -9,11 +11,11 @@ def create_exporter(context, name):
     ExporterFactory(name=name, is_active=True)
 
 
-@given('"{username}" is a member of exporter "{name}"')
-def add_exporter_member(context, username, name):
+@given('"{username}" is a contact of exporter "{name}"')
+def add_exporter_contact(context, username, name):
     exporter = Exporter.objects.get(name=name)
     user = User.objects.get(username=username)
-    exporter.members.add(user)
+    assign_perm("web.is_contact_of_exporter", user, exporter)
 
 
 @given('"{agent_name}" is an agent of exporter "{name}"')

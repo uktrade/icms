@@ -6,9 +6,7 @@ from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import ImporterFactory
 
 LOGIN_URL = "/"
-ADMIN_PERMISSIONS = ["IMP_MAINTAIN_ALL"]
-SECTION5_AUTHORITY_PERMISSIONS = ["IMP_EDIT_SECTION5_AUTHORITY"]
-FIREARMS_AUTHORITY_PERMISSIONS = ["IMP_EDIT_FIREARMS_AUTHORITY"]
+PERMISSIONS = ["reference_data_access"]
 
 
 class ImporterListViewTest(AuthTestCase):
@@ -33,22 +31,22 @@ class ImporterListViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_admin_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_external_user_access(self):
-        self.login_with_permissions(SECTION5_AUTHORITY_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_constabulary_access(self):
-        self.login_with_permissions(FIREARMS_AUTHORITY_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data["page_title"], "Maintain Importers")
 
@@ -66,7 +64,7 @@ class ImporterListViewTest(AuthTestCase):
         for i in range(58):
             ImporterFactory()
 
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
@@ -74,7 +72,7 @@ class ImporterListViewTest(AuthTestCase):
     def test_page_results(self):
         for i in range(53):
             ImporterFactory(is_active=True)
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 3)
@@ -98,12 +96,12 @@ class ImporterEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertTrue(f"Editing {self.importer}", response.content)
 
@@ -123,12 +121,12 @@ class IndividualImporterCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_importer_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         data = {
             "eori_number": "GBPR",
             "user": self.user.pk,
@@ -161,12 +159,12 @@ class OrganisationImporterCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_importer_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         data = {
             "eori_number": "GB",
             "name": "test importer",
@@ -199,12 +197,12 @@ class IndividualAgentCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_agent_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         data = {
             "main_importer": self.importer.pk,
             "eori_number": "GBPR",
@@ -243,12 +241,12 @@ class OrganisationAgentCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_agent_created(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         data = {
             "main_importer": self.importer.pk,
             "eori_number": "GB",
@@ -282,13 +280,13 @@ class AgentEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     @pytest.mark.xfail
     def test_post(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         data = {
             "type": "ORGANISATION",
             "action": "edit",
@@ -325,7 +323,7 @@ class AgentArchiveViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.is_active, False)
@@ -354,7 +352,7 @@ class AgentUnarchiveViewTest(AuthTestCase):
     def test_authorized_access(self):
         self.agent.is_active = False
         self.agent.save()
-        self.login_with_permissions(ADMIN_PERMISSIONS)
+        self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.is_active, True)

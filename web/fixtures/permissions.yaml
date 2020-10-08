@@ -244,30 +244,6 @@
     content_type: 15
     codename: IMP_EDIT_APP
 - model: auth.permission
-  pk: 1041
-  fields:
-    name: IMP_EDIT_FIREARMS_AUTHORITY
-    content_type: 15
-    codename: IMP_EDIT_FIREARMS_AUTHORITY
-- model: auth.permission
-  pk: 1042
-  fields:
-    name: IMP_EDIT_SECTION5_AUTHORITY
-    content_type: 15
-    codename: IMP_EDIT_SECTION5_AUTHORITY
-- model: auth.permission
-  pk: 1043
-  fields:
-    name: IMP_MAINTAIN_ALL
-    content_type: 15
-    codename: IMP_MAINTAIN_ALL
-- model: auth.permission
-  pk: 1044
-  fields:
-    name: IMP_REGULATOR
-    content_type: 15
-    codename: IMP_REGULATOR
-- model: auth.permission
   pk: 1045
   fields:
     name: IMP_SEARCH_CASES_ALL
@@ -291,18 +267,6 @@
     name: IMP_VIEW_APP
     content_type: 15
     codename: IMP_VIEW_APP
-- model: auth.permission
-  pk: 1049
-  fields:
-    name: MAILSHOT_ADMIN
-    content_type: 15
-    codename: MAILSHOT_ADMIN
-- model: auth.permission
-  pk: 1050
-  fields:
-    name: MAILSHOT_RECIPIENT
-    content_type: 15
-    codename: MAILSHOT_RECIPIENT
 - model: auth.permission
   pk: 1051
   fields:

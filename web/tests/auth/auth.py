@@ -7,6 +7,7 @@ from web.tests.domains.user.factory import UserFactory
 
 
 class AuthTestCase(TestCase):
+    # TODO: this might be able to be removed once all old permissions are gone from the code
     fixtures = ["permissions.yaml"]
 
     def setUp(self):
@@ -20,10 +21,6 @@ class AuthTestCase(TestCase):
         )
 
     def grant(self, permission_codename):
-        # TODO: Migrated permissions with django has a fixed content type 15.
-        # Create a proxy Permission model for handling permission constants
-        # modelless permissions instances.
-        # see: https://stackoverflow.com/questions/13932774/how-can-i-use-django-permissions-without-defining-a-content-type-or-model
         permission = Permission.objects.get(codename=permission_codename)
         self.user.user_permissions.add(permission)
 

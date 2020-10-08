@@ -6,14 +6,12 @@ from web.views.actions import Archive, Edit, Unarchive
 from .forms import ConstabulariesFilter, ConstabularyForm
 from .models import Constabulary
 
-permissions = "web.IMP_MAINTAIN_ALL"
-
 
 class ConstabularyListView(ModelFilterView):
     template_name = "web/domains/constabulary/list.html"
     model = Constabulary
     filterset_class = ConstabulariesFilter
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "Maintain Constabularies"
 
     class Display:
@@ -32,7 +30,7 @@ class ConstabularyCreateView(ModelCreateView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "New Constabulary"
 
 
@@ -42,7 +40,7 @@ class ConstabularyEditView(ModelUpdateView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class ConstabularyDetailView(ModelDetailView):
@@ -50,4 +48,4 @@ class ConstabularyDetailView(ModelDetailView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"

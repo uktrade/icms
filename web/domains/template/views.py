@@ -6,15 +6,13 @@ from web.views.actions import Archive, Unarchive, Edit
 from .models import Template
 from .forms import TemplatesFilter, GenericTemplate, EndorsementCreateTemplateForm
 
-permissions = "web.IMP_MAINTAIN_ALL"
-
 
 class TemplateListView(ModelFilterView):
     template_name = "web/domains/template/list.html"
     model = Template
     filterset_class = TemplatesFilter
     page_title = "Maintain Templates"
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
     # Default display fields on the listing page of the model
     class Display:
@@ -36,7 +34,7 @@ class TemplateListView(ModelFilterView):
 class TemplateDetailView(ModelDetailView):
     form_class = GenericTemplate
     model = Template
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     cancel_url = "javascript:history.go(-1)"
 
 
@@ -46,7 +44,7 @@ class TemplateEditView(ModelUpdateView):
     model = Template
     success_url = reverse_lazy("template-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class EndorsementCreateView(ModelCreateView):
@@ -55,7 +53,7 @@ class EndorsementCreateView(ModelCreateView):
     model = Template
     success_url = reverse_lazy("template-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "New Endorsement"
 
     def form_valid(self, form):

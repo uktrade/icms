@@ -38,7 +38,7 @@ Feature: Request Importer/Exporter Access as an Importer
     Scenario: An exporter user should see workbasket when request to act as an importer is complete
         Given "theuser" is logged in
         And exporter "Test Exports" exists
-        And "theuser" is a member of exporter "Test Exports"
+        And "theuser" is a contact of exporter "Test Exports"
         When  the user requests to act as an importer
         Then  "workbasket" page is displayed
 

@@ -2,7 +2,9 @@ import re
 
 from behave import given, then, when
 from features.steps import utils
+from guardian.shortcuts import assign_perm
 from selenium.webdriver.support.ui import Select
+
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.tests.domains.importer.factory import ImporterFactory
@@ -58,11 +60,12 @@ def mark_as_agent(context, agent_name, importer_name):
     agent.save()
 
 
-@given('"{username}" is a member of importer "{name}"')
-def add_importer_member(context, username, name):
+@given('"{username}" is a contact of importer "{name}"')
+def add_importer_contact(context, username, name):
     importer = Importer.objects.get(name=name)
     user = User.objects.get(username=username)
-    importer.members.add(user)
+
+    assign_perm("web.is_contact_of_importer", user, importer)
 
 
 @when('clicks on importer name "{name}"')

@@ -19,4 +19,6 @@ class Permissions(models.Model):
         permissions = (
             ("importer_access", "Can act as an importer"),
             ("exporter_access", "Can act as an exporter"),
+            ("reference_data_access", "Can maintain reference data"),
+            ("mailshot_access", "Can maintain mailshots"),
         )

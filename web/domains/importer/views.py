@@ -7,7 +7,6 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, View
 
 from web.address.address import find as postcode_lookup
-from web.auth import utils as auth_utils
 from web.company.companieshouse import api_get_companies
 from web.domains.importer.forms import (
     AgentIndividualForm,
@@ -26,12 +25,6 @@ from web.views.actions import Archive, CreateAgent, Edit, Unarchive
 
 logger = logging.getLogger(__name__)
 
-permissions = ["IMP_MAINTAIN_ALL", "IMP_EDIT_SECTION5_AUTHORITY", "IMP_EDIT_FIREARMS_AUTHORITY"]
-
-
-def has_permission(user):
-    return auth_utils.has_any_permission(user, permissions)
-
 
 class ImporterListView(ModelFilterView):
     template_name = "web/domains/importer/list.html"
@@ -39,9 +32,7 @@ class ImporterListView(ModelFilterView):
     model = Importer
     queryset = Importer.objects.prefetch_related("offices").select_related("main_importer")
     page_title = "Maintain Importers"
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     class Display:
         fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
@@ -62,9 +53,7 @@ class ImporterEditView(ModelUpdateView):
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
     model = Importer
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get_form_class(self):
         importer = self.get_object()
@@ -135,9 +124,7 @@ class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     template_name = "web/domains/importer/create.html"
     success_url = reverse_lazy("importer-list")
     cancel_url = success_url
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get_form_class(self):
         """`form_class` is passed in the view as an extra arguments in the urls."""
@@ -179,9 +166,6 @@ class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
 
 
 class AgentCreateView(ImporterCreateView):
-    def has_permission(self):
-        return has_permission(self.request.user)
-
     def get_context_data(self, *args, **kwargs):
         kwargs["page_title"] = "Agent"
         kwargs["importer"] = Importer.objects.get(pk=self.kwargs["importer_id"])
@@ -207,9 +191,7 @@ class AgentEditView(ImporterEditView):
 class AgentArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
     queryset = Importer.objects.filter(main_importer__isnull=False)
     http_method_names = ["get"]
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get(self, request, *args, **kwargs):
         agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
@@ -221,9 +203,7 @@ class AgentArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
 class AgentUnArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
     queryset = Importer.objects.filter(main_importer__isnull=False)
     http_method_names = ["get"]
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get(self, request, *args, **kwargs):
         agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
@@ -236,13 +216,11 @@ class ImporterOrganisationDetailView(ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterOrganisationDisplayForm
     model = Importer
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object)
+        context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object())
         return context
 
 
@@ -250,9 +228,7 @@ class ImporterIndividualDetailView(ModelDetailView):
     template_name = "web/domains/importer/view.html"
     form_class = ImporterIndividualDisplayForm
     model = Importer
-
-    def has_permission(self):
-        return has_permission(self.request.user)
+    permission_required = "web.reference_data_access"
 
     def get_context_data(self, object):
         context = super().get_context_data(object)

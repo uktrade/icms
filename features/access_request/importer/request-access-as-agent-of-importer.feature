@@ -42,14 +42,14 @@ Feature: Request Importer/Exporter Access as an Agent for an Importer
         And exporter "Test Exports" exists
         And exporter "Export Agents Ltd" exists
         And "Export Agents Ltd" is an agent of exporter "Test Exports"
-        And "export agent" is a member of exporter "Export Agents Ltd"
+        And "export agent" is a contact of exporter "Export Agents Ltd"
         When  the user requests to act as an agent of an importer
         Then  "workbasket" page is displayed
 
     @access-request @importer-access-request
     Scenario: User should see pending access requets
         Given "some_user" is logged in
-        When  the user requests to act as an agent of an importer 
-        And   the user requests to act as an agent of an importer 
+        When  the user requests to act as an agent of an importer
+        And   the user requests to act as an agent of an importer
         And navigates to "access:importer:request"
         Then there are 2 pending access requests to act as an importer

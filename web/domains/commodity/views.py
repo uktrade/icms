@@ -12,14 +12,12 @@ from .forms import (
 )
 from .models import Commodity, CommodityGroup
 
-permissions = "web.IMP_MAINTAIN_ALL"
-
 
 class CommodityListView(ModelFilterView):
     template_name = "web/domains/commodity/list.html"
     filterset_class = CommodityFilter
     model = Commodity
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "Maintain Commodities"
 
     class Display:
@@ -38,7 +36,7 @@ class CommodityEditView(ModelUpdateView):
     model = Commodity
     success_url = reverse_lazy("commodity-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class CommodityCreateView(ModelCreateView):
@@ -46,14 +44,14 @@ class CommodityCreateView(ModelCreateView):
     form_class = CommodityForm
     success_url = reverse_lazy("commodity-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "New Commodity"
 
 
 class CommodityDetailView(ModelDetailView):
     form_class = CommodityForm
     model = Commodity
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     cancel_url = reverse_lazy("commodity-list")
 
 
@@ -61,7 +59,7 @@ class CommodityGroupListView(ModelFilterView):
     template_name = "web/domains/commodity/group/list.html"
     filterset_class = CommodityGroupFilter
     model = CommodityGroup
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
     class Display:
         fields = [
@@ -86,7 +84,7 @@ class CommodityGroupEditView(ModelUpdateView):
     model = CommodityGroup
     success_url = reverse_lazy("commodity-group-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class CommodityGroupCreateView(ModelCreateView):
@@ -95,12 +93,12 @@ class CommodityGroupCreateView(ModelCreateView):
     model = CommodityGroup
     success_url = reverse_lazy("commodity-group-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "New Commodity Group"
 
 
 class CommodityGroupDetailView(ModelDetailView):
     form_class = CommodityGroupForm
     model = CommodityGroup
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     cancel_url = reverse_lazy("commodity-group-list")

@@ -3,7 +3,7 @@ from web.tests.auth import AuthTestCase
 from .factory import TemplateFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["IMP_MAINTAIN_ALL"]
+PERMISSIONS = ["reference_data_access"]
 
 
 class TemplateListViewTest(AuthTestCase):

@@ -13,8 +13,6 @@ from .forms import (
 )
 from .models import ObsoleteCalibreGroup
 
-permissions = "web.IMP_MAINTAIN_ALL"
-
 logger = logging.getLogger(__name__)
 
 
@@ -23,7 +21,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
     page_title = "Maintain Obsolete Calibres"
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     paginate = False
 
     def swap_orders(self, first, second):
@@ -108,7 +106,7 @@ class ObsoleteCalibreGroupEditView(ObsoleteCalibreGroupBaseView, ModelUpdateView
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy("obsolete-calibre-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
 
 class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, ModelCreateView):
@@ -117,7 +115,7 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, ModelCreateVi
     model = ObsoleteCalibreGroup
     success_url = reverse_lazy("obsolete-calibre-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
     page_title = "New Obsolete Calibre Group"
 
     def get_object(self):
@@ -127,7 +125,7 @@ class ObsoleteCalibreGroupCreateView(ObsoleteCalibreGroupBaseView, ModelCreateVi
 class ObsoleteCalibreGroupDetailView(ModelDetailView):
     template_name = "web/domains/firearms/group/view.html"
     model = ObsoleteCalibreGroup
-    permission_required = permissions
+    permission_required = "web.reference_data_access"
 
     def get_context_data(self, object):
         context = super().get_context_data()

@@ -24,8 +24,6 @@ from .forms import (
 )
 from .models import Mailshot
 
-permissions = "web.MAILSHOT_ADMIN"
-
 
 class ReceivedMailshotsView(ModelFilterView):
     template_name = "web/domains/mailshot/received.html"
@@ -55,7 +53,7 @@ class MailshotListView(ModelFilterView):
     template_name = "web/domains/mailshot/list.html"
     model = Mailshot
     filterset_class = MailshotFilter
-    permission_required = permissions
+    permission_required = "web.mailshot_access"
     page_title = "Maintain Mailshots"
 
     class Display:
@@ -80,7 +78,7 @@ class MailshotListView(ModelFilterView):
 
 class MailshotCreateView(RequireRegisteredMixin, View):
     MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
-    permission_required = permissions
+    permission_required = "web.mailshot_access"
 
     def get(self, request):
         """
@@ -101,7 +99,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.mailshot_access"
 
     def handle_notification(self, mailshot):
         if mailshot.is_email:
@@ -160,7 +158,7 @@ class MailshotDetailView(ModelDetailView):
     form_class = MailshotForm
     model = Mailshot
     cancel_url = reverse_lazy("mailshot-list")
-    permission_required = permissions
+    permission_required = "web.mailshot_access"
 
     def has_permission(self):
         user = self.request.user
@@ -184,7 +182,7 @@ class MailshotRetractView(ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = permissions
+    permission_required = "web.mailshot_access"
 
     def __init__(self, *args, **kwargs):
         template = Template.objects.get(template_code=self.RETRACT_TEMPLATE_CODE)

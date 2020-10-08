@@ -10,7 +10,7 @@ from web.tests.domains.template.factory import TemplateFactory
 from .factory import MailshotFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["MAILSHOT_ADMIN"]
+PERMISSIONS = ["mailshot_access"]
 
 
 class MailshotListViewTest(AuthTestCase):
