@@ -1,10 +1,5 @@
 {% extends "model/edit.html" %}
 
-{% block fields %}
-  {{super()}}
-  {% include "web/contacts/tabs.html" %}
-{%endblock %}
-
 {% block actions %}
   <li>
     <button type="submit" name="action" value="save" class="primary-button button">Save</button>

@@ -2,14 +2,5 @@
 {% block empty_message %}There aren't any exporters that match your search{% endblock %}
 
 {% block sidebar %}
-<ul class="menu-out">
-    <li>
-      <a href="{{url('exporter-new')}}">Create Exporter</a>
-    </li>
-</ul>
-<ul class="menu-out">
-    <li>
-      <a href="">Search Access Requests</a>
-    </li>
-</ul>
+    {% include "partial/exporter/sidebar.html" %}
 {% endblock %}

@@ -1,4 +1,4 @@
-from django.forms import CharField, ModelForm
+from django.forms import CharField, Form, ModelChoiceField, ModelForm
 from django.forms.widgets import (
     CheckboxInput,
     CheckboxSelectMultiple,
@@ -9,6 +9,7 @@ from django.forms.widgets import (
 )
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, FilterSet, MultipleChoiceFilter
+from web.domains.user.widgets import ContactWidget
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
@@ -223,3 +224,19 @@ class UserListFilter(FilterSet):
     class Meta:
         model = User
         fields = []
+
+
+class ContactForm(Form):
+    contact = ModelChoiceField(
+        label="",
+        help_text="""
+            Search a contact to add. Contacts returned are matched against first/last name,
+            email, job title, organisation and department.
+        """,
+        queryset=User.objects.none(),
+        widget=ContactWidget,
+    )
+
+    def __init__(self, contacts, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["contact"].queryset = contacts

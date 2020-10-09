@@ -1,16 +1,46 @@
-{% extends "model/edit.html" %}
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
-{% block fields %}
-  {{super()}}
-  {% include "web/contacts/tabs.html" %}
-{%endblock %}
-
-{% block actions %}
-  <li>
-    <button type="submit" name="action" value="save" class="primary-button button">Save</button>
-  </li>
-  <li>
-    <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
-  </li>
+{% block css %}
+  {{ contact_form.media.css }}
+  {{ super() }}
 {% endblock %}
 
+{% block context_header %}
+  Editing exporter {{ form.instance }}
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/exporter/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% block fields %}
+      {% for field in form %}
+        {{fields.field(field)}}
+      {% endfor %}
+    {% endblock %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+  {% include "partial/contacts/contacts.html" %}
+{% endblock %}
+
+{% block page_js %}
+  {{ contact_form.media.js }}
+  {{ super() }}
+{% endblock %}

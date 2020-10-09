@@ -7,7 +7,12 @@ from . import views
 
 urlpatterns = [
     path("", views.ExporterListView.as_view(), name="exporter-list"),
-    path("<int:pk>/edit/", views.ExporterEditView.as_view(), name="exporter-edit"),
-    path("new/", views.ExporterCreateView.as_view(), name="exporter-new"),
-    path("<int:pk>/", views.ExporterDetailView.as_view(), name="exporter-view"),
+    path("<int:pk>/edit/", views.edit_exporter, name="exporter-edit"),
+    path("create/", views.create_exporter, name="exporter-create"),
+    path("<int:pk>/contacts/add/", views.add_contact, name="exporter-contact-add"),
+    path(
+        "<int:pk>/contacts/<int:contact_pk>/delete/",
+        views.delete_contact,
+        name="exporter-contact-delete",
+    ),
 ]

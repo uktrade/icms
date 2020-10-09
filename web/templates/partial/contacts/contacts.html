@@ -1,3 +1,85 @@
 <h3>Contacts</h3>
 
-{% include "web/contacts/tabs.html" %}
+<div id="team-members" class="tab-content big-tabs" aria-hidden="false">
+    {% if not contacts %}
+    <div class="info-box info-box-info">
+        There are no contacts attached
+    </div>
+    {% else %}
+    <table class="setoutList">
+        <thead>
+            <tr>
+              <th>Central Contact Details</th>
+              {% if not read_only %}
+                <th>Actions</th>
+              {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in contacts %}
+            <tr>
+                <td style="white-space: nowrap">
+                    <div class="container setoutForm">
+                        <div class="row">
+                            <div class="twelve columns bold">
+                                <span class="text-widget ">{{user.first_name}} {{user.last_name}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns">
+                                <span class="text-widget ">{{user.email or ''}}
+                                    <br />
+                                    {{user.organisation or ''}}
+                                               <br />
+                                    {{user.department or ''}}
+                                    <br>
+                                    {{user.job_title or ''}}
+                                    <br>
+                                    {{user.phone_number or ''}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns"><span class="text-widget "></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="twelve columns">
+                                <span class="text-widget"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+                {% if not read_only %}
+                  <td>
+                    <div class="row">
+                        <div class="twelve columns">
+                          <form method="post"
+                                action="{{ url('exporter-contact-delete', kwargs={'pk': object.pk, 'contact_pk': user.pk}) }}">
+                            {{ csrf_input }}
+                            <button type="submit" class="button small-button icon-bin">Delete</button>
+                          </form>
+                        </div>
+                    </div>
+                  </td>
+               {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    <form method="post" action="{{ url('exporter-contact-add', kwargs={'pk': object.pk}) }}">
+      {{ csrf_input }}
+      <div class="container setoutForm">
+        <div class="row">
+          <div class="four columns">
+            {{ contact_form.as_p() }}
+          </div>
+          <div class="two columns">
+            <button type="submit" class="button small-button icon-add">Add contact</button>
+          </div>
+          <div class="six columns"></div>
+        </div>
+      </div>
+    </form>
+</div>

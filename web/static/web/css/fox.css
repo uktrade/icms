@@ -3944,11 +3944,12 @@ label {
     min-width: 50px;
 }
 
-.mand-label {
+.mand-label, .helptext {
     font-weight: 500;
     font-size: 0.7em;
     color: #707070;
     margin-left: 0.3em;
+    line-height: 1em;
 }
 
 .mand-label .mand-label-block {
