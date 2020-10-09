@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from guardian.mixins import GuardianUserMixin
+from guardian.shortcuts import get_objects_for_user
 
 from .managers import UserManager
 
@@ -83,33 +84,39 @@ class User(AbstractUser, GuardianUserMixin):
         return None if self.last_login is None else self.last_login.date()
 
     def is_importer(self):
-        """
-            Checks if user is a member of any import organisation or is an individual importer
-        """
+        """Checks if user is a member of any import organisation or is an individual importer"""
+
         # Check if user has any invidual importer company
         own_importers = self.own_importers.filter(is_active=True).count()
         if own_importers > 0:
             return True
 
         # Check if user is a member of any import/agent organisation
-        # from web.domains.importer.models import Importer
+        from web.domains.importer.models import Importer
 
-        # TODO: replace this with django-guardian
-        # member_of_count = Importer.objects.filter(is_active=True, members=self).count()
-        # return member_of_count > 0
-
-        return False
+        return (
+            get_objects_for_user(
+                self,
+                "web.is_contact_of_importer",
+                Importer.objects.filter(is_active=True),
+                with_superuser=False,
+            ).count()
+            > 0
+        )
 
     def is_exporter(self):
-        """
-           Checks if user is a member of any export organisation
-        """
-        # from web.domains.exporter.models import Exporter
+        """Checks if user is a member of any export organisation."""
+        from web.domains.exporter.models import Exporter
 
-        # TODO: replace this with django-guardian
-        # return Exporter.objects.filter(is_active=True, members=self).count() > 0
-
-        return False
+        return (
+            get_objects_for_user(
+                self,
+                "web.is_contact_of_exporter",
+                Exporter.objects.filter(is_active=True),
+                with_superuser=False,
+            ).count()
+            > 0
+        )
 
     def is_export_case_officer(self):
         return self.has_perm("web.export_case_officer")

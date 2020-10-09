@@ -1,5 +1,5 @@
-import pytest
 from django.test import TestCase
+from guardian.shortcuts import assign_perm
 
 from web.domains.mailshot.forms import (
     MailshotFilter,
@@ -120,11 +120,10 @@ class ReceivedMailshotsFilterTest(TestCase):
     def run_filter(self, data=None, user=None):
         return ReceivedMailshotsFilter(data=data, user=user).qs
 
-    @pytest.mark.xfail
     def test_filter_only_gets_published_mailshots(self):
         self.individual_importer.user = self.user
         self.individual_importer.save()
-        self.exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
         results = self.run_filter({"title": "Mailshot"}, user=self.user)
         self.assertEqual(results.count(), 3)
         self.assertTrue(results[0].status, Mailshot.PUBLISHED)
@@ -138,36 +137,32 @@ class ReceivedMailshotsFilterTest(TestCase):
         self.assertTrue(results[1].status, Mailshot.PUBLISHED)
         self.assertTrue(results[2].status, Mailshot.PUBLISHED)
 
-    @pytest.mark.xfail
     def test_filter_only_gets_importer_mailshots(self):
-        self.importer_organisation.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
         results = self.run_filter({"title": "Mailshot"}, user=self.user)
         self.assertEqual(results.count(), 2)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to importers")
 
-    @pytest.mark.xfail
     def test_filter_only_gets_exporter_mailshots(self):
-        self.exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
         results = self.run_filter({"title": "Mailshot"}, user=self.user)
         self.assertEqual(results.count(), 2)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to exporters")
 
-    @pytest.mark.xfail
     def test_title_filter(self):
-        self.importer_organisation.members.add(self.user)
-        self.exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
+        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
         results = self.run_filter({"title": "mailshot"}, user=self.user)
         self.assertEqual(results.count(), 3)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to exporters")
         self.assertEqual(results[2].title, "Published Mailshot to importers")
 
-    @pytest.mark.xfail
     def test_description_filter(self):
-        self.importer_organisation.members.add(self.user)
-        self.exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
+        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
         results = self.run_filter({"description": "mailshot"}, user=self.user)
         self.assertEqual(results.count(), 3)
         self.assertEqual(results[0].description, "This is a published mailshot to all")

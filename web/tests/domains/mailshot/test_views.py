@@ -1,4 +1,4 @@
-import pytest
+from guardian.shortcuts import assign_perm
 
 from web.domains.importer.models import Importer
 from web.domains.mailshot.models import Mailshot
@@ -77,19 +77,17 @@ class ReceivedMailshotsView(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_exporter_access(self):
         self.login()
         exporter = ExporterFactory(is_active=True)
-        exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_exporter", self.user, exporter)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_organisation_importer_access(self):
         self.login()
         importer = ImporterFactory(type=Importer.ORGANISATION, is_active=True)
-        importer.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, importer)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
@@ -99,11 +97,10 @@ class ReceivedMailshotsView(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_page_title(self):
         self.login()
         importer = ImporterFactory(is_active=True)
-        importer.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, importer)
         response = self.client.get(self.url)
         self.assertEqual(response.context_data["page_title"], "Received Mailshots")
 
@@ -264,19 +261,17 @@ class MailshotDetailViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_exporter_access(self):
         self.login()
         exporter = ExporterFactory(is_active=True)
-        exporter.members.add(self.user)
+        assign_perm("web.is_contact_of_exporter", self.user, exporter)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_organisation_importer_access(self):
         self.login()
         importer = ImporterFactory(type=Importer.ORGANISATION, is_active=True)
-        importer.members.add(self.user)
+        assign_perm("web.is_contact_of_importer", self.user, importer)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 

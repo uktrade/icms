@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+from guardian.shortcuts import get_users_with_perms
 
 from config.celery import app
 from web.domains.exporter.models import Exporter
@@ -25,24 +24,25 @@ def send_to_importers(subject, message, html_message=None):
                     utils.get_notification_emails(importer.user),
                     html_message=html_message,
                 )
-        else:  # Importer organisation
-            # TODO: use django-guardian
-            # for user in importer.members.filter(account_status=User.ACTIVE):
-            #     send_email.delay(
-            #         subject, message, utils.get_notification_emails(user), html_message=html_message
-            #     )
-            pass
+        else:
+            # Importer organisation
+            for user in get_users_with_perms(
+                importer, only_with_perms_in=["is_contact_of_importer"]
+            ).filter(account_status=User.ACTIVE):
+                send_email.delay(
+                    subject, message, utils.get_notification_emails(user), html_message=html_message
+                )
 
 
 def send_to_exporters(subject, message, html_message=None):
     exporters = Exporter.objects.filter(is_active=True)
     for exporter in exporters:
-        # TODO: use django-guardian
-        # for user in exporter.members.filter(account_status=User.ACTIVE):
-        #     send_email.delay(
-        #         subject, message, utils.get_notification_emails(user), html_message=html_message
-        #     )
-        pass
+        for user in get_users_with_perms(
+            exporter, only_with_perms_in=["is_contact_of_exporter"]
+        ).filter(account_status=User.ACTIVE):
+            send_email.delay(
+                subject, message, utils.get_notification_emails(user), html_message=html_message
+            )
 
 
 @app.task(name="web.notify.email.send_to_import_case_officers")

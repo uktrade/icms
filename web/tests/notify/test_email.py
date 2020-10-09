@@ -1,7 +1,6 @@
-import pytest
-
 from django.core import mail
 from django.test import TestCase
+from guardian.shortcuts import assign_perm
 
 from web.domains.importer.models import Importer
 from web.domains.user.models import AlternativeEmail, PersonalEmail, User
@@ -17,7 +16,8 @@ class TestEmail(TestCase):
         return user
 
     def create_importer_org(self, name=None, active=True, members=[]):
-        ImporterFactory(is_active=active, name=name, type=Importer.ORGANISATION)
+        importer = ImporterFactory(is_active=active, name=name, type=Importer.ORGANISATION)
+
         for member in members:
             if member["active"]:
                 user = self.create_user(account_status=User.ACTIVE)
@@ -32,8 +32,7 @@ class TestEmail(TestCase):
                         user=user, email=m["email"], portal_notifications=m["notify"]
                     ).save()
 
-            # TODO: use django-guardian
-            # importer.members.add(user)
+            assign_perm("web.is_contact_of_importer", user, importer)
 
     def create_individual_importer(self, name=None, active=True, user=None):
         is_active = user["active"]
@@ -47,7 +46,8 @@ class TestEmail(TestCase):
             PersonalEmail(user=_user, email=m["email"], portal_notifications=m["notify"]).save()
 
     def create_exporter(self, name=None, active=True, members=[]):
-        ExporterFactory(is_active=active, name=name)
+        exporter = ExporterFactory(is_active=active, name=name)
+
         for member in members:
             if member["active"]:
                 user = self.create_user(account_status=User.ACTIVE)
@@ -62,8 +62,7 @@ class TestEmail(TestCase):
                         user=user, email=m["email"], portal_notifications=m["notify"]
                     ).save()
 
-            # TODO: use django-guardian
-            # exporter.members.add(user)
+            assign_perm("web.is_contact_of_exporter", user, exporter)
 
     def setup_importers(self):
         # An active import organisation
@@ -195,7 +194,6 @@ class TestEmail(TestCase):
         assert "test@example.com" in outbox[0].to
         assert "test2@example.com" in outbox[0].to
 
-    @pytest.mark.xfail
     def test_send_mailshot_to_importers(self):
         email.send_mailshot.delay(
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True
@@ -218,7 +216,6 @@ class TestEmail(TestCase):
             else:
                 raise AssertionError("Test failed with invalid email recipients")
 
-    @pytest.mark.xfail
     def test_send_mailshot_to_exporters(self):
         email.send_mailshot.delay(
             "Test subject", "Test message", html_message="<p>Test message</p>", to_exporters=True

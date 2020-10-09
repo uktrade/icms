@@ -5,6 +5,8 @@ from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 
+# TODO: explore if we should use the "direct foreign keys" for django-guardian
+# for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
 class Importer(Archivable, models.Model):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
@@ -93,3 +95,10 @@ class Importer(Archivable, models.Model):
             "-is_active",
             "name",
         )
+
+        # object-level permissions
+        permissions = [
+            ("is_contact_of_importer", "Is contact of this importer"),
+            # NOTE: this is given on the "main importer" object, not on the "agent" object
+            ("is_agent_of_importer", "Is agent of this importer"),
+        ]
