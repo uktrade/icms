@@ -2,6 +2,7 @@ import random
 
 import factory
 import factory.fuzzy
+from django.contrib.auth.models import Permission
 
 from web.domains.user.models import User
 
@@ -23,3 +24,13 @@ class UserFactory(factory.django.DjangoModelFactory):
     password_disposition = factory.fuzzy.FuzzyChoice(
         User.PASSWORD_DISPOSITION, getter=lambda r: r[0]
     )
+
+    @factory.post_generation
+    def permission_codenames(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            for codename in extracted:
+                permission = Permission.objects.get(codename=codename)
+                self.user_permissions.add(permission)

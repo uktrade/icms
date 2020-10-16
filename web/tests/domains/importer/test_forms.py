@@ -7,6 +7,7 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
+from web.domains.user.models import User
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
@@ -69,11 +70,11 @@ def test_invalid_eori_number_importer_individual_form():
 @pytest.mark.django_db()
 def test_type_importer_individual_form():
     """Assert individual importer type is set on save."""
-    user = UserFactory.create()
+    user = UserFactory.create(account_status=User.ACTIVE, permission_codenames=["importer_access"])
     data = {"user": user.pk, "eori_number": "GBPR"}
     form = ImporterIndividualForm(data)
 
-    assert form.is_valid()
+    assert form.is_valid(), form.errors
     form.save()
 
     importer = Importer.objects.last()

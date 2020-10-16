@@ -1,46 +1,74 @@
-{% extends "model/edit.html" %}
-
+{% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+{% block css %}
+  {{ contact_form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>  <a href="{{ url('importer-list') }}" class="prev-link">Importers</a></li>
+    </ul>
+  </div>
+{% endblock %}
+
 {% block context_header %}
-    Editing importer {{ form.instance }}
+    Editing Importer '{{ object.display_name }}'
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/importer/sidebar.html" %}
 {% endblock %}
 
 {% block main_content %}
+  {% include "web/domains/importer/company_list.html" %}
 
-  {% if importer %}
-      <div class="info-box info-box-info">
-        This importer is an agent of {{importer}}.
-      </div>
-  {% endif %}
-
-  {{super()}}
-
-
-{% endblock %}
-
-{% block additional_content %}
-
-    {% with offices = form.instance.offices.all() %}
-      {% include "partial/offices-edit.html" %}
-    {% endwith %}
-
-    {% if not form.instance.is_agent() %}
-      {% with agents = form.instance.agents %}
-        {% include "partial/agents-edit.html" %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% block fields %}
+      {% for field in form %}
+      {% with lookup = field.name in ['name', 'registered_number'] %}
+        {{ fields.field(field, lookup=lookup) }}
       {% endwith %}
-    {% endif %}
+      {% endfor %}
+    {% endblock %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="action" value="save" class="primary-button button">Save</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+  {% with
+    contact_add_url_name = 'importer-contact-add',
+    contact_delete_url_name = 'importer-contact-delete' %}
 
     {% include "partial/contacts/contacts.html" %}
+  {% endwith %}
 
-    {#
-    {% include "partial/firearms-authorities.html" %}
-    {% include "partial/section5-authorities.html" %}
-    {% include "partial/agents.html" %}
-    #}
+  {#
+  {% include "partial/agents-edit.html" %}
+  {% include "partial/offices/edit.html" %}
+  {% include "partial/firearms-authorities.html" %}
+  {% include "partial/section5-authorities.html" %}
+  {% include "partial/agents.html" %}
+  #}
 {% endblock %}
 
 {% block page_js %}
-    {% include "partial/offices/formset-script.html" %}
+  {% include "partial/offices/formset-script.html" %}
+  {% include "web/domains/importer/search-companies.html" %}
+
+  {{ contact_form.media.js }}
+  {{ super() }}
 {% endblock %}

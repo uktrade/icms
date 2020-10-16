@@ -1,32 +1,24 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from django.urls import path
+from django.urls import path, re_path
 
 from web.domains.importer import views
-from web.domains.importer.forms import (
-    AgentIndividualForm,
-    AgentOrganisationForm,
-    ImporterIndividualForm,
-    ImporterOrganisationForm,
-)
+from web.domains.importer.forms import AgentIndividualForm, AgentOrganisationForm
 
 urlpatterns = [
     path("", views.ImporterListView.as_view(), name="importer-list"),
-    path("<int:pk>/edit/", views.ImporterEditView.as_view(), name="importer-edit"),
-    path(
-        "individual/create/",
-        views.ImporterCreateView.as_view(),
-        {"form_class": ImporterIndividualForm},
-        name="importer-individual-create",
-    ),
-    path(
-        "organisation/create/",
-        views.ImporterCreateView.as_view(),
-        {"form_class": ImporterOrganisationForm},
-        name="importer-organisation-create",
+    path("<int:pk>/edit/", views.edit_importer, name="importer-edit"),
+    re_path(
+        "^(?P<entity>individual|organisation)/create/$",
+        views.create_importer,
+        name="importer-create",
     ),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),
+    # contacts
+    path("<int:pk>/contacts/add/", views.add_contact, name="importer-contact-add"),
+    path(
+        "<int:importer_pk>/contacts/<int:contact_pk>/delete/",
+        views.delete_contact,
+        name="importer-contact-delete",
+    ),
     # Importer Agents
     path("agent/<int:pk>/edit/", views.AgentEditView.as_view(), name="importer-agent-edit",),
     path(

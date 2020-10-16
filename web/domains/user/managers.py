@@ -34,3 +34,6 @@ class UserManager(BaseUserManager):
 
     def account_active(self):
         return self.filter(account_status=self.model.ACTIVE)
+
+    def importer_access(self):
+        return self.account_active().filter(user_permissions__codename="importer_access")

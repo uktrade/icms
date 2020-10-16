@@ -20,10 +20,14 @@
   <h5>Create Importer</h5>
   <ul class="menu-out">
     <li>
-      <a href="{{ url('importer-individual-create') }}">Main Individual Importer</a>
+      <a href="{{ url('importer-create', kwargs={'entity': 'individual'}) }}">
+        Main Individual Importer
+      </a>
     </li>
     <li>
-      <a href="{{ url('importer-organisation-create') }}">Main Organisation Importer</a>
+      <a href="{{ url('importer-create', kwargs={'entity': 'organisation'}) }}">
+        Main Organisation Importer
+      </a>
     </li>
   </ul>
 {% endblock %}

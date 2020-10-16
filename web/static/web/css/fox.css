@@ -3957,6 +3957,11 @@ label {
     margin-top: -0.2em;
 }
 
+.helptext {
+    line-height: 0em;
+    margin: 0 0 1em 0;
+}
+
 .prompt.north .mand-label {
     margin-left: 0;
 }

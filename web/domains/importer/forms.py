@@ -5,18 +5,26 @@ from django.db.models import Q
 
 from web.domains.importer.fields import PersonWidget
 from web.domains.importer.models import Importer
+from web.domains.user.models import User
 from web.forms.mixins import ReadonlyFormMixin
 
 
 class ImporterIndividualForm(ModelForm):
+    user = ModelChoiceField(
+        queryset=User.objects.importer_access(),
+        widget=PersonWidget,
+        help_text="""
+            Search a user to link. Users returned are matched against first/last name,
+            email and title.
+        """,
+    )
+
     class Meta:
         model = Importer
         fields = ["user", "eori_number", "eori_number_ni", "region_origin", "comments"]
-        widgets = {"user": PersonWidget}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["user"].required = True
         self.fields["eori_number"].required = True
 
     def clean(self):
@@ -116,7 +124,7 @@ class ImporterFilter(FilterSet):
         fields = []
 
 
-class ImporterOrganisationEditForm(ModelForm):
+class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ModelForm):
     type = ChoiceField(choices=Importer.TYPES)
 
     def __init__(self, *args, **kwargs):
@@ -127,22 +135,6 @@ class ImporterOrganisationEditForm(ModelForm):
         model = Importer
         fields = ["type", "name", "region_origin", "comments"]
         labels = {"type": "Entity Type"}
-
-
-class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ImporterOrganisationEditForm):
-    pass
-
-
-class ImporterIndividualEditForm(ModelForm):
-    type = ChoiceField(choices=Importer.TYPES)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["user"].required = True
-
-    class Meta:
-        model = Importer
-        fields = ["type", "user", "comments"]
 
 
 class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):

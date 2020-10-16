@@ -1,10 +1,12 @@
 import structlog as logging
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.forms import formset_factory
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
-from django.views.generic import CreateView, View
+from django.urls import reverse_lazy, reverse
+from django.views.decorators.http import require_POST
+from django.views.generic import View
+from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
 from web.address.address import find as postcode_lookup
 from web.company.companieshouse import api_get_companies
@@ -13,13 +15,13 @@ from web.domains.importer.forms import (
     AgentOrganisationForm,
     ImporterFilter,
     ImporterIndividualDisplayForm,
-    ImporterIndividualEditForm,
+    ImporterIndividualForm,
     ImporterOrganisationDisplayForm,
-    ImporterOrganisationEditForm,
+    ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
-from web.domains.office.forms import OfficeEditForm, OfficeFormSet
-from web.domains.office.models import Office
+from web.domains.user.forms import ContactForm
+from web.domains.user.models import User
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, CreateAgent, Edit, Unarchive
 
@@ -48,124 +50,91 @@ class ImporterListView(ModelFilterView):
         actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
 
 
-class ImporterEditView(ModelUpdateView):
-    template_name = "web/domains/importer/edit.html"
-    success_url = reverse_lazy("importer-list")
-    cancel_url = success_url
-    model = Importer
-    permission_required = "web.reference_data_access"
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_importer(request, pk):
+    importer = get_object_or_404(Importer, pk=pk)
 
-    def get_form_class(self):
-        importer = self.get_object()
-        if importer.is_organisation():
-            return ImporterOrganisationEditForm
-        return ImporterIndividualEditForm
+    if importer.is_organisation():
+        ImporterForm = ImporterOrganisationForm
+    else:
+        ImporterForm = ImporterIndividualForm
 
-    def get(self, request, pk, offices_form=None, form=None):
-        # if offices_form is set it means either form or offices form contain errors
-        # if offices_form is not set it is initialised
-        if not offices_form:
-            Formset = formset_factory(OfficeEditForm, extra=0)
-            offices_form = Formset()
-        contact_context_data = super().get(request).context_data
-        if self.extra_context is not None:
-            contact_context_data.update(self.extra_context)
+    if request.POST:
+        form = ImporterForm(request.POST, instance=importer)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse("importer-edit", kwargs={"pk": pk}))
+    else:
+        form = ImporterForm(instance=importer)
 
-        return render(
-            request, self.template_name, {"offices_form": offices_form, **contact_context_data,},
-        )
+    importer_contacts = get_users_with_perms(
+        importer, only_with_perms_in=["is_contact_of_importer"]
+    ).filter(user_permissions__codename="importer_access")
+    available_contacts = User.objects.importer_access().exclude(pk__in=importer_contacts)
+    if importer.type == Importer.INDIVIDUAL:
+        available_contacts = available_contacts.exclude(pk=importer.user.pk)
 
-    def add_people(self, *args, **kwargs):
-        template_response = super().add_people(*args, **kwargs)
-        self.extra_context = template_response.context_data
-        return self.get(*args, **kwargs)
-
-    def edit(self, request, pk):
-        Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
-        offices_form = Formset(request.POST)
-
-        form_class = self.get_form_class()
-        form = form_class(request.POST, instance=self.get_object())
-
-        if not offices_form.is_valid() or not form.is_valid():
-            return self.get(request, pk, offices_form=offices_form)
-
-        importer = form.save()
-
-        for form in offices_form:
-            office = form.save()
-            importer.offices.add(office)
-        super().save(request=request)
-
-        return redirect("importer-view", pk=pk)
-
-    def do_archive(self, request, is_active):
-        if "item" not in request.POST:
-            raise NameError()
-
-        office = Office.objects.get(pk=int(request.POST.get("item", 0)))
-
-        if not office:
-            raise IndexError()
-
-        office.is_active = is_active
-        office.save()
-
-    def archive(self, request, pk):
-        self.do_archive(request, False)
-        return redirect("importer-edit", pk=pk)
-
-    def unarchive(self, request, pk):
-        self.do_archive(request, True)
-        return redirect("importer-edit", pk=pk)
+    context = {
+        "object": importer,
+        "form": form,
+        "contact_form": ContactForm(available_contacts),
+        "contacts": importer_contacts,
+    }
+    return render(request, "web/domains/importer/edit.html", context)
 
 
-class ImporterCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    template_name = "web/domains/importer/create.html"
-    success_url = reverse_lazy("importer-list")
-    cancel_url = success_url
-    permission_required = "web.reference_data_access"
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_importer(request, entity):
+    if entity == "organisation":
+        ImporterForm = ImporterOrganisationForm
+    else:
+        ImporterForm = ImporterIndividualForm
 
-    def get_form_class(self):
-        """`form_class` is passed in the view as an extra arguments in the urls."""
-        self.form_class = self.kwargs["form_class"]
-        return self.form_class
+    if request.POST:
+        form = ImporterForm(request.POST)
+        if form.is_valid():
+            importer = form.save()
+            return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    else:
+        form = ImporterForm()
 
-    def get_context_data(self, *args, **kwargs):
-        offices_form = kwargs.get("offices_form")
-        if not offices_form:
-            Formset = formset_factory(OfficeEditForm, extra=0)
-            offices_form = Formset()
+    context = {
+        "form": form,
+    }
 
-        kwargs.update(
-            {"offices_form": offices_form,}
-        )
-        return super().get_context_data(*args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        Formset = formset_factory(OfficeEditForm, formset=OfficeFormSet)
-        offices_form = Formset(self.request.POST)
-
-        form = self.get_form()
-        if form.is_valid() and offices_form.is_valid():
-            return self.form_valid(form, offices_form)
-        return self.form_invalid(form, offices_form)
-
-    def form_valid(self, form, offices_form):
-        self.object = form.save()
-        for form in offices_form:
-            office = form.save()
-            self.object.offices.add(office)
-        self.object.save()
-
-        return super().form_valid(form)
-
-    def form_invalid(self, form, offices_form):
-        self.object = None
-        return self.render_to_response(self.get_context_data(form=form, offices_form=offices_form))
+    return render(request, "web/domains/importer/create.html", context)
 
 
-class AgentCreateView(ImporterCreateView):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+# TODO: permissions - importer's contacts should be able to manage contacts
+@require_POST
+def add_contact(request, pk):
+    importer = get_object_or_404(Importer, pk=pk)
+
+    available_contacts = User.objects.importer_access()
+    form = ContactForm(available_contacts, request.POST)
+    if form.is_valid():
+        contact = form.cleaned_data["contact"]
+        assign_perm("web.is_contact_of_importer", contact, importer)
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+# TODO: permissions - importer's contacts should be able to manage contacts
+@require_POST
+def delete_contact(request, importer_pk, contact_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    contact = get_object_or_404(User, pk=contact_pk)
+
+    remove_perm("web.is_contact_of_importer", contact, importer)
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+class AgentCreateView(ModelUpdateView):
     def get_context_data(self, *args, **kwargs):
         kwargs["page_title"] = "Agent"
         kwargs["importer"] = Importer.objects.get(pk=self.kwargs["importer_id"])
@@ -177,7 +146,7 @@ class AgentCreateView(ImporterCreateView):
         return initial
 
 
-class AgentEditView(ImporterEditView):
+class AgentEditView(ModelUpdateView):
     queryset = Importer.objects.filter(main_importer__isnull=False)
     template_name = "web/domains/importer/create.html"
 
@@ -221,6 +190,12 @@ class ImporterOrganisationDetailView(ModelDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object())
+
+        importer_contacts = get_users_with_perms(
+            self.object, only_with_perms_in=["is_contact_of_importer"]
+        ).filter(user_permissions__codename="importer_access")
+        context["contacts"] = importer_contacts
+
         return context
 
 
@@ -246,6 +221,11 @@ class ImporterIndividualDetailView(ModelDetailView):
             )
 
         context["form"] = form
+
+        importer_contacts = get_users_with_perms(
+            self.object, only_with_perms_in=["is_contact_of_importer"]
+        ).filter(user_permissions__codename="importer_access")
+        context["contacts"] = importer_contacts
 
         return context
 

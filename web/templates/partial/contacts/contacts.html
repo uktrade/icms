@@ -55,7 +55,7 @@
                     <div class="row">
                         <div class="twelve columns">
                           <form method="post"
-                                action="{{ url('exporter-contact-delete', kwargs={'pk': object.pk, 'contact_pk': user.pk}) }}">
+                                action="{{ url(contact_delete_url_name, kwargs={'importer_pk': object.pk, 'contact_pk': user.pk}) }}">
                             {{ csrf_input }}
                             <button type="submit" class="button small-button icon-bin">Delete</button>
                           </form>
@@ -68,18 +68,22 @@
         </tbody>
     </table>
     {% endif %}
-    <form method="post" action="{{ url('exporter-contact-add', kwargs={'pk': object.pk}) }}">
-      {{ csrf_input }}
-      <div class="container setoutForm">
-        <div class="row">
-          <div class="four columns">
-            {{ contact_form.as_p() }}
+    {% if not read_only %}
+      <form
+        method="post"
+        action="{{ url(contact_add_url_name, kwargs={'pk': object.pk}) }}">
+        {{ csrf_input }}
+        <div class="container setoutForm">
+          <div class="row">
+            <div class="four columns">
+              {{ contact_form.as_p() }}
+            </div>
+            <div class="two columns">
+              <button type="submit" class="button small-button icon-add">Add contact</button>
+            </div>
+            <div class="six columns"></div>
           </div>
-          <div class="two columns">
-            <button type="submit" class="button small-button icon-add">Add contact</button>
-          </div>
-          <div class="six columns"></div>
         </div>
-      </div>
-    </form>
+      </form>
+    {% endif %}
 </div>

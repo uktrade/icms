@@ -37,7 +37,12 @@
     </div>
   {% endcall %}
 
-  {% include "partial/contacts/contacts.html" %}
+  {% with
+    contact_add_url_name = 'exporter-contact-add',
+    contact_delete_url_name = 'exporter-contact-delete' %}
+
+    {% include "partial/contacts/contacts.html" %}
+  {% endwith %}
 {% endblock %}
 
 {% block page_js %}

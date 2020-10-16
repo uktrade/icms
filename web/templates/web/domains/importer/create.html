@@ -1,39 +1,46 @@
-{% extends "model/edit.html" %}
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
 {% block css %}
   {{ form.media.css }}
   {{ super() }}
 {% endblock %}
 
-{% block context_header %}Create {{ page_title|default("Importer") }}{% endblock %}
+{% block context_header %}
+    Create Importer
+{% endblock %}
 
 {% block sidebar %}
     {% include "partial/importer/sidebar.html" %}
 {% endblock %}
 
-{% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as fields %}
-
-{% block fields %}
+{% block main_content %}
   {% include "web/domains/importer/company_list.html" %}
 
-  {% if page_title == "Agent" %}
-  <div class="info-box info-box-info">
-      <div class="screen-reader-only">Information box,</div>
-      This importer will be an agent of {{ importer.display_name }}.
-  </div>
-  {% endif %}
-
-  {% call forms.form(method='post', csrf_input=csrf_input) %}
-    {% for field in form %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% block fields %}
+      {% for field in form %}
       {% with lookup = field.name in ['name', 'registered_number'] %}
         {{ fields.field(field, lookup=lookup) }}
       {% endwith %}
-    {% endfor %}
+      {% endfor %}
+    {% endblock %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" name="action" value="save" class="primary-button button">Create</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   {% endcall %}
 
-  {% with offices = [] %}
-    {% include "partial/offices-edit.html" %}
-  {% endwith %}
 {% endblock %}
 
 {% block page_js %}
