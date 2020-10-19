@@ -94,9 +94,9 @@
 {% endmacro %}
 
 {# Renders a single inline form field with icms styling #}
-{% macro inline_field(field) -%}
+{% macro inline_field(field, lookup=False) -%}
   <td {% if field.errors %}class="input-error"{% endif %}>
-    {{_field(field)}}
+    {{_field(field, lookup=lookup)}}
   </td>
 {%- endmacro %}
 

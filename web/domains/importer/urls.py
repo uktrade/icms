@@ -19,6 +19,23 @@ urlpatterns = [
         views.delete_contact,
         name="importer-contact-delete",
     ),
+    # offices
+    path("<int:pk>/offices/create/", views.create_office, name="importer-office-create"),
+    path(
+        "<int:importer_pk>/offices/<int:office_pk>/edit/",
+        views.edit_office,
+        name="importer-office-edit",
+    ),
+    path(
+        "<int:importer_pk>/offices/<int:office_pk>/archive/",
+        views.archive_office,
+        name="importer-office-archive",
+    ),
+    path(
+        "<int:importer_pk>/offices/<int:office_pk>/unarchive/",
+        views.unarchive_office,
+        name="importer-office-unarchive",
+    ),
     # Importer Agents
     path("agent/<int:pk>/edit/", views.AgentEditView.as_view(), name="importer-agent-edit",),
     path(

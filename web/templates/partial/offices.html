@@ -1,89 +1,42 @@
- <h3>
-   Offices
- </h3>
+<h3>Offices</h3>
 
- <ul class="tabs -tabs " data-tab-group="tg-offices" role="tablist">
-   <li id="tg-offices-CURRENT" class="current-tab" aria-selected="true" data-tab-key="CURRENT" role="tab" aria-controls="tg-offices-CURRENT">
-     <a href="">Current/Pending</a>
-   </li>
-   <li id="tg-offices-ARCHIVED" class="disabled-tab" aria-selected="false" data-tab-key="ARCHIVED" role="tab" aria-controls="tg-offices-archived">
-     Archived
-   </li>
- </ul>
- <div aria-labelledby="offices-current" class="tab-content " style="" data-tab-group="s1Kzx6n_plrnqVW43/tg-offices" data-tab-key="CURRENT" aria-hidden="false">
-   <table class="setoutList">
-     <thead>
-       <tr>
-         <th scope="col">Status
-         </th>
-         <th scope="col">Address
-         </th>
-         <th scope="col">Postcode
-         </th>
-         <th scope="col">Override EORI Number
-           <div id="hint146-content" role="tooltip" class="hint-content">Optionally enter an EORI number to be used in licences for this office. When no override EORI is entered the main EORI number will be used. The EORI number should include the GB or GBN prefix.</div>
-           <div id="hint146" aria-describedby="hint146-content" class="hint icon-info"></div>
-         </th>
-         <th scope="col">Actions
-         </th>
-       </tr>
-     </thead>
-     <tr >
-       <td ><span  class="text-widget ">Current</span></td>
-       <td ><textarea   cols="80" rows="6" maxlength="300" aria-required="true">xhkjhdkjfghjkdfhdjfhjksd</textarea></td>
-       <td ><input   type="text" value="" size="30" maxlength="30" aria-required="false" /></td>
-       <td ><input   type="text" value="" size="16" maxlength="16" aria-required="false" aria-describedby="hint147-content" /></td>
-       <td >
-         <ul class="menu-out grouped flow-across">
-           <li> <button type="button" role="action-button" data-in-form data-action="action-IMP_SHARED_LIB_OFFICES-search-address-by-postcode" class="link-button icon-search button no-prompt-action" aria-describedby="hint148-content" aria-label="Find Address">
-             </button>
-             <div id="hint148-content" role="tooltip" class="hint-content">Find Address</div>
-           </li>
-           <li> <button type="button" role="action-button" data-in-form data-confirm="Are you sure you want to archive this office?" data-action="action-IMP_SHARED_LIB_OFFICES-archive-office" class="link-button icon-bin button no-prompt-action" aria-describedby="hint149-content" aria-label="Archive">
-             </button>
-             <div id="hint149-content" role="tooltip" class="hint-content">Archive</div>
-           </li>
-         </ul>
-       </td>
-     </tr>
-     <tr >
-       <td ><span  class="text-widget ">Current</span></td>
-       <td ><span  class="text-widget ">WINDSOR HOUSE 42-50<br>VICTORIA STREET<br>LONDON</span></td>
-       <td ><span  class="text-widget ">SW1H 0TL</span></td>
-       <td ><input   type="text" value="" size="16" maxlength="16" aria-required="false" aria-describedby="hint150-content" /></td>
-       <td >
-         <ul class="menu-out grouped flow-across">
-           <li> <button type="button" role="action-button" data-in-form data-action="action-IMP_SHARED_LIB_OFFICES-reset-search-address" class="link-button icon-binoculars button no-prompt-action" aria-describedby="hint151-content" aria-label="Start Search Again">
-             </button>
-             <div id="hint151-content" role="tooltip" class="hint-content">Start Search Again</div>
-           </li>
-           <li> <button type="button" role="action-button" data-in-form data-action="action-IMP_SHARED_LIB_OFFICES-manually-enter-address" class="link-button icon-pencil button no-prompt-action" aria-describedby="hint152-content" aria-label="Manually Enter Address">
-             </button>
-             <div id="hint152-content" role="tooltip" class="hint-content">Manually Enter Address</div>
-           </li>
-           <li> <button type="button" role="action-button" data-in-form data-action="action-IMP_SHARED_LIB_OFFICES-archive-office" data-confirm="Are you sure you want to archive this office?" class="link-button icon-bin button no-prompt-action" aria-describedby="hint153-content" aria-label="Archive">
-             </button>
-             <div id="hint153-content" role="tooltip" class="hint-content">Archive</div>
-           </li>
-         </ul>
-       </td>
-     </tr>
-   </table>
+{% if not offices %}
+  <div class="info-box info-box-info">
+    There are no offices attached
+  </div>
+{% else %}
+  <ul class="tabs -tabs " data-tab-group="tg-offices" role="tablist">
+    <li id="tg-offices-CURRENT" class="current-tab" aria-selected="true" data-tab-key="CURRENT" role="tab" aria-controls="tg-offices-CURRENT">
+      <a href="javascript:FOXtabs.switchTab('tg-offices', 'CURRENT')">Current</a>
+    </li>
+    <li id="tg-offices-ARCHIVED" class="disabled-tab" aria-selected="false" data-tab-key="ARCHIVED" role="tab" aria-controls="tg-offices-archived">
+      <a href="javascript:FOXtabs.switchTab('tg-offices', 'ARCHIVED')">Archived</a>
+    </li>
+  </ul>
 
-   <div class="list-actions">
-     <ul class="menu-out flow-across">
-       <li> <button type="button" role="action-button" data-in-form data-action="action-IMP_SHARED_LIB_OFFICES-add-office" class="small-button icon-office button">
-           Add Office </button></li>
-     </ul>
-   </div>
+  <div aria-labelledby="offices-current" class="tab-content " style="" data-tab-group="tg-offices" data-tab-key="CURRENT" aria-hidden="false">
+    {% with office_list = offices.filter(is_active=True) %}
+      {% include 'partial/offices/office-list-display.html' %}
+    {% endwith %}
+  </div>
 
- </div>
- <div id="tcs1Kzx6n_plrnqVW43-tg-officesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-officesARCHIVED" class="tab-content " style="display: none;" data-tab-group="s1Kzx6n_plrnqVW43/tg-offices" data-tab-key="ARCHIVED" aria-hidden="true">
+  <div id="tcs1Kzx6n_plrnqVW43-tg-officesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-officesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-offices" data-tab-key="ARCHIVED" aria-hidden="true">
+    {% with office_list = offices.filter(is_active=False) %}
+      {% include 'partial/offices/office-list-display.html' %}
+    {% endwith %}
+  </div>
+{% endif %}
 
-   <div class="info-box info-box-info">
-     There aren't any offices.
-   </div>
-
- </div><input type="hidden" data-tab-group="s1Kzx6n_plrnqVW43/tg-offices" name="_int_tab_s1Kzx6n_plrnqVW43/tg-offices" value="CURRENT" />
-
- <div class="section-break"></div>
+{% if not read_only %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ url(office_create_url_name, kwargs={'pk': object.pk}) }}"
+          class="button small-button icon-office">
+          Create Office</a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
+<div class="section-break"></div>

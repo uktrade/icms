@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 from web.domains.importer.models import Importer
@@ -161,11 +163,21 @@ class OrganisationImporterCreateViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def test_importer_created(self):
+    @patch("web.domains.importer.forms.api_get_company")
+    def test_importer_created(self, api_get_company):
+        api_get_company.return_value = {
+            "registered_office_address": {
+                "address_line_1": "60 rue Wiertz",
+                "postcode": "B-1047",
+                "locality": "Bruxelles",
+            }
+        }
+
         self.login_with_permissions(PERMISSIONS)
         data = {
             "eori_number": "GB",
             "name": "test importer",
+            "registered_number": "42",
         }
         response = self.client.post(self.url, data)
         importer = Importer.objects.first()

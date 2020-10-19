@@ -1,0 +1,36 @@
+{% extends "web/domains/offices/create.html" %}
+
+{% block context_header %}
+  Edit Office for Importer '{{ object.display_name }}'
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+          {% if object.is_agent() %}
+            <a href="{{ url('importer-agent-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+              Agent {{ object.display_name }}
+            </a>
+          {% else %}
+            <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+              Importer {{ object.display_name }}
+            </a>
+          {% endif %}
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <div class="info-box info-box-info">
+    Edit office for the importer '{{ object.display_name }}'.
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block submit_button %}Save{% endblock %}

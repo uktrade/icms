@@ -1,4 +1,49 @@
-<table class="setoutList">
-    {% include 'partial/offices/office-list-header-display.html' %}
-    {% include 'partial/offices/office-list-body-display.html' %}
+<table  class="setoutList" id="tbl-offices">
+  <thead>
+    <tr>
+      <th scope="col">Address</th>
+      <th scope="col">Postcode</th>
+      {% if object.is_organisation() %}
+        <th scope="col">EORI Number</th>
+      {% endif %}
+      {% if not read_only %}
+        <th scope="col">Actions</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for office in office_list %}
+    <tr>
+      <td>{{ office.address|nl2br() or '' }}</td>
+      <td>{{ office.postcode or '' }}</td>
+      {% if object.is_organisation() %}
+        <td>{{ office.eori_number or '' }}</td>
+      {% endif %}
+      {% if not read_only %}
+        <td>
+          <a
+            href="{{ url(office_edit_url_name, args=[object.pk, office.pk]) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+          {% if office.is_active %}
+            <form method="post"
+                  action="{{ url(office_archive_url_name, args=[object.pk, office.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Archive</button>
+            </form>
+          {% else %}
+            <form method="post"
+                  action="{{ url(office_unarchive_url_name, args=[object.pk, office.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Restore</button>
+            </form>
+          {% endif %}
+        </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>

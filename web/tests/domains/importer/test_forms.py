@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.test import TestCase
 
@@ -104,12 +106,21 @@ def test_invalid_eori_number_importer_organisation_form():
 
 
 @pytest.mark.django_db()
-def test_type_importer_organisation_form():
+@patch("web.domains.importer.forms.api_get_company")
+def test_type_importer_organisation_form(api_get_company):
     """Assert organisation importer type is set on save."""
-    data = {"name": "hello", "eori_number": "GB"}
+    api_get_company.return_value = {
+        "registered_office_address": {
+            "address_line_1": "60 rue Wiertz",
+            "postcode": "B-1047",
+            "locality": "Bruxelles",
+        }
+    }
+
+    data = {"name": "hello", "eori_number": "GB", "registered_number": "42"}
     form = ImporterOrganisationForm(data)
 
-    assert form.is_valid()
+    assert form.is_valid(), form.errors
     form.save()
 
     importer = Importer.objects.last()

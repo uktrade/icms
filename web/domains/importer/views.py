@@ -20,6 +20,7 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
+from web.domains.office.forms import OfficeIndividualForm, OfficeOrganisationForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
@@ -131,6 +132,83 @@ def delete_contact(request, importer_pk, contact_pk):
     contact = get_object_or_404(User, pk=contact_pk)
 
     remove_perm("web.is_contact_of_importer", contact, importer)
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_office(request, pk):
+    importer = get_object_or_404(Importer, pk=pk)
+    if importer.is_organisation():
+        OfficeForm = OfficeOrganisationForm
+    else:
+        OfficeForm = OfficeIndividualForm
+
+    if request.POST:
+        form = OfficeForm(request.POST)
+        if form.is_valid():
+            office = form.save()
+            importer.offices.add(office)
+            return redirect(
+                reverse(
+                    "importer-office-edit",
+                    kwargs={"importer_pk": importer.pk, "office_pk": office.pk},
+                )
+            )
+    else:
+        form = OfficeForm()
+
+    context = {"object": importer, "form": form}
+
+    return render(request, "web/domains/importer/create-office.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_office(request, importer_pk, office_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    office = get_object_or_404(importer.offices, pk=office_pk)
+    if importer.is_organisation():
+        OfficeForm = OfficeOrganisationForm
+    else:
+        OfficeForm = OfficeIndividualForm
+
+    if request.POST:
+        form = OfficeForm(request.POST, instance=office)
+        if form.is_valid():
+            form.save()
+    else:
+        form = OfficeForm(instance=office)
+
+    context = {
+        "object": importer,
+        "office": office,
+        "form": form,
+    }
+    return render(request, "web/domains/importer/edit-office.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_office(request, importer_pk, office_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    office = get_object_or_404(importer.offices.filter(is_active=True), pk=office_pk)
+    office.is_active = False
+    office.save()
+
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_office(request, importer_pk, office_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    office = get_object_or_404(importer.offices.filter(is_active=False), pk=office_pk)
+    office.is_active = True
+    office.save()
+
     return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
 
 

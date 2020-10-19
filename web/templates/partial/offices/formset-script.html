@@ -23,47 +23,12 @@
 </script>
 
 <script>
-  function updateIndex() {
-      $('#tbl-offices .new-form-row').each(function(idx, el) {
-          $(el).find('input, textarea').each(function(i, inp) {
-              name = $(inp).attr('name')
-              arr = name.split('-');
-              arr[1] = idx;
-
-              $(inp).attr('name', arr.join('-'))
-            })
-        });
-    }
-
-  $('#btn-add-office').on('click', function(evt) {
+  $('#offices').on('click', '.icon-search', function(evt) {
       evt.preventDefault();
-      const tpl = $('#add-office-tpl').clone();
-      tpl.find('tr').first().addClass('new-form-row');
-
-      $('#tbl-offices tbody').append(
-          tpl.html().replace('<!--', '').replace('-->', '')
-        );
-
-      $('#id_form-TOTAL_FORMS').val($('#tbl-offices .new-form-row').length)
-
-      updateIndex()
-    });
-
-  $('#tbl-offices').on('click', '[role=remove-address-row]', function(evt) {
-      evt.preventDefault();
-      $(this).closest('tr').remove();
-
-      $('#id_form-TOTAL_FORMS').val($('#tbl-offices .new-form-row').length);
-
-      updateIndex();
-    });
-
-  $('#tbl-offices').on('click', '.icon-search', function(evt) {
-      evt.preventDefault();
-      $ta = $(this).closest('tr').find('textarea')
+      $ta = $('textarea[name=address]');
 
       data = {
-          postcode: $(this).closest('tr').find('[name*=postcode]').val(),
+          postcode: $('#offices').find('input[name=postcode]').val(),
           csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
         }
 

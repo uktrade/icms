@@ -50,6 +50,16 @@
   {% endcall %}
 
   {% with
+    offices = object.offices.all(),
+    office_create_url_name = 'importer-office-create',
+    office_archive_url_name = 'importer-office-archive',
+    office_unarchive_url_name = 'importer-office-unarchive',
+    office_edit_url_name = 'importer-office-edit' %}
+
+    {% include "partial/offices.html" %}
+  {% endwith %}
+
+  {% with
     contact_add_url_name = 'importer-contact-add',
     contact_delete_url_name = 'importer-contact-delete' %}
 

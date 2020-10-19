@@ -1,0 +1,38 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block main_content %}
+  <div id="offices">
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+      {% for field in form %}
+      {% with lookup = field.name == 'postcode' %}
+        {{ fields.field(field, lookup=lookup) }}
+      {% endwith %}
+      {% endfor %}
+
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button
+                  type="submit"
+                  name="action"
+                  value="save"
+                  class="primary-button button">
+                  {% block submit_button %}Create{% endblock %}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endcall %}
+  </div>
+{% endblock %}
+
+{% block page_js %}
+  {% include "partial/offices/formset-script.html" %}
+{% endblock %}
