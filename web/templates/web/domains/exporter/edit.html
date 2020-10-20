@@ -7,8 +7,16 @@
   {{ super() }}
 {% endblock %}
 
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>  <a href="{{ url('exporter-list') }}" class="prev-link">Exporters</a></li>
+    </ul>
+  </div>
+{% endblock %}
+
 {% block context_header %}
-  Editing exporter {{ form.instance }}
+  Editing Exporter '{{ object.name }}'
 {% endblock %}
 
 {% block sidebar %}
@@ -16,10 +24,14 @@
 {% endblock %}
 
 {% block main_content %}
+  {% include "web/company_list.html" %}
+
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
       {% for field in form %}
-        {{fields.field(field)}}
+      {% with lookup = field.name in ['name', 'registered_number'] %}
+        {{ fields.field(field, lookup=lookup) }}
+      {% endwith %}
       {% endfor %}
     {% endblock %}
 
@@ -38,6 +50,16 @@
   {% endcall %}
 
   {% with
+    offices = object.offices.all(),
+    office_create_url_name = 'exporter-office-create',
+    office_archive_url_name = 'exporter-office-archive',
+    office_unarchive_url_name = 'exporter-office-unarchive',
+    office_edit_url_name = 'exporter-office-edit' %}
+
+    {% include "partial/offices.html" %}
+  {% endwith %}
+
+  {% with
     contact_add_url_name = 'exporter-contact-add',
     contact_delete_url_name = 'exporter-contact-delete' %}
 
@@ -46,6 +68,8 @@
 {% endblock %}
 
 {% block page_js %}
+  {% include "web/search-companies.html" %}
+
   {{ contact_form.media.js }}
   {{ super() }}
 {% endblock %}

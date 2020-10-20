@@ -16,10 +16,14 @@
 {% endblock %}
 
 {% block main_content %}
+  {% include "web/company_list.html" %}
+
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
       {% for field in form %}
-        {{fields.field(field)}}
+      {% with lookup = field.name in ['name', 'registered_number'] %}
+        {{ fields.field(field, lookup=lookup) }}
+      {% endwith %}
       {% endfor %}
     {% endblock %}
 
@@ -39,6 +43,8 @@
 {% endblock %}
 
 {% block page_js %}
+  {% include "web/search-companies.html" %}
+
   {{ form.media.js }}
   {{ super() }}
 {% endblock %}

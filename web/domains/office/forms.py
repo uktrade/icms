@@ -13,7 +13,7 @@ class OfficeFormSet(forms.BaseFormSet):
                 form.add_error("address", "Cannot be empty")
 
 
-class OfficeOrganisationForm(forms.ModelForm):
+class OfficeEORIForm(forms.ModelForm):
     address = forms.CharField(
         widget=forms.Textarea({"rows": 3, "required": "required"}), required=True, strip=True
     )
@@ -23,7 +23,7 @@ class OfficeOrganisationForm(forms.ModelForm):
         fields = ["address", "postcode", "eori_number"]
 
 
-class OfficeIndividualForm(forms.ModelForm):
+class OfficeForm(forms.ModelForm):
     address = forms.CharField(
         widget=forms.Textarea({"rows": 3, "required": "required"}), required=True, strip=True
     )

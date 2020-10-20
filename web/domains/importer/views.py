@@ -20,7 +20,7 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
-from web.domains.office.forms import OfficeIndividualForm, OfficeOrganisationForm
+from web.domains.office.forms import OfficeForm, OfficeEORIForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
@@ -140,12 +140,12 @@ def delete_contact(request, importer_pk, contact_pk):
 def create_office(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
     if importer.is_organisation():
-        OfficeForm = OfficeOrganisationForm
+        Form = OfficeEORIForm
     else:
-        OfficeForm = OfficeIndividualForm
+        Form = OfficeForm
 
     if request.POST:
-        form = OfficeForm(request.POST)
+        form = Form(request.POST)
         if form.is_valid():
             office = form.save()
             importer.offices.add(office)
@@ -156,7 +156,7 @@ def create_office(request, pk):
                 )
             )
     else:
-        form = OfficeForm()
+        form = Form()
 
     context = {"object": importer, "form": form}
 
@@ -169,16 +169,16 @@ def edit_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
     office = get_object_or_404(importer.offices, pk=office_pk)
     if importer.is_organisation():
-        OfficeForm = OfficeOrganisationForm
+        Form = OfficeEORIForm
     else:
-        OfficeForm = OfficeIndividualForm
+        Form = OfficeForm
 
     if request.POST:
-        form = OfficeForm(request.POST, instance=office)
+        form = Form(request.POST, instance=office)
         if form.is_valid():
             form.save()
     else:
-        form = OfficeForm(instance=office)
+        form = Form(instance=office)
 
     context = {
         "object": importer,

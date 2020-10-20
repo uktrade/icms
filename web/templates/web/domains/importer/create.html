@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block main_content %}
-  {% include "web/domains/importer/company_list.html" %}
+  {% include "web/company_list.html" %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
@@ -44,7 +44,7 @@
 {% endblock %}
 
 {% block page_js %}
-  {% include "web/domains/importer/search-companies.html" %}
+  {% include "web/search-companies.html" %}
 
   {{ form.media.js }}
   {{ super() }}

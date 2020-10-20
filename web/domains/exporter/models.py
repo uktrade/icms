@@ -9,7 +9,7 @@ class Exporter(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
     name = models.CharField(max_length=4000, blank=False, null=False)
     registered_number = models.CharField(max_length=15, blank=True, null=True)
-    comments = models.CharField(max_length=4000, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
     offices = models.ManyToManyField(Office)
 
     # Having a main exporter means exporter is an agent
@@ -28,7 +28,7 @@ class Exporter(Archivable, models.Model):
             LABEL = "Exporter"
 
         if self.id:
-            return LABEL + " - " + (self.name or self.user.full_name)
+            return LABEL + " - " + self.name
         else:
             return LABEL
 

@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
+from web.domains.office.forms import OfficeForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelFilterView
@@ -96,4 +97,73 @@ def delete_contact(request, pk, contact_pk):
     contact = get_object_or_404(User, pk=contact_pk)
 
     remove_perm("web.is_contact_of_exporter", contact, exporter)
+    return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_office(request, pk):
+    exporter = get_object_or_404(Exporter, pk=pk)
+
+    if request.POST:
+        form = OfficeForm(request.POST)
+        if form.is_valid():
+            office = form.save()
+            exporter.offices.add(office)
+            return redirect(
+                reverse(
+                    "exporter-office-edit",
+                    kwargs={"exporter_pk": exporter.pk, "office_pk": office.pk},
+                )
+            )
+    else:
+        form = OfficeForm()
+
+    context = {"object": exporter, "form": form}
+
+    return render(request, "web/domains/exporter/create-office.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_office(request, exporter_pk, office_pk):
+    exporter = get_object_or_404(Exporter, pk=exporter_pk)
+    office = get_object_or_404(exporter.offices, pk=office_pk)
+
+    if request.POST:
+        form = OfficeForm(request.POST, instance=office)
+        if form.is_valid():
+            form.save()
+    else:
+        form = OfficeForm(instance=office)
+
+    context = {
+        "object": exporter,
+        "office": office,
+        "form": form,
+    }
+    return render(request, "web/domains/exporter/edit-office.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_office(request, exporter_pk, office_pk):
+    exporter = get_object_or_404(Exporter, pk=exporter_pk)
+    office = get_object_or_404(exporter.offices.filter(is_active=True), pk=office_pk)
+    office.is_active = False
+    office.save()
+
+    return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_office(request, exporter_pk, office_pk):
+    exporter = get_object_or_404(Exporter, pk=exporter_pk)
+    office = get_object_or_404(exporter.offices.filter(is_active=False), pk=office_pk)
+    office.is_active = True
+    office.save()
+
     return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))

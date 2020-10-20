@@ -1,0 +1,30 @@
+{% extends "web/domains/offices/create.html" %}
+
+{% block context_header %}
+  Edit Office for Exporter {{ object.name }}
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/exporter/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Exporter {{ object.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <div class="info-box info-box-info">
+    Edit office for the exporter {{ object.name }}.
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block submit_button %}Save{% endblock %}

@@ -55,7 +55,7 @@
                     <div class="row">
                         <div class="twelve columns">
                           <form method="post"
-                                action="{{ url(contact_delete_url_name, kwargs={'importer_pk': object.pk, 'contact_pk': user.pk}) }}">
+                                action="{{ url(contact_delete_url_name, args=[object.pk, user.pk]) }}">
                             {{ csrf_input }}
                             <button type="submit" class="button small-button icon-bin">Delete</button>
                           </form>

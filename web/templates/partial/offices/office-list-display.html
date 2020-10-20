@@ -3,7 +3,7 @@
     <tr>
       <th scope="col">Address</th>
       <th scope="col">Postcode</th>
-      {% if object.is_organisation() %}
+      {% if has_eori %}
         <th scope="col">EORI Number</th>
       {% endif %}
       {% if not read_only %}
@@ -16,7 +16,7 @@
     <tr>
       <td>{{ office.address|nl2br() or '' }}</td>
       <td>{{ office.postcode or '' }}</td>
-      {% if object.is_organisation() %}
+      {% if has_eori %}
         <td>{{ office.eori_number or '' }}</td>
       {% endif %}
       {% if not read_only %}

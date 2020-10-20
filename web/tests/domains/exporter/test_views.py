@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from web.domains.exporter.models import Exporter
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
@@ -86,7 +88,7 @@ class ExporterEditViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(["reference_data_access"])
         response = self.client.get(self.url)
-        assert f"Editing exporter {self.exporter}" in response.content.decode()
+        assert f"Editing Exporter '{self.exporter.name}'" in response.content.decode()
 
 
 class ExporterCreateViewTest(AuthTestCase):
@@ -108,9 +110,17 @@ class ExporterCreateViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def test_exporter_created(self):
+    @patch("web.domains.exporter.forms.api_get_company")
+    def test_exporter_created(self, api_get_company):
+        api_get_company.return_value = {
+            "registered_office_address": {
+                "address_line_1": "60 rue Wiertz",
+                "postcode": "B-1047",
+                "locality": "Bruxelles",
+            }
+        }
         self.login_with_permissions(["reference_data_access"])
-        self.client.post(self.url, {"name": "test exporter"})
+        self.client.post(self.url, {"name": "test exporter", "registered_number": "42"})
         exporter = Exporter.objects.first()
         self.assertEqual(exporter.name, "test exporter")
 
