@@ -48,9 +48,11 @@
 
 
         {% if not form.instance.is_agent() %}
-            {% with agents = form.instance.agents %}
-            {% include "partial/agents-display.html" %}
-            {% endwith %}
+          {% with
+            agents = form.instance.agents,
+            read_only = True %}
+            {% include "partial/agents.html" %}
+          {% endwith %}
         {% endif %}
 
         {% with read_only = True %}

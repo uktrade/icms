@@ -122,4 +122,6 @@ class CreateAgent(LinkAction):
     icon = "icon-user-plus"
 
     def href(self, object):
-        return reverse("importer-agent-individual-create", kwargs={"importer_id": object.id})
+        return reverse(
+            "importer-agent-create", kwargs={"importer_pk": object.id, "entity": "organisation"}
+        )

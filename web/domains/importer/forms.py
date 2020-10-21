@@ -208,6 +208,7 @@ class AgentOrganisationForm(ModelForm):
         self.fields["main_importer"].queryset = importer
         self.fields["main_importer"].required = True
         self.fields["name"].required = True
+        self.fields["registered_number"].required = True
 
     class Meta(ImporterOrganisationForm.Meta):
         fields = [

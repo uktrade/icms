@@ -1,11 +1,9 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse
 from django.views.decorators.http import require_POST
-from django.views.generic import View
 from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
 from web.address.address import find as postcode_lookup
@@ -23,7 +21,7 @@ from web.domains.importer.models import Importer
 from web.domains.office.forms import OfficeForm, OfficeEORIForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
-from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views import ModelDetailView, ModelFilterView
 from web.views.actions import Archive, CreateAgent, Edit, Unarchive
 
 logger = logging.getLogger(__name__)
@@ -139,10 +137,10 @@ def delete_contact(request, importer_pk, contact_pk):
 @permission_required("web.reference_data_access", raise_exception=True)
 def create_office(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
-    if importer.is_organisation():
-        Form = OfficeEORIForm
-    else:
+    if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
         Form = OfficeForm
+    else:
+        Form = OfficeEORIForm
 
     if request.POST:
         form = Form(request.POST)
@@ -168,10 +166,10 @@ def create_office(request, pk):
 def edit_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
     office = get_object_or_404(importer.offices, pk=office_pk)
-    if importer.is_organisation():
-        Form = OfficeEORIForm
-    else:
+    if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
         Form = OfficeForm
+    else:
+        Form = OfficeEORIForm
 
     if request.POST:
         form = Form(request.POST, instance=office)
@@ -212,51 +210,90 @@ def unarchive_office(request, importer_pk, office_pk):
     return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
 
 
-class AgentCreateView(ModelUpdateView):
-    def get_context_data(self, *args, **kwargs):
-        kwargs["page_title"] = "Agent"
-        kwargs["importer"] = Importer.objects.get(pk=self.kwargs["importer_id"])
-        return super().get_context_data(*args, **kwargs)
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_agent(request, importer_pk, entity):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    initial = {"main_importer": importer_pk}
+    if entity == "organisation":
+        AgentForm = AgentOrganisationForm
+    else:
+        AgentForm = AgentIndividualForm
 
-    def get_initial(self):
-        initial = super().get_initial()
-        initial["main_importer"] = self.kwargs["importer_id"]
-        return initial
+    if request.POST:
+        form = AgentForm(request.POST, initial=initial)
+        if form.is_valid():
+            agent = form.save()
+            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk,}))
+    else:
+        form = AgentForm(initial=initial)
 
+    context = {
+        "object": importer,
+        "form": form,
+    }
 
-class AgentEditView(ModelUpdateView):
-    queryset = Importer.objects.filter(main_importer__isnull=False)
-    template_name = "web/domains/importer/create.html"
-
-    def get_form_class(self):
-        agent = self.get_object()
-        if agent.is_organisation():
-            return AgentOrganisationForm
-        return AgentIndividualForm
-
-
-class AgentArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    queryset = Importer.objects.filter(main_importer__isnull=False)
-    http_method_names = ["get"]
-    permission_required = "web.reference_data_access"
-
-    def get(self, request, *args, **kwargs):
-        agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
-        agent.is_active = False
-        agent.save()
-        return redirect(reverse_lazy("importer-agent-edit", kwargs=kwargs))
+    return render(request, "web/domains/importer/create-agent.html", context=context)
 
 
-class AgentUnArchiveView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    queryset = Importer.objects.filter(main_importer__isnull=False)
-    http_method_names = ["get"]
-    permission_required = "web.reference_data_access"
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_agent(request, pk):
+    agent = get_object_or_404(Importer.objects.agents(), pk=pk)
+    if agent.is_organisation():
+        AgentForm = AgentOrganisationForm
+    else:
+        AgentForm = AgentIndividualForm
 
-    def get(self, request, *args, **kwargs):
-        agent = get_object_or_404(self.queryset, pk=kwargs["pk"])
-        agent.is_active = True
-        agent.save()
-        return redirect(reverse_lazy("importer-agent-edit", kwargs=kwargs))
+    if request.POST:
+        form = AgentForm(request.POST, instance=agent)
+        if form.is_valid():
+            agent = form.save()
+            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk,}))
+    else:
+        form = AgentForm(instance=agent)
+
+    agent_contacts = get_users_with_perms(
+        agent.main_importer, only_with_perms_in=["is_agent_of_importer"]
+    ).filter(user_permissions__codename="importer_access")
+    available_contacts = User.objects.importer_access().exclude(pk__in=agent_contacts)
+
+    context = {
+        "object": agent.main_importer,
+        "form": form,
+        "contact_form": ContactForm(available_contacts),
+        "contacts": agent_contacts,
+    }
+
+    return render(request, "web/domains/importer/edit-agent.html", context=context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_agent(self, pk):
+    agent = get_object_or_404(Importer.objects.agents().filter(is_active=True), pk=pk)
+    agent.is_active = False
+    agent.save()
+
+    if agent.type == Importer.INDIVIDUAL:
+        remove_perm("web.is_agent_of_importer", agent.user, agent.main_importer)
+
+    return redirect(reverse("importer-edit", kwargs={"pk": agent.main_importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_agent(self, pk):
+    agent = get_object_or_404(Importer.objects.agents().filter(is_active=False), pk=pk)
+    agent.is_active = True
+    agent.save()
+
+    if agent.type == Importer.INDIVIDUAL:
+        assign_perm("web.is_agent_of_importer", agent.user, agent.main_importer)
+
+    return redirect(reverse("importer-edit", kwargs={"pk": agent.main_importer.pk}))
 
 
 class ImporterOrganisationDetailView(ModelDetailView):

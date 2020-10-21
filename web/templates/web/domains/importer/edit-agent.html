@@ -10,13 +10,17 @@
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
-      <li>  <a href="{{ url('importer-list') }}" class="prev-link">Importers</a></li>
+      <li>
+        <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Importer {{ object.display_name }}
+        </a>
+      </li>
     </ul>
   </div>
 {% endblock %}
 
 {% block context_header %}
-    Editing Importer '{{ object.display_name }}'
+  Editing Agent '{{ form.instance.display_name }}' for Importer '{{ object.display_name }}'
 {% endblock %}
 
 {% block sidebar %}
@@ -24,6 +28,11 @@
 {% endblock %}
 
 {% block main_content %}
+
+  <div class="info-box info-box-info">
+    This importer is an agent of importer '{{ object.display_name }}'.
+  </div>
+
   {% include "web/company_list.html" %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
@@ -50,8 +59,8 @@
   {% endcall %}
 
   {% with
-    has_eori = object.is_organisation(),
-    offices = object.offices.all(),
+    object = form.instance,
+    offices = form.instance.offices.all(),
     office_create_url_name = 'importer-office-create',
     office_archive_url_name = 'importer-office-archive',
     office_unarchive_url_name = 'importer-office-unarchive',
@@ -60,21 +69,15 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with agents = object.agents %}
-    {% include "partial/agents.html" %}
-  {% endwith %}
+  {% if form.instance.is_organisation() %}
+    {% with
+      object = form.instance,
+      contact_add_url_name = 'importer-contact-add',
+      contact_delete_url_name = 'importer-contact-delete' %}
 
-  {% with
-    contact_add_url_name = 'importer-contact-add',
-    contact_delete_url_name = 'importer-contact-delete' %}
-
-    {% include "partial/contacts/contacts.html" %}
-  {% endwith %}
-
-  {#
-  {% include "partial/firearms-authorities.html" %}
-  {% include "partial/section5-authorities.html" %}
-  #}
+      {% include "partial/contacts/contacts.html" %}
+    {% endwith %}
+  {% endif %}
 {% endblock %}
 
 {% block page_js %}

@@ -3,7 +3,7 @@
         <td>
             <span class="text-widget ">
                 <a href="{{url('importer-view', args=[agent.id])}}">{{ agent.display_name }}</a>
-                <br>{{ agent.entity_type }}
+                <br>{{ agent.entity_type or '' }}
             </span>
         </td>
         <td>
@@ -13,24 +13,29 @@
             <span class="text-widget ">
                 {# there should only ever be one active office for an agent #}
                 {% with office = agent.offices.filter(is_active=True).first() %}
-                    {{ office|nl2br }}
+                    {{ office|default('', true)|nl2br }}
                 {% endwith %}
             </span>
         </td>
-        <td>
-          {% if agent.is_active %}
-            <a class="link-button button icon-pencil"
-               href="{{ url('importer-agent-edit', args=[agent.pk]) }}">
-            </a>
-            <a class="link-button button icon-bin"
-               href="{{ url('importer-agent-archive', args=[agent.pk]) }}">
-            </a>
-          {% else %}
-            <a class="link-button button icon-undo"
-               href="{{ url('importer-agent-unarchive', args=[agent.pk]) }}">
-            </a>
-          {% endif %}
-        </td>
+        {% if not read_only %}
+          <td>
+            {% if agent.is_active %}
+              <a class="button small-button icon-pencil"
+                 href="{{ url('importer-agent-edit', args=[agent.pk]) }}">
+                Edit
+              </a>
+              <form method="post" action="{{ url('importer-agent-archive', args=[agent.pk]) }}" class="form-inline">
+                {{ csrf_input }}
+                <button type="submit" class="button small-button icon-bin">Archive</button>
+              </form>
+            {% else %}
+              <form method="post" action="{{ url('importer-agent-unarchive', args=[agent.pk]) }}">
+                {{ csrf_input }}
+                <button type="submit" class="button small-button icon-undo">Restore</button>
+              </form>
+            {% endif %}
+          </td>
+        {% endif %}
     </tr>
 {% else %}
     <tr>

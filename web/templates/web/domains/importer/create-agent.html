@@ -1,0 +1,29 @@
+{% extends "web/domains/importer/create.html" %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Importer {{ object.display_name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block context_header %}
+  Create Agent for Importer '{{ object.display_name }}'
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  <div class="info-box info-box-info">
+    This importer will be an agent of importer '{{ object.display_name }}'.
+  </div>
+
+  {{ super() }}
+{% endblock %}

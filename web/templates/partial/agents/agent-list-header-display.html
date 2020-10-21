@@ -3,6 +3,8 @@
         <th scope="col">Importer Name /<br> Importer Entity Type</th>
         <th scope="col">Agent Type </th>
         <th scope="col">Address </th>
-        <th scope="col">Actions</th>
+        {% if not read_only %}
+          <th scope="col">Actions</th>
+        {% endif %}
     </tr>
 </thead>

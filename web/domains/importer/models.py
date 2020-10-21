@@ -5,6 +5,11 @@ from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 
+class ImporterManager(models.Manager):
+    def agents(self):
+        return self.filter(main_importer__isnull=False)
+
+
 # TODO: explore if we should use the "direct foreign keys" for django-guardian
 # for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
 class Importer(Archivable, models.Model):
@@ -18,6 +23,8 @@ class Importer(Archivable, models.Model):
     EUROPE = "E"
     NON_EUROPEAN = "O"
     REGIONS = ((UK, "UK"), (EUROPE, "Europe"), (NON_EUROPEAN, "Non-European"))
+
+    objects = ImporterManager()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 

@@ -10,10 +10,14 @@
     <h5>Create Agent</h5>
     <ul class="menu-out">
       <li>
-        <a href="{{ url('importer-agent-individual-create', args=[view.kwargs.importer_id]) }}">Individual Agent</a>
+        <a href="{{ url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'individual'}) }}">
+          Individual Agent
+        </a>
       </li>
       <li>
-        <a href="{{ url('importer-agent-organisation-create', args=[view.kwargs.importer_id]) }}">Organisation Agent</a>
+        <a href="{{ url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'organisation'}) }}">
+          Organisation Agent
+        </a>
       </li>
     </ul>
   {% endif %}

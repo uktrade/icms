@@ -1,9 +1,6 @@
 from unittest.mock import patch
 
-import pytest
-
 from web.domains.importer.models import Importer
-from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import ImporterFactory, IndividualImporterFactory
@@ -188,10 +185,8 @@ class OrganisationImporterCreateViewTest(AuthTestCase):
 class IndividualAgentCreateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        base_url = "/importer/{importer_id}/agent/individual/create/"
-
-        self.importer = ImporterFactory()
-        self.url = base_url.format(importer_id=self.importer.pk)
+        self.importer = IndividualImporterFactory()
+        self.url = f"/importer/{self.importer.pk}/agent/individual/create/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -199,46 +194,37 @@ class IndividualAgentCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    @pytest.mark.xfail
     def test_forbidden_access(self):
         self.login()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    @pytest.mark.xfail
     def test_authorized_access(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_agent_created(self):
         self.login_with_permissions(PERMISSIONS)
+        other_user = UserFactory.create(
+            account_status=User.ACTIVE, permission_codenames=["importer_access"]
+        )
         data = {
             "main_importer": self.importer.pk,
-            "eori_number": "GBPR",
-            "user": self.user.pk,
-            "form-TOTAL_FORMS": 1,
-            "form-INITIAL_FORMS": 0,
-            "form-0-address": "3 avenue des arbres, Pommier",
-            "form-0-postcode": "42000",
+            "user": other_user.pk,
         }
         response = self.client.post(self.url, data)
-        self.assertRedirects(response, "/importer/")
-        importer = Importer.objects.filter(main_importer__isnull=False).first()
-        self.assertEqual(importer.user, self.user, msg=importer)
-
-        office = Office.objects.first()
-        self.assertEqual(office.postcode, "42000")
+        agent = Importer.objects.filter(main_importer__isnull=False).first()
+        self.assertRedirects(response, f"/importer/agent/{agent.pk}/edit/")
+        self.assertEqual(agent.user, other_user, msg=agent)
 
 
 class OrganisationAgentCreateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        base_url = "/importer/{importer_id}/agent/organisation/create/"
 
         self.importer = ImporterFactory()
-        self.url = base_url.format(importer_id=self.importer.pk)
+        self.url = f"/importer/{self.importer.pk}/agent/organisation/create/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -246,32 +232,27 @@ class OrganisationAgentCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    @pytest.mark.xfail
     def test_forbidden_access(self):
         self.login()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    @pytest.mark.xfail
     def test_authorized_access(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_agent_created(self):
         self.login_with_permissions(PERMISSIONS)
         data = {
             "main_importer": self.importer.pk,
-            "eori_number": "GB",
+            "registered_number": "42",
             "name": "test importer",
-            "form-TOTAL_FORMS": 0,
-            "form-INITIAL_FORMS": 0,
         }
         response = self.client.post(self.url, data)
-        self.assertRedirects(response, "/importer/")
-        importer = Importer.objects.filter(main_importer__isnull=False).first()
-        self.assertEqual(importer.name, "test importer", msg=importer)
+        agent = Importer.objects.filter(main_importer__isnull=False).first()
+        self.assertRedirects(response, f"/importer/agent/{agent.pk}/edit/")
+        self.assertEqual(agent.name, "test importer", msg=agent)
 
 
 class AgentEditViewTest(AuthTestCase):
@@ -288,32 +269,26 @@ class AgentEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, self.redirect_url)
 
-    @pytest.mark.xfail
     def test_forbidden_access(self):
         self.login()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    @pytest.mark.xfail
     def test_authorized_access(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    @pytest.mark.xfail
     def test_post(self):
         self.login_with_permissions(PERMISSIONS)
         data = {
             "type": "ORGANISATION",
-            "action": "edit",
             "name": self.agent.name,
             "registered_number": "quarante-deux",
             "comments": "Alter agent",
-            "form-TOTAL_FORMS": 0,
-            "form-INITIAL_FORMS": 0,
         }
         response = self.client.post(self.url, data)
-        self.assertRedirects(response, f"/importer/{self.agent.pk}/")
+        self.assertRedirects(response, self.url)
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.comments, "Alter agent")
         self.assertEqual(self.agent.registered_number, "quarante-deux")
@@ -322,8 +297,10 @@ class AgentEditViewTest(AuthTestCase):
 class AgentArchiveViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        importer = ImporterFactory()
-        self.agent = ImporterFactory(main_importer=importer)
+        self.importer = IndividualImporterFactory()
+        self.agent = ImporterFactory(
+            main_importer=self.importer, type=Importer.ORGANISATION, is_active=True
+        )
 
         self.url = f"/importer/agent/{self.agent.pk}/archive/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -338,20 +315,21 @@ class AgentArchiveViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    @pytest.mark.xfail
     def test_authorized_access(self):
         self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
+        response = self.client.post(self.url)
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.is_active, False)
-        self.assertRedirects(response, f"/importer/agent/{self.agent.pk}/edit/")
+        self.assertRedirects(response, f"/importer/{self.importer.pk}/edit/")
 
 
 class AgentUnarchiveViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        importer = ImporterFactory()
-        self.agent = ImporterFactory(main_importer=importer)
+        self.importer = IndividualImporterFactory()
+        self.agent = ImporterFactory(
+            main_importer=self.importer, type=Importer.ORGANISATION, is_active=False
+        )
 
         self.url = f"/importer/agent/{self.agent.pk}/unarchive/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -366,12 +344,9 @@ class AgentUnarchiveViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 403)
 
-    @pytest.mark.xfail
     def test_authorized_access(self):
-        self.agent.is_active = False
-        self.agent.save()
         self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
+        response = self.client.post(self.url)
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.is_active, True)
-        self.assertRedirects(response, f"/importer/agent/{self.agent.pk}/edit/")
+        self.assertRedirects(response, f"/importer/{self.importer.pk}/edit/")
