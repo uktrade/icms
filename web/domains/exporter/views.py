@@ -4,13 +4,13 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
+from web.domains.exporter.forms import AgentForm, ExporterForm, ExporterFilter
 from web.domains.office.forms import OfficeForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelFilterView
-from web.views.actions import Archive, Edit, Unarchive
+from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
 
-from .forms import ExporterForm, ExporterFilter
 from .models import Exporter
 
 
@@ -22,9 +22,14 @@ class ExporterListView(ModelFilterView):
     page_title = "Maintain Exporters"
 
     class Display:
-        fields = ["name"]
-        fields_config = {"name": {"header": "Exporter Name"}}
-        actions = [Archive(), Unarchive(), Edit()]
+        fields = ["name", "offices", "agents"]
+        fields_config = {
+            "name": {"header": "Exporter Name"},
+            "offices": {"header": "Addresses", "show_all": True,},
+            "agents": {"header": "Agent", "show_all": True,},
+        }
+        opts = {"inline": True, "icon_only": True}
+        actions = [Edit(**opts), CreateExporterAgent(**opts), Archive(**opts), Unarchive(**opts)]
 
 
 @login_required
@@ -77,16 +82,20 @@ def create_exporter(request):
 @require_POST
 def add_contact(request, pk):
     exporter = get_object_or_404(Exporter, pk=pk)
-
-    available_contacts = User.objects.account_active().filter(
-        user_permissions__codename="exporter_access"
-    )
+    available_contacts = User.objects.exporter_access()
 
     form = ContactForm(available_contacts, request.POST)
     if form.is_valid():
         contact = form.cleaned_data["contact"]
-        assign_perm("web.is_contact_of_exporter", contact, exporter)
-    return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+        if exporter.is_agent():
+            assign_perm("web.is_agent_of_exporter", contact, exporter.main_exporter)
+        else:
+            assign_perm("web.is_contact_of_exporter", contact, exporter)
+
+    if exporter.is_agent():
+        return redirect(reverse("exporter-agent-edit", kwargs={"pk": exporter.pk}))
+    else:
+        return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
 
 
 @login_required
@@ -96,8 +105,12 @@ def delete_contact(request, pk, contact_pk):
     exporter = get_object_or_404(Exporter, pk=pk)
     contact = get_object_or_404(User, pk=contact_pk)
 
-    remove_perm("web.is_contact_of_exporter", contact, exporter)
-    return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+    if exporter.is_agent():
+        remove_perm("web.is_agent_of_exporter", contact, exporter.main_exporter)
+        return redirect(reverse("exporter-agent-edit", kwargs={"pk": exporter.pk}))
+    else:
+        remove_perm("web.is_contact_of_exporter", contact, exporter)
+        return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
 
 
 @login_required
@@ -167,3 +180,75 @@ def unarchive_office(request, exporter_pk, office_pk):
     office.save()
 
     return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_agent(request, exporter_pk):
+    exporter = get_object_or_404(Exporter, pk=exporter_pk)
+    initial = {"main_exporter": exporter_pk}
+
+    if request.POST:
+        form = AgentForm(request.POST, initial=initial)
+        if form.is_valid():
+            agent = form.save()
+            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk,}))
+    else:
+        form = AgentForm(initial=initial)
+
+    context = {
+        "object": exporter,
+        "form": form,
+    }
+
+    return render(request, "web/domains/exporter/create-agent.html", context=context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_agent(request, pk):
+    agent = get_object_or_404(Exporter.objects.agents(), pk=pk)
+
+    if request.POST:
+        form = AgentForm(request.POST, instance=agent)
+        if form.is_valid():
+            agent = form.save()
+            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk,}))
+    else:
+        form = AgentForm(instance=agent)
+
+    agent_contacts = get_users_with_perms(
+        agent.main_exporter, only_with_perms_in=["is_agent_of_exporter"]
+    ).filter(user_permissions__codename="exporter_access")
+    available_contacts = User.objects.exporter_access().exclude(pk__in=agent_contacts)
+
+    context = {
+        "object": agent.main_exporter,
+        "form": form,
+        "contact_form": ContactForm(available_contacts),
+        "contacts": agent_contacts,
+    }
+
+    return render(request, "web/domains/exporter/edit-agent.html", context=context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_agent(self, pk):
+    agent = get_object_or_404(Exporter.objects.agents().filter(is_active=True), pk=pk)
+    agent.is_active = False
+    agent.save()
+
+    return redirect(reverse("exporter-edit", kwargs={"pk": agent.main_exporter.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_agent(self, pk):
+    agent = get_object_or_404(Exporter.objects.agents().filter(is_active=False), pk=pk)
+    agent.is_active = True
+    agent.save()
+
+    return redirect(reverse("exporter-edit", kwargs={"pk": agent.main_exporter.pk}))

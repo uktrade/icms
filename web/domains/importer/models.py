@@ -28,11 +28,13 @@ class Importer(Archivable, models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    type = models.CharField(max_length=20, choices=TYPES, blank=False, null=False)
+    type = models.CharField(max_length=20, choices=TYPES, verbose_name="Entity Type")
 
     # these are only set for organisations
-    name = models.CharField(max_length=4000, blank=True, null=True)
-    registered_number = models.CharField(max_length=15, blank=True, null=True)
+    name = models.TextField(blank=True, default="", verbose_name="Organisation Name")
+    registered_number = models.CharField(
+        max_length=15, blank=True, null=True, verbose_name="Registered Number"
+    )
     eori_number = models.CharField(
         max_length=20,
         blank=True,

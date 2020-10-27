@@ -2,13 +2,25 @@
     <tr>
         <td>
             <span class="text-widget ">
-                <a href="{{url('importer-view', args=[agent.id])}}">{{ agent.display_name }}</a>
+              {% if is_importer and read_only %}
+                {{ agent.display_name }}
+              {% elif is_importer %}
+                <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                  {{ agent.display_name }}
+                </a>
+              {% else %}
+                <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                  {{ agent.name }}
+                </a>
+              {% endif %}
                 <br>{{ agent.entity_type or '' }}
             </span>
         </td>
-        <td>
-            <span class="text-widget ">Care Of Importer</span>
-        </td>
+        {% if is_importer %}
+          <td>
+              <span class="text-widget ">Care Of Importer</span>
+          </td>
+        {% endif %}
         <td>
             <span class="text-widget ">
                 {# there should only ever be one active office for an agent #}
@@ -21,15 +33,15 @@
           <td>
             {% if agent.is_active %}
               <a class="button small-button icon-pencil"
-                 href="{{ url('importer-agent-edit', args=[agent.pk]) }}">
+                 href="{{ url(agent_edit_url_name, args=[agent.pk]) }}">
                 Edit
               </a>
-              <form method="post" action="{{ url('importer-agent-archive', args=[agent.pk]) }}" class="form-inline">
+              <form method="post" action="{{ url(agent_archive_url_name, args=[agent.pk]) }}" class="form-inline">
                 {{ csrf_input }}
                 <button type="submit" class="button small-button icon-bin">Archive</button>
               </form>
             {% else %}
-              <form method="post" action="{{ url('importer-agent-unarchive', args=[agent.pk]) }}">
+              <form method="post" action="{{ url(agent_unarchive_url_name, args=[agent.pk]) }}">
                 {{ csrf_input }}
                 <button type="submit" class="button small-button icon-undo">Restore</button>
               </form>

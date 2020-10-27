@@ -117,11 +117,29 @@ class Unarchive(PostAction):
         messages.success(request, "Record restored successfully")
 
 
-class CreateAgent(LinkAction):
-    label = "Create Agent"
+class CreateIndividualAgent(LinkAction):
+    label = "Create Individual Agent"
     icon = "icon-user-plus"
 
     def href(self, object):
         return reverse(
-            "importer-agent-create", kwargs={"importer_pk": object.id, "entity": "organisation"}
+            "importer-agent-create", kwargs={"importer_pk": object.pk, "entity": "individual"}
         )
+
+
+class CreateOrganisationAgent(LinkAction):
+    label = "Create Organisation Agent"
+    icon = "icon-user-plus"
+
+    def href(self, object):
+        return reverse(
+            "importer-agent-create", kwargs={"importer_pk": object.pk, "entity": "organisation"}
+        )
+
+
+class CreateExporterAgent(LinkAction):
+    label = "Create Agent"
+    icon = "icon-user-plus"
+
+    def href(self, object):
+        return reverse("exporter-agent-create", kwargs={"exporter_pk": object.pk})

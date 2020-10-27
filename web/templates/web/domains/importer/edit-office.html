@@ -1,7 +1,11 @@
 {% extends "web/domains/offices/create.html" %}
 
 {% block context_header %}
-  Edit Office for Importer '{{ object.display_name }}'
+  {% if object.is_agent() %}
+    Edit Office for Agent '{{ object.display_name }}'
+  {% else %}
+    Edit Office for Importer '{{ object.display_name }}'
+  {% endif %}
 {% endblock %}
 
 {% block sidebar %}

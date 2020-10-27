@@ -16,9 +16,15 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
-          Exporter {{ object.name }}
-        </a>
+        {% if object.is_agent() %}
+          <a href="{{ url('exporter-agent-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            Agent {{ object.name }}
+          </a>
+        {% else %}
+          <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            Exporter {{ object.name }}
+          </a>
+        {% endif %}
       </li>
     </ul>
   </div>

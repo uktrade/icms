@@ -50,7 +50,8 @@
         {% if not form.instance.is_agent() %}
           {% with
             agents = form.instance.agents,
-            read_only = True %}
+            read_only = True,
+            is_importer = True %}
             {% include "partial/agents.html" %}
           {% endwith %}
         {% endif %}

@@ -37,3 +37,6 @@ class UserManager(BaseUserManager):
 
     def importer_access(self):
         return self.account_active().filter(user_permissions__codename="importer_access")
+
+    def exporter_access(self):
+        return self.account_active().filter(user_permissions__codename="exporter_access")

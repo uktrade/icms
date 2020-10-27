@@ -22,7 +22,13 @@ from web.domains.office.forms import OfficeForm, OfficeEORIForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelDetailView, ModelFilterView
-from web.views.actions import Archive, CreateAgent, Edit, Unarchive
+from web.views.actions import (
+    Archive,
+    CreateIndividualAgent,
+    CreateOrganisationAgent,
+    Edit,
+    Unarchive,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +52,13 @@ class ImporterListView(ModelFilterView):
             "offices": {"header": "Addresses", "show_all": True,},
         }
         opts = {"inline": True, "icon_only": True}
-        actions = [Archive(**opts), Unarchive(**opts), CreateAgent(**opts), Edit(**opts)]
+        actions = [
+            Edit(**opts),
+            CreateIndividualAgent(**opts),
+            CreateOrganisationAgent(**opts),
+            Archive(**opts),
+            Unarchive(**opts),
+        ]
 
 
 @login_required
@@ -112,13 +124,19 @@ def create_importer(request, entity):
 @require_POST
 def add_contact(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
-
     available_contacts = User.objects.importer_access()
     form = ContactForm(available_contacts, request.POST)
     if form.is_valid():
         contact = form.cleaned_data["contact"]
-        assign_perm("web.is_contact_of_importer", contact, importer)
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+        if importer.is_agent():
+            assign_perm("web.is_agent_of_importer", contact, importer.main_importer)
+        else:
+            assign_perm("web.is_contact_of_importer", contact, importer)
+
+    if importer.is_agent():
+        return redirect(reverse("importer-agent-edit", kwargs={"pk": importer.pk}))
+    else:
+        return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
 
 
 @login_required
@@ -129,8 +147,12 @@ def delete_contact(request, importer_pk, contact_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
     contact = get_object_or_404(User, pk=contact_pk)
 
-    remove_perm("web.is_contact_of_importer", contact, importer)
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    if importer.is_agent():
+        remove_perm("web.is_agent_of_importer", contact, importer.main_importer)
+        return redirect(reverse("importer-agent-edit", kwargs={"pk": importer.pk}))
+    else:
+        remove_perm("web.is_contact_of_importer", contact, importer)
+        return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
 
 
 @login_required

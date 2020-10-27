@@ -60,7 +60,13 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with agents = object.agents %}
+  {% with 
+    is_importer = True,
+    agents = object.agents,
+    agent_edit_url_name = "importer-agent-edit",
+    agent_archive_url_name = "importer-agent-archive",
+    agent_unarchive_url_name = "importer-agent-unarchive" %}
+
     {% include "partial/agents.html" %}
   {% endwith %}
 

@@ -10,13 +10,17 @@
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
-      <li>  <a href="{{ url('exporter-list') }}" class="prev-link">Exporters</a></li>
+      <li>
+        <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Exporter {{ object.name }}
+        </a>
+      </li>
     </ul>
   </div>
 {% endblock %}
 
 {% block context_header %}
-  Editing Exporter '{{ object.name }}'
+  Editing Agent '{{ form.instance.name }}' for Exporter '{{ object.name }}'
 {% endblock %}
 
 {% block sidebar %}
@@ -24,6 +28,11 @@
 {% endblock %}
 
 {% block main_content %}
+
+  <div class="info-box info-box-info">
+    This exporter is an agent of exporter '{{ object.name }}'.
+  </div>
+
   {% include "web/company_list.html" %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
@@ -50,7 +59,8 @@
   {% endcall %}
 
   {% with
-    offices = object.offices.all(),
+    object = form.instance,
+    offices = form.instance.offices.all(),
     office_create_url_name = 'exporter-office-create',
     office_archive_url_name = 'exporter-office-archive',
     office_unarchive_url_name = 'exporter-office-unarchive',
@@ -59,16 +69,8 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with 
-    agents = object.agents,
-    agent_edit_url_name = "exporter-agent-edit",
-    agent_archive_url_name = "exporter-agent-archive",
-    agent_unarchive_url_name = "exporter-agent-unarchive" %}
-
-    {% include "partial/agents.html" %}
-  {% endwith %}
-
   {% with
+    object = form.instance,
     contact_add_url_name = 'exporter-contact-add',
     contact_delete_url_name = 'exporter-contact-delete' %}
 

@@ -20,8 +20,6 @@
       {% endwith %}
   </div>
 
-  {% block agent_edit %}{% endblock %}
-
   <div id="tg-agentsARCHIVED" aria-labelledby="tg-agentsARCHIVED" class="tab-content " style="display: none;"
        data-tab-group="tg-agents" data-tab-key="ARCHIVED" aria-hidden="true">
       {% with agent_list = agents.filter(is_active=False).order_by('pk') %}
@@ -29,5 +27,6 @@
       {% endwith %}
   </div>
 
-  <div class="section-break"></div>
+  {% block agent_edit %}{% endblock %}
+
 {% endif %}

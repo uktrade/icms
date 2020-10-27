@@ -1,0 +1,29 @@
+{% extends "web/domains/importer/create.html" %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Exporter {{ object.name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block context_header %}
+  Create Agent for Exporter '{{ object.name }}'
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/exporter/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  <div class="info-box info-box-info">
+    This exporter will be an agent of exporter '{{ object.name }}'.
+  </div>
+
+  {{ super() }}
+{% endblock %}

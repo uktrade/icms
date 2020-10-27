@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import ChoiceField, CharField, ModelChoiceField, ModelForm
+from django.forms import ChoiceField, CharField, ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django.db.models import Q
 
@@ -53,6 +53,7 @@ class ImporterOrganisationForm(ModelForm):
             "region_origin",
             "comments",
         ]
+        widgets = {"name": Textarea(attrs={"rows": 1})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -154,7 +155,7 @@ class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ModelForm):
     class Meta:
         model = Importer
         fields = ["type", "name", "region_origin", "comments"]
-        labels = {"type": "Entity Type"}
+        widgets = {"name": Textarea(attrs={"rows": 1})}
 
 
 class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):
@@ -174,6 +175,7 @@ class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):
     class Meta:
         model = Importer
         fields = ["type", "user", "comments"]
+        widgets = {"name": Textarea(attrs={"rows": 1})}
 
 
 class AgentIndividualForm(ModelForm):
@@ -217,6 +219,8 @@ class AgentOrganisationForm(ModelForm):
             "registered_number",
             "comments",
         ]
+
+        widgets = {"name": Textarea(attrs={"rows": 1})}
 
     def clean(self):
         self.instance.type = Importer.ORGANISATION

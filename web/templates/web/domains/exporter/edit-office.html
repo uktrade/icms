@@ -1,7 +1,11 @@
 {% extends "web/domains/offices/create.html" %}
 
 {% block context_header %}
-  Edit Office for Exporter {{ object.name }}
+  {% if object.is_agent() %}
+    Edit Office for Agent '{{ object.name }}'
+  {% else %}
+    Edit Office for Importer '{{ object.name }}'
+  {% endif %}
 {% endblock %}
 
 {% block sidebar %}
@@ -12,9 +16,15 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
-          Exporter {{ object.name }}
-        </a>
+        {% if object.is_agent() %}
+          <a href="{{ url('exporter-agent-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            Agent {{ object.name }}
+          </a>
+        {% else %}
+          <a href="{{ url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            Exporter {{ object.name }}
+          </a>
+        {% endif %}
       </li>
     </ul>
   </div>
@@ -22,7 +32,11 @@
 
 {% block main_content %}
   <div class="info-box info-box-info">
-    Edit office for the exporter {{ object.name }}.
+    {% if object.is_agent() %}
+      Edit office for the exporter {{ object.name }}.
+    {% else %}
+      Edit office for the agent {{ object.name }}.
+    {% endif %}
   </div>
   {{ super() }}
 {% endblock %}
