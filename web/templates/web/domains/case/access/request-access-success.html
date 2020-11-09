@@ -1,4 +1,4 @@
-{% extends "layout/simple.html" %}
+{% extends "layout/sidebar.html" %}
 
 {% block page_title %}Importer/Exporter Access Request{% endblock %}
 {% block context_header %}Importer/Exporter Access Request{% endblock %}
@@ -17,9 +17,9 @@
 
             </div>
             <ul class="menu-out flow-across">
-                <li> <a  href="{{url('access:importer:request')}}"  class="link-button button">
+                <li> <a  href="{{url('access:importer-request')}}"  class="link-button button">
                         Submit Another Importer Access Request </a></li>
-                <li> <a  href="{{url('access:exporter:request')}}"  class="link-button button">
+                <li> <a  href="{{url('access:exporter-request')}}"  class="link-button button">
                         Submit Another Exporter Access Request </a></li>
                 <li> <a  href="{{ url('logout') }}"  class="link-button button">
                         Logout </a></li>

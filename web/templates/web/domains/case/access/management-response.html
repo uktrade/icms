@@ -1,0 +1,39 @@
+{% extends "web/domains/case/access/management-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block main_content %}
+  <h3>Close Access Request</h3>
+  {% if object.link %}
+    <div class="container setOutForm">
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {% for field in form %}
+          {{ fields.field(field) }}
+        {% endfor %}
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <button type="submit" class="button primary-button">Close Access Request</button>
+          </div>
+        </div>
+      {% endcall %}
+    </div>
+    {% else %}
+      {% if object.process_type == "ExporterAccessRequest" %}
+        <div class="info-box info-box-info">
+          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'exporter']) }}">
+          link an exporter</a> to the access request if you wish to start exporter access approval.
+        </div>
+      {% else %}
+        <div class="info-box info-box-info">
+          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'importer']) }}">
+          link an importer</a> to the access request if you wish to start importer access approval.
+        </div>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block page_js %}
+  {{super()}}
+  <script src="{{ static('web/js/pages/review-request-access.js') }}" type="text/javascript"></script>
+{% endblock %}

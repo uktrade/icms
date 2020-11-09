@@ -1,25 +1,27 @@
-from django.urls import include, path
+from django.urls import path, re_path
 
-from web.flows import ApprovalRequestFlow, ExporterAccessRequestFlow, ImporterAccessRequestFlow
-from web.viewflow.viewset import FlowViewSet
-
-from ..fir.urls import fir_parent_urls
 from . import views
 
-importer_access_request_urls = FlowViewSet(ImporterAccessRequestFlow).urls
-exporter_access_request_urls = FlowViewSet(ExporterAccessRequestFlow).urls
-approval_request_urls = FlowViewSet(ApprovalRequestFlow).urls
-
-# Add fir urls to both flows
-importer_access_request_urls.extend(fir_parent_urls)
-exporter_access_request_urls.extend(fir_parent_urls)
 
 app_name = "access"
-
-
 urlpatterns = [
-    path("importer/", include((importer_access_request_urls, "importer"))),
-    path("exporter/", include((exporter_access_request_urls, "exporter"))),
-    path("approval/", include((approval_request_urls, "approval"))),
+    path("importer/request/", views.importer_access_request, name="importer-request"),
+    path("exporter/request/", views.exporter_access_request, name="exporter-request"),
     path("requested/", views.AccessRequestCreatedView.as_view(), name="requested"),
+    # access request management
+    re_path(
+        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/management/$",
+        views.management,
+        name="case-management",
+    ),
+    re_path(
+        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/access-approval/$",
+        views.management_access_approval,
+        name="case-management-access-approval",
+    ),
+    re_path(
+        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
+        views.management_response,
+        name="case-management-response",
+    ),
 ]

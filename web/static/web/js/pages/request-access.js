@@ -20,10 +20,10 @@ $(document).ready(function() {
 
     function toggle_agent(request_type) {
       console.log(request_type)
-      if (request_type == 'MAIN_IMPORTER_ACCESS' || request_type == 'MAIN_EXPORTER_ACCESS') {
-        hide_agent_inputs()
-      } else {
+      if (request_type == 'AGENT_IMPORTER_ACCESS' || request_type == 'AGENT_EXPORTER_ACCESS') {
         show_agent_inputs()
+      } else {
+        hide_agent_inputs()
       }
     }
 

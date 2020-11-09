@@ -25,14 +25,15 @@
         </div>
         <div id="form-container">
             {% call forms.form(method='post', csrf_input=csrf_input) %}
-              {{activation.management_form}}
 
               {% block form_fields %}
-                {{fields.field(form.request_type)}}
-                {{fields.field(form.organisation_name)}}
-                {{fields.field(form.organisation_address)}}
-                {{fields.field(form.agent_name)}}
-                {{fields.field(form.agent_address)}}
+              {% for field in form %}
+                {% if field.name in ['agent_name', 'agent_address', 'request_reason'] %}
+                  {{ fields.field(field, show_optional_indicator=False) }}
+                {% else %}
+                  {{ fields.field(field) }}
+                {% endif %}
+              {% endfor %}
               {% endblock %}
 
             <div class="clearBoth"></div>

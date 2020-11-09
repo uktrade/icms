@@ -1,0 +1,26 @@
+{% extends "web/domains/case/access/management-base.html" %}
+
+{% block main_content %}
+<div class="row">
+  {% if object.process_type == "ExporterAccessRequest" %}
+    <h3>Exporter Access Approval</h3>
+  {% else %}
+    <h3>Importer Access Approval</h3>
+  {% endif %}
+  <div class="eight columns">
+    {% if not task.process.link %}
+      {% if object.process_type == "ExporterAccessRequest" %}
+        <div class="info-box info-box-info">
+          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'exporter']) }}">
+          link an exporter</a> to the access request if you wish to start exporter access approval.
+        </div>
+      {% else %}
+        <div class="info-box info-box-info">
+          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'importer']) }}">
+          link an importer</a> to the access request if you wish to start importer access approval.
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

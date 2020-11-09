@@ -1,114 +1,127 @@
 import structlog as logging
-from django.core.exceptions import ValidationError
-from django.forms import ModelForm
-from django.forms.widgets import Select, Textarea
+from django.forms import CharField, Field, ModelChoiceField, ModelForm, Textarea
 
-from .approval.models import ApprovalRequest
-from .models import AccessRequest
+from web.domains.case.access.models import (
+    AccessRequest,
+    ExporterAccessRequest,
+    ImporterAccessRequest,
+)
+from web.domains.exporter.models import Exporter
+from web.domains.exporter.widgets import ExporterWidget
+from web.domains.importer.models import Importer
+from web.domains.importer.widgets import ImporterWidget
 
 logger = logging.getLogger(__name__)
 
 
-def is_valid(form, data, fields):
-    """
-        Check if fields in given list is entered by user
-    """
-    valid = True
-    for field in fields:
-        logger.debug(f"field {field}: {data[field]}")
-        if not data[field]:
-            valid = False
-            form.add_error(field, "You must enter this item")
-
-    logger.debug(f"Form valid? {valid}")
-    return valid
-
-
-def is_agent_request(request_type):
-    return request_type in [AccessRequest.IMPORTER_AGENT, AccessRequest.EXPORTER_AGENT]
-
-
 class ExporterAccessRequestForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["request_type"].widget = Select(choices=AccessRequest.EXPORTER_REQUEST_TYPES)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        request_type = cleaned_data["request_type"]
-        if is_agent_request(request_type):
-            logger.debug("Validating agent")
-            # Only validate agent_name and agent_address if this is an agent request
-            if not is_valid(self, cleaned_data, ["agent_name", "agent_address"]):
-                raise ValidationError("")
-        return cleaned_data
-
     class Meta:
-        model = AccessRequest
+        model = ExporterAccessRequest
 
         fields = [
             "request_type",
             "organisation_name",
             "organisation_address",
+            "organisation_registered_number",
             "agent_name",
             "agent_address",
         ]
 
-        labels = {"request_type": "Access Request Type"}
-
-        widgets = {
-            "organisation_address": Textarea({"rows": 5}),
-            "agent_address": Textarea({"rows": 5}),
-        }
-
-
-class ImporterAccessRequestForm(ExporterAccessRequestForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["request_type"].widget = Select(choices=AccessRequest.IMPORTER_REQUEST_TYPES)
-
     def clean(self):
         cleaned_data = super().clean()
-        if not is_valid(self, cleaned_data, ["request_reason"]):
-            raise ValidationError("")
+        request_type = cleaned_data.get("request_type")
+        if request_type == ExporterAccessRequest.AGENT_ACCESS:
+            logger.debug("Validating agent")
+            if not cleaned_data["agent_name"]:
+                self.add_error("agent_name", Field.default_error_messages["required"])
+            if not cleaned_data["agent_address"]:
+                self.add_error("agent_address", Field.default_error_messages["required"])
+        else:
+            cleaned_data["agent_name"] = ""
+            cleaned_data["agent_address"] = ""
+        return cleaned_data
 
-    class Meta(ExporterAccessRequestForm.Meta):
+
+class ImporterAccessRequestForm(ModelForm):
+    class Meta:
+        model = ImporterAccessRequest
+
         fields = [
             "request_type",
             "organisation_name",
             "organisation_address",
+            "organisation_registered_number",
+            "eori_number",
+            "eori_number_ni",
             "request_reason",
             "agent_name",
             "agent_address",
         ]
 
-        labels = ExporterAccessRequestForm.Meta.labels
-        labels["request_reason"] = "What are you importing and where are you importing it from?"
+    def clean(self):
+        cleaned_data = super().clean()
+        request_type = cleaned_data.get("request_type")
+        if request_type == ImporterAccessRequest.AGENT_ACCESS:
+            logger.debug("Validating agent")
+            if not cleaned_data["agent_name"]:
+                self.add_error("agent_name", Field.default_error_messages["required"])
+            if not cleaned_data["agent_address"]:
+                self.add_error("agent_address", Field.default_error_messages["required"])
+        else:
+            cleaned_data["agent_name"] = ""
+            cleaned_data["agent_address"] = ""
+        return cleaned_data
 
-        widgets = ExporterAccessRequestForm.Meta.widgets
-        widgets["request_reason"] = Textarea({"rows": 5})
+
+class LinkImporterAccessRequestForm(ModelForm):
+    link = ModelChoiceField(
+        label="Link Importer",
+        help_text="""
+            Search an importer to link. Importers returned are matched against name, registerer number,
+            eori number and user name/email.
+        """,
+        queryset=Importer.objects.filter(is_active=True),
+        widget=ImporterWidget,
+    )
+
+    class Meta:
+        model = ImporterAccessRequest
+        fields = ["link"]
+
+
+class LinkExporterAccessRequestForm(ModelForm):
+    link = ModelChoiceField(
+        label="Link Exporter",
+        help_text="""
+            Search an exporter to link. Exporters returned are matched against name and registerer number.
+        """,
+        queryset=Exporter.objects.filter(is_active=True),
+        widget=ExporterWidget,
+    )
+
+    class Meta:
+        model = ExporterAccessRequest
+        fields = ["link"]
 
 
 class CloseAccessRequestForm(ModelForm):
+    response_reason = CharField(
+        required=False,
+        widget=Textarea,
+        help_text="If refused please write the reason for the decision.",
+    )
+
     class Meta:
         model = AccessRequest
-
         fields = ["response", "response_reason"]
 
-
-class ApprovalRequestForm(ModelForm):
-    def __init__(self, team, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields[
-            "requested_from"
-        ].queryset = team.members.all()  # TODO: All members? Check if certain roles or not
-        self.fields["requested_from"].empty_label = "All"
-
-    class Meta:
-        model = ApprovalRequest
-
-        fields = ["requested_from"]
-
-        labels = {"requested_from": "Contact"}
-
-        widgets = {"requested_from": Select()}
+    def clean(self):
+        cleaned_data = super().clean()
+        if (
+            cleaned_data.get("response") == AccessRequest.REFUSED
+            and cleaned_data.get("response_reason") == ""
+        ):
+            self.add_error(
+                "response_reason", "This field is required when Access Request is refused"
+            )
+        return cleaned_data

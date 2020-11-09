@@ -1,0 +1,17 @@
+<h4>Access Request</h4>
+{% with entity = "exporter" if object.process_type == "ExporterAccessRequest" else "importer" %}
+<ul class="menu-out">
+  <li>
+    <a href="{{ url('access:case-management', args=[object.pk, entity]) }}">Case {{ object.pk }}</a>
+  </li>
+  <li>
+    <a href="#">Further Information Requests (x/x)</a>
+  </li>
+  <li>
+    <a href="{{ url('access:case-management-access-approval', args=[object.pk, entity]) }}">Access Approval</a>
+  </li>
+  <li>
+    <a href="{{ url('access:case-management-response', args=[object.pk, entity]) }}">Close Access Request</a>
+  </li>
+</ul>
+{% endwith %}

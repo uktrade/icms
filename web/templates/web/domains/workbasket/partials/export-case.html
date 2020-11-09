@@ -16,6 +16,9 @@
     {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>
   <td>
+    Application Processing
+  </td>
+  <td>
     {# NOTE: process.tasks has been filtered by is_active=True already #}
     {% for task in process.tasks.all() %}
       {% include 'web/domains/workbasket/partials/workbasket-item.html' %}

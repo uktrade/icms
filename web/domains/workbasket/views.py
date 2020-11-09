@@ -1,3 +1,5 @@
+from itertools import chain
+
 import structlog as logging
 from django.db.models import Prefetch
 from django.views.generic.list import ListView
@@ -5,6 +7,11 @@ from django.views.generic.list import ListView
 from web.auth.mixins import RequireRegisteredMixin
 
 from web.flow.models import Task
+from web.domains.case.access.models import (
+    AccessRequest,
+    ExporterAccessRequest,
+    ImporterAccessRequest,
+)
 from web.domains.case.export.models import CertificateOfManufactureApplication
 
 logger = logging.get_logger(__name__)
@@ -31,6 +38,18 @@ class Workbasket(RequireRegisteredMixin, ListView):
         #   * if admin/case officer, filter by all
         #   * if external user, filter by "all exporters i have access to"
 
-        return CertificateOfManufactureApplication.objects.filter(is_active=True).prefetch_related(
-            Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
-        )
+        if self.request.user.has_perm("web.reference_data_access"):
+            certificates = CertificateOfManufactureApplication.objects.filter(
+                is_active=True
+            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+            exporter_access_requests = ExporterAccessRequest.objects.filter(
+                is_active=True, status=AccessRequest.SUBMITTED
+            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+            importer_access_requests = ImporterAccessRequest.objects.filter(
+                is_active=True, status=AccessRequest.SUBMITTED
+            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+            return chain(certificates, exporter_access_requests, importer_access_requests)
+        else:
+            return self.request.user.submitted_access_requests.filter(
+                status=AccessRequest.SUBMITTED
+            )

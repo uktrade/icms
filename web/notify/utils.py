@@ -1,6 +1,7 @@
 import itertools
 
 from django.conf import settings
+from django.contrib.auth.models import Permission
 from django.core.mail.message import EmailMultiAlternatives
 
 from web.domains.user.models import AlternativeEmail, PersonalEmail
@@ -52,11 +53,17 @@ def get_notification_emails(user):
 
 def get_import_case_officers_emails():
     """Return a list of emails for import case officers"""
-    # TODO: get list of people in "import case officers" group, return their emails
-    raise NotImplementedError
+    return list(
+        Permission.objects.get(codename="reference_data_access").user_set.values_list(
+            "email", flat=True
+        )
+    )
 
 
 def get_export_case_officers_emails():
     """Return a list of emails for export case officers"""
-    # TODO: get list of people in "export case officers" group, return their emails
-    raise NotImplementedError
+    return list(
+        Permission.objects.get(codename="reference_data_access").user_set.values_list(
+            "email", flat=True
+        )
+    )

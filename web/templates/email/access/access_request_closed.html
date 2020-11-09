@@ -2,9 +2,23 @@
 
 {% block message %}
   <p>
-    Your {{ access_request.request_type_short }} 
-    (requested {{ access_request.organisation_name }}: )
-    to act as an {{ access_request.requester_type }} has now been actioned.
+    {% if access_request.process_type == "ExporterAccessRequest" %}
+      Your Exporter Access Request
+      (requested for '{{ access_request.organisation_name }}')
+      {% if access_request.request_type == "AGENT_EXPORTER_ACCESS" %}
+        to act as an Agent Exporter has now been actioned.
+      {% else %}
+        to act as an Exporter has now been actioned.
+      {% endif %}
+    {% else %}
+      Your Importer Access Request
+      (requested for '{{ access_request.organisation_name }}')
+      {% if access_request.request_type == "AGENT_IMPORTER_ACCESS" %}
+        to act as an Agent Importer has now been actioned.
+      {% else %}
+        to act as an Importer has now been actioned.
+      {% endif %}
+    {% endif %}
   </p>
 
   <p>Request Outcome: {{ access_request.response }}</p>

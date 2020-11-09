@@ -55,17 +55,19 @@ def register(user, password):
     )
 
 
-def access_requested(access_request):
+def access_requested_importer(case_reference):
     # TODO: Generate access request reference when created. Currently empty
-    subject = f"Access Request {access_request.reference}"
-    if access_request.is_importer_request():
-        send_import_case_officer_notification(
-            subject, "email/access/access_requested.html", context={"subject": subject}
-        )
-    else:
-        send_export_case_officer_notification(
-            subject, "email/access/access_requested.html", context={"subject": subject}
-        )
+    subject = f"Access Request {case_reference}"
+    send_import_case_officer_notification(
+        subject, "email/access/access_requested.html", context={"subject": subject}
+    )
+
+
+def access_requested_exporter(case_reference):
+    subject = f"Access Request {case_reference}"
+    send_export_case_officer_notification(
+        subject, "email/access/access_requested.html", context={"subject": subject}
+    )
 
 
 def access_request_closed(access_request):
