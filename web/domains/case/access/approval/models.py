@@ -3,13 +3,14 @@
 
 from django.db import models
 
-from ..models import AccessRequest
 from web.domains.user.models import User
+from web.domains.workbasket.base import WorkbasketBase
+from web.flow.models import Process
 
-from viewflow.models import Subprocess
+from ..models import AccessRequest
 
 
-class ApprovalRequest(models.Model):
+class ApprovalRequest(WorkbasketBase, Process):
     """
     Approval request for submitted access requests.
     Approval requests are requested from importer/exporter
@@ -70,11 +71,3 @@ class ApprovalRequest(models.Model):
 
     class Meta:
         ordering = ("-request_date",)
-
-
-class ApprovalRequestProcess(Subprocess):
-    """
-        Approval Request subprocess for access requests
-    """
-
-    approval_request = models.ForeignKey(ApprovalRequest, on_delete=models.SET_NULL, null=True)

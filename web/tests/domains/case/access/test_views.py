@@ -1,6 +1,5 @@
 import pytest
 
-from web.domains.case.fir.flows import FurtherInformationRequestFlow
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case.access import factory as access_factories
 from web.tests.domains.case.fir import factory as fir_factories
@@ -20,10 +19,10 @@ def populate_fields(access_request):
 class ImporterAccessRequestFIRListViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.process = access_factories.ImporterAccessRequestProcessFactory()
+        self.process = access_factories.ImporterAccessRequestFactory()
         # Create an access request task
         access_factories.ImporterAccessRequestTaskFactory(process=self.process, owner=self.user)
-        self.fir_process = fir_factories.FurtherInformationRequestProcessFactory(
+        self.fir_process = fir_factories.FurtherInformationRequestFactory(
             parent_process=self.process
         )
         self.url = f"/access/importer/{self.process.pk}/fir/list/"
@@ -46,7 +45,7 @@ class ImporterAccessRequestFIRListViewTest(AuthTestCase):
 
     def test_deleted_firs_not_shown(self):
         # Create a deleted FIR process for importer access request process
-        self.second_process = fir_factories.FurtherInformationRequestProcessFactory(
+        self.second_process = fir_factories.FurtherInformationRequestFactory(
             parent_process=self.process,
             fir=fir_factories.FurtherInformationRequestFactory(is_active=False),
         )
@@ -118,7 +117,7 @@ class ImporterAccessRequestFIRStartViewTest(AuthTestCase):
             [[REQUEST_REFERENCE]].
             Yours sincerely, [[CURRENT_USER_NAME]]""",
         )
-        self.process = access_factories.ImporterAccessRequestProcessFactory()
+        self.process = access_factories.ImporterAccessRequestFactory()
         self.url = f"/access/importer/{self.process.pk}/fir/request/"
         self.fir_list_url = f"/access/importer/{self.process.pk}/fir/list/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -199,12 +198,11 @@ class ImporterAccessRequestFIRStartViewTest(AuthTestCase):
 class ImporterAccessRequestFIREditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.process = access_factories.ImporterAccessRequestProcessFactory()
+        self.process = access_factories.ImporterAccessRequestFactory()
         # Create a send_request task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="DRAFT",
-            flow_task=FurtherInformationRequestFlow.send_request,
             owner=self.user,
         )
         self.fir_process = self.task.process
@@ -281,7 +279,7 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         # create importer access request process
-        self.process = access_factories.ImporterAccessRequestProcessFactory()
+        self.process = access_factories.ImporterAccessRequestFactory()
 
         # Add test user to importer's team
         # team tasks are restricted to team members with necessary permission
@@ -292,7 +290,6 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="OPEN",
-            flow_task=FurtherInformationRequestFlow.respond,
             owner=self.user,
         )
         self.fir_process = self.task.process
@@ -349,13 +346,12 @@ class ImporterAccessRequestFIRReviewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
         # create access request process
-        self.process = access_factories.ImporterAccessRequestProcessFactory()
+        self.process = access_factories.ImporterAccessRequestFactory()
 
         # Create a review task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="RESPONDED",
-            flow_task=FurtherInformationRequestFlow.review,
             owner=self.user,
         )
         self.fir_process = self.task.process
@@ -392,10 +388,10 @@ class ImporterAccessRequestFIRReviewTest(AuthTestCase):
 class ExporterAccessRequestFIRListViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.process = access_factories.ExporterAccessRequestProcessFactory()
+        self.process = access_factories.ExporterAccessRequestFactory()
         # Create an access request task
         access_factories.ExporterAccessRequestTaskFactory(process=self.process, owner=self.user)
-        self.fir_process = fir_factories.FurtherInformationRequestProcessFactory(
+        self.fir_process = fir_factories.FurtherInformationRequestFactory(
             parent_process=self.process
         )
         self.url = f"/access/exporter/{self.process.pk}/fir/list/"
@@ -418,7 +414,7 @@ class ExporterAccessRequestFIRListViewTest(AuthTestCase):
 
     def test_deleted_firs_not_shown(self):
         # Create a deleted FIR process for importer access request process
-        self.second_process = fir_factories.FurtherInformationRequestProcessFactory(
+        self.second_process = fir_factories.FurtherInformationRequestFactory(
             parent_process=self.process,
             fir=fir_factories.FurtherInformationRequestFactory(is_active=False),
         )
@@ -574,7 +570,6 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="DRAFT",
-            flow_task=FurtherInformationRequestFlow.send_request,
             owner=self.user,
         )
         self.fir_process = self.task.process
@@ -662,7 +657,6 @@ class ExporterAccessRequestFIRResponseViewTest(AuthTestCase):
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="OPEN",
-            flow_task=FurtherInformationRequestFlow.respond,
             owner=self.user,
         )
         self.fir_process = self.task.process
@@ -725,7 +719,6 @@ class ExporterAccessRequestFIRReviewTest(AuthTestCase):
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
             process__parent_process=self.process,
             process__fir__status="RESPONDED",
-            flow_task=FurtherInformationRequestFlow.review,
             owner=self.user,
         )
         self.fir_process = self.task.process

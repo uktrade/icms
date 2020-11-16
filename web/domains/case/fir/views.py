@@ -2,10 +2,7 @@ import structlog as logging
 from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, reverse
-from django.views.generic.edit import FormView
-from django.views.generic.list import ListView
-from viewflow.flow.views import UpdateProcessView
-from viewflow.models import Process
+from django.views.generic import FormView, ListView, View
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.views.mixins import FileUploadMixin
@@ -22,15 +19,17 @@ def _parent_process(request):
         Resolves concrete Process model. E.g. ImporterAccessRequestProcess,
         ExporterAccessRequestProcess, etc
     """
-    kwargs = request.resolver_match.kwargs
-    parent_process_pk = kwargs.get("parent_process_pk")
-    logger.debug(f"Parent process: {parent_process_pk}")
-    base_process = get_object_or_404(Process, pk=parent_process_pk)
-    parent_process = get_object_or_404(base_process.flow_class.process_class, pk=parent_process_pk)
-    # If parent process is finished no new FIR is to be allowed
-    if parent_process.finished:
-        raise Http404("Parent process not found")
-    return parent_process
+    raise NotImplementedError
+    # TODO: fixme
+    # kwargs = request.resolver_match.kwargs
+    # parent_process_pk = kwargs.get("parent_process_pk")
+    # logger.debug(f"Parent process: {parent_process_pk}")
+    # base_process = get_object_or_404(Process, pk=parent_process_pk)
+    # parent_process = get_object_or_404(base_process.flow_class.process_class, pk=parent_process_pk)
+    # # If parent process is finished no new FIR is to be allowed
+    # if parent_process.finished:
+    #     raise Http404("Parent process not found")
+    # return parent_process
 
 
 def _process(view):
@@ -97,7 +96,7 @@ class FurtherInformationRequestListView(RequireRegisteredMixin, ListView):
         return self.request.user.has_perm(perm_code)
 
     class Meta:
-        model = models.FurtherInformationRequestProcess
+        model = models.FurtherInformationRequest
 
 
 class FurtherInformationRequestStartView(RequireRegisteredMixin, FileUploadMixin, FormView):
@@ -156,7 +155,7 @@ class FurtherInformationRequestStartView(RequireRegisteredMixin, FileUploadMixin
             return redirect(_fir_list_url(_parent_process(self.request)))
 
 
-class FutherInformationRequestEditView(RequireRegisteredMixin, FileUploadMixin, UpdateProcessView):
+class FutherInformationRequestEditView(RequireRegisteredMixin, FileUploadMixin, View):
     """
         Edit or submit an existing FIR draft
     """
@@ -191,7 +190,7 @@ class FutherInformationRequestEditView(RequireRegisteredMixin, FileUploadMixin, 
 
 
 class FurtherInformationRequestResponseView(
-    RequireRegisteredMixin, FileUploadMixin, UpdateProcessView
+    RequireRegisteredMixin, FileUploadMixin, View
 ):
     template_name = "web/domains/case/fir/respond.html"
     form_class = forms.FurtherInformationRequestResponseForm
@@ -218,7 +217,7 @@ class FurtherInformationRequestResponseView(
 
 
 class FurtherInformationRequestReviewView(
-    RequireRegisteredMixin, FileUploadMixin, UpdateProcessView
+    RequireRegisteredMixin, FileUploadMixin, View
 ):
     template_name = "web/domains/case/fir/review.html"
 

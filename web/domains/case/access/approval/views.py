@@ -1,13 +1,10 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from django.urls import reverse
-from viewflow.flow.views import UpdateProcessView
+from django.views.generic import View
 
 from . import forms, models
 
 
-class ApprovalRequestResponseView(UpdateProcessView):
+class ApprovalRequestResponseView(View):
     template_name = "web/domains/case/access/approval/respond.html"
     form_class = forms.ApprovalRequestResponseForm
 

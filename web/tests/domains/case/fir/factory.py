@@ -1,13 +1,10 @@
 import factory
-from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from viewflow.activation import STATUS
 from viewflow.models import Task
 
-from web.domains.case.fir.flows import FurtherInformationRequestFlow
-from web.domains.case.fir.models import FurtherInformationRequest, FurtherInformationRequestProcess
+from web.domains.case.fir.models import FurtherInformationRequest
 from web.tests.domains.user.factory import UserFactory
-from web.tests.viewflow.factory import SampleProcessFactory
 
 
 def _owner_permission(task):
@@ -36,31 +33,10 @@ class FurtherInformationRequestFactory(factory.django.DjangoModelFactory):
     deleted_by = None
 
 
-class FurtherInformationRequestProcessFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = FurtherInformationRequestProcess
-
-    def __init__(self, *args, parent_process=None, **kwargs):
-        self.parent_process = parent_process or SampleProcessFactory()
-        super().__init__(*args, **kwargs)
-
-    flow_class = FurtherInformationRequestFlow
-    fir = factory.SubFactory(FurtherInformationRequestFactory)
-    object_id = factory.SelfAttribute("parent_process.pk")
-    content_type = factory.LazyAttribute(
-        lambda p: ContentType.objects.get_for_model(p.parent_process)
-    )
-    created = timezone.now()
-    finished = None
-    status = STATUS.NEW
-
-
 class FurtherInformationRequestTaskFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Task
 
-    process = factory.SubFactory(FurtherInformationRequestProcessFactory)
-    flow_task = FurtherInformationRequestFlow.send_request
     owner = None
     status = STATUS.NEW
     owner_permission = factory.LazyAttribute(_owner_permission)
