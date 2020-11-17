@@ -7,17 +7,23 @@
     {{process.process_type}}
   </td>
   <td>
+    {{process.submitted_by}} ({{process.submitted_by.email}})
+    <br/>
     {{process.organisation_name}} 
-    <br/> 
+    <br/>
     {{process.organisation_address}}
   </td>
   <td>
-    {{process.status}}
+    {{process.get_status_display()}}
     <br>
     {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>
   <td>
-    Access Request
+    {% if process.further_information_requests.active() %}
+      Access Request, Further Information Requested
+    {% else %}
+      Access Request
+    {% endif %}
   </td>
   <td>
     {# NOTE: process.tasks has been filtered by is_active=True already #}

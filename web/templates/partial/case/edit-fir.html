@@ -1,0 +1,74 @@
+<fieldset>
+  <legend class="bold">
+    FIR requested by {{ fir.requested_by }} on {{ fir.requested_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+  </legend>
+
+  {% if fir.is_active %}
+  <form
+    method="post"
+    action="{{ url(
+                 'access:case-management-fir-archive',
+                 kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk }) }}"
+    class="form-inline">
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      <button type="submit" class="small-button icon-bin">Delete</button>
+    </form>
+  {% endif %}
+
+  <div class="row">
+    <div class="three columns"></div>
+    <div class="six columns">
+      <form method="post"
+            action="{{ url(
+                         'access:case-management-fir-edit',
+                         kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk}) }}"
+            enctype="multipart/form-data">
+        {{ csrf_input }}
+        {{ form.as_p() }}
+        <p>Selected files:</p>
+        <p>
+          <label>Documents</label>
+        </p>
+        <div id="fileList"></div>
+        <button type="submit" name="send" class="button primary-button">Send Request</button>
+        <button type="submit" name="save" class="button primary-button">Save</button>
+      </form>
+      {% if fir.files.exists() %}
+      <table class="setoutList">
+        <thead>
+          <tr>
+            <th scope="col">File</th>
+            <th scope="col">Created By</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for document in fir.files.active() %}
+          <tr>
+            <td>
+              {{ document.filename }}<br />
+              <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+            </td>
+            <td>
+              {{ document.created_by }}<br />
+              <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+            </td>
+            <td>
+              <form method="post"
+                    action={{ url(
+                                'access:case-management-fir-files-archive',
+                                kwargs={'application_pk': object.pk, 'entity':entity, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
+                {{ csrf_input }}
+                <button type="submit" class="button link-button-no-padding">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+    </div>
+    <div class="three columns"></div>
+  </div>
+</fieldset>

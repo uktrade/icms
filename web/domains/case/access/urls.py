@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import include, path, re_path
 
 from . import views
 
@@ -23,5 +23,30 @@ urlpatterns = [
         "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
         views.management_response,
         name="case-management-response",
+    ),
+    # management for further information requests
+    re_path(
+        "^case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/management/firs/",
+        include(
+            [
+                path("", views.management_firs, name="case-management-firs",),
+                re_path("add/$", views.add_fir, name="case-management-fir-add",),
+                path("<int:fir_pk>/edit/", views.edit_fir, name="case-management-fir-edit",),
+                path(
+                    "<int:fir_pk>/archive/", views.archive_fir, name="case-management-fir-archive",
+                ),
+                path(
+                    "<int:fir_pk>/withdraw/",
+                    views.withdraw_fir,
+                    name="case-management-fir-withdraw",
+                ),
+                path("<int:fir_pk>/close/", views.close_fir, name="case-management-fir-close",),
+                path(
+                    "<int:fir_pk>/files/<int:file_pk>/",
+                    views.fir_archive_file,
+                    name="case-management-fir-file-archive",
+                ),
+            ]
+        ),
     ),
 ]

@@ -1,0 +1,26 @@
+<div class="info-box info-box-info">
+    <p>This screen is used to send a request to the applicant for further information.</p>
+    <p>
+      An email will be sent to the members of the importer/agent team who submitted
+      the application. One of these members will need to log in and supply further
+      information. When they submit their response the case owner will be notified
+      via email.
+    </p>
+</div>
+
+<div class="list-actions">
+  <ul class="menu-out flow-across">
+    <form
+      method="post"
+      action="{{ url('access:case-management-fir-add', args=[object.pk, entity]) }}"
+      class="form-inline">
+
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      <button type="submit" class="small-button icon-plus">New FIR</button>
+    </form>
+  </ul>
+</div>
+
+{% for fir in firs.all() %}
+  {% include 'partial/case/case-fir-box.html' %}
+{% endfor %}

@@ -123,6 +123,16 @@ def further_information_requested(fir_process):
     # )
 
 
+def further_information_request_access_request(fir):
+    send_notification(
+        f"{fir.request_subject}",
+        "email/fir/requested.html",
+        context={"subject": fir.request_subject, "request_detail": fir.request_detail},
+        recipients=fir.accessrequest_set.first().submitted_by.email,
+        cc_list=fir.email_cc_address_list,
+    )
+
+
 def further_information_responded(fir_process):
     # TODO: implement in new way
     raise NotImplementedError
