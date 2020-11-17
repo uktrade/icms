@@ -201,9 +201,7 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
         self.process = access_factories.ImporterAccessRequestFactory()
         # Create a send_request task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="DRAFT",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="DRAFT", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/send_request/{self.task.pk}/"
@@ -288,9 +286,7 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
 
         # Create a respond task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="OPEN",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="OPEN", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/respond/{self.task.pk}/"
@@ -350,9 +346,7 @@ class ImporterAccessRequestFIRReviewTest(AuthTestCase):
 
         # Create a review task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="RESPONDED",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="RESPONDED", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/review/{self.task.pk}/"
@@ -568,9 +562,7 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
         self.process = access_factories.ExporterAccessRequestProcessFactory()
         # Create a send_request task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="DRAFT",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="DRAFT", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/send_request/{self.task.pk}/"
@@ -655,9 +647,7 @@ class ExporterAccessRequestFIRResponseViewTest(AuthTestCase):
 
         # Create a respond task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="OPEN",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="OPEN", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/respond/{self.task.pk}/"
@@ -717,9 +707,7 @@ class ExporterAccessRequestFIRReviewTest(AuthTestCase):
 
         # Create a review task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process,
-            process__fir__status="RESPONDED",
-            owner=self.user,
+            process__parent_process=self.process, process__fir__status="RESPONDED", owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/review/{self.task.pk}/"

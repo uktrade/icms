@@ -1,7 +1,6 @@
 import structlog as logging
 from django.db import transaction
-from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, reverse
+from django.shortcuts import redirect, reverse
 from django.views.generic import FormView, ListView, View
 
 from web.auth.mixins import RequireRegisteredMixin
@@ -189,9 +188,7 @@ class FutherInformationRequestEditView(RequireRegisteredMixin, FileUploadMixin, 
             return super().form_valid(form)
 
 
-class FurtherInformationRequestResponseView(
-    RequireRegisteredMixin, FileUploadMixin, View
-):
+class FurtherInformationRequestResponseView(RequireRegisteredMixin, FileUploadMixin, View):
     template_name = "web/domains/case/fir/respond.html"
     form_class = forms.FurtherInformationRequestResponseForm
 
@@ -216,9 +213,7 @@ class FurtherInformationRequestResponseView(
             return super().form_valid(form)
 
 
-class FurtherInformationRequestReviewView(
-    RequireRegisteredMixin, FileUploadMixin, View
-):
+class FurtherInformationRequestReviewView(RequireRegisteredMixin, FileUploadMixin, View):
     template_name = "web/domains/case/fir/review.html"
 
     def has_permission(self):
