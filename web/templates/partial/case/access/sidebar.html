@@ -10,9 +10,9 @@
     <a href="{{ url('access:case-management-firs', args=[object.pk, entity]) }}">
       {% with
         completed=object.further_information_requests.completed().count(),
-        active=object.further_information_requests.active().count() %}
+        total=object.further_information_requests.exclude(status="DELETED").count() %}
 
-        Further Information Requests ({{ completed }}/{{ active }})
+        Further Information Requests ({{ completed }}/{{ total }})
       {% endwith %}
     </a>
   </li>

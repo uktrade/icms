@@ -1,7 +1,6 @@
 import structlog as logging
 from django.core.validators import validate_email
 from django.forms import ChoiceField, ClearableFileInput, FileField, ModelForm, Textarea
-from django.utils import timezone
 
 from web.domains.case.fir.models import FurtherInformationRequest
 
@@ -50,28 +49,19 @@ class FurtherInformationRequestForm(ModelForm):
 
 
 class FurtherInformationRequestResponseForm(ModelForm):
-    def __init__(self, response_by, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.response_by = response_by
-
-    def save(self, commit=True):
-        """Set response status/date before save"""
-        fir = super().save(commit=False)
-        fir.response_datetime = timezone.now()
-        fir.status = FurtherInformationRequest.RESPONDED
-        fir.response_by = self.response_by
-        if commit:
-            fir.save()
-        return fir
+    files = FileField(
+        required=False,
+        label="Upload New Documents",
+        widget=ClearableFileInput(attrs={"multiple": True, "onchange": "updateList()"}),
+    )
 
     class Meta:
         model = FurtherInformationRequest
-        fields = [
-            "response_detail",
-        ]
-        labels = {
-            "response_detail": "Response Details",
-        }
-        widgets = {
-            "response_detail": Textarea({"rows": 5}),
-        }
+        fields = ["response_detail", "files"]
+        labels = {"response_detail": "Response Details"}
+        widgets = {"response_detail": Textarea({"rows": 5})}
+
+    def clean(self):
+        data = super().clean()
+        data.pop("files", None)
+        return data

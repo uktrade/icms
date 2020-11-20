@@ -38,6 +38,8 @@ class Workbasket(RequireRegisteredMixin, ListView):
         #   * if admin/case officer, filter by all
         #   * if external user, filter by "all exporters i have access to"
 
+        processes = []
+
         if self.request.user.has_perm("web.reference_data_access"):
             certificates = CertificateOfManufactureApplication.objects.filter(
                 is_active=True
@@ -48,8 +50,17 @@ class Workbasket(RequireRegisteredMixin, ListView):
             importer_access_requests = ImporterAccessRequest.objects.filter(
                 is_active=True, status=AccessRequest.SUBMITTED
             ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
-            return chain(certificates, exporter_access_requests, importer_access_requests)
-        else:
-            return self.request.user.submitted_access_requests.filter(
-                status=AccessRequest.SUBMITTED
+            processes.extend([certificates, exporter_access_requests, importer_access_requests])
+
+        processes.append(
+            self.request.user.submitted_access_requests.filter(status=AccessRequest.SUBMITTED)
+            .prefetch_related("further_information_requests")
+            .prefetch_related(
+                Prefetch(
+                    "further_information_requests__tasks",
+                    queryset=Task.objects.filter(is_active=True, owner=self.request.user),
+                )
             )
+        )
+
+        return chain(*processes)

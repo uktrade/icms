@@ -26,18 +26,11 @@ def send_notification(subject, template, context=None, recipients=None, cc_list=
     email.send_email.delay(subject, message_text, recipients, html_message, cc_list)
 
 
-def send_import_case_officer_notification(subject, template, context=None):
-    """Renders given email template and sends to import case officers."""
+def send_case_officer_notification(subject, template, context=None):
+    """Renders given email template and sends to case officers."""
     html_message = _render_email(template, context)
     message_text = html2text.html2text(html_message)
-    email.send_to_import_case_officers.delay(subject, message_text, html_message)
-
-
-def send_export_case_officer_notification(subject, template, context=None):
-    """Renders given email template and sends to export case officers."""
-    html_message = _render_email(template, context)
-    message_text = html2text.html2text(html_message)
-    email.send_to_export_case_officers.delay(subject, message_text, html_message)
+    email.send_to_case_officers.delay(subject, message_text, html_message)
 
 
 def register(user, password):
@@ -58,14 +51,14 @@ def register(user, password):
 def access_requested_importer(case_reference):
     # TODO: Generate access request reference when created. Currently empty
     subject = f"Access Request {case_reference}"
-    send_import_case_officer_notification(
+    send_case_officer_notification(
         subject, "email/access/access_requested.html", context={"subject": subject}
     )
 
 
 def access_requested_exporter(case_reference):
     subject = f"Access Request {case_reference}"
-    send_export_case_officer_notification(
+    send_case_officer_notification(
         subject, "email/access/access_requested.html", context={"subject": subject}
     )
 
@@ -128,8 +121,17 @@ def further_information_request_access_request(fir):
         f"{fir.request_subject}",
         "email/fir/requested.html",
         context={"subject": fir.request_subject, "request_detail": fir.request_detail},
-        recipients=fir.accessrequest_set.first().submitted_by.email,
-        cc_list=fir.email_cc_address_list,
+        recipients=[fir.accessrequest_set.first().submitted_by.email],
+        cc_list=fir.email_cc_address_list or [],
+    )
+
+
+def further_information_request_access_request_responded(fir):
+    send_case_officer_notification(
+        # TODO: use case reference instead of pk
+        f"FIR Response - {fir.accessrequest_set.first().pk} - {fir.request_subject}",
+        "email/fir/responded.html",
+        context={"fir": fir},
     )
 
 

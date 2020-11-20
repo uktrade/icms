@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from web.domains.case.fir import forms
-from web.tests.domains.user.factory import UserFactory
 
 
 class FurtherInformationRequestFormTest(TestCase):
@@ -38,15 +37,13 @@ class FurtherInformationRequestFormTest(TestCase):
 
 class FurtherInformationRequestResponseFormTest(TestCase):
     def test_form_valid(self):
-        response_by = UserFactory()
         form = forms.FurtherInformationRequestResponseForm(
-            response_by, data={"response_detail": "here is my response, cheers!",}
+            data={"response_detail": "here is my response, cheers!",}
         )
         self.assertTrue(form.is_valid())
 
     def test_form_invalid_without_response_detail(self):
-        response_by = UserFactory()
-        form = forms.FurtherInformationRequestResponseForm(response_by, data={})
+        form = forms.FurtherInformationRequestResponseForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 1)
         message = form.errors["response_detail"][0]

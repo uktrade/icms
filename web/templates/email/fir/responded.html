@@ -2,6 +2,7 @@
 
 {% block message %}
   <p>
-    An FIR response has been submitted for {{process}}.
-  </p> 
+    {# TODO: replace pk with case reference #}
+    A FIR response has been submitted for {{fir.pk}} - {{fir.accessrequest_set.first().pk}}.
+  </p>
 {% endblock %}

@@ -1,0 +1,7 @@
+{% extends "web/domains/case/access/case-user-base.html" %}
+
+{% block main_content %}
+  {% for fir in firs %}
+    {% include "partial/case/case-fir-box-user.html" %}
+  {% endfor %}
+{% endblock %}

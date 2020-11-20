@@ -45,15 +45,9 @@ def send_to_exporters(subject, message, html_message=None):
             )
 
 
-@app.task(name="web.notify.email.send_to_import_case_officers")
-def send_to_import_case_officers(subject, message, html_message=None):
-    recipients = utils.get_import_case_officers_emails()
-    send_email.delay(subject, message, recipients, html_message=html_message)
-
-
-@app.task(name="web.notify.email.send_to_export_case_officers")
-def send_to_export_case_officers(subject, message, html_message=None):
-    recipients = utils.get_export_case_officers_emails()
+@app.task(name="web.notify.email.send_to_case_officers")
+def send_to_case_officers(subject, message, html_message=None):
+    recipients = utils.get_case_officers_emails()
     send_email.delay(subject, message, recipients, html_message=html_message)
 
 

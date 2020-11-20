@@ -1,0 +1,80 @@
+{% extends "layout/sidebar.html" %}
+
+{% block header %}
+  <header id="menu-bar">
+    {% include "web/menu/menu.html" %}
+  </header>
+  <div class="has-context-header-grid" id="context-header">
+    {% if object.process_type == "ExporterAccessRequest" %}
+      <h2>Exporter Access Request</h2>
+    {% else %}
+      <h2>Importer Access Request</h2>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Access Request</h3>
+  <dt class="bold">Access Requested By</dt>
+  <dd>{{ object.submitted_by }} ({{ object.submitted_by.email }})</dd>
+  <dt class="bold">Access Request Type</dt>
+  <dd>{{ object.get_request_type_display() }}</dd>
+  <dt class="bold">Request date</dt>
+  <dd>
+    {% if object.submit_datetime %}
+      {{ object.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+    {% endif %}
+  </dd>
+  {% if object.process_type == "ExporterAccessRequest" %}
+    <dt class="bold">Exporter Name</dt>
+    <dd>{{ object.organisation_name }}</dd>
+    <dt class="bold">Exporter Address</dt>
+    <dd>{{ object.organisation_address }}</dd>
+    <dt class="bold">Linked Exporter</dt>
+    <dd>{{ object.link|default('Not Linked', True)}}</dd>
+  {% else %}
+    <dt class="bold">Importer Name</dt>
+    <dd>{{ object.organisation_name }}</dd>
+    <dt class="bold">Importer Address</dt>
+    <dd>{{ object.organisation_address }}</dd>
+    <dt class="bold">Linked Importer</dt>
+    <dd>{{ object.link|default('Not Linked', True)}}</dd>
+  {% endif %}
+  <dt class="bold">What are you importing and where are you importing it from?</dt>
+  <dd>{{ object.request_reason }}</dd>
+{% endblock %}
+
+{% block sidebar %}
+<h4>Access Request</h4>
+{% with entity = "exporter" if object.process_type == "ExporterAccessRequest" else "importer" %}
+<ul class="menu-out">
+  <li>
+    <a href="{{ url('access:case-view', args=[object.pk, entity]) }}">
+      Case {{ object.pk }}
+    </a>
+  </li>
+  <li>
+    <a href="{{ url('access:case-firs', args=[object.pk, entity]) }}">
+      {% with
+        closed = object.further_information_requests.closed().count(),
+        total = object.further_information_requests.submitted().count()
+      %}
+        Further Information Requests ({{ closed }}/{{ total }})
+      {% endwith %}
+    </a>
+  </li>
+</ul>
+{% endwith %}
+{% endblock %}

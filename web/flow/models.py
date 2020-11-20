@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.query import QuerySet
 from django.conf import settings
 
 
@@ -42,6 +43,16 @@ class Process(models.Model):
             raise Exception(f"Expected one active task, got {len(tasks)}")
 
         return tasks[0]
+
+    def get_active_tasks(self) -> "QuerySet[Task]":
+        """Get all active task for current process.
+
+        NOTE: This locks the tasks for update, so make sure there is an
+        active transaction.
+
+        Useful when soft deleting a process.
+        """
+        return self.tasks.filter(is_active=True).select_for_update()
 
 
 class Task(models.Model):

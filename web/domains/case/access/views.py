@@ -3,13 +3,17 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-from web.domains.case.fir.forms import FurtherInformationRequestForm
+from web.domains.case.fir.forms import (
+    FurtherInformationRequestForm,
+    FurtherInformationRequestResponseForm,
+)
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
@@ -93,6 +97,93 @@ def exporter_access_request(request):
         }
 
     return render(request, "web/domains/case/access/request-exporter-access.html", context)
+
+
+@login_required
+def case_view(request, application_pk, entity):
+    with transaction.atomic():
+        if entity == "importer":
+            application = get_object_or_404(
+                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        else:
+            application = get_object_or_404(
+                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        application.get_task(AccessRequest.SUBMITTED, "request")
+
+    context = {"object": application}
+    return render(request, "web/domains/case/access/case-view.html", context)
+
+
+@login_required
+def case_firs(request, application_pk, entity):
+    with transaction.atomic():
+        if entity == "importer":
+            application = get_object_or_404(
+                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        else:
+            application = get_object_or_404(
+                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        application.get_task(AccessRequest.SUBMITTED, "request")
+
+    context = {
+        "object": application,
+        "firs": application.further_information_requests.filter(
+            Q(status=FurtherInformationRequest.OPEN)
+            | Q(status=FurtherInformationRequest.RESPONDED)
+            | Q(status=FurtherInformationRequest.CLOSED)
+        ),
+        "entity": entity,
+    }
+    return render(request, "web/domains/case/access/case-firs.html", context)
+
+
+@login_required
+def case_fir_respond(request, application_pk, entity, fir_pk):
+    with transaction.atomic():
+        if entity == "importer":
+            application = get_object_or_404(
+                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        else:
+            application = get_object_or_404(
+                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
+            )
+        fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
+
+        application.get_task(AccessRequest.SUBMITTED, "request")
+        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
+
+        if request.POST:
+            form = FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
+            files = request.FILES.getlist("files")
+            if form.is_valid():
+                fir = form.save()
+                for f in files:
+                    handle_uploaded_file(f, request.user, fir.files)
+
+                fir.response_datetime = timezone.now()
+                fir.status = FurtherInformationRequest.RESPONDED
+                fir.response_by = request.user
+                fir.save()
+
+                fir_task.is_active = False
+                fir_task.finished = timezone.now()
+                fir_task.save()
+
+                Task.objects.create(process=fir, task_type="responded", owner=request.user)
+
+                notify.further_information_request_access_request_responded(fir)
+
+                return redirect(reverse("workbasket"))
+        else:
+            form = FurtherInformationRequestResponseForm(instance=fir)
+
+    context = {"object": application, "fir": fir, "form": form}
+    return render(request, "web/domains/case/access/case-fir-respond.html", context)
 
 
 @login_required
@@ -224,7 +315,9 @@ def management_firs(request, application_pk, entity):
         application.get_task(AccessRequest.SUBMITTED, "request")
         context = {
             "object": application,
-            "firs": application.further_information_requests.active(),
+            "firs": application.further_information_requests.exclude(
+                status=FurtherInformationRequest.DELETED
+            ),
             "entity": entity,
         }
     return render(
@@ -343,11 +436,16 @@ def archive_fir(request, application_pk, entity, fir_pk):
             application = get_object_or_404(
                 ExporterAccessRequest.objects.select_for_update(), pk=application_pk
             )
+        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
         application.get_task(AccessRequest.SUBMITTED, "request")
-        application.further_information_requests.filter(pk=fir_pk).update(
-            is_active=False, status=FurtherInformationRequest.DELETED
-        )
+        fir_tasks = fir.get_active_tasks()
+
+        fir.is_active = False
+        fir.status = FurtherInformationRequest.DELETED
+        fir.save()
+
+        fir_tasks.update(is_active=False, finished=timezone.now())
 
     return redirect(
         reverse(
@@ -400,7 +498,10 @@ def close_fir(request, application_pk, entity, fir_pk):
             AccessRequest.objects.select_for_update(), pk=application_pk
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
-        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
+        try:
+            fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
+        except Exception:
+            fir_task = fir.get_task(FurtherInformationRequest.RESPONDED, "responded")
 
         fir.status = FurtherInformationRequest.CLOSED
         fir.save()

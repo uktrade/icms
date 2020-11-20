@@ -8,13 +8,25 @@ from web.flow.models import Process
 
 class FIRStatuses(models.Manager):
     def completed(self):
-        return self.filter(is_active=True, status__in=[self.model.CLOSED, self.model.RESPONDED])
+        return self.filter(status__in=[self.model.CLOSED, self.model.RESPONDED])
 
     def active(self):
         return self.filter(is_active=True)
 
     def draft(self):
         return self.filter(status=self.model.DRAFT)
+
+    def open(self):
+        return self.filter(status=self.model.OPEN)
+
+    def closed(self):
+        return self.filter(status=self.model.CLOSED)
+
+    def responded(self):
+        return self.filter(status=self.model.RESPONDED)
+
+    def submitted(self):
+        return self.filter(status__in=[self.model.OPEN, self.model.RESPONDED, self.model.CLOSED])
 
 
 class FurtherInformationRequest(WorkbasketBase, Process):
@@ -79,3 +91,6 @@ class FurtherInformationRequest(WorkbasketBase, Process):
         related_name="deleted_import_information_requests",
     )
     files = models.ManyToManyField(File, blank=True)
+
+    class Meta:
+        ordering = ["-requested_datetime"]

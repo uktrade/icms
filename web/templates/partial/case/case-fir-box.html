@@ -1,8 +1,6 @@
-<fieldset>
-  <legend class="bold">
-    FIR requested by {{ fir.requested_by }} on {{ fir.requested_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
-  </legend>
+{% extends "partial/case/fir.html" %}
 
+{% block fir_action %}
   {% if fir.status == 'DRAFT' %}
     <a href="{{ url(
                   'access:case-management-fir-edit',
@@ -27,64 +25,25 @@
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button">Close</button>
     </form>
+  {% elif fir.status == 'RESPONDED' %}
+    <form method="post"
+          action="{{ url(
+                       'access:case-management-fir-close',
+                       kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk }) }}"
+          class="form-inline">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+        <button type="submit" class="small-button">Close</button>
+    </form>
   {% endif %}
-  <form method="post"
-        action="{{ url(
-                     'access:case-management-fir-archive',
-                     kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk }) }}"
-        class="form-inline">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-      <button type="submit" class="small-button icon-bin">Delete</button>
-  </form>
-  <div class="row">
-    <div class="two columns"></div>
-    <div class="eight columns">
-      <dl>
-        <dt class="bold">Status</dt>
-        <dd class="status {{ fir.status.lower() }}">
-          <span class="text-widget">{{ fir.get_status_display() }}</span>
-        </dd>
-        <dt class="bold">Requested</dt>
-        <dd>{{ fir.requested_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</dd>
-        <dt class="bold">Requested by</dt>
-        <dd>{{ fir.requested_by }}</dd>
-        <dt class="bold">Request Subject</dt>
-        <dd>{{ fir.request_subject|default('N/A', true) }}</dd>
-        <dt class="bold">Request CC Email Addresses</dt>
-        <dd>{{ fir.email_cc_address_list|default('N/A', true) }}</dd>
-        <dt class="bold">Request Details</dt>
-        <dd>{{ fir.request_detail|default('N/A', true)|nl2br }}</dd>
-        <dt class="bold">Documents</dt>
-        <dd>
-          {% if fir.files.exists() %}
-            <table class="setoutList">
-              <thead>
-                <tr>
-                  <th scope="col">File</th>
-                  <th scope="col">Created By</th>
-                </tr>
-              </thead>
-              <tbody>
-              {% for document in fir.files.all() %}
-                <tr>
-                  <td>
-                    {{ document.filename }}<br />
-                    <span class="extra-info">{{ document.file_size }}</span>
-                  </td>
-                  <td>
-                    {{ document.created_by }}<br />
-                    <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
-                  </td>
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
-          {% else %}
-            N/A
-          {% endif %}
-        </dd>
-      </dl>
-    </div>
-    <div class="two columns"></div>
-  </div>
-</fieldset>
+
+  {% if fir.status in ['DRAFT', 'OPEN'] %}
+    <form method="post"
+          action="{{ url(
+                       'access:case-management-fir-archive',
+                       kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk }) }}"
+          class="form-inline">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+        <button type="submit" class="small-button icon-bin">Delete</button>
+    </form>
+  {% endif %}
+{% endblock %}

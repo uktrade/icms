@@ -51,17 +51,8 @@ def get_notification_emails(user):
     return emails
 
 
-def get_import_case_officers_emails():
+def get_case_officers_emails():
     """Return a list of emails for import case officers"""
-    return list(
-        Permission.objects.get(codename="reference_data_access").user_set.values_list(
-            "email", flat=True
-        )
-    )
-
-
-def get_export_case_officers_emails():
-    """Return a list of emails for export case officers"""
     return list(
         Permission.objects.get(codename="reference_data_access").user_set.values_list(
             "email", flat=True
