@@ -4,7 +4,7 @@
 
 behave-django==1.4.0
 black==19.10b0
-django-debug-toolbar==2.2
+django-debug-toolbar==3.1.1
 factory-boy==3.0.1
 faker==4.1.2
 flake8==3.8.3
@@ -13,7 +13,7 @@ mypy==0.782
 pip-check==2.6
 pyparsing==2.4.7
 pytest-cov==2.10.1
-pytest-django==3.9.0
+pytest-django==4.1.0
 pytest-flake8==1.0.6
 pytest-mock==3.3.1
 pytest-xdist==1.32.0

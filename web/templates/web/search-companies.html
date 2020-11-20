@@ -1,7 +1,7 @@
 <script>
   $('.icon-search').on('click', function(evt) {
       evt.preventDefault();
-      $ta = $(this).closest('div').prev().find('input');
+      $ta = $(this).closest('div.input-group').find('input, textarea');
       companyInfo = {};
 
       data = {

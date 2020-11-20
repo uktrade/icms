@@ -27,6 +27,7 @@ services:
             - ICMS_NUM_WORKERS # Gunicorn workers number
             - ICMS_MIGRATE
             - ICMS_ADDRESS_API_KEY # getAddress.io api key for post code search
+            - COMPANIES_HOUSE_TOKEN # https://developer.company-information.service.gov.uk/api/docs/
             # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
             - DATABASE_URL
             - ICMS_ALLOWED_HOSTS
