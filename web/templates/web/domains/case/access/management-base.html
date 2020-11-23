@@ -1,5 +1,16 @@
 {% extends "layout/sidebar.html" %}
 
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
 
 {% block header %}
   <header id="menu-bar">

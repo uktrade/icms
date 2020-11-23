@@ -1,7 +1,6 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -229,29 +228,6 @@ def management(request, pk, entity):
 
     return render(
         request=request, template_name="web/domains/case/access/management.html", context=context
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def management_access_approval(request, pk, entity):
-    # FIXME: when removing viewflow form Access Approval
-    with transaction.atomic():
-        application = get_object_or_404(AccessRequest.objects.select_for_update(), pk=pk)
-        try:
-            application = application.importeraccessrequest
-        except ObjectDoesNotExist:
-            application = application.exporteraccessrequest
-        task = application.get_task(AccessRequest.SUBMITTED, "request")
-        context = {
-            "object": application,
-            "task": task,
-        }
-
-    return render(
-        request=request,
-        template_name="web/domains/case/access/management-access-approval.html",
-        context=context,
     )
 
 

@@ -69,5 +69,16 @@ class ApprovalRequest(WorkbasketBase, Process):
     def is_complete(self):
         return self.status == self.COMPLETED
 
+    def get_workbasket_template(self):
+        return "web/domains/workbasket/partials/approval-request.html"
+
     class Meta:
         ordering = ("-request_date",)
+
+
+class ExporterApprovalRequest(ApprovalRequest):
+    PROCESS_TYPE = "ExporterApprovalRequest"
+
+
+class ImporterApprovalRequest(ApprovalRequest):
+    PROCESS_TYPE = "ImporterApprovalRequest"

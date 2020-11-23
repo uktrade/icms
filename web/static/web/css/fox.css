@@ -2204,6 +2204,12 @@ dd {
   margin: 0
 }
 
+dl:after {
+  display: table;
+  clear: both;
+  content: "";
+}
+
 
 abbr[title],
 dfn[title] {

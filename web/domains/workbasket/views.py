@@ -38,21 +38,26 @@ class Workbasket(RequireRegisteredMixin, ListView):
         #   * if admin/case officer, filter by all
         #   * if external user, filter by "all exporters i have access to"
 
-        processes = []
-
         if self.request.user.has_perm("web.reference_data_access"):
-            certificates = CertificateOfManufactureApplication.objects.filter(
-                is_active=True
-            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
-            exporter_access_requests = ExporterAccessRequest.objects.filter(
-                is_active=True, status=AccessRequest.SUBMITTED
-            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
-            importer_access_requests = ImporterAccessRequest.objects.filter(
-                is_active=True, status=AccessRequest.SUBMITTED
-            ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
-            processes.extend([certificates, exporter_access_requests, importer_access_requests])
+            return self.get_queryset_admin()
+        else:
+            return self.get_queryset_user()
 
-        processes.append(
+    def get_queryset_admin(self):
+        certificates = CertificateOfManufactureApplication.objects.filter(
+            is_active=True
+        ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+        exporter_access_requests = ExporterAccessRequest.objects.filter(
+            is_active=True, status=AccessRequest.SUBMITTED
+        ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+        importer_access_requests = ImporterAccessRequest.objects.filter(
+            is_active=True, status=AccessRequest.SUBMITTED
+        ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+
+        return chain(certificates, exporter_access_requests, importer_access_requests)
+
+    def get_queryset_user(self):
+        return (
             self.request.user.submitted_access_requests.filter(status=AccessRequest.SUBMITTED)
             .prefetch_related("further_information_requests")
             .prefetch_related(
@@ -62,5 +67,3 @@ class Workbasket(RequireRegisteredMixin, ListView):
                 )
             )
         )
-
-        return chain(*processes)

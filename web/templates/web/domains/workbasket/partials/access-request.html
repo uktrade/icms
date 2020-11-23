@@ -19,11 +19,17 @@
     {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>
   <td>
-    {% if process.further_information_requests.open() %}
-      Access Request, Further Information Requested
-    {% else %}
       Access Request
+    {% if process.further_information_requests.open() %}
+      <br />
+      Further Information Requested
     {% endif %}
+    {% with approval = process.approval_requests.filter(is_active=True) %}
+      {% if approval and request.user.has_perm("web.reference_data_access") %}
+        <br />
+        Approval Requested
+      {% endif %}
+    {% endwith %}
   </td>
   <td>
     {# NOTE: process.tasks has been filtered by is_active=True already #}

@@ -30,15 +30,12 @@ urlpatterns = [
         name="case-management",
     ),
     re_path(
-        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/access-approval/$",
-        views.management_access_approval,
-        name="case-management-access-approval",
-    ),
-    re_path(
         "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
         views.management_response,
         name="case-management-response",
     ),
+    # approval request
+    path("", include("web.domains.case.access.approval.urls")),
     # management for further information requests
     re_path(
         "^case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/management/firs/",
