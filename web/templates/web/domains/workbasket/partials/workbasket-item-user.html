@@ -14,4 +14,22 @@
       Respond FIR
     </a>
   {% endfor %}
+{% elif process.process_type == "ImporterApprovalRequest" %}
+  {% if not process.requested_from %}
+    <form method="post" action="{{ url('access:case-approval-take-ownership', args=[process.pk, 'importer']) }}">
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      <button type="submit" class="button link-button-no-padding">Take Ownership</button>
+    </form>
+  {% else %}
+    <a href="{{ url('access:case-approval-respond', args=[process.access_request.importeraccessrequest.pk, 'importer', object.pk]) }}">Manage</a>
+  {% endif %}
+{% elif process.process_type == "ExporterApprovalRequest" %}
+  {% if not process.requested_from %}
+    <form method="post" action="{{ url('access:case-approval-take-ownership', args=[process.pk, 'exporter']) }}">
+      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      <button type="submit" class="button link-button-no-padding">Take Ownership</button>
+    </form>
+  {% else %}
+    <a href="{{ url('access:case-approval-respond', args=[process.access_request.exporteraccessrequest.pk, 'exporter', process.pk]) }}">Manage</a>
+  {% endif %}
 {% endif %}

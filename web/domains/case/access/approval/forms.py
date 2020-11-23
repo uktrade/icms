@@ -1,4 +1,4 @@
-from django.forms import ChoiceField, ModelChoiceField, ModelForm
+from django.forms import ChoiceField, ModelChoiceField, ModelForm, Textarea
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.user.models import User
@@ -68,3 +68,4 @@ class ApprovalRequestResponseForm(ModelForm):
     class Meta:
         model = ApprovalRequest
         fields = ["response", "response_reason"]
+        widgets = {"response_reason": Textarea(attrs={"rows": 4})}

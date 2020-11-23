@@ -3,27 +3,27 @@
     {{process.id}}
   </td>
   <td>
-    {{process.summary()}}
+    {# TODO: do something better (process.get_summary()?) #}
+    {{process.process_type}}
   </td>
   <td>
-    {{process.approval_request.access_request.organisation_name}} 
+    {{process.access_request.submitted_by}} ({{process.access_request.submitted_by.email}})
+    <br />
+    {{process.access_request.organisation_name}} 
     <br/> 
-    {{process.approval_request.access_request.organisation_address}}
+    {{process.access_request.organisation_address}}
   </td>
   <td>
     {{process.status}}
     <br>
-    {{process.created}}
+    {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>
   <td>
-    <a href="{{flowurl(request, process,url_name='detail', namespace='access:approval')}}">
-      Manage Process
-    </a>
-    {% for task in process.active_tasks() %}
-      {% with namespace = 'access:approval' %}
-        {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
-      {% endwith %}
+    Approval Request
+  </td>
+  <td>
+    {% for task in process.tasks.all() %}
+      {% include 'web/domains/workbasket/partials/workbasket-item-user.html' %}
     {% endfor %}
-
   </td>
 </tr>
