@@ -1,4 +1,6 @@
 {% extends 'layout/sidebar.html' %}
+{% import 'forms/forms.html' as forms %}
+
 
 {% block main_content %}
   {% block process_details %}
@@ -35,4 +37,24 @@
       </div>
     </div>
   {% endblock %}
+
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
+    {% block form_content %}{% endblock %}
+
+    <div class="list-actions">
+      <div class="container">
+        <div class="row">
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              {% block task_actions %}
+              {% endblock %}
+            </ul>
+          </div>
+          <div class="four columns"></div>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
 {% endblock %}

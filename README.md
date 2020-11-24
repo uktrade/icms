@@ -20,19 +20,6 @@ Django / PostgreSQL port of it from the original Oracle-based system.
 
 ## Setup
 
-## Viewflow
-
-ICMS uses the PRO version of [Viewflow](http://viewflow.io/) and in order to
-fetch it from the private viewflow index `ICMS_VIEWFLOW_LICENSE` must be set.
-Get it from [Rattic](https://rattic.ci.uktrade.digital/) ("Viewflow License
-Key") and save it in `.env`:
-
-    # use actual license number in place of <license_number>
-    echo "ICMS_VIEWFLOW_LICENSE=<license_number>" > .env
-
-`.env` file is ignored by git, make sure not to include this file in the
-repository. It is only used locally.
-
 ## Local virtualenv
 
 A local virtualenv is needed for a few reasons:

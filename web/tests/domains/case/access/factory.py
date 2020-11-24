@@ -1,7 +1,6 @@
 import factory
 import factory.fuzzy
 from django.utils import timezone
-from viewflow.models import Task
 
 from web.domains.case.access.models import (
     AccessRequest,
@@ -52,35 +51,3 @@ class ExporterAccessRequestFactory(AccessRequestFactory):
     process_type = ExporterAccessRequest.PROCESS_TYPE
     link = factory.SubFactory(ExporterFactory)
     request_type = "MAIN_EXPORTER_ACCESS"
-
-
-class ImporterAccessRequestTaskFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Task
-
-    process = factory.SubFactory(ImporterAccessRequestFactory)
-    owner = None
-    owner_permission = factory.LazyAttribute(lambda t: t.flow_task._owner_permission)
-    token = "start"
-
-    @factory.post_generation
-    def run_activation(self, create, extracted, **kwargs):
-        if self.owner:
-            activation = self.activate()
-            activation.assign(self.owner)
-
-
-class ExporterAccessRequestTaskFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Task
-
-    process = factory.SubFactory(ExporterAccessRequestFactory)
-    owner = None
-    owner_permission = factory.LazyAttribute(lambda t: t.flow_task._owner_permission)
-    token = "start"
-
-    @factory.post_generation
-    def run_activation(self, create, extracted, **kwargs):
-        activation = self.activate()
-        if self.owner:
-            activation.assign(self.owner)

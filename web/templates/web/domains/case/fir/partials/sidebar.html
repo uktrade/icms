@@ -1,9 +1,0 @@
-{# FIR start view is a Django form view, not a viewflow view. activation is not available at start view #}
-{% set parent_process = parent_process or activation.process.parent_process %}
-
-<ul class="menu-out">
-  <a 
-    href="{{ flowurl(request, parent_process, namespace=parent_process.fir_config()['namespace'], url_name='detail')}}">
-    {{parent_process}}
-  </a>
-</ul>

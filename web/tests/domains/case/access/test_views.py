@@ -4,7 +4,6 @@ from web.tests.auth import AuthTestCase
 from web.tests.domains.case.access import factory as access_factories
 from web.tests.domains.case.fir import factory as fir_factories
 from web.tests.domains.template.factory import TemplateFactory
-from web.tests.viewflow.utils import activation_management_form_data
 
 LOGIN_URL = "/"
 
@@ -226,19 +225,21 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
 
     def test_save_draft_redirects_to_list(self):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update(
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": " This is a test ",}
-        )
+        data = {
+            "_save_draft": "",
+            "request_subject": "Testing",
+            "request_detail": " This is a test ",
+        }
         response = self.client.post(self.url, data)
         self.assertRedirects(response, self.fir_list_url)
 
     def test_saves_draft(self):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update(
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": "This is a test",},
-        )
+        data = {
+            "_save_draft": "",
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -250,8 +251,10 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_opens_fir(self):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update({"request_subject": "Testing", "request_detail": "This is a test",},)
+        data = {
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -263,8 +266,10 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_creates_respond_task(self):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update({"request_subject": "Testing", "request_detail": "This is a test",},)
+        data = {
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -311,16 +316,14 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_redirects_to_workbasket(self):
         self.login_with_permissions(["IMP_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "My response is... this!"},)
+        data = {"response_detail": "My response is... this!"}
         response = self.client.post(self.url, data)
         self.assertRedirects(response, "/workbasket/")
 
     @pytest.mark.xfail
     def test_submit_updates_fir_status(self):
         self.login_with_permissions(["IMP_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "This is a test"},)
+        data = {"response_detail": "This is a test"}
         self.client.post(self.url, data)
         fir = self.fir_process.fir
         fir.refresh_from_db()
@@ -330,8 +333,7 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_creates_review_task(self):
         self.login_with_permissions(["IMP_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "This is a test"},)
+        data = {"response_detail": "This is a test"}
         self.client.post(self.url, data)
         task = self.fir_process.active_tasks().last()
         self.assertEqual(task.flow_task.name, "review")
@@ -371,8 +373,7 @@ class ImporterAccessRequestFIRReviewTest(AuthTestCase):
 
     def test_submit_closes_fir(self):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        data = activation_management_form_data()
-        self.client.post(self.url, data)
+        self.client.post(self.url, {})
         fir = self.fir_process.fir
         fir.refresh_from_db()
         self.assertEqual(fir.status, "CLOSED")
@@ -587,19 +588,21 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
 
     def test_save_draft_redirects_to_list(self):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update(
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": " This is a test ",}
-        )
+        data = {
+            "_save_draft": "",
+            "request_subject": "Testing",
+            "request_detail": " This is a test ",
+        }
         response = self.client.post(self.url, data)
         self.assertRedirects(response, self.fir_list_url)
 
     def test_saves_draft(self):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update(
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": "This is a test",},
-        )
+        data = {
+            "_save_draft": "",
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -611,8 +614,10 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_opens_fir(self):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update({"request_subject": "Testing", "request_detail": "This is a test",},)
+        data = {
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -624,8 +629,10 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_creates_respond_task(self):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        data = activation_management_form_data()
-        data.update({"request_subject": "Testing", "request_detail": "This is a test",},)
+        data = {
+            "request_subject": "Testing",
+            "request_detail": "This is a test",
+        }
         response = self.client.post(self.url, data, follow=True,)  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
@@ -672,16 +679,14 @@ class ExporterAccessRequestFIRResponseViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_redirects_to_workbasket(self):
         self.login_with_permissions(["IMP_CERT_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "My response is... this!"},)
+        data = {"response_detail": "My response is... this!"}
         response = self.client.post(self.url, data)
         self.assertRedirects(response, "/workbasket/")
 
     @pytest.mark.xfail
     def test_submit_updates_fir_status(self):
         self.login_with_permissions(["IMP_CERT_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "This is a test"},)
+        data = {"response_detail": "This is a test"}
         self.client.post(self.url, data)
         fir = self.fir_process.fir
         fir.refresh_from_db()
@@ -691,8 +696,7 @@ class ExporterAccessRequestFIRResponseViewTest(AuthTestCase):
     @pytest.mark.xfail
     def test_submit_creates_review_task(self):
         self.login_with_permissions(["IMP_CERT_AGENT_APPROVER"])
-        data = activation_management_form_data()
-        data.update({"response_detail": "This is a test"},)
+        data = {"response_detail": "This is a test"}
         self.client.post(self.url, data)
         task = self.fir_process.active_tasks().last()
         self.assertEqual(task.flow_task.name, "review")
@@ -732,8 +736,7 @@ class ExporterAccessRequestFIRReviewTest(AuthTestCase):
 
     def test_submit_closes_fir(self):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        data = activation_management_form_data()
-        self.client.post(self.url, data)
+        self.client.post(self.url, {})
         fir = self.fir_process.fir
         fir.refresh_from_db()
         self.assertEqual(fir.status, "CLOSED")

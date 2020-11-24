@@ -1,7 +1,5 @@
 import factory
 from django.utils import timezone
-from viewflow.activation import STATUS
-from viewflow.models import Task
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.tests.domains.user.factory import UserFactory
@@ -31,20 +29,3 @@ class FurtherInformationRequestFactory(factory.django.DjangoModelFactory):
     closed_by = None
     deleted_datetime = None
     deleted_by = None
-
-
-class FurtherInformationRequestTaskFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Task
-
-    owner = None
-    status = STATUS.NEW
-    owner_permission = factory.LazyAttribute(_owner_permission)
-    token = "start"
-
-    @factory.post_generation
-    def run_activation(self, create, extracted, **kwargs):
-        activation = self.activate()
-        # Only View tasks can be assigned, other node types are not assined to a human
-        if self.owner and hasattr(activation, "assign"):
-            activation.assign(self.owner)

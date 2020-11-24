@@ -1,6 +1,5 @@
 import factory
 from django.utils import timezone
-from viewflow.models import Task
 
 from web.domains.case.access.approval.flows import ApprovalRequestFlow
 from web.domains.case.access.approval.models import ApprovalRequest, ApprovalRequestProcess
@@ -30,20 +29,3 @@ class ApprovalRequestProcessFactory(factory.django.DjangoModelFactory):
 
     approval_request = factory.SubFactory(ApprovalRequestFactory)
     flow_class = ApprovalRequestFlow
-
-
-class ApprovalRequestTaskFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Task
-
-    process = factory.SubFactory(ApprovalRequestProcessFactory)
-    flow_task = ApprovalRequestFlow.respond
-    owner = None
-    owner_permission = factory.LazyAttribute(lambda t: t.flow_task._owner_permission)
-    token = "start"
-
-    @factory.post_generation
-    def run_activation(self, create, extracted, **kwargs):
-        activation = self.activate()
-        if self.owner:
-            activation.assign(self.owner)

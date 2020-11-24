@@ -16,8 +16,6 @@ services:
         restart: unless-stopped
         build:
             context: .
-            args:
-                ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
         # user: ${UID}
         entrypoint: dockerize -wait tcp://db:5432 -timeout 20s
         command: scripts/entry.sh
@@ -66,8 +64,6 @@ services:
     celery:
         build:
             context: .
-            args:
-                ICMS_VIEWFLOW_LICENSE: ${ICMS_VIEWFLOW_LICENSE}
         command: celery --app=config.celery:app --loglevel=debug worker
         environment:
             - DJANGO_SETTINGS_MODULE

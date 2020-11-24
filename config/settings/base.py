@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "captcha",
     "compressor",
     "phonenumber_field",
-    "viewflow",
     "guardian",
     "django_filters",
     "django_select2",
