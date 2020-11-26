@@ -5,14 +5,5 @@
 {% block empty_message %}There aren't any commodity groups that match your search{% endblock %}
 
 {% block sidebar %}
-<ul class="menu-out">
-    <li>
-        <a href="{{ url('commodity-group-new') }}">New Group</a>
-    </li>
-</ul>
-<ul class="menu-out">
-    <li>
-        <a href="{{ url('commodity-list') }}">Maintain Commodities</a>
-    </li>
-</ul>
+  {% include "partial/commodity/sidebar.html" %}
 {% endblock %}

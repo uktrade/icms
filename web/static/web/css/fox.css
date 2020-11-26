@@ -4028,6 +4028,10 @@ label {
     margin-bottom: 0;
 }
 
+.setoutForm .django-select2, .select2 {
+    width: 100% !important;
+}
+
 .tightForm input,
 .tightForm button,
 .tightForm .button,

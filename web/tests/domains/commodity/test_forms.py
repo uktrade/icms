@@ -61,17 +61,14 @@ class CommodityFilterTest(TestCase):
 class CommodityFormTest(TestCase):
     def test_form_valid(self):
         form = CommodityForm(
-            data={"commodity_code": "987654", "validity_start_date": "13-May-2020"}
+            data={"commodity_code": "1234567890", "validity_start_date": "13-May-2020"}
         )
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
-        form = CommodityForm(data={"commodity_code": "2374267"})
+        form = CommodityForm(data={"commodity_code": "1234567890"})
         self.assertFalse(form.is_valid())
-
-    def test_invalid_form_message(self):
-        form = CommodityForm(data={"commodity_code": "32134"})
-        self.assertEqual(len(form.errors), 1)
+        self.assertEqual(len(form.errors), 1, form.errors)
         message = form.errors["validity_start_date"][0]
         self.assertEqual(message, "You must enter this item")
 
@@ -141,31 +138,25 @@ class CommodityGroupFilterTest(TestCase):
 
 class CommodityGroupFormTest(TestCase):
     def test_form_valid(self):
+        commodity_type = CommodityTypeFactory.create()
         form = CommodityGroupForm(
             data={
                 "group_type": CommodityGroup.AUTO,
-                "commodity_type": CommodityTypeFactory().id,
-                "group_code": "test",
+                "commodity_type": commodity_type.pk,
+                "group_code": f"{commodity_type.type_code[:2]}st",
             }
         )
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_form_invalid(self):
+        commodity_type = CommodityTypeFactory.create()
         form = CommodityGroupForm(
             data={
                 "group_type": CommodityGroup.CATEGORY,
-                "commodity_type": CommodityTypeFactory().id,
+                "commodity_type": commodity_type.pk,
+                "commodities": [CommodityFactory.create(commodity_type=commodity_type).pk],
             }
         )
-        self.assertFalse(form.is_valid())
-
-    def test_invalid_form_message(self):
-        form = CommodityGroupForm(
-            data={
-                "group_type": CommodityGroup.CATEGORY,
-                "commodity_type": CommodityTypeFactory().id,
-            }
-        )
-        self.assertEqual(len(form.errors), 1)
+        self.assertEqual(len(form.errors), 1, form.errors)
         message = form.errors["group_code"][0]
         self.assertEqual(message, "You must enter this item")

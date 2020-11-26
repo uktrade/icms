@@ -1,50 +1,91 @@
-{% extends "web/domains/commodity/edit.html" %}
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 {% import "messages/banners.html" as banners %}
 
+{% block context_header %}
+  Create Commodity
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/commodity/sidebar.html" %}
+{% endblock %}
+
 {% block main_content %}
-    {% set info_message %}
-        <b>Commodity codes may begin with the following:</b>
-        <br/>
-        <br/>
-        Firearms and Ammunition
-        <br/>
-        93, 97
-        <br/>
-        <br/>
-        Iron, Steel and Aluminium
-        <br/>
-        72, 73, 76
-        <br/>
-        <br/>
-        Oil and Petrochemicals
-        <br/>
-        2707, 2709, 2710, 2711, 2712, 2713, 2714, 2715, 2812, 2814, 2901, 2902, 2903, 2905, 2907, 2909, 2910, 2914, 2917, 2926, 2929, 3901
-        <br/>
-        <br/>
-        Precious Metals and Stones
-        <br/>
-        71
-        <br/>
-        <br/>
-        Textiles
-        <br/>
-        50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 9619
-        <br/>
-        <br/>
-        Vehicles
-        <br/>
-        87
-        <br/>
-        <br/>
-        Wood
-        <br/>
-        4403
-        <br/>
-        <br/>
-        Wood Charcoal
-        <br/>
-        4402
-    {% endset %}
-    {{banners.info(info_message|safe)}}
-    {{super()}}
+  {% set info_message %}
+    <h4>Commodity codes may begin with the following:</h4>
+    <span class="bold">
+      Chemicals:
+    </span>
+    28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39
+    <br/>
+    <span class="bold">
+      Firearms and Ammunition:
+    </span>
+    93, 97
+    <br/>
+    <span class="bold">
+      Iron, Steel and Aluminium:
+    </span>
+    72, 73, 76
+    <br/>
+    <span class="bold">
+      Oil and Petrochemicals:
+    </span>
+    2707, 2709, 2710, 2711, 2712, 2713, 2714, 2715, 2812, 2814, 2901,
+    2902, 2903, 2905, 2907, 2909, 2910, 2914, 2917, 2926, 2929, 3901
+    <br/>
+    <span class="bold">
+      Precious Metals and Stones:
+    </span>
+    71
+    <br/>
+    <span class="bold">
+      Textiles:
+    </span>
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 9619
+    <br/>
+    <span class="bold">
+      Vehicles:
+    </span>
+    87
+    <br/>
+    <span class="bold">
+      Wood:
+    </span>
+    4403
+    <br/>
+    <span class="bold">
+      Wood Charcoal:
+    </span>
+    4402
+  {% endset %}
+  {{banners.info(info_message|safe)}}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% block fields %}
+      {% for field in form %}
+        {{ fields.field(field) }}
+      {% endfor %}
+    {% endblock %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Create" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
 {% endblock %}

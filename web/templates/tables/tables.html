@@ -9,9 +9,11 @@
 {%- endmacro %}
 
 {% macro _field_value(text, config) -%}
-  {% if config and config.bold %}<strong>{% endif -%}
-      {{ text }}
-  {% if config and config.bold %}</strong>{% endif -%}
+  {% if config and config.bold %}
+    <strong>{{ text }}</strong>
+  {% else %}
+    {{ text }}
+  {% endif %}
 {% endmacro %}
 
 {% macro _field(object, field, config) -%}
@@ -21,9 +23,15 @@
   {% if config and config.link %}
     <a href={{object.id}} role="model-link">{{object[field]}}</a>
   {% elif config and config.show_all %}
-    {% for entry in object[field].all() %}
-      {{ _field_value(entry, config)|nl2br }}
-    {% endfor %}
+    {% if config.separator %}
+      {% for entry in object[field].all() %}
+        {{ _field_value(entry, config)|trim }}{{ config.separator if not loop.last }}
+      {% endfor %}
+    {% else %}
+      {% for entry in object[field].all() %}
+        {{ _field_value(entry, config)|nl2br }}
+      {% endfor %}
+    {% endif %}
   {% else %}
     {{_field_value(object[field], config)}}
   {% endif %}
@@ -56,6 +64,7 @@
         {% endif %}
       {% else %}
         {% for field in f %}
+
           {% set current_value = _field(object, field, display.fields_config[field]) %}
           {% if not 'None' in current_value %}
             {{ current_value }}

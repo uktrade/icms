@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 
@@ -21,13 +22,15 @@ class CommodityListView(ModelFilterView):
     page_title = "Maintain Commodities"
 
     class Display:
-        fields = ["commodity_code", ("validity_start_date", "validity_end_date")]
+        fields = ["commodity_code", "commodity_type", ("validity_start_date", "validity_end_date")]
         fields_config = {
             "commodity_code": {"header": "Commodity Code", "link": True},
+            "commodity_type": {"header": "Commodity Type"},
             "validity_start_date": {"header": "Validity Start Date"},
             "validity_end_date": {"header": "Validity End Date"},
         }
-        actions = [Archive(), Unarchive(), Edit()]
+        opts = {"inline": True, "icon_only": True}
+        actions = [Edit(**opts), Archive(**opts), Unarchive(**opts)]
 
 
 class CommodityEditView(ModelUpdateView):
@@ -66,7 +69,7 @@ class CommodityGroupListView(ModelFilterView):
             "group_type_verbose",
             "commodity_type_verbose",
             ("group_code", "group_name"),
-            "group_description",
+            ("group_description", "commodities"),
         ]
         fields_config = {
             "group_type_verbose": {"header": "Group Type"},
@@ -74,12 +77,14 @@ class CommodityGroupListView(ModelFilterView):
             "group_code": {"header": "Group Code"},
             "group_name": {"header": "Group Name"},
             "group_description": {"header": "Description"},
+            "commodities": {"header": "Commodities", "show_all": True, "separator": ","},
         }
-        actions = [Archive(), Unarchive(), Edit()]
+        opts = {"inline": True, "icon_only": True}
+        actions = [Edit(**opts), Archive(**opts), Unarchive(**opts)]
 
 
 class CommodityGroupEditView(ModelUpdateView):
-    template_name = "model/edit.html"
+    template_name = "web/domains/commodity/group/edit.html"
     form_class = CommodityGroupEditForm
     model = CommodityGroup
     success_url = reverse_lazy("commodity-group-list")
@@ -88,13 +93,12 @@ class CommodityGroupEditView(ModelUpdateView):
 
 
 class CommodityGroupCreateView(ModelCreateView):
-    template_name = "model/edit.html"
+    template_name = "web/domains/commodity/group/create.html"
     form_class = CommodityGroupForm
     model = CommodityGroup
     success_url = reverse_lazy("commodity-group-list")
     cancel_url = success_url
     permission_required = "web.reference_data_access"
-    page_title = "New Commodity Group"
 
 
 class CommodityGroupDetailView(ModelDetailView):

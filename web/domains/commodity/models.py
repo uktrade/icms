@@ -1,4 +1,5 @@
 from django.db import models
+
 from web.models.mixins import Archivable
 
 
@@ -13,8 +14,21 @@ class Unit(models.Model):
 
 
 class CommodityType(models.Model):
+    COMMODITY_TYPES = [
+        "Chemicals",
+        "Firearms and Ammunition",
+        "Iron, Steel and Aluminium",
+        "Oil and Petrochemicals",
+        "Precious Metals and Stones",
+        "Textiles",
+        "Vehicles",
+        "Wood",
+        "Wood Charcoal",
+    ]
+    COMMODITY_TYPE_CHOICES = ((val, val) for val in COMMODITY_TYPES)
+
     type_code = models.CharField(max_length=20, blank=False, null=False)
-    type = models.CharField(max_length=50, blank=False, null=False)
+    type = models.CharField(max_length=50, choices=COMMODITY_TYPE_CHOICES, blank=False, null=False)
 
     def __str__(self):
         return self.type
@@ -27,6 +41,9 @@ class Commodity(Archivable, models.Model):
     start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
+    commodity_type = models.ForeignKey(
+        CommodityType, on_delete=models.PROTECT, blank=True, null=True
+    )
     validity_start_date = models.DateField(blank=False, null=True)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
@@ -37,6 +54,13 @@ class Commodity(Archivable, models.Model):
             return f"{self.LABEL} - {self.commodity_code}"
         else:
             return self.LABEL
+
+    def save(self, *args, **kwargs):
+        self.commodity_type = CommodityType.objects.get(
+            models.Q(type_code=self.commodity_code[:2])
+            | models.Q(type_code=self.commodity_code[:4])
+        )
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = (
@@ -51,10 +75,10 @@ class CommodityGroup(Archivable, models.Model):
     AUTO = "AUTO"
     CATEGORY = "CATEGORY"
 
-    TYPES = ((AUTO, "Auto"), (CATEGORY, ("Category")))
+    TYPES = [(AUTO, "Auto"), (CATEGORY, ("Category"))]
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    start_datetime = models.DateTimeField(blank=False, null=False)
+    start_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     end_datetime = models.DateTimeField(blank=True, null=True)
     group_type = models.CharField(
         max_length=20, choices=TYPES, blank=False, null=False, default=AUTO

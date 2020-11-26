@@ -32,8 +32,7 @@ class CommodityListView(AuthTestCase):
 
     def test_number_of_pages(self):
         # Create 51 product legislation as paging lists 50 items per page
-        for i in range(52):
-            CommodityFactory()
+        CommodityFactory.create_batch(52)
 
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
@@ -41,8 +40,7 @@ class CommodityListView(AuthTestCase):
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
-        for i in range(55):
-            CommodityFactory(is_active=True)
+        CommodityFactory.create_batch(55, is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
@@ -105,8 +103,8 @@ class CommodityUpdateViewTest(AuthTestCase):
 class CommodityDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.commodity = CommodityFactory()
-        self.url = f"/commodity/{self.commodity.id}/"
+        self.commodity = CommodityFactory.create()
+        self.url = f"/commodity/{self.commodity.pk}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -152,7 +150,7 @@ class CommodityGroupCreateViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "New Commodity Group")
+        self.assertContains(response, "Create Commodity Group")
 
 
 class CommodityGroupUpdateViewTest(AuthTestCase):

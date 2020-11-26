@@ -2,20 +2,22 @@ import datetime
 from datetime import date
 
 from django.test import TestCase
+
 from web.domains.commodity.models import Commodity, CommodityGroup
+from web.tests.domains.commodity.factory import CommodityFactory, CommodityGroupFactory
 
 
 class CommodityTest(TestCase):
     def create_commodity(
         self,
         is_active=True,
-        commodity_code="12345678",
+        commodity_code="1234567890",
         validity_start_date=date.today(),
         validity_end_date=date.today() + datetime.timedelta(days=10),
         quantity_threshold=8,
         sigl_product_type="xyz",
     ):
-        return Commodity.objects.create(
+        return CommodityFactory.create(
             is_active=is_active,
             commodity_code=commodity_code,
             validity_start_date=validity_start_date,
@@ -27,7 +29,7 @@ class CommodityTest(TestCase):
     def test_create_commodity(self):
         commodity = self.create_commodity()
         self.assertTrue(isinstance(commodity, Commodity))
-        self.assertEqual(commodity.commodity_code, "12345678")
+        self.assertEqual(commodity.commodity_code, "1234567890")
 
     def test_archive_commodity(self):
         commodity = self.create_commodity()
@@ -51,7 +53,7 @@ class CommodityGroupTest(TestCase):
         start_datetime=date.today(),
         end_datetime=date.today() + datetime.timedelta(days=20),
     ):
-        return CommodityGroup.objects.create(
+        return CommodityGroupFactory.create(
             is_active=is_active,
             group_type=group_type,
             group_code=group_code,
