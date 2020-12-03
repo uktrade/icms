@@ -1,0 +1,66 @@
+{% extends "layout/sidebar.html" %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>  <a href="{{ url('exporter-list') }}" class="prev-link">Exporters</a></li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block context_header %}
+  Exporter '{{ object.name }}'
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/exporter/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+
+  <h3>Exporter '{{ object.name }}'</h3>
+
+  <dl>
+    <dt class="bold">
+      Organisation Name
+    </dt>
+    <dd>
+      {{ object.name }}
+    </dd>
+    <dt class="bold">
+      Registered Number
+    </dt>
+    <dd>
+      {{ object.registered_number }}
+    </dd>
+    <dt class="bold">
+      Comments
+    </dt>
+    <dd>
+      {{ object.comments|default("", True)|nl2br }}
+    </dd>
+  </dl>
+
+
+  {% with
+    offices = object.offices.all(),
+    read_only = True %}
+
+    {% include "partial/offices.html" %}
+  {% endwith %}
+
+
+  {% if not object.is_agent() %}
+    {% with
+      agents = object.agents,
+      read_only = True %}
+
+      {% include "partial/agents.html" %}
+    {% endwith %}
+  {% endif %}
+
+  {% with read_only = True %}
+      {% include "partial/contacts/contacts.html" %}
+  {% endwith %}
+
+{% endblock %}

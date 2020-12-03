@@ -24,7 +24,7 @@ class ExporterListView(ModelFilterView):
     class Display:
         fields = ["name", "offices", "agents"]
         fields_config = {
-            "name": {"header": "Exporter Name"},
+            "name": {"header": "Exporter Name", "link": True},
             "offices": {"header": "Addresses", "show_all": True,},
             "agents": {"header": "Agent", "show_all": True,},
         }
@@ -61,6 +61,22 @@ def edit_exporter(request, pk):
         "contacts": exporter_contacts,
     }
     return render(request, "web/domains/exporter/edit.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def detail_exporter(request, pk):
+    exporter = get_object_or_404(Exporter, pk=pk)
+
+    exporter_contacts = get_users_with_perms(
+        exporter, only_with_perms_in=["is_contact_of_exporter"]
+    ).filter(user_permissions__codename="exporter_access")
+
+    context = {
+        "object": exporter,
+        "contacts": exporter_contacts,
+    }
+    return render(request, "web/domains/exporter/detail.html", context)
 
 
 @login_required

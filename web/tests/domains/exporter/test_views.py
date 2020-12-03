@@ -1,8 +1,13 @@
 from unittest.mock import patch
 
+import pytest
+from django.test import Client
+
 from web.domains.exporter.models import Exporter
+from web.domains.user.models import User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
+from web.tests.domains.user.factory import UserFactory
 
 LOGIN_URL = "/"
 
@@ -128,3 +133,38 @@ class ExporterCreateViewTest(AuthTestCase):
         self.login_with_permissions(["reference_data_access"])
         response = self.client.get(self.url)
         assert "Create Exporter" in response.content.decode()
+
+
+def test_detail_exporter_anonymous_user():
+    client = Client()
+    response = client.get("/exporter/1/")
+    assert response.status_code == 302
+    assert response["Location"] == "/?next=/exporter/1/"
+
+
+@pytest.mark.django_db
+def test_detail_exporter_permission_not_ok():
+    user = UserFactory.create(account_status=User.ACTIVE, password_disposition=User.FULL)
+
+    client = Client()
+    client.login(username=user.username, password="test")
+    response = client.get("/exporter/1/")
+
+    assert response.status_code == 403
+
+
+@pytest.mark.django_db
+def test_detail_exporter_ok():
+    ilb_admin = UserFactory.create(
+        account_status=User.ACTIVE,
+        password_disposition=User.FULL,
+        permission_codenames=["reference_data_access"],
+    )
+    exporter = ExporterFactory.create()
+
+    client = Client()
+    client.login(username=ilb_admin.username, password="test")
+    response = client.get(f"/exporter/{ exporter.pk }/")
+
+    assert response.status_code == 200
+    assert exporter.name in response.content.decode()

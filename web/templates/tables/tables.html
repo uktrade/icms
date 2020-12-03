@@ -21,7 +21,7 @@
     {{config.label | safe}}
   {% endif %}
   {% if config and config.link %}
-    <a href={{object.id}} role="model-link">{{object[field]}}</a>
+    <a href="{{object.id}}" role="model-link">{{object[field]}}</a>
   {% elif config and config.show_all %}
     {% if config.separator %}
       {% for entry in object[field].all() %}
