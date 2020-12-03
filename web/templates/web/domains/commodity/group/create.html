@@ -29,7 +29,7 @@
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
       {% for field in form %}
-        {% if field.name == "commodities" %}
+        {% if field.name in ["commodities", "unit"] %}
           {{ fields.field(field, show_optional_indicator=False) }}
         {% else %}
           {{ fields.field(field) }}

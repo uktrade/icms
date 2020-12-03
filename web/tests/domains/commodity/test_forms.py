@@ -9,7 +9,7 @@ from web.domains.commodity.forms import (
 )
 from web.domains.commodity.models import CommodityGroup
 
-from .factory import CommodityFactory, CommodityGroupFactory, CommodityTypeFactory
+from .factory import CommodityFactory, CommodityGroupFactory, CommodityTypeFactory, UnitFactory
 
 
 class CommodityFilterTest(TestCase):
@@ -155,6 +155,7 @@ class CommodityGroupFormTest(TestCase):
                 "group_type": CommodityGroup.CATEGORY,
                 "commodity_type": commodity_type.pk,
                 "commodities": [CommodityFactory.create(commodity_type=commodity_type).pk],
+                "unit": UnitFactory.create(),
             }
         )
         self.assertEqual(len(form.errors), 1, form.errors)

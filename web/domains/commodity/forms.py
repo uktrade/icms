@@ -167,18 +167,26 @@ class CommodityGroupForm(ModelForm):
             "group_name",
             "group_description",
             "commodities",
+            "unit",
         ]
         labels = {"group_description": "Group Description", "group_name": "Display Name"}
         widgets = {"group_description": Textarea(attrs={"rows": 5, "cols": 20})}
 
     def clean(self):
         cleaned_data = super().clean()
+        group_type = cleaned_data.get("group_type")
+
+        # Ensure unit is filled when group_type is CATEGORY
+        if group_type == CommodityGroup.CATEGORY:
+            if not cleaned_data.get("unit"):
+                self.add_error("unit", Field.default_error_messages["required"])
+        else:
+            cleaned_data.pop("unit", None)
 
         # Validate commodities in regard to commodity type and group type.
         # If group_type is:
         #  - CATEGORY user picks manually relevent commodities
         #  - AUTO the system sets the relevent commodities
-        group_type = cleaned_data.get("group_type")
         commodity_type = cleaned_data.get("commodity_type")
         if group_type == CommodityGroup.CATEGORY:
             if not cleaned_data.get("commodities"):

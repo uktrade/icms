@@ -5,7 +5,7 @@ import factory.fuzzy
 import pytz
 from faker import Faker
 
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
+from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Unit
 
 fake = Faker("en_GB")
 
@@ -63,3 +63,13 @@ class CommodityTypeFactory(factory.django.DjangoModelFactory):
 
     type_code = factory.fuzzy.FuzzyText(length=2)
     type = factory.Faker("sentence", nb_words=2)
+
+
+class UnitFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Unit
+
+    unit_type = factory.LazyAttribute(lambda x: "unit_{pk}")
+    description = factory.LazyAttribute(lambda x: "description {pk}")
+    short_description = factory.LazyAttribute(lambda x: "short description {pk}")
+    hmrc_code = 42

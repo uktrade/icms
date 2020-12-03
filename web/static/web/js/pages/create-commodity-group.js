@@ -3,20 +3,23 @@ window.addEventListener("DOMContentLoaded", function (event) { // doesn't work i
 
     var dropdown = document.getElementById('id_group_type');
 
-    var container = document.getElementsByClassName('row_id_commodities')[0];
-    showOrHide(dropdown, container);
+    var commodities = document.getElementsByClassName('row_id_commodities')[0];
+    var unit = document.getElementsByClassName('row_id_unit')[0];
+    showOrHide(dropdown, commodities, unit);
 
     dropdown.onchange = function () {
-        showOrHide(dropdown, container);
+        showOrHide(dropdown, commodities, unit);
     };
 
 });
 
-function showOrHide(dropdown, container) {
+function showOrHide(dropdown, commodities, unit) {
     "use strict";
     if (dropdown.value === "" || dropdown.value === "AUTO") {
-        container.classList.add('hidden');
+        commodities.classList.add('hidden');
+        unit.classList.add('hidden');
     } else {
-        container.classList.remove('hidden');
+        commodities.classList.remove('hidden');
+        unit.classList.remove('hidden');
     }
 }
