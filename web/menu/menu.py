@@ -193,7 +193,7 @@ class Menu:
                     links=[
                         SubMenuLink(label="Commodities", view="commodity-list"),
                         SubMenuLink(label="Constabularies", view="constabulary-list"),
-                        SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-list"),
+                        SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-group-list"),
                         SubMenuLink(label="Product legislation", view="product-legislation-list"),
                         SubMenuLink(label="Templates", view="template-list"),
                         SubMenuLink(label="Countries", view="country-list"),

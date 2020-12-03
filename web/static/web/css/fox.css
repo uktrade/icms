@@ -4889,3 +4889,23 @@ ul.fileList {
 .capitalize {
   text-transform: capitalize
 }
+
+.grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+ /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+.grabbable:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.ui-sortable-placeholder {
+    border: 1px dotted #ddd;
+    background: #f0f0f0;
+    visibility:visible !important;
+}

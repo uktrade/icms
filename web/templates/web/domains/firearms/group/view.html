@@ -1,53 +1,68 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as fields %}
 
-{% block page_title %}Edit Obsolete Calibre Group{% endblock %}
-{% block context_header %}Edit Obsolete Calibre Group{% endblock %}
+{% block page_title %}Obsolete Calibre Group{% endblock %}
+{% block context_header %}Obsolete Calibre Group{% endblock %}
+
+{% block content_actions %}
+    <div class="content-actions">
+        <ul class="menu-out flow-across">
+          <a href="{{ url('obsolete-calibre-group-list') }}" class="prev-link">
+            Maintain Obsolete Calibre
+          </a>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/firearms/sidebar.html" %}
+{% endblock %}
 
 {% block main_content %}
+  <h3>Group</h3>
 
-<h3>Group</h3>
-
-{% call forms.form(method='post', csrf_input=csrf_input) -%}
-<h3>Obsolete Calibres</h3>
-
-<div id="calibre_display_archived_checkbox" class="container setoutForm">
+  <div class="container">
     <div class="row">
-        {{fields.field(form.name)}}
-        <div class="three columns">
-            <label class="prompt west">Display Archived</label>
-        </div>
-        <div class="six columns radio-or-tickbox-group">
-          <label class="radio-label" for="calibre_display_archived_checkbox">
-            <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
-          </label>
-        </div>
-        <div class="three columns"/>
+      <dl>
+        <dt class="bold">Group Name</dt>
+        <dd>{{ object.name }}</dd>
+        <dt class="bold">Status</dt>
+        <dd class="status {{ object.is_active}}">
+          {% if object.is_active %}
+            Currrent
+          {% else %}
+            Archived
+          {% endif %}
+        </dd>
+      </dl>
     </div>
-</div>
+  </div>
 
-<table responsiveList class="setoutList">
-    <thead>
+  <h3>Obsolete Calibres</h3>
+
+  {% with calibres = object.calibres.all() %}
+  {% if not calibres %}
+    <div class="info-box info-box-info">
+      There are no calibres attached.
+    </div>
+  {% else %}
+    <table responsiveList class="setoutList">
+      <thead>
         <tr>
-            <th scope="col">Obsolete Calibre Name</th>
-            {% if request.GET.get('display_archived') %}
-            <th scope="col">Status </th>
-            {% endif %}
+          <th scope="col">Obsolete Calibre Name</th>
+          <th scope="col">Status </th>
         </tr>
-    </thead>
-    <tbody>
+      </thead>
+      <tbody>
         {% for calibre in calibres %}
         <tr>
-            <td class="calibre-status">
-                <input type="text" disabled="disabled" value="{{calibre.name}}"/>
-            </td>
-            {% if request.GET.get('display_archived') %}
-            <td class="calibre-status">{{calibre.status}}</td>
-            {% endif %}
+          <td class="calibre-status">
+            {{ calibre.name }}
+          </td>
+          <td class="calibre-status">{{calibre.status}}</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
-{% endcall %}
+      </tbody>
+    </table>
+  {% endif %}
+  {% endwith %}
 {% endblock %}

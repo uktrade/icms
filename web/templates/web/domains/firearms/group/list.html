@@ -2,72 +2,73 @@
 {% block empty_message %}There aren't any obsolete calibres that match your search{% endblock %}
 {% set filtered = request.GET.group_name or request.GET.calibre_name  %}
 
+
 {% block sidebar %}
-  <ul class="menu-out">
-      <li>
-          <a href="{{url('obsolete-calibre-new')}}">New Obsolete Calibre Group</a>
-      </li>
-  </ul>
+    {% include "partial/firearms/sidebar.html" %}
 {% endblock %}
 
-
 {% block results %}
-  <table responsiveList class="setoutList">
+  <table responsiveList id="obsolete-calibres-table" class="setoutList">
     <thead>
       <tr>
         {{tables.headers(display)}}
-        <th scope="col">Actions</th>
-        {% if not filtered %}
-          <th scope="col">Sort</th>
+        {% if filter.data.get("calibre_name") %}
+          <th>Matching Matching Obsolete Calibres</th>
         {% endif %}
+        <th scope="col">Actions</th>
       </tr>
     </thead>
-
+    <tbody class="{{ 'grabbable grabbable-group' if not filtered else '' }}">
     {% for item in results %}
-      <tr>
-        {{tables.fields(item, display)}}
+      {% if not 'display_archived' in filter.data and not item.is_active %}
+        <tr class="hidden" id="{{ item.pk }}">
+      {% else %}
+        <tr id="{{ item.pk }}">
+      {% endif %}
         <td>
-          {% for action in display.actions %}
-            {% if action.display(item) %}
-              {{action.as_html(item, csrf_token)}}
-            {% endif %}
-          {% endfor %}
+          {% if not filtered %}
+            &#x2B0D;
+          {% endif %}
+          <a href="{{ url('obsolete-calibre-group-view', args=[item.pk]) }}">
+            {{ item.name }}
+          </a>
         </td>
-        {% if not filtered %}
+        <td>
+          {{ item.calibres.filter(is_active=True).count() }}
+          (archived: {{ item.calibres.filter(is_active=False).count() }})
+        </td>
+        {% if filter.data.get("calibre_name") %}
           <td>
-            <ul class="menu-out grouped flow-across">
-              {% if not loop.first %}
-                <li>
-                  <button
-                    role="action-button"
-                    class="link-button button no-prompt-action tooltipstered icon-arrow-up2"
-                    aria-label="Move up"
-                    data-input_action="move_up"
-                    data-input_csrfmiddlewaretoken="{{ csrf_token }}"
-                    data-input_item="{{ item.id }}"
-                    data-input_previtem={{loop.previtem.id}}
-                  >
-                  </button>
-                </li>
-              {% endif %}
-              {% if not loop.last %}
-                <li>
-                  <button
-                    role="action-button"
-                    class="link-button button no-prompt-action tooltipstered icon-arrow-down2"
-                    aria-label="Move down"
-                    data-input_action="move_down"
-                    data-input_csrfmiddlewaretoken="{{ csrf_token }}"
-                    data-input_item="{{ item.id }}"
-                    data-input_nextitem={{loop.nextitem.id}}
-                  >
-                  </button>
-                </li>
-              {% endif %}
-            </ul>
+            {% for calibre in item.calibres.filter(name__icontains=filter.data.get("calibre_name")) %}
+              {{ calibre }}<br />
+            {% endfor %}
           </td>
         {% endif %}
+        <td>
+          {% if item.is_active %}
+            <a href="{{ url('obsolete-calibre-group-edit', args=[item.pk]) }}"
+               class="button small-button icon-pencil">
+               Edit
+            </a>
+            <form method="post"
+              action="{{ url('obsolete-calibre-group-archive', args=[item.pk]) }}"
+              class="form-inline">
+
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Archive</button>
+            </form>
+          {% else %}
+            <form method="post"
+              action="{{ url('obsolete-calibre-group-unarchive', args=[item.pk]) }}"
+              class="form-inline">
+
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-undo2">Restore</button>
+            </form>
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
+    </tbody>
   </table>
 {% endblock %}

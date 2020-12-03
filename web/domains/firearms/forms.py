@@ -1,15 +1,16 @@
-from django.db.models import Count
-from django.forms import BaseInlineFormSet, inlineformset_factory, ModelForm
-from django.forms.widgets import CheckboxInput, HiddenInput
-from django_filters import BooleanFilter, CharFilter, FilterSet
-from web.forms.mixins import ReadonlyFormMixin
+from django.forms import ModelForm
+from django.forms.widgets import CheckboxInput
+from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 
 from .models import ObsoleteCalibre, ObsoleteCalibreGroup
 
 
 class ObsoleteCalibreGroupFilter(FilterSet):
-    group_name = CharFilter(
-        field_name="name", lookup_expr="icontains", label="Obsolete Calibre Group Name"
+    group_name = ChoiceFilter(
+        field_name="name",
+        label="Obsolete Calibre Group Name",
+        lookup_expr="exact",
+        empty_label="Any",
     )
 
     calibre_name = CharFilter(
@@ -20,65 +21,31 @@ class ObsoleteCalibreGroupFilter(FilterSet):
         label="Display Archived", widget=CheckboxInput, method="filter_display_archived"
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # ModelChoiceFilter only works for FKs
+        self.filters["group_name"].extra["choices"] = (
+            (row.name, row.name) for row in ObsoleteCalibreGroup.objects.filter(is_active=True)
+        )
+
     def filter_display_archived(self, queryset, name, value):
-        if value:
-            return queryset
-
-        # filter archived calibre groups
-        return queryset.filter(is_active=True)
-
-    @property
-    def qs(self):
-        self.queryset = ObsoleteCalibreGroup.objects.annotate(Count("calibres"))
-
-        #  Filter archived querysets on first load as django_filters doesn't
-        #  seem to apply filters on first load
-        if not self.form.data:  # first page load
-            self.queryset = self.queryset.filter(is_active=True)
-
-        return super().qs
+        return queryset
 
     class Meta:
         model = ObsoleteCalibreGroup
-        fields = []
+        fields = ["group_name", "calibre_name"]
 
 
-class ObsoleteCalibreGroupEditForm(ModelForm):
+class ObsoleteCalibreGroupForm(ModelForm):
     class Meta:
         model = ObsoleteCalibreGroup
         fields = ["name"]
         labels = {"name": "Group Name"}
 
 
-class ObsoleteCalibreGroupDisplayForm(ReadonlyFormMixin, ModelForm):
-    class Meta(ObsoleteCalibreGroupEditForm.Meta):
-        pass
-
-
 class ObsoleteCalibreForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     class Meta:
         model = ObsoleteCalibre
-        fields = ["name", "order"]
-        widgets = {"order": HiddenInput()}
-
-
-class ObsoleteCalibreFormSet(BaseInlineFormSet):
-    def sorted_forms(self):
-        return sorted(self.forms, key=lambda form: form.instance.order)
-
-
-def new_calibres_formset(instance, queryset=None, data=None, extra=0):
-    initial = None
-    if extra:
-        initial = [{"order": 1}]
-    return inlineformset_factory(
-        ObsoleteCalibreGroup,
-        ObsoleteCalibre,
-        form=ObsoleteCalibreForm,
-        formset=ObsoleteCalibreFormSet,
-        extra=extra,
-        can_delete=False,
-    )(data, initial=initial, queryset=queryset, prefix="calibre", instance=instance)
+        fields = ["name"]
+        labels = {"name": "Calibre Name"}

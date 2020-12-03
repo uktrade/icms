@@ -1,71 +1,138 @@
-{% extends "model/edit.html" %}
+{% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block fields %}
 
+{% block context_header %}
+  Edit Obsolete Calibre Group
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('obsolete-calibre-group-list') }}" class="prev-link">
+          Maintain Obsolete Calibre
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/firearms/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
     <h3>Group</h3>
-    {{fields.field(form.name)}}
+    {% for field in form %}
+        {{fields.field(field)}}
+    {% endfor %}
 
-    <h3>Obsolete Calibres</h3>
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {%- endcall %}
 
+  {% with calibres = object.calibres.all() %}
+  {% if not calibres %}
+    <div class="info-box info-box-info">
+      There are no calibres attached.
+    </div>
+  {% else %}
     <div id="calibre_display_archived_checkbox" class="container setoutForm">
       <div class="row">
-          <div class="three columns">
-              <label class="prompt west">Display Archived</label>
-          </div>
-          <div class="six columns radio-or-tickbox-group">
-            <label class="radio-label" for="calibre_display_archived_checkbox">
-              <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
-            </label>
-          </div>
+        <div class="three columns">
+          <label class="prompt west">Display Archived</label>
+        </div>
+        <div class="eight columns radio-or-tickbox-group">
+          <label class="radio-label" for="calibre_display_archived_checkbox">
+            <input id="calibre_display_archived_checkbox" type="checkbox" {%- if request.GET.get('display_archived') %} checked="checked" {% endif -%} />
+          </label>
+        </div>
+        <div class="one columns"></div>
       </div>
     </div>
 
-    {{forms.errors(formset)}}
-
-    <table id="obsolete-calibres-table" responsiveList class="setoutList">
+    <table id="obsolete-calibres-table" class="setoutList">
       <thead>
-          <tr>
-              <th scope="col">Obsolete Calibre Name</th>
-              <th scope="col">Status </th>
-              <th scope="col">Actions </th>
-          </tr>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Status</th>
+          <th scope="col">Actions</th>
+        </tr>
       </thead>
-      <tbody>
-          {% for form in formset.sorted_forms() %}
-          <tr>
-              {{form.id}}
-              {{fields.inline_field(form.name)}}
-              <td class="calibre-status">{{form.instance.status}}</td>
-              <td>
-                  <div class="calibre-order">
-                      {{form.order}}
-                  </div>
-                  <ul class="menu-out grouped flow-across">
-                      <li class="move-up"  {% if loop.first %}style="display:none"{% endif %}>
-                          <button name="calibre-move-up" type="button" class="link-button icon-arrow-up2 button no-prompt-action tooltipstered" aria-describedby="move-up-hint" aria-label="Move Up">
-                              {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
-                              {# <input type="hidden" name="prev_item" value="{{loop.previtem.instance.id}}" /> #}
-                          </button>
-                          <div id="move-up-hint" role="tooltip" class="hint-content">Move Up</div>
-                      </li>
-                      <li class="move-down" {% if loop.last %}style="display:none"{% endif %} >
-                          <button name="calibre-move-down" type="button" class="link-button icon-arrow-down2 button no-prompt-action tooltipstered" aria-describedby="move-down-hint" aria-label="Move Down">
-                              {# <input type="hidden" name="item" value="{{form.instance.id}}" /> #}
-                              {# <input type="hidden" name="prev_item" value="{{loop.nextitem.instance.id}}" /> #}
-                          </button>
-                          <div id="move-down-hint" role="tooltip" class="hint-content">Move Down</div>
-                      </li>
-                  </ul>
-              </td>
-          </tr>
-          {% endfor %}
+      <tbody class="grabbable grabbable-calibre">
+      {% for calibre in calibres %}
+        {% if not display_archived and not calibre.is_active %}
+          <tr class="hidden" id="{{ calibre.pk }}">
+        {% else %}
+          <tr id="{{ calibre.pk }}">
+        {% endif %}
+          <td>
+            &#x2B0D;
+            {{ calibre.name }}
+          </td>
+          <td>
+            {% if calibre.is_active %}
+              Current
+            {% else %}
+              Archived
+            {% endif %}
+          </td>
+          <td>
+            {% if calibre.is_active %}
+              <a href="{{ url('obsolete-calibre-edit', args=[object.pk, calibre.pk]) }}"
+                 class="button small-button icon-pencil">
+                 Edit
+              </a>
+              <form method="post"
+                action="{{ url('obsolete-calibre-archive', args=[object.pk, calibre.pk]) }}"
+                class="form-inline">
+
+                {{ csrf_input }}
+                <button type="submit" class="button small-button icon-bin">Archive</button>
+              </form>
+            {% else %}
+              <form method="post"
+                action="{{ url('obsolete-calibre-unarchive', args=[object.pk, calibre.pk]) }}"
+                class="form-inline">
+
+                {{ csrf_input }}
+                <button type="submit" class="button small-button icon-undo2">Restore</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
       </tbody>
     </table>
-    {{ formset.management_form }}
+  {% endif %}
+  {% endwith %}
 
-  {%- endcall %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ url('obsolete-calibre-create', kwargs={'calibre_group_pk': object.pk}) }}"
+          class="button small-button icon-office">
+          Create Obsolete Calibre</a>
+      </li>
+    </ul>
+  </div>
 
 {% endblock %}
