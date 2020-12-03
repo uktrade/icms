@@ -1,1 +1,74 @@
 {% extends "web/domains/commodity/group/create.html" %}
+
+{% block context_header %}
+  Edit Commodity Group - {{ object.group_code }}
+{% endblock %}
+
+{% block main_content %}
+  {{ super() }}
+
+  <h3>Usage</h3>
+    {% include "web/domains/commodity/group/usage-info-box.html" %}
+
+    {% with usages = object.usages.all() %}
+    {% if not usages %}
+      <div class="info-box info-box-info">
+        There are no usages attached.
+      </div>
+    {% else %}
+      <table  class="setoutList">
+        <thead>
+          <tr>
+            <th scope="col">Application Type</th>
+            <th scope="col">Country</th>
+            <th scope="col">Start date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Maximum Allocation</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usage in usages %}
+            <tr>
+              <td>{{ usage.application_type }}</td>
+              <td>{{ usage.country }}</td>
+              <td>{{ usage.start_datetime.strftime('%d-%b-%Y') }}</td>
+              <td>
+                {% if usage.end_datetime %}
+                  {{ usage.end_datetime.strftime('%d-%b-%Y') }}
+                {% endif %}
+              </td>
+              <td>{{ usage.maximum_allocation|default("", True) }}</td>
+              <td>
+                <a
+                  href="{{ url('commodity-group-usage-edit', kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
+                  class="button small-button icon-pencil">
+                  Edit
+                </a>
+                <form
+                  method="POST"
+                  action="{{ url("commodity-group-usage-delete", kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
+                  class="form-inline">
+                  {{ csrf_input }}
+                  <input type="submit" class="button small-button icon-bin" value="Delete" />
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+    {% endwith %}
+
+    <div class="list-actions">
+      <ul class="menu-out flow-across">
+        <li>
+          <a
+            href="{{ url('commodity-group-usage', kwargs={"pk": object.pk}) }}"
+            class="button small-button icon-plus">
+              Add Usage
+          </a>
+        </li>
+      </ul>
+    </div>
+{% endblock %}

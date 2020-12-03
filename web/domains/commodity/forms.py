@@ -3,6 +3,7 @@ from django.forms import (
     ChoiceField,
     DateField,
     Field,
+    ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
 )
@@ -15,13 +16,12 @@ from django_filters import (
     FilterSet,
     ModelChoiceFilter,
 )
-from django_filters.fields import ModelChoiceField
 from django.utils import timezone
 
 from web.domains.commodity.widgets import CommodityWidget
 from web.forms.widgets import DateInput
 
-from .models import Commodity, CommodityGroup, CommodityType, Unit
+from .models import Commodity, CommodityGroup, CommodityType, Unit, Usage
 
 
 class CommodityFilter(FilterSet):
@@ -160,8 +160,15 @@ class CommodityGroupForm(ModelForm):
 
     class Meta:
         model = CommodityGroup
-        fields = ["group_type", "commodity_type", "group_code", "group_description", "commodities"]
-        labels = {"group_description": "Group Description"}
+        fields = [
+            "group_type",
+            "commodity_type",
+            "group_code",
+            "group_name",
+            "group_description",
+            "commodities",
+        ]
+        labels = {"group_description": "Group Description", "group_name": "Display Name"}
         widgets = {"group_description": Textarea(attrs={"rows": 5, "cols": 20})}
 
     def clean(self):
@@ -202,3 +209,37 @@ class CommodityGroupEditForm(CommodityGroupForm):
         super().__init__(*args, **kwargs)
         self.fields["group_type"].disabled = True
         self.fields["commodity_type"].disabled = True
+
+
+class UsageForm(ModelForm):
+    commodity_group = ModelChoiceField(disabled=True, queryset=CommodityGroup.objects.none())
+
+    class Meta:
+        model = Usage
+        fields = [
+            "commodity_group",
+            "application_type",
+            "country",
+            "start_datetime",
+            "end_datetime",
+            "maximum_allocation",
+        ]
+        help_texts = {
+            "maximum_allocation": """
+                Optionally enter the maximum allocation of commodities in this group an applicant
+                may request (textile and outward processing trade applications only). The applicant
+                will be asked to provide evidence of past trade if they exceed this limit. Leave
+                blank to apply no maximum.
+            """,
+        }
+        widgets = {
+            "start_datetime": DateInput(),
+            "end_datetime": DateInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.initial.get("commodity_group"):
+            self.fields["commodity_group"].queryset = CommodityGroup.objects.filter(
+                pk=self.initial["commodity_group"]
+            )

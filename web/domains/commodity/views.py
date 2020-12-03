@@ -1,4 +1,7 @@
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.decorators.http import require_POST
 
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
@@ -10,8 +13,9 @@ from .forms import (
     CommodityGroupEditForm,
     CommodityGroupFilter,
     CommodityGroupForm,
+    UsageForm,
 )
-from .models import Commodity, CommodityGroup
+from .models import Commodity, CommodityGroup, Usage
 
 
 class CommodityListView(ModelFilterView):
@@ -96,9 +100,10 @@ class CommodityGroupCreateView(ModelCreateView):
     template_name = "web/domains/commodity/group/create.html"
     form_class = CommodityGroupForm
     model = CommodityGroup
-    success_url = reverse_lazy("commodity-group-list")
-    cancel_url = success_url
     permission_required = "web.reference_data_access"
+
+    def get_success_url(self):
+        return reverse("commodity-group-edit", kwargs={"pk": self.object.pk})
 
 
 class CommodityGroupDetailView(ModelDetailView):
@@ -106,3 +111,66 @@ class CommodityGroupDetailView(ModelDetailView):
     model = CommodityGroup
     permission_required = "web.reference_data_access"
     cancel_url = reverse_lazy("commodity-group-list")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_usage(request, pk):
+    commodity_group = get_object_or_404(CommodityGroup, pk=pk)
+
+    if request.POST:
+        form = UsageForm(request.POST, initial={"commodity_group": pk})
+        if form.is_valid():
+            usage = form.save()
+            return redirect(
+                reverse(
+                    "commodity-group-usage-edit",
+                    kwargs={"commodity_group_pk": pk, "usage_pk": usage.pk},
+                )
+            )
+    else:
+        form = UsageForm(initial={"commodity_group": pk})
+
+    context = {
+        "object": commodity_group,
+        "form": form,
+    }
+    return render(request, "web/domains/commodity/group/create-usage.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_usage(request, commodity_group_pk, usage_pk):
+    commodity_group = get_object_or_404(CommodityGroup, pk=commodity_group_pk)
+    usage = get_object_or_404(Usage, pk=usage_pk)
+
+    if request.POST:
+        form = UsageForm(request.POST, instance=usage)
+        if form.is_valid():
+            form.save()
+            return redirect(
+                reverse(
+                    "commodity-group-usage-edit",
+                    kwargs={"commodity_group_pk": commodity_group_pk, "usage_pk": usage_pk},
+                )
+            )
+    else:
+        form = UsageForm(instance=usage)
+
+    context = {
+        "object": commodity_group,
+        "form": form,
+        "usage_pk": usage_pk,
+    }
+    return render(request, "web/domains/commodity/group/edit-usage.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def delete_usage(request, commodity_group_pk, usage_pk):
+    get_object_or_404(CommodityGroup, pk=commodity_group_pk)
+    usage = get_object_or_404(Usage, pk=usage_pk)
+    usage.delete()
+
+    return redirect(reverse("commodity-group-edit", kwargs={"pk": commodity_group_pk}))

@@ -2,22 +2,17 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block css %}
-  {{ form.media.css }}
-  {{ super() }}
-{% endblock %}
-
 
 {% block context_header %}
-  Create Commodity Group
+  Create Usage for Commodity Group {{ object.group_code }}
 {% endblock %}
 
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('commodity-group-list') }}" class="prev-link">
-          Maintain Commodity Groups
+        <a href="{{ url('commodity-group-edit', kwargs={"pk": object.pk}) }}" class="prev-link">
+          {{ object }}
         </a>
       </li>
     </ul>
@@ -25,15 +20,12 @@
 {% endblock %}
 
 {% block main_content %}
+  {% include "web/domains/commodity/group/usage-info-box.html" %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
       {% for field in form %}
-        {% if field.name == "commodities" %}
-          {{ fields.field(field, show_optional_indicator=False) }}
-        {% else %}
-          {{ fields.field(field) }}
-        {% endif %}
+        {{ fields.field(field) }}
       {% endfor %}
     {% endblock %}
 
@@ -55,10 +47,4 @@
     </div>
   {% endcall %}
 
-{% endblock %}
-
-{% block page_js %}
-  {{ form.media.js }}
-  {{ super() }}
-  <script src="{{ static('web/js/pages/create-commodity-group.js') }}" type="text/javascript"></script>
 {% endblock %}

@@ -20,6 +20,17 @@ urlpatterns = [
         commodity_views.CommodityGroupEditView.as_view(),
         name="commodity-group-edit",
     ),
+    path("group/<int:pk>/usage/create/", commodity_views.add_usage, name="commodity-group-usage",),
+    path(
+        "group/<int:commodity_group_pk>/usage/<int:usage_pk>/edit/",
+        commodity_views.edit_usage,
+        name="commodity-group-usage-edit",
+    ),
+    path(
+        "group/<int:commodity_group_pk>/usage/<int:usage_pk>/delete/",
+        commodity_views.delete_usage,
+        name="commodity-group-usage-delete",
+    ),
     path(
         "group/new/", commodity_views.CommodityGroupCreateView.as_view(), name="commodity-group-new"
     ),
