@@ -14,6 +14,7 @@ from web.domains.importer.models import *  # NOQA
 from web.domains.legislation.models import *  # NOQA
 from web.domains.mailshot.models import *  # NOQA
 from web.domains.office.models import *  # NOQA
+from web.domains.section5.models import *  # NOQA
 from web.domains.template.models import *  # NOQA
 from web.domains.user.models import *  # NOQA
 from web.permissions import *  # NOQA
