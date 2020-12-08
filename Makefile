@@ -37,6 +37,11 @@ migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
 
+COMMAND="help"
+manage: ## execute manage.py
+	unset UID && \
+	docker-compose run --rm web python ./manage.py ${COMMAND}
+
 ##@ Docker
 setup: ## sets up system for first use
 	# doing this here gives it the right permissions, e.g. the local user.
