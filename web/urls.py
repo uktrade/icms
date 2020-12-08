@@ -17,6 +17,7 @@ urlpatterns = [
     path("country/", include("web.domains.country.urls")),
     path("product-legislation/", include("web.domains.legislation.urls")),
     path("firearms/", include("web.domains.firearms.urls")),
+    path("section5/", include("web.domains.section5.urls")),
     path("importer/", include("web.domains.importer.urls")),
     path("exporter/", include("web.domains.exporter.urls")),
     path("access/", include("web.domains.case.access.urls", namespace="access")),

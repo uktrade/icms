@@ -1,0 +1,51 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block context_header %}
+  Create Section 5 Clause
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('section5:list') }}" class="prev-link">
+          Maintain Section 5 Clause
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/section5/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>Calibre</h3>
+    {% for field in form %}
+        {{fields.field(field)}}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Create" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  {%- endcall %}
+{% endblock %}

@@ -1,8 +1,10 @@
 from django.db import models
+
 from web.domains.user.models import User
+from web.models.mixins import Archivable
 
 
-class Section5Clause(models.Model):
+class Section5Clause(Archivable, models.Model):
     clause = models.CharField(max_length=100)
     description = models.TextField()
     is_active = models.BooleanField(default=True)

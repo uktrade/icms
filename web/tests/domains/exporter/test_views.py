@@ -144,7 +144,9 @@ def test_detail_exporter_anonymous_user():
 
 @pytest.mark.django_db
 def test_detail_exporter_permission_not_ok():
-    user = UserFactory.create(account_status=User.ACTIVE, password_disposition=User.FULL)
+    user = UserFactory.create(
+        is_active=True, account_status=User.ACTIVE, password_disposition=User.FULL
+    )
 
     client = Client()
     client.login(username=user.username, password="test")
@@ -156,11 +158,12 @@ def test_detail_exporter_permission_not_ok():
 @pytest.mark.django_db
 def test_detail_exporter_ok():
     ilb_admin = UserFactory.create(
+        is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
         permission_codenames=["reference_data_access"],
     )
-    exporter = ExporterFactory.create()
+    exporter = ExporterFactory.create(is_active=True)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
