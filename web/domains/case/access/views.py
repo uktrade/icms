@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
+from web.domains.case.access.filters import ExporterAccessRequestFilter, ImporterAccessRequestFilter
 from web.domains.case.fir.forms import (
     FurtherInformationRequestForm,
     FurtherInformationRequestResponseForm,
@@ -18,11 +19,75 @@ from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import notify
+from web.views import ModelFilterView
+
 
 from . import forms
 from .models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 
 logger = logging.get_logger(__name__)
+
+
+class ListImporterAccessRequest(ModelFilterView):
+    template_name = "web/domains/case/access/list-importer.html"
+    filterset_class = ImporterAccessRequestFilter
+    model = ImporterAccessRequest
+    permission_required = "web.reference_data_access"
+    page_title = "Search Importer Access Requests"
+
+    class Display:
+        fields = [
+            "submit_datetime",
+            ("submitted_by", "submitted_by_email"),
+            "request_type",
+            ("organisation_name", "organisation_address", "organisation_registered_number"),
+            "link",
+            "response",
+            "closed_datetime",
+        ]
+        fields_config = {
+            "submit_datetime": {"header": "Requested Date", "date_format": True},
+            "submitted_by": {"header": "Requested By"},
+            "submitted_by_email": {"header": "Email"},
+            "request_type": {"header": "Request Type", "method": "get_request_type_display"},
+            "organisation_name": {"header": "Name"},
+            "organisation_address": {"header": "Address"},
+            "organisation_registered_number": {"header": "Registered Number"},
+            "link": {"header": "Linked to Importer"},
+            "response": {"header": "Response"},
+            "closed_datetime": {"header": "Response Date", "date_format": True},
+        }
+
+
+class ListExporterAccessRequest(ModelFilterView):
+    template_name = "web/domains/case/access/list-exporter.html"
+    filterset_class = ExporterAccessRequestFilter
+    model = ExporterAccessRequest
+    permission_required = "web.reference_data_access"
+    page_title = "Search Exporter Access Requests"
+
+    class Display:
+        fields = [
+            "submit_datetime",
+            ("submitted_by", "submitted_by_email"),
+            "request_type",
+            ("organisation_name", "organisation_address", "organisation_registered_number"),
+            "link",
+            "response",
+            "closed_datetime",
+        ]
+        fields_config = {
+            "submit_datetime": {"header": "Requested Date", "date_format": True},
+            "submitted_by": {"header": "Requested By"},
+            "submitted_by_email": {"header": "Email"},
+            "request_type": {"header": "Request Type", "method": "get_request_type_display"},
+            "organisation_name": {"header": "Name"},
+            "organisation_address": {"header": "Address"},
+            "organisation_registered_number": {"header": "Registered Number"},
+            "link": {"header": "Linked to Exporter"},
+            "response": {"header": "Response"},
+            "closed_datetime": {"header": "Response Date", "date_format": True},
+        }
 
 
 @login_required

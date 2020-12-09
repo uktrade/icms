@@ -11,6 +11,10 @@
 {% macro _field_value(text, config) -%}
   {% if config and config.bold %}
     <strong>{{ text }}</strong>
+  {% elif config and config.date_format %}
+    {% if text %}
+      {{ text.strftime('%d-%b-%Y %H:%M:%S') }}
+    {% endif %}
   {% else %}
     {{ text }}
   {% endif %}
@@ -22,6 +26,10 @@
   {% endif %}
   {% if config and config.link %}
     <a href="{{object.id}}" role="model-link">{{object[field]}}</a>
+  {% elif config and config.method %}
+    {% with caller = object|attr(config.method) %}
+      {{ caller() }}
+    {% endwith %}
   {% elif config and config.show_all %}
     {% if config.separator %}
       {% for entry in object[field].all() %}

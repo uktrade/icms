@@ -34,3 +34,10 @@ class UserFactory(factory.django.DjangoModelFactory):
             for codename in extracted:
                 permission = Permission.objects.get(codename=codename)
                 self.user_permissions.add(permission)
+
+
+class ActiveUserFactory(UserFactory):
+    account_status = User.ACTIVE
+    is_active = True
+    is_staff = False
+    password_disposition = User.FULL

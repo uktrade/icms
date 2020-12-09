@@ -183,6 +183,8 @@ class Menu:
                     links=[
                         SubMenuLink(label="Importers", view="importer-list"),
                         SubMenuLink(label="Exporters", view="exporter-list"),
+                        SubMenuLink(label="Importer Access Requests", view="access:importer-list"),
+                        SubMenuLink(label="Exporter Access Requests", view="access:exporter-list"),
                     ],
                 ),
                 SubMenu(

@@ -1,13 +1,18 @@
 {% block sidebar %}
   <h4>Exporter</h4>
+  <h5>Search</h5>
   <ul class="menu-out">
     <li>
-        <a href="{{ url('exporter-list') }}">Search</a>
+        <a href="{{ url('exporter-list') }}">Exporter</a>
+    </li>
+    <li>
+      <a href="{{ url('access:importer-list') }}">Exporter Access Requests</a>
     </li>
   </ul>
+  <h5>Create</h5>
   <ul class="menu-out">
     <li>
-      <a href="{{ url('exporter-create') }}">Create</a>
+      <a href="{{ url('exporter-create') }}">Exporter</a>
     </li>
   </ul>
 {% endblock %}

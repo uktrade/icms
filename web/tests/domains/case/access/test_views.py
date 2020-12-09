@@ -1,9 +1,12 @@
 import pytest
+from django.test import Client
 
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case.access import factory as access_factories
 from web.tests.domains.case.fir import factory as fir_factories
 from web.tests.domains.template.factory import TemplateFactory
+from web.tests.domains.user.factory import ActiveUserFactory
+
 
 LOGIN_URL = "/"
 
@@ -740,3 +743,41 @@ class ExporterAccessRequestFIRReviewTest(AuthTestCase):
         fir = self.fir_process.fir
         fir.refresh_from_db()
         self.assertEqual(fir.status, "CLOSED")
+
+
+@pytest.mark.django_db
+def test_list_importer_access_request_ok():
+    client = Client()
+
+    user = ActiveUserFactory.create()
+    client.login(username=user.username, password="test")
+    response = client.get("/access/importer/")
+
+    assert response.status_code == 403
+
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    access_factories.ImporterAccessRequestFactory.create()
+    client.login(username=ilb_admin.username, password="test")
+    response = client.get("/access/importer/")
+
+    assert response.status_code == 200
+    assert "Search Importer Access Requests" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_list_exporter_access_request_ok():
+    client = Client()
+
+    user = ActiveUserFactory.create()
+    client.login(username=user.username, password="test")
+    response = client.get("/access/exporter/")
+
+    assert response.status_code == 403
+
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    access_factories.ExporterAccessRequestFactory.create()
+    client.login(username=ilb_admin.username, password="test")
+    response = client.get("/access/exporter/")
+
+    assert response.status_code == 200
+    assert "Search Exporter Access Requests" in response.content.decode()

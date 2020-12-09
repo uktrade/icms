@@ -1,0 +1,36 @@
+{% extends "model/list.html" %}
+
+{% block sidebar %}
+  {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
+{% block empty_message %}
+  There aren't any Importer Access Requests that match your search.
+{% endblock %}
+
+{% block results %}
+  <table responsiveList class="setoutList" id="tbl-search-results">
+    <thead>
+      <tr>
+        {{tables.headers(display)}}
+
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+
+    {% for item in (page.object_list if page else results) %}
+      <tr class="result-row">
+        {{tables.fields(item, display)}}
+
+        <td>
+          <a
+            href="{{ url('access:case-view', kwargs={'application_pk': item.pk, 'entity': 'importer'}) }}"
+            class="button small-button icon-eye">
+              View
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}

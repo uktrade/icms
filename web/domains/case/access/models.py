@@ -1,6 +1,7 @@
 import structlog as logging
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
@@ -70,6 +71,12 @@ class AccessRequest(WorkbasketBase, Process):
             return reverse("access:management", kwargs={"pk": self.pk})
         else:
             raise Exception(f"Unknown task_type {task.task_type}")
+
+    @cached_property
+    def submitted_by_email(self):
+        if self.submitted_by:
+            return self.submitted_by.email
+        return None
 
 
 class ImporterAccessRequest(AccessRequest):
