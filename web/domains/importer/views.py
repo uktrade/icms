@@ -12,16 +12,14 @@ from web.domains.importer.forms import (
     AgentIndividualForm,
     AgentOrganisationForm,
     ImporterFilter,
-    ImporterIndividualDisplayForm,
     ImporterIndividualForm,
-    ImporterOrganisationDisplayForm,
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
 from web.domains.office.forms import OfficeForm, OfficeEORIForm
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
-from web.views import ModelDetailView, ModelFilterView
+from web.views import ModelFilterView
 from web.views.actions import (
     Archive,
     CreateIndividualAgent,
@@ -318,66 +316,19 @@ def unarchive_agent(self, pk):
     return redirect(reverse("importer-edit", kwargs={"pk": agent.main_importer.pk}))
 
 
-class ImporterOrganisationDetailView(ModelDetailView):
-    template_name = "web/domains/importer/view.html"
-    form_class = ImporterOrganisationDisplayForm
-    model = Importer
-    permission_required = "web.reference_data_access"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["form"] = ImporterOrganisationDisplayForm(instance=self.get_object())
-
-        importer_contacts = get_users_with_perms(
-            self.object, only_with_perms_in=["is_contact_of_importer"]
-        ).filter(user_permissions__codename="importer_access")
-        context["contacts"] = importer_contacts
-
-        return context
-
-
-class ImporterIndividualDetailView(ModelDetailView):
-    template_name = "web/domains/importer/view.html"
-    form_class = ImporterIndividualDisplayForm
-    model = Importer
-    permission_required = "web.reference_data_access"
-
-    def get_context_data(self, object):
-        context = super().get_context_data(object)
-
-        form = ImporterIndividualDisplayForm(instance=object)
-        user = object.user
-
-        if user:
-            form.initial["user_title"] = user.title
-            form.initial["user_first_name"] = user.first_name
-            form.initial["user_last_name"] = user.last_name
-            form.initial["user_email"] = user.email
-            form.initial["user_tel_no"] = "\n".join(
-                f"{x.phone} ({x.entity_type})" for x in user.phone_numbers.all()
-            )
-
-        context["form"] = form
-
-        importer_contacts = get_users_with_perms(
-            self.object, only_with_perms_in=["is_contact_of_importer"]
-        ).filter(user_permissions__codename="importer_access")
-        context["contacts"] = importer_contacts
-
-        return context
-
-
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
 def importer_detail_view(request, pk):
-    importer = Importer.objects.get(pk=pk)
+    importer = get_object_or_404(Importer, pk=pk)
+    contacts = get_users_with_perms(importer, only_with_perms_in=["is_contact_of_importer"]).filter(
+        user_permissions__codename="importer_access"
+    )
 
-    # there might be a better way to dynamically switch which view we're using
-    # depending on the object type, but this works
-    if importer.is_organisation():
-        view = ImporterOrganisationDetailView.as_view()
-    else:
-        view = ImporterIndividualDetailView.as_view()
-
-    return view(request, pk=pk)
+    context = {
+        "object": importer,
+        "contacts": contacts,
+    }
+    return render(request, "web/domains/importer/view.html", context)
 
 
 def list_postcode_addresses(request,):

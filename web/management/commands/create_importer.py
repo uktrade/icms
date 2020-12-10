@@ -32,7 +32,10 @@ class Command(BaseCommand):
         user.save()
 
         exporter = Importer.objects.create(
-            is_active=True, name=f"{username} org", registered_number="42",
+            is_active=True,
+            name=f"{username} org",
+            registered_number="42",
+            type=Importer.ORGANISATION,
         )
         assign_perm("web.is_contact_of_importer", user, exporter)
 

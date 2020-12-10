@@ -3,7 +3,9 @@
 {% import "forms/fields.html" as fields %}
 
 {% block page_title %}View Importer{% endblock %}
-{% block context_header %}View {{ form.instance }}{% endblock %}
+{% block context_header %}
+  View Importer '{{ object.display_name }}'
+{% endblock %}
 
 {% block content_actions %}
     <div class="content-actions">
@@ -13,52 +15,86 @@
     </div>
 {% endblock %}
 
+{% block sidebar %}
+  {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
 {% block main_content %}
-    {% call forms.form(method='post', csrf_input=csrf_input) %}
+  {% if object.is_agent() %}
+      <div class="info-box info-box-info">
+          This importer is an agent of
+          <a href="{{url('importer-view', args=[object.main_importer.id])}}">
+              {{ object.main_importer.display_name }}</a>.
+      </div>
+  {% endif %}
 
-        {% if form.instance.is_agent() %}
-            <div class="info-box info-box-info">
-                This importer is an agent of
-                <a href="{{url('importer-view', args=[form.instance.main_importer.id])}}">
-                    {{ form.instance.main_importer.display_name }}</a>.
-            </div>
-        {% endif %}
+  <h3>{{ object.get_type_display() }}</h3>
 
-        {% with field=form.type %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-
-        {% if form.instance.is_organisation() %}
-            {% with field=form.name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-            {% with field=form.region_origin %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-        {% else %}
-            {% with field=form.user_title %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-            {% with field=form.user_first_name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-            {% with field=form.user_last_name %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-            {% with field=form.user_email %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-            {% with field=form.user_tel_no %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-        {% endif %}
-
-        {% with field=form.comments %} {% include 'partial/single-field-view-mode.html' %} {% endwith %}
-
-        {% with
-          offices = object.offices.all(),
-          read_only = True %}
-
-          {% include "partial/offices.html" %}
+  {% if object.is_organisation() %}
+    <dl>
+      <dt class="bold">Organisation Name</dt>
+      <dd>{{ object.name }}
+      <dt class="bold">Registered Number</dt>
+      <dd>{{ object.registered_number }}
+      <dt class="bold">Importer EORI Number</dt>
+      <dd>{{ object.eori_number|default("N/A", True) }}
+      <dt class="bold">Importer NI EORI Number</dt>
+      <dd>{{ object.eori_number_ni|default("N/A", True) }}
+      <dt class="bold">Importer Region Origin</dt>
+      <dd>{{ object.get_region_origin_display()|default("N/A", True) }}
+      <dt class="bold">Comments</dt>
+      <dd>{{ object.comments|default("N/A", True) }}
+    </dl>
+  {% else %}
+    <dl>
+      <dt class="bold">Title</dt>
+      <dd>{{ object.user.title }}
+      <dt class="bold">Forename</dt>
+      <dd>{{ object.user.first_name }}
+      <dt class="bold">Surname</dt>
+      <dd>{{ object.user.last_name }}
+      <dt class="bold">Email Address</dt>
+      <dd>{{ object.user.email }}
+      <dt class="bold">Telephone No</dt>
+      <dd>
+        {% with numbers=object.user.phone_numbers.all() %}
+          {% for number in numbers %}
+            {{ number.get_type_display() }}: {{ number.phone }}
+            {% if not loop.last %}<br />{% endif %}
+          {% else %}
+            N/A
+          {% endfor %}
         {% endwith %}
+      </dd>
+      <dt class="bold">Importer EORI Number</dt>
+      <dd>{{ object.eori_number|default("N/A", True) }}
+      <dt class="bold">Importer NI EORI Number</dt>
+      <dd>{{ object.eori_number_ni|default("N/A", True) }}
+      <dt class="bold">Importer Region Origin</dt>
+      <dd>{{ object.get_region_origin_display()|default("N/A", True) }}
+      <dt class="bold">Comments</dt>
+      <dd>{{ object.comments|default("N/A", True) }}
+    </dl>
+  {% endif %}
+
+  {% with
+    offices = object.offices.all(),
+    read_only = True %}
+
+    {% include "partial/offices.html" %}
+  {% endwith %}
 
 
-        {% if not form.instance.is_agent() %}
-          {% with
-            agents = form.instance.agents,
-            read_only = True,
-            is_importer = True %}
-            {% include "partial/agents.html" %}
-          {% endwith %}
-        {% endif %}
+  {% if not object.is_agent() %}
+    {% with
+      agents = object.agents,
+      read_only = True,
+      is_importer = True %}
+      {% include "partial/agents.html" %}
+    {% endwith %}
+  {% endif %}
 
-        {% with read_only = True %}
-            {% include "partial/contacts/contacts.html" %}
-        {% endwith %}
-
-    {% endcall %}
+  {% with read_only = True %}
+      {% include "partial/contacts/contacts.html" %}
+  {% endwith %}
 {% endblock %}

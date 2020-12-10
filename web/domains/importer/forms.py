@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.forms import ChoiceField, CharField, ModelChoiceField, ModelForm, Textarea
+from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django.db.models import Q
 
@@ -7,7 +7,6 @@ from web.company.companieshouse import api_get_company
 from web.domains.importer.fields import PersonWidget
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
-from web.forms.mixins import ReadonlyFormMixin
 
 
 class ImporterIndividualForm(ModelForm):
@@ -143,39 +142,6 @@ class ImporterFilter(FilterSet):
     class Meta:
         model = Importer
         fields = []
-
-
-class ImporterOrganisationDisplayForm(ReadonlyFormMixin, ModelForm):
-    type = ChoiceField(choices=Importer.TYPES)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["name"].required = True
-
-    class Meta:
-        model = Importer
-        fields = ["type", "name", "region_origin", "comments"]
-        widgets = {"name": Textarea(attrs={"rows": 1})}
-
-
-class ImporterIndividualDisplayForm(ReadonlyFormMixin, ModelForm):
-    type = ChoiceField(choices=Importer.TYPES)
-
-    # ImporterIndividualDetailView fills these out
-    user_title = CharField(label="Title")
-    user_first_name = CharField(label="Forename")
-    user_last_name = CharField(label="Surname")
-    user_email = CharField(label="Email")
-    user_tel_no = CharField(label="Telephone No")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["user"].required = True
-
-    class Meta:
-        model = Importer
-        fields = ["type", "user", "comments"]
-        widgets = {"name": Textarea(attrs={"rows": 1})}
 
 
 class AgentIndividualForm(ModelForm):
