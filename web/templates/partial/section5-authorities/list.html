@@ -1,0 +1,56 @@
+<table class="setoutList" id="tbl-section5-authorities">
+  <thead>
+    <tr>
+      <th scope="col">Reference</th>
+      <th scope="col">Address</th>
+      <th scope="col">Postcode</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">End Date</th>
+      {% if not read_only %}
+        <th scope="col">Actions</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for section5_authority in section5_authorities_list %}
+    <tr>
+      <td>
+        <a
+          href="{{ url(
+                     'importer-section5-authorities-detail',
+                     args=[object.pk, section5_authority.pk]) }}">
+          {{ section5_authority.reference }}
+        </a>
+      </td>
+      <td>{{ section5_authority.address|nl2br() or '' }}</td>
+      <td>{{ section5_authority.postcode }}</td>
+      <td>{{ section5_authority.start_date }}</td>
+      <td>{{ section5_authority.end_date }}</td>
+      {% if not read_only %}
+        <td>
+          <a
+            href="{{ url('importer-section5-authorities-edit', args=[object.pk, section5_authority.pk]) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+          {% if section5_authority.is_active %}
+            <form method="post"
+                  action="{{ url('importer-section5-authorities-archive', args=[object.pk, section5_authority.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Archive</button>
+            </form>
+          {% else %}
+            <form method="post"
+                  action="{{ url('importer-section5-authorities-unarchive', args=[object.pk, section5_authority.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Restore</button>
+            </form>
+          {% endif %}
+        </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

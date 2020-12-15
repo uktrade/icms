@@ -1,0 +1,60 @@
+{% extends "web/domains/importer/create-section5-authority.html" %}
+
+
+{% block context_header %}
+  Edit Section5 Authority for Importer '{{ object.display_name }}'
+{% endblock %}
+
+{% block submit_button %}Save{% endblock %}
+
+{% block section5_files %}
+  {% if section5_authority.files.exists() %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Documents Uploaded
+          </label>
+        </div>
+        <div class="six columns">
+          <table class="setoutList">
+            <thead>
+              <tr>
+                <th scope="col">File</th>
+                <th scope="col">Created By</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for document in section5_authority.files.active() %}
+              <tr>
+                <td>
+                  {{ document.filename }}<br />
+                  <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+                </td>
+                <td>
+                  {{ document.created_by }}<br />
+                  <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+                </td>
+                <td>
+                  <form method="post"
+                        action={{ url(
+                          'importer-section5-authorities-file-archive',
+                          kwargs={
+                            'importer_pk': object.pk,
+                            'section5_authority_pk': section5_authority.pk,
+                            'file_pk': document.pk}) }}>
+                    {{ csrf_input }}
+                    <button type="submit" class="button link-button-no-padding">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

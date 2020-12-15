@@ -23,19 +23,13 @@
   {% endset %}
 
   {% if field.help_text or tooltip %}
-    <div class="eleven-column-input">
-      {{field_markup}}
-    </div>
-    <div class="input-group-addon hint-addon">
-      {% if tooltip %}
-      {{tooltip}}
-      {% else %}
-      <div id="{{field.html_name}}-hint-content" role="tooltip" class="hint-content">
-        {{tooltip or field.help_text|safe}}
-      </div>
-      <div aria-describedby="{{field.html_name}}-hint-content" class="hint icon-info tooltipstered"></div>
-      {% endif %}
-      </div>
+    {{ field_markup }}
+
+    {% if tooltip %}
+      {{ tooltip }}
+    {% else %}
+      <p class="helptext">{{ field.help_text }}</p>
+    {% endif %}
   {% elif lookup %}
     <div class="nine-column-input">
       {{field_markup}}

@@ -1,0 +1,101 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "tables/tables.html" as tables %}
+
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+
+{% block context_header %}
+  Create Section5 Authority for Importer '{{ object.display_name }}'
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+          Importer {{ object.display_name }}
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <div id="lookup_postcode">
+    {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype="multipart/form-data") -%}
+
+      {% for field in form %}
+      {% with lookup = field.name == 'postcode' %}
+        {{ fields.field(field, lookup=lookup) }}
+      {% endwith %}
+      {% endfor %}
+
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Section 5 Clauses
+            <span class="mand-label">optional</span>
+          </label>
+        </div>
+        <div class="six columns">
+          {{ formset.management_form }}
+          {% for clause_form in formset %}
+            <div class="row section5-clauses">
+            {% for field in clause_form %}
+              <div class="four columns {% if field.errors %}input-error{% endif %}">
+                {{ field }}
+                {% if field.name == "infinity" %}
+                  <span class="infinity">{{ field.label }}</span>
+                {% endif %}
+                {% if field.errors %}
+                  {% for error in field.errors %}
+                    <div class="error-message">{{error}}</div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="three columns"></div>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button
+                  type="submit"
+                  name="action"
+                  value="save"
+                  class="primary-button button">
+                  {% block submit_button %}Create{% endblock %}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endcall %}
+    {% block section5_files %}{% endblock %}
+  </div>
+{% endblock %}
+
+{% block page_js %}
+  {% include "partial/offices/formset-script.html" %}
+
+  {{ form.media.js }}
+  {{ super() }}
+{% endblock %}

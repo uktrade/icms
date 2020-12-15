@@ -4207,6 +4207,10 @@ input[type='checkbox'] {
     padding: 0;
 }
 
+.section5-clauses span.infinity {
+    margin-left: 1em;
+}
+
 input[type='checkbox'].radio-relative{
     position: relative;
     top: 0;

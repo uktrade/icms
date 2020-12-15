@@ -23,12 +23,12 @@
 </script>
 
 <script>
-  $('#offices').on('click', '.icon-search', function(evt) {
+  $('#lookup_postcode').on('click', '.icon-search', function(evt) {
       evt.preventDefault();
       $ta = $('textarea[name=address]');
 
       data = {
-          postcode: $('#offices').find('input[name=postcode]').val(),
+          postcode: $('#lookup_postcode').find('input[name=postcode]').val(),
           csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
         }
 

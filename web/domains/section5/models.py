@@ -17,3 +17,6 @@ class Section5Clause(Archivable, models.Model):
 
     class Meta:
         ordering = ("clause",)
+
+    def __str__(self):
+        return self.clause

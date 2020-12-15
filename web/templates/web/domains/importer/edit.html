@@ -60,7 +60,11 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with 
+  {% with section5_authorities = object.section5_authorities.all() %}
+    {% include "partial/section5-authorities.html" %}
+  {% endwith %}
+
+  {% with
     is_importer = True,
     agents = object.agents,
     agent_edit_url_name = "importer-agent-edit",
@@ -79,7 +83,6 @@
 
   {#
   {% include "partial/firearms-authorities.html" %}
-  {% include "partial/section5-authorities.html" %}
   #}
 {% endblock %}
 

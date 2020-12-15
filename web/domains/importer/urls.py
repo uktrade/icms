@@ -18,6 +18,37 @@ urlpatterns = [
         views.delete_contact,
         name="importer-contact-delete",
     ),
+    # section 5 authorities
+    path(
+        "<int:pk>/section5-authorities/create/",
+        views.create_section5_authorities,
+        name="importer-section5-authorities-create",
+    ),
+    path(
+        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/edit/",
+        views.edit_section5_authorities,
+        name="importer-section5-authorities-edit",
+    ),
+    path(
+        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/",
+        views.detail_section5_authorities,
+        name="importer-section5-authorities-detail",
+    ),
+    path(
+        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/archive/",
+        views.archive_section5_authorities,
+        name="importer-section5-authorities-archive",
+    ),
+    path(
+        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/unarchive/",
+        views.unarchive_section5_authorities,
+        name="importer-section5-authorities-unarchive",
+    ),
+    path(
+        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/files/<int:file_pk>/",
+        views.archive_file_section5_authorities,
+        name="importer-section5-authorities-file-archive",
+    ),
     # offices
     path("<int:pk>/offices/create/", views.create_office, name="importer-office-create"),
     path(
