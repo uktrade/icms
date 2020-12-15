@@ -22,10 +22,11 @@ class ExporterApprovalRequestForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.application = application
 
-        users = get_users_with_perms(
-            self.application.link, only_with_perms_in=["is_contact_of_exporter"]
-        )
-        self.fields["requested_from"].queryset = users
+        if self.application.link:
+            users = get_users_with_perms(
+                self.application.link, only_with_perms_in=["is_contact_of_exporter"]
+            )
+            self.fields["requested_from"].queryset = users
 
     def clean(self):
         self.instance.access_request = self.application
@@ -49,10 +50,11 @@ class ImporterApprovalRequestForm(ModelForm):
         super().__init__(*args, **kwargs)
         self.application = application
 
-        users = get_users_with_perms(
-            self.application.link, only_with_perms_in=["is_contact_of_importer"]
-        )
-        self.fields["requested_from"].queryset = users
+        if self.application.link:
+            users = get_users_with_perms(
+                self.application.link, only_with_perms_in=["is_contact_of_importer"]
+            )
+            self.fields["requested_from"].queryset = users
 
     def clean(self):
         self.instance.access_request = self.application

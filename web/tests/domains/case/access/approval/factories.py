@@ -1,8 +1,7 @@
 import factory
 from django.utils import timezone
 
-from web.domains.case.access.approval.flows import ApprovalRequestFlow
-from web.domains.case.access.approval.models import ApprovalRequest, ApprovalRequestProcess
+from web.domains.case.access.approval.models import ApprovalRequest
 from web.tests.domains.case.access.factory import AccessRequestFactory
 from web.tests.domains.user.factory import UserFactory
 
@@ -21,11 +20,3 @@ class ApprovalRequestFactory(factory.django.DjangoModelFactory):
     response_by = None
     response_date = None
     response_reason = None
-
-
-class ApprovalRequestProcessFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = ApprovalRequestProcess
-
-    approval_request = factory.SubFactory(ApprovalRequestFactory)
-    flow_class = ApprovalRequestFlow
