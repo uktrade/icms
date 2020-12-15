@@ -8,3 +8,4 @@ set -eu
 
 make black
 make flake8
+make isort

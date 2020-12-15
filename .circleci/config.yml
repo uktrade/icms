@@ -20,6 +20,10 @@ jobs:
                 command: make docker_flake8
 
             - run:
+                name: run isort (import formatter check)
+                command: make docker_isort
+
+            - run:
                 name: run mypy
                 command: make mypy
 

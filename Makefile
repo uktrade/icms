@@ -24,6 +24,12 @@ black: ## run Black in check mode
 black_format: ## run Black in reformat mode
 	unset UID && .venv/bin/python -m black .
 
+isort: ## run isort in check mode
+	unset UID && .venv/bin/python -m isort -j 4 --check .
+
+isort_format: ## run isort in reformat mode
+	unset UID && .venv/bin/python -m isort -j 4 .
+
 ##@ Development
 showmigrations: ## make db migrations
 	unset UID && \
@@ -61,6 +67,11 @@ docker_black: ## run Black in check mode
 	unset UID && \
 	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m black --check .
+
+docker_isort: ## run isort in check mode
+	unset UID && \
+	ICMS_DEBUG=False \
+	docker-compose run --rm web python -m isort -j 4 --check .
 
 mypy: ## run mypy
 	unset UID && \
