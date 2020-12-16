@@ -1,6 +1,6 @@
 import os
-from psycogreen.gevent import patch_psycopg
 
+from psycogreen.gevent import patch_psycopg
 
 ICMS_WEB_PORT = os.environ.get("ICMS_WEB_PORT", 8080)
 ICMS_WORKER_CONNECTIONS = int(os.environ.get("ICMS_WORKER_CONNECTIONS", 1000))

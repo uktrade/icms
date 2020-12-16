@@ -1,5 +1,7 @@
-import factory
 import random
+
+import factory
+
 from web.domains.legislation.models import ProductLegislation
 
 

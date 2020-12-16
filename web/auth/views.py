@@ -1,9 +1,10 @@
+import django.contrib.auth.views as auth_views
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
-import django.contrib.auth.views as auth_views
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.shortcuts import redirect, render
+
 from web.auth.decorators import require_registered
 from web.domains.user import PersonalEmail, User
 from web.notify import notify

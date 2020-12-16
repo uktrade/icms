@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
-from django.db.models import Q
 
 from web.company.companieshouse import api_get_company
 from web.domains.importer.fields import PersonWidget

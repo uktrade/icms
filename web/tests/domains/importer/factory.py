@@ -2,6 +2,7 @@ import random
 
 import factory
 import factory.fuzzy
+
 from web.domains.importer.models import Importer
 from web.tests.domains.user.factory import UserFactory
 

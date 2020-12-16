@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 from django.urls import path
 
-from .views import TemplateListView, TemplateDetailView, TemplateEditView, EndorsementCreateView
+from .views import (
+    EndorsementCreateView,
+    TemplateDetailView,
+    TemplateEditView,
+    TemplateListView,
+)
 
 urlpatterns = [
     path("", TemplateListView.as_view(), name="template-list"),

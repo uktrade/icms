@@ -1,9 +1,10 @@
+import random
+
 import factory
 import factory.fuzzy
-import random
-from web.domains.office.models import Office
-
 from faker import Faker
+
+from web.domains.office.models import Office
 
 fake = Faker("en_GB")
 

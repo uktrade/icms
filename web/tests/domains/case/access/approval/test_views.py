@@ -2,12 +2,12 @@ import pytest
 from django.test import Client
 
 from web.domains.case.access.models import AccessRequest
+from web.flow.models import Task
 from web.tests.domains.case.access.factories import (
     ExporterAccessRequestFactory,
     ImporterAccessRequestFactory,
 )
 from web.tests.domains.user.factory import ActiveUserFactory
-from web.flow.models import Task
 
 
 @pytest.mark.django_db

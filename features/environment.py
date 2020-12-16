@@ -1,6 +1,5 @@
-from django.conf import settings
-
 from behave_django.testcase import BehaviorDrivenTestCase
+from django.conf import settings
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 

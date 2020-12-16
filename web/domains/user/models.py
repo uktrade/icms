@@ -3,7 +3,6 @@ import string
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 

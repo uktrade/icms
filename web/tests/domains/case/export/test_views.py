@@ -2,9 +2,10 @@ from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
 from web.domains.country.models import Country
-
 from web.tests.auth.auth import AuthTestCase
-from web.tests.domains.case.export.factories import CertificateOfManufactureApplicationFactory
+from web.tests.domains.case.export.factories import (
+    CertificateOfManufactureApplicationFactory,
+)
 
 
 class TestCreate(AuthTestCase):

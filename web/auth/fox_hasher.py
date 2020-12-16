@@ -5,10 +5,11 @@ migrated users.
 Hashing algorith is PBKDF2 with SHA1 digest, but salt generation is altered to
 match legacy applications salt geheration.
 """
-import os
 import binascii
 import hmac
+import os
 import struct
+
 from django.contrib.auth.hashers import PBKDF2SHA1PasswordHasher
 
 

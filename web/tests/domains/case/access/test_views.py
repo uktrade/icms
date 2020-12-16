@@ -7,7 +7,6 @@ from web.tests.domains.case.fir import factory as fir_factories
 from web.tests.domains.template.factory import TemplateFactory
 from web.tests.domains.user.factory import ActiveUserFactory
 
-
 LOGIN_URL = "/"
 
 

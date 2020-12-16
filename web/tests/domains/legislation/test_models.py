@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from web.domains.legislation.models import ProductLegislation
 
 

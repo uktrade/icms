@@ -1,6 +1,6 @@
 from django.forms import ChoiceField, ClearableFileInput, FileField, ModelForm
 
-from web.domains.case.models import CaseNote, CASE_NOTE_STATUSES
+from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote
 
 
 class CaseNoteForm(ModelForm):

@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from web.domains.country.models import (
     Country,
     CountryGroup,

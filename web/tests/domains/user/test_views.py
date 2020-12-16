@@ -1,6 +1,5 @@
-from web.tests.auth import AuthTestCase
-
 from web.domains.user import User
+from web.tests.auth import AuthTestCase
 
 from .factory import UserFactory
 

@@ -1,6 +1,6 @@
 from django.forms import ModelForm
-from django.forms.widgets import Select, CheckboxInput
-from django_filters import CharFilter, ChoiceFilter, BooleanFilter, FilterSet
+from django.forms.widgets import CheckboxInput, Select
+from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 
 from .models import Constabulary
 

@@ -2,7 +2,6 @@ from django.urls import path
 
 from . import views
 
-
 urlpatterns = [
     # obsolete calibre group
     path("", views.ObsoleteCalibreListView.as_view(), name="obsolete-calibre-group-list"),

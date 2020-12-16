@@ -1,13 +1,13 @@
-import structlog as logging
-from django import forms
 import django.contrib.auth.forms as auth_forms
+import structlog as logging
+from captcha.fields import ReCaptchaField
+from django import forms
 from django.forms import Form, ModelForm, ValidationError
 from django.forms.fields import CharField, DateField
 from django.forms.widgets import PasswordInput, Select, TextInput
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 
-from captcha.fields import ReCaptchaField
 from web.domains.user import User
 from web.forms import validators
 from web.forms.fields import PhoneNumberField

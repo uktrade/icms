@@ -1,6 +1,8 @@
-from django.forms import inlineformset_factory, BaseInlineFormSet, ValidationError
-from web.models import PhoneNumber, User, PersonalEmail, AlternativeEmail
-from .forms import PhoneNumberForm, AlternativeEmailsForm, PersonalEmailForm
+from django.forms import BaseInlineFormSet, ValidationError, inlineformset_factory
+
+from web.models import AlternativeEmail, PersonalEmail, PhoneNumber, User
+
+from .forms import AlternativeEmailsForm, PersonalEmailForm, PhoneNumberForm
 
 
 class PhoneNumbersFormSet(BaseInlineFormSet):

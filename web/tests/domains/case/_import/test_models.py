@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.tests.domains.case._import.factory import ImportApplicationTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory

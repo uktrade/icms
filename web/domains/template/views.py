@@ -1,10 +1,10 @@
 from django.urls import reverse_lazy
 
-from web.views import ModelFilterView, ModelDetailView, ModelUpdateView, ModelCreateView
-from web.views.actions import Archive, Unarchive, Edit
+from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views.actions import Archive, Edit, Unarchive
 
+from .forms import EndorsementCreateTemplateForm, GenericTemplate, TemplatesFilter
 from .models import Template
-from .forms import TemplatesFilter, GenericTemplate, EndorsementCreateTemplateForm
 
 
 class TemplateListView(ModelFilterView):

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from behave import given, then, when
 from django.contrib.auth.models import Permission
 
-from behave import given, then, when
 from features.steps import utils
 from web.domains.user.models import User
 

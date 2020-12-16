@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+
 from web.domains.user.models import User
 from web.tests.domains.user.factory import UserFactory
 

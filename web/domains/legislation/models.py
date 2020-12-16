@@ -1,5 +1,6 @@
-from web.models.mixins import Archivable
 from django.db import models
+
+from web.models.mixins import Archivable
 
 
 class ProductLegislation(Archivable, models.Model):

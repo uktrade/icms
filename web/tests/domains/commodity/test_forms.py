@@ -9,7 +9,12 @@ from web.domains.commodity.forms import (
 )
 from web.domains.commodity.models import CommodityGroup
 
-from .factory import CommodityFactory, CommodityGroupFactory, CommodityTypeFactory, UnitFactory
+from .factory import (
+    CommodityFactory,
+    CommodityGroupFactory,
+    CommodityTypeFactory,
+    UnitFactory,
+)
 
 
 class CommodityFilterTest(TestCase):

@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 

@@ -1,5 +1,4 @@
 import structlog as logging
-
 from django.conf import settings
 from s3chunkuploader.file_handler import s3_client
 from sentry_sdk import capture_exception
@@ -7,7 +6,6 @@ from sentry_sdk import capture_exception
 from web.utils import FilevalidationService
 from web.utils.s3upload import InvalidFileException, S3UploadService
 from web.utils.virus import ClamAV, InfectedFileException
-
 
 logger = logging.get_logger(__name__)
 

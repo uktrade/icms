@@ -1,10 +1,9 @@
 import structlog as logging
-
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
@@ -12,9 +11,9 @@ from web.domains.case.forms import CaseNoteForm
 from web.domains.case.models import CASE_NOTE_DRAFT
 from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.notify.email import send_email
 from web.views import ModelCreateView
-from web.flow.models import Task
 
 from .forms import (
     CloseCaseForm,
@@ -22,8 +21,11 @@ from .forms import (
     PrepareCertManufactureForm,
     SubmitCertManufactureForm,
 )
-from .models import ExportApplication, ExportApplicationType, CertificateOfManufactureApplication
-
+from .models import (
+    CertificateOfManufactureApplication,
+    ExportApplication,
+    ExportApplicationType,
+)
 
 logger = logging.get_logger(__name__)
 

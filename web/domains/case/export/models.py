@@ -1,15 +1,14 @@
 from django.db import models
 from django.urls import reverse
 
-from web.flow.models import Process
-
-from web.domains.workbasket.base import WorkbasketBase
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
 from web.domains.country.models import Country, CountryGroup
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.domains.workbasket.base import WorkbasketBase
+from web.flow.models import Process
 
 
 class ExportApplicationType(models.Model):

@@ -1,10 +1,8 @@
 import base64
 
+import requests
 import structlog as logging
 from django.conf import settings
-
-import requests
-
 
 logger = logging.getLogger(__name__)
 

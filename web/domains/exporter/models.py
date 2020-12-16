@@ -1,4 +1,5 @@
 from django.db import models
+
 from web.domains.office.models import Office
 from web.models.mixins import Archivable
 

@@ -1,8 +1,9 @@
 from django.contrib.auth.models import Permission
-from web.models import User
 
 # from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
+
+from web.models import User
 from web.tests.domains.user.factory import UserFactory
 
 

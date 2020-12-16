@@ -1,12 +1,11 @@
-import environ
 import os
-import structlog
 
+import environ
 import sentry_sdk
+import structlog
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from .base import *  # NOQA
-
 
 env = environ.Env()
 

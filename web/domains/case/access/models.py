@@ -6,10 +6,9 @@ from django.utils.functional import cached_property
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
-from web.domains.workbasket.base import WorkbasketBase
 from web.domains.user.models import User
+from web.domains.workbasket.base import WorkbasketBase
 from web.flow.models import Process
-
 
 logger = logging.getLogger(__name__)
 

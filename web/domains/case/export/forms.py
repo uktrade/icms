@@ -1,25 +1,26 @@
 import structlog as logging
-
 from django.forms import (
     BooleanField,
-    CheckboxInput,
-    ModelChoiceField,
-    ValidationError,
     CharField,
+    CheckboxInput,
     Form,
+    ModelChoiceField,
     ModelForm,
+    ValidationError,
 )
 from django.utils.safestring import mark_safe
-
 from django_select2 import forms as s2forms
-
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
 
-from .models import ExportApplication, ExportApplicationType, CertificateOfManufactureApplication
+from .models import (
+    CertificateOfManufactureApplication,
+    ExportApplication,
+    ExportApplicationType,
+)
 
 logger = logging.get_logger(__name__)
 

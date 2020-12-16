@@ -2,6 +2,7 @@ import random
 
 import factory
 import factory.fuzzy
+
 from web.domains.constabulary.models import Constabulary
 
 

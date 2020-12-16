@@ -9,7 +9,10 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-from web.domains.case.access.filters import ExporterAccessRequestFilter, ImporterAccessRequestFilter
+from web.domains.case.access.filters import (
+    ExporterAccessRequestFilter,
+    ImporterAccessRequestFilter,
+)
 from web.domains.case.fir.forms import (
     FurtherInformationRequestForm,
     FurtherInformationRequestResponseForm,
@@ -20,7 +23,6 @@ from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import notify
 from web.views import ModelFilterView
-
 
 from . import forms
 from .models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest

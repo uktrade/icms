@@ -1,6 +1,8 @@
+import random
+
 import factory
 import factory.fuzzy
-import random
+
 from web.domains.case._import.models import ImportApplicationType
 from web.tests.domains.template.factory import TemplateFactory
 

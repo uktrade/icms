@@ -8,6 +8,7 @@ from django.forms import (
     ModelMultipleChoiceField,
 )
 from django.forms.widgets import CheckboxInput, Textarea
+from django.utils import timezone
 from django_filters import (
     BooleanFilter,
     CharFilter,
@@ -16,7 +17,6 @@ from django_filters import (
     FilterSet,
     ModelChoiceFilter,
 )
-from django.utils import timezone
 
 from web.domains.commodity.widgets import CommodityWidget
 from web.forms.widgets import DateInput

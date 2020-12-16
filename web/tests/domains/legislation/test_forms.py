@@ -1,5 +1,9 @@
 from django.test import TestCase
-from web.domains.legislation.forms import ProductLegislationFilter, ProductLegislationForm
+
+from web.domains.legislation.forms import (
+    ProductLegislationFilter,
+    ProductLegislationForm,
+)
 
 from .factory import ProductLegislationFactory
 

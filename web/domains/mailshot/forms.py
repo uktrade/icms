@@ -4,7 +4,6 @@
 import structlog as logging
 from django.forms import CharField, ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple, Textarea
-
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.forms.mixins import ReadonlyFormMixin

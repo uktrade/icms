@@ -1,11 +1,12 @@
-import structlog as logging
 import os
 import random
 import time
 
+import structlog as logging
 from django.conf import settings
-from web.utils.virus import InfectedFileException
+
 from web.utils import url_path_join
+from web.utils.virus import InfectedFileException
 
 logger = logging.getLogger(__name__)
 

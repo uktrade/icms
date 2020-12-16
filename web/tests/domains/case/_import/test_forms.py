@@ -1,4 +1,5 @@
 import logging
+
 import pytest
 from django.test import RequestFactory, TestCase
 from django.urls import reverse_lazy
@@ -6,8 +7,8 @@ from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.forms import NewImportApplicationForm
 from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.domains.user.factory import UserFactory
 from web.tests.domains.office.factory import OfficeFactory
+from web.tests.domains.user.factory import UserFactory
 
 from .factory import ImportApplicationTypeFactory
 

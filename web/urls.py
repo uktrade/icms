@@ -1,7 +1,6 @@
 from django.urls import include, path, register_converter
 
 from . import converters
-
 from .views import home
 
 register_converter(converters.NegativeIntConverter, "negint")

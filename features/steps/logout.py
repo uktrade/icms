@@ -1,6 +1,7 @@
 from behave import when
-from features.steps import utils
 from selenium.webdriver.common.by import By
+
+from features.steps import utils
 
 
 @when("the user clicks on logout button")

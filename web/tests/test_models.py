@@ -1,6 +1,7 @@
-from web.models import User
-from django.db.utils import IntegrityError
 import pytest
+from django.db.utils import IntegrityError
+
+from web.models import User
 
 
 @pytest.mark.django_db

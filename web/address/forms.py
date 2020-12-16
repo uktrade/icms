@@ -2,6 +2,7 @@ from django.forms import Form
 from django.forms.fields import CharField
 from django.forms.widgets import Select, Textarea, TextInput
 from django.utils.translation import gettext_lazy as _
+
 from web.forms import validators
 from web.views.utils import countries
 

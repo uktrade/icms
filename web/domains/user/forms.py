@@ -9,6 +9,7 @@ from django.forms.widgets import (
 )
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, FilterSet, MultipleChoiceFilter
+
 from web.domains.user.widgets import ContactWidget
 from web.forms import validators
 from web.forms.fields import PhoneNumberField

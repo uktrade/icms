@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+
 import semver
 
 bump = sys.argv[1]

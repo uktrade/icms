@@ -3,7 +3,10 @@ from unittest.mock import patch
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.tests.auth import AuthTestCase
-from web.tests.domains.importer.factory import ImporterFactory, IndividualImporterFactory
+from web.tests.domains.importer.factory import (
+    ImporterFactory,
+    IndividualImporterFactory,
+)
 from web.tests.domains.user.factory import UserFactory
 
 LOGIN_URL = "/"

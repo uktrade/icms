@@ -1,5 +1,6 @@
-from .non_prod_base import *  # NOQA
 import environ
+
+from .non_prod_base import *  # NOQA
 
 INSTALLED_APPS += [  # noqa
     "behave_django",

@@ -5,18 +5,20 @@ from django.db.models import Prefetch
 from django.views.generic.list import ListView
 from guardian.shortcuts import get_objects_for_user
 
-
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case.access.approval.models import ExporterApprovalRequest, ImporterApprovalRequest
+from web.domains.case.access.approval.models import (
+    ExporterApprovalRequest,
+    ImporterApprovalRequest,
+)
 from web.domains.case.access.models import (
     AccessRequest,
     ExporterAccessRequest,
     ImporterAccessRequest,
 )
-from web.flow.models import Task
 from web.domains.case.export.models import CertificateOfManufactureApplication
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 
 logger = logging.get_logger(__name__)
 

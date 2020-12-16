@@ -1,13 +1,12 @@
 from django.urls import re_path
 
 from web.domains.case.access.approval.views import (
+    case_approval_respond,
     management_access_approval,
     management_access_approval_withdraw,
-    take_ownership_approval,
     release_ownership_approval,
-    case_approval_respond,
+    take_ownership_approval,
 )
-
 
 urlpatterns = [
     # approval request for admin

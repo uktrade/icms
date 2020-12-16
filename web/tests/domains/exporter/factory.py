@@ -1,5 +1,7 @@
-import factory
 import random
+
+import factory
+
 from web.domains.exporter.models import Exporter
 
 

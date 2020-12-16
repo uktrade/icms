@@ -1,10 +1,10 @@
 import re
 
 from behave import given, then, when
-from features.steps import utils
 from guardian.shortcuts import assign_perm
 from selenium.webdriver.support.ui import Select
 
+from features.steps import utils
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.tests.domains.importer.factory import ImporterFactory

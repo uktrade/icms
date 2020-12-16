@@ -1,5 +1,6 @@
 from django.test import TestCase
-from web.domains.constabulary.forms import ConstabularyForm, ConstabulariesFilter
+
+from web.domains.constabulary.forms import ConstabulariesFilter, ConstabularyForm
 from web.domains.constabulary.models import Constabulary
 
 from .factory import ConstabularyFactory

@@ -1,6 +1,8 @@
+from functools import wraps
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-from functools import wraps
+
 from web.models import User
 
 

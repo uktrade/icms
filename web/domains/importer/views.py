@@ -19,9 +19,13 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
-from web.domains.office.forms import OfficeForm, OfficeEORIForm
+from web.domains.office.forms import OfficeEORIForm, OfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
-from web.domains.section5.models import ClauseQuantity, Section5Authority, Section5Clause
+from web.domains.section5.models import (
+    ClauseQuantity,
+    Section5Authority,
+    Section5Clause,
+)
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
 from web.views import ModelFilterView

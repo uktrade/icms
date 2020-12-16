@@ -1,4 +1,5 @@
 from django.test import TestCase
+
 from web.domains.firearms.models import ObsoleteCalibre, ObsoleteCalibreGroup
 
 from .factory import ObsoleteCalibreFactory, ObsoleteCalibreGroupFactory

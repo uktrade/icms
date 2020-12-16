@@ -11,8 +11,8 @@ from web.views.mixins import PostActionMixin
 
 from .forms import (
     ObsoleteCalibreForm,
-    ObsoleteCalibreGroupForm,
     ObsoleteCalibreGroupFilter,
+    ObsoleteCalibreGroupForm,
 )
 from .models import ObsoleteCalibre, ObsoleteCalibreGroup
 

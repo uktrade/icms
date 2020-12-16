@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from django.urls import path
 
-from .views import current_user_details, UsersListView, user_details
+from .views import UsersListView, current_user_details, user_details
 
 urlpatterns = [
     path("", current_user_details, name="current-user-details"),
