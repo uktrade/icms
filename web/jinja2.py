@@ -34,7 +34,7 @@ def show_all_attrs(value):
 
 def input_datetime(value):
     """
-        Convert a utc datetime from string to input date format
+    Convert a utc datetime from string to input date format
     """
     if not value:
         return ""

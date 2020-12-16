@@ -43,7 +43,7 @@ class ReceivedMailshotsView(ModelFilterView):
         fields_config = {
             "id": {"header": "Reference"},
             "published": {"header": "Published"},
-            "title": {"header": "Title",},
+            "title": {"header": "Title"},
             "description": {"header": "Description"},
         }
         actions = [Display()]
@@ -82,7 +82,7 @@ class MailshotCreateView(RequireRegisteredMixin, View):
 
     def get(self, request):
         """
-            Create a draft mailshot and redirect to edit
+        Create a draft mailshot and redirect to edit
         """
         template = Template.objects.get(template_code=self.MAILSHOT_TEMPLATE_CODE)
         mailshot = Mailshot()
@@ -107,7 +107,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
     def form_valid(self, form):
         """
-            Publish mailshot if form is valid.
+        Publish mailshot if form is valid.
         """
         mailshot = form.instance
         mailshot.status = Mailshot.PUBLISHED
@@ -120,7 +120,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
     def save_draft(self, request, pk):
         """
-            Saves mailshot draft bypassing all validation.
+        Saves mailshot draft bypassing all validation.
         """
         self.object = super().get_object()
         form = self.get_form()
@@ -147,8 +147,8 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
     def get_queryset(self):
         """
-            Only allow DRAFT mailshots to be edited by filtering.
-            Leads to 404 otherwise
+        Only allow DRAFT mailshots to be edited by filtering.
+        Leads to 404 otherwise
         """
         return Mailshot.objects.filter(status=Mailshot.DRAFT)
 
@@ -193,7 +193,7 @@ class MailshotRetractView(ModelUpdateView):
 
     def get_form(self, *args, **kwargs):
         """
-            Add mailshot form into the context for displaying mailshot details
+        Add mailshot form into the context for displaying mailshot details
         """
         form = super().get_form(*args, **kwargs)
         self.view_form = MailshotReadonlyForm(instance=self.object)
@@ -205,7 +205,7 @@ class MailshotRetractView(ModelUpdateView):
 
     def form_valid(self, form):
         """
-            Retract mailshot if form is valid.
+        Retract mailshot if form is valid.
         """
         mailshot = form.instance
         mailshot.status = Mailshot.RETRACTED
@@ -221,8 +221,8 @@ class MailshotRetractView(ModelUpdateView):
 
     def get_queryset(self):
         """
-            Only allow PUBLISHED mailshots to be retracted by filtering.
-            Leads to 404 otherwise
+        Only allow PUBLISHED mailshots to be retracted by filtering.
+        Leads to 404 otherwise
         """
         return Mailshot.objects.filter(status=Mailshot.PUBLISHED)
 

@@ -200,7 +200,7 @@ def archive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre.is_active = False
     calibre.save()
 
-    return redirect(reverse("obsolete-calibre-group-edit", kwargs={"pk": calibre_group_pk},))
+    return redirect(reverse("obsolete-calibre-group-edit", kwargs={"pk": calibre_group_pk}))
 
 
 @require_POST
@@ -213,11 +213,12 @@ def unarchive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre.is_active = True
     calibre.save()
 
-    return redirect(reverse("obsolete-calibre-group-edit", kwargs={"pk": calibre_group_pk},))
+    return redirect(reverse("obsolete-calibre-group-edit", kwargs={"pk": calibre_group_pk}))
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def view_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
+
     return render(request, "web/domains/firearms/group/view.html", {"object": calibre_group})

@@ -19,7 +19,8 @@ class FurtherInformationRequestFormTest(TestCase):
 
     def test_form_invalid_without_request_subject(self):
         form = forms.FurtherInformationRequestForm(
-            data={"request_detail": "Test", "status": "DRAFT"}, initial={"status": "DRAFT"},
+            data={"request_detail": "Test", "status": "DRAFT"},
+            initial={"status": "DRAFT"},
         )
         self.assertFalse(form.is_valid())
         self.assertTrue(len(form.errors) == 1, form.errors)
@@ -28,7 +29,8 @@ class FurtherInformationRequestFormTest(TestCase):
 
     def test_form_invalid_without_request_detail(self):
         form = forms.FurtherInformationRequestForm(
-            data={"request_subject": "Test"}, initial={"status": "DRAFT"},
+            data={"request_subject": "Test"},
+            initial={"status": "DRAFT"},
         )
         self.assertEqual(len(form.errors), 1, form.errors)
         message = form.errors["request_detail"][0]
@@ -38,7 +40,9 @@ class FurtherInformationRequestFormTest(TestCase):
 class FurtherInformationRequestResponseFormTest(TestCase):
     def test_form_valid(self):
         form = forms.FurtherInformationRequestResponseForm(
-            data={"response_detail": "here is my response, cheers!",}
+            data={
+                "response_detail": "here is my response, cheers!",
+            }
         )
         self.assertTrue(form.is_valid())
 

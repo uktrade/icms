@@ -39,7 +39,7 @@ def get_user_emails_by_ids(user_ids):
 
 def get_notification_emails(user):
     """Returns user's personal and alternative email addresses
-       with portal notifications enabled"""
+    with portal notifications enabled"""
     emails = []
     personal = user.personal_emails.filter(portal_notifications=True)
     alternative = user.alternative_emails.filter(portal_notifications=True)

@@ -5,7 +5,7 @@ from web.tests.domains.user.factory import UserFactory
 
 def login(context, username, password):
     """
-        Type in username and password  and click on Sign in
+    Type in username and password  and click on Sign in
     """
     username_field = context.browser.find_element(By.ID, "id_username")
     password_field = context.browser.find_element(By.ID, "id_password")
@@ -17,7 +17,7 @@ def login(context, username, password):
 
 def go_to_page(context, url_name, **kwargs):
     """
-        Navigate to page with given url name
+    Navigate to page with given url name
     """
     url = context.get_url(url_name, **kwargs)
     context.browser.get(url)
@@ -25,7 +25,7 @@ def go_to_page(context, url_name, **kwargs):
 
 def assert_on_page(context, expected_url_name, **kwargs):
     """
-        Assert current url is the expected url
+    Assert current url is the expected url
     """
     page_url = context.browser.current_url.split("?")[0]
     expected_url = context.get_url(expected_url_name, **kwargs)
@@ -34,7 +34,7 @@ def assert_on_page(context, expected_url_name, **kwargs):
 
 def assert_context_header(context, expected_header):
     """
-        Assert ICMS internal page context header is given text
+    Assert ICMS internal page context header is given text
     """
     header = context.browser.find_element_by_css_selector("#context-header h2")
     assert (

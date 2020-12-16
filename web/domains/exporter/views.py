@@ -25,8 +25,8 @@ class ExporterListView(ModelFilterView):
         fields = ["name", "offices", "agents"]
         fields_config = {
             "name": {"header": "Exporter Name", "link": True},
-            "offices": {"header": "Addresses", "show_all": True,},
-            "agents": {"header": "Agent", "show_all": True,},
+            "offices": {"header": "Addresses", "show_all": True},
+            "agents": {"header": "Agent", "show_all": True},
         }
         opts = {"inline": True, "icon_only": True}
         actions = [Edit(**opts), CreateExporterAgent(**opts), Archive(**opts), Unarchive(**opts)]
@@ -208,7 +208,8 @@ def create_agent(request, exporter_pk):
         form = AgentForm(request.POST, initial=initial)
         if form.is_valid():
             agent = form.save()
-            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk,}))
+
+            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk}))
     else:
         form = AgentForm(initial=initial)
 
@@ -229,7 +230,8 @@ def edit_agent(request, pk):
         form = AgentForm(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()
-            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk,}))
+
+            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk}))
     else:
         form = AgentForm(instance=agent)
 

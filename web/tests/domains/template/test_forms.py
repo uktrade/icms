@@ -76,12 +76,19 @@ class GenericTemplateFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
-        form = GenericTemplate(data={"template_name": "Test Endorsement",})
+        form = GenericTemplate(
+            data={
+                "template_name": "Test Endorsement",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_invalid_form_message(self):
         form = GenericTemplate(
-            data={"template_name": "Test Name", "template_content": "Test Content",}
+            data={
+                "template_name": "Test Name",
+                "template_content": "Test Content",
+            }
         )
         self.assertEqual(len(form.errors), 1)
         message = form.errors["template_title"][0]
@@ -96,11 +103,19 @@ class EndorsementCreateFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
-        form = EndorsementCreateTemplateForm(data={"template_name": "Test Endorsement",})
+        form = EndorsementCreateTemplateForm(
+            data={
+                "template_name": "Test Endorsement",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_invalid_form_message(self):
-        form = EndorsementCreateTemplateForm(data={"template_content": "Test Content",})
+        form = EndorsementCreateTemplateForm(
+            data={
+                "template_content": "Test Content",
+            }
+        )
         self.assertEqual(len(form.errors), 1)
         message = form.errors["template_name"][0]
         self.assertEqual(message, "You must enter this item")

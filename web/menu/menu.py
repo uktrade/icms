@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def url(view_name):
     """
-        Reverse view name and return resolved url
+    Reverse view name and return resolved url
     """
     if view_name:
         return reverse(view_name)
@@ -19,7 +19,7 @@ def url(view_name):
 
 def has_view_access(request, view_name):
     """
-        Check if current user has access to given view
+    Check if current user has access to given view
     """
     if not view_name:
         return True
@@ -32,7 +32,7 @@ def has_view_access(request, view_name):
 
 class MenuItem:
     """
-        Base class for all menu items
+    Base class for all menu items
     """
 
     def __init__(self, label=None):
@@ -40,7 +40,7 @@ class MenuItem:
 
     def has_access(self, request):
         """
-            Check if user has access to item
+        Check if user has access to item
         """
         return True
 
@@ -188,7 +188,8 @@ class Menu:
                     ],
                 ),
                 SubMenu(
-                    label="Mailshot", links=[SubMenuLink(label="Mailshots", view="mailshot-list"),]
+                    label="Mailshot",
+                    links=[SubMenuLink(label="Mailshots", view="mailshot-list")],
                 ),
                 SubMenu(
                     label="Reference Data",
@@ -204,7 +205,7 @@ class Menu:
                 ),
                 SubMenu(
                     label="Users",
-                    links=[SubMenuLink(label="Web User Accounts", view="users-list"),],
+                    links=[SubMenuLink(label="Web User Accounts", view="users-list")],
                 ),
             ],
         ),

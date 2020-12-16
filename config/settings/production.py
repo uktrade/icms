@@ -65,10 +65,21 @@ LOGGING = {
             "processor": structlog.processors.JSONRenderer(),
         },
     },
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json_formatter",},},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json_formatter",
+        },
+    },
     "loggers": {
-        "django": {"handlers": ["console"], "level": "ERROR",},
-        "web": {"handlers": ["console"], "level": "INFO",},
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
+        "web": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
     },
 }
 

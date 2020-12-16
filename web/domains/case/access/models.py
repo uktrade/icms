@@ -102,7 +102,7 @@ class ImporterAccessRequest(AccessRequest):
         Importer, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
     )
     request_type = models.CharField(
-        max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type",
+        max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )
 
 
@@ -119,5 +119,5 @@ class ExporterAccessRequest(AccessRequest):
         Exporter, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
     )
     request_type = models.CharField(
-        max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type",
+        max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )

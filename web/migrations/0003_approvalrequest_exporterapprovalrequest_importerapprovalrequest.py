@@ -92,7 +92,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-request_date",),},
+            options={
+                "ordering": ("-request_date",),
+            },
             bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
         ),
         migrations.CreateModel(

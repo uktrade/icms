@@ -48,7 +48,7 @@ class NewExportApplicationForm(ModelForm):
         active_exporters = Exporter.objects.filter(is_active=True)
 
         exporters = get_objects_for_user(
-            user, "web.is_agent_of_exporter", active_exporters, with_superuser=False,
+            user, "web.is_agent_of_exporter", active_exporters, with_superuser=False
         )
 
         return set([exporter.pk for exporter in exporters])
@@ -61,7 +61,7 @@ class NewExportApplicationForm(ModelForm):
         main_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
 
         main_exporters = get_objects_for_user(
-            request.user, "web.is_contact_of_exporter", main_exporters, with_superuser=False,
+            request.user, "web.is_contact_of_exporter", main_exporters, with_superuser=False
         )
 
         main_exporter_ids = set([exporter.pk for exporter in main_exporters])

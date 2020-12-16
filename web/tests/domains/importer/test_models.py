@@ -5,7 +5,10 @@ from web.domains.importer.models import Importer
 
 class ImporterTest(TestCase):
     def create_importer(
-        self, is_active=True, type=Importer.ORGANISATION, name="Very Best Importers Ltd.",
+        self,
+        is_active=True,
+        type=Importer.ORGANISATION,
+        name="Very Best Importers Ltd.",
     ):
         return Importer.objects.create(is_active=is_active, type=type, name=name)
 

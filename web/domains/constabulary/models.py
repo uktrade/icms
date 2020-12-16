@@ -19,7 +19,7 @@ class Constabulary(Archivable, models.Model):
         (EAST_MIDLANDS, "East Midlands"),
         (EASTERN, "Eastern"),
         (ISLE_OF_MAN, "Isle of Man"),
-        (LONDON, "London",),
+        (LONDON, "London"),
         (NORTH_EAST, "North East"),
         (NORTH_WEST, "North WEST"),
         (ROYAL_ULSTER, "Royal Ulster"),

@@ -306,7 +306,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("country-translation-set-edit", args=[self.translation_set.id,])
+        return reverse("country-translation-set-edit", args=[self.translation_set.id])
 
     def get_cancel_url(self):
         return self.get_success_url()

@@ -54,12 +54,26 @@ LOGGING = {
             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
-        "simple": {"format": "{levelname} - {message} [{module}]", "style": "{",},
+        "simple": {
+            "format": "{levelname} - {message} [{module}]",
+            "style": "{",
+        },
     },
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "simple",},},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
     "loggers": {
-        "django": {"handlers": ["console"], "level": "WARNING",},
-        "web": {"handlers": ["console"], "level": "DEBUG",},
+        "django": {
+            "handlers": ["console"],
+            "level": "WARNING",
+        },
+        "web": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
     },
 }
 

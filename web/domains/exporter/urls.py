@@ -36,7 +36,7 @@ urlpatterns = [
     ),
     # Exporter Agents
     path("<int:exporter_pk>/agent/create/", views.create_agent, name="exporter-agent-create"),
-    path("agent/<int:pk>/edit/", views.edit_agent, name="exporter-agent-edit",),
+    path("agent/<int:pk>/edit/", views.edit_agent, name="exporter-agent-edit"),
     path("agent/<int:pk>/archive/", views.archive_agent, name="exporter-agent-archive"),
     path("agent/<int:pk>/unarchive/", views.unarchive_agent, name="exporter-agent-unarchive"),
 ]

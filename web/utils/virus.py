@@ -17,7 +17,12 @@ class ClamAV:
 
     def is_safe(self, bytes_string):
         scan_status = requests.post(
-            self.endpoint, auth=(self.username, self.password,), files={"file": bytes_string},
+            self.endpoint,
+            auth=(
+                self.username,
+                self.password,
+            ),
+            files={"file": bytes_string},
         ).json()
 
         return not scan_status["malware"] if "malware" in scan_status else False

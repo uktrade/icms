@@ -139,7 +139,7 @@ class ExportApplication(WorkbasketBase, Process):
         related_name="agent_office_export_applications",
     )
     case_owner = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+",
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     case_notes = models.ManyToManyField(CaseNote)

@@ -16,10 +16,10 @@ def _render_email(template, context):
 
 def send_notification(subject, template, context=None, recipients=None, cc_list=None):
     """Renders given email template and sends to recipiens.
-       User's personal and alternative emails with portal notifications
-       enabled will be used.
+    User's personal and alternative emails with portal notifications
+    enabled will be used.
 
-       Emails are queued to Redis to be sent asynchronously"""
+    Emails are queued to Redis to be sent asynchronously"""
 
     html_message = _render_email(template, context)
     message_text = html2text.html2text(html_message)
@@ -92,7 +92,10 @@ def mailshot(mailshot):
 def retract_mailshot(mailshot):
     html_message = _render_email(
         "email/mailshot/mailshot.html",
-        {"subject": mailshot.retract_email_subject, "body": mailshot.retract_email_body,},
+        {
+            "subject": mailshot.retract_email_subject,
+            "body": mailshot.retract_email_body,
+        },
     )
     message_text = html2text.html2text(html_message)
     email.send_mailshot.delay(

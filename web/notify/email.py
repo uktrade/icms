@@ -54,7 +54,7 @@ def send_to_case_officers(subject, message, html_message=None):
 @app.task(name="web.notify.email.send_mailshot")
 def send_mailshot(subject, message, html_message=None, to_importers=False, to_exporters=False):
     """
-        Sends mailshots
+    Sends mailshots
     """
     if to_importers:
         send_to_importers(subject, message, html_message=html_message)

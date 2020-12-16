@@ -35,7 +35,7 @@ class File(Archivable, models.Model):
 
     def date_created_formatted(self):
         """
-            returns a formatted datetime
+        returns a formatted datetime
         """
         return self.created_datetime.strftime("%d-%b-%Y %H:%M:%S")
 

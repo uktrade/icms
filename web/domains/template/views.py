@@ -58,7 +58,7 @@ class EndorsementCreateView(ModelCreateView):
 
     def form_valid(self, form):
         """
-            Sets readonly fields for this template type and validates other inputs.
+        Sets readonly fields for this template type and validates other inputs.
         """
         template = form.instance
 

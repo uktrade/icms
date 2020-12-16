@@ -176,7 +176,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-is_active", "first_name"),},
+            options={
+                "ordering": ("-is_active", "first_name"),
+            },
             bases=(models.Model, guardian.mixins.GuardianUserMixin),
         ),
         migrations.CreateModel(
@@ -208,7 +210,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["-create_datetime"],},
+            options={
+                "ordering": ["-create_datetime"],
+            },
         ),
         migrations.CreateModel(
             name="Commodity",
@@ -228,7 +232,9 @@ class Migration(migrations.Migration):
                 ("quantity_threshold", models.IntegerField(blank=True, null=True)),
                 ("sigl_product_type", models.CharField(blank=True, max_length=3, null=True)),
             ],
-            options={"ordering": ("-is_active", "commodity_code"),},
+            options={
+                "ordering": ("-is_active", "commodity_code"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -256,7 +262,9 @@ class Migration(migrations.Migration):
                 ("group_description", models.CharField(blank=True, max_length=4000, null=True)),
                 ("commodities", models.ManyToManyField(blank=True, to="web.Commodity")),
             ],
-            options={"ordering": ("-is_active", "group_code"),},
+            options={
+                "ordering": ("-is_active", "group_code"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -304,7 +312,9 @@ class Migration(migrations.Migration):
                 ("email", models.EmailField(max_length=254)),
                 ("is_active", models.BooleanField(default=True)),
             ],
-            options={"ordering": ("-is_active", "name"),},
+            options={
+                "ordering": ("-is_active", "name"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -331,7 +341,9 @@ class Migration(migrations.Migration):
                 ("commission_code", models.CharField(max_length=20)),
                 ("hmrc_code", models.CharField(max_length=20)),
             ],
-            options={"ordering": ("name",),},
+            options={
+                "ordering": ("name",),
+            },
         ),
         migrations.CreateModel(
             name="CountryGroup",
@@ -351,7 +363,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("name",),},
+            options={
+                "ordering": ("name",),
+            },
         ),
         migrations.CreateModel(
             name="CountryTranslationSet",
@@ -365,7 +379,9 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=100)),
                 ("is_active", models.BooleanField(default=True)),
             ],
-            options={"ordering": ("-is_active", "name"),},
+            options={
+                "ordering": ("-is_active", "name"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -393,7 +409,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ["-created_datetime"],},
+            options={
+                "ordering": ["-created_datetime"],
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -483,7 +501,9 @@ class Migration(migrations.Migration):
                 ("is_active", models.BooleanField(default=True)),
                 ("order", models.IntegerField()),
             ],
-            options={"ordering": ("order", "-is_active"),},
+            options={
+                "ordering": ("order", "-is_active"),
+            },
             bases=(web.models.mixins.Archivable, web.models.mixins.Sortable, models.Model),
         ),
         migrations.CreateModel(
@@ -532,7 +552,9 @@ class Migration(migrations.Migration):
                 ("is_eu_cosmetics_regulation", models.BooleanField(default=False)),
                 ("is_biocidal_claim", models.BooleanField(default=False)),
             ],
-            options={"ordering": ("-is_active", "name"),},
+            options={
+                "ordering": ("-is_active", "name"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -838,7 +860,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-is_active", "template_name"),},
+            options={
+                "ordering": ("-is_active", "template_name"),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -974,7 +998,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
         ),
         migrations.CreateModel(
             name="ObsoleteCalibre",
@@ -997,7 +1023,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("order",),},
+            options={
+                "ordering": ("order",),
+            },
             bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
@@ -1052,10 +1080,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("-id",),},
+            options={
+                "ordering": ("-id",),
+            },
         ),
         migrations.AddField(
-            model_name="importer", name="offices", field=models.ManyToManyField(to="web.Office"),
+            model_name="importer",
+            name="offices",
+            field=models.ManyToManyField(to="web.Office"),
         ),
         migrations.AddField(
             model_name="importer",
@@ -1173,7 +1205,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("type", "sub_type"),},
+            options={
+                "ordering": ("type", "sub_type"),
+            },
         ),
         migrations.CreateModel(
             name="ImportApplication",
@@ -1480,7 +1514,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("type",),},
+            options={
+                "ordering": ("type",),
+            },
         ),
         migrations.CreateModel(
             name="CountryTranslation",
@@ -1569,10 +1605,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("order",),},
+            options={
+                "ordering": ("order",),
+            },
         ),
         migrations.AddField(
-            model_name="casenote", name="files", field=models.ManyToManyField(to="web.File"),
+            model_name="casenote",
+            name="files",
+            field=models.ManyToManyField(to="web.File"),
         ),
         migrations.CreateModel(
             name="AlternativeEmail",
@@ -1601,7 +1641,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"abstract": False,},
+            options={
+                "abstract": False,
+            },
         ),
         migrations.CreateModel(
             name="CertificateOfManufactureApplication",

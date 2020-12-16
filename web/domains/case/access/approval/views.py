@@ -181,7 +181,7 @@ def take_ownership_approval(request, pk, entity):
         application.save()
 
         Task.objects.create(
-            process=application, task_type="respond", owner=request.user, previous=task,
+            process=application, task_type="respond", owner=request.user, previous=task
         )
 
     return redirect(reverse("workbasket"))
@@ -225,7 +225,7 @@ def release_ownership_approval(request, pk, entity):
         application.save()
 
         Task.objects.create(
-            process=application, task_type="notify_contacts", owner=None, previous=task,
+            process=application, task_type="notify_contacts", owner=None, previous=task
         )
 
     return redirect(reverse("workbasket"))

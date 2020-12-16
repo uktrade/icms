@@ -89,8 +89,8 @@ class Template(Archivable, models.Model):
     def get_content(self, replacements=None):
         """Returns the template content with the placeholders replaced with their value
 
-           Calling this function with replacements={'foo': 'bar'} will return the template content
-           with all occurences of [[foo]] replaced with bar"""
+        Calling this function with replacements={'foo': 'bar'} will return the template content
+        with all occurences of [[foo]] replaced with bar"""
         content = self.template_content
 
         if content is None:
@@ -107,8 +107,8 @@ class Template(Archivable, models.Model):
     def get_title(self, replacements=None):
         """Returns the template title with the placeholders replaced with their value
 
-            Calling this function with replacements={'foo': 'bar'} will return the template title
-            with all occurences of [[foo]] replaced with bar"""
+        Calling this function with replacements={'foo': 'bar'} will return the template title
+        with all occurences of [[foo]] replaced with bar"""
         title = self.template_title
 
         if title is None:
@@ -125,11 +125,11 @@ class Template(Archivable, models.Model):
     @staticmethod
     def get_choice_entry(items, search):
         """Returns the entry that matched the `search` term on the `items` collection
-           This is meant to be used to create form that need a choice with only a few of the
-           configured choices
+        This is meant to be used to create form that need a choice with only a few of the
+        configured choices
 
-           e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION)
-           returns  (IMPORT_APPLICATION, "Import Applications")"""
+        e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION)
+        returns  (IMPORT_APPLICATION, "Import Applications")"""
         for entry in items:
             if entry[0] == search:
                 return entry
@@ -143,7 +143,7 @@ class Template(Archivable, models.Model):
 
 class CFSScheduleTranslationParagraph(models.Model):
     """Paragraphs for Certificate of Free Sale Schedule and
-       Certificate of Free Sale Schedule Translation templates"""
+    Certificate of Free Sale Schedule Translation templates"""
 
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"

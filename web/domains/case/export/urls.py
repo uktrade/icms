@@ -10,7 +10,7 @@ urlpatterns = [
     path("com/<int:pk>/submit/", views.submit_com, name="com-submit"),
     path("case/<int:pk>/take_ownership/", views.take_ownership, name="case-take-ownership"),
     path(
-        "case/<int:pk>/release_ownership/", views.release_ownership, name="case-release-ownership",
+        "case/<int:pk>/release_ownership/", views.release_ownership, name="case-release-ownership"
     ),
     path("case/<int:pk>/management/", views.management, name="case-management"),
     path("case/<int:pk>/management/notes/", views.management_notes, name="case-notes"),

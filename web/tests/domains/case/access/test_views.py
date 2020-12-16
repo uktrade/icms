@@ -52,7 +52,9 @@ class ImporterAccessRequestFIRListViewTest(AuthTestCase):
             fir=fir_factories.FurtherInformationRequestFactory(is_active=False),
         )
         self.login_with_permissions(["IMP_CASE_OFFICER"])
-        response = self.client.get(self.url,)
+        response = self.client.get(
+            self.url,
+        )
         fir_list = response.context_data["fir_list"]
         self.assertEqual(len(fir_list), 1)
         self.assertEqual(fir_list.first(), self.fir_process)
@@ -157,7 +159,11 @@ class ImporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "_save_draft": "",
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -172,7 +178,10 @@ class ImporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -187,7 +196,10 @@ class ImporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -203,7 +215,9 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
         self.process = access_factories.ImporterAccessRequestFactory()
         # Create a send_request task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="DRAFT", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="DRAFT",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/send_request/{self.task.pk}/"
@@ -243,7 +257,11 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         fir = fir_process.fir
@@ -258,7 +276,11 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         fir = fir_process.fir
@@ -273,7 +295,11 @@ class ImporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         task = fir_process.active_tasks().last()
@@ -294,7 +320,9 @@ class ImporterAccessRequestFIRResponseViewTest(AuthTestCase):
 
         # Create a respond task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="OPEN", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="OPEN",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/respond/{self.task.pk}/"
@@ -351,7 +379,9 @@ class ImporterAccessRequestFIRReviewTest(AuthTestCase):
 
         # Create a review task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="RESPONDED", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="RESPONDED",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/review/{self.task.pk}/"
@@ -417,7 +447,9 @@ class ExporterAccessRequestFIRListViewTest(AuthTestCase):
             fir=fir_factories.FurtherInformationRequestFactory(is_active=False),
         )
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
-        response = self.client.get(self.url,)
+        response = self.client.get(
+            self.url,
+        )
         fir_list = response.context_data["fir_list"]
         self.assertEqual(len(fir_list), 1)
         self.assertEqual(fir_list.first(), self.fir_process)
@@ -520,7 +552,11 @@ class ExporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"_save_draft": "", "request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "_save_draft": "",
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -535,7 +571,10 @@ class ExporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -550,7 +589,10 @@ class ExporterAccessRequestFIRStartViewTest(AuthTestCase):
         self.login_with_permissions(["IMP_CERT_CASE_OFFICER"])
         response = self.client.post(
             self.url,
-            {"request_subject": "Testing", "request_detail": "This is a test",},
+            {
+                "request_subject": "Testing",
+                "request_detail": "This is a test",
+            },
             follow=True,  # follow redirect
         )
         # list page context
@@ -566,7 +608,9 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
         self.process = access_factories.ExporterAccessRequestProcessFactory()
         # Create a send_request task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="DRAFT", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="DRAFT",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/send_request/{self.task.pk}/"
@@ -606,7 +650,11 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         fir = fir_process.fir
@@ -621,7 +669,11 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         fir = fir_process.fir
@@ -636,7 +688,11 @@ class ExporterAccessRequestFIREditViewTest(AuthTestCase):
             "request_subject": "Testing",
             "request_detail": "This is a test",
         }
-        response = self.client.post(self.url, data, follow=True,)  # follow redirect
+        response = self.client.post(
+            self.url,
+            data,
+            follow=True,
+        )  # follow redirect
         # list page context
         fir_process = response.context_data["fir_list"][0]
         task = fir_process.active_tasks().last()
@@ -657,7 +713,9 @@ class ExporterAccessRequestFIRResponseViewTest(AuthTestCase):
 
         # Create a respond task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="OPEN", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="OPEN",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/respond/{self.task.pk}/"
@@ -714,7 +772,9 @@ class ExporterAccessRequestFIRReviewTest(AuthTestCase):
 
         # Create a review task
         self.task = fir_factories.FurtherInformationRequestTaskFactory(
-            process__parent_process=self.process, process__fir__status="RESPONDED", owner=self.user,
+            process__parent_process=self.process,
+            process__fir__status="RESPONDED",
+            owner=self.user,
         )
         self.fir_process = self.task.process
         self.url = f"/fir/{self.fir_process.pk}/review/{self.task.pk}/"

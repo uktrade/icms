@@ -449,7 +449,7 @@ def edit_fir(request, application_pk, entity, fir_pk):
                 return redirect(
                     reverse(
                         "access:case-management-firs",
-                        kwargs={"application_pk": application_pk, "entity": entity,},
+                        kwargs={"application_pk": application_pk, "entity": entity},
                     )
                 )
         else:

@@ -20,9 +20,9 @@ def generate_temp_password(length=8):
 
 def get_users_with_permission(permission_name):
     """
-        Return all users who has given permission
+    Return all users who has given permission
 
-        permission is in app_label.codename format
+    permission is in app_label.codename format
     """
     if permission_name:
         app_label, codename = permission_name.split(".")

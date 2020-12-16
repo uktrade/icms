@@ -67,7 +67,7 @@ urlpatterns = [
         name="importer-office-unarchive",
     ),
     # Importer Agents
-    path("agent/<int:pk>/edit/", views.edit_agent, name="importer-agent-edit",),
+    path("agent/<int:pk>/edit/", views.edit_agent, name="importer-agent-edit"),
     path("agent/<int:pk>/archive/", views.archive_agent, name="importer-agent-archive"),
     path("agent/<int:pk>/unarchive/", views.unarchive_agent, name="importer-agent-unarchive"),
     re_path(

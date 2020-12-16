@@ -29,9 +29,9 @@ class LoginView(auth_views.LoginView):
 @transaction.atomic
 def register(request):
     """
-  An atomic transaction to save user information and send notifications
-  When an unexpected error occurs the whole transaction is rolled back
-  """
+    An atomic transaction to save user information and send notifications
+    When an unexpected error occurs the whole transaction is rolled back
+    """
     # Handle security question
     data = request.POST.copy() if request.POST else None
     selected = request.POST.get("security_question_list", None)

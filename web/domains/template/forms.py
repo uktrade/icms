@@ -39,9 +39,9 @@ class GenericTemplate(forms.ModelForm):
 
     def enable_html_editor(self, template_type):
         """
-            Sets lang=html on textarea boxes that need to show an html editor
+        Sets lang=html on textarea boxes that need to show an html editor
         """
-        if template_type in (Template.LETTER_TEMPLATE, Template.LETTER_FRAGMENT,):
+        if template_type in (Template.LETTER_TEMPLATE, Template.LETTER_FRAGMENT):
             self.fields["template_content"].widget = forms.Textarea(attrs={"lang": "html"})
 
     class Meta:

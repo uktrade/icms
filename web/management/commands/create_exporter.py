@@ -32,12 +32,12 @@ class Command(BaseCommand):
         user.save()
 
         exporter = Exporter.objects.create(
-            is_active=True, name=f"{username} org", registered_number="42",
+            is_active=True, name=f"{username} org", registered_number="42"
         )
         assign_perm("web.is_contact_of_exporter", user, exporter)
 
         office = Office.objects.create(
-            is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London",
+            is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London"
         )
         exporter.offices.add(office)
         self.stdout.write(f"Created exporter user with login/pass: {username}/password")

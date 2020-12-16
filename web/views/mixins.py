@@ -43,7 +43,7 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
 
 class PostActionMixin(object):
     """Handle post requests with action variable: Calls method with the same
-       name as action variable to handle action"""
+    name as action variable to handle action"""
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
@@ -81,13 +81,13 @@ class FileUploadMixin(FormView):
     def _upload(self, request):
         """Validates and virus scans the file uploaded to S3.
 
-           A file is entry is created even if file validation is failed
-           and file is deleted.
+        A file is entry is created even if file validation is failed
+        and file is deleted.
 
-           File is uploaded by S3 Chunk Uploader.
+        File is uploaded by S3 Chunk Uploader.
 
-           Invoked when post request received with paremter action="upload"
-           see: web.view.mixins.PostActionMixin"""
+        Invoked when post request received with paremter action="upload"
+        see: web.view.mixins.PostActionMixin"""
         data = request.POST
         if not data:
             return HttpResponseBadRequest("Invalid body received")
@@ -117,7 +117,10 @@ class FileUploadMixin(FormView):
             error_message = "Unknown error uploading file"
         finally:
             self._uploaded_file = self._create_file_entry(
-                uploaded_file, created_by=request.user, error_message=error_message, path=file_path,
+                uploaded_file,
+                created_by=request.user,
+                error_message=error_message,
+                path=file_path,
             )
 
         # re render page

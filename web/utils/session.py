@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Session:
     """
-        Helper to manage session data for a request
+    Helper to manage session data for a request
     """
 
     def __init__(self, request):

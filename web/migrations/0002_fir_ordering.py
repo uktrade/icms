@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="furtherinformationrequest", options={"ordering": ["-requested_datetime"]},
+            name="furtherinformationrequest",
+            options={"ordering": ["-requested_datetime"]},
         ),
     ]

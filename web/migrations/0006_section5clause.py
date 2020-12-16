@@ -42,6 +42,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("clause",),},
+            options={
+                "ordering": ("clause",),
+            },
         ),
     ]

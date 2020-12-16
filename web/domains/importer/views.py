@@ -47,12 +47,12 @@ class ImporterListView(ModelFilterView):
     class Display:
         fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
         fields_config = {
-            "name": {"header": "Importer Name", "link": True,},
+            "name": {"header": "Importer Name", "link": True},
             "user": {"no_header": True, "link": True},
-            "registered_number": {"header": "Importer Reg No",},
-            "entity_type": {"header": "Importer Entity Type",},
-            "status": {"header": "Status", "bold": True,},
-            "offices": {"header": "Addresses", "show_all": True,},
+            "registered_number": {"header": "Importer Reg No"},
+            "entity_type": {"header": "Importer Entity Type"},
+            "status": {"header": "Status", "bold": True},
+            "offices": {"header": "Addresses", "show_all": True},
         }
         opts = {"inline": True, "icon_only": True}
         actions = [
@@ -150,7 +150,7 @@ def create_section5_authorities(request, pk):
     if request.POST:
         form = Section5AuthorityForm(importer, request.POST, request.FILES)
         ClauseQuantityFormSet = inlineformset_factory(
-            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False,
+            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
         clause_quantity_formset = ClauseQuantityFormSet(request.POST)
 
@@ -205,7 +205,7 @@ def edit_section5_authorities(request, importer_pk, section5_authority_pk):
 
     if request.POST:
         ClauseQuantityFormSet = inlineformset_factory(
-            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False,
+            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
         clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=section5_authority)
 
@@ -232,7 +232,7 @@ def edit_section5_authorities(request, importer_pk, section5_authority_pk):
     else:
         form = Section5AuthorityForm(importer, instance=section5_authority)
         ClauseQuantityFormSet = inlineformset_factory(
-            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False,
+            Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
         clause_quantity_formset = ClauseQuantityFormSet(instance=section5_authority)
 
@@ -302,7 +302,7 @@ def archive_file_section5_authorities(request, importer_pk, section5_authority_p
     return redirect(
         reverse(
             "importer-section5-authorities-edit",
-            kwargs={"importer_pk": importer_pk, "section5_authority_pk": section5_authority_pk,},
+            kwargs={"importer_pk": importer_pk, "section5_authority_pk": section5_authority_pk},
         )
     )
 
@@ -414,7 +414,7 @@ def create_agent(request, importer_pk, entity):
         form = AgentForm(request.POST, initial=initial)
         if form.is_valid():
             agent = form.save()
-            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk,}))
+            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
         form = AgentForm(initial=initial)
 
@@ -439,7 +439,7 @@ def edit_agent(request, pk):
         form = AgentForm(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()
-            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk,}))
+            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
         form = AgentForm(instance=agent)
 
@@ -501,7 +501,7 @@ def importer_detail_view(request, pk):
     return render(request, "web/domains/importer/view.html", context)
 
 
-def list_postcode_addresses(request,):
+def list_postcode_addresses(request):
     postcode = request.POST.get("postcode")
 
     return JsonResponse(postcode_lookup(postcode), safe=False)

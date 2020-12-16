@@ -31,7 +31,7 @@ class FIRStatuses(models.Manager):
 
 class FurtherInformationRequest(WorkbasketBase, Process):
     """Further information requests for cases requested from
-       applicant by case officers"""
+    applicant by case officers"""
 
     PROCESS_TYPE = "FurtherInformationRequest"
 

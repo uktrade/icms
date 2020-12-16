@@ -11,7 +11,7 @@ def url_path_join(*args):
 
 class FilevalidationService:
     """
-        Basic file validation service
+    Basic file validation service
     """
 
     EXTENSION_BLACKLIST = [
@@ -34,14 +34,14 @@ class FilevalidationService:
 
     def has_valid_extenstion(self, file):
         """
-            Checks if a file extension is not bacllisted
+        Checks if a file extension is not bacllisted
 
-            Arguments:
-                file -- Any object with a name property
+        Arguments:
+            file -- Any object with a name property
 
-            Returns:
-                True - if extension is NOT blacklisted
-                False - if extension is blacklisted
+        Returns:
+            True - if extension is NOT blacklisted
+            False - if extension is blacklisted
         """
         file_name, file_extension = os.path.splitext(file.name)
 
@@ -49,11 +49,11 @@ class FilevalidationService:
 
     def is_valid(self, file):
         """
-            Aggregator function, runs all validation functions
+        Aggregator function, runs all validation functions
 
-            Returns:
-                True - if all validations pass
-                False - if any validation fails
+        Returns:
+            True - if all validations pass
+            False - if any validation fails
         """
         if not self.has_valid_extenstion(file):
             return False

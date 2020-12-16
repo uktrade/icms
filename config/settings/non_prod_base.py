@@ -30,10 +30,21 @@ LOGGING = {
             "processor": structlog.dev.ConsoleRenderer(),
         },
     },
-    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "plain_console",},},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "plain_console",
+        },
+    },
     "loggers": {
-        "django": {"handlers": ["console"], "level": "ERROR",},
-        "web": {"handlers": ["console"], "level": "DEBUG",},
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
+        "web": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+        },
     },
 }
 

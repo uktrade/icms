@@ -45,18 +45,18 @@ urlpatterns = [
         "^case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/management/firs/",
         include(
             [
-                path("", views.management_firs, name="case-management-firs",),
-                re_path("add/$", views.add_fir, name="case-management-fir-add",),
-                path("<int:fir_pk>/edit/", views.edit_fir, name="case-management-fir-edit",),
+                path("", views.management_firs, name="case-management-firs"),
+                re_path("add/$", views.add_fir, name="case-management-fir-add"),
+                path("<int:fir_pk>/edit/", views.edit_fir, name="case-management-fir-edit"),
                 path(
-                    "<int:fir_pk>/archive/", views.archive_fir, name="case-management-fir-archive",
+                    "<int:fir_pk>/archive/", views.archive_fir, name="case-management-fir-archive"
                 ),
                 path(
                     "<int:fir_pk>/withdraw/",
                     views.withdraw_fir,
                     name="case-management-fir-withdraw",
                 ),
-                path("<int:fir_pk>/close/", views.close_fir, name="case-management-fir-close",),
+                path("<int:fir_pk>/close/", views.close_fir, name="case-management-fir-close"),
                 path(
                     "<int:fir_pk>/files/<int:file_pk>/",
                     views.fir_archive_file,
