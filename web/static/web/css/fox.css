@@ -3964,8 +3964,9 @@ label {
 }
 
 .helptext {
-    line-height: 0em;
+    line-height: 1em;
     margin: 0 0 1em 0;
+    padding: 0;
 }
 
 .prompt.north .mand-label {

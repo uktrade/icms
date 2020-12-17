@@ -7,6 +7,7 @@ from web.domains.section5.models import (
     Section5Authority,
     Section5Clause,
 )
+from web.forms.widgets import DateInput
 
 
 class Section5AuthorityForm(forms.ModelForm):
@@ -28,10 +29,10 @@ class Section5AuthorityForm(forms.ModelForm):
             the applicant may use this authority with any office they select.
         """,
     )
-    start_date = forms.DateField(label="Start Date", widget=forms.DateInput)
+    start_date = forms.DateField(label="Start Date", widget=DateInput)
     end_date = forms.DateField(
         label="End Date",
-        widget=forms.DateInput,
+        widget=DateInput,
         help_text="A user will not be able to use this verified Authority on an application past this date.",
     )
 
@@ -66,13 +67,13 @@ class Section5AuthorityForm(forms.ModelForm):
         end_date = data.get("end_date")
         if start_date and end_date and data["start_date"] > data["end_date"]:
             self.add_error("end_date", "End Date must be after Start Date.")
-        return data
 
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.importer = self.importer
         if commit:
             instance.save()
+            self.save_m2m()
         return instance
 
 

@@ -1,12 +1,17 @@
 from unittest.mock import patch
 
+import pytest
+from django.test import Client
+
 from web.domains.importer.models import Importer
+from web.domains.section5.models import Section5Authority
 from web.domains.user.models import User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import (
     ImporterFactory,
     IndividualImporterFactory,
 )
+from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.user.factory import UserFactory
 
 LOGIN_URL = "/"
@@ -353,3 +358,40 @@ class AgentUnarchiveViewTest(AuthTestCase):
         self.agent.refresh_from_db()
         self.assertEqual(self.agent.is_active, True)
         self.assertRedirects(response, f"/importer/{self.importer.pk}/edit/")
+
+
+@pytest.mark.django_db
+def test_create_section5_authority():
+    ilb_admin = UserFactory.create(
+        is_active=True,
+        account_status=User.ACTIVE,
+        password_disposition=User.FULL,
+        permission_codenames=["reference_data_access"],
+    )
+    office_one, office_two = OfficeFactory.create_batch(2, is_active=True)
+    importer = ImporterFactory.create(is_active=True, offices=[office_one, office_two])
+
+    client = Client()
+    client.login(username=ilb_admin.username, password="test")
+    response = client.get(f"/importer/{importer.pk}/section5-authorities/create/")
+    assert response.status_code == 200
+
+    data = {
+        "linked_offices": office_one.pk,
+        "reference": "12",
+        "postcode": "ox51dw",
+        "address": "1 Beech Crescent Kidlington Oxfordshire",
+        "start_date": "01-Dec-2020",
+        "end_date": "02-Dec-2020",
+        "clausequantity_set-TOTAL_FORMS": 0,
+        "clausequantity_set-INITIAL_FORMS": 0,
+    }
+    response = client.post(f"/importer/{importer.pk}/section5-authorities/create/", data=data)
+    assert response.status_code == 302
+
+    section5_authority = Section5Authority.objects.get()
+    assert office_one == section5_authority.linked_offices.first()
+    assert (
+        response["Location"]
+        == f"/importer/{importer.pk}/section5-authorities/{section5_authority.pk}/edit/"
+    )
