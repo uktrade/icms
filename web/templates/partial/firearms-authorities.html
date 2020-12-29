@@ -1,41 +1,42 @@
-<h3>
-Verified
+<h3> Verified Firearms Authorities</h3>
 
-                Firearms
+{% if not firearms_authorities %}
+  <div class="info-box info-box-info">
+    There are no Firearms Authorities attached
+  </div>
+{% else %}
+  <ul class="tabs -tabs " data-tab-group="tg-authorities" role="tablist">
+    <li id="tg-authorities-CURRENT" class="current-tab" aria-selected="true" data-tab-key="CURRENT" role="tab" aria-controls="tg-authorities-CURRENT">
+      <a href="javascript:FOXtabs.switchTab('tg-authorities', 'CURRENT')">Current</a>
+    </li>
+    <li id="tg-authorities-ARCHIVED" class="disabled-tab" aria-selected="false" data-tab-key="ARCHIVED" role="tab" aria-controls="tg-authorities-archived">
+      <a href="javascript:FOXtabs.switchTab('tg-authorities', 'ARCHIVED')">Archived</a>
+    </li>
+  </ul>
 
-           Authorities
-</h3>
-            <ul class="tabs -tabs " data-tab-group="s1Kzx6J_plrnqVW43/tg-authorities" role="tablist">
-  <li id="tks1Kzx6J_plrnqVW43-tg-authoritiesCURRENT" class="current-tab" aria-selected="true" data-tab-key="CURRENT" role="tab" aria-controls="tcs1Kzx6J_plrnqVW43-tg-authoritiesCURRENT"><a href="javascript:FOXtabs.switchTab('s1Kzx6J_plrnqVW43/tg-authorities', 'CURRENT');">Current</a></li>
-  <li id="tks1Kzx6J_plrnqVW43-tg-authoritiesARCHIVED" class="disabled-tab" aria-selected="false" data-tab-key="ARCHIVED" role="tab" aria-controls="tcs1Kzx6J_plrnqVW43-tg-authoritiesARCHIVED">Archived</li>
-</ul><div id="tcs1Kzx6J_plrnqVW43-tg-authoritiesCURRENT" aria-labelledby="tks1Kzx6J_plrnqVW43-tg-authoritiesCURRENT" class="tab-content " style="" data-tab-group="s1Kzx6J_plrnqVW43/tg-authorities" data-tab-key="CURRENT" aria-hidden="false">
+  <div aria-labelledby="authorities-current" class="tab-content " style="" data-tab-group="tg-authorities" data-tab-key="CURRENT" aria-hidden="false">
+    {% with firearms_authorities_list = firearms_authorities.filter(is_active=True) %}
+      {% include 'partial/firearms-authorities/list.html' %}
+    {% endwith %}
+  </div>
 
-            <div class="info-box info-box-info">
-There aren't any
+  <div id="tcs1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-authorities" data-tab-key="ARCHIVED" aria-hidden="true">
+    {% with firearms_authorities_list = firearms_authorities.filter(is_active=False) %}
+      {% include 'partial/firearms-authorities/list.html' %}
+    {% endwith %}
+  </div>
+{% endif %}
 
-                Firearms
-
-           authorities.
-</div>
-
-
-            <div class="list-actions">
-              <ul class="menu-out flow-across">
-  <li>  <button type="button" role="action-button" data-in-form data-action="action-IMP_LIB_AUTHORITY-add-authority" class="small-button icon-plus button">
-    Add Firearms Authority  </button></li>
-</ul>
-            </div>
-
-                </div><div id="tcs1Kzx6J_plrnqVW43-tg-authoritiesARCHIVED" aria-labelledby="tks1Kzx6J_plrnqVW43-tg-authoritiesARCHIVED" class="tab-content " style="display: none;" data-tab-group="s1Kzx6J_plrnqVW43/tg-authorities" data-tab-key="ARCHIVED" aria-hidden="true">
-
-            <div class="info-box info-box-info">
-There aren't any
-
-                Firearms
-
-           authorities.
-</div>
-
-                </div><input type="hidden" data-tab-group="s1Kzx6J_plrnqVW43/tg-authorities" name="_int_tab_s1Kzx6J_plrnqVW43/tg-authorities" value="CURRENT"/>
-
-                <div class="section-break"></div>
+{% if not read_only %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ url('importer-firearms-authorities-create', kwargs={'pk': object.pk}) }}"
+          class="button small-button icon-plus">
+          Create Firearms Authority</a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
+<div class="section-break"></div>

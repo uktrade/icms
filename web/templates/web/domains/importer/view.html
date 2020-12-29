@@ -85,6 +85,13 @@
   {% endwith %}
 
   {% with
+    firearms_authorities = object.firearms_authorities.all(),
+    read_only = True %}
+
+    {% include "partial/firearms-authorities.html" %}
+  {% endwith %}
+
+  {% with
     section5_authorities = object.section5_authorities.all(),
     read_only = True %}
 

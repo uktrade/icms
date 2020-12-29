@@ -60,6 +60,10 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
+  {% with firearms_authorities = object.firearms_authorities.all() %}
+    {% include "partial/firearms-authorities.html" %}
+  {% endwith %}
+
   {% with section5_authorities = object.section5_authorities.all() %}
     {% include "partial/section5-authorities.html" %}
   {% endwith %}
@@ -81,9 +85,6 @@
     {% include "partial/contacts/contacts.html" %}
   {% endwith %}
 
-  {#
-  {% include "partial/firearms-authorities.html" %}
-  #}
 {% endblock %}
 
 {% block page_js %}

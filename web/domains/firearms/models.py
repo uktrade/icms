@@ -4,6 +4,7 @@ from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.domains.user.models import User
 from web.models.mixins import Archivable, Sortable
 
 
@@ -48,6 +49,32 @@ class FirearmsAuthority(models.Model):
         related_name="firearms_authorities",
     )
     files = models.ManyToManyField(File)
+
+
+class FirearmsAct(Archivable, models.Model):
+    act = models.CharField(max_length=100)
+    description = models.TextField()
+    is_active = models.BooleanField(default=True)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    updated_datetime = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name="+", blank=True, null=True
+    )
+
+    class Meta:
+        ordering = ("act",)
+
+    def __str__(self):
+        return self.act
+
+
+class ActQuantity(models.Model):
+    firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.PROTECT)
+    firearmsact = models.ForeignKey(FirearmsAct, on_delete=models.PROTECT)
+
+    quantity = models.IntegerField(blank=True, null=True)
+    infinity = models.BooleanField(default=False)
 
 
 class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):

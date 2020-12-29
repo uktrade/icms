@@ -1,5 +1,6 @@
 from django.urls import path, re_path
 
+from web.domains.firearms import views as firearms_views
 from web.domains.importer import views
 
 urlpatterns = [
@@ -17,6 +18,37 @@ urlpatterns = [
         "<int:importer_pk>/contacts/<int:contact_pk>/delete/",
         views.delete_contact,
         name="importer-contact-delete",
+    ),
+    # firearms authorities
+    path(
+        "<int:pk>/firearms-authorities/create/",
+        firearms_views.create_firearms_authorities,
+        name="importer-firearms-authorities-create",
+    ),
+    path(
+        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/edit/",
+        firearms_views.edit_firearms_authorities,
+        name="importer-firearms-authorities-edit",
+    ),
+    path(
+        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/",
+        firearms_views.detail_firearms_authorities,
+        name="importer-firearms-authorities-detail",
+    ),
+    path(
+        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/archive/",
+        firearms_views.archive_firearms_authorities,
+        name="importer-firearms-authorities-archive",
+    ),
+    path(
+        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/unarchive/",
+        firearms_views.unarchive_firearms_authorities,
+        name="importer-firearms-authorities-unarchive",
+    ),
+    path(
+        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/files/<int:file_pk>/",
+        firearms_views.archive_file_firearms_authorities,
+        name="importer-firearms-authorities-file-archive",
     ),
     # section 5 authorities
     path(

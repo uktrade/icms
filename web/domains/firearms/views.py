@@ -1,20 +1,32 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
+from django.db.models import F
+from django.forms.models import inlineformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from web.domains.file.views import handle_uploaded_file
+from web.domains.importer.models import Importer
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
 from web.views.mixins import PostActionMixin
 
 from .forms import (
+    FirearmsAuthorityForm,
+    FirearmsQuantityForm,
     ObsoleteCalibreForm,
     ObsoleteCalibreGroupFilter,
     ObsoleteCalibreGroupForm,
 )
-from .models import ObsoleteCalibre, ObsoleteCalibreGroup
+from .models import (
+    ActQuantity,
+    FirearmsAct,
+    FirearmsAuthority,
+    ObsoleteCalibre,
+    ObsoleteCalibreGroup,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -222,3 +234,168 @@ def view_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 
     return render(request, "web/domains/firearms/group/view.html", {"object": calibre_group})
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_firearms_authorities(request, pk):
+    importer = get_object_or_404(Importer, pk=pk)
+
+    if request.POST:
+        form = FirearmsAuthorityForm(importer, request.POST, request.FILES)
+        ClauseQuantityFormSet = inlineformset_factory(
+            FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
+        )
+        clause_quantity_formset = ClauseQuantityFormSet(request.POST)
+
+        if form.is_valid() and clause_quantity_formset.is_valid():
+            firearms_authority = form.save()
+            for clause_quantity_form in clause_quantity_formset:
+                clause_quantity = clause_quantity_form.save(commit=False)
+                clause_quantity.firearmsauthority = firearms_authority
+                clause_quantity.save()
+
+            files = request.FILES.getlist("files")
+            for f in files:
+                handle_uploaded_file(f, request.user, firearms_authority.files)
+
+            return redirect(
+                reverse(
+                    "importer-firearms-authorities-edit",
+                    kwargs={
+                        "importer_pk": importer.pk,
+                        "firearms_authority_pk": firearms_authority.pk,
+                    },
+                )
+            )
+    else:
+        form = FirearmsAuthorityForm(importer)
+
+        # Create a formset to specify quantity for each firearmsacts
+        initial = FirearmsAct.objects.annotate(firearmsact=F("pk")).values("firearmsact")
+        ClauseQuantityFormSet = inlineformset_factory(
+            FirearmsAuthority,
+            ActQuantity,
+            extra=len(initial),
+            form=FirearmsQuantityForm,
+            can_delete=False,
+        )
+        clause_quantity_formset = ClauseQuantityFormSet(initial=initial)
+
+    context = {
+        "object": importer,
+        "form": form,
+        "formset": clause_quantity_formset,
+    }
+
+    return render(request, "web/domains/importer/create-firearms-authority.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_firearms_authorities(request, importer_pk, firearms_authority_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    firearms_authority = get_object_or_404(FirearmsAuthority, pk=firearms_authority_pk)
+
+    if request.POST:
+        ClauseQuantityFormSet = inlineformset_factory(
+            FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
+        )
+        clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=firearms_authority)
+
+        form = FirearmsAuthorityForm(
+            importer, request.POST, request.FILES, instance=firearms_authority
+        )
+        if form.is_valid() and clause_quantity_formset.is_valid():
+            firearms_authority = form.save()
+            clause_quantity_formset.save()
+
+            files = request.FILES.getlist("files")
+            for f in files:
+                handle_uploaded_file(f, request.user, firearms_authority.files)
+
+            return redirect(
+                reverse(
+                    "importer-firearms-authorities-edit",
+                    kwargs={
+                        "importer_pk": importer.pk,
+                        "firearms_authority_pk": firearms_authority.pk,
+                    },
+                )
+            )
+    else:
+        form = FirearmsAuthorityForm(importer, instance=firearms_authority)
+        ClauseQuantityFormSet = inlineformset_factory(
+            FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
+        )
+        clause_quantity_formset = ClauseQuantityFormSet(instance=firearms_authority)
+
+    context = {
+        "object": importer,
+        "form": form,
+        "firearms_authority": firearms_authority,
+        "formset": clause_quantity_formset,
+    }
+
+    return render(request, "web/domains/importer/edit-firearms-authority.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def detail_firearms_authorities(request, importer_pk, firearms_authority_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    firearms_authority = get_object_or_404(FirearmsAuthority, pk=firearms_authority_pk)
+
+    context = {
+        "object": importer,
+        "firearms_authority": firearms_authority,
+    }
+
+    return render(request, "web/domains/importer/detail-firearms-authority.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_firearms_authorities(request, importer_pk, firearms_authority_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    authority = get_object_or_404(
+        importer.firearms_authorities.filter(is_active=True), pk=firearms_authority_pk
+    )
+    authority.is_active = False
+    authority.save()
+
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_firearms_authorities(request, importer_pk, firearms_authority_pk):
+    importer = get_object_or_404(Importer, pk=importer_pk)
+    authority = get_object_or_404(
+        importer.firearms_authorities.filter(is_active=False), pk=firearms_authority_pk
+    )
+    authority.is_active = True
+    authority.save()
+
+    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_file_firearms_authorities(request, importer_pk, firearms_authority_pk, file_pk):
+    authority = get_object_or_404(
+        FirearmsAuthority, pk=firearms_authority_pk, importer_id=importer_pk
+    )
+    document = authority.files.get(pk=file_pk)
+    document.is_active = False
+    document.save()
+
+    return redirect(
+        reverse(
+            "importer-firearms-authorities-edit",
+            kwargs={"importer_pk": importer_pk, "firearms_authority_pk": firearms_authority_pk},
+        )
+    )

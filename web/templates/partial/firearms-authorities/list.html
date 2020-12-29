@@ -1,0 +1,60 @@
+<table class="setoutList" id="tbl-firearms-authorities">
+  <thead>
+    <tr>
+      <th scope="col">Reference</th>
+      <th scope="col">Certificate Type</th>
+      <th scope="col">Issuing Constabulary</th>
+      <th scope="col">Address</th>
+      <th scope="col">Postcode</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">End Date</th>
+      {% if not read_only %}
+        <th scope="col">Actions</th>
+      {% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for firearms_authority in firearms_authorities_list %}
+    <tr>
+      <td>
+        <a
+          href="{{ url(
+                     'importer-firearms-authorities-detail',
+                     args=[object.pk, firearms_authority.pk]) }}">
+          {{ firearms_authority.reference }}
+        </a>
+      </td>
+      <td>{{ firearms_authority.get_certificate_type_display() }}</td>
+      <td>{{ firearms_authority.issuing_constabulary.name }}</td>
+      <td>{{ firearms_authority.address|nl2br() or '' }}</td>
+      <td>{{ firearms_authority.postcode }}</td>
+      <td>{{ firearms_authority.start_date }}</td>
+      <td>{{ firearms_authority.end_date }}</td>
+      {% if not read_only %}
+        <td>
+          <a
+            href="{{ url('importer-firearms-authorities-edit', args=[object.pk, firearms_authority.pk]) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+          {% if firearms_authority.is_active %}
+            <form method="post"
+                  action="{{ url('importer-firearms-authorities-archive', args=[object.pk, firearms_authority.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Archive</button>
+            </form>
+          {% else %}
+            <form method="post"
+                  action="{{ url('importer-firearms-authorities-unarchive', args=[object.pk, firearms_authority.pk]) }}"
+                  class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="button small-button icon-bin">Restore</button>
+            </form>
+          {% endif %}
+        </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
