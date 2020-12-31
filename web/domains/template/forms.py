@@ -1,6 +1,8 @@
 from django import forms
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
+from web.domains.template.widgets import EndorsementTemplateWidget
+
 from .models import Template
 
 
@@ -72,3 +74,15 @@ class TemplatesFilter(FilterSet):
     class Meta:
         model = Template
         fields = []  # Django complains without fields set in the meta
+
+
+class EndorsementUsageForm(forms.Form):
+    linked_endorsement = forms.ModelChoiceField(
+        label="",
+        help_text="""
+            Search an endorsement to add. Endorsements returned are matched against
+            name and content.
+        """,
+        queryset=Template.objects.filter(template_type=Template.ENDORSEMENT),
+        widget=EndorsementTemplateWidget,
+    )

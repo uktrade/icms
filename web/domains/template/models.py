@@ -154,3 +154,13 @@ class CFSScheduleTranslationParagraph(models.Model):
 
     class Meta:
         ordering = ("order",)
+
+
+class EndorsementUsage(models.Model):
+    application_type = models.ForeignKey(
+        "web.ImportApplicationType", on_delete=models.PROTECT, related_name="+"
+    )
+    linked_endorsements = models.ManyToManyField(Template)
+
+    class Meta:
+        ordering = ("application_type__type",)

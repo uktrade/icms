@@ -1,10 +1,17 @@
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse_lazy
 
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 
-from .forms import EndorsementCreateTemplateForm, GenericTemplate, TemplatesFilter
-from .models import Template
+from .forms import (
+    EndorsementCreateTemplateForm,
+    EndorsementUsageForm,
+    GenericTemplate,
+    TemplatesFilter,
+)
+from .models import EndorsementUsage, Template
 
 
 class TemplateListView(ModelFilterView):
@@ -66,3 +73,36 @@ class EndorsementCreateView(ModelCreateView):
         template.application_domain = Template.IMPORT_APPLICATION
 
         return super().form_valid(form)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def list_endorsement_usages(request):
+    usages = EndorsementUsage.objects.all()
+    return render(request, "web/domains/template/list-endorsement-usages.html", {"objects": usages})
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_endorsement_usage(request, pk):
+    usage = get_object_or_404(EndorsementUsage, pk=pk)
+    if request.POST:
+        form = EndorsementUsageForm(request.POST)
+        if form.is_valid():
+            linked_endorsement = form.cleaned_data["linked_endorsement"]
+            usage.linked_endorsements.add(linked_endorsement)
+    else:
+        form = EndorsementUsageForm()
+
+    context = {"object": usage, "form": form}
+    return render(request, "web/domains/template/edit-endorsement-usage.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def archive_endorsement_usage_link(request, usage_pk, link_pk):
+    usage = get_object_or_404(EndorsementUsage, pk=usage_pk)
+    endorsement = get_object_or_404(Template, pk=link_pk)
+    usage.linked_endorsements.remove(endorsement)
+
+    return redirect(reverse("template-endorsement-usage-edit", kwargs={"pk": usage.pk}))

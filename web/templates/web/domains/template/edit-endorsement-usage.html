@@ -1,0 +1,106 @@
+{% extends "layout/sidebar.html" %}
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+{% include "partial/template/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('template-endorsement-usages') }}"
+        class="prev-link">
+        Maintain Endorsement Usages
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<div class="info-box info-box-info">
+  <h4>
+    {{ object.application_type.type }}
+    {% if object.application_type.sub_type %}
+      - {{ object.application_type.sub_type }}
+    {% endif %}
+  </h4>
+  The endorsements below will be automatically added to all cases of this application type.
+</div>
+
+{% with endorsements = object.linked_endorsements.all() %}
+{% if not endorsements %}
+<div class="info-box info-box-info">
+  There are no endorsements attached.
+</div>
+{% else %}
+<table class="setoutList">
+  <thead>
+    <tr>
+      <th scope="col">Endorsement Name</th>
+      <th scope="col">Template Status</th>
+      <th scope="col">Endorsement text</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tboby>
+  {% for endorsement in object.linked_endorsements.all() %}
+  <tr>
+    <td>{{ endorsement.template_name }}</td>
+    <td>
+      {% if endorsement.is_active %}
+      Current
+      {% else %}
+      Archived
+      {% endif %}
+    </td>
+    <td>{{ endorsement.template_content }}</td>
+    <td>
+      <form
+        method="post"
+        action="{{ url('template-endorsement-usage-link-archive', kwargs={'usage_pk': object.pk, 'link_pk': endorsement.pk}) }}"
+        class="form-inline">
+        {{ csrf_input }}
+        <button type="submit" class="button small-button icon-bin">Archive</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endwith %}
+
+<h4>Add an Endorsement</h4>
+<div class="container setoutForm">
+  <form
+    method="post"
+    action="{{ url('template-endorsement-usage-edit', kwargs={'pk': object.pk}) }}"
+    class="form-inline">
+    {{ csrf_input }}
+    <div class="container setoutForm">
+      <div class="row">
+        <div class="four columns">
+          {{ form.as_p() }}
+        </div>
+        <div class="two columns">
+          <button type="submit" class="button small-button icon-add">Add Endorsement</button>
+        </div>
+        <div class="six columns"></div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+  {{ super() }}
+{% endblock %}

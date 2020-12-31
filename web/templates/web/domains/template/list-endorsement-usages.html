@@ -1,0 +1,57 @@
+{% extends "layout/sidebar.html" %}
+
+
+{% block sidebar %}
+{% include "partial/template/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a href="{{ url('template-list') }}" class="prev-link">Template</a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<div class="info-box info-box-info">
+  <h4>Linking Endorsements</h4>
+  The available application types, and the endorsements which are currently linked to them,
+  are displayed below. Click 'Edit' to add or remove endorsements from each application type.
+  The linked endorsements will be automatically added to all cases of that application type.
+</div>
+
+<table class="setoutList">
+  <thead>
+    <tr>
+      <th scope="col">Application Type</th>
+      <th scope="col">Application Sub-type</th>
+      <th scope="col">Linked Endorsements</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tboby>
+    {% for usage in objects %}
+      <tr>
+        <td>{{ usage.application_type.type }}</td>
+        <td>{{ usage.application_type.sub_type }}</td>
+        <td>
+          {% for endorsement in usage.linked_endorsements.all() %}
+            {{ endorsement.template_name }}
+            {% if not loop.last %},{% endif %}
+          {% endfor %}
+        </td>
+        <td>
+          <a
+            href="{{ url("template-endorsement-usage-edit", kwargs={"pk": usage.pk}) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
