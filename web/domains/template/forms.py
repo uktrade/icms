@@ -16,26 +16,40 @@ class GenericTemplate(forms.ModelForm):
 
     def set_fields(self, template_type):
         if template_type == Template.EMAIL_TEMPLATE:
+            del self.fields["countries"]
             self.fields["template_title"].label = "Email Subject"
             self.fields["template_content"].label = "Email Body"
 
         if template_type == Template.LETTER_TEMPLATE:
+            del self.fields["countries"]
             del self.fields["template_title"]
             self.fields["template_content"].label = "Letter"
 
         if template_type == Template.DECLARATION:
-            self.fields["template_title"].label = "Declaration Title"
+            self.fields["template_name"].label = "Declaration Title"
             self.fields["template_content"].label = "Declaration Text"
             self.fields[
                 "template_content"
             ].help_text = "This will be displayed as the main text of the Submit page"
+            del self.fields["countries"]
+            del self.fields["template_title"]
+
+        if template_type == Template.CFS_DECLARATION_TRANSLATION:
+            self.fields["template_name"].label = "CFS Translation Name"
+            self.fields["template_content"].label = "Translation"
+            self.fields[
+                "template_content"
+            ].help_text = "This will be displayed as the main text of the Submit page"
+            del self.fields["template_title"]
 
         if template_type == Template.ENDORSEMENT:
             self.fields["template_name"].label = "Endorsment Name"
             self.fields["template_content"].label = "Endorsement Text"
+            del self.fields["countries"]
             del self.fields["template_title"]
 
         if template_type == Template.LETTER_FRAGMENT:
+            del self.fields["countries"]
             del self.fields["template_title"]
             self.fields["template_name"].label = "Fragment Name"
             self.fields["template_content"].label = "Fragment Text"
@@ -49,7 +63,7 @@ class GenericTemplate(forms.ModelForm):
 
     class Meta:
         model = Template
-        fields = ["template_name", "template_title", "template_content"]
+        fields = ["template_name", "countries", "template_title", "template_content"]
 
 
 class EndorsementCreateTemplateForm(GenericTemplate):

@@ -1,0 +1,19 @@
+{% extends "model/view.html" %}
+
+{% block sidebar %}
+  {% include "partial/template/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('template-list') }}"
+        class="prev-link">
+        Maintain Templates
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}

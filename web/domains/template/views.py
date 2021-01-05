@@ -40,6 +40,7 @@ class TemplateListView(ModelFilterView):
 
 
 class TemplateDetailView(ModelDetailView):
+    template_name = "web/domains/template/detail.html"
     form_class = GenericTemplate
     model = Template
     permission_required = "web.reference_data_access"
