@@ -1,5 +1,6 @@
 from django import forms
 from django_filters import CharFilter, ChoiceFilter, FilterSet
+from django_select2 import forms as s2forms
 
 from web.domains.template.widgets import EndorsementTemplateWidget
 
@@ -86,3 +87,24 @@ class EndorsementUsageForm(forms.Form):
         queryset=Template.objects.filter(template_type=Template.ENDORSEMENT),
         widget=EndorsementTemplateWidget,
     )
+
+
+class CFSDeclarationTranslationForm(forms.ModelForm):
+    template_name = forms.CharField(label="CFS Translation Name")
+    template_content = forms.CharField(label="Translation", widget=forms.Textarea)
+
+    class Meta:
+        model = Template
+        fields = ("template_name", "countries", "template_content")
+        widgets = {
+            "countries": s2forms.Select2MultipleWidget,
+        }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.application_domain = Template.CERTIFICATE_APPLICATION
+        instance.template_type = Template.CFS_DECLARATION_TRANSLATION
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance

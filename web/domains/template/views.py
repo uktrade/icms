@@ -3,9 +3,10 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse_lazy
 
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
-from web.views.actions import Archive, Edit, Unarchive
+from web.views.actions import Archive, EditTemplate, Unarchive
 
 from .forms import (
+    CFSDeclarationTranslationForm,
     EndorsementCreateTemplateForm,
     EndorsementUsageForm,
     GenericTemplate,
@@ -35,7 +36,7 @@ class TemplateListView(ModelFilterView):
             "template_type_verbose": {"header": "Template Type"},
             "template_status": {"header": "Template Status"},
         }
-        actions = [Archive(), Unarchive(), Edit()]
+        actions = [Archive(), Unarchive(), EditTemplate()]
 
 
 class TemplateDetailView(ModelDetailView):
@@ -106,3 +107,39 @@ def archive_endorsement_usage_link(request, usage_pk, link_pk):
     usage.linked_endorsements.remove(endorsement)
 
     return redirect(reverse("template-endorsement-usage-edit", kwargs={"pk": usage.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_cfs_declaration_translation(request):
+    if request.POST:
+        form = CFSDeclarationTranslationForm(request.POST)
+        if form.is_valid():
+            template = form.save()
+            return redirect(
+                reverse("template-cfs-declaration-translation-edit", kwargs={"pk": template.pk})
+            )
+    else:
+        form = CFSDeclarationTranslationForm()
+
+    return render(
+        request, "web/domains/template/create-cfs-declaration-translation.html", {"form": form}
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_cfs_declaration_translation(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+    if request.POST:
+        form = CFSDeclarationTranslationForm(request.POST, instance=template)
+        if form.is_valid():
+            template = form.save()
+            return redirect(
+                reverse("template-cfs-declaration-translation-edit", kwargs={"pk": template.pk})
+            )
+    else:
+        form = CFSDeclarationTranslationForm(instance=template)
+
+    context = {"object": template, "form": form}
+    return render(request, "web/domains/template/edit-cfs-declaration-translation.html", context)

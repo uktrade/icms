@@ -4016,6 +4016,7 @@ label {
 .setoutForm .button,
 .setoutForm select,
 .setoutForm textarea,
+.setoutForm .jodit_container,
 .setoutForm .tagger,
 .setoutForm .text-widget,
 .setoutForm .radio-or-tickbox-group,

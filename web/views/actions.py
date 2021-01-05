@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from web.domains.template.models import Template
 from web.models.mixins import Archivable
 
 
@@ -87,6 +88,16 @@ class Edit(LinkAction):
 
     def href(self, object):
         return f"{object.id}/edit/"
+
+
+class EditTemplate(LinkAction):
+    label = "Edit"
+    icon = "icon-pencil"
+
+    def href(self, instance):
+        if instance.template_type == Template.CFS_DECLARATION_TRANSLATION:
+            return reverse("template-cfs-declaration-translation-edit", kwargs={"pk": instance.pk})
+        return f"{instance.id}/edit/"
 
 
 class Archive(PostAction):
