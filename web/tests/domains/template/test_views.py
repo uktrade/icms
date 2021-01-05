@@ -45,7 +45,7 @@ class TemplateListViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + "?page=3")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 3)
+        self.assertEqual(len(page.object_list), 4)
 
 
 class EndorsementCreateViewTest(AuthTestCase):

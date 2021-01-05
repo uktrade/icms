@@ -115,7 +115,7 @@ shell: ## Starts the Python interactive interpreter
 	unset UID && \
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose run --rm web python ./manage.py shell
+	docker-compose run --rm web python ./manage.py shell -i python
 
 psql: ## Starts psql
 	@unset UID && \

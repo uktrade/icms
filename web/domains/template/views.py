@@ -39,12 +39,52 @@ class TemplateListView(ModelFilterView):
         actions = [Archive(), Unarchive(), EditTemplate()]
 
 
+@login_required
+def view_template_fwd(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+
+    if template.template_type == Template.CFS_SCHEDULE:
+        return view_cfs_schedule(request, pk)
+    elif template.template_type == Template.CFS_SCHEDULE_TRANSLATION:
+        return view_cfs_schedule_translation(request, pk)
+    else:
+        return TemplateDetailView.as_view()(request, pk=pk)
+
+
+# used for non-CFS_SCHEDULE templates
 class TemplateDetailView(ModelDetailView):
     template_name = "web/domains/template/detail.html"
     form_class = GenericTemplate
     model = Template
     permission_required = "web.reference_data_access"
     cancel_url = "javascript:history.go(-1)"
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_cfs_schedule(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+
+    assert template.template_type == Template.CFS_SCHEDULE
+
+    context = {"object": template}
+
+    return render(request, "web/domains/template/view-cfs-schedule.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_cfs_schedule_translation(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+
+    assert template.template_type == Template.CFS_SCHEDULE_TRANSLATION
+
+    # TODO: get the english language CFS_SCHEDULE and map it to this translation
+
+    context = {"object": template}
+
+    # TODO: create this html file
+    return render(request, "web/domains/template/view-cfs-schedule-translation.html", context)
 
 
 class TemplateEditView(ModelUpdateView):

@@ -24,5 +24,5 @@ class TemplateFactory(factory.django.DjangoModelFactory):
     template_name = factory.Faker("sentence", nb_words=4)
     template_title = factory.Faker("sentence", nb_words=3)
     template_content = factory.Faker("sentence", nb_words=8)
-    template_type = factory.fuzzy.FuzzyChoice(Template.TYPES, getter=lambda t: t[0])
+    template_type = Template.DECLARATION
     application_domain = factory.fuzzy.FuzzyChoice(Template.DOMAINS, getter=lambda d: d[0])

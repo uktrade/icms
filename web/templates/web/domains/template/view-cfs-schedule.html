@@ -1,0 +1,38 @@
+{% extends "layout/sidebar.html" %}
+
+{% block sidebar %}
+{% include "partial/template/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('template-list') }}"
+        class="prev-link">
+        Maintain Templates
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<table>
+<tr>
+    <td style="width: 20%"><label>CFS Schedule template name</label></td>
+    <td style="vertical-align: top; width: 80%">{{ object.template_name }}</td>
+</tr>
+<tr>
+    <td><label>Template text</label></td>
+    <td>
+        {% for para in object.paragraphs.all() %}
+          <p>{{ para.content }}</p>
+          <hr>
+        {% endfor %}
+    </td>
+</tr>
+</table>
+
+{% endblock %}

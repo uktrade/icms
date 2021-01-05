@@ -77,6 +77,8 @@ class LinkAction(ListAction):
         }
 
 
+# note that this seems to be unused, and web/templates/tables/tables.html (lines
+# 27-28) hardcodes the view-link generation
 class View(LinkAction):
     label = "View"
     icon = "icon-eye"
@@ -95,6 +97,8 @@ class EditTemplate(LinkAction):
     icon = "icon-pencil"
 
     def href(self, instance):
+        # TODO: add CFS_SCHEDULE and CFS_SCHEDULE_TRANSLATION, point those at
+        # their special URLs
         if instance.template_type == Template.CFS_DECLARATION_TRANSLATION:
             return reverse("template-cfs-declaration-translation-edit", kwargs={"pk": instance.pk})
         return f"{instance.id}/edit/"

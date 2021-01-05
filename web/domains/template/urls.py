@@ -2,7 +2,6 @@ from django.urls import path
 
 from .views import (
     EndorsementCreateView,
-    TemplateDetailView,
     TemplateEditView,
     TemplateListView,
     archive_endorsement_usage_link,
@@ -10,11 +9,12 @@ from .views import (
     edit_cfs_declaration_translation,
     edit_endorsement_usage,
     list_endorsement_usages,
+    view_template_fwd,
 )
 
 urlpatterns = [
     path("", TemplateListView.as_view(), name="template-list"),
-    path("<int:pk>/", TemplateDetailView.as_view(), name="template-view"),
+    path("<int:pk>/", view_template_fwd, name="template-view"),
     path("<int:pk>/edit/", TemplateEditView.as_view(), name="template-edit"),
     path(
         "cfs-declaration-translation/new/",

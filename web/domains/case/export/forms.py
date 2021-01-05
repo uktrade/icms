@@ -29,11 +29,13 @@ class NewExportApplicationForm(ModelForm):
 
     application_type = ModelChoiceField(
         queryset=ExportApplicationType.objects.filter(is_active=True),
-        help_text="""DIT does not issue Certificates of Free Sale for food, food
+        help_text=mark_safe(
+            """DIT does not issue Certificates of Free Sale for food, food
         supplements, pesticides and CE marked medical devices.<br><br>
 
         Certificates of Manufacture are applicable only to pesticides that are
-        for export only and not on free sale on the domestic market.""",
+        for export only and not on free sale on the domestic market."""
+        ),
     )
 
     exporter = ModelChoiceField(queryset=Exporter.objects.none())

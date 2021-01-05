@@ -1586,7 +1586,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.CreateModel(
-            name="CFSScheduleTranslationParagraph",
+            name="CFSScheduleParagraph",
             fields=[
                 (
                     "id",

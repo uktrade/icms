@@ -61,7 +61,10 @@ class Template(Archivable, models.Model):
     template_type = models.CharField(max_length=50, choices=TYPES, blank=False, null=False)
     application_domain = models.CharField(max_length=20, choices=DOMAINS, blank=False, null=False)
     template_title = models.CharField(max_length=4000, blank=False, null=True)
+
+    # everything except CFS schedules uses this; CFS schedules use "paragraphs" (see CFSScheduleParagraph, below)
     template_content = models.TextField(blank=False, null=True)
+
     countries = models.ManyToManyField(Country)
     country_translation_set = models.ForeignKey(
         CountryTranslationSet, on_delete=models.SET_NULL, blank=False, null=True
@@ -141,9 +144,10 @@ class Template(Archivable, models.Model):
         )
 
 
-class CFSScheduleTranslationParagraph(models.Model):
-    """Paragraphs for Certificate of Free Sale Schedule and
-    Certificate of Free Sale Schedule Translation templates"""
+class CFSScheduleParagraph(models.Model):
+    """Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation templates"""
+
+    # TODO: do we need constants here for the paragraph names?
 
     template = models.ForeignKey(
         Template, on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"
