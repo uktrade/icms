@@ -8,6 +8,8 @@ from .models import Template
 
 
 class GenericTemplate(forms.ModelForm):
+    countries = forms.MultipleChoiceField(required=False)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
