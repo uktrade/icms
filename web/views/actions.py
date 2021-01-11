@@ -97,10 +97,12 @@ class EditTemplate(LinkAction):
     icon = "icon-pencil"
 
     def href(self, instance):
-        # TODO: add CFS_SCHEDULE and CFS_SCHEDULE_TRANSLATION, point those at
-        # their special URLs
+        # TODO: add CFS_SCHEDULE and point it its special URL
         if instance.template_type == Template.CFS_DECLARATION_TRANSLATION:
             return reverse("template-cfs-declaration-translation-edit", kwargs={"pk": instance.pk})
+        elif instance.template_type == Template.CFS_SCHEDULE_TRANSLATION:
+            return reverse("template-cfs-schedule-translation-edit", kwargs={"pk": instance.pk})
+
         return f"{instance.id}/edit/"
 
 

@@ -7,6 +7,7 @@ from web.views.actions import Archive, EditTemplate, Unarchive
 
 from .forms import (
     CFSDeclarationTranslationForm,
+    CFSScheduleTranslationForm,
     EndorsementCreateTemplateForm,
     EndorsementUsageForm,
     GenericTemplate,
@@ -184,3 +185,30 @@ def edit_cfs_declaration_translation(request, pk):
 
     context = {"object": template, "form": form}
     return render(request, "web/domains/template/edit-cfs-declaration-translation.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def create_cfs_schedule_translation(request):
+    if request.POST:
+        form = CFSScheduleTranslationForm(request.POST)
+
+        if form.is_valid():
+            template = form.save()
+
+            return redirect(
+                reverse("template-cfs-schedule-translation-edit", kwargs={"pk": template.pk})
+            )
+    else:
+        form = CFSScheduleTranslationForm()
+
+    context = {"form": form, "page_title": "Create CFS Schedule translation"}
+
+    return render(request, "web/domains/template/create-cfs-schedule-translation.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_cfs_schedule_translation(request, pk):
+    # TODO: impl
+    raise NotImplementedError("blaa")

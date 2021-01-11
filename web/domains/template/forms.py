@@ -106,7 +106,7 @@ class EndorsementUsageForm(forms.Form):
 
 
 class CFSDeclarationTranslationForm(forms.ModelForm):
-    template_name = forms.CharField(label="CFS Translation Name")
+    template_name = forms.CharField(label="CFS Declaration Translation Name")
     template_content = forms.CharField(label="Translation", widget=forms.Textarea)
 
     class Meta:
@@ -123,4 +123,29 @@ class CFSDeclarationTranslationForm(forms.ModelForm):
         if commit:
             instance.save()
             self.save_m2m()
+        return instance
+
+
+class CFSScheduleTranslationForm(forms.ModelForm):
+    template_name = forms.CharField(label="CFS Schedule Translation Name")
+
+    # TODO: limit countries/country_translation_set by not allowing duplicates
+    # of stuff already in DB. either do it in the query or in clean
+
+    class Meta:
+        model = Template
+        fields = ("template_name", "countries", "country_translation_set")
+        widgets = {
+            "countries": s2forms.Select2MultipleWidget,
+        }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.application_domain = Template.CERTIFICATE_APPLICATION
+        instance.template_type = Template.CFS_SCHEDULE_TRANSLATION
+
+        if commit:
+            instance.save()
+            self.save_m2m()
+
         return instance
