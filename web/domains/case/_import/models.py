@@ -8,14 +8,20 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
+from web.domains.workbasket.base import WorkbasketBase
+from web.flow.models import Process
 
 
 class ImportApplicationType(models.Model):
+    TYPE_FIREARMS_AMMUNITION_CODE = "FA"
+    TYPE = ((TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),)
+
+    SUBTYPE_OPEN_INDIVIDUAL_LICENCE = "OIL"
+    SUBTYPE = ((SUBTYPE_OPEN_INDIVIDUAL_LICENCE, "Open Individual Import Licence"),)
+
     is_active = models.BooleanField(blank=False, null=False)
-    type_code = models.CharField(max_length=30, blank=False, null=False)
-    type = models.CharField(max_length=70, blank=False, null=False)
-    sub_type_code = models.CharField(max_length=30, blank=False, null=False)
-    sub_type = models.CharField(max_length=70, blank=True, null=True)
+    type = models.CharField(max_length=70, blank=False, null=False, choices=TYPE)
+    sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SUBTYPE)
     licence_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField(blank=False, null=False)
@@ -87,7 +93,7 @@ class ImportApplicationType(models.Model):
         ordering = ("type", "sub_type")
 
 
-class ImportApplication(models.Model):
+class ImportApplication(WorkbasketBase, Process):
     IN_PROGRESS = "IN_PROGRESS"
     SUBMITTED = "SUBMITTED"
     PROCESSING = "PROCESSING"
@@ -127,8 +133,9 @@ class ImportApplication(models.Model):
     APPROVE = "APPROVE"
     DECISIONS = ((REFUSE, "Refuse"), (APPROVE, "Approve"))
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30, choices=STATUSES, blank=False, null=False)
+    status = models.CharField(
+        max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
+    )
     reference = models.CharField(max_length=50, blank=True, null=True)
     applicant_reference = models.CharField(max_length=500, blank=True, null=True)
     submit_datetime = models.DateTimeField(blank=True, null=True)
@@ -222,6 +229,10 @@ class ImportApplication(models.Model):
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)
+
+
+class OpenIndividualLicenceApplication(ImportApplication):
+    PROCESS_TYPE = "OpenIndividualLicenceApplication"
 
 
 class ConstabularyEmail(models.Model):

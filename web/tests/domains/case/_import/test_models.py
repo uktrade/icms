@@ -12,9 +12,7 @@ class ImportApplicationTypeTest(TestCase):
     def create_application_type(self):
         return ImportApplicationType.objects.create(
             is_active=True,
-            type_code="TEST",
             type="TEST",
-            sub_type_code="TEST",
             sub_type="TEST",
             licence_type_code="TEST",
             sigl_flag=True,
@@ -38,8 +36,8 @@ class ImportApplicationTypeTest(TestCase):
     def test_create_application_type(self):
         application_type = self.create_application_type()
         self.assertTrue(isinstance(application_type, ImportApplicationType))
-        self.assertEqual(application_type.type_code, "TEST")
-        self.assertEqual(application_type.sub_type_code, "TEST")
+        self.assertEqual(application_type.type, "TEST")
+        self.assertEqual(application_type.sub_type, "TEST")
 
     def test_string_representation(self):
         application_type = self.create_application_type()

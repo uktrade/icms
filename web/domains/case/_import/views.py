@@ -1,41 +1,44 @@
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.db import transaction
+from django.shortcuts import redirect, render, reverse
+from django.views.generic import TemplateView
 
-from web.views import ModelCreateView
-
-from .forms import NewImportApplicationForm
-from .models import ImportApplication
-
-permissions = "web.IMP_EDIT_APP"
+from web.domains.case._import.forms import CreateOILForm
+from web.domains.case._import.models import OpenIndividualLicenceApplication
+from web.flow.models import Task
 
 
-class ImportApplicationCreateView(ModelCreateView):
-    template_name = "web/domains/application/import/create.html"
-    model = ImportApplication
-    # TODO: Change to application form when created
-    success_url = reverse_lazy("product-legislation-list")
-    cancel_url = success_url
-    form_class = NewImportApplicationForm
-    page_title = "Create Import Application"
-    permission_required = permissions
+class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
+    template_name = "web/domains/case/import/choice.html"
+    permission_required = "web.importer_access"
 
-    def get_form(self):
-        if hasattr(self, "form"):
-            return self.form
 
-        if self.request.POST:
-            self.form = NewImportApplicationForm(self.request, data=self.request.POST)
-        else:
-            self.form = NewImportApplicationForm(self.request)
-
-        return self.form
-
-    def post(self, request, *args, **kwargs):
-        # see web/static/web/js/main.js::initialize
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_oil(request):
+    with transaction.atomic():
         if request.POST:
-            if request.POST.get("change", None):
-                return super().get(request, *args, **kwargs)
+            form = CreateOILForm(request.user, request.POST)
+            if form.is_valid():
+                application = form.save(commit=False)
+                application.process_type = OpenIndividualLicenceApplication.PROCESS_TYPE
+                application.created_by = request.user
+                application.last_updated_by = request.user
+                application.submitted_by = request.user
+                application.save()
 
-        form = self.get_form()
-        form.instance.created_by = request.user
+                Task.objects.create(process=application, task_type="prepare", owner=request.user)
+                return redirect(reverse("edit-oil", kwargs={"pk": application.pk}))
+        else:
+            form = CreateOILForm(request.user)
 
-        return super().post(request, *args, **kwargs)
+        context = {"form": form, "page_title": "Open Individual Import Licence"}
+        return render(request, "web/domains/case/import/firearms/oil/create.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_oil(request, pk):
+    # TODO: next step when creating OIL Application
+    return render(request, "web/domains/case/import/firearms/oil/edit.html", {})

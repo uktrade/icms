@@ -1,5 +1,3 @@
-import random
-
 import factory
 import factory.fuzzy
 
@@ -11,31 +9,34 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = ImportApplicationType
 
-    is_active = random.choice([True, False])
-    type_code = factory.fuzzy.FuzzyText(length=10)
+    is_active = True
     type = factory.Faker("sentence", nb_words=3)
-    sub_type_code = factory.fuzzy.FuzzyText(length=10)
     sub_type = factory.Faker("sentence", nb_words=2)
     licence_type_code = factory.fuzzy.FuzzyText(length=10)
-    sigl_flag = random.choice([True, False])
-    chief_flag = random.choice([True, False])
+    sigl_flag = True
+    chief_flag = True
     chief_licence_prefix = factory.fuzzy.FuzzyText(length=3)
-    paper_licence_flag = random.choice([True, False])
-    electronic_licence_flag = random.choice([True, False])
-    cover_letter_flag = random.choice([True, False])
-    cover_letter_schedule_flag = random.choice([True, False])
-    category_flag = random.choice([True, False])
+    paper_licence_flag = True
+    electronic_licence_flag = True
+    cover_letter_flag = True
+    cover_letter_schedule_flag = True
+    category_flag = True
     sigl_category_prefix = factory.fuzzy.FuzzyText(length=4)
     chief_category_prefix = factory.fuzzy.FuzzyText(length=2)
     default_licence_length_months = factory.fuzzy.FuzzyInteger(1, 12)
-    endorsements_flag = random.choice([True, False])
+    endorsements_flag = True
     default_commodity_desc = factory.Faker("sentence", nb_words=10)
-    quantity_unlimited_flag = random.choice([True, False])
-    exp_cert_upload_flag = random.choice([True, False])
-    supporting_docs_upload_flag = random.choice([True, False])
-    multiple_commodities_flag = random.choice([True, False])
+    quantity_unlimited_flag = True
+    exp_cert_upload_flag = True
+    supporting_docs_upload_flag = True
+    multiple_commodities_flag = True
     licence_category_description = factory.Faker("sentence", nb_words=8)
-    usage_auto_category_desc_flag = random.choice([True, False])
-    case_checklist_flag = random.choice([True, False])
-    importer_printable = random.choice([True, False])
+    usage_auto_category_desc_flag = True
+    case_checklist_flag = True
+    importer_printable = True
     declaration_template = factory.SubFactory(TemplateFactory, is_active=True)
+
+
+class OILApplicationFactory(ImportApplicationTypeFactory):
+    type = ImportApplicationType.TYPE_FIREARMS_AMMUNITION_CODE
+    sub_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE

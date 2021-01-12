@@ -1,94 +1,63 @@
-from django.db.models import Q
-from django.forms import ModelChoiceField, ModelForm
+from django import forms
+from django_select2.forms import ModelSelect2Widget
+from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case._import.models import (
+    ImportApplicationType,
+    OpenIndividualLicenceApplication,
+)
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 
-from .models import ImportApplication, ImportApplicationType
 
-
-class NewImportApplicationForm(ModelForm):
-
-    application_type = ModelChoiceField(
-        queryset=ImportApplicationType.objects.filter(is_active=True),
-        help_text="Imports of textiles and clothing or iron and steel of value \
-        less than £120 do not need and import license. \
-        This does NOT apply to firearms or sanctions derogations.",
-    )
-
-    importer = ModelChoiceField(
+class CreateOILForm(forms.ModelForm):
+    importer = forms.ModelChoiceField(
         queryset=Importer.objects.none(),
-        help_text="For Derogations from Sanctions applications, \
-        you must be a main importer, \
-        and will not be able to select and agent importer.",
+        label="Main Importer",
+        widget=ModelSelect2Widget(
+            search_fields=(
+                "name__icontains",
+                "user__first_name__icontains",
+                "user__last_name__icontains",
+            )
+        ),
     )
-
-    importer_office = ModelChoiceField(
-        queryset=Office.objects.none(), help_text="The office that this licence will be issued to."
+    importer_office = forms.ModelChoiceField(
+        queryset=Office.objects.none(),
+        label="Importer Office",
+        widget=ModelSelect2Widget(
+            search_fields=("postcode__icontains", "address__icontains"),
+            dependent_fields={"importer": "importer"},
+        ),
     )
-
-    def _get_agent_importer_ids(self, user):
-        """ Get ids for main importers of given agents"""
-        agents = (
-            Importer.objects.filter(is_active=True)
-            # TODO: use django-guardian
-            # .filter(members=user)
-            .filter(main_importer__isnull=False)
-        )
-        ids = []
-        for agent in agents:
-            ids.append(agent.main_importer_id)
-        return ids
-
-    def _update_agents(self, user, application_type, importer):
-        if application_type.type == "Derogation from Sanctions Import Ban":
-            return
-
-        # User is a member of main importer's team, no agent.
-        # TODO: use django-guardian
-        # if user in importer.members.all():
-        #     return
-
-        # TODO: use django-guardian
-        agents = importer.agents.filter(is_active=True)  # .filter(members=user)
-        field = ModelChoiceField(queryset=agents)
-        # Add field configuration to agent as it is a dynamic field
-        # and configuration won't be applied as the other fields.
-        self.fields["agent"] = field
-        self.Meta.fields.append("agent")
-
-    def _update_offices(self, importer):
-        if importer in self.fields["importer"].queryset:
-            self.fields["importer_office"].queryset = importer.offices.filter(is_active=True)
-
-    def _update_importers(self, request, application_type):
-        importers = Importer.objects.filter(is_active=True)
-        # TODO: use django-guardian
-        # main_importers = Q(members=request.user, main_importer__isnull=True)
-        main_importers = Q(main_importer__isnull=True)
-        agent_importers = Q(pk__in=self._get_agent_importer_ids(request.user))
-
-        if application_type.type == "Derogation from Sanctions Import Ban":
-            importers = importers.filter(main_importers)
-        else:
-            importers = importers.filter(main_importers | agent_importers)
-        self.fields["importer"].queryset = importers
-
-    def _update_form(self, request):
-        type_pk = self.data.get("application_type", None)
-        if type_pk:
-            type = ImportApplicationType.objects.get(pk=type_pk)
-            self._update_importers(request, type)
-            importer_pk = self.data.get("importer", None)
-            if importer_pk:
-                importer = Importer.objects.get(pk=importer_pk)
-                self._update_offices(importer)
-                self._update_agents(request.user, type, importer)
-
-    def __init__(self, request, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._update_form(request)
 
     class Meta:
-        model = ImportApplication
-        fields = ["application_type", "importer", "importer_office"]
+        model = OpenIndividualLicenceApplication
+        fields = ("importer", "importer_office")
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        active_importers = Importer.objects.filter(is_active=True)
+        importers = get_objects_for_user(
+            user,
+            ["web.is_contact_of_importer", "web.is_agent_of_importer"],
+            active_importers,
+            any_perm=True,
+            with_superuser=True,
+        )
+        self.fields["importer"].queryset = importers
+        self.fields["importer_office"].queryset = Office.objects.filter(
+            is_active=True, importer__in=importers
+        )
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        application_type = ImportApplicationType.objects.filter(
+            is_active=True, sub_type=ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
+        ).first()
+        instance.application_type = application_type
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
