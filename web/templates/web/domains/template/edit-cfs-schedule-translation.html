@@ -3,5 +3,33 @@
 {% block main_content %}
   {{ super() }}
 
-  <p>TODO: list translations here, have an "Edit" buttong linking to template-cfs-schedule-translation-paragraphs-edit</p>
+  <h3>Translations</h3>
+
+  <a href="{{ url('template-cfs-schedule-translation-paragraphs-edit', kwargs={'pk': object.pk }) }}"
+     class="button small-button icon-pencil">
+     Edit
+  </a>
+
+  <table>
+    <tr>
+        <td style="width: 30%"><label>English</label></td>
+        <td style="vertical-align: top; width: 70%"><label>Translation</label></td>
+    </tr>
+    {% for para in english_paras %}
+      <tr>
+        <td>
+          <p>{{ para.content }}</p>
+        </td>
+        <td>
+          {{ translations.get(para.name, '') }}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+            <hr>
+        </td>
+      </tr>
+    {% endfor %}
+</table>
+
 {% endblock %}

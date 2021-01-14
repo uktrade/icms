@@ -210,5 +210,35 @@ def create_cfs_schedule_translation(request):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_cfs_schedule_translation(request, pk):
-    # TODO: impl
-    raise NotImplementedError("blaa")
+    template = get_object_or_404(Template, pk=pk)
+
+    assert template.template_type == Template.CFS_SCHEDULE_TRANSLATION
+
+    english_template = get_object_or_404(Template, template_type=Template.CFS_SCHEDULE)
+    english_paras = english_template.paragraphs.all()
+
+    assert len(english_paras) > 0
+
+    if request.POST:
+        form = CFSScheduleTranslationForm(request.POST, instance=template)
+
+        if form.is_valid():
+            template = form.save()
+
+            return redirect(
+                reverse("template-cfs-schedule-translation-edit", kwargs={"pk": template.pk})
+            )
+    else:
+        form = CFSScheduleTranslationForm(instance=template)
+
+    translations = {para.name: para.content for para in template.paragraphs.all()}
+
+    context = {
+        "object": template,
+        "form": form,
+        "page_title": "Edit CFS Schedule translation",
+        "english_paras": english_paras,
+        "translations": translations,
+    }
+
+    return render(request, "web/domains/template/edit-cfs-schedule-translation.html", context)
