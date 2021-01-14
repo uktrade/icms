@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from web.domains.country.models import Country
@@ -28,8 +29,8 @@ class CommodityType(models.Model):
     ]
     COMMODITY_TYPE_CHOICES = ((val, val) for val in COMMODITY_TYPES)
 
-    type_code = models.CharField(max_length=20, blank=False, null=False)
-    type = models.CharField(max_length=50, choices=COMMODITY_TYPE_CHOICES, blank=False, null=False)
+    allowed_codes = ArrayField(models.CharField(max_length=10), blank=True, null=True)
+    type = models.CharField(max_length=50, choices=COMMODITY_TYPE_CHOICES)
 
     def __str__(self):
         return self.type
@@ -55,13 +56,6 @@ class Commodity(Archivable, models.Model):
             return f"{self.LABEL} - {self.commodity_code}"
         else:
             return self.LABEL
-
-    def save(self, *args, **kwargs):
-        self.commodity_type = CommodityType.objects.filter(
-            models.Q(type_code=self.commodity_code[:2])
-            | models.Q(type_code=self.commodity_code[:4])
-        ).first()
-        super().save(*args, **kwargs)
 
     class Meta:
         ordering = (

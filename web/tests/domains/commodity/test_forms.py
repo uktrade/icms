@@ -65,17 +65,24 @@ class CommodityFilterTest(TestCase):
 
 class CommodityFormTest(TestCase):
     def test_form_valid(self):
+        code = "42"
+        CommodityTypeFactory.create(allowed_codes=[code])
         form = CommodityForm(
-            data={"commodity_code": "1234567890", "validity_start_date": "13-May-2020"}
+            data={"commodity_code": f"{code}34567890", "validity_start_date": "13-May-2020"}
         )
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
         form = CommodityForm(data={"commodity_code": "1234567890"})
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 1, form.errors)
+
+        self.assertEqual(len(form.errors), 2, form.errors)
+
         message = form.errors["validity_start_date"][0]
         self.assertEqual(message, "You must enter this item")
+
+        message = form.errors["commodity_code"][0]
+        self.assertEqual(message, "Commodity Type for code doesn't exist")
 
 
 class CommodityGroupFilterTest(TestCase):
@@ -143,12 +150,13 @@ class CommodityGroupFilterTest(TestCase):
 
 class CommodityGroupFormTest(TestCase):
     def test_form_valid(self):
-        commodity_type = CommodityTypeFactory.create()
+        allowed_codes = [42, 43]
+        commodity_type = CommodityTypeFactory.create(allowed_codes=allowed_codes)
         form = CommodityGroupForm(
             data={
                 "group_type": CommodityGroup.AUTO,
                 "commodity_type": commodity_type.pk,
-                "group_code": f"{commodity_type.type_code[:2]}st",
+                "group_code": f"{allowed_codes[0]}st",
             }
         )
         self.assertTrue(form.is_valid(), form.errors)

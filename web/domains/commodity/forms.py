@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.forms import (
     CharField,
     ChoiceField,
@@ -85,6 +86,22 @@ class CommodityForm(ModelForm):
         }
         widgets = {"validity_start_date": DateInput, "validity_end_date": DateInput}
 
+    def clean(self):
+        data = super().clean()
+        self.commodity_types = CommodityType.objects.filter(
+            Q(allowed_codes__contains=[data["commodity_code"][:2]])
+            | Q(allowed_codes__contains=[data["commodity_code"][:4]])
+        )
+        if not self.commodity_types.exists():
+            self.add_error("commodity_code", "Commodity Type for code doesn't exist")
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.commodity_type = self.commodity_types.first()
+        if commit:
+            instance.save()
+        return instance
+
 
 class CommodityEditForm(CommodityForm):
     def __init__(self, *args, **kwargs):
@@ -148,8 +165,6 @@ class CommodityGroupForm(ModelForm):
     )
     group_code = CharField(
         label="Group Code",
-        min_length=4,
-        max_length=4,
         help_text="""
             For Auto Groups: please enter the first four digits
             of the commodity code you want to include in this group.
@@ -176,40 +191,31 @@ class CommodityGroupForm(ModelForm):
         cleaned_data = super().clean()
         group_type = cleaned_data.get("group_type")
 
-        # Ensure unit is filled when group_type is CATEGORY
+        # Ensure unit is filled when CommodityGroup.group_type is CATEGORY
         if group_type == CommodityGroup.CATEGORY:
             if not cleaned_data.get("unit"):
                 self.add_error("unit", Field.default_error_messages["required"])
-        else:
+        elif group_type == CommodityGroup.AUTO:
             cleaned_data.pop("unit", None)
 
-        # Validate commodities in regard to commodity type and group type.
-        # If group_type is:
-        #  - CATEGORY user picks manually relevent commodities
-        #  - AUTO the system sets the relevent commodities
-        commodity_type = cleaned_data.get("commodity_type")
-        if group_type == CommodityGroup.CATEGORY:
-            if not cleaned_data.get("commodities"):
-                self.add_error("commodities", Field.default_error_messages["required"])
-        elif group_type == CommodityGroup.AUTO and commodity_type:
-            cleaned_data["commodities"] = Commodity.objects.filter(
-                commodity_type__type=commodity_type.type
-            )
+            #  - CommodityGroup.group_code should be 4 characters long
+            group_code = cleaned_data.get("group_code", "")
+            if group_type == CommodityGroup.AUTO and len(group_code) != 4:
+                self.add_error("group_code", "Group Code should be four characters long")
 
-        # Validate group code. Code shares 2 or 4 first characters from community type code.
-        group_code = cleaned_data.get("group_code", "")
-        if commodity_type and len(group_code) == 4:
-            types = CommodityType.objects.filter(type=commodity_type.type)
-            exists = types.filter(type_code__in=[group_code[:2], group_code[:4]]).exists()
-            if not exists:
-                self.add_error(
-                    "group_code",
-                    "This code is not of the selected type. Allowed code prefixes: {}".format(
-                        ", ".join(types.values_list("type_code", flat=True))
-                    ),
-                )
-
-        return cleaned_data
+            #  - CommodityGroup.group_code should match or start with CommodityType.allowed_codes
+            commodity_type = cleaned_data.get("commodity_type")
+            if len(group_code) == 4:
+                if (
+                    group_code[:2] not in commodity_type.allowed_codes
+                    and group_code not in commodity_type.allowed_codes
+                ):
+                    self.add_error(
+                        "group_code",
+                        "This code is not of the selected type. Allowed code prefixes: {}".format(
+                            ", ".join(commodity_type.allowed_codes)
+                        ),
+                    )
 
 
 class CommodityGroupEditForm(CommodityGroupForm):
