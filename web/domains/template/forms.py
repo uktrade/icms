@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django_select2 import forms as s2forms
@@ -134,3 +136,48 @@ class CFSScheduleTranslationForm(forms.ModelForm):
             self.save_m2m()
 
         return instance
+
+
+class CFSScheduleTranslationParagraphsForm(forms.Form):
+    def __init__(self, english_paras, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.english_paras = english_paras
+
+        for para in english_paras:
+            self.fields[f"para_{para.name}"] = forms.CharField(
+                label=para.content, widget=forms.Textarea
+            )
+
+    def clean(self):
+        data = super().clean()
+
+        # replacement patterns look like [[EXPORTER_NAME]]
+        repl_re = re.compile(r"\[\[[A-Z_]+\]\]")
+
+        for english_para in self.english_paras:
+            name = f"para_{english_para.name}"
+            orig = english_para.content
+
+            translation = data.get(name)
+
+            if translation is None:
+                # all fields are required, so this is handled by django
+                # automatically, no need to manually check all fields are
+                # present
+                continue
+
+            orig_repls = set(repl_re.findall(orig))
+            translation_repls = set(repl_re.findall(translation))
+
+            missing = orig_repls - translation_repls
+            if missing:
+                missing_str = ", ".join(missing)
+                self.add_error(name, f"The translation must include the fields {missing_str}")
+
+            extra = translation_repls - orig_repls
+            if extra:
+                extra_str = ", ".join(extra)
+                self.add_error(name, f"The translation contains invalid fields {extra_str}")
+
+        return data

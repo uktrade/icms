@@ -130,6 +130,8 @@ class Unarchive(PostAction):
         return isinstance(object, Archivable) and not object.is_active
 
     def handle(self, request, view):
+        # TODO: unarchive can be blocked, this function should probably return
+        # an error string if it fails?
         self._get_item(request, view.model).unarchive()
         messages.success(request, "Record restored successfully")
 

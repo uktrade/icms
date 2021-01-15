@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse_lazy
 
@@ -8,6 +9,7 @@ from web.views.actions import Archive, EditTemplate, Unarchive
 from .forms import (
     CFSDeclarationTranslationForm,
     CFSScheduleTranslationForm,
+    CFSScheduleTranslationParagraphsForm,
     DeclarationTemplateForm,
     EmailTemplateForm,
     EndorsementTemplateForm,
@@ -16,7 +18,7 @@ from .forms import (
     LetterTemplateForm,
     TemplatesFilter,
 )
-from .models import EndorsementUsage, Template
+from .models import CFSScheduleParagraph, EndorsementUsage, Template
 
 
 class UnknownTemplateTypeException(Exception):
@@ -275,3 +277,55 @@ def edit_cfs_schedule_translation(request, pk):
     }
 
     return render(request, "web/domains/template/edit-cfs-schedule-translation.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_cfs_schedule_translation_paragraphs(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+
+    assert template.template_type == Template.CFS_SCHEDULE_TRANSLATION
+
+    english_template = get_object_or_404(Template, template_type=Template.CFS_SCHEDULE)
+    english_paras = english_template.paragraphs.all()
+
+    assert len(english_paras) > 0
+
+    if request.POST:
+        form = CFSScheduleTranslationParagraphsForm(english_paras, data=request.POST)
+
+        if form.is_valid():
+            # atomically delete all old translations and insert new ones
+            with transaction.atomic():
+                template.paragraphs.all().delete()
+
+                for english_para in english_paras:
+                    name = f"para_{english_para.name}"
+
+                    translation = form.cleaned_data[name]
+
+                    CFSScheduleParagraph.objects.create(
+                        template=template,
+                        order=english_para.order,
+                        name=english_para.name,
+                        content=translation,
+                    )
+
+            return redirect(
+                reverse("template-cfs-schedule-translation-edit", kwargs={"pk": template.pk})
+            )
+    else:
+        translated_paras = list(template.paragraphs.all())
+        translations = {f"para_{para.name}": para.content for para in translated_paras}
+
+        form = CFSScheduleTranslationParagraphsForm(english_paras, initial=translations)
+
+    context = {
+        "object": template,
+        "form": form,
+        "page_title": "Edit CFS Schedule translation paragraphs",
+    }
+
+    return render(
+        request, "web/domains/template/edit-cfs-schedule-translation-paragraphs.html", context
+    )

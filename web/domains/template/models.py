@@ -159,6 +159,8 @@ class CFSScheduleParagraph(models.Model):
     class Meta:
         ordering = ("order",)
 
+        constraints = [models.UniqueConstraint(fields=["template", "name"], name="unique_name")]
+
 
 class EndorsementUsage(models.Model):
     application_type = models.ForeignKey(

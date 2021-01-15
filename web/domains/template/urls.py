@@ -8,6 +8,7 @@ from .views import (
     create_cfs_schedule_translation,
     edit_cfs_declaration_translation,
     edit_cfs_schedule_translation,
+    edit_cfs_schedule_translation_paragraphs,
     edit_endorsement_usage,
     edit_template,
     list_endorsement_usages,
@@ -39,6 +40,11 @@ urlpatterns = [
         "cfs-schedule-translation/<int:pk>/edit/",
         edit_cfs_schedule_translation,
         name="template-cfs-schedule-translation-edit",
+    ),
+    path(
+        "cfs-schedule-translation-paragraphs/<int:pk>/edit/",
+        edit_cfs_schedule_translation_paragraphs,
+        name="template-cfs-schedule-translation-paragraphs-edit",
     ),
     # endorsements
     path("endorsement/new/", EndorsementCreateView.as_view(), name="template-endorsement-new"),

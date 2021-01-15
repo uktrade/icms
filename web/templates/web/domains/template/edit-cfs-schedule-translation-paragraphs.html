@@ -1,0 +1,23 @@
+{% extends "web/domains/template/create-cfs-schedule-translation.html" %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('template-cfs-schedule-translation-edit', kwargs={'pk': object.pk }) }}"
+        class="prev-link">
+        Edit CFS Schedule Translation
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>CFS Schedule Translation paragraphs for "{{ object.template_name }}"</h3>
+
+  {{forms.form_errors(form=form)}}
+
+  {{ super() }}
+{% endblock %}
