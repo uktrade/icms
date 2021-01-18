@@ -1,8 +1,8 @@
 from django.test import TestCase
 
 from web.domains.template.forms import (
-    EndorsementCreateTemplateForm,
-    GenericTemplate,
+    EmailTemplateForm,
+    EndorsementTemplateForm,
     TemplatesFilter,
 )
 from web.domains.template.models import Template
@@ -64,9 +64,9 @@ class TemplatesFilterTest(TestCase):
         self.assertEqual(results.first().template_name, "Active Letter Template")
 
 
-class GenericTemplateFormTest(TestCase):
+class EmailTemplateFormTest(TestCase):
     def test_form_valid(self):
-        form = GenericTemplate(
+        form = EmailTemplateForm(
             data={
                 "template_title": "Test Title",
                 "template_name": "Test Template",
@@ -76,15 +76,15 @@ class GenericTemplateFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
-        form = GenericTemplate(
+        form = EmailTemplateForm(
             data={
-                "template_name": "Test Endorsement",
+                "template_name": "Test Email template",
             }
         )
         self.assertFalse(form.is_valid())
 
     def test_invalid_form_message(self):
-        form = GenericTemplate(
+        form = EmailTemplateForm(
             data={
                 "template_name": "Test Name",
                 "template_content": "Test Content",
@@ -97,13 +97,13 @@ class GenericTemplateFormTest(TestCase):
 
 class EndorsementCreateFormTest(TestCase):
     def test_form_valid(self):
-        form = EndorsementCreateTemplateForm(
+        form = EndorsementTemplateForm(
             data={"template_name": "Test Endorsement", "template_content": "Just testing"}
         )
         self.assertTrue(form.is_valid())
 
     def test_form_invalid(self):
-        form = EndorsementCreateTemplateForm(
+        form = EndorsementTemplateForm(
             data={
                 "template_name": "Test Endorsement",
             }
@@ -111,7 +111,7 @@ class EndorsementCreateFormTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_invalid_form_message(self):
-        form = EndorsementCreateTemplateForm(
+        form = EndorsementTemplateForm(
             data={
                 "template_content": "Test Content",
             }

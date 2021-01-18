@@ -98,7 +98,7 @@ class TemplateEditViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Editing {self.template}")
+        self.assertIn(f"Editing {self.template}", response.content.decode())
 
 
 class TemplateDetailViewTest(AuthTestCase):
@@ -126,4 +126,4 @@ class TemplateDetailViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Viewing {self.template}")
+        self.assertIn(f"Viewing {self.template}", response.content.decode())

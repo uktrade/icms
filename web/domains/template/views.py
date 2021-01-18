@@ -2,18 +2,25 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.urls import reverse_lazy
 
-from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import Archive, EditTemplate, Unarchive
 
 from .forms import (
     CFSDeclarationTranslationForm,
     CFSScheduleTranslationForm,
-    EndorsementCreateTemplateForm,
+    DeclarationTemplateForm,
+    EmailTemplateForm,
+    EndorsementTemplateForm,
     EndorsementUsageForm,
-    GenericTemplate,
+    LetterFragmentForm,
+    LetterTemplateForm,
     TemplatesFilter,
 )
 from .models import EndorsementUsage, Template
+
+
+class UnknownTemplateTypeException(Exception):
+    pass
 
 
 class TemplateListView(ModelFilterView):
@@ -49,16 +56,18 @@ def view_template_fwd(request, pk):
     elif template.template_type == Template.CFS_SCHEDULE_TRANSLATION:
         return view_cfs_schedule_translation(request, pk)
     else:
-        return TemplateDetailView.as_view()(request, pk=pk)
+        return view_template(request, pk=pk)
 
 
 # used for non-CFS_SCHEDULE templates
-class TemplateDetailView(ModelDetailView):
-    template_name = "web/domains/template/detail.html"
-    form_class = GenericTemplate
-    model = Template
-    permission_required = "web.reference_data_access"
-    cancel_url = "javascript:history.go(-1)"
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_template(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+
+    context = {"object": template, "page_title": f"Viewing {template}"}
+
+    return render(request, "web/domains/template/detail.html", context)
 
 
 @login_required
@@ -88,18 +97,42 @@ def view_cfs_schedule_translation(request, pk):
     return render(request, "web/domains/template/view-cfs-schedule-translation.html", context)
 
 
-class TemplateEditView(ModelUpdateView):
-    template_name = "web/domains/template/edit.html"
-    form_class = GenericTemplate
-    model = Template
-    success_url = reverse_lazy("template-list")
-    cancel_url = success_url
-    permission_required = "web.reference_data_access"
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_template(request, pk):
+    template = get_object_or_404(Template, pk=pk)
+    if template.template_type == Template.DECLARATION:
+        TemplateForm = DeclarationTemplateForm
+    elif template.template_type == Template.EMAIL_TEMPLATE:
+        TemplateForm = EmailTemplateForm
+    elif template.template_type == Template.ENDORSEMENT:
+        TemplateForm = EndorsementTemplateForm
+    elif template.template_type == Template.LETTER_TEMPLATE:
+        TemplateForm = LetterTemplateForm
+    elif template.template_type == Template.LETTER_FRAGMENT:
+        TemplateForm = LetterFragmentForm
+    else:
+        raise UnknownTemplateTypeException(f"Unknown template type '{template.template_type}'")
+
+    if request.POST:
+        form = TemplateForm(request.POST, instance=template)
+        if form.is_valid():
+            template = form.save()
+            return redirect(reverse("edit-template", kwargs={"pk": template.pk}))
+    else:
+        form = TemplateForm(instance=template)
+
+    context = {
+        "object": template,
+        "form": form,
+        "page_title": f"Editing {template}",
+    }
+    return render(request, "web/domains/template/edit.html", context)
 
 
 class EndorsementCreateView(ModelCreateView):
     template_name = "web/domains/template/edit.html"
-    form_class = EndorsementCreateTemplateForm
+    form_class = EndorsementTemplateForm
     model = Template
     success_url = reverse_lazy("template-list")
     cancel_url = success_url

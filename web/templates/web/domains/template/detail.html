@@ -1,4 +1,5 @@
-{% extends "model/view.html" %}
+{% extends "layout/sidebar.html" %}
+
 
 {% block sidebar %}
   {% include "partial/template/sidebar.html" %}
@@ -16,4 +17,72 @@
     </li>
   </ul>
 </div>
+{% endblock %}
+
+{% block main_content %}
+  <div class="container">
+    <div class="row">
+      <div class="one columns"></div>
+      <div class="eight columns">
+        {% if object.template_type == "CFS_DECLARATION_TRANSLATION" %}
+          <dl>
+            <dt class="bold">CFS Translation Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Countries</dt>
+            <dd>
+              {% for country in object.countries.all() %}
+                {{ country.name }}
+                {% if not loop.last %}<br />{% endif %}
+              {% endfor %}
+            </dd>
+            <dt class="bold">Translation</dt>
+            <dd>{{ object.template_content|safe }}</dd>
+          </dl>
+        {% elif object.template_type == "DECLARATION" %}
+          <dl>
+            <dt class="bold">Declaration Title</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Declaration Text</dt>
+            <dd>{{ object.template_content }}</dd>
+          </dl>
+        {% elif object.template_type == "EMAIL_TEMPLATE"%}
+          <dl>
+            <dt class="bold">Email Template Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Email Subject</dt>
+            <dd>{{ object.template_title}}</dd>
+            <dt class="bold">Email Body</dt>
+            <dd>{{ object.template_content }}</dd>
+          </dl>
+        {% elif object.template_type == "LETTER_TEMPLATE"%}
+          <dl>
+            <dt class="bold">Letter Template Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Letter</dt>
+            <dd>{{ object.template_content|safe }}</dd>
+          </dl>
+        {% elif object.template_type == "LETTER_FRAGMENT" %}
+          <dl>
+            <dt class="bold">Fragment Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Fragment Text</dt>
+            <dd>{{ object.template_content|safe }}</dd>
+          </dl>
+        {% elif object.template_type == "ENDORSEMENT" %}
+          <dl>
+            <dt class="bold">Endorsement Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Endorsement Text</dt>
+            <dd>{{ object.template_content }}</dd>
+          </dl>
+        {% else %}
+          <dl>
+            <dt class="bold">Template Name</dt>
+            <dd>{{ object.template_name }}</dd>
+            <dt class="bold">Content</dt>
+            <dd>{{ object.template_content }}</dd>
+          </dl>
+        {% endif %}
+      </div>
+      <div class="three columns"></div>
 {% endblock %}

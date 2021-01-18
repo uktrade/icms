@@ -7,74 +7,57 @@ from web.domains.template.widgets import EndorsementTemplateWidget
 from .models import Template
 
 
-class GenericTemplate(forms.ModelForm):
-    countries = forms.MultipleChoiceField(required=False)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.set_fields(self.instance.template_type)
-        self.enable_html_editor(self.instance.template_type)
-
-    def set_fields(self, template_type):
-        if template_type == Template.EMAIL_TEMPLATE:
-            del self.fields["countries"]
-            self.fields["template_title"].label = "Email Subject"
-            self.fields["template_content"].label = "Email Body"
-
-        if template_type == Template.LETTER_TEMPLATE:
-            del self.fields["countries"]
-            del self.fields["template_title"]
-            self.fields["template_content"].label = "Letter"
-
-        if template_type == Template.DECLARATION:
-            self.fields["template_name"].label = "Declaration Title"
-            self.fields["template_content"].label = "Declaration Text"
-            self.fields[
-                "template_content"
-            ].help_text = "This will be displayed as the main text of the Submit page"
-            del self.fields["countries"]
-            del self.fields["template_title"]
-
-        if template_type == Template.CFS_DECLARATION_TRANSLATION:
-            self.fields["template_name"].label = "CFS Translation Name"
-            self.fields["template_content"].label = "Translation"
-            self.fields[
-                "template_content"
-            ].help_text = "This will be displayed as the main text of the Submit page"
-            del self.fields["template_title"]
-
-        if template_type == Template.ENDORSEMENT:
-            self.fields["template_name"].label = "Endorsment Name"
-            self.fields["template_content"].label = "Endorsement Text"
-            del self.fields["countries"]
-            del self.fields["template_title"]
-
-        if template_type == Template.LETTER_FRAGMENT:
-            del self.fields["countries"]
-            del self.fields["template_title"]
-            self.fields["template_name"].label = "Fragment Name"
-            self.fields["template_content"].label = "Fragment Text"
-
-    def enable_html_editor(self, template_type):
-        """
-        Sets lang=html on textarea boxes that need to show an html editor
-        """
-        if template_type in (Template.LETTER_TEMPLATE, Template.LETTER_FRAGMENT):
-            self.fields["template_content"].widget = forms.Textarea(attrs={"lang": "html"})
-
+class DeclarationTemplateForm(forms.ModelForm):
     class Meta:
         model = Template
-        fields = ["template_name", "countries", "template_title", "template_content"]
+        fields = ("template_name", "template_content")
+        labels = {
+            "template_name": "Declaration Title",
+            "template_content": "Declaration Text",
+        }
 
 
-class EndorsementCreateTemplateForm(GenericTemplate):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class EmailTemplateForm(forms.ModelForm):
+    class Meta:
+        model = Template
+        fields = ("template_name", "template_title", "template_content")
+        labels = {
+            "template_name": "Email Template Name",
+            "template_title": "Email Subject",
+            "template_content": "Email Body",
+        }
 
-        del self.fields["template_title"]
-        self.fields["template_content"].label = "Endorsement Text"
-        self.fields["template_name"].label = "Endorsement Name"
+
+class EndorsementTemplateForm(forms.ModelForm):
+    class Meta:
+        model = Template
+        fields = ("template_name", "template_content")
+        labels = {
+            "template_name": "Endorsement Name",
+            "template_content": "Endorsement Text",
+        }
+
+
+class LetterTemplateForm(forms.ModelForm):
+    class Meta:
+        model = Template
+        fields = ("template_name", "template_content")
+        labels = {
+            "template_name": "Letter Template Name",
+            "template_content": "Letter",
+        }
+        widgets = {"template_content": forms.Textarea(attrs={"lang": "html"})}
+
+
+class LetterFragmentForm(forms.ModelForm):
+    class Meta:
+        model = Template
+        fields = ("template_name", "template_content")
+        labels = {
+            "template_name": "Fragment Name",
+            "template_content": "Fragment Text",
+        }
+        widgets = {"template_content": forms.Textarea(attrs={"lang": "html"})}
 
 
 class TemplatesFilter(FilterSet):
@@ -83,7 +66,9 @@ class TemplatesFilter(FilterSet):
     application_domain = ChoiceFilter(
         choices=Template.DOMAINS, lookup_expr="exact", label="Application Domain"
     )
-    template_type = ChoiceFilter(choices=Template.TYPES, lookup_expr="exact", label="Template Type")
+    template_type = ChoiceFilter(
+        choices=sorted(Template.TYPES), lookup_expr="exact", label="Template Type"
+    )
     template_title = CharFilter(lookup_expr="icontains", label="Template Title")
     template_content = CharFilter(lookup_expr="icontains", label="Template Content")
     is_active = ChoiceFilter(choices=Template.STATUS, lookup_expr="exact", label="Template Status")
