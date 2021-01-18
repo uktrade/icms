@@ -1,11 +1,15 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.shortcuts import redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.views.generic import TemplateView
 
-from web.domains.case._import.forms import CreateOILForm
-from web.domains.case._import.models import OpenIndividualLicenceApplication
+from web.domains.case._import.forms import CreateOILForm, PrepareOILForm
+from web.domains.case._import.models import (
+    ImportApplication,
+    OpenIndividualLicenceApplication,
+)
 from web.flow.models import Task
 
 
@@ -40,5 +44,33 @@ def create_oil(request):
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def edit_oil(request, pk):
-    # TODO: next step when creating OIL Application
-    return render(request, "web/domains/case/import/firearms/oil/edit.html", {})
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if request.POST:
+            form = PrepareOILForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(reverse("edit-oil", kwargs={"pk": pk}))
+
+        else:
+            form = PrepareOILForm(instance=application, initial={"contact": request.user})
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Open Individual Import Licence",
+        }
+
+        return render(request, "web/domains/case/import/firearms/oil/edit.html", context)

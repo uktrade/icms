@@ -16,9 +16,11 @@ class Unit(models.Model):
 
 
 class CommodityType(models.Model):
+    FIREARMS_AND_AMMUNITION = "Firearms and Ammunition"
+
     COMMODITY_TYPES = [
         "Chemicals",
-        "Firearms and Ammunition",
+        FIREARMS_AND_AMMUNITION,
         "Iron, Steel and Aluminium",
         "Oil and Petrochemicals",
         "Precious Metals and Stones",
@@ -96,8 +98,10 @@ class CommodityGroup(Archivable, models.Model):
         return self.commodity_type.type
 
     def __str__(self):
-        if self.id:
-            return f"{self.LABEL} - {self.group_code}"
+        if self.pk and self.group_name:
+            return f"{self.group_code} - {self.group_name}"
+        elif self.pk:
+            return self.group_code
         else:
             return self.LABEL
 

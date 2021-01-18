@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="two columns">
+    <label class="prompt west">Case Reference</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.reference or "Not Yet Assigned" }}</span>
+  </div>
+  <div class="two columns">
+    <label class="prompt west" class="prompt west">Case Owner</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.case_owner or '' }}</span>
+  </div>
+  <div class="two columns">
+    <label class="prompt west">Submitted Date</label>
+  </div>
+  <div class="two columns">
+    <span>
+      {% if process.submit_datetime %}
+        {{ process.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="two columns">
+    <label class="prompt west">Application Type</label>
+  </div>
+  <div class="two columns">
+    <span>
+      {{ process.application_type.get_type_display() }}
+      -
+      {{ process.application_type.get_sub_type_display() }}
+    </span>
+  </div>
+  <div class="two columns">
+    <label class="prompt west">Importer</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.importer }}</span>
+  </div>
+  <div class="two columns">
+    <label class="prompt west">Contact</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.contact or ""}}</span>
+  </div>
+</div>
+
+<div class="row">
+  <div class="two columns">
+    <label class="prompt west">Case Status</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.get_status_display() }}</span>
+  </div>
+  <div class="eight columns"></div>
+</div>

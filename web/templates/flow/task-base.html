@@ -2,11 +2,13 @@
 {% import 'forms/forms.html' as forms %}
 
 
-{% block main_content %}
-  {% block process_details %}
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
     {% include process_template %}
-  {% endblock %}
+  </div>
+{% endblock %}
 
+{% block main_content %}
   {% block task_details %}
     <h3>{{task.task_type}}</h3>
     <div class="container" >

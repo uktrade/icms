@@ -229,6 +229,7 @@ class ImportApplication(WorkbasketBase, Process):
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)
+    commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
 
 
 class OpenIndividualLicenceApplication(ImportApplication):

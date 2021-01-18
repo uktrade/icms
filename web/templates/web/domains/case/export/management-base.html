@@ -1,20 +1,13 @@
 {% extends "layout/sidebar.html" %}
 
 
-{% block header %}
-  <header id="menu-bar">
-    {% include "web/menu/menu.html" %}
-  </header>
-  <div class="has-context-header-grid" id="context-header">
-    <h2>
-      {{title}} {# same as page title if not specified #}
-    </h2>
-    <div class="container contextHeaderGrid">
-      {% with process=object %}
-        {% include 'web/domains/case/export/partials/process.html' %}
-      {% endwith %}
-    </div>
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% with process=object %}
+      {% include 'web/domains/case/export/partials/process.html' %}
+    {% endwith %}
   </div>
+  {{ super() }}
 {% endblock %}
 
 {% block content_actions %}

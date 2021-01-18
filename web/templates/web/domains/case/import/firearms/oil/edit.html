@@ -1,1 +1,17 @@
-TODO: complete me
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+    {% include "partial/case/import/sidebar.html" %}
+{% endblock %}
+
+{% block form_content %}
+  {% for field in form %}
+    {{fields.field(field)}}
+  {% endfor %}
+{% endblock %}
+
+{% block task_actions %}
+  <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock %}

@@ -4023,7 +4023,8 @@ label {
 .setoutForm .mce-panel,
 .setoutForm .prompt,
 .setoutForm .prefixed-or-suffixed-input {
-    margin-bottom: 1em;
+    margin-top: 0.7em;
+    margin-bottom: 0.3em;
 }
 
 .setoutForm .mce-panel.mce-toolbar-grp {
@@ -4032,7 +4033,8 @@ label {
 
 .setoutForm .django-select2, .select2 {
     width: 100% !important;
-    margin-bottom: 1em !important;
+    margin-top: 0.7em !important;
+    margin-bottom: 0.3em !important;
 }
 
 .tightForm input,
