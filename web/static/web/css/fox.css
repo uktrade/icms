@@ -4022,7 +4022,8 @@ label {
 .setoutForm .radio-or-tickbox-group,
 .setoutForm .mce-panel,
 .setoutForm .prompt,
-.setoutForm .prefixed-or-suffixed-input {
+.setoutForm .prefixed-or-suffixed-input,
+setoutForm .radio-label {
     margin-top: 0.7em;
     margin-bottom: 0.3em;
 }
@@ -4395,7 +4396,7 @@ input[type='checkbox'].radio-relative{
     right: 0;
     top: 0;
     width: 1em;
-    padding: 0.22em 0.3em;
+    padding: 0.7em 0.3em;
     cursor: pointer;
     color: #666;
 }

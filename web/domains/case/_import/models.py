@@ -234,6 +234,14 @@ class ImportApplication(WorkbasketBase, Process):
 
 class OpenIndividualLicenceApplication(ImportApplication):
     PROCESS_TYPE = "OpenIndividualLicenceApplication"
+    KNOW_BOUGHT_FROM_CHOICES = (
+        ("yes", "Yes"),
+        ("no", "No"),
+    )
+
+    section1 = models.BooleanField(verbose_name="Section 1", default=True)
+    section2 = models.BooleanField(verbose_name="Section 2", default=True)
+    know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
 
 
 class ConstabularyEmail(models.Model):

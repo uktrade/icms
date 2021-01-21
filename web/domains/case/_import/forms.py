@@ -96,13 +96,22 @@ class PrepareOILForm(forms.ModelForm):
         empty_label=None,
         queryset=Country.objects.filter(name="Any Country"),
     )
+    section1 = forms.BooleanField(disabled=True, label="Firearms Licence for")
+    section2 = forms.BooleanField(disabled=True, label="")
 
     class Meta:
         model = OpenIndividualLicenceApplication
         fields = (
             "contact",
             "applicant_reference",
+            "section1",
+            "section2",
             "origin_country",
             "consignment_country",
             "commodity_group",
+            "know_bought_from",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["know_bought_from"].required = True

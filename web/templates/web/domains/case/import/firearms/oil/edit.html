@@ -7,9 +7,53 @@
 {% endblock %}
 
 {% block form_content %}
-  {% for field in form %}
-    {{fields.field(field)}}
-  {% endfor %}
+  <h4>Contact</h4>
+  {{ fields.field(form.contact) }}
+
+  <h4>Firearms and Ammunition</h4>
+  {{ fields.field(form.applicant_reference) }}
+  {{ fields.field(form.section1, checkbox_label="Section 1") }}
+  {{ fields.field(form.section2, checkbox_label="Section 2") }}
+  {{ fields.field(form.origin_country) }}
+  {{ fields.field(form.consignment_country) }}
+
+  <h4>Goods</h4>
+  {{ fields.field(form.commodity_group) }}
+
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th style="width: 400px"> Goods Description </th>
+        <th> Quantity </th>
+        <th> Unit </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="individual-input">
+            <span class="text-widget">
+              Firearms, component parts thereof, or ammunition of any applicable commodity code,
+              other than those falling under Section 5 of the Firearms Act 1968 as amended.
+            </span>
+          </div>
+        </td>
+        <td>
+          <div class="individual-input">
+            <span class="text-widget">Unlimited</span>
+          </div>
+        </td>
+        <td>
+          <div class="individual-input">
+            <span class="text-widget">units</span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Details of who bought from</h4>
+  {{ fields.field(form.know_bought_from) }}
 {% endblock %}
 
 {% block task_actions %}
