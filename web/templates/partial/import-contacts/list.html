@@ -1,0 +1,60 @@
+{% if not contacts %}
+  <div class="info-box info-box-info">
+    There are no details of who bought from attached.
+  </div>
+{% else %}
+  <table  class="setoutList">
+    <thead>
+      <tr>
+        <th scope="col">Details of who bought from</th>
+        <th scope="col">Address</th>
+        <th scope="col">Is Dealer?</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for contact in contacts %}
+      <tr>
+        <td>
+          {{ contact.first_name}}<br />
+          {{ contact.last_name or contact.registration_number }}
+        </td>
+        <td>
+          {{ contact.street }}<br />
+          {{ contact.city }}
+          {% if contact.postcode %}<br />{{ contact.postcode }}{% endif %}
+          {% if contact.region %}<br />{{ contact.region }}{% endif %}
+          <br />{{ contact.country}}
+        </td>
+        <td>{{ contact.get_dealer_display() }}</td>
+        <td>
+          <a
+            href="{{ url(
+                       'edit-import-contact',
+                       kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<div class="list-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('create-import-contact', kwargs={'pk': process.pk, 'entity': 'legal'}) }}"
+        class="button small-button icon-plus">
+      Add Who Bought From (Legal Person)
+      </a>
+      <a
+        href="{{ url('create-import-contact', kwargs={'pk': process.pk, 'entity': 'natural'}) }}"
+        class="button small-button icon-plus">
+      Add Who Bought From (Natural Person)
+      </a>
+    </li>
+  </ul>
+</div>

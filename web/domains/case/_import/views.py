@@ -8,11 +8,14 @@ from django.views.generic import TemplateView
 
 from web.domains.case._import.forms import (
     CreateOILForm,
+    ImportContactLegalEntityForm,
+    ImportContactPersonForm,
     PrepareOILForm,
     UserImportCertificateForm,
 )
 from web.domains.case._import.models import (
     ImportApplication,
+    ImportContact,
     OpenIndividualLicenceApplication,
     UserImportCertificate,
 )
@@ -218,4 +221,142 @@ def archive_user_import_certificate_file(request, application_pk, certificate_pk
                 "edit-user-import-certificate",
                 kwargs={"application_pk": application_pk, "certificate_pk": certificate_pk},
             )
+        )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def list_import_contacts(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Open Individual Import Licence - Contacts",
+        }
+
+        return render(
+            request, "web/domains/case/import/firearms/import-contacts/list.html", context
+        )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_import_contact(request, pk, entity):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if entity == ImportContact.LEGAL:
+            Form = ImportContactLegalEntityForm
+        else:
+            Form = ImportContactPersonForm
+
+        if request.POST:
+            form = Form(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                import_contact = form.save(commit=False)
+                import_contact.import_application = application
+                import_contact.entity = entity
+                import_contact.save()
+
+                if application.know_bought_from != OpenIndividualLicenceApplication.YES:
+                    application.know_bought_from = OpenIndividualLicenceApplication.YES
+                    application.save()
+
+                return redirect(
+                    reverse(
+                        "edit-import-contact",
+                        kwargs={
+                            "application_pk": pk,
+                            "entity": entity,
+                            "contact_pk": import_contact.pk,
+                        },
+                    )
+                )
+        else:
+            form = Form()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Open Individual Import Licence",
+        }
+
+        return render(
+            request, "web/domains/case/import/firearms/import-contacts/create.html", context
+        )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_import_contact(request, application_pk, entity, contact_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+        person = get_object_or_404(ImportContact, pk=contact_pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if entity == ImportContact.LEGAL:
+            Form = ImportContactLegalEntityForm
+        else:
+            Form = ImportContactPersonForm
+
+        if request.POST:
+            form = Form(data=request.POST, instance=person)
+
+            if form.is_valid():
+                certificate = form.save()
+                document = request.FILES.get("document")
+                if document:
+                    handle_uploaded_file(document, request.user, certificate.files)
+
+                return redirect(
+                    reverse(
+                        "edit-import-contact",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "entity": entity,
+                            "contact_pk": contact_pk,
+                        },
+                    )
+                )
+
+        else:
+            form = Form(instance=person)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Open Individual Import Licence - Edit Import Contact",
+        }
+
+        return render(
+            request, "web/domains/case/import/firearms/import-contacts/edit.html", context
         )

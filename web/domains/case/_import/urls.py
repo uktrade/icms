@@ -1,12 +1,15 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from web.domains.case._import.views import (
     ImportApplicationChoiceView,
     archive_user_import_certificate_file,
+    create_import_contact,
     create_oil,
     create_user_import_certificate,
+    edit_import_contact,
     edit_oil,
     edit_user_import_certificate,
+    list_import_contacts,
     list_user_import_certificates,
 )
 
@@ -35,5 +38,21 @@ urlpatterns = [
         "firearms/oil/<int:application_pk>/certificates/<int:certificate_pk>/files/<int:file_pk>/archive/",
         archive_user_import_certificate_file,
         name="archive-user-import-certificate-file",
+    ),
+    # Firearms and Ammunition - Import Contact
+    path(
+        "firearms/oil/<int:pk>/import-contacts/",
+        list_import_contacts,
+        name="list-import-contacts",
+    ),
+    re_path(
+        "^firearms/oil/(?P<pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/create/$",
+        create_import_contact,
+        name="create-import-contact",
+    ),
+    re_path(
+        "^firearms/oil/(?P<application_pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/(?P<contact_pk>[0-9]+)/edit/$",
+        edit_import_contact,
+        name="edit-import-contact",
     ),
 ]
