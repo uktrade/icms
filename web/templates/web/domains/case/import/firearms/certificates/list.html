@@ -1,0 +1,34 @@
+{% extends "flow/task-base.html" %}
+
+
+{% block sidebar %}
+  {% include "partial/case/import/oil/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('edit-oil', kwargs={'pk': process.pk}) }}"
+        class="prev-link">
+        Edit Open Individual Licence
+        {% if process.applicant_reference %}
+          '{{ process.applicant_reference }}'
+        {% endif %}
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Certificates/Documents</h3>
+  <div class="info-box info-box-info">
+    There are no verified firearms authorities that may be used for this import.
+    Any certificates that have been verified for use will appear here.
+  </div>
+
+  <h3>Other Certificates</h3>
+  {% include "partial/certificates/list.html" %}
+{% endblock %}

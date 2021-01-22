@@ -5,12 +5,14 @@ from guardian.shortcuts import get_objects_for_user
 from web.domains.case._import.models import (
     ImportApplicationType,
     OpenIndividualLicenceApplication,
+    UserImportCertificate,
 )
 from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.forms.widgets import DateInput
 
 
 class CreateOILForm(forms.ModelForm):
@@ -115,3 +117,26 @@ class PrepareOILForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["know_bought_from"].required = True
+
+
+class UserImportCertificateForm(forms.ModelForm):
+    document = forms.FileField(required=False, widget=forms.ClearableFileInput())
+    certificate_type = forms.ChoiceField(choices=(UserImportCertificate.REGISTERED,))
+
+    class Meta:
+        model = UserImportCertificate
+        fields = (
+            "reference",
+            "certificate_type",
+            "constabulary",
+            "date_issued",
+            "expiry_date",
+            "document",
+        )
+        widgets = {"date_issued": DateInput, "expiry_date": DateInput}
+
+    def clean(self):
+        data = super().clean()
+
+        # document is handled in the view
+        data.pop("document", None)

@@ -3,7 +3,9 @@ from django.db import models
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
 from web.domains.commodity.models import CommodityGroup, CommodityType
+from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country, CountryGroup
+from web.domains.file.models import File
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -262,3 +264,27 @@ class ConstabularyEmail(models.Model):
     email_response = models.TextField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
+
+
+class UserImportCertificate(models.Model):
+    REGISTERED_KEY = "registered"
+    REGISTERED_TEXT = "Registered Firearms Dealer Certificate"
+    REGISTERED = (REGISTERED_KEY, REGISTERED_TEXT)
+    CERTIFICATE_TYPE = (
+        ("firearms", "Firearms Certificate"),
+        REGISTERED,
+        ("shotgun", "Shotgun Certificate"),
+    )
+
+    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
+    reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
+    certificate_type = models.CharField(
+        verbose_name="Certificate Type", choices=CERTIFICATE_TYPE, max_length=200
+    )
+    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT)
+    date_issued = models.DateField(verbose_name="Date Issued")
+    expiry_date = models.DateField(verbose_name="Expiry Date")
+    files = models.ManyToManyField(File)
+
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)

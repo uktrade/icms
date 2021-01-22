@@ -1,0 +1,58 @@
+{% if not certificates %}
+  <div class="info-box info-box-info">
+    If you have certificates from a firearms authorities that have not yet been verified,
+    you may attach them below.
+  </div>
+{% else %}
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th scope="col">Reference</th>
+        <th scope="col">Type</th>
+        <th scope="col">Constabulary</th>
+        <th scope="col">Date Issued</th>
+        <th scope="col">Expiry Date</th>
+        <th scope="col">Files</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for certificate in certificates %}
+      <tr>
+        <td>{{ certificate.reference }}</td>
+        <td>{{ certificate.get_certificate_type_display() }}</td>
+        <td>{{ certificate.constabulary.name }}</td>
+        <td>{{ certificate.date_issued.strftime('%d-%b-%Y') }}</td>
+        <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
+        <td>
+          {% for document in certificate.files.filter(is_active=True) %}
+            {{ document.path or document.error_message }}
+          {% else %}
+            N/A
+          {% endfor %}
+        </td>
+        <td>
+          <a
+            href="{{ url('edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+            class="button small-button icon-pencil">
+            Edit
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<div class="list-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('create-user-import-certificate', kwargs={'pk': process.pk}) }}"
+        class="button small-button icon-plus">
+      Add Certificate
+      </a>
+    </li>
+  </ul>
+</div>
+

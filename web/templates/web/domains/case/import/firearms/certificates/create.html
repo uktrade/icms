@@ -1,0 +1,48 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+  {% include "partial/case/import/oil/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('list-user-import-certificates', kwargs={'pk': process.pk}) }}"
+        class="prev-link">
+        Certificates
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+
+
+{% block main_content %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {% for field in form %}
+      {{fields.field(field)}}
+    {% endfor %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  {%- endcall %}
+{% endblock %}

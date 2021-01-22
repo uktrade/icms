@@ -1,0 +1,43 @@
+{% extends "web/domains/case/import/firearms/certificates/create.html" %}
+
+
+{% block main_content %}
+  {{ super() }}
+
+      {% if certificate.files.exists() %}
+          <table class="setoutList">
+            <thead>
+              <tr>
+                <th scope="col">File</th>
+                <th scope="col">Created By</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for document in certificate.files.active() %}
+              <tr>
+                <td>
+                  {{ document.filename }}<br />
+                  <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+                </td>
+                <td>
+                  {{ document.created_by }}<br />
+                  <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+                </td>
+                <td>
+                  <form method="post"
+                        action={{ url(
+                                    'archive-user-import-certificate-file',
+                                    kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk, 'file_pk': document.pk}) }}>
+                    {{ csrf_input }}
+                    <button type="submit" class="button link-button-no-padding">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+
+
+{% endblock %}
