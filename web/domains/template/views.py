@@ -91,11 +91,20 @@ def view_cfs_schedule_translation(request, pk):
 
     assert template.template_type == Template.CFS_SCHEDULE_TRANSLATION
 
-    # TODO: get the english language CFS_SCHEDULE and map it to this translation
+    english_template = get_object_or_404(Template, template_type=Template.CFS_SCHEDULE)
+    english_paras = english_template.paragraphs.all()
 
-    context = {"object": template}
+    assert len(english_paras) > 0
 
-    # TODO: create this html file
+    translations = {para.name: para.content for para in template.paragraphs.all()}
+
+    context = {
+        "object": template,
+        "page_title": "View CFS Schedule translation",
+        "english_paras": english_paras,
+        "translations": translations,
+    }
+
     return render(request, "web/domains/template/view-cfs-schedule-translation.html", context)
 
 

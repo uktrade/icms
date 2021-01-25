@@ -1,0 +1,65 @@
+{% extends "layout/sidebar.html" %}
+
+{% block sidebar %}
+{% include "partial/template/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('template-list') }}"
+        class="prev-link">
+        Maintain Templates
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<table style="width: 100%">
+<tr>
+    <td style="width: 30%"><label>CFS Schedule template name</label></td>
+    <td style="width: 70%">{{ object.template_name }}</td>
+</tr>
+<tr>
+    <td><label>Countries</label></td>
+    <td>
+        {% for country in object.countries.all() %}
+          {{ country.name}}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </td>
+</tr>
+<tr>
+    <td><label>Country translation set</label></td>
+    <td>{{ object.country_translation_set.name }}</td>
+</tr>
+</table>
+
+<h3>Translations</h3>
+
+<table>
+  <tr>
+      <td style="width: 30%"><label>English</label></td>
+      <td style="vertical-align: top; width: 70%"><label>Translation</label></td>
+  </tr>
+  {% for para in english_paras %}
+    <tr>
+      <td>
+        <p>{{ para.content }}</p>
+      </td>
+      <td>
+        {{ translations.get(para.name, '') }}
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+          <hr>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
