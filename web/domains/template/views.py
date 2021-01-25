@@ -120,7 +120,7 @@ def edit_template(request, pk):
         form = TemplateForm(request.POST, instance=template)
         if form.is_valid():
             template = form.save()
-            return redirect(reverse("edit-template", kwargs={"pk": template.pk}))
+            return redirect(reverse("template-edit", kwargs={"pk": template.pk}))
     else:
         form = TemplateForm(instance=template)
 

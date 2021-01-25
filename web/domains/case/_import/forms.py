@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
@@ -190,3 +191,17 @@ class ImportContactLegalEntityForm(forms.ModelForm):
             "registration_number": "Registration Number",
             "dealer": "Did you buy from a dealer?",
         }
+
+
+class SubmitOILForm(forms.Form):
+    confirmation = forms.CharField(
+        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
+    )
+
+    def clean_confirmation(self):
+        confirmation = self.cleaned_data["confirmation"]
+
+        if confirmation != "I AGREE":
+            raise ValidationError("Please agree to the declaration of truth.")
+
+        return confirmation

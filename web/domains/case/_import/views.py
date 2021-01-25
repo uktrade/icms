@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
@@ -11,6 +12,7 @@ from web.domains.case._import.forms import (
     ImportContactLegalEntityForm,
     ImportContactPersonForm,
     PrepareOILForm,
+    SubmitOILForm,
     UserImportCertificateForm,
 )
 from web.domains.case._import.models import (
@@ -20,6 +22,7 @@ from web.domains.case._import.models import (
     UserImportCertificate,
 )
 from web.domains.file.views import handle_uploaded_file
+from web.domains.template.models import Template
 from web.flow.models import Task
 
 
@@ -389,3 +392,63 @@ def validate_oil(request, pk):
         }
 
         return render(request, "web/domains/case/import/firearms/oil/validation.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def submit_oil(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        know_bought_from = application.know_bought_from is not None
+        if know_bought_from == OpenIndividualLicenceApplication.YES:
+            know_bought_from = application.importcontact_set.exists()
+        if (
+            not application.commodity_group
+            or not know_bought_from
+            or not application.userimportcertificate_set.exists()
+        ):
+            return redirect(reverse("oil-validation", kwargs={"pk": application.pk}))
+
+        if request.POST:
+            form = SubmitOILForm(data=request.POST)
+
+            if form.is_valid():
+                application.status = ImportApplication.SUBMITTED
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
+
+                Task.objects.create(process=application, task_type="process", previous=task)
+
+                return redirect(reverse("home"))
+
+        else:
+            form = SubmitOILForm()
+
+        declaration = Template.objects.filter(
+            is_active=True,
+            template_type=Template.DECLARATION,
+            application_domain=Template.IMPORT_APPLICATION,
+            template_name="Declaration of Truth",
+        ).first()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Submit Application",
+            "form": form,
+            "declaration": declaration,
+        }
+
+        return render(request, "web/domains/case/import/firearms/oil/submit.html", context)

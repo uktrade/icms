@@ -11,6 +11,7 @@ from web.domains.case._import.views import (
     edit_user_import_certificate,
     list_import_contacts,
     list_user_import_certificates,
+    submit_oil,
     validate_oil,
 )
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path("firearms/oil/create/", create_oil, name="create-oil"),
     path("firearms/oil/<int:pk>/edit/", edit_oil, name="edit-oil"),
     path("firearms/oil/<int:pk>/validation/", validate_oil, name="oil-validation"),
+    path("firearms/oil/<int:pk>/submit/", submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Certificates
     path(
         "firearms/oil/<int:pk>/certificates/",
