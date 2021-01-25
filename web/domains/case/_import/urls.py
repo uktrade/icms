@@ -11,6 +11,7 @@ from web.domains.case._import.views import (
     edit_user_import_certificate,
     list_import_contacts,
     list_user_import_certificates,
+    validate_oil,
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     # Firearms and Ammunition - Open Individual Licence
     path("firearms/oil/create/", create_oil, name="create-oil"),
     path("firearms/oil/<int:pk>/edit/", edit_oil, name="edit-oil"),
+    path("firearms/oil/<int:pk>/validation/", validate_oil, name="oil-validation"),
     # Firearms and Ammunition - Certificates
     path(
         "firearms/oil/<int:pk>/certificates/",

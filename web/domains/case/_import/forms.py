@@ -71,7 +71,9 @@ class CreateOILForm(forms.ModelForm):
 
 class PrepareOILForm(forms.ModelForm):
     applicant_reference = forms.CharField(
-        label="Applicant's Reference", help_text="Enter your own reference for this application."
+        label="Applicant's Reference",
+        help_text="Enter your own reference for this application.",
+        required=False,
     )
     contact = forms.ModelChoiceField(
         queryset=User.objects.all(),
@@ -121,7 +123,7 @@ class PrepareOILForm(forms.ModelForm):
 
 
 class UserImportCertificateForm(forms.ModelForm):
-    document = forms.FileField(required=False, widget=forms.ClearableFileInput())
+    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
     certificate_type = forms.ChoiceField(choices=(UserImportCertificate.REGISTERED,))
 
     class Meta:
@@ -135,6 +137,11 @@ class UserImportCertificateForm(forms.ModelForm):
             "document",
         )
         widgets = {"date_issued": DateInput, "expiry_date": DateInput}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.files.active().exists():
+            self.fields["document"].required = False
 
     def clean(self):
         data = super().clean()

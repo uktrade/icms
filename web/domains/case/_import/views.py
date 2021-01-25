@@ -360,3 +360,32 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
         return render(
             request, "web/domains/case/import/firearms/import-contacts/edit.html", context
         )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def validate_oil(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        know_bought_from = application.know_bought_from is not None
+        if know_bought_from == OpenIndividualLicenceApplication.YES:
+            know_bought_from = application.importcontact_set.exists()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Validation",
+            "certificates": application.userimportcertificate_set.exists(),
+            "know_bought_from": know_bought_from,
+        }
+
+        return render(request, "web/domains/case/import/firearms/oil/validation.html", context)
