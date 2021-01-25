@@ -2,18 +2,26 @@
     <tr>
         <td>
             <span class="text-widget ">
-              {% if is_importer and read_only %}
-                {{ agent.display_name }}
-              {% elif is_importer %}
-                <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
-                  {{ agent.display_name }}
-                </a>
+              {% if is_importer %}
+                {% if read_only %}
+                    {{ agent.display_name }}
+                {% else %}
+                  <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                    {{ agent.display_name }}
+                  </a>
+                {% endif %}
               {% else %}
-                <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
-                  {{ agent.name }}
-                </a>
+                {% if read_only %}
+                    {{ agent.name }}
+                {% else %}
+                  <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                    {{ agent.name }}
+                  </a>
+                {% endif %}
               {% endif %}
+              {% if agent.entity_type %}
                 <br>{{ agent.entity_type or '' }}
+              {% endif %}
             </span>
         </td>
         {% if is_importer %}
