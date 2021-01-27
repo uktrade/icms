@@ -233,6 +233,9 @@ class ImportApplication(WorkbasketBase, Process):
     case_notes = models.ManyToManyField(CaseNote)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
 
+    def get_workbasket_template(self):
+        return "web/domains/workbasket/partials/import-case.html"
+
 
 class OpenIndividualLicenceApplication(ImportApplication):
     PROCESS_TYPE = "OpenIndividualLicenceApplication"

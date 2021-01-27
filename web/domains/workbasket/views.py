@@ -6,6 +6,7 @@ from django.views.generic.list import ListView
 from guardian.shortcuts import get_objects_for_user
 
 from web.auth.mixins import RequireRegisteredMixin
+from web.domains.case._import.models import OpenIndividualLicenceApplication
 from web.domains.case.access.approval.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
@@ -37,14 +38,22 @@ class Workbasket(RequireRegisteredMixin, ListView):
         certificates = CertificateOfManufactureApplication.objects.filter(
             is_active=True
         ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+
         exporter_access_requests = ExporterAccessRequest.objects.filter(
             is_active=True, status=AccessRequest.SUBMITTED
         ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+
         importer_access_requests = ImporterAccessRequest.objects.filter(
             is_active=True, status=AccessRequest.SUBMITTED
         ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
-        return chain(certificates, exporter_access_requests, importer_access_requests)
+        oil_import_application = OpenIndividualLicenceApplication.objects.filter(
+            is_active=True
+        ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+
+        return chain(
+            certificates, exporter_access_requests, importer_access_requests, oil_import_application
+        )
 
     def get_queryset_user(self):
         # current user's exporters
@@ -53,7 +62,7 @@ class Workbasket(RequireRegisteredMixin, ListView):
 
         # current user's importers
         # TODO: check if agent's contacts can do Approval Request
-        importers = get_objects_for_user(self.request.user, ["is_contact_of_exporter"], Importer)
+        importers = get_objects_for_user(self.request.user, ["is_contact_of_importer"], Importer)
 
         exporter_approval_requests = (
             ExporterApprovalRequest.objects.select_related(
@@ -89,4 +98,19 @@ class Workbasket(RequireRegisteredMixin, ListView):
             )
         )
 
-        return chain(exporter_approval_requests, importer_approval_requests, access_requests)
+        # Import Application - Open Individual Licence (OIL)
+        oil_import_application = (
+            OpenIndividualLicenceApplication.objects.prefetch_related(
+                Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
+            )
+            .filter(is_active=True)
+            .filter(status=OpenIndividualLicenceApplication.SUBMITTED)
+            .filter(importer__in=importers)
+        )
+
+        return chain(
+            exporter_approval_requests,
+            importer_approval_requests,
+            access_requests,
+            oil_import_application,
+        )

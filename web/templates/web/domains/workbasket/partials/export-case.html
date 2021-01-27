@@ -11,7 +11,7 @@
     {{ process.exporter }}
   </td>
   <td>
-    {{process.status}}
+    {{process.get_status_display()}}
     <br>
     {{process.created.strftime('%d-%b-%Y %H:%M:%S')}}
   </td>

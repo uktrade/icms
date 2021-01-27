@@ -6,6 +6,7 @@
       Respond FIR
     </a>
   {% endfor %}
+
 {% elif process.process_type == "ExporterAccessRequest" %}
   <a href="{{ url('access:case-view', args=[process.pk, 'exporter']) }}">View</a>
   {% for fir in process.further_information_requests.open() %}
@@ -14,6 +15,7 @@
       Respond FIR
     </a>
   {% endfor %}
+
 {% elif process.process_type == "ImporterApprovalRequest" %}
   {% if not process.requested_from %}
     <form method="post" action="{{ url('access:case-approval-take-ownership', args=[process.pk, 'importer']) }}">
@@ -23,6 +25,7 @@
   {% else %}
     <a href="{{ url('access:case-approval-respond', args=[process.access_request.importeraccessrequest.pk, 'importer', object.pk]) }}">Manage</a>
   {% endif %}
+
 {% elif process.process_type == "ExporterApprovalRequest" %}
   {% if not process.requested_from %}
     <form method="post" action="{{ url('access:case-approval-take-ownership', args=[process.pk, 'exporter']) }}">
@@ -32,4 +35,10 @@
   {% else %}
     <a href="{{ url('access:case-approval-respond', args=[process.access_request.exporteraccessrequest.pk, 'exporter', process.pk]) }}">Manage</a>
   {% endif %}
+
+{% elif process.process_type == "OpenIndividualLicenceApplication" %}
+  {# TODO implement view/Withdraw application #}
+  <a href="#">View</a>
+  <br/>
+  <a href="#">Withdraw</a>
 {% endif %}
