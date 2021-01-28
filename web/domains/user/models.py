@@ -69,10 +69,7 @@ class User(AbstractUser, GuardianUserMixin):
 
     @property
     def full_name(self):
-        if self.title:
-            return " ".join(filter(None, (self.title, self.first_name, self.last_name)))
-        else:
-            return " ".join(filter(None, (self.first_name, self.last_name)))
+        return " ".join(filter(None, (self.title, self.first_name, self.last_name)))
 
     @property
     def account_status_by_full_name(self):
