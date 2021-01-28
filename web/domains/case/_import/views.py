@@ -452,3 +452,25 @@ def submit_oil(request, pk):
         }
 
         return render(request, "web/domains/case/import/firearms/oil/submit.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def case_oil_view(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence",
+        }
+        return render(request, "web/domains/case/import/firearms/oil/view.html", context)

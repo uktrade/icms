@@ -13,7 +13,9 @@
         <th scope="col">Date Issued</th>
         <th scope="col">Expiry Date</th>
         <th scope="col">Files</th>
-        <th scope="col">Actions</th>
+        {% if not read_only %}
+          <th scope="col">Actions</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
@@ -31,28 +33,31 @@
             N/A
           {% endfor %}
         </td>
-        <td>
-          <a
-            href="{{ url('edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
-            class="button small-button icon-pencil">
-            Edit
-          </a>
-        </td>
+        {% if not read_only %}
+          <td>
+            <a
+              href="{{ url('edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+              class="button small-button icon-pencil">
+              Edit
+            </a>
+          </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 {% endif %}
 
-<div class="list-actions">
-  <ul class="menu-out flow-across">
-    <li>
-      <a
-        href="{{ url('create-user-import-certificate', kwargs={'pk': process.pk}) }}"
-        class="button small-button icon-plus">
-      Add Certificate
-      </a>
-    </li>
-  </ul>
-</div>
-
+{% if not read_only %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ url('create-user-import-certificate', kwargs={'pk': process.pk}) }}"
+          class="button small-button icon-plus">
+        Add Certificate
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}

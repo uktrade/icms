@@ -3,6 +3,7 @@ from django.urls import path, re_path
 from web.domains.case._import.views import (
     ImportApplicationChoiceView,
     archive_user_import_certificate_file,
+    case_oil_view,
     create_import_contact,
     create_oil,
     create_user_import_certificate,
@@ -22,6 +23,8 @@ urlpatterns = [
     path("firearms/oil/<int:pk>/edit/", edit_oil, name="edit-oil"),
     path("firearms/oil/<int:pk>/validation/", validate_oil, name="oil-validation"),
     path("firearms/oil/<int:pk>/submit/", submit_oil, name="submit-oil"),
+    # Firearms and Ammunition - Application made by user
+    path("case/firearms/oil/<int:pk>/view/", case_oil_view, name="view-oil-case"),
     # Firearms and Ammunition - Certificates
     path(
         "firearms/oil/<int:pk>/certificates/",
