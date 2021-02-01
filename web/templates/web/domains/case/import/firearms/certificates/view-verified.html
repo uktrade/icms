@@ -1,0 +1,115 @@
+{% extends "flow/task-base.html" %}
+
+{% block sidebar %}
+  {% include "partial/case/import/oil/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ url('list-user-import-certificates', kwargs={'pk': process.pk}) }}"
+        class="prev-link">
+        Certificates
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Verified Firearms Authority</h3>
+  <div class="container">
+    <dl>
+      <dt class="bold">Reference</dt>
+      <dd>{{ firearms_authority.reference }}</dd>
+      <dt class="bold">Certificate type</dt>
+      <dd>{{ firearms_authority.get_certificate_type_display() }}</dd>
+      <dt class="bold">Issuing Constabulary</dt>
+      <dd>{{ firearms_authority.issuing_constabulary.name }}</dd>
+      <dt class="bold">Postcode</dt>
+      <dd>{{ firearms_authority.postcode }}</dd>
+      <dt class="bold">Address</dt>
+      <dd>{{ firearms_authority.address}}</dd>
+      <dt class="bold">Linked Offices</dt>
+      <dd>
+        {% for office in linked_offices %}
+          {{ office }}
+        {% else %}
+          N/A
+        {% endfor %}
+      </dd>
+      <dt class="bold">Start Date</dt>
+      <dd>{{ firearms_authority.start_date.strftime('%d-%b-%Y') }}</dd>
+      <dt class="bold">End Date</dt>
+      <dd>{{ firearms_authority.end_date.strftime('%d-%b-%Y') }}</dd>
+      <dt class="bold">Authority Details</dt>
+      <dd>
+        {% with act_quantities = firearms_authority.actquantity_set.all() %}
+          {% if act_quantities %}
+            <table class="setoutList">
+              <thead>
+                <tr>
+                  <th scope="col">Category</th>
+                  <th scope="col">Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for act in act_quantities %}
+                <tr>
+                  <td>{{ act.firearmsact.act }}</td>
+                  <td>
+                    {% if act.infinity %}
+                      Unlimited
+                    {% else %}
+                      {{ act.quantity or '' }}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            N/A
+          {% endif %}
+        {% endwith %}
+      </dd>
+      <dt class="bold">Further Details</dt>
+      <dd>{{ firearms_authority.further_details or 'N/A' }}</dd>
+      <dt class="bold">Documents</dt>
+      <dd>
+        {% with documents = firearms_authority.files.filter(is_active=True) %}
+          {% if documents %}
+            <table class="setoutList">
+              <thead>
+                <tr>
+                  <th scope="col">Document Type</th>
+                  <th scope="col">Created By</th>
+                  <th scope="col">File</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for document in documents %}
+                <tr>
+                  <td>Verified Firearms Authority</td>
+                  <td>
+                    {{ document.created_by }}<br />
+                    <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+                  </td>
+                  <td>
+                    {{ document.filename }}<br />
+                    <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            N/A
+          {% endif %}
+        {% endwith %}
+      </dd>
+    </dl>
+  </div>
+{% endblock %}

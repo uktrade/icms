@@ -107,6 +107,7 @@ def list_user_import_certificates(request, pk):
             "process": application,
             "task": task,
             "certificates": application.userimportcertificate_set.all(),
+            "verified_certificates": application.importer.firearms_authorities.active(),
             "page_title": "Open Individual Import Licence - Certificates",
         }
 
@@ -382,12 +383,16 @@ def validate_oil(request, pk):
         if know_bought_from == OpenIndividualLicenceApplication.YES:
             know_bought_from = application.importcontact_set.exists()
 
+        certificates = (
+            application.userimportcertificate_set.exists()
+            or application.verified_certificates.exists()
+        )
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Open Individual Import Licence - Validation",
-            "certificates": application.userimportcertificate_set.exists(),
+            "certificates": certificates,
             "know_bought_from": know_bought_from,
         }
 
@@ -410,11 +415,11 @@ def submit_oil(request, pk):
         know_bought_from = application.know_bought_from is not None
         if know_bought_from == OpenIndividualLicenceApplication.YES:
             know_bought_from = application.importcontact_set.exists()
-        if (
-            not application.commodity_group
-            or not know_bought_from
-            or not application.userimportcertificate_set.exists()
-        ):
+        certificates = (
+            application.userimportcertificate_set.exists()
+            or application.verified_certificates.exists()
+        )
+        if not application.commodity_group or not know_bought_from or not certificates:
             return redirect(reverse("oil-validation", kwargs={"pk": application.pk}))
 
         if request.POST:
@@ -474,3 +479,57 @@ def case_oil_view(request, pk):
             "page_title": "Open Individual Import Licence",
         }
         return render(request, "web/domains/case/import/firearms/oil/view.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+@require_POST
+def toggle_verified_firearms(request, application_pk, firearms_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+        firearms_authority = get_object_or_404(
+            application.importer.firearms_authorities.active(), pk=firearms_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        certificate, created = application.verified_certificates.get_or_create(
+            firearms_authority=firearms_authority
+        )
+        if not created:
+            certificate.delete()
+
+        return redirect(reverse("list-user-import-certificates", kwargs={"pk": application_pk}))
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def view_verified_firearms(request, application_pk, firearms_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+        firearms_authority = get_object_or_404(
+            application.importer.firearms_authorities.active(), pk=firearms_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Verified Certificate",
+            "firearms_authority": firearms_authority,
+        }
+        return render(
+            request, "web/domains/case/import/firearms/certificates/view-verified.html", context
+        )

@@ -6,6 +6,7 @@ from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country, CountryGroup
 from web.domains.file.models import File
+from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -291,6 +292,18 @@ class UserImportCertificate(models.Model):
     date_issued = models.DateField(verbose_name="Date Issued")
     expiry_date = models.DateField(verbose_name="Expiry Date")
     files = models.ManyToManyField(File)
+
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)
+
+
+class VerifiedCertificate(models.Model):
+    import_application = models.ForeignKey(
+        ImportApplication, on_delete=models.PROTECT, related_name="verified_certificates"
+    )
+    firearms_authority = models.ForeignKey(
+        FirearmsAuthority, on_delete=models.PROTECT, related_name="+"
+    )
 
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)

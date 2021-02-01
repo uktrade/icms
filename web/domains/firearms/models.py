@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
@@ -6,6 +7,12 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.models.mixins import Archivable, Sortable
+
+
+class ActiveFirearmsAuthorityManager(models.Manager):
+    def active(self):
+        now = timezone.now()
+        return self.filter(is_active=True).filter(start_date__lte=now).filter(end_date__gte=now)
 
 
 class FirearmsAuthority(models.Model):
@@ -25,6 +32,8 @@ class FirearmsAuthority(models.Model):
         (REGISTERED_FIREARMS_DEALER, "Registered Firearms Dealer Certificate"),
         (SHOTGUN, "Shotgun Certificate"),
     )
+
+    objects = ActiveFirearmsAuthorityManager()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     reference = models.CharField(max_length=50, blank=False, null=True)
