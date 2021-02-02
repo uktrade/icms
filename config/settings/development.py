@@ -10,6 +10,7 @@ env = environ.Env()
 INTERNAL_IPS = ("127.0.0.1", "localhost")
 INSTALLED_APPS += [  # NOQA
     "debug_toolbar",
+    "django_extensions",
 ]
 
 MIDDLEWARE += [  # NOQA
@@ -96,3 +97,8 @@ NPM_FILE_PATTERNS = {
 
 # minifi html (djano-htmlmin) - uncomment to activate
 # HTML_MINIFY = True
+
+GRAPH_MODELS = {
+    "all_applications": True,
+    "group_models": True,
+}

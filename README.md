@@ -74,6 +74,12 @@ ICMS uses [Black](https://pypi.org/project/black/) for code formatting and
 - `make black_format` - Reformat all code
 - `make flake8` - Check code quality is up to scratch
 
+## Database schema generation
+
+A schema for the database can be generated using the following django-extensions command:
+
+- `python manage.py graph_models --output=output.png`
+
 ## Deployments
 
 - Dev deployment Jenkins job: https://jenkins.ci.uktrade.digital/job/icms/

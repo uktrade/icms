@@ -20,7 +20,7 @@ humanize==3.1.0
 Jinja2==2.11.2
 phonenumbers==8.12.12
 psycogreen==1.0.2
-psycopg2==2.8.6
+psycopg2-binary==2.8.2
 redis==3.5.3
 requests==2.24.0
 s3chunkuploader==0.15
