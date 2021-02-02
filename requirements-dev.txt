@@ -21,3 +21,5 @@ pytest-xdist==1.32.0
 pytest==6.0.1
 PyYAML==5.3.1
 selenium==3.141.0
+django-extensions==3.1.0
+pygraphviz==1.7
