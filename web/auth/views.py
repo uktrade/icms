@@ -49,7 +49,7 @@ def register(request):
         PersonalEmail(
             user=user, email=user.email, is_primary=True, portal_notifications=True
         ).save()
-        login(request, user)
+        login(request, user, backend="web.auth.models.CustomBackend")
         notify.register(user, temp_pass)
         return redirect("set-password")
 
