@@ -1,7 +1,10 @@
 import factory
 import factory.fuzzy
 
-from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.models import (
+    ImportApplicationType,
+    OpenIndividualLicenceApplication,
+)
 from web.tests.domains.template.factory import TemplateFactory
 
 
@@ -37,6 +40,13 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     declaration_template = factory.SubFactory(TemplateFactory, is_active=True)
 
 
-class OILApplicationFactory(ImportApplicationTypeFactory):
+class OILApplicationTypeFactory(ImportApplicationTypeFactory):
     type = ImportApplicationType.TYPE_FIREARMS_AMMUNITION_CODE
     sub_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
+
+
+class OILApplicationFactory(factory.django.DjangoModelFactory):
+    application_type = factory.SubFactory(OILApplicationTypeFactory)
+
+    class Meta:
+        model = OpenIndividualLicenceApplication

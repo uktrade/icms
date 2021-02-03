@@ -37,8 +37,11 @@
   {% endif %}
 
 {% elif process.process_type == "OpenIndividualLicenceApplication" %}
-  {# TODO implement view/Withdraw application #}
-  <a href="{{ url('view-oil-case', args=[process.pk]) }}">View</a>
-  <br/>
-  <a href="#">Withdraw</a>
+  {% if process.status == "SUBMITTED" %}
+    <a href="{{ url('view-oil-case', args=[process.pk]) }}">View</a>
+    <br/>
+    <a href="#">Withdraw</a>
+  {% elif process.status == "IN_PROGRESS" %}
+    <a href="{{ url('edit-oil', args=[process.pk]) }}">Resume</a>
+  {% endif %}
 {% endif %}

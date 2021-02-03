@@ -6,7 +6,10 @@ from django.views.generic.list import ListView
 from guardian.shortcuts import get_objects_for_user
 
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case._import.models import OpenIndividualLicenceApplication
+from web.domains.case._import.models import (
+    ImportApplication,
+    OpenIndividualLicenceApplication,
+)
 from web.domains.case.access.approval.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
@@ -104,7 +107,7 @@ class Workbasket(RequireRegisteredMixin, ListView):
                 Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
             )
             .filter(is_active=True)
-            .filter(status=OpenIndividualLicenceApplication.SUBMITTED)
+            .filter(status__in=[ImportApplication.SUBMITTED, ImportApplication.IN_PROGRESS])
             .filter(importer__in=importers)
         )
 

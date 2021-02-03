@@ -4,7 +4,7 @@ from django.test import TestCase
 from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.forms import CreateOILForm
-from web.tests.domains.case._import.factory import OILApplicationFactory
+from web.tests.domains.case._import.factory import OILApplicationTypeFactory
 from web.tests.domains.importer.factory import AgentImporterFactory, ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.user.factory import ActiveUserFactory
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class TestCreateOpenIndividualImportLicenceForm(TestCase):
     def setUp(self):
-        OILApplicationFactory.create()
+        OILApplicationTypeFactory.create()
 
     def test_form_valid(self):
         office = OfficeFactory.create(is_active=True)

@@ -6,7 +6,7 @@ from web.domains.case._import.models import (
     OpenIndividualLicenceApplication,
 )
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case._import.factory import OILApplicationFactory
+from web.tests.domains.case._import.factory import OILApplicationTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 
@@ -28,7 +28,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_ok(self):
-        OILApplicationFactory.create()
+        OILApplicationTypeFactory.create()
 
         office = OfficeFactory.create(is_active=True)
         importer = ImporterFactory.create(is_active=True, offices=[office])
