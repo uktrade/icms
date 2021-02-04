@@ -1,0 +1,40 @@
+<fieldset>
+  <legend class="bold">
+    Withdrawal - {{ withdrawal.get_status_display() }}
+  </legend>
+
+  <div class="row">
+    <div class="two columns"></div>
+    <div class="eight columns">
+      <dl>
+        <dt class="bold">Status</dt>
+        <dd class="status {{ withdrawal.status.lower() }}">
+          <span class="text-widget">{{ withdrawal.get_status_display() }}</span>
+        </dd>
+        <dt class="bold">Withdraw Reason</dt>
+        <dd>{{ withdrawal.reason|default('N/A', true)|nl2br }}</dd>
+        <dt class="bold">Request Date</dt>
+        <dd>{{ withdrawal.created_datetime.strftime('%d-%b-%Y') }}</dd>
+        <dt class="bold">Requested By</dt>
+        <dd>{{ withdrawal.request_by }}</dd>
+
+        {% if withdrawal.status == "rejected" %}
+          <dt class="bold">Withdraw Reject Reason</dt>
+          <dd>{{ withdrawal.response|default('N/A', true)|nl2br }}</dd>
+          <dt class="bold">Responded Date</dt>
+          <dd>{{ withdrawal.updated_datetime.strftime('%d-%b-%Y') }}</dd>
+          <dt class="bold">Response By</dt>
+          <dd>{{ withdrawal.response_by }}</dd>
+        {% endif %}
+      </dl>
+
+      {% if withdrawal.status == "open" %}
+      <form method="post" action="{{ url("archive-withdrawal-oil-case", args=[process.pk, withdrawal.pk]) }}">
+          {{ csrf_input }}
+          <input type="submit" class="button" value="Retract Request" />
+        </form>
+      {% endif %}
+    </div>
+    <div class="two columns"></div>
+  </div>
+</fieldset>

@@ -8,6 +8,7 @@ from web.domains.case._import.models import (
     ImportContact,
     OpenIndividualLicenceApplication,
     UserImportCertificate,
+    WithdrawImportApplication,
 )
 from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country
@@ -213,3 +214,9 @@ class SubmitOILForm(forms.Form):
             raise ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class WithdrawForm(forms.ModelForm):
+    class Meta:
+        model = WithdrawImportApplication
+        fields = ("reason",)

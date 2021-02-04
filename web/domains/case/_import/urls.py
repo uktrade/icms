@@ -4,6 +4,8 @@ from web.domains.case._import.views import (
     ImportApplicationChoiceView,
     archive_user_import_certificate_file,
     case_oil_view,
+    case_oil_withdraw,
+    case_oil_withdraw_archive,
     create_import_contact,
     create_oil,
     create_user_import_certificate,
@@ -27,6 +29,12 @@ urlpatterns = [
     path("firearms/oil/<int:pk>/submit/", submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Application made by user
     path("case/firearms/oil/<int:pk>/view/", case_oil_view, name="view-oil-case"),
+    path("case/firearms/oil/<int:pk>/withdraw/", case_oil_withdraw, name="withdraw-oil-case"),
+    path(
+        "case/firearms/oil/<int:application_pk>/withdraw/<int:withdrawal_pk>/archive/",
+        case_oil_withdraw_archive,
+        name="archive-withdrawal-oil-case",
+    ),
     # Firearms and Ammunition - User Certificates
     path(
         "firearms/oil/<int:pk>/certificates/",

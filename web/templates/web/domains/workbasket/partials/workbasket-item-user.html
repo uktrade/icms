@@ -40,7 +40,11 @@
   {% if process.status == "SUBMITTED" %}
     <a href="{{ url('view-oil-case', args=[process.pk]) }}">View</a>
     <br/>
-    <a href="#">Withdraw</a>
+    <a href="{{ url('withdraw-oil-case', args=[process.pk]) }}">Withdraw</a>
+  {% elif process.status == "WITHDRAWN" %}
+    <a href="{{ url('view-oil-case', args=[process.pk]) }}">View</a>
+    <br/>
+    <a href="{{ url('withdraw-oil-case', args=[process.pk]) }}">Pending Withdrawal</a>
   {% elif process.status == "IN_PROGRESS" %}
     <a href="{{ url('edit-oil', args=[process.pk]) }}">Resume</a>
   {% endif %}

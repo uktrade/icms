@@ -107,7 +107,13 @@ class Workbasket(RequireRegisteredMixin, ListView):
                 Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
             )
             .filter(is_active=True)
-            .filter(status__in=[ImportApplication.SUBMITTED, ImportApplication.IN_PROGRESS])
+            .filter(
+                status__in=[
+                    ImportApplication.SUBMITTED,
+                    ImportApplication.IN_PROGRESS,
+                    ImportApplication.WITHDRAWN,
+                ]
+            )
             .filter(importer__in=importers)
         )
 

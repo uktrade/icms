@@ -14,6 +14,7 @@ from web.domains.case._import.forms import (
     PrepareOILForm,
     SubmitOILForm,
     UserImportCertificateForm,
+    WithdrawForm,
 )
 from web.domains.case._import.models import (
     ImportApplication,
@@ -467,7 +468,9 @@ def case_oil_view(request, pk):
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
 
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -479,6 +482,83 @@ def case_oil_view(request, pk):
             "page_title": "Open Individual Import Licence",
         }
         return render(request, "web/domains/case/import/firearms/oil/view.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def case_oil_withdraw(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if request.POST:
+            form = WithdrawForm(request.POST)
+            if form.is_valid():
+                withdrawal = form.save(commit=False)
+                withdrawal.import_application = application
+                withdrawal.request_by = request.user
+                withdrawal.save()
+
+                application.status = ImportApplication.WITHDRAWN
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
+
+                Task.objects.create(process=application, task_type="process", previous=task)
+
+                return redirect(reverse("workbasket"))
+        else:
+            form = WithdrawForm()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Withdraw",
+            "form": form,
+            "withdrawals": application.withdrawals.filter(is_active=True),
+        }
+        return render(request, "web/domains/case/import/firearms/oil/withdraw.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+@require_POST
+def case_oil_withdraw_archive(request, application_pk, withdrawal_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+        withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
+
+        task = application.get_task(ImportApplication.WITHDRAWN, "process")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        application.status = ImportApplication.SUBMITTED
+        application.save()
+
+        withdrawal.is_active = False
+        withdrawal.save()
+
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(process=application, task_type="process", previous=task)
+
+        return redirect(reverse("withdraw-oil-case", kwargs={"pk": application_pk}))
 
 
 @login_required

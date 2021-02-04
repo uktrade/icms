@@ -1,6 +1,10 @@
+from typing import List, Union
+
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
+
+from . import errors
 
 
 class Process(models.Model):
@@ -13,7 +17,7 @@ class Process(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(blank=True, null=True)
 
-    def get_task(self, expected_state: str, task_type: str) -> "Task":
+    def get_task(self, expected_state: Union[str, List[str]], task_type: str) -> "Task":
         """Get the latest active task of the given type attached to this
         process, while also checking the process is in the expected state.
 
@@ -28,10 +32,14 @@ class Process(models.Model):
         """
 
         if not self.is_active:
-            raise Exception("Process is not active")
+            raise errors.ProcessInactiveError("Process is not active")
 
-        if self.status != expected_state:
-            raise Exception(f"Process is in the wrong state: {self.status}")
+        if isinstance(expected_state, list):
+            if self.status not in expected_state:
+                raise errors.ProcessStateError(f"Process is in the wrong state: {self.status}")
+        else:
+            if self.status != expected_state:
+                raise errors.ProcessStateError(f"Process is in the wrong state: {self.status}")
 
         tasks = (
             self.tasks.filter(is_active=True, task_type=task_type)
@@ -40,7 +48,7 @@ class Process(models.Model):
         )
 
         if len(tasks) != 1:
-            raise Exception(f"Expected one active task, got {len(tasks)}")
+            raise errors.TaskError(f"Expected one active task, got {len(tasks)}")
 
         return tasks[0]
 
