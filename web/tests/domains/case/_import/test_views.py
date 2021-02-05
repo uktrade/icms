@@ -1,3 +1,5 @@
+import pytest
+from django.test import Client
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
@@ -5,10 +7,16 @@ from web.domains.case._import.models import (
     ImportApplicationType,
     OpenIndividualLicenceApplication,
 )
+from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case._import.factory import OILApplicationTypeFactory
+from web.tests.domains.case._import.factory import (
+    OILApplicationFactory,
+    OILApplicationTypeFactory,
+)
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
+from web.tests.domains.user.factory import ActiveUserFactory
+from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
@@ -63,3 +71,46 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.login()
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, 403)
+
+
+@pytest.mark.django_db
+def test_take_ownership():
+    user = ActiveUserFactory.create(permission_codenames=["importer_access"])
+    importer = ImporterFactory.create(type=Importer.ORGANISATION, user=user)
+
+    process = OILApplicationFactory.create(
+        status="SUBMITTED", importer=importer, created_by=user, last_updated_by=user
+    )
+    TaskFactory.create(process=process, task_type="process")
+
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    client = Client()
+    client.login(username=ilb_admin.username, password="test")
+    response_workbasket = client.get("/workbasket/")
+    assert "Take Ownership" in response_workbasket.content.decode()
+
+    response = client.post(f"/import/case/firearms/oil/{process.pk}/take_ownership/", follow=True)
+    assert "Manage" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_release_ownership():
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    user = ActiveUserFactory.create(permission_codenames=["importer_access"])
+    importer = ImporterFactory.create(type=Importer.ORGANISATION, user=user)
+
+    process = OILApplicationFactory.create(
+        status="SUBMITTED",
+        importer=importer,
+        created_by=user,
+        last_updated_by=user,
+        case_owner=ilb_admin,
+    )
+    TaskFactory.create(process=process, task_type="process")
+
+    client = Client()
+    client.login(username=ilb_admin.username, password="test")
+    response = client.post(
+        f"/import/case/firearms/oil/{process.pk}/release_ownership/", follow=True
+    )
+    assert "Manage" in response.content.decode()

@@ -233,6 +233,9 @@ class ImportApplication(WorkbasketBase, Process):
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
+    case_owner = models.ForeignKey(
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+    )
 
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/import-case.html"

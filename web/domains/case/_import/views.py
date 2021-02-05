@@ -613,3 +613,51 @@ def view_verified_firearms(request, application_pk, firearms_pk):
         return render(
             request, "web/domains/case/import/firearms/certificates/view-verified.html", context
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def take_ownership(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.case_owner = request.user
+        application.save()
+
+        return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def release_ownership(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.case_owner = None
+        application.save()
+
+        return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_case(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Management",
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management.html",
+            context=context,
+        )

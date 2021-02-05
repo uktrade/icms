@@ -46,6 +46,7 @@ class OILApplicationTypeFactory(ImportApplicationTypeFactory):
 
 
 class OILApplicationFactory(factory.django.DjangoModelFactory):
+    process_type = OpenIndividualLicenceApplication.PROCESS_TYPE
     application_type = factory.SubFactory(OILApplicationTypeFactory)
 
     class Meta:

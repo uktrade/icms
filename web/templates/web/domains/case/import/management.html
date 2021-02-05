@@ -1,0 +1,25 @@
+{% extends "layout/sidebar.html" %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <form
+    method="post"
+    action="{{ url('case-release-ownership', args=[process.pk]) }}"
+    class="form-inline">
+      {{ csrf_input }}
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/oil/sidebar-management.html' %}
+{% endblock %}

@@ -9,14 +9,16 @@
   {% endif %}
 
 {% elif process.process_type == "OpenIndividualLicenceApplication" %}
-  {# TODO implement take ownership and manage #}
-  {% if not process.case_owner %}
-    <form method="post" action="#">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-      <button type="submit" class="button link-button-no-padding">Take Ownership</button>
-    </form>
-  {% elif process.case_owner == request.user %}
-    <a href="#">Manage</a>
+  {% if process.status == "SUBMITTED" %}
+    {% if not process.case_owner %}
+      <form method="post" action="{{ url('case-take-ownership', args=[process.pk]) }}">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+        <button type="submit" class="button link-button-no-padding">Take Ownership</button>
+      </form>
+      <a href="{{ url('view-oil-case', args=[process.pk]) }}">View</a>
+    {% elif process.case_owner == request.user %}
+      <a href="{{ url('case-management', args=[process.pk]) }}">Manage</a>
+    {% endif %}
   {% endif %}
 
 {% elif process.process_type == "ExporterAccessRequest" %}
