@@ -1,0 +1,194 @@
+{% extends "flow/task-base.html" %}
+{#{% extends 'layout/sidebar.html' %}#}
+{#{% import "forms/forms.html" as forms %}#}
+{#{% import "forms/fields.html" as fields %}#}
+
+{% block sidebar %}
+    {% include "partial/case/import/sanctions/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+
+
+                    <table width="100%">
+                        <tr>
+                            <td>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h3>
+
+                                    Applicant Details
+
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+
+                                <h4>
+                                    Application Type
+                                </h4>
+                                <div class="container setoutForm noBottomMargin" data-xfid="f35">
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g36"><label id="pg36" for="g36"
+                                                                                          class="prompt west">Type
+                                        </label>
+                                        </div>
+                                        <div class="six columns" data-xfid="g36"><span id="g36" class="text-widget ">Sanctions and Adhoc Licence Application</span>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                </div>
+                                <h4>
+                                    Importer
+                                </h4>
+                                <div class="container setoutForm noBottomMargin" data-xfid="f35">
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g37"><label id="pg37" for="g37"
+                                                                                          class="prompt west">Importer
+                                        </label>
+                                        </div>
+                                        <div class="six columns" data-xfid="g37"><span id="g37" class="text-widget ">{{ process.importer.name }}</span>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                </div>
+                                <div class="container setoutForm" data-xfid="f38">
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g39"><label id="pg39" for="g39"
+                                                                                          class="prompt west">Address
+                                        </label>
+                                        </div>
+                                        <div class="six columns input-group input-hint" data-xfid="g39">
+                                            <div class="eleven-column-input"><span id="g39" class="text-widget "
+                                                                                   aria-describedby="   hint49-content">{% autoescape false %}{{ process.importer_office.address|replace(",","<br/>") }}{% endautoescape %}</span>
+                                                <div class="input-group-addon hint-addon">
+                                                    <div id="hint49-content" role="tooltip" class="hint-content">
+                                                        <div class="screen-reader-only">This item has hint text,</div>
+                                                        If this address is incorrect, please contact DIT Import
+                                                        Licensing Branch.
+                                                    </div>
+                                                    <div id="hint49" aria-describedby="hint49-content"
+                                                         class="hint icon-info"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g40"><label id="pg40" for="g40"
+                                                                                          class="prompt west">Importer
+                                            EORI Number
+                                        </label>
+                                        </div>
+                                        <div class="six columns" data-xfid="g40"><span id="g40" class="text-widget ">{{ process.importer.eori_number }}</span>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                </div>
+
+                                <h4>
+                                    Contact
+                                </h4>
+                                <div class="container setoutForm noBottomMargin" data-xfid="f35">
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g41"><label id="pg41" for="g41"
+                                                                                          class="prompt west">Contact Name
+                                        </label>
+                                        </div>
+                                        <div class="six columns input-group input-hint" data-xfid="g41">
+                                            <div class="eleven-column-input">
+
+                                            <span id="g41" name="g41" aria-required="true" aria-describedby="  rg41 hint50-content">
+                                            {{ process.submitted_by.full_name }}
+                                            </span>
+                                               <span id="hint50" aria-describedby="hint50-content"
+                                                     class="hint icon-info"></span>
+
+                                                <div class="screen-reader-only" aria-hidden="true" id="rg41">Changing
+                                                    this item will refresh the page.
+                                                </div>
+                                                <div class="input-group-addon hint-addon">
+                                                    <div id="hint50-content" role="tooltip" class="hint-content">
+                                                        <div class="screen-reader-only">This item has hint text,</div>
+                                                        Select the main point of contact for the case. This will usually
+                                                        be the person who created the application.
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                </div>
+                                <div class="container setoutForm" data-xfid="f38">
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g42"><label id="pg42" for="g42"
+                                                                                          class="prompt west">Telephone
+                                        </label>
+                                        </div>
+                                        <div class="six columns input-group input-hint" data-xfid="g42">
+                                            <div class="eleven-column-input">
+
+
+                                            <span id="g42" class="text-widget" aria-describedby="hint51-content">
+                                            <ul style="padding: 0;">
+                                            {% for number in process.submitted_by.phone_numbers.all() %}
+                                                <li style="list-style:none;" >{{ number.phone }} - ({{ number.entity_type }}) <span id="hint51" aria-describedby="hint51-content" class="hint icon-info"></span> </li>
+                                            {%  endfor %}
+                                            </ul>
+                                            </span>
+
+
+                                                <div class="input-group-addon hint-addon">
+                                                    <div id="hint51-content" role="tooltip" class="hint-content">
+                                                        <div class="screen-reader-only">This item has hint text,</div>
+                                                        To add more phone numbers, please go to 'My details' from the
+                                                        user menu.
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="three columns" data-xfid="g43"><label id="pg43" for="g43"
+                                                                                          class="prompt west">Email
+                                        </label>
+                                        </div>
+                                        <div class="six columns" data-xfid="g43">
+                                        <span id="g43" class="text-widget ">
+                                            {{ process.submitted_by.email }}
+                                        </span>
+                                        </div>
+                                        <div class="three columns"></div>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <hr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+
+                            </td>
+                        </tr>
+                    </table>
+
+
+{% endblock main_content %}

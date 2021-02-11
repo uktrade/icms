@@ -1,10 +1,8 @@
 import factory
 import factory.fuzzy
 
-from web.domains.case._import.models import (
-    ImportApplicationType,
-    OpenIndividualLicenceApplication,
-)
+from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
+from web.domains.case._import.models import ImportApplicationType
 from web.tests.domains.template.factory import TemplateFactory
 
 

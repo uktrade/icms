@@ -3,10 +3,8 @@ from django.test import Client
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.models import (
-    ImportApplicationType,
-    OpenIndividualLicenceApplication,
-)
+from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
@@ -22,7 +20,7 @@ LOGIN_URL = "/"
 
 
 class ImportAppplicationCreateViewTest(AuthTestCase):
-    url = "/import/firearms/oil/create/"
+    url = "/import/create/firearms/oil/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
@@ -42,14 +40,13 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         importer = ImporterFactory.create(is_active=True, offices=[office])
         assign_perm("web.is_contact_of_importer", self.user, importer)
         self.login_with_permissions(["importer_access"])
-
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(
-            reverse("create-oil"), data={"importer": importer.pk, "importer_office": office.pk}
+        self.client.post(
+            reverse("import:create-oil"),
+            data={"importer": importer.pk, "importer_office": office.pk},
         )
-
         application = OpenIndividualLicenceApplication.objects.get()
         self.assertEqual(application.process_type, OpenIndividualLicenceApplication.PROCESS_TYPE)
 
@@ -89,7 +86,7 @@ def test_take_ownership():
     response_workbasket = client.get("/workbasket/")
     assert "Take Ownership" in response_workbasket.content.decode()
 
-    response = client.post(f"/import/case/firearms/oil/{process.pk}/take_ownership/", follow=True)
+    response = client.post(f"/import/firearms/case/oil/{process.pk}/take_ownership/", follow=True)
     assert "Manage" in response.content.decode()
 
 
@@ -111,7 +108,7 @@ def test_release_ownership():
     client = Client()
     client.login(username=ilb_admin.username, password="test")
     response = client.post(
-        f"/import/case/firearms/oil/{process.pk}/release_ownership/", follow=True
+        f"/import/firearms/case/oil/{process.pk}/release_ownership/", follow=True
     )
     assert "Manage" in response.content.decode()
 
@@ -134,7 +131,7 @@ def test_close_case():
     client = Client()
     client.login(username=ilb_admin.username, password="test")
     client.post(
-        f"/import/case/firearms/oil/{process.pk}/management/",
+        f"/import/firearms/case/oil/{process.pk}/management/",
         data={"send_email": True},
         follow=True,
     )

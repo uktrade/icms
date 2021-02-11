@@ -2,10 +2,8 @@ import pytest
 from django.test import Client
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.models import (
-    ImportApplication,
-    OpenIndividualLicenceApplication,
-)
+from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
+from web.domains.case._import.models import ImportApplication
 from web.domains.importer.models import Importer
 from web.flow.models import Task
 from web.tests.domains.case._import.factory import OILApplicationFactory

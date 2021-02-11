@@ -88,3 +88,9 @@ class Task(models.Model):
         on_delete=models.CASCADE,
         related_name="+",
     )
+
+    def __unicode__(self):
+        return f"{self.id}"
+
+    def __str__(self):
+        return f"{self.id}"

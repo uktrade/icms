@@ -6,7 +6,7 @@ from django.views.generic.list import ListView
 from guardian.shortcuts import get_objects_for_user
 
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case._import.models import (
+from web.domains.case._import.firearms.models import (
     ImportApplication,
     OpenIndividualLicenceApplication,
 )

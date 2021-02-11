@@ -31,16 +31,16 @@ class Command(BaseCommand):
         user.user_permissions.add(Permission.objects.get(codename="importer_access"))
         user.save()
 
-        exporter = Importer.objects.create(
+        importer = Importer.objects.create(
             is_active=True,
             name=f"{username} org",
             registered_number="42",
             type=Importer.ORGANISATION,
         )
-        assign_perm("web.is_contact_of_importer", user, exporter)
+        assign_perm("web.is_contact_of_importer", user, importer)
 
         office = Office.objects.create(
             is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London"
         )
-        exporter.offices.add(office)
+        importer.offices.add(office)
         self.stdout.write(f"Created importer user with login/pass: {username}/password")

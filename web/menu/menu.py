@@ -209,7 +209,7 @@ class Menu:
                 ),
             ],
         ),
-        MenuButton(label="New Import Application", view="new-import-application"),
+        MenuButton(label="New Import Application", view="import:create"),
         MenuButton(label="New Certificate Application", view="export:create"),
     ]
 

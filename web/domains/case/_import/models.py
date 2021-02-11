@@ -3,10 +3,7 @@ from django.db import models
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
 from web.domains.commodity.models import CommodityGroup, CommodityType
-from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country, CountryGroup
-from web.domains.file.models import File
-from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -17,7 +14,11 @@ from web.flow.models import Process
 
 class ImportApplicationType(models.Model):
     TYPE_FIREARMS_AMMUNITION_CODE = "FA"
-    TYPE = ((TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),)
+    TYPE_SANCTION_ADHOC = "SA"
+    TYPE = (
+        (TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),
+        (TYPE_SANCTION_ADHOC, "Sanctions and Adhoc"),
+    )
 
     SUBTYPE_OPEN_INDIVIDUAL_LICENCE = "OIL"
     SUBTYPE = ((SUBTYPE_OPEN_INDIVIDUAL_LICENCE, "Open Individual Import Licence"),)
@@ -85,6 +86,15 @@ class ImportApplicationType(models.Model):
     default_commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.PROTECT, blank=True, null=True
     )
+
+    def get_type_description(self):
+        type_name = self.get_type_display()
+        sub_type_name = self.get_sub_type_display()
+        if sub_type_name:
+            title = f"{type_name} {sub_type_name}"
+        else:
+            title = type_name
+        return title
 
     def __str__(self):
         if self.sub_type:
@@ -241,77 +251,6 @@ class ImportApplication(WorkbasketBase, Process):
         return "web/domains/workbasket/partials/import-case.html"
 
 
-class OpenIndividualLicenceApplication(ImportApplication):
-    PROCESS_TYPE = "OpenIndividualLicenceApplication"
-
-    YES = "yes"
-    NO = "no"
-    KNOW_BOUGHT_FROM_CHOICES = (
-        (YES, "Yes"),
-        (NO, "No"),
-    )
-
-    section1 = models.BooleanField(verbose_name="Section 1", default=True)
-    section2 = models.BooleanField(verbose_name="Section 2", default=True)
-    know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
-
-
-class ConstabularyEmail(models.Model):
-
-    OPEN = "OPEN"
-    CLOSED = "CLOSED"
-    DRAFT = "DRAFT"
-    STATUSES = ((OPEN, "Open"), (CLOSED, "Closed"), (DRAFT, "Draft"))
-
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, blank=False, null=False
-    )
-    status = models.CharField(max_length=30, blank=False, null=False, default=DRAFT)
-    email_cc_address_list = models.CharField(max_length=4000, blank=True, null=True)
-    email_subject = models.CharField(max_length=100, blank=False, null=True)
-    email_body = models.TextField(max_length=4000, blank=False, null=True)
-    email_response = models.TextField(max_length=4000, blank=True, null=True)
-    email_sent_datetime = models.DateTimeField(blank=True, null=True)
-    email_closed_datetime = models.DateTimeField(blank=True, null=True)
-
-
-class UserImportCertificate(models.Model):
-    REGISTERED_KEY = "registered"
-    REGISTERED_TEXT = "Registered Firearms Dealer Certificate"
-    REGISTERED = (REGISTERED_KEY, REGISTERED_TEXT)
-    CERTIFICATE_TYPE = (
-        ("firearms", "Firearms Certificate"),
-        REGISTERED,
-        ("shotgun", "Shotgun Certificate"),
-    )
-
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
-    reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
-    certificate_type = models.CharField(
-        verbose_name="Certificate Type", choices=CERTIFICATE_TYPE, max_length=200
-    )
-    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT)
-    date_issued = models.DateField(verbose_name="Date Issued")
-    expiry_date = models.DateField(verbose_name="Expiry Date")
-    files = models.ManyToManyField(File)
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
-
-
-class VerifiedCertificate(models.Model):
-    import_application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, related_name="verified_certificates"
-    )
-    firearms_authority = models.ForeignKey(
-        FirearmsAuthority, on_delete=models.PROTECT, related_name="+"
-    )
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
-
-
 class ImportContact(models.Model):
     LEGAL = "legal"
     ENTITIES = (
@@ -334,38 +273,6 @@ class ImportContact(models.Model):
     region = models.CharField(max_length=200, null=True, blank=True)
     country = models.ForeignKey(Country, on_delete=models.PROTECT, related_name="+")
     dealer = models.CharField(max_length=10, choices=DEALER_CHOICES, null=True)
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
-
-
-class WithdrawImportApplication(models.Model):
-    STATUS_OPEN = "open"
-    STATUSES = (
-        (STATUS_OPEN, "OPEN"),
-        ("rejected", "REJECTED"),
-        ("accepted", "ACCEPTED"),
-    )
-    import_application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, related_name="withdrawals"
-    )
-    is_active = models.BooleanField(default=True)
-    status = models.CharField(max_length=10, choices=STATUSES, default=STATUS_OPEN)
-    reason = models.TextField()
-    request_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-
-    response = models.TextField()
-    response_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="+",
-    )
 
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)

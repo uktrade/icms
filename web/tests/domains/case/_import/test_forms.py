@@ -3,7 +3,7 @@ import logging
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.forms import CreateOILForm
+from web.domains.case._import.forms import CreateImportApplicationForm
 from web.tests.domains.case._import.factory import OILApplicationTypeFactory
 from web.tests.domains.importer.factory import AgentImporterFactory, ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
@@ -22,7 +22,7 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         contact = ActiveUserFactory.create()
         assign_perm("web.is_contact_of_importer", contact, importer)
 
-        form = CreateOILForm(
+        form = CreateImportApplicationForm(
             contact,
             data={
                 "importer": importer.pk,
@@ -37,7 +37,7 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         agent = ActiveUserFactory.create()
         assign_perm("web.is_agent_of_importer", agent, agent_importer.main_importer)
 
-        form = CreateOILForm(
+        form = CreateImportApplicationForm(
             agent,
             data={
                 "importer": agent_importer.main_importer.pk,
@@ -52,7 +52,7 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         contact = ActiveUserFactory.create()
         assign_perm("web.is_contact_of_importer", contact, importer)
 
-        form = CreateOILForm(contact, data={})
+        form = CreateImportApplicationForm(contact, data={})
         logger.debug(form.errors)
         self.assertEqual(len(form.errors), 2)
         message = form.errors["importer"][0]

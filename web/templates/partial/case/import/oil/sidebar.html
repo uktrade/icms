@@ -1,17 +1,17 @@
 <ul class="menu-out">
   <li>
-    <a href="{{ url('edit-oil', kwargs={'pk': process.pk}) }}">Application Details</a>
+    <a href="{{ url('import:edit-oil', kwargs={'pk': process.pk}) }}">Application Details</a>
   </li>
   <li>
-    <a href="{{ url('list-user-import-certificates', kwargs={'pk': process.pk}) }}">Certificates</a>
+    <a href="{{ url('import:list-user-import-certificates', kwargs={'pk': process.pk}) }}">Certificates</a>
   </li>
   <li>
-    <a href="{{ url('list-import-contacts', kwargs={'pk': process.pk}) }}">Details of Who Bought From</a>
+    <a href="{{ url('import:list-import-contacts', kwargs={'pk': process.pk}) }}">Details of Who Bought From</a>
   </li>
   <li>
-    <a href="{{ url('oil-validation', kwargs={'pk': process.pk}) }}">Validation Summary</a>
+    <a href="{{ url('import:oil-validation', kwargs={'pk': process.pk}) }}">Validation Summary</a>
   </li>
   <li>
-    <a href="{{ url('submit-oil', kwargs={'pk': process.pk}) }}">Submit</a>
+    <a href="{{ url('import:submit-oil', kwargs={'pk': process.pk}) }}">Submit</a>
   </li>
 </ul>
