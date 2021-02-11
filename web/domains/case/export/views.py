@@ -7,7 +7,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from web.domains.case.forms import CaseNoteForm
+from web.domains.case.forms import CaseNoteForm, CloseCaseForm
 from web.domains.case.models import CASE_NOTE_DRAFT
 from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
@@ -16,7 +16,6 @@ from web.notify.email import send_email
 from web.views import ModelCreateView
 
 from .forms import (
-    CloseCaseForm,
     NewExportApplicationForm,
     PrepareCertManufactureForm,
     SubmitCertManufactureForm,

@@ -12,7 +12,7 @@ from .factory import TemplateFactory
 
 class TemplatesFilterTest(TestCase):
     def setUp(self):
-        TemplateFactory(
+        self.archived_endorsement = TemplateFactory(
             template_name="Archived Endorsement",
             template_type=Template.ENDORSEMENT,
             template_title="Endorsement Title",
@@ -20,7 +20,7 @@ class TemplatesFilterTest(TestCase):
             application_domain=Template.IMPORT_APPLICATION,
             is_active=False,
         )
-        TemplateFactory(
+        self.letter = TemplateFactory(
             template_name="Active Letter Template",
             template_type=Template.LETTER_TEMPLATE,
             template_title="Letter Title",
@@ -28,7 +28,7 @@ class TemplatesFilterTest(TestCase):
             application_domain=Template.IMPORT_APPLICATION,
             is_active=True,
         )
-        TemplateFactory(
+        self.email = TemplateFactory(
             template_name="Active Email Template",
             template_title="Email Title",
             template_content="This is a test email template",
@@ -46,12 +46,12 @@ class TemplatesFilterTest(TestCase):
 
     def test_template_type_filter(self):
         results = self.run_filter({"template_type": Template.EMAIL_TEMPLATE})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().template_name, "Active Email Template")
+        self.assertIn(self.email, results)
 
     def test_application_domain_filter(self):
         results = self.run_filter({"application_domain": Template.IMPORT_APPLICATION})
-        self.assertEqual(results.count(), 2)
+        self.assertIn(self.letter, results)
+        self.assertIn(self.archived_endorsement, results)
 
     def test_template_title_filter(self):
         results = self.run_filter({"template_title": "endors"})
@@ -59,7 +59,7 @@ class TemplatesFilterTest(TestCase):
         self.assertEqual(results.first().template_title, "Endorsement Title")
 
     def test_template_content_filter(self):
-        results = self.run_filter({"template_content": "er"})
+        results = self.run_filter({"template_content": "ter"})
         self.assertEqual(results.count(), 1)
         self.assertEqual(results.first().template_name, "Active Letter Template")
 

@@ -1,14 +1,14 @@
-from django.forms import ChoiceField, ClearableFileInput, FileField, ModelForm
+from django import forms
 
 from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote
 
 
-class CaseNoteForm(ModelForm):
-    status = ChoiceField(choices=CASE_NOTE_STATUSES)
-    files = FileField(
+class CaseNoteForm(forms.ModelForm):
+    status = forms.ChoiceField(choices=CASE_NOTE_STATUSES)
+    files = forms.FileField(
         required=False,
         label="Upload New Documents",
-        widget=ClearableFileInput(attrs={"multiple": True, "onchange": "updateList()"}),
+        widget=forms.ClearableFileInput(attrs={"multiple": True, "onchange": "updateList()"}),
     )
 
     class Meta:
@@ -19,3 +19,12 @@ class CaseNoteForm(ModelForm):
         data = super().clean()
         data.pop("files", None)
         return data
+
+
+class CloseCaseForm(forms.Form):
+    send_email = forms.BooleanField(
+        required=False,
+        label="Send Email to Applicants?",
+        help_text="This email can be edited from the templates management screens.",
+        widget=forms.CheckboxInput(),
+    )

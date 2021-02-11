@@ -1,7 +1,11 @@
 <h4>Case</h4>
 <ul class="menu-out">
   <li>
-    <a href="#">Application</a>
+    <a
+      class="current-page"
+      href="{{ url('case-management', args=[process.pk]) }}">
+      {{ process.reference or process.pk }}
+    </a>
   </li>
   <li>
     <a href="#">Constabulary Emails</a>

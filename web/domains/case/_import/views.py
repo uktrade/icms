@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
+from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.forms import (
     CreateOILForm,
@@ -22,9 +23,11 @@ from web.domains.case._import.models import (
     OpenIndividualLicenceApplication,
     UserImportCertificate,
 )
+from web.domains.case.forms import CloseCaseForm
 from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
 from web.flow.models import Task
+from web.notify.email import send_email
 
 
 class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
@@ -650,10 +653,37 @@ def manage_case(request, pk):
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
         task = application.get_task(ImportApplication.SUBMITTED, "process")
 
+        if request.POST:
+            form = CloseCaseForm(request.POST)
+            if form.is_valid():
+                application.status = ImportApplication.STOPPED
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
+
+                if form.cleaned_data.get("send_email"):
+                    template = Template.objects.get(template_code="STOP_CASE")
+
+                    subject = template.get_title({"CASE_REFERENCE": application.pk})
+                    body = template.get_content({"CASE_REFERENCE": application.pk})
+                    users = get_users_with_perms(
+                        application.importer, only_with_perms_in=["is_contact_of_importer"]
+                    ).filter(user_permissions__codename="importer_access")
+                    recipients = set(users.values_list("email", flat=True))
+
+                    send_email(subject, body, recipients)
+
+                return redirect(reverse("workbasket"))
+        else:
+            form = CloseCaseForm()
+
         context = {
             "process": application,
             "task": task,
             "page_title": "Open Individual Import Licence - Management",
+            "form": form,
         }
 
         return render(

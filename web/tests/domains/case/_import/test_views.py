@@ -114,3 +114,33 @@ def test_release_ownership():
         f"/import/case/firearms/oil/{process.pk}/release_ownership/", follow=True
     )
     assert "Manage" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_close_case():
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    user = ActiveUserFactory.create(permission_codenames=["importer_access"])
+    importer = ImporterFactory.create(type=Importer.ORGANISATION, user=user)
+
+    process = OILApplicationFactory.create(
+        status="SUBMITTED",
+        importer=importer,
+        created_by=user,
+        last_updated_by=user,
+        case_owner=ilb_admin,
+    )
+    task = TaskFactory.create(process=process, task_type="process")
+
+    client = Client()
+    client.login(username=ilb_admin.username, password="test")
+    client.post(
+        f"/import/case/firearms/oil/{process.pk}/management/",
+        data={"send_email": True},
+        follow=True,
+    )
+
+    process.refresh_from_db()
+    assert process.status == "STOPPED"
+
+    task.refresh_from_db()
+    assert task.is_active is False

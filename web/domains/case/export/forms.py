@@ -1,13 +1,5 @@
 import structlog as logging
-from django.forms import (
-    BooleanField,
-    CharField,
-    CheckboxInput,
-    Form,
-    ModelChoiceField,
-    ModelForm,
-    ValidationError,
-)
+from django.forms import CharField, Form, ModelChoiceField, ModelForm, ValidationError
 from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
 from guardian.shortcuts import get_objects_for_user
@@ -225,12 +217,3 @@ class SubmitCertManufactureForm(Form):
         # we're not a modelform, there's nothing to save, but the view is an
         # updateview so it calls this, so just blank this out
         return None
-
-
-class CloseCaseForm(Form):
-    send_email = BooleanField(
-        required=False,
-        label="Send Email to Applicants?",
-        help_text="Inform applicants that the case has been stopped",
-        widget=CheckboxInput(attrs={"class": "radio-relative"}),
-    )
