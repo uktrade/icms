@@ -27,7 +27,7 @@
       <tr>
         <td>
           <form action="{{ url(
-                           'toggle-verified-firearms',
+                           'import:toggle-verified-firearms',
                            kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
             {{ csrf_input }}
             {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
@@ -47,7 +47,7 @@
         <td>
           <a
             href="{{ url(
-                       'view-verified-firearms',
+                       'import:view-verified-firearms',
                        kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
             View Details
           </a>

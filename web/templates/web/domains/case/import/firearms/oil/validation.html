@@ -28,7 +28,7 @@
         {% if not process.commodity_group %}
           <tr>
             <td>
-              <a href="{{ url('edit-oil', kwargs={'pk': process.pk}) }}">
+              <a href="{{ url('import:edit-oil', kwargs={'pk': process.pk}) }}">
                 Commodity Code
               </a>
             </td>
@@ -40,7 +40,7 @@
         {% if not certificates %}
           <tr>
             <td>
-              <a href="{{ url('list-user-import-certificates', kwargs={'pk': process.pk}) }}">
+              <a href="{{ url('import:list-user-import-certificates', kwargs={'pk': process.pk}) }}">
                 Certificate
               </a>
             </td>
@@ -52,7 +52,7 @@
         {% if not process.know_bought_from %}
           <tr>
             <td>
-              <a href="{{ url('edit-oil', kwargs={'pk': process.pk}) }}">
+              <a href="{{ url('import:edit-oil', kwargs={'pk': process.pk}) }}">
                 Do you know who you plan to buy/obtain these items from?
               </a>
             </td>
@@ -64,7 +64,7 @@
         {% if process.know_bought_from == 'yes' and not process.importcontact_set.exists() %}
           <tr>
             <td>
-              <a href="{{ url('list-import-contacts', kwargs={'pk': process.pk}) }}">
+              <a href="{{ url('import:list-import-contacts', kwargs={'pk': process.pk}) }}">
                 Do you know who you plan to buy/obtain these items from?
               </a>
             </td>
