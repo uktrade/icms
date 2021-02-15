@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def sanctions_applicant_details(request, pk):
+def sanctions_show_applicant_details(request, pk):
+
+    # Transaction atomic required as get_task performs select for update
+    application = get_object_or_404(SanctionsAndAdhocApplication.objects, pk=pk)
     with transaction.atomic():
-        application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
-        )
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
     context = {
@@ -26,7 +26,7 @@ def sanctions_applicant_details(request, pk):
         "application_title": "Sanctions and Adhoc License Application",
     }
     return render(
-        request, "web/domains/case/import/sanctions/sanctions_applicant_details.html", context
+        request, "web/domains/case/import/sanctions/sanctions_show_applicant_details.html", context
     )
 
 

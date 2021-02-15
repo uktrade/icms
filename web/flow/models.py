@@ -89,8 +89,5 @@ class Task(models.Model):
         related_name="+",
     )
 
-    def __unicode__(self):
-        return f"{self.id}"
-
     def __str__(self):
         return f"{self.id}"
