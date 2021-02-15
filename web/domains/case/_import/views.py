@@ -11,6 +11,7 @@ from .firearms.models import OpenIndividualLicenceApplication
 from .forms import CreateImportApplicationForm
 from .models import ImportApplicationType
 from .sanctions.models import SanctionsAndAdhocApplication
+from .wood.models import WoodQuotaApplication
 
 
 class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
@@ -33,6 +34,15 @@ def create_oil(request):
     import_application_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
     model_class = OpenIndividualLicenceApplication
     redirect_view = "import:edit-oil"
+    return _create_application(request, import_application_type, model_class, redirect_view)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_wood_quota(request):
+    import_application_type = ImportApplicationType.TYPE_WOOD_QUOTA
+    model_class = WoodQuotaApplication
+    redirect_view = "import:edit-wood-quota"
     return _create_application(request, import_application_type, model_class, redirect_view)
 
 

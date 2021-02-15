@@ -15,9 +15,12 @@ from web.flow.models import Process
 class ImportApplicationType(models.Model):
     TYPE_FIREARMS_AMMUNITION_CODE = "FA"
     TYPE_SANCTION_ADHOC = "SA"
+    TYPE_WOOD_QUOTA = "WD"
+
     TYPE = (
         (TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),
         (TYPE_SANCTION_ADHOC, "Sanctions and Adhoc"),
+        (TYPE_WOOD_QUOTA, "Wood (Quota)"),
     )
 
     SUBTYPE_OPEN_INDIVIDUAL_LICENCE = "OIL"
