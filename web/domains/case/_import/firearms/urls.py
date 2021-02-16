@@ -19,6 +19,11 @@ urlpatterns = [
         name="case-release-ownership",
     ),
     path("case/oil/<int:pk>/management/", views.manage_case, name="case-management"),
+    path(
+        "case/oil/<int:pk>/checklist/",
+        views.manage_checklist,
+        name="manage-checklist",
+    ),
     # Firearms and Ammunition - Application made by user
     path("case/oil/<int:pk>/view/", views.case_oil_view, name="view-oil-case"),
     path("case/oil/<int:pk>/withdraw/", views.case_oil_withdraw, name="withdraw-oil-case"),

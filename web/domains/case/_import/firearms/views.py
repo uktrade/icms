@@ -7,6 +7,7 @@ from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.firearms.forms import (
+    ChecklistFirearmsOILApplicationForm,
     ImportContactLegalEntityForm,
     ImportContactPersonForm,
     PrepareOILForm,
@@ -655,5 +656,37 @@ def manage_case(request, pk):
         return render(
             request=request,
             template_name="web/domains/case/import/management.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        checklist, _ = application.checklists.get_or_create()
+
+        if request.POST:
+            form = ChecklistFirearmsOILApplicationForm(request.POST, instance=checklist)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse("import:manage-checklist", kwargs={"pk": pk}))
+        else:
+            form = ChecklistFirearmsOILApplicationForm(instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Open Individual Import Licence - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
             context=context,
         )

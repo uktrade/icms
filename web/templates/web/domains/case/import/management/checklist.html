@@ -1,0 +1,57 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/oil/sidebar-management.html' %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>{{ process.reference or process.pk }}</h3>
+  <h4>Checklist</h4>
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+    {% if field.name in ['response_preparation', 'authorisation'] %}
+      {{fields.field(field, show_optional_indicator=False, input_cols="two", checkbox_label="Completed")}}
+    {% else %}
+      {{fields.field(field, show_optional_indicator=False, input_cols="two")}}
+    {% endif %}
+    {% endfor %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {%- endcall %}
+{% endblock %}

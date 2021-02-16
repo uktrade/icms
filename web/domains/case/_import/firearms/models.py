@@ -108,3 +108,71 @@ class WithdrawImportApplication(models.Model):
 
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
+
+
+class ChecklistFirearmsOILApplication(models.Model):
+    CHOICES = (
+        ("yes", "Yes"),
+        ("no", "No"),
+        ("n/a", "N/A"),
+    )
+    import_application = models.ForeignKey(
+        OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklists"
+    )
+    authority_required = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Authority to possess required?",
+    )
+    authority_received = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Authority to possess received?",
+    )
+    authority_police = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Authority to possess checked with police?",
+    )
+    case_update = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Case update required from applicant?",
+    )
+    fir_required = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Further information request required?",
+    )
+    response_preparation = models.BooleanField(
+        default=False,
+        verbose_name="Response Preparation - approve/refuse the request, edit details if necessary",
+    )
+    validity_match = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Validity period of licence matches that of the RFD certificate?",
+    )
+    endorsements_listed = models.CharField(
+        max_length=10,
+        choices=CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
+    )
+    authorisation = models.BooleanField(
+        default=False,
+        verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
+    )

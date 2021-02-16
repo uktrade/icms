@@ -8,16 +8,12 @@ from web.domains.user.models import User
 from web.forms.widgets import DateInput
 
 from ..forms import CreateImportApplicationForm
-from .models import (
-    OpenIndividualLicenceApplication,
-    UserImportCertificate,
-    WithdrawImportApplication,
-)
+from . import models
 
 
 class FirearmsForm(CreateImportApplicationForm):
     class Meta:
-        model = OpenIndividualLicenceApplication
+        model = models.OpenIndividualLicenceApplication
         fields = ("importer", "importer_office")
 
 
@@ -57,7 +53,7 @@ class PrepareOILForm(forms.ModelForm):
     section2 = forms.BooleanField(disabled=True, label="")
 
     class Meta:
-        model = OpenIndividualLicenceApplication
+        model = models.OpenIndividualLicenceApplication
         fields = (
             "contact",
             "applicant_reference",
@@ -76,10 +72,10 @@ class PrepareOILForm(forms.ModelForm):
 
 class UserImportCertificateForm(forms.ModelForm):
     document = forms.FileField(required=True, widget=forms.ClearableFileInput())
-    certificate_type = forms.ChoiceField(choices=(UserImportCertificate.REGISTERED,))
+    certificate_type = forms.ChoiceField(choices=(models.UserImportCertificate.REGISTERED,))
 
     class Meta:
-        model = UserImportCertificate
+        model = models.UserImportCertificate
         fields = (
             "reference",
             "certificate_type",
@@ -160,5 +156,21 @@ class SubmitOILForm(forms.Form):
 
 class WithdrawForm(forms.ModelForm):
     class Meta:
-        model = WithdrawImportApplication
+        model = models.WithdrawImportApplication
         fields = ("reason",)
+
+
+class ChecklistFirearmsOILApplicationForm(forms.ModelForm):
+    class Meta:
+        model = models.ChecklistFirearmsOILApplication
+        fields = (
+            "authority_required",
+            "authority_received",
+            "authority_police",
+            "case_update",
+            "fir_required",
+            "response_preparation",
+            "validity_match",
+            "endorsements_listed",
+            "authorisation",
+        )

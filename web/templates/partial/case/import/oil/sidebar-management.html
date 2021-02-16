@@ -3,8 +3,14 @@
   <li>
     <a
       class="current-page"
-      href="{{ url('case-management', args=[process.pk]) }}">
+      href="{{ url('import:case-management', args=[process.pk]) }}">
       {{ process.reference or process.pk }}
+    </a>
+  </li>
+  <li>
+    <a
+      href="{{ url('import:manage-checklist', args=[process.pk]) }}">
+      Checklist
     </a>
   </li>
   <li>
