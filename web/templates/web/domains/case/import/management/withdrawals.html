@@ -1,0 +1,123 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/sidebar-management.html' %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Application Withdrawals</h3>
+  {% if current_withdrawal %}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    <fieldset>
+      <legend class="bold">Withdrawal</legend>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Status
+          </label>
+        </div>
+        <div class="six columns">
+          <div class="status open">
+            <div>
+              <span class="text-widget">open</span>
+            </div>
+          </div>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Withdraw Reason
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget">
+            {{ form.instance.reason }}
+          </span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Request Date
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget">
+            {{ form.instance.created_datetime.strftime('%d-%b-%Y') }}
+          </span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Requested By
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget">
+            {{ form.instance.request_by }}
+          </span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+
+
+      {% for field in form %}
+        {{ fields.field(field) }}
+      {% endfor %}
+
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input
+                  type="submit"
+                  name="action"
+                  class="primary-button button"
+                  value="Submit" />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+    {% endcall %}
+  {% endif %}
+
+  {% for withdrawal in withdrawals.filter(status="rejected") %}
+    {% include "partial/withdrawal/box.html" %}
+  {% endfor %}
+{% endblock %}
+
+{% block page_js %}
+  {{super()}}
+  <script src="{{ static('web/js/pages/withdrawals.js') }}" type="text/javascript"></script>
+{% endblock %}

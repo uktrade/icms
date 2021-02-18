@@ -15,8 +15,8 @@ from web.flow.models import Task
 from web.notify.email import send_email
 
 from .firearms.models import OpenIndividualLicenceApplication
-from .forms import CreateImportApplicationForm, WithdrawForm
-from .models import ImportApplication, ImportApplicationType
+from .forms import CreateImportApplicationForm, WithdrawForm, WithdrawResponseForm
+from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
 
@@ -86,7 +86,7 @@ def _create_application(request, import_application_type, model_class, redirect_
 def take_ownership(request, pk):
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
         application.case_owner = request.user
         application.save()
 
@@ -100,6 +100,7 @@ def release_ownership(request, pk):
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
         application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
         application.case_owner = None
         application.save()
 
@@ -111,7 +112,9 @@ def release_ownership(request, pk):
 def manage_case(request, pk):
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
 
         if request.POST:
             form = CloseCaseForm(request.POST)
@@ -149,6 +152,69 @@ def manage_case(request, pk):
         return render(
             request=request,
             template_name="web/domains/case/import/management.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_withdrawals(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+        )
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+        withdrawals = application.withdrawals.filter(is_active=True)
+        current_withdrawal = withdrawals.filter(
+            status=WithdrawImportApplication.STATUS_OPEN
+        ).first()
+
+        if request.POST:
+            form = WithdrawResponseForm(request.POST, instance=current_withdrawal)
+            if form.is_valid():
+                withdrawal = form.save(commit=False)
+                withdrawal.response_by = request.user
+                withdrawal.save()
+
+                # withdrawal accepted - case is closed
+                # else case still open
+                if withdrawal.status == WithdrawImportApplication.STATUS_ACCEPTED:
+                    application.is_active = False
+                    application.save()
+
+                    task.is_active = False
+                    task.finished = timezone.now()
+                    task.save()
+
+                    return redirect(reverse("workbasket"))
+                else:
+                    application.status = ImportApplication.SUBMITTED
+                    application.save()
+
+                    task.is_active = False
+                    task.finished = timezone.now()
+                    task.save()
+
+                    Task.objects.create(process=application, task_type="process", previous=task)
+
+                    return redirect(reverse("import:manage-withdrawals", kwargs={"pk": pk}))
+        else:
+            form = WithdrawResponseForm(instance=current_withdrawal)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": f"{application.application_type.get_type_description()} - Withdrawals",
+            "form": form,
+            "withdrawals": withdrawals,
+            "current_withdrawal": current_withdrawal,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/withdrawals.html",
             context=context,
         )
 
@@ -238,7 +304,9 @@ def view_case(request, pk):
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied

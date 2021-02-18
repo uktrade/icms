@@ -283,11 +283,14 @@ class ImportContact(models.Model):
 
 class WithdrawImportApplication(models.Model):
     STATUS_OPEN = "open"
-    STATUSES = (
-        (STATUS_OPEN, "OPEN"),
-        ("rejected", "REJECTED"),
-        ("accepted", "ACCEPTED"),
-    )
+    STATUS_REJECTED = "rejected"
+    STATUS_ACCEPTED = "accepted"
+
+    OPEN = (STATUS_OPEN, "OPEN")
+    REJECTED = (STATUS_REJECTED, "REJECTED")
+    ACCEPTED = (STATUS_ACCEPTED, "ACCEPTED")
+    STATUSES = (OPEN, REJECTED, ACCEPTED)
+
     import_application = models.ForeignKey(
         ImportApplication, on_delete=models.PROTECT, related_name="withdrawals"
     )

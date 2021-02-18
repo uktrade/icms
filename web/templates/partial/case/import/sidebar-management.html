@@ -17,7 +17,13 @@
     <a href="#">Constabulary Emails</a>
   </li>
   <li>
-    <a href="#">Application Withdrawal (x/x)</a>
+    {% with total = process.withdrawals.count(),
+    processed = process.withdrawals.exclude(status="open").count() %}
+      <a
+        href="{{ url('import:manage-withdrawals', args=[process.pk]) }}">
+        Application Withdrawals ({{ processed }}/{{ total }})
+      </a>
+    {% endwith %}
   </li>
   <li>
     <a href="#">Application Updates (x/x)</a>

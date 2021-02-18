@@ -9,7 +9,7 @@
   {% endif %}
 
 {% elif process.process_type == "OpenIndividualLicenceApplication" %}
-  {% if process.status == "SUBMITTED" %}
+  {% if process.status in ["SUBMITTED", "WITHDRAWN"] %}
     {% if not process.case_owner %}
       <form method="post" action="{{ url('import:take-ownership', args=[process.pk]) }}">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />

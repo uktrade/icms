@@ -32,6 +32,7 @@ urlpatterns = [
         name="release-ownership",
     ),
     path("case/<int:pk>/management/", views.manage_case, name="case-management"),
+    path("case/<int:pk>/withdrawals", views.manage_withdrawals, name="manage-withdrawals"),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]
