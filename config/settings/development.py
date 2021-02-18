@@ -46,39 +46,6 @@ AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", "dev")
 EMAIL_FROM = env.str("ICMS_EMAIL_FROM", "enquiries.ilb@icms.trade.dev.uktrade.io")
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-
-# Loging
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-        "simple": {
-            "format": "{levelname} - {message} [{module}]",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "WARNING",
-        },
-        "web": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-    },
-}
-
 NPM_STATIC_FILES_LOCATION = "web/static/3rdparty"
 
 NPM_FILE_PATTERNS = {

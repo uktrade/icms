@@ -1,5 +1,4 @@
 import environ
-import structlog
 
 from .base import *  # NOQA”
 
@@ -19,34 +18,6 @@ SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
 # getAddress.io api key
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
-
-# Loging
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "plain_console": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(),
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "plain_console",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
-        "web": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-    },
-}
 
 # used in email content
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", "enquiries.ilb@icms.trade.dev.uktrade.io")
