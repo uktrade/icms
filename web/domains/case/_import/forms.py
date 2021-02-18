@@ -5,6 +5,8 @@ from guardian.shortcuts import get_objects_for_user
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 
+from . import models
+
 
 class CreateImportApplicationForm(forms.Form):
     importer = forms.ModelChoiceField(
@@ -50,3 +52,9 @@ class CreateImportApplicationForm(forms.Form):
         self.fields["importer_office"].queryset = Office.objects.filter(
             is_active=True, importer__in=importers
         )
+
+
+class WithdrawForm(forms.ModelForm):
+    class Meta:
+        model = models.WithdrawImportApplication
+        fields = ("reason",)

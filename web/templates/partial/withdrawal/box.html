@@ -29,7 +29,7 @@
       </dl>
 
       {% if withdrawal.status == "open" %}
-      <form method="post" action="{{ url("archive-withdrawal-oil-case", args=[process.pk, withdrawal.pk]) }}">
+      <form method="post" action="{{ url("import:archive-withdrawal", args=[process.pk, withdrawal.pk]) }}">
           {{ csrf_input }}
           <input type="submit" class="button" value="Retract Request" />
         </form>

@@ -4,7 +4,6 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.firearms.forms import (
     ChecklistFirearmsOILApplicationForm,
@@ -13,14 +12,11 @@ from web.domains.case._import.firearms.forms import (
     PrepareOILForm,
     SubmitOILForm,
     UserImportCertificateForm,
-    WithdrawForm,
 )
 from web.domains.case._import.models import ImportApplication, ImportContact
-from web.domains.case.forms import CloseCaseForm
 from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.notify.email import send_email
 
 from .models import OpenIndividualLicenceApplication, UserImportCertificate
 
@@ -432,28 +428,6 @@ def submit_oil(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def case_oil_view(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": "Open Individual Import Licence",
-        }
-        return render(request, "web/domains/case/import/firearms/oil/view.html", context)
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
 @require_POST
 def toggle_verified_firearms(request, application_pk, authority_pk):
     with transaction.atomic():
@@ -482,83 +456,6 @@ def toggle_verified_firearms(request, application_pk, authority_pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def case_oil_withdraw(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-
-        task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
-        )
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        if request.POST:
-            form = WithdrawForm(request.POST)
-            if form.is_valid():
-                withdrawal = form.save(commit=False)
-                withdrawal.import_application = application
-                withdrawal.request_by = request.user
-                withdrawal.save()
-
-                application.status = ImportApplication.WITHDRAWN
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(process=application, task_type="process", previous=task)
-
-                return redirect(reverse("workbasket"))
-        else:
-            form = WithdrawForm()
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": "Open Individual Import Licence - Withdraw",
-            "form": form,
-            "withdrawals": application.withdrawals.filter(is_active=True),
-        }
-        return render(request, "web/domains/case/import/firearms/oil/withdraw.html", context)
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-@require_POST
-def case_oil_withdraw_archive(request, application_pk, withdrawal_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-        withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
-
-        task = application.get_task(ImportApplication.WITHDRAWN, "process")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        application.status = ImportApplication.SUBMITTED
-        application.save()
-
-        withdrawal.is_active = False
-        withdrawal.save()
-
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
-        Task.objects.create(process=application, task_type="process", previous=task)
-
-        return redirect(reverse("withdraw-oil-case", kwargs={"pk": application_pk}))
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
 def view_verified_firearms(request, application_pk, authority_pk):
     with transaction.atomic():
         application = get_object_or_404(
@@ -582,81 +479,6 @@ def view_verified_firearms(request, application_pk, authority_pk):
         }
         return render(
             request, "web/domains/case/import/firearms/certificates/view-verified.html", context
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def take_ownership(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-        application.get_task(ImportApplication.SUBMITTED, "process")
-        application.case_owner = request.user
-        application.save()
-
-        return redirect(reverse("workbasket"))
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def release_ownership(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ImportApplication.SUBMITTED, "process")
-        application.case_owner = None
-        application.save()
-
-        return redirect(reverse("workbasket"))
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_case(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
-
-        if request.POST:
-            form = CloseCaseForm(request.POST)
-            if form.is_valid():
-                application.status = ImportApplication.STOPPED
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                if form.cleaned_data.get("send_email"):
-                    template = Template.objects.get(template_code="STOP_CASE")
-
-                    subject = template.get_title({"CASE_REFERENCE": application.pk})
-                    body = template.get_content({"CASE_REFERENCE": application.pk})
-                    users = get_users_with_perms(
-                        application.importer, only_with_perms_in=["is_contact_of_importer"]
-                    ).filter(user_permissions__codename="importer_access")
-                    recipients = set(users.values_list("email", flat=True))
-
-                    send_email(subject, body, recipients)
-
-                return redirect(reverse("workbasket"))
-        else:
-            form = CloseCaseForm()
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Open Individual Import Licence - Management",
-            "form": form,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/management.html",
-            context=context,
         )
 
 

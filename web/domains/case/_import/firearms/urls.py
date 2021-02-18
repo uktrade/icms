@@ -9,28 +9,9 @@ urlpatterns = [
     path("oil/<int:pk>/submit/", views.submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Management by ILB Admin
     path(
-        "case/oil/<int:pk>/take_ownership/",
-        views.take_ownership,
-        name="case-take-ownership",
-    ),
-    path(
-        "case/oil/<int:pk>/release_ownership/",
-        views.release_ownership,
-        name="case-release-ownership",
-    ),
-    path("case/oil/<int:pk>/management/", views.manage_case, name="case-management"),
-    path(
         "case/oil/<int:pk>/checklist/",
         views.manage_checklist,
         name="manage-checklist",
-    ),
-    # Firearms and Ammunition - Application made by user
-    path("case/oil/<int:pk>/view/", views.case_oil_view, name="view-oil-case"),
-    path("case/oil/<int:pk>/withdraw/", views.case_oil_withdraw, name="withdraw-oil-case"),
-    path(
-        "case/oil/<int:application_pk>/withdraw/<int:withdrawal_pk>/archive/",
-        views.case_oil_withdraw_archive,
-        name="archive-withdrawal-oil-case",
     ),
     # Firearms and Ammunition - User Certificates
     path(

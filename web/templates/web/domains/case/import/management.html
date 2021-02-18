@@ -23,7 +23,7 @@
 
   <form
     method="post"
-    action="{{ url('import:case-release-ownership', args=[process.pk]) }}"
+    action="{{ url('import:release-ownership', args=[process.pk]) }}"
     class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>

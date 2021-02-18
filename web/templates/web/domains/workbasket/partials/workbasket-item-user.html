@@ -38,13 +38,13 @@
 
 {% elif process.process_type == "OpenIndividualLicenceApplication" %}
   {% if process.status == "SUBMITTED" %}
-    <a href="{{ url('import:view-oil-case', args=[process.pk]) }}">View</a>
+    <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
-    <a href="{{ url('import:withdraw-oil-case', args=[process.pk]) }}">Withdraw</a>
+    <a href="{{ url('import:withdraw-case', args=[process.pk]) }}">Withdraw</a>
   {% elif process.status == "WITHDRAWN" %}
-    <a href="{{ url('import:view-oil-case', args=[process.pk]) }}">View</a>
+    <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
-    <a href="{{ url('import:withdraw-oil-case', args=[process.pk]) }}">Pending Withdrawal</a>
+    <a href="{{ url('import:withdraw-case', args=[process.pk]) }}">Pending Withdrawal</a>
   {% elif process.status == "IN_PROGRESS" %}
     <a href="{{ url('import:edit-oil', args=[process.pk]) }}">Resume</a>
   {% endif %}

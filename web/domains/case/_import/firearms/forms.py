@@ -154,12 +154,6 @@ class SubmitOILForm(forms.Form):
         return confirmation
 
 
-class WithdrawForm(forms.ModelForm):
-    class Meta:
-        model = models.WithdrawImportApplication
-        fields = ("reason",)
-
-
 class ChecklistFirearmsOILApplicationForm(forms.ModelForm):
     class Meta:
         model = models.ChecklistFirearmsOILApplication

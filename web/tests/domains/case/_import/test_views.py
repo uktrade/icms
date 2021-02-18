@@ -86,7 +86,7 @@ def test_take_ownership():
     response_workbasket = client.get("/workbasket/")
     assert "Take Ownership" in response_workbasket.content.decode()
 
-    response = client.post(f"/import/firearms/case/oil/{process.pk}/take_ownership/", follow=True)
+    response = client.post(f"/import/case/{process.pk}/take_ownership/", follow=True)
     assert "Manage" in response.content.decode()
 
 
@@ -107,9 +107,7 @@ def test_release_ownership():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.post(
-        f"/import/firearms/case/oil/{process.pk}/release_ownership/", follow=True
-    )
+    response = client.post(f"/import/case/{process.pk}/release_ownership/", follow=True)
     assert "Manage" in response.content.decode()
 
 
@@ -131,7 +129,7 @@ def test_close_case():
     client = Client()
     client.login(username=ilb_admin.username, password="test")
     client.post(
-        f"/import/firearms/case/oil/{process.pk}/management/",
+        f"/import/case/{process.pk}/management/",
         data={"send_email": True},
         follow=True,
     )
