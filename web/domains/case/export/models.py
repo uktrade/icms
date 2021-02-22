@@ -16,7 +16,7 @@ class ExportApplicationType(models.Model):
     CERT_MANUFACTURE = 2
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    type_code = models.CharField(max_length=30, blank=False, null=False)
+    type_code = models.CharField(max_length=30, blank=False, null=False, unique=True)
     type = models.CharField(max_length=70, blank=False, null=False)
     allow_multiple_products = models.BooleanField(blank=False, null=False)
     generate_cover_letter = models.BooleanField(blank=False, null=False)
