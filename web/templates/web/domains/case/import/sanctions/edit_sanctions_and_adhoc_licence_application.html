@@ -1,0 +1,26 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+    {% include "partial/case/import/sanctions/sidebar.html" %}
+{% endblock %}
+
+{% block form_content %}
+
+       <h4>Contact HOME</h4>
+      {{ fields.field(form.contact) }}
+
+      <h4>Sanctions and Adhoc License</h4>
+      {{ fields.field(form.applicant_reference) }}
+      {{ fields.field(form.origin_country) }}
+      {{ fields.field(form.consignment_country) }}
+      {{ fields.field(form.exporter_name) }}
+      {{ fields.field(form.exporter_address) }}
+
+{% endblock form_content %}
+
+{% block task_actions %}
+  <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock task_actions %}
+

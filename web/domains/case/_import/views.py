@@ -31,7 +31,7 @@ class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
 def create_sanctions(request):
     import_application_type = ImportApplicationType.TYPE_SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
-    redirect_view = "import:sanctions-show-applicant-details"
+    redirect_view = "import:edit-sanctions-and-adhoc-licence-application"
     return _create_application(request, import_application_type, model_class, redirect_view)
 
 
@@ -69,6 +69,7 @@ def _create_application(request, import_application_type, model_class, redirect_
             application.last_updated_by = request.user
             application.submitted_by = request.user
             application.application_type = import_application_type
+
             with transaction.atomic():
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)

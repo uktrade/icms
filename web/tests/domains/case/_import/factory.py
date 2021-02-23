@@ -3,6 +3,7 @@ import factory.fuzzy
 
 from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.tests.domains.template.factory import TemplateFactory
 
 
@@ -49,3 +50,15 @@ class OILApplicationFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = OpenIndividualLicenceApplication
+
+
+class SanctionsAndAdhocLicenseApplicationTypeFactory(ImportApplicationTypeFactory):
+    type = ImportApplicationType.TYPE_SANCTION_ADHOC
+
+
+class SanctionsAndAdhocLicenseApplicationFactory(factory.django.DjangoModelFactory):
+    process_type = SanctionsAndAdhocApplication.PROCESS_TYPE
+    application_type = factory.SubFactory(SanctionsAndAdhocLicenseApplicationTypeFactory)
+
+    class Meta:
+        model = SanctionsAndAdhocApplication
