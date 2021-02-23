@@ -87,7 +87,7 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
             last_updated_by=self.user,
         )
         TaskFactory.create(process=self.process, task_type="prepare")
-        self.url = f"/import/sanctions/{self.process.pk}/edit"
+        self.url = f"/import/sanctions/{self.process.pk}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
         assign_perm("web.is_contact_of_importer", self.user, self.importer)
