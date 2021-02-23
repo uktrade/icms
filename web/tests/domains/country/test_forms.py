@@ -30,11 +30,11 @@ class CountryNameFilterTest(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({"country_name": "dor"})
-        self.assertEqual(results.count(), 2)
+        self.assertEqual(results.count(), 4)
 
     def test_filter_finds_active_only(self):
         results = self.run_filter({"country_name": "o"})
-        self.assertEqual(results.count(), 2)
+        self.assertEqual(results.count(), 63)
         self.assertTrue(results.first().is_active)
         self.assertTrue(results.last().is_active)
 

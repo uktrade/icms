@@ -36,7 +36,7 @@ class CountryListViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         results = response.context_data["object_list"]
-        self.assertEqual(len(results), 3)
+        self.assertEqual(len(results), 183)
 
 
 class CountryEditViewTest(AuthTestCase):
@@ -119,7 +119,7 @@ class CountryGroupDefaultViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(
-            response.context_data["page_title"], "Viewing Country Group (American Countries)"
+            response.context_data["page_title"], "Viewing American Countries - (0 countries)"
         )
 
 
@@ -149,7 +149,7 @@ class CountryGroupViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(
-            response.context_data["page_title"], "Viewing Country Group (European Countries)"
+            response.context_data["page_title"], "Viewing European Countries - (0 countries)"
         )
 
 
@@ -161,10 +161,10 @@ class CountryGroupEditViewTest(AuthTestCase):
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def setupCountries(self):
-        self.benin = CountryFactory(name="Benin", is_active=True)
-        self.kenya = CountryFactory(name="Kenya", is_active=True)
-        self.ethiopia = CountryFactory(name="Ethiopia", is_active=True)
-        self.group.countries.set([self.kenya, self.benin])
+        self.new_country_one = CountryFactory(name="New Country 1", is_active=True)
+        self.new_country_two = CountryFactory(name="New Country 2", is_active=True)
+        self.new_country_three = CountryFactory(name="New Country 3", is_active=True)
+        self.group.countries.set([self.new_country_one, self.new_country_two])
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
@@ -185,7 +185,7 @@ class CountryGroupEditViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(
-            response.context_data["page_title"], "Editing Country Group (African Countries)"
+            response.context_data["page_title"], "Editing African Countries - (0 countries)"
         )
 
     def test_group_countries(self):
@@ -194,8 +194,8 @@ class CountryGroupEditViewTest(AuthTestCase):
         response = self.client.get(self.url)
         countries = response.context_data["countries"]
         self.assertEqual(len(countries), 2)
-        self.assertEqual(countries[0].name, "Benin")
-        self.assertEqual(countries[1].name, "Kenya")
+        self.assertEqual(countries[0].name, "New Country 1")
+        self.assertEqual(countries[1].name, "New Country 2")
 
     def test_post_action_anonymous_access(self):
         response = self.client.post(self.url, {"action": "add_country"})
@@ -216,12 +216,16 @@ class CountryGroupEditViewTest(AuthTestCase):
         self.setupCountries()
         self.login_with_permissions(PERMISSIONS)
         response = self.client.post(
-            self.url, {"action": "add_country", "countries": [self.benin.id, self.kenya.id]}
+            self.url,
+            {
+                "action": "add_country",
+                "countries": [self.new_country_one.id, self.new_country_two.id],
+            },
         )
         context = response.context_data
         self.assertEqual(len(context["selected_countries"]), 2)
-        self.assertEqual(context["selected_countries"][0].name, "Benin")
-        self.assertEqual(context["selected_countries"][1].name, "Kenya")
+        self.assertEqual(context["selected_countries"][0].name, "New Country 1")
+        self.assertEqual(context["selected_countries"][1].name, "New Country 2")
 
     def test_accept_countries(self):
         self.setupCountries()
@@ -230,14 +234,18 @@ class CountryGroupEditViewTest(AuthTestCase):
             self.url,
             {
                 "action": "accept_countries",
-                "country-selection": [self.benin.id, self.kenya.id, self.ethiopia.id],
+                "country-selection": [
+                    self.new_country_one.id,
+                    self.new_country_two.id,
+                    self.new_country_three.id,
+                ],
             },
         )
         countries = response.context_data["countries"]
         self.assertEqual(len(countries), 3)
-        self.assertEqual(countries[0].name, "Benin")
-        self.assertEqual(countries[1].name, "Ethiopia")
-        self.assertEqual(countries[2].name, "Kenya")
+        self.assertEqual(countries[0].name, "New Country 1")
+        self.assertEqual(countries[1].name, "New Country 2")
+        self.assertEqual(countries[2].name, "New Country 3")
 
 
 class CountryTranslationSetListViewTest(AuthTestCase):
@@ -342,8 +350,8 @@ class CountryTranslationSetEditViewTest(AuthTestCase):
 class CountryTranslationEditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.translation_set = CountryTranslationSetFactory(name="Russian", is_active=True)
-        self.country = CountryFactory(name="Egypt", is_active=True)
+        self.translation_set = CountryTranslationSetFactory(name="New Country 4", is_active=True)
+        self.country = CountryFactory(name="New Country 5", is_active=True)
         self.url = f"/country/translations/{self.translation_set.id}/edit/{self.country.id}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -366,5 +374,6 @@ class CountryTranslationEditViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         self.assertEqual(
-            response.context_data["page_title"], "Editing Russian translation of Egypt"
+            response.context_data["page_title"],
+            "Editing New Country 4 translation of New Country 5",
         )

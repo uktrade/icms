@@ -40,7 +40,10 @@ class CountryGroupTest(TestCase):
 
     def test_string_representation(self):
         group = self.create_country_group(name="EU Countries")
-        self.assertEqual(group.__str__(), "Country Group (EU Countries)")
+        country = CountryTest().create_country()
+        group.countries.add(country)
+        group.save()
+        self.assertEqual(group.__str__(), "EU Countries - (1 countries)")
 
 
 class CountryTranslationSetTest(TestCase):
