@@ -1,5 +1,35 @@
-{% extends "web/domains/case/export/management-base.html" %}
+{% extends "layout/sidebar.html" %}
 
+
+{% block context_header %}
+  Edit Note
+{% endblock %}
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+  {% if url_namespace == "export" %}
+    {% with object = process %}
+      {% include 'partial/case/export/sidebar.html' %}
+    {% endwith %}
+  {% else %}
+    {% include 'partial/case/import/sidebar-management.html' %}
+  {% endif %}
+{% endblock %}
+
+{% block content_actions %}
+  <form method="post" action="{{ url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
+    {{ csrf_input }}
+    <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
 
 {% block main_content %}
   <h3>Case Notes</h3>
@@ -20,7 +50,11 @@
 
   <div class="list-actions">
     <ul class="menu-out flow-across">
-      <form method="post" action="{{ url('export:case-notes-add', args=[object.pk]) }}" class="form-inline">
+      {% if url_namespace == "export" %}
+        <form method="post" action="{{ url('export:add-note', args=[process.pk]) }}" class="form-inline">
+      {% else %}
+        <form method="post" action="{{ url('import:add-note', args=[process.pk]) }}" class="form-inline">
+      {% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button icon-plus">New Case note</button>
       </form>

@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content_actions %}
-  <form method="post" action="{{ url('export:case-release-ownership', args=[object.pk]) }}" class="form-inline">
+  <form method="post" action="{{ url('export:release-ownership', args=[object.pk]) }}" class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>
   </form>

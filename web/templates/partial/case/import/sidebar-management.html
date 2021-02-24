@@ -32,7 +32,9 @@
     <a href="#">Further Information Requests (x/x)</a>
   </li>
   <li>
-    <a href="#">Case Note (x/x)</a>
+    <a href="{{ url('import:list-notes', args=[process.pk]) }}">
+      Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
+    </a>
   </li>
   <li>
     <a href="#">Response Preparation</a>

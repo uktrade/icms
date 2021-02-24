@@ -3,14 +3,27 @@
     Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
   </legend>
 
-  <a href="{{ url('export:case-notes-edit', kwargs={'pk': object.pk, 'note_pk': note.pk }) }}"
-     class="button small-button icon-pencil">
-     Edit
-  </a>
+  {% if url_namespace == "export" %}
+    <a href="{{ url('export:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+      class="button small-button icon-pencil">
+      Edit
+    </a>
+  {% else %}
+    <a href="{{ url('import:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+      class="button small-button icon-pencil">
+      Edit
+    </a>
+  {% endif %}
   {% if note.status != 'DELETED' %}
-    <form method="post"
-          action="{{ url('export:case-notes-archive', kwargs={'pk': object.pk, 'note_pk': note.pk }) }}"
-          class="form-inline">
+    {% if url_namespace == "export" %}
+      <form method="post"
+            action="{{ url('export:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+            class="form-inline">
+    {% else %}
+      <form method="post"
+            action="{{ url('import:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+            class="form-inline">
+    {% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button icon-bin">Delete</button>
     </form>

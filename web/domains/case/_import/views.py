@@ -14,6 +14,7 @@ from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
 
+from .. import views as case_views
 from .firearms.models import OpenIndividualLicenceApplication
 from .forms import CreateImportApplicationForm, WithdrawForm, WithdrawResponseForm
 from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
@@ -319,3 +320,45 @@ def view_case(request, pk):
             "page_title": application.application_type.get_type_description(),
         }
         return render(request, "web/domains/case/import/view.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def list_notes(request, pk):
+    return case_views._list_notes(request, pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def add_note(request, pk):
+    return case_views._add_note(request, pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_note(request, application_pk, note_pk):
+    return case_views._archive_note(request, application_pk, note_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_note(request, application_pk, note_pk):
+    return case_views._unarchive_note(request, application_pk, note_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_note(request, application_pk, note_pk):
+    return case_views._edit_note(request, application_pk, note_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_note_file(request, application_pk, note_pk, file_pk):
+    return case_views._archive_note_file(
+        request, application_pk, note_pk, file_pk, ImportApplication, "import"
+    )

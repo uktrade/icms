@@ -7,14 +7,13 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from web.domains.case.forms import CaseNoteForm, CloseCaseForm
-from web.domains.case.models import CASE_NOTE_DRAFT
-from web.domains.file.views import handle_uploaded_file
+from web.domains.case.forms import CloseCaseForm
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
 from web.views import ModelCreateView
 
+from .. import views as case_views
 from .forms import (
     NewExportApplicationForm,
     PrepareCertManufactureForm,
@@ -256,95 +255,42 @@ def management(request, pk):
 
 
 @login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def list_notes(request, pk):
+    return case_views._list_notes(request, pk, ExportApplication, "export")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def add_note(request, pk):
+    return case_views._add_note(request, pk, ExportApplication, "export")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_note(request, application_pk, note_pk):
+    return case_views._archive_note(request, application_pk, note_pk, ExportApplication, "export")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_note(request, application_pk, note_pk):
+    return case_views._unarchive_note(request, application_pk, note_pk, ExportApplication, "export")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_note(request, application_pk, note_pk):
+    return case_views._edit_note(request, application_pk, note_pk, ExportApplication, "export")
+
+
+@login_required
 @permission_required(export_case_officer_permission, raise_exception=True)
-def management_notes(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(klass=ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        context = {
-            "object": application,
-            "notes": application.case_notes,
-        }
-    return render(
-        request=request,
-        template_name="web/domains/case/export/management-notes.html",
-        context=context,
+@require_POST
+def archive_note_file(request, application_pk, note_pk, file_pk):
+    return case_views._archive_note_file(
+        request, application_pk, note_pk, file_pk, ExportApplication, "export"
     )
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def add_notes(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        application.case_notes.create(status=CASE_NOTE_DRAFT, created_by=request.user)
-
-    return redirect(reverse("export:case-notes", kwargs={"pk": pk}))
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def archive_note(request, pk, note_pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        application.case_notes.filter(pk=note_pk).update(is_active=False)
-
-    return redirect(reverse("export:case-notes", kwargs={"pk": pk}))
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def unarchive_note(request, pk, note_pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        application.case_notes.filter(pk=note_pk).update(is_active=True)
-
-    return redirect(reverse("export:case-notes", kwargs={"pk": pk}))
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-def edit_notes(request, pk, note_pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        note = application.case_notes.get(pk=note_pk)
-        note_form = CaseNoteForm(instance=note)
-        if request.POST:
-            note_form = CaseNoteForm(request.POST, instance=note)
-            files = request.FILES.getlist("files")
-            if note_form.is_valid():
-                note_form.save()
-                for f in files:
-                    handle_uploaded_file(f, request.user, note.files)
-                return redirect(
-                    reverse("export:case-notes-edit", kwargs={"pk": pk, "note_pk": note_pk})
-                )
-
-        context = {"object": application, "note_form": note_form, "note": note}
-
-    return render(
-        request=request,
-        template_name="web/domains/case/export/management-edit-notes.html",
-        context=context,
-    )
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def archive_file(request, pk, note_pk, file_pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        document = application.case_notes.get(pk=note_pk).files.get(pk=file_pk)
-        document.is_active = False
-        document.save()
-
-    return redirect(reverse("export:case-notes-edit", kwargs={"pk": pk, "note_pk": note_pk}))
