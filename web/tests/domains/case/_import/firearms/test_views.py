@@ -7,10 +7,7 @@ from web.domains.case._import.firearms.models import OpenIndividualLicenceApplic
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case._import.factory import (
-    OILApplicationFactory,
-    OILApplicationTypeFactory,
-)
+from web.tests.domains.case._import.factory import OILApplicationFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.user.factory import ActiveUserFactory
@@ -39,8 +36,6 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_ok(self):
-        OILApplicationTypeFactory.create()
-
         office = OfficeFactory.create(is_active=True)
         importer = ImporterFactory.create(is_active=True, offices=[office])
         assign_perm("web.is_contact_of_importer", self.user, importer)

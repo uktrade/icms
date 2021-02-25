@@ -7,7 +7,6 @@ from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocLicenseApplicationFactory,
-    SanctionsAndAdhocLicenseApplicationTypeFactory,
 )
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
@@ -31,7 +30,6 @@ class SanctionsAndAdhocImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_create_ok(self):
-        SanctionsAndAdhocLicenseApplicationTypeFactory.create()
         office = OfficeFactory.create(is_active=True)
         importer = ImporterFactory.create(is_active=True, offices=[office])
 

@@ -14,7 +14,7 @@ from web.flow.models import Process
 
 class ImportApplicationType(models.Model):
     TYPE_FIREARMS_AMMUNITION_CODE = "FA"
-    TYPE_SANCTION_ADHOC = "SA"
+    TYPE_SANCTION_ADHOC = "SAN"
     TYPE_WOOD_QUOTA = "WD"
 
     TYPE = (
@@ -82,7 +82,7 @@ class ImportApplicationType(models.Model):
         Template,
         on_delete=models.PROTECT,
         blank=False,
-        null=False,
+        null=True,  # TODO: decide if we're going to use this or not; made nullable for now so we can have this table populated
         related_name="declaration_application_types",
     )
     endorsements = models.ManyToManyField(Template, related_name="endorsement_application_types")

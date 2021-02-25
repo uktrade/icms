@@ -1,7 +1,6 @@
 from django.test import TestCase
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.tests.domains.case._import.factory import ImportApplicationTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.template.factory import TemplateFactory
@@ -53,7 +52,9 @@ class ImportApplicationTest(TestCase):
         )
         return ImportApplication.objects.create(
             is_active=True,
-            application_type=ImportApplicationTypeFactory(),
+            application_type=ImportApplicationType.objects.get(
+                type=ImportApplicationType.TYPE_SANCTION_ADHOC
+            ),
             created_by=UserFactory(is_active=True),
             last_updated_by=UserFactory(is_active=True),
             importer=importer,
