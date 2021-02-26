@@ -31,21 +31,18 @@ class TemplateListViewTest(AuthTestCase):
         self.assertEqual(response.context_data["page_title"], "Maintain Templates")
 
     def test_number_of_pages(self):
-        for i in range(118):
-            TemplateFactory()
-
+        TemplateFactory.create_batch(118, is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         page = response.context_data["page"]
-        self.assertEqual(page.paginator.num_pages, 3)
+        self.assertEqual(page.paginator.num_pages, 5)
 
     def test_page_results(self):
-        for i in range(103):
-            TemplateFactory(is_active=True)
+        TemplateFactory.create_batch(103, is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + "?page=3")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 5)
+        self.assertEqual(len(page.object_list), 50)
 
 
 class EndorsementCreateViewTest(AuthTestCase):

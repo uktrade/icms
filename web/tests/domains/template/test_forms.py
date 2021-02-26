@@ -59,7 +59,7 @@ class TemplatesFilterTest(TestCase):
         self.assertEqual(results.first().template_title, "Endorsement Title")
 
     def test_template_content_filter(self):
-        results = self.run_filter({"template_content": "ter"})
+        results = self.run_filter({"template_content": "test let"})
         self.assertEqual(results.count(), 1)
         self.assertEqual(results.first().template_name, "Active Letter Template")
 

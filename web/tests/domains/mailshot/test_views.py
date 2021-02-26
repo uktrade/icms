@@ -5,7 +5,6 @@ from web.domains.mailshot.models import Mailshot
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.domains.template.factory import TemplateFactory
 
 from .factory import MailshotFactory
 
@@ -109,15 +108,6 @@ class MailshotCreateViewTest(AuthTestCase):
     url = "/mailshot/new/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
-    def setUp(self):
-        super().setUp()
-        # Create publish mailshot template for testing
-        TemplateFactory(
-            template_code="PUBLISH_MAILSHOT",
-            template_title="New Mailshot",
-            template_content="Template Content",
-        )  # Create mailshot template
-
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
@@ -198,11 +188,6 @@ class MailshotEditViewTest(AuthTestCase):
 class MailshotRetractViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        TemplateFactory(
-            template_code="RETRACT_MAILSHOT",
-            template_title="Retract Mailshot",
-            template_content="Template Content",
-        )  # Create retraction mail template
         self.mailshot = MailshotFactory(status=Mailshot.PUBLISHED)  # Create a mailshot
         self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.id}/retract/"
