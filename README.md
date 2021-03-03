@@ -52,6 +52,9 @@ developing, only within Docker.
 - `make createsuperuser`
   - Create user to login with
 
+- `make add_dummy_data`
+  - Add needed permissions to user, create dummy importer and exporter, etc
+
 ## Running the application
 
 Start everything using docker-compose: `make debug`

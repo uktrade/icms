@@ -48,6 +48,10 @@ manage: ## execute manage.py
 	unset UID && \
 	docker-compose run --rm web python ./manage.py ${COMMAND}
 
+add_dummy_data: ## add dummy data
+	unset UID && \
+	docker-compose run --rm web python ./manage.py add_dummy_data
+
 ##@ Docker
 setup: ## sets up system for first use
 	# doing this here gives it the right permissions, e.g. the local user.
