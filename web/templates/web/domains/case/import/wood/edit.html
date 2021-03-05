@@ -1,0 +1,35 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+    {% include "partial/case/import/wood/sidebar.html" %}
+{% endblock %}
+
+{% block form_content %}
+  <h4>Contact</h4>
+  {{ fields.field(form.contact) }}
+
+  <h4>Wood (Quota)</h4>
+  {{ fields.field(form.applicant_reference) }}
+  {{ fields.field(form.shipping_year) }}
+
+  <h4>Exporter details</h4>
+  {{ fields.field(form.exporter_name) }}
+  {{ fields.field(form.exporter_address) }}
+  {{ fields.field(form.exporter_vat_nr) }}
+
+  <h4>Goods</h4>
+  <p>TODO: add what's needed (ICMSLST-559)</p>
+
+  <h4>Certificates/documents</h4>
+  <p>TODO: add what's needed (ICMSLST-557)</p>
+
+  <h4>Supporting documents</h4>
+  <p>TODO: add what's needed (ICMSLST-558)</p>
+
+{% endblock %}
+
+{% block task_actions %}
+  <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock %}
