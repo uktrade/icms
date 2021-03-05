@@ -6,10 +6,7 @@ from django.views.generic.list import ListView
 from guardian.shortcuts import get_objects_for_user
 
 from web.auth.mixins import RequireRegisteredMixin
-from web.domains.case._import.firearms.models import (
-    ImportApplication,
-    OpenIndividualLicenceApplication,
-)
+from web.domains.case._import.models import ImportApplication
 from web.domains.case.access.approval.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
@@ -20,6 +17,7 @@ from web.domains.case.access.models import (
     ImporterAccessRequest,
 )
 from web.domains.case.export.models import CertificateOfManufactureApplication
+from web.domains.case.models import UpdateRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.flow.models import Task
@@ -50,12 +48,16 @@ class Workbasket(RequireRegisteredMixin, ListView):
             is_active=True, status=AccessRequest.SUBMITTED
         ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
-        oil_import_application = OpenIndividualLicenceApplication.objects.filter(
-            is_active=True
-        ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+        import_application = (
+            ImportApplication.objects.filter(is_active=True)
+            .exclude(
+                update_requests__status__in=[UpdateRequest.OPEN, UpdateRequest.UPDATE_IN_PROGRESS]
+            )
+            .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+        )
 
         return chain(
-            certificates, exporter_access_requests, importer_access_requests, oil_import_application
+            certificates, exporter_access_requests, importer_access_requests, import_application
         )
 
     def get_queryset_user(self):
@@ -101,9 +103,9 @@ class Workbasket(RequireRegisteredMixin, ListView):
             )
         )
 
-        # Import Application - Open Individual Licence (OIL)
-        oil_import_application = (
-            OpenIndividualLicenceApplication.objects.prefetch_related(
+        # Import Application
+        import_application = (
+            ImportApplication.objects.prefetch_related(
                 Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
             )
             .filter(is_active=True)
@@ -112,6 +114,7 @@ class Workbasket(RequireRegisteredMixin, ListView):
                     ImportApplication.SUBMITTED,
                     ImportApplication.IN_PROGRESS,
                     ImportApplication.WITHDRAWN,
+                    ImportApplication.UPDATE_REQUESTED,
                 ]
             )
             .filter(importer__in=importers)
@@ -121,5 +124,5 @@ class Workbasket(RequireRegisteredMixin, ListView):
             exporter_approval_requests,
             importer_approval_requests,
             access_requests,
-            oil_import_application,
+            import_application,
         )

@@ -8,7 +8,7 @@
     <a href="{{ url('export:case-management', args=[process.pk]) }}">Manage</a>
   {% endif %}
 
-{% elif process.process_type == "OpenIndividualLicenceApplication" %}
+  {% elif process.process_type in ["OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication"] %}
   {% if process.status in ["SUBMITTED", "WITHDRAWN"] %}
     {% if not process.case_owner %}
       <form method="post" action="{{ url('import:take-ownership', args=[process.pk]) }}">
@@ -16,8 +16,10 @@
         <button type="submit" class="button link-button-no-padding">Take Ownership</button>
       </form>
       <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
-    {% elif process.case_owner == request.user %}
+    {% elif process.case_owner == request.user and task.task_type == "process" %}
       <a href="{{ url('import:case-management', args=[process.pk]) }}">Manage</a>
+    {% else %}
+      <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
     {% endif %}
   {% endif %}
 

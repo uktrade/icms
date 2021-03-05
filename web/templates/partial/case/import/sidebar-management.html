@@ -18,7 +18,7 @@
   </li>
   <li>
     {% with total = process.withdrawals.count(),
-    processed = process.withdrawals.exclude(status="open").count() %}
+            processed = process.withdrawals.exclude(status="open").count() %}
       <a
         href="{{ url('import:manage-withdrawals', args=[process.pk]) }}">
         Application Withdrawals ({{ processed }}/{{ total }})
@@ -26,7 +26,13 @@
     {% endwith %}
   </li>
   <li>
-    <a href="#">Application Updates (x/x)</a>
+    {% with total = process.update_requests.count(),
+    processed = process.update_requests.exclude(status="OPEN").count() %}
+      <a
+        href="{{ url('import:manage-update-requests', args=[process.pk]) }}">
+        Application Updates ({{ processed }}/{{ total }})
+      </a>
+    {% endwith %}
   </li>
   <li>
     <a href="#">Further Information Requests (x/x)</a>

@@ -1,0 +1,96 @@
+<fieldset>
+  <legend class="bold">Application Update</legend>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Status
+      </label>
+    </div>
+    <div class="six columns">
+      <div class="status {{ update_request.status }}">
+        <div>
+          <span class="text-widget">{{ update_request.status }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Request Date
+      </label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">
+        {{ update_request.request_datetime.strftime('%d-%b-%Y') }}
+      </span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Requested By
+      </label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">
+        {{ update_request.requested_by }}
+      </span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Request Subject
+      </label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">
+        {{ update_request.request_subject }}
+      </span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Request CC Email Addresses
+      </label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">
+        {{ update_request.email_cc_address_list or '' }}
+      </span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Request Detail
+      </label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">
+        {{ update_request.request_detail|nl2br }}
+      </span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {% if start_changes %}
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        <form method="POST" action={{ url(url_namespace + ':start-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk}) }}>
+          {{ csrf_input }}
+          <input type="submit" value="Start Changes" class="button primary-button" />
+        </form>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  {% endif %}
+</fieldset>

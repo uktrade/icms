@@ -119,6 +119,7 @@ class ImportApplication(WorkbasketBase, Process):
     VARIATION_REQUESTED = "VARIATION_REQUESTED"
     REVOKED = "REVOKED"
     DELETED = "DELETED"
+    UPDATE_REQUESTED = "UPDATE_REQUESTED"
 
     STATUSES = (
         (IN_PROGRESS, "In Progress"),
@@ -130,6 +131,7 @@ class ImportApplication(WorkbasketBase, Process):
         (REVOKED, "Revoked"),
         (VARIATION_REQUESTED, "Variation Requested"),
         (DELETED, "Deleted"),
+        (UPDATE_REQUESTED, "Update Requested"),
     )
 
     # Chief usage status

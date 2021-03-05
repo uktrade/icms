@@ -15,7 +15,8 @@ def _render_email(template, context):
 
 
 def send_notification(subject, template, context=None, recipients=None, cc_list=None):
-    """Renders given email template and sends to recipiens.
+    """Renders given email template and sends to recipients.
+
     User's personal and alternative emails with portal notifications
     enabled will be used.
 
@@ -31,6 +32,12 @@ def send_case_officer_notification(subject, template, context=None):
     html_message = _render_email(template, context)
     message_text = html2text.html2text(html_message)
     email.send_to_case_officers.delay(subject, message_text, html_message)
+
+
+def update_request(subject, content, contacts, cc_list):
+    # TODO: investigate web.notify.utils.get_notification_emails
+    recipients = [contact.email for contact in contacts]
+    email.send_email.delay(subject, content, recipients, cc_list=cc_list)
 
 
 def register(user, password):

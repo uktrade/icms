@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.forms import CloseCaseForm
+from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
@@ -361,4 +362,71 @@ def edit_note(request, application_pk, note_pk):
 def archive_note_file(request, application_pk, note_pk, file_pk):
     return case_views._archive_note_file(
         request, application_pk, note_pk, file_pk, ImportApplication, "import"
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_update_requests(request, pk):
+    application = get_object_or_404(ImportApplication, pk=pk)
+    template = Template.objects.get(template_code="IMA_APP_UPDATE", is_active=True)
+
+    importer = Importer.objects.get(import_applications__pk=pk)
+
+    # TODO: replace with case reference
+    placeholder_content = {
+        "CASE_REFERENCE": pk,
+        "IMPORTER_NAME": importer.display_name,
+        "CASE_OFFICER_NAME": request.user,
+    }
+
+    # TODO: replace with case reference
+    email_subject = template.get_title({"CASE_REFERENCE": pk})
+    email_content = template.get_content(placeholder_content)
+
+    importer_contacts = get_users_with_perms(
+        application.importer, only_with_perms_in=["is_contact_of_importer"]
+    ).filter(user_permissions__codename="importer_access")
+
+    return case_views._manage_update_requests(
+        request,
+        application,
+        ImportApplication,
+        email_subject,
+        email_content,
+        importer_contacts,
+        "import",
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def close_update_requests(request, application_pk, update_request_pk):
+    return case_views._close_update_requests(
+        request, application_pk, update_request_pk, ImportApplication, "import"
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def list_update_requests(request, pk):
+    return case_views._list_update_requests(request, pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+@require_POST
+def start_update_request(request, application_pk, update_request_pk):
+    return case_views._start_update_request(
+        request, application_pk, update_request_pk, ImportApplication, "import"
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def respond_update_request(request, application_pk, update_request_pk):
+    # TODO: make url more generic
+    return case_views._respond_update_request(
+        request, application_pk, update_request_pk, ImportApplication, "import"
     )

@@ -33,6 +33,16 @@ urlpatterns = [
     ),
     path("case/<int:pk>/management/", views.manage_case, name="case-management"),
     path("case/<int:pk>/withdrawals", views.manage_withdrawals, name="manage-withdrawals"),
+    path(
+        "case/<int:pk>/update-requests/",
+        views.manage_update_requests,
+        name="manage-update-requests",
+    ),
+    path(
+        "case/<int:application_pk>/update-requests/<int:update_request_pk>/close/",
+        views.close_update_requests,
+        name="close-update-requests",
+    ),
     path("case/<int:pk>/management/notes/", views.list_notes, name="list-notes"),
     path("case/<int:pk>/management/notes/add/", views.add_note, name="add-note"),
     path(

@@ -1,6 +1,6 @@
 from django import forms
 
-from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote
+from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote, UpdateRequest
 
 
 class CaseNoteForm(forms.ModelForm):
@@ -28,3 +28,9 @@ class CloseCaseForm(forms.Form):
         help_text="This email can be edited from the templates management screens.",
         widget=forms.CheckboxInput(),
     )
+
+
+class UpdateRequestForm(forms.ModelForm):
+    class Meta:
+        model = UpdateRequest
+        fields = ("request_subject", "email_cc_address_list", "request_detail")

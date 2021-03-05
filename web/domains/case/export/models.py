@@ -49,6 +49,7 @@ class ExportApplication(WorkbasketBase, Process):
     VARIATION_REQUESTED = "VARIATION"
     REVOKED = "REVOKED"
     DELETED = "DELETED"
+    UPDATE_REQUESTED = "UPDATE_REQUESTED"
 
     STATUSES = (
         (IN_PROGRESS, "In Progress"),
@@ -60,6 +61,7 @@ class ExportApplication(WorkbasketBase, Process):
         (REVOKED, "Revoked"),
         (VARIATION_REQUESTED, "Case Variation"),
         (DELETED, "Deleted"),
+        (UPDATE_REQUESTED, "Update Requested"),
     )
 
     # Decision
