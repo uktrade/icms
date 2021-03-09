@@ -20,6 +20,7 @@ from .models import (
     Importer,
     PersonalEmail,
     PhoneNumber,
+    SanctionsAndAdhocApplicationGoods,
     Template,
     User,
 )
@@ -55,6 +56,7 @@ admin.site.register(ImportApplication)
 admin.site.register(VerifiedCertificate)
 admin.site.register(ExportApplication)
 admin.site.register(Exporter)
+admin.site.register(SanctionsAndAdhocApplicationGoods)
 
 
 @admin.register(Permission)

@@ -255,6 +255,11 @@ class ImportApplication(WorkbasketBase, Process):
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/import-case.html"
 
+    def application_started(self):
+        if self.origin_country is not None and self.consignment_country is not None:
+            return True
+        return False
+
 
 class ImportContact(models.Model):
     LEGAL = "legal"

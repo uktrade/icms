@@ -4,7 +4,7 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.country.models import Country
 from web.domains.user.models import User
 
-from .models import SanctionsAndAdhocApplication
+from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
 
 class SanctionsAndAdhocLicenseForm(forms.ModelForm):
@@ -20,13 +20,11 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
     )
     origin_country = forms.ModelChoiceField(
         label="Country Of Origin",
-        empty_label=None,
         queryset=Country.objects.filter(country_groups__name="Sanctions and Adhoc License"),
     )
 
     consignment_country = forms.ModelChoiceField(
         label="Country Of Consignment",
-        empty_label=None,
         queryset=Country.objects.filter(country_groups__name="Sanctions and Adhoc License"),
     )
     exporter_name = forms.CharField(
@@ -55,3 +53,14 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+
+
+class GoodsForm(forms.ModelForm):
+    class Meta:
+        # TODO restrict commodities to group when it becomes known
+        model = SanctionsAndAdhocApplicationGoods
+        fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
+        widgets = {
+            "goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
+        }
+        labels = {"value": "Value (GBP CIF)"}

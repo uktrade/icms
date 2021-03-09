@@ -3,7 +3,10 @@ import factory.fuzzy
 
 from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
-from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
+from web.domains.case._import.sanctions.models import (
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+)
 
 
 class OILApplicationFactory(factory.django.DjangoModelFactory):
@@ -27,3 +30,8 @@ class SanctionsAndAdhocLicenseApplicationFactory(factory.django.DjangoModelFacto
 
     class Meta:
         model = SanctionsAndAdhocApplication
+
+
+class SanctionsAndAdhocApplicationGoodsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SanctionsAndAdhocApplicationGoods

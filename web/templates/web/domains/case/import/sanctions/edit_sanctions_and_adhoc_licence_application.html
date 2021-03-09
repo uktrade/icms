@@ -6,21 +6,83 @@
     {% include "partial/case/import/sanctions/sidebar.html" %}
 {% endblock %}
 
+
 {% block form_content %}
 
-       <h4>Contact HOME</h4>
-      {{ fields.field(form.contact) }}
+    <h4>Contact</h4>
+    {{ fields.field(form.contact) }}
 
-      <h4>Sanctions and Adhoc License</h4>
-      {{ fields.field(form.applicant_reference) }}
-      {{ fields.field(form.origin_country) }}
-      {{ fields.field(form.consignment_country) }}
-      {{ fields.field(form.exporter_name) }}
-      {{ fields.field(form.exporter_address) }}
+    <h4>Sanctions and Adhoc License</h4>
+    {{ fields.field(form.applicant_reference) }}
+    {{ fields.field(form.origin_country) }}
+    {{ fields.field(form.consignment_country) }}
+    {{ fields.field(form.exporter_name) }}
+    {{ fields.field(form.exporter_address) }}
 
 {% endblock form_content %}
 
 {% block task_actions %}
-  <input type="submit" name="action" class="primary-button button" value="Save" />
+
+    <input type="submit" name="save" class="primary-button button" value="Save"/>
+
 {% endblock task_actions %}
 
+{% block subtasks %}
+
+    {% if process.application_started() %}
+        <h4>Goods</h4>
+
+        {% if goods_list %}
+
+            <table responsiveList class="setoutList" id="tbl-search-results">
+                <thead>
+                <tr>
+                    <th>
+                        Commodity Code
+                    </th>
+                    <th>Goods Descriptions</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Value (GBP CIF)</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                {% for row in goods_list %}
+                    <tr class="result-row">
+                        <td>{{ row.commodity_code }}</td>
+                        <td>{{ row.goods_description }}</td>
+                        <td>{{ row.quantity_amount }}</td>
+                        <td>kilos</td>
+                        <td>{{ row.value }}</td>
+                        <td>
+                            <a class="link-button button icon-pencil" data-input_action="edit"
+                               href="{{ url('import:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
+
+                            <form action="{{ url('import:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
+                                {{ csrf_input }}
+                                <button role="action-button"
+                                        type="submit"
+                                        class="link-button button no-prompt-action tooltipstered icon-bin"
+                                        aria-label="Delete"
+                                        data-confirm="Are you sure you want to delete this record?">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+        {% else %}
+            <div class="info-box info-box-info">
+                There are no goods attached
+            </div>
+        {% endif %}
+
+        <a class="button small-button" href="{{ url('import:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
+
+
+    {% endif %}
+
+{% endblock subtasks %}
