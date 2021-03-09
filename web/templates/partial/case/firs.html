@@ -12,10 +12,10 @@
   <ul class="menu-out flow-across">
     <form
       method="post"
-      action="{{ url('access:case-management-fir-add', args=[object.pk, entity]) }}"
+      action="{{ url('access:add-fir', args=[process.pk]) }}"
       class="form-inline">
 
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      {{ csrf_input }}
       <button type="submit" class="small-button icon-plus">New FIR</button>
     </form>
   </ul>

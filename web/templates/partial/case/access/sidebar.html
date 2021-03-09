@@ -1,28 +1,28 @@
 <h4>Access Request</h4>
-{% with entity = "exporter" if object.process_type == "ExporterAccessRequest" else "importer" %}
+{% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
 <ul class="menu-out">
   <li>
-    <a href="{{ url('access:case-management', args=[object.pk, entity]) }}">
-      Case {{ object.pk }}
+    <a href="{{ url('access:case-management', args=[process.pk, entity]) }}">
+      Case {{ process.pk }}
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-management-firs', args=[object.pk, entity]) }}">
+    <a href="{{ url('access:manage-firs', args=[process.pk]) }}">
       {% with
-        completed=object.further_information_requests.completed().count(),
-        total=object.further_information_requests.exclude(status="DELETED").count() %}
+        completed=process.further_information_requests.completed().count(),
+        total=process.further_information_requests.exclude(status="DELETED").count() %}
 
         Further Information Requests ({{ completed }}/{{ total }})
       {% endwith %}
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-management-access-approval', args=[object.pk, entity]) }}">
+    <a href="{{ url('access:case-management-access-approval', args=[process.pk, entity]) }}">
       Access Approval
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-management-response', args=[object.pk, entity]) }}">
+    <a href="{{ url('access:case-management-response', args=[process.pk, entity]) }}">
       Close Access Request
     </a>
   </li>

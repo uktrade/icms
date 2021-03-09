@@ -4,7 +4,8 @@
 
 {% block main_content %}
   <h3>Close Access Request</h3>
-  {% if object.link %}
+  {% if process.process_type == "ImporterAccessRequest" and process.importeraccessrequest.link
+        or process.process_type == "ExporterAccessRequest "and process.exporteraccessrequest.link %}
     <div class="container setOutForm">
       {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
         {% for field in form %}
@@ -19,14 +20,14 @@
       {% endcall %}
     </div>
     {% else %}
-      {% if object.process_type == "ExporterAccessRequest" %}
+      {% if process.process_type == "ExporterAccessRequest" %}
         <div class="info-box info-box-info">
-          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'exporter']) }}">
+          You must first <a href=" {{ url('access:case-management', args=[process.pk, 'exporter']) }}">
           link an exporter</a> to the access request if you wish to start exporter access approval.
         </div>
       {% else %}
         <div class="info-box info-box-info">
-          You must first <a href=" {{ url('access:case-management', args=[object.pk, 'importer']) }}">
+          You must first <a href=" {{ url('access:case-management', args=[process.pk, 'importer']) }}">
           link an importer</a> to the access request if you wish to start importer access approval.
         </div>
       {% endif %}

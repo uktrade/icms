@@ -2,7 +2,7 @@
   <a href="{{ url('access:case-view', args=[process.pk, 'importer']) }}">View</a>
   {% for fir in process.further_information_requests.open() %}
     <br/>
-    <a href="{{ url('access:case-fir-respond', args=[process.pk, 'importer', fir.pk]) }}">
+    <a href="{{ url('access:respond-fir', args=[process.pk, fir.pk]) }}">
       Respond FIR
     </a>
   {% endfor %}
@@ -11,7 +11,7 @@
   <a href="{{ url('access:case-view', args=[process.pk, 'exporter']) }}">View</a>
   {% for fir in process.further_information_requests.open() %}
     <br/>
-    <a href="{{ url('access:case-fir-respond', args=[process.pk, 'exporter', fir.pk]) }}">
+    <a href="{{ url('access:respond-fir', args=[process.pk, fir.pk]) }}">
       Respond FIR
     </a>
   {% endfor %}

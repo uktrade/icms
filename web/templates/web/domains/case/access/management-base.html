@@ -17,7 +17,7 @@
     {% include "web/menu/menu.html" %}
   </header>
   <div class="has-context-header-grid" id="context-header">
-    {% if object.process_type == "ExporterAccessRequest" %}
+    {% if process.process_type == "ExporterAccessRequest" %}
       <h2>Manage Exporter Access Request</h2>
     {% else %}
       <h2>Manage Importer Access Request</h2>
@@ -27,40 +27,42 @@
         <div class="row">
           <div class="six columns">
             <dt class="bold">Access Requested By</dt>
-            <dd>{{ object.submitted_by }}</dd>
-            <dt class="bold">Access Request Type</dt>
-            <dd>{{ object.get_request_type_display() }}</dd>
+            <dd>{{ process.submitted_by }}</dd>
 
-            {% if object.process_type == "ExporterAccessRequest" %}
+            {% if process.process_type == "ExporterAccessRequest" %}
+              <dt class="bold">Access Request Type</dt>
+              <dd>{{ process.exporteraccessrequest.get_request_type_display() }}</dd>
               <dt class="bold">Exporter Name</dt>
-              <dd>{{ object.organisation_name }}</dd>
+              <dd>{{ process.organisation_name }}</dd>
               <dt class="bold">Exporter Address</dt>
-              <dd>{{ object.organisation_address }}</dd>
+              <dd>{{ process.organisation_address }}</dd>
               <dt class="bold">Linked Exporter</dt>
-              <dd>{{ object.link|default('Not Linked', True)}}</dd>
+              <dd>{{ process.exporteraccessrequest.link|default('Not Linked', True)}}</dd>
             {% else %}
+              <dt class="bold">Access Request Type</dt>
+              <dd>{{ process.importeraccessrequest.get_request_type_display() }}</dd>
               <dt class="bold">Importer Name</dt>
-              <dd>{{ object.organisation_name }}</dd>
+              <dd>{{ process.organisation_name }}</dd>
               <dt class="bold">Importer Address</dt>
-              <dd>{{ object.organisation_address }}</dd>
+              <dd>{{ process.organisation_address }}</dd>
               <dt class="bold">Linked Importer</dt>
-              <dd>{{ object.link|default('Not Linked', True)}}</dd>
+              <dd>{{ process.importeraccessrequest.link|default('Not Linked', True)}}</dd>
             {% endif %}
           </div>
           <div class="six columns">
             <dt class="bold">Registered Number</dt>
-            <dd>{{ object.organisation_registered_number|default("N/A", True) }}</dd>
-            {% if object.process_type == "ImporterAccessRequest" %}
+            <dd>{{ process.organisation_registered_number|default("N/A", True) }}</dd>
+            {% if process.process_type == "ImporterAccessRequest" %}
               <dt class="bold">EORI Number</dt>
-              <dd>{{ object.eori_number|default("N/A", True) }}</dd>
+              <dd>{{ process.eori_number|default("N/A", True) }}</dd>
               <dt class="bold">NI EORI Number</dt>
-              <dd>{{ object.eori_number_ni|default("N/A", True) }}</dd>
+              <dd>{{ process.eori_number_ni|default("N/A", True) }}</dd>
             {% endif %}
 
             <dt class="bold">Request date</dt>
             <dd>
-              {% if object.submit_datetime %}
-                {{ object.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+              {% if process.submit_datetime %}
+                {{ process.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
               {% endif %}
             </dd>
           </div>

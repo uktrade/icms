@@ -88,7 +88,7 @@ def management_access_approval(request, pk, entity):
             form = Form(application, instance=approval_request)
 
         context = {
-            "object": application,
+            "process": application,
             "task": task,
             "form": form,
             "approval_request": approval_request,
@@ -280,5 +280,5 @@ def case_approval_respond(request, application_pk, entity, approval_request_pk):
         else:
             form = ApprovalRequestResponseForm(instance=approval)
 
-    context = {"object": application, "form": form, "entity": entity, "approval": approval}
+    context = {"process": application, "form": form, "entity": entity, "approval": approval}
     return render(request, "web/domains/case/access/case-approval-respond.html", context)

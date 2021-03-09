@@ -5,7 +5,7 @@
     {% include "web/menu/menu.html" %}
   </header>
   <div class="has-context-header-grid" id="context-header">
-    {% if object.process_type == "ExporterAccessRequest" %}
+    {% if process.process_type == "ExporterAccessRequest" %}
       <h2>Exporter Access Request</h2>
     {% else %}
       <h2>Importer Access Request</h2>
@@ -30,31 +30,31 @@
   <div class="container">
     <dl>
     <dt class="bold">Access Requested By</dt>
-    <dd>{{ object.submitted_by }} ({{ object.submitted_by.email }})</dd>
+    <dd>{{ process.submitted_by }} ({{ object.submitted_by.email }})</dd>
     <dt class="bold">Access Request Type</dt>
-    <dd>{{ object.get_request_type_display() }}</dd>
+    <dd>{{ process.get_request_type_display() }}</dd>
     <dt class="bold">Request date</dt>
     <dd>
-      {% if object.submit_datetime %}
-        {{ object.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
+      {% if process.submit_datetime %}
+        {{ process.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
       {% endif %}
     </dd>
-    {% if object.process_type == "ExporterAccessRequest" %}
+    {% if process.process_type == "ExporterAccessRequest" %}
       <dt class="bold">Exporter Name</dt>
-      <dd>{{ object.organisation_name }}</dd>
+      <dd>{{ process.organisation_name }}</dd>
       <dt class="bold">Exporter Address</dt>
-      <dd>{{ object.organisation_address }}</dd>
+      <dd>{{ process.organisation_address }}</dd>
       <dt class="bold">Linked Exporter</dt>
-      <dd>{{ object.link|default('Not Linked', True)}}</dd>
+      <dd>{{ process.exporteraccessrequest.link|default('Not Linked', True)}}</dd>
     {% else %}
       <dt class="bold">Importer Name</dt>
-      <dd>{{ object.organisation_name }}</dd>
+      <dd>{{ process.organisation_name }}</dd>
       <dt class="bold">Importer Address</dt>
-      <dd>{{ object.organisation_address }}</dd>
+      <dd>{{ process.organisation_address }}</dd>
       <dt class="bold">Linked Importer</dt>
-      <dd>{{ object.link|default('Not Linked', True)}}</dd>
+      <dd>{{ process.importeraccessrequest.link|default('Not Linked', True)}}</dd>
       <dt class="bold">What are you importing and where are you importing it from?</dt>
-      <dd>{{ object.request_reason }}</dd>
+      <dd>{{ process.request_reason }}</dd>
     {% endif %}
     </dl>
   </div>
@@ -62,18 +62,18 @@
 
 {% block sidebar %}
 <h4>Access Request</h4>
-{% with entity = "exporter" if object.process_type == "ExporterAccessRequest" else "importer" %}
+{% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
 <ul class="menu-out">
   <li>
-    <a href="{{ url('access:case-view', args=[object.pk, entity]) }}">
-      Case {{ object.pk }}
+    <a href="{{ url('access:case-view', args=[process.pk, entity]) }}">
+      Case {{ process.pk }}
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-firs', args=[object.pk, entity]) }}">
+    <a href="{{ url('access:list-firs', args=[process.pk]) }}">
       {% with
-        closed = object.further_information_requests.closed().count(),
-        total = object.further_information_requests.submitted().count()
+        closed = process.further_information_requests.closed().count(),
+        total = process.further_information_requests.submitted().count()
       %}
         Further Information Requests ({{ closed }}/{{ total }})
       {% endwith %}

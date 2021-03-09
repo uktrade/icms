@@ -16,15 +16,15 @@ urlpatterns = [
         views.case_view,
         name="case-view",
     ),
-    re_path(
-        "case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/view/firs/$",
-        views.case_firs,
-        name="case-firs",
+    path(
+        "case/<int:application_pk>/firs/list/",
+        views.list_firs,
+        name="list-firs",
     ),
-    re_path(
-        "case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/firs/(?P<fir_pk>[0-9]+)/respond/$",
-        views.case_fir_respond,
-        name="case-fir-respond",
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/respond/",
+        views.respond_fir,
+        name="respond-fir",
     ),
     # access request management
     re_path(
@@ -40,28 +40,23 @@ urlpatterns = [
     # approval request
     path("", include("web.domains.case.access.approval.urls")),
     # management for further information requests
-    re_path(
-        "^case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/management/firs/",
-        include(
-            [
-                path("", views.management_firs, name="case-management-firs"),
-                re_path("add/$", views.add_fir, name="case-management-fir-add"),
-                path("<int:fir_pk>/edit/", views.edit_fir, name="case-management-fir-edit"),
-                path(
-                    "<int:fir_pk>/archive/", views.archive_fir, name="case-management-fir-archive"
-                ),
-                path(
-                    "<int:fir_pk>/withdraw/",
-                    views.withdraw_fir,
-                    name="case-management-fir-withdraw",
-                ),
-                path("<int:fir_pk>/close/", views.close_fir, name="case-management-fir-close"),
-                path(
-                    "<int:fir_pk>/files/<int:file_pk>/",
-                    views.fir_archive_file,
-                    name="case-management-fir-file-archive",
-                ),
-            ]
-        ),
+    path("case/<int:application_pk>/firs/manage/", views.manage_firs, name="manage-firs"),
+    path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),
+    path("case/<int:application_pk>/firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/archive/",
+        views.archive_fir,
+        name="archive-fir",
+    ),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/withdraw/",
+        views.withdraw_fir,
+        name="withdraw-fir",
+    ),
+    path("case/<int:application_pk>/firs/<int:fir_pk>/close/", views.close_fir, name="close-fir"),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk/files/<int:file_pk/archive/",
+        views.archive_fir_file,
+        name="archive-fir-file",
     ),
 ]

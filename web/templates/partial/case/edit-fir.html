@@ -7,10 +7,10 @@
   <form
     method="post"
     action="{{ url(
-                 'access:case-management-fir-archive',
-                 kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk }) }}"
+                 'access:archive-fir',
+                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
     class="form-inline">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+      {{ csrf_input }}
       <button type="submit" class="small-button icon-bin">Delete</button>
     </form>
   {% endif %}
@@ -20,8 +20,8 @@
     <div class="six columns">
       <form method="post"
             action="{{ url(
-                         'access:case-management-fir-edit',
-                         kwargs={'application_pk': object.pk, 'entity': entity, 'fir_pk': fir.pk}) }}"
+                         'access:edit-fir',
+                         kwargs={'application_pk': process.pk, 'fir_pk': fir.pk}) }}"
             enctype="multipart/form-data">
         {{ csrf_input }}
         {{ form.as_p() }}
@@ -56,8 +56,8 @@
             <td>
               <form method="post"
                     action={{ url(
-                                'access:case-management-fir-files-archive',
-                                kwargs={'application_pk': object.pk, 'entity':entity, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
+                                'access:archive-fir-file',
+                                kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>
               </form>

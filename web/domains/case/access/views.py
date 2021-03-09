@@ -2,24 +2,17 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
 from django.db import transaction
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
+from web.domains.case import views as case_views
 from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
-from web.domains.case.fir.forms import (
-    FurtherInformationRequestForm,
-    FurtherInformationRequestResponseForm,
-)
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.file.views import handle_uploaded_file
-from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import notify
 from web.views import ModelFilterView
@@ -178,78 +171,18 @@ def case_view(request, application_pk, entity):
             )
         application.get_task(AccessRequest.SUBMITTED, "request")
 
-    context = {"object": application}
+    context = {"process": application}
     return render(request, "web/domains/case/access/case-view.html", context)
 
 
 @login_required
-def case_firs(request, application_pk, entity):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        application.get_task(AccessRequest.SUBMITTED, "request")
-
-    context = {
-        "object": application,
-        "firs": application.further_information_requests.filter(
-            Q(status=FurtherInformationRequest.OPEN)
-            | Q(status=FurtherInformationRequest.RESPONDED)
-            | Q(status=FurtherInformationRequest.CLOSED)
-        ),
-        "entity": entity,
-    }
-    return render(request, "web/domains/case/access/case-firs.html", context)
+def list_firs(request, application_pk):
+    return case_views._list_firs(request, application_pk, AccessRequest, "access")
 
 
 @login_required
-def case_fir_respond(request, application_pk, entity, fir_pk):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
-
-        if request.POST:
-            form = FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
-            files = request.FILES.getlist("files")
-            if form.is_valid():
-                fir = form.save()
-                for f in files:
-                    handle_uploaded_file(f, request.user, fir.files)
-
-                fir.response_datetime = timezone.now()
-                fir.status = FurtherInformationRequest.RESPONDED
-                fir.response_by = request.user
-                fir.save()
-
-                fir_task.is_active = False
-                fir_task.finished = timezone.now()
-                fir_task.save()
-
-                Task.objects.create(process=fir, task_type="responded", owner=request.user)
-
-                notify.further_information_request_access_request_responded(fir)
-
-                return redirect(reverse("workbasket"))
-        else:
-            form = FurtherInformationRequestResponseForm(instance=fir)
-
-    context = {"object": application, "fir": fir, "form": form}
-    return render(request, "web/domains/case/access/case-fir-respond.html", context)
+def respond_fir(request, application_pk, fir_pk):
+    return case_views._respond_fir(request, application_pk, fir_pk, AccessRequest, "access")
 
 
 @login_required
@@ -288,7 +221,7 @@ def management(request, pk, entity):
             form = Form(instance=application)
 
         context = {
-            "object": application,
+            "process": application,
             "task": task,
             "form": form,
         }
@@ -329,7 +262,7 @@ def management_response(request, pk, entity):
         else:
             form = forms.CloseAccessRequestForm(instance=application)
 
-        context = {"object": application, "task": task, "form": form}
+        context = {"process": application, "task": task, "form": form}
 
     return render(
         request=request,
@@ -344,244 +277,48 @@ class AccessRequestCreatedView(TemplateView):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def management_firs(request, application_pk, entity):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        context = {
-            "object": application,
-            "firs": application.further_information_requests.exclude(
-                status=FurtherInformationRequest.DELETED
-            ),
-            "entity": entity,
-        }
-    return render(
-        request=request,
-        template_name="web/domains/case/access/management-firs.html",
-        context=context,
-    )
+def manage_firs(request, application_pk):
+    return case_views._manage_firs(request, application_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def add_fir(request, application_pk, entity):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
-        # TODO: use case reference
-        title_mapping = {"REQUEST_REFERENCE": application.pk}
-        content_mapping = {
-            "REQUESTER_NAME": application.submitted_by,
-            "CURRENT_USER_NAME": request.user,
-            "REQUEST_REFERENCE": application.pk,
-        }
-        fir = application.further_information_requests.create(
-            status=FurtherInformationRequest.DRAFT,
-            requested_by=request.user,
-            request_subject=template.get_title(title_mapping),
-            request_detail=template.get_content(content_mapping),
-            process_type=FurtherInformationRequest.PROCESS_TYPE,
-        )
-
-        Task.objects.create(process=fir, task_type="check_draft", owner=request.user)
-
-    return redirect(
-        reverse(
-            "access:case-management-firs",
-            kwargs={"application_pk": application_pk, "entity": entity},
-        )
-    )
+def add_fir(request, application_pk):
+    return case_views._add_fir(request, application_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_fir(request, application_pk, entity, fir_pk):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-
-        fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        fir_task = fir.get_task(FurtherInformationRequest.DRAFT, "check_draft")
-
-        if request.POST:
-            form = FurtherInformationRequestForm(request.POST, instance=fir)
-            files = request.FILES.getlist("files")
-            if form.is_valid():
-                fir = form.save()
-                for f in files:
-                    handle_uploaded_file(f, request.user, fir.files)
-
-                if "send" in form.data:
-                    fir.status = FurtherInformationRequest.OPEN
-                    fir.save()
-                    notify.further_information_request_access_request(fir)
-
-                    fir_task.is_active = False
-                    fir_task.finished = timezone.now()
-                    fir_task.save()
-
-                    Task.objects.create(process=fir, task_type="notify_contacts", previous=fir_task)
-
-                return redirect(
-                    reverse(
-                        "access:case-management-firs",
-                        kwargs={"application_pk": application_pk, "entity": entity},
-                    )
-                )
-        else:
-            form = FurtherInformationRequestForm(instance=fir)
-
-        context = {"object": application, "form": form, "entity": entity, "fir": fir}
-
-    return render(
-        request=request,
-        template_name="web/domains/case/access/management-edit-fir.html",
-        context=context,
-    )
+def edit_fir(request, application_pk, fir_pk):
+    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_fir(request, application_pk, entity, fir_pk):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        fir_tasks = fir.get_active_tasks()
-
-        fir.is_active = False
-        fir.status = FurtherInformationRequest.DELETED
-        fir.save()
-
-        fir_tasks.update(is_active=False, finished=timezone.now())
-
-    return redirect(
-        reverse(
-            "access:case-management-firs",
-            kwargs={"application_pk": application_pk, "entity": entity},
-        )
-    )
+def archive_fir(request, application_pk, fir_pk):
+    return case_views._archive_fir(request, application_pk, fir_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def withdraw_fir(request, application_pk, entity, fir_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            AccessRequest.objects.select_for_update(), pk=application_pk
-        )
-        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
-
-        fir.status = FurtherInformationRequest.DRAFT
-        fir.save()
-
-        fir_task.is_active = False
-        fir_task.finished = timezone.now()
-        fir_task.save()
-
-        Task.objects.create(process=fir, task_type="check_draft", previous=fir_task)
-
-        application.further_information_requests.filter(pk=fir_pk).update(
-            is_active=True, status=FurtherInformationRequest.DRAFT
-        )
-
-    return redirect(
-        reverse(
-            "access:case-management-firs",
-            kwargs={"application_pk": application_pk, "entity": entity},
-        )
-    )
+def withdraw_fir(request, application_pk, fir_pk):
+    return case_views._withdraw_fir(request, application_pk, fir_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def close_fir(request, application_pk, entity, fir_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            AccessRequest.objects.select_for_update(), pk=application_pk
-        )
-        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
-        try:
-            fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
-        except Exception:
-            fir_task = fir.get_task(FurtherInformationRequest.RESPONDED, "responded")
-
-        fir.status = FurtherInformationRequest.CLOSED
-        fir.save()
-
-        fir_task.is_active = False
-        fir_task.finished = timezone.now()
-        fir_task.save()
-
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        application.further_information_requests.filter(pk=fir_pk).update(
-            is_active=False, status=FurtherInformationRequest.CLOSED
-        )
-
-    return redirect(
-        reverse(
-            "access:case-management-firs",
-            kwargs={"application_pk": application_pk, "entity": entity},
-        )
-    )
+def close_fir(request, application_pk, fir_pk):
+    return case_views._close_fir(request, application_pk, fir_pk, AccessRequest, "access")
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def fir_archive_file(request, application_pk, entity, fir_pk, file_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            AccessRequest.objects.select_for_update(), pk=application_pk
-        )
-        application.get_task(AccessRequest.SUBMITTED, "request")
-        document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
-        document.is_active = False
-        document.save()
-
-    return redirect(
-        reverse(
-            "access:case-management-firs-edit",
-            kwargs={"application_pk": application_pk, "entity": entity, "fir_pk": fir_pk},
-        )
+def archive_fir_file(request, application_pk, fir_pk, file_pk):
+    return case_views._archive_fir_file(
+        request, application_pk, fir_pk, file_pk, AccessRequest, "access"
     )

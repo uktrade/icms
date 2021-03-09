@@ -1,13 +1,17 @@
 from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.file.views import handle_uploaded_file
+from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import notify
 
 from . import forms, models
+from .fir import forms as fir_forms
+from .fir.models import FurtherInformationRequest
 
 
 def _list_notes(request, application_pk, model_class, url_namespace):
@@ -193,3 +197,253 @@ def _close_update_requests(request, application_pk, update_request_pk, model_cla
             kwargs={"application_pk": application_pk},
         )
     )
+
+
+def _manage_firs(request, application_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        task = application.get_task(model_class.SUBMITTED, "request")
+        context = {
+            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+            "process": application,
+            "task": task,
+            "firs": application.further_information_requests.exclude(
+                status=FurtherInformationRequest.DELETED
+            ),
+            "url_namespace": url_namespace,
+        }
+    return render(
+        request=request,
+        template_name="web/domains/case/manage-firs.html",
+        context=context,
+    )
+
+
+def _add_fir(request, application_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application.get_task(model_class.SUBMITTED, "request")
+        template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
+        # TODO: use case reference
+        title_mapping = {"REQUEST_REFERENCE": application.pk}
+        content_mapping = {
+            "REQUESTER_NAME": application.submitted_by,
+            "CURRENT_USER_NAME": request.user,
+            "REQUEST_REFERENCE": application.pk,
+        }
+        fir = application.further_information_requests.create(
+            status=FurtherInformationRequest.DRAFT,
+            requested_by=request.user,
+            request_subject=template.get_title(title_mapping),
+            request_detail=template.get_content(content_mapping),
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        Task.objects.create(process=fir, task_type="check_draft", owner=request.user)
+
+    return redirect(
+        reverse(
+            f"{url_namespace}:manage-firs",
+            kwargs={"application_pk": application_pk},
+        )
+    )
+
+
+def _edit_fir(request, application_pk, fir_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
+
+        task = application.get_task(model_class.SUBMITTED, "request")
+        fir_task = fir.get_task(FurtherInformationRequest.DRAFT, "check_draft")
+
+        if request.POST:
+            form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
+            files = request.FILES.getlist("files")
+            if form.is_valid():
+                fir = form.save()
+                for f in files:
+                    handle_uploaded_file(f, request.user, fir.files)
+
+                if "send" in form.data:
+                    fir.status = FurtherInformationRequest.OPEN
+                    fir.save()
+                    notify.further_information_request_access_request(fir)
+
+                    fir_task.is_active = False
+                    fir_task.finished = timezone.now()
+                    fir_task.save()
+
+                    Task.objects.create(process=fir, task_type="notify_contacts", previous=fir_task)
+
+                return redirect(
+                    reverse(
+                        "access:manage-firs",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+        else:
+            form = fir_forms.FurtherInformationRequestForm(instance=fir)
+
+        context = {
+            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "fir": fir,
+            "url_namespace": url_namespace,
+        }
+
+    return render(
+        request=request,
+        template_name="web/domains/case/edit-fir.html",
+        context=context,
+    )
+
+
+def _archive_fir(request, application_pk, fir_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
+
+        application.get_task(model_class.SUBMITTED, "request")
+        fir_tasks = fir.get_active_tasks()
+
+        fir.is_active = False
+        fir.status = FurtherInformationRequest.DELETED
+        fir.save()
+
+        fir_tasks.update(is_active=False, finished=timezone.now())
+
+    return redirect(
+        reverse(
+            "access:manage-firs",
+            kwargs={"application_pk": application_pk},
+        )
+    )
+
+
+def _withdraw_fir(request, application_pk, fir_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
+
+        application.get_task(model_class.SUBMITTED, "request")
+        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
+
+        fir.status = FurtherInformationRequest.DRAFT
+        fir.save()
+
+        fir_task.is_active = False
+        fir_task.finished = timezone.now()
+        fir_task.save()
+
+        Task.objects.create(process=fir, task_type="check_draft", previous=fir_task)
+
+        application.further_information_requests.filter(pk=fir_pk).update(
+            is_active=True, status=FurtherInformationRequest.DRAFT
+        )
+
+    return redirect(
+        reverse(
+            "access:manage-firs",
+            kwargs={"application_pk": application_pk},
+        )
+    )
+
+
+def _close_fir(request, application_pk, fir_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
+        fir_task = fir.get_task(
+            [FurtherInformationRequest.OPEN, FurtherInformationRequest.RESPONDED], "responded"
+        )
+
+        fir.status = FurtherInformationRequest.CLOSED
+        fir.save()
+
+        fir_task.is_active = False
+        fir_task.finished = timezone.now()
+        fir_task.save()
+
+        application.get_task(model_class.SUBMITTED, "request")
+        application.further_information_requests.filter(pk=fir_pk).update(
+            is_active=False, status=FurtherInformationRequest.CLOSED
+        )
+
+    return redirect(
+        reverse(
+            "access:manage-firs",
+            kwargs={"application_pk": application_pk},
+        )
+    )
+
+
+def _archive_fir_file(request, application_pk, fir_pk, file_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application.get_task(model_class.SUBMITTED, "request")
+        document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
+        document.is_active = False
+        document.save()
+
+    return redirect(
+        reverse(
+            "access:edit-fir",
+            kwargs={"application_pk": application_pk, "fir_pk": fir_pk},
+        )
+    )
+
+
+def _list_firs(request, application_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application.get_task(model_class.SUBMITTED, "request")
+
+    context = {
+        "process": application,
+        "firs": application.further_information_requests.filter(
+            Q(status=FurtherInformationRequest.OPEN)
+            | Q(status=FurtherInformationRequest.RESPONDED)
+            | Q(status=FurtherInformationRequest.CLOSED)
+        ),
+    }
+    return render(request, "web/domains/case/list-firs.html", context)
+
+
+def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
+
+        application.get_task(model_class.SUBMITTED, "request")
+        fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
+
+        if request.POST:
+            form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
+            files = request.FILES.getlist("files")
+            if form.is_valid():
+                fir = form.save()
+                for f in files:
+                    handle_uploaded_file(f, request.user, fir.files)
+
+                fir.response_datetime = timezone.now()
+                fir.status = FurtherInformationRequest.RESPONDED
+                fir.response_by = request.user
+                fir.save()
+
+                fir_task.is_active = False
+                fir_task.finished = timezone.now()
+                fir_task.save()
+
+                Task.objects.create(process=fir, task_type="responded", owner=request.user)
+
+                notify.further_information_request_access_request_responded(fir)
+
+                return redirect(reverse("workbasket"))
+        else:
+            form = fir_forms.FurtherInformationRequestResponseForm(instance=fir)
+
+    context = {"process": application, "fir": fir, "form": form}
+    return render(request, "web/domains/case/respond-fir.html", context)
