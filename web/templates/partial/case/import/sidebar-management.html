@@ -35,7 +35,14 @@
     {% endwith %}
   </li>
   <li>
-    <a href="#">Further Information Requests (x/x)</a>
+    <a href="{{ url('import:manage-firs', args=[process.pk]) }}">
+      {% with
+        completed=process.further_information_requests.completed().count(),
+        total=process.further_information_requests.exclude(status="DELETED").count() %}
+
+        Further Information Requests ({{ completed }}/{{ total }})
+      {% endwith %}
+    </a>
   </li>
   <li>
     <a href="{{ url('import:list-notes', args=[process.pk]) }}">

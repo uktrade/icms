@@ -430,3 +430,74 @@ def respond_update_request(request, application_pk, update_request_pk):
     return case_views._respond_update_request(
         request, application_pk, update_request_pk, ImportApplication, "import"
     )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_firs(request, application_pk):
+    extra_context = {"show_firs": True}
+    return case_views._manage_firs(
+        request, application_pk, ImportApplication, "import", **extra_context
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def add_fir(request, application_pk):
+    return case_views._add_fir(request, application_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_fir(request, application_pk, fir_pk):
+    application = get_object_or_404(ImportApplication, pk=application_pk)
+    importer_contacts = get_users_with_perms(
+        application.importer, only_with_perms_in=["is_contact_of_importer"]
+    ).filter(user_permissions__codename="importer_access")
+
+    return case_views._edit_fir(
+        request, application_pk, fir_pk, ImportApplication, "import", importer_contacts
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_fir(request, application_pk, fir_pk):
+    return case_views._archive_fir(request, application_pk, fir_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def withdraw_fir(request, application_pk, fir_pk):
+    return case_views._withdraw_fir(request, application_pk, fir_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def close_fir(request, application_pk, fir_pk):
+    return case_views._close_fir(request, application_pk, fir_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_fir_file(request, application_pk, fir_pk, file_pk):
+    return case_views._archive_fir_file(
+        request, application_pk, fir_pk, file_pk, ImportApplication, "import"
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def list_firs(request, application_pk):
+    return case_views._list_firs(request, application_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def respond_fir(request, application_pk, fir_pk):
+    return case_views._respond_fir(request, application_pk, fir_pk, ImportApplication, "import")

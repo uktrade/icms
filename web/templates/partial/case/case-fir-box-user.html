@@ -3,8 +3,8 @@
 {% block fir_action %}
   {% if fir.status == "OPEN" %}
     <a href="{{ url(
-                  'access:respond-fir',
-                  kwargs={'application_pk': object.pk, 'fir_pk': fir.pk }) }}"
+                  url_namespace + ':respond-fir',
+                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
       class="button small-button icon-pencil">
       Respond
     </a>

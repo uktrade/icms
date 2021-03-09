@@ -7,7 +7,7 @@
   <form
     method="post"
     action="{{ url(
-                 'access:archive-fir',
+                 url_namespace + ':archive-fir',
                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
     class="form-inline">
       {{ csrf_input }}
@@ -20,7 +20,7 @@
     <div class="six columns">
       <form method="post"
             action="{{ url(
-                         'access:edit-fir',
+                         url_namespace + ':edit-fir',
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk}) }}"
             enctype="multipart/form-data">
         {{ csrf_input }}
@@ -56,7 +56,7 @@
             <td>
               <form method="post"
                     action={{ url(
-                                'access:archive-fir-file',
+                                url_namespace + ':archive-fir-file',
                                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>

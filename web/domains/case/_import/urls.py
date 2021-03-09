@@ -20,6 +20,16 @@ urlpatterns = [
         views.archive_withdrawal,
         name="archive-withdrawal",
     ),
+    path(
+        "case/<int:application_pk>/firs/list/",
+        views.list_firs,
+        name="list-firs",
+    ),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/respond/",
+        views.respond_fir,
+        name="respond-fir",
+    ),
     # ILB Admin Case management
     path(
         "case/<int:pk>/take_ownership/",
@@ -64,6 +74,25 @@ urlpatterns = [
         "case/<int:application_pk>/management/notes/<int:note_pk>/files/<int:file_pk>",
         views.archive_note_file,
         name="archive-note-file",
+    ),
+    path("case/<int:application_pk>/firs/manage/", views.manage_firs, name="manage-firs"),
+    path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),
+    path("case/<int:application_pk>/firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/archive/",
+        views.archive_fir,
+        name="archive-fir",
+    ),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk>/withdraw/",
+        views.withdraw_fir,
+        name="withdraw-fir",
+    ),
+    path("case/<int:application_pk>/firs/<int:fir_pk>/close/", views.close_fir, name="close-fir"),
+    path(
+        "case/<int:application_pk>/firs/<int:fir_pk/files/<int:file_pk/archive/",
+        views.archive_fir_file,
+        name="archive-fir-file",
     ),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),

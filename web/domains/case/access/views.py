@@ -98,7 +98,7 @@ def importer_access_request(request):
                 application.save()
 
                 notify.access_requested_importer(application.pk)
-                Task.objects.create(process=application, task_type="request", owner=request.user)
+                Task.objects.create(process=application, task_type="process", owner=request.user)
 
                 if request.user.is_importer() or request.user.is_exporter():
                     return redirect(reverse("workbasket"))
@@ -136,7 +136,7 @@ def exporter_access_request(request):
                 application.save()
 
                 notify.access_requested_exporter(application.pk)
-                Task.objects.create(process=application, task_type="request", owner=request.user)
+                Task.objects.create(process=application, task_type="process", owner=request.user)
 
                 if request.user.is_importer() or request.user.is_exporter():
                     return redirect(reverse("workbasket"))
@@ -169,7 +169,7 @@ def case_view(request, application_pk, entity):
             application = get_object_or_404(
                 ExporterAccessRequest.objects.select_for_update(), pk=application_pk
             )
-        application.get_task(AccessRequest.SUBMITTED, "request")
+        application.get_task(AccessRequest.SUBMITTED, "process")
 
     context = {"process": application}
     return render(request, "web/domains/case/access/case-view.html", context)
@@ -202,7 +202,7 @@ def management(request, pk, entity):
             Form = forms.LinkExporterAccessRequestForm
             permission_codename = "exporter_access"
 
-        task = application.get_task(AccessRequest.SUBMITTED, "request")
+        task = application.get_task(AccessRequest.SUBMITTED, "process")
 
         if request.POST:
             form = Form(instance=application, data=request.POST)
@@ -278,7 +278,20 @@ class AccessRequestCreatedView(TemplateView):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_firs(request, application_pk):
-    return case_views._manage_firs(request, application_pk, AccessRequest, "access")
+    application = get_object_or_404(AccessRequest, pk=application_pk)
+
+    if application.process_type == "ImporterAccessRequest":
+        show_firs = application.importeraccessrequest.link_id
+    else:
+        show_firs = application.exporteraccessrequest.link_id
+
+    extra_context = {
+        "show_firs": show_firs,
+    }
+
+    return case_views._manage_firs(
+        request, application_pk, AccessRequest, "access", **extra_context
+    )
 
 
 @login_required
@@ -291,7 +304,9 @@ def add_fir(request, application_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_fir(request, application_pk, fir_pk):
-    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access")
+    application = get_object_or_404(AccessRequest, pk=application_pk)
+    contacts = [application.submitted_by]
+    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access", contacts)
 
 
 @login_required

@@ -3,7 +3,7 @@
 {% block fir_action %}
   {% if fir.status == 'DRAFT' %}
     <a href="{{ url(
-                  'access:edit-fir',
+                  url_namespace + ':edit-fir',
                   kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
       class="button small-button icon-pencil">
       Edit
@@ -11,7 +11,7 @@
   {% elif fir.status == 'OPEN' %}
     <form method="post"
           action="{{ url(
-                       'access:withdraw-fir',
+                       url_namespace + ':withdraw-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
         {{ csrf_input }}
@@ -19,7 +19,7 @@
     </form>
     <form method="post"
           action="{{ url(
-                       'access:close-fir',
+                       url_namespace + ':close-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
         {{ csrf_input }}
@@ -28,7 +28,7 @@
   {% elif fir.status == 'RESPONDED' %}
     <form method="post"
           action="{{ url(
-                       'access:close-fir',
+                       url_namespace + ':close-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
         {{ csrf_input }}
@@ -39,7 +39,7 @@
   {% if fir.status in ['DRAFT', 'OPEN'] %}
     <form method="post"
           action="{{ url(
-                       'access:archive-fir',
+                       url_namespace + ':archive-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
         {{ csrf_input }}

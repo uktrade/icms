@@ -41,6 +41,13 @@
     <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
     <a href="{{ url('import:withdraw-case', args=[process.pk]) }}">Withdraw</a>
+    <br />
+    {% for fir in process.further_information_requests.open() %}
+      <br/>
+      <a href="{{ url('import:respond-fir', args=[process.pk, fir.pk]) }}">
+        Respond FIR
+      </a>
+    {% endfor %}
   {% elif process.status == "WITHDRAWN" %}
     <a href="{{ url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>

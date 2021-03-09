@@ -114,47 +114,21 @@ def retract_mailshot(mailshot):
     )
 
 
-def further_information_requested(fir_process):
-    # TODO: implement in new way
-    raise NotImplementedError
-
-    # send_notification(
-    #     f"{fir.request_subject}",
-    #     "email/fir/requested.html",
-    #     context={"subject": fir.request_subject, "request_detail": fir.request_detail},
-    #     recipients=recipients,
-    # )
-
-
-def further_information_request_access_request(fir):
+def further_information_requested(fir, contacts):
     send_notification(
         f"{fir.request_subject}",
         "email/fir/requested.html",
         context={"subject": fir.request_subject, "request_detail": fir.request_detail},
-        recipients=[fir.accessrequest_set.first().submitted_by.email],
+        # TODO: investigate web.notify.utils.get_notification_emails
+        recipients=[contact.email for contact in contacts],
         cc_list=fir.email_cc_address_list or [],
     )
 
 
-def further_information_request_access_request_responded(fir):
+def further_information_responded(process, fir):
     send_case_officer_notification(
         # TODO: use case reference instead of pk
-        f"FIR Response - {fir.accessrequest_set.first().pk} - {fir.request_subject}",
+        f"FIR Response - {process.pk} - {fir.request_subject}",
         "email/fir/responded.html",
-        context={"fir": fir},
+        context={"process": process, "fir": fir},
     )
-
-
-def further_information_responded(fir_process):
-    # TODO: implement in new way
-    raise NotImplementedError
-
-    # subject = f"FIR Reponse - {fir_process.parent_display}"
-    # if isinstance(team, Exporter):
-    #     send_export_case_officer_notification(
-    #         subject, "email/fir/responded.html", context={"process": fir_process}
-    #     )
-    # else:
-    #     send_import_case_officer_notification(
-    #         subject, "email/fir/responded.html", context={"process": fir_process}
-    #     )
