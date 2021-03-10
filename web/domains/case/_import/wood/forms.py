@@ -42,6 +42,23 @@ class PrepareWoodQuotaForm(forms.ModelForm):
 
     exporter_vat_nr = forms.CharField(label="Exporter VAT number")
 
+    commodity_code = forms.ChoiceField(
+        help_text=""" It is the responsibility of the applicant to ensure that
+        the commodity code in this box is correct. If you are unsure of the
+        correct commodity code, consult the HM Revenue and Customs Integrated
+        Tariff Book, Volume 2, which is available from the Stationery Office. If
+        you are still in doubt, contact the Classification Advisory Service on
+        (01702) 366077.""",
+        choices=[(x, x) for x in [None, "4403201110", "4403201910", "4403203110", "4403203910"]],
+    )
+
+    goods_qty = forms.DecimalField(label="Quantity")
+
+    goods_unit = forms.ChoiceField(
+        label="Unit",
+        choices=[(x, x) for x in ["cubic metres"]],
+    )
+
     class Meta:
         model = models.WoodQuotaApplication
         fields = (
@@ -51,6 +68,10 @@ class PrepareWoodQuotaForm(forms.ModelForm):
             "exporter_name",
             "exporter_address",
             "exporter_vat_nr",
+            "commodity_code",
+            "goods_description",
+            "goods_qty",
+            "goods_unit",
         )
 
     def __init__(self, *args, **kwargs):

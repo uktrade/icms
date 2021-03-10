@@ -20,7 +20,10 @@
   {{ fields.field(form.exporter_vat_nr) }}
 
   <h4>Goods</h4>
-  <p>TODO: add what's needed (ICMSLST-559)</p>
+  {{ fields.field(form.commodity_code) }}
+  {{ fields.field(form.goods_description) }}
+  {{ fields.field(form.goods_qty) }}
+  {{ fields.field(form.goods_unit) }}
 
   <h4>Certificates/documents</h4>
   <p>TODO: add what's needed (ICMSLST-557)</p>
