@@ -7,14 +7,7 @@ from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
 
-from ..forms import CreateImportApplicationForm
 from . import models
-
-
-class FirearmsForm(CreateImportApplicationForm):
-    class Meta:
-        model = models.OpenIndividualLicenceApplication
-        fields = ("importer", "importer_office")
 
 
 class PrepareOILForm(forms.ModelForm):
