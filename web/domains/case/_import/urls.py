@@ -94,6 +94,7 @@ urlpatterns = [
         views.archive_fir_file,
         name="archive-fir-file",
     ),
+    path("case/<int:pk>/prepare-response/", views.prepare_response, name="prepare-response"),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]

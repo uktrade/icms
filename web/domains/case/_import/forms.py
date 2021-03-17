@@ -84,3 +84,22 @@ class WithdrawResponseForm(forms.ModelForm):
             and cleaned_data.get("response") == ""
         ):
             self.add_error("response", "This field is required when Withdrawal is refused")
+
+
+class ResponsePreparationForm(forms.ModelForm):
+    class Meta:
+        model = models.ImportApplication
+        fields = ("decision", "refuse_reason")
+        widgets = {"refuse_reason": forms.Textarea}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["decision"].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if (
+            cleaned_data.get("decision") == models.ImportApplication.REFUSE
+            and cleaned_data.get("refuse_reason") == ""
+        ):
+            self.add_error("response", "This field is required when the Application is refused")

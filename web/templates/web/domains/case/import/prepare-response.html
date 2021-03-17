@@ -1,0 +1,108 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <form
+    method="post"
+    action="{{ url('import:release-ownership', args=[process.pk]) }}"
+    class="form-inline">
+      {{ csrf_input }}
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/sidebar-management.html' %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Response Preparation</h3>
+  {% if process.application_approved %}
+    {% if cover_letter_flag %}
+      <a
+        href="#todo"
+        target="blank"
+        class="button">
+        Preview Cover Letter
+      </a>
+    {% endif %}
+
+    {% if electronic_licence_flag %}
+      <a
+        href="#todo"
+        target="blank"
+        class="button">
+        Preview Licence
+      </a>
+    {% endif %}
+  {% endif %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {{ fields.field(field, show_optional_indicator=False) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                class="primary-button button"
+                value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+
+  {% if process.application_approved %}
+    <h4>Goods</h4>
+    <div class="info-box info-box-info">
+      <p class="bold">
+        Edit the quantities, descriptions and values of the licenced goods,
+        and export certificates if applicable, below.
+      </p>
+      <p>
+        To begin editing the data, click "Edit Goods" below.
+      </p>
+    </div>
+    {% include goods_template %}
+
+    <h4>Documents</h4>
+    {% include documents_template %}
+
+    <h4>Endorsement</h4>
+  {% endif %}
+
+{% endblock %}
+
+{% block page_js %}
+  {{super()}}
+  <script src="{{ static('web/js/pages/approval-response.js') }}" type="text/javascript"></script>
+{% endblock %}

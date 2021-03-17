@@ -16,8 +16,8 @@ from web.flow.models import Task
 from web.notify.email import send_email
 
 from .. import views as case_views
+from . import forms
 from .firearms.models import OpenIndividualLicenceApplication
-from .forms import CreateImportApplicationForm, WithdrawForm, WithdrawResponseForm
 from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
@@ -61,7 +61,7 @@ def _create_application(request, import_application_type, model_class, redirect_
     )
 
     if request.POST:
-        form = CreateImportApplicationForm(request.user, request.POST)
+        form = forms.CreateImportApplicationForm(request.user, request.POST)
         if form.is_valid():
             application = model_class()
             application.importer = form.cleaned_data["importer"]
@@ -77,7 +77,7 @@ def _create_application(request, import_application_type, model_class, redirect_
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
             return redirect(reverse(redirect_view, kwargs={"pk": application.pk}))
     else:
-        form = CreateImportApplicationForm(request.user)
+        form = forms.CreateImportApplicationForm(request.user)
 
         context = {"form": form, "import_application_type": import_application_type}
         return render(request, "web/domains/case/import/create.html", context)
@@ -175,7 +175,7 @@ def manage_withdrawals(request, pk):
         ).first()
 
         if request.POST:
-            form = WithdrawResponseForm(request.POST, instance=current_withdrawal)
+            form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
             if form.is_valid():
                 withdrawal = form.save(commit=False)
                 withdrawal.response_by = request.user
@@ -204,7 +204,7 @@ def manage_withdrawals(request, pk):
 
                     return redirect(reverse("import:manage-withdrawals", kwargs={"pk": pk}))
         else:
-            form = WithdrawResponseForm(instance=current_withdrawal)
+            form = forms.WithdrawResponseForm(instance=current_withdrawal)
 
         context = {
             "process": application,
@@ -236,7 +236,7 @@ def withdraw_case(request, pk):
             raise PermissionDenied
 
         if request.POST:
-            form = WithdrawForm(request.POST)
+            form = forms.WithdrawForm(request.POST)
             if form.is_valid():
                 withdrawal = form.save(commit=False)
                 withdrawal.import_application = application
@@ -254,7 +254,7 @@ def withdraw_case(request, pk):
 
                 return redirect(reverse("workbasket"))
         else:
-            form = WithdrawForm()
+            form = forms.WithdrawForm()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -501,3 +501,38 @@ def list_firs(request, application_pk):
 @permission_required("web.importer_access", raise_exception=True)
 def respond_fir(request, application_pk, fir_pk):
     return case_views._respond_fir(request, application_pk, fir_pk, ImportApplication, "import")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def prepare_response(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = forms.ResponsePreparationForm(request.POST, instance=application)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+        else:
+            form = forms.ResponsePreparationForm()
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Response Preparation",
+            "form": form,
+            "goods_template": "web/domains/case/import/partials/firearms/oil-goods.html",
+            "documents_template": "web/domains/case/import/partials/firearms/oil-documents.html",
+            "cover_letter_flag": application.application_type.cover_letter_flag,
+            "electronic_licence_flag": application.application_type.electronic_licence_flag,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/prepare-response.html",
+            context=context,
+        )

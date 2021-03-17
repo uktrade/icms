@@ -149,7 +149,7 @@ class ImportApplication(WorkbasketBase, Process):
     # Decision
     REFUSE = "REFUSE"
     APPROVE = "APPROVE"
-    DECISIONS = ((REFUSE, "Refuse"), (APPROVE, "Approve"))
+    DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
 
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
@@ -259,6 +259,10 @@ class ImportApplication(WorkbasketBase, Process):
         if self.origin_country is not None and self.consignment_country is not None:
             return True
         return False
+
+    @property
+    def application_approved(self):
+        return self.decision == self.APPROVE
 
 
 class ImportContact(models.Model):
