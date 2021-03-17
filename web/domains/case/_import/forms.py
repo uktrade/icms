@@ -5,6 +5,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.domains.template.models import Template
 from web.forms.widgets import DateInput
 
 from . import models
@@ -136,3 +137,23 @@ class LicenceDateForm(forms.ModelForm):
             self.add_error("licence_start_date", "Date must be in the future.")
         if start_date > end_date:
             self.add_error("licence_end_date", "End Date must be after Start Date.")
+
+
+class EndorsementChoiceImportApplicationForm(forms.ModelForm):
+    content = forms.ModelChoiceField(
+        queryset=Template.objects.filter(is_active=True, template_type=Template.ENDORSEMENT)
+    )
+
+    class Meta:
+        model = models.EndorsementImportApplication
+        fields = ("content",)
+
+    def clean_content(self):
+        endorsement = self.cleaned_data["content"]
+        return endorsement.template_content
+
+
+class EndorsementImportApplicationForm(forms.ModelForm):
+    class Meta:
+        model = models.EndorsementImportApplication
+        fields = ("content",)

@@ -98,6 +98,49 @@
     {% include documents_template %}
 
     <h4>Endorsement</h4>
+    <table class="setoutList">
+      <thead>
+        <tr>
+          <th>Endorsement</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for endorsement in process.endorsements.all() %}
+          <tr>
+            <td>
+              {{ endorsement.content|nl2br }}
+            </td>
+            <td>
+              <a
+                href="{{ icms_url('import:edit-endorsement', args=[process.pk, endorsement.pk]) }}"
+                class="button small-button">
+                Edit
+              </a>
+              <form
+                method="post"
+                action="{{ icms_url('import:delete-endorsement', args=[process.pk, endorsement.pk]) }}"
+                class="form-inline">
+                {{ csrf_input }}
+                <input type="submit" class="button small-button" value="Remove" />
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="list-actions">
+      <a
+        href="{{ icms_url('import:add-endorsement', args=[process.pk]) }}"
+        class="button small-button icon-plus">
+        Add Endorsement
+      </a>
+      <a
+        href="{{ icms_url('import:add-custom-endorsement', args=[process.pk]) }}"
+        class="button small-button icon-plus">
+        Add Custom Endorsement
+      </a>
+    </div>
   {% endif %}
 
 {% endblock %}

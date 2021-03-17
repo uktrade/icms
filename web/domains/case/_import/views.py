@@ -598,3 +598,99 @@ def edit_licence(request, pk):
             template_name="web/domains/case/import/edit-licence.html",
             context=context,
         )
+
+
+def _add_endorsement(request, pk, Form):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = Form(request.POST)
+            if form.is_valid():
+                endorsement = form.save(commit=False)
+                endorsement.import_application = application
+                endorsement.save()
+                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+        else:
+            form = Form()
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Endorsement Response Preparation",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/add-endorsement.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_endorsement(request, pk):
+    return _add_endorsement(request, pk, forms.EndorsementChoiceImportApplicationForm)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_custom_endorsement(request, pk):
+    return _add_endorsement(request, pk, forms.EndorsementImportApplicationForm)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_endorsement(request, application_pk, endorsement_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = forms.EndorsementImportApplicationForm(request.POST, instance=endorsement)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse("import:prepare-response", kwargs={"pk": application_pk}))
+        else:
+            form = forms.EndorsementImportApplicationForm(instance=endorsement)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Endorsement Response Preparation",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/edit-endorsement.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+@require_POST
+def delete_endorsement(request, application_pk, endorsement_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+        endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
+        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        endorsement.delete()
+
+        return redirect(reverse("import:prepare-response", kwargs={"pk": application_pk}))

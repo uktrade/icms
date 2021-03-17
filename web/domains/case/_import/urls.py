@@ -105,6 +105,26 @@ urlpatterns = [
         views.edit_licence,
         name="edit-licence",
     ),
+    path(
+        "case/<int:pk>/endorsements/add/",
+        views.add_endorsement,
+        name="add-endorsement",
+    ),
+    path(
+        "case/<int:pk>/endorsements/add-custom/",
+        views.add_custom_endorsement,
+        name="add-custom-endorsement",
+    ),
+    path(
+        "case/<int:application_pk>/endorsements/<int:endorsement_pk>/edit/",
+        views.edit_endorsement,
+        name="edit-endorsement",
+    ),
+    path(
+        "case/<int:application_pk>/endorsements/<int:endorsement_pk>/delete/",
+        views.delete_endorsement,
+        name="delete-endorsement",
+    ),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]

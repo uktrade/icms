@@ -326,3 +326,12 @@ class WithdrawImportApplication(models.Model):
 
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
+
+
+class EndorsementImportApplication(models.Model):
+    import_application = models.ForeignKey(
+        ImportApplication, on_delete=models.PROTECT, related_name="endorsements"
+    )
+    content = models.TextField()
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)

@@ -404,6 +404,13 @@ def submit_oil(request, pk):
                 )
                 application.save()
 
+                endorsement = Template.objects.get(
+                    is_active=True,
+                    template_type=Template.ENDORSEMENT,
+                    template_name="Open Individual Licence endorsement",
+                )
+                application.endorsements.create(content=endorsement.template_content)
+
                 task.is_active = False
                 task.finished = timezone.now()
                 task.save()
