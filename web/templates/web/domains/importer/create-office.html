@@ -17,11 +17,11 @@
     <ul class="menu-out flow-across">
       <li>
           {% if object.is_agent() %}
-            <a href="{{ url('importer-agent-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            <a href="{{ icms_url('importer-agent-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
               Agent {{ object.display_name }}
             </a>
           {% else %}
-            <a href="{{ url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+            <a href="{{ icms_url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
               Importer {{ object.display_name }}
             </a>
           {% endif %}

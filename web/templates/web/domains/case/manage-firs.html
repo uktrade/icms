@@ -12,7 +12,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('workbasket') }}" class="prev-link">
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
           Workbasket
         </a>
       </li>
@@ -22,7 +22,7 @@
   {% if url_namespace == "import" %}
     <form
       method="post"
-      action="{{ url(url_namespace + ':release-ownership', args=[process.pk]) }}"
+      action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}"
       class="form-inline">
         {{ csrf_input }}
         <button type="submit">Release Ownership</button>
@@ -49,12 +49,12 @@
   {% else %} 
     {% if process.process_type == "ExporterAccessRequest" %}
       <div class="info-box info-box-info">
-        You must first <a href=" {{ url(url_namespace + ':case-management', args=[process.pk, 'exporter']) }}">
+        You must first <a href=" {{ icms_url(url_namespace + ':case-management', args=[process.pk, 'exporter']) }}">
         link an exporter</a> to the access request if you wish to start exporter access approval.
       </div>
     {% else %}
       <div class="info-box info-box-info">
-        You must first <a href=" {{ url(url_namespace + ':case-management', args=[process.pk, 'importer']) }}">
+        You must first <a href=" {{ icms_url(url_namespace + ':case-management', args=[process.pk, 'importer']) }}">
         link an importer</a> to the access request if you wish to start importer access approval.
       </div>
     {% endif %}

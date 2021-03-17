@@ -76,7 +76,7 @@ def environment(**options):
     env.globals.update(
         {
             "static": staticfiles_storage.url,
-            "url": reverse,
+            "icms_url": reverse,
             "get_messages": messages.get_messages,
             "modify_query": modify_query,
             "menu": menu,

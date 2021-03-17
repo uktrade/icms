@@ -6,7 +6,7 @@
                 {% if read_only %}
                     {{ agent.display_name }}
                 {% else %}
-                  <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                  <a href="{{ icms_url(agent_edit_url_name, args=[agent.id]) }}">
                     {{ agent.display_name }}
                   </a>
                 {% endif %}
@@ -14,7 +14,7 @@
                 {% if read_only %}
                     {{ agent.name }}
                 {% else %}
-                  <a href="{{ url(agent_edit_url_name, args=[agent.id]) }}">
+                  <a href="{{ icms_url(agent_edit_url_name, args=[agent.id]) }}">
                     {{ agent.name }}
                   </a>
                 {% endif %}
@@ -41,15 +41,15 @@
           <td>
             {% if agent.is_active %}
               <a class="button small-button icon-pencil"
-                 href="{{ url(agent_edit_url_name, args=[agent.pk]) }}">
+                 href="{{ icms_url(agent_edit_url_name, args=[agent.pk]) }}">
                 Edit
               </a>
-              <form method="post" action="{{ url(agent_archive_url_name, args=[agent.pk]) }}" class="form-inline">
+              <form method="post" action="{{ icms_url(agent_archive_url_name, args=[agent.pk]) }}" class="form-inline">
                 {{ csrf_input }}
                 <button type="submit" class="button small-button icon-bin">Archive</button>
               </form>
             {% else %}
-              <form method="post" action="{{ url(agent_unarchive_url_name, args=[agent.pk]) }}">
+              <form method="post" action="{{ icms_url(agent_unarchive_url_name, args=[agent.pk]) }}">
                 {{ csrf_input }}
                 <button type="submit" class="button small-button icon-undo">Restore</button>
               </form>

@@ -12,7 +12,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('workbasket') }}" class="prev-link">
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
           Workbasket
         </a>
       </li>
@@ -26,14 +26,14 @@
   {% if url_namespace == "access" %}
     <li>
       {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
-        <a href="{{ url('access:case-view', args=[process.pk, entity]) }}">
+        <a href="{{ icms_url('access:case-view', args=[process.pk, entity]) }}">
           Case {{ process.pk }}
         </a>
       {% endwith %}
     </li>
   {% endif %}
     <li>
-      <a href="{{ url(url_namespace + ':list-firs', args=[process.pk]) }}">
+      <a href="{{ icms_url(url_namespace + ':list-firs', args=[process.pk]) }}">
         {% with
           closed = process.further_information_requests.closed().count(),
           total = process.further_information_requests.submitted().count()
@@ -89,7 +89,7 @@
             <td>
               {% if document.created_by == request.user %}
               <form method="post"
-                    action={{ url(
+                    action={{ icms_url(
                                 url_namespace + ':case-management-fir-files-archive',
                                 kwargs={'application_pk': object.pk, 'entity':entity, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
                 {{ csrf_input }}

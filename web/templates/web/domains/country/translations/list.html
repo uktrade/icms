@@ -93,7 +93,7 @@
         <ul class="menu-out">
           {% if set.is_active %}
           <li>
-            <a href="{{url('country-translation-set-edit', args=[set.id])}}" class="link-button icon-pencil button">
+            <a href="{{ icms_url('country-translation-set-edit', args=[set.id])}}" class="link-button icon-pencil button">
               Edit
             </a>
           </li>

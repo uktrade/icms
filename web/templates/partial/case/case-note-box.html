@@ -4,12 +4,12 @@
   </legend>
 
   {% if url_namespace == "export" %}
-    <a href="{{ url('export:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+    <a href="{{ icms_url('export:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
       class="button small-button icon-pencil">
       Edit
     </a>
   {% else %}
-    <a href="{{ url('import:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+    <a href="{{ icms_url('import:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
       class="button small-button icon-pencil">
       Edit
     </a>
@@ -17,11 +17,11 @@
   {% if note.status != 'DELETED' %}
     {% if url_namespace == "export" %}
       <form method="post"
-            action="{{ url('export:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+            action="{{ icms_url('export:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
             class="form-inline">
     {% else %}
       <form method="post"
-            action="{{ url('import:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+            action="{{ icms_url('import:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
             class="form-inline">
     {% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />

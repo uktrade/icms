@@ -14,7 +14,7 @@
   <ul class="menu-out flow-across">
     <li>
       <a
-        href="{{ url('template-endorsement-usages') }}"
+        href="{{ icms_url('template-endorsement-usages') }}"
         class="prev-link">
         Maintain Endorsement Usages
       </a>
@@ -64,7 +64,7 @@
     <td>
       <form
         method="post"
-        action="{{ url('template-endorsement-usage-link-archive', kwargs={'usage_pk': object.pk, 'link_pk': endorsement.pk}) }}"
+        action="{{ icms_url('template-endorsement-usage-link-archive', kwargs={'usage_pk': object.pk, 'link_pk': endorsement.pk}) }}"
         class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="button small-button icon-bin">Archive</button>
@@ -81,7 +81,7 @@
 <div class="container setoutForm">
   <form
     method="post"
-    action="{{ url('template-endorsement-usage-edit', kwargs={'pk': object.pk}) }}"
+    action="{{ icms_url('template-endorsement-usage-edit', kwargs={'pk': object.pk}) }}"
     class="form-inline">
     {{ csrf_input }}
     <div class="container setoutForm">

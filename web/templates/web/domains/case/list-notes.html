@@ -23,7 +23,7 @@
 {% endblock %}
 
 {% block content_actions %}
-  <form method="post" action="{{ url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
+  <form method="post" action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
     {{ csrf_input }}
     <button type="submit">Release Ownership</button>
   </form>
@@ -51,9 +51,9 @@
   <div class="list-actions">
     <ul class="menu-out flow-across">
       {% if url_namespace == "export" %}
-        <form method="post" action="{{ url('export:add-note', args=[process.pk]) }}" class="form-inline">
+        <form method="post" action="{{ icms_url('export:add-note', args=[process.pk]) }}" class="form-inline">
       {% else %}
-        <form method="post" action="{{ url('import:add-note', args=[process.pk]) }}" class="form-inline">
+        <form method="post" action="{{ icms_url('import:add-note', args=[process.pk]) }}" class="form-inline">
       {% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button icon-plus">New Case note</button>

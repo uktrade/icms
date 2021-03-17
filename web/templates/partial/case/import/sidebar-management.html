@@ -3,13 +3,13 @@
   <li>
     <a
       class="current-page"
-      href="{{ url('import:case-management', args=[process.pk]) }}">
+      href="{{ icms_url('import:case-management', args=[process.pk]) }}">
       {{ process.reference or process.pk }}
     </a>
   </li>
   <li>
     <a
-      href="{{ url('import:manage-checklist', args=[process.pk]) }}">
+      href="{{ icms_url('import:manage-checklist', args=[process.pk]) }}">
       Checklist
     </a>
   </li>
@@ -20,7 +20,7 @@
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}
       <a
-        href="{{ url('import:manage-withdrawals', args=[process.pk]) }}">
+        href="{{ icms_url('import:manage-withdrawals', args=[process.pk]) }}">
         Application Withdrawals ({{ processed }}/{{ total }})
       </a>
     {% endwith %}
@@ -29,13 +29,13 @@
     {% with total = process.update_requests.count(),
     processed = process.update_requests.exclude(status="OPEN").count() %}
       <a
-        href="{{ url('import:manage-update-requests', args=[process.pk]) }}">
+        href="{{ icms_url('import:manage-update-requests', args=[process.pk]) }}">
         Application Updates ({{ processed }}/{{ total }})
       </a>
     {% endwith %}
   </li>
   <li>
-    <a href="{{ url('import:manage-firs', args=[process.pk]) }}">
+    <a href="{{ icms_url('import:manage-firs', args=[process.pk]) }}">
       {% with
         completed=process.further_information_requests.completed().count(),
         total=process.further_information_requests.exclude(status="DELETED").count() %}
@@ -45,7 +45,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ url('import:list-notes', args=[process.pk]) }}">
+    <a href="{{ icms_url('import:list-notes', args=[process.pk]) }}">
       Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
     </a>
   </li>

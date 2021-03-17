@@ -10,7 +10,7 @@
 {% block content_actions %}
     <div class="content-actions">
         <ul class="menu-out flow-across">
-            <li>  <a href="{{ url('importer-list') }}" class="prev-link">Importers</a></li>
+            <li>  <a href="{{ icms_url('importer-list') }}" class="prev-link">Importers</a></li>
         </ul>
     </div>
 {% endblock %}
@@ -23,7 +23,7 @@
   {% if object.is_agent() %}
       <div class="info-box info-box-info">
           This importer is an agent of
-          <a href="{{url('importer-view', args=[object.main_importer.id])}}">
+          <a href="{{ icms_url('importer-view', args=[object.main_importer.id])}}">
               {{ object.main_importer.display_name }}</a>.
       </div>
   {% endif %}

@@ -14,7 +14,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('workbasket') }}" class="prev-link">
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
           Workbasket
         </a>
       </li>
@@ -23,7 +23,7 @@
 
   <form
     method="post"
-    action="{{ url('import:release-ownership', args=[process.pk]) }}"
+    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
     class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>

@@ -5,7 +5,7 @@
 {% block main_content %}
 <p>Hi {{ request.user.username }}, you are logged in</p>
 
-<form method="post" action="{{url('logout')}}">
+<form method="post" action="{{icms_url('logout')}}">
     {{ csrf_input }}
     <button type="submit" id="btnLogout">Logout</button>
 </form>

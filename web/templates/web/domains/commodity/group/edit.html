@@ -41,13 +41,13 @@
               <td>{{ usage.maximum_allocation|default("", True) }}</td>
               <td>
                 <a
-                  href="{{ url('commodity-group-usage-edit', kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
+                  href="{{ icms_url('commodity-group-usage-edit', kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
                   class="button small-button icon-pencil">
                   Edit
                 </a>
                 <form
                   method="POST"
-                  action="{{ url("commodity-group-usage-delete", kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
+                  action="{{ icms_url("commodity-group-usage-delete", kwargs={"commodity_group_pk": object.pk, "usage_pk": usage.pk}) }}"
                   class="form-inline">
                   {{ csrf_input }}
                   <input type="submit" class="button small-button icon-bin" value="Delete" />
@@ -64,7 +64,7 @@
       <ul class="menu-out flow-across">
         <li>
           <a
-            href="{{ url('commodity-group-usage', kwargs={"pk": object.pk}) }}"
+            href="{{ icms_url('commodity-group-usage', kwargs={"pk": object.pk}) }}"
             class="button small-button icon-plus">
               Add Usage
           </a>

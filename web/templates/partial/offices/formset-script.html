@@ -47,7 +47,7 @@
 
       $.ajax({
           method: 'POST',
-          url: '{{ url("importer-postcode-lookup") }}',
+          url: '{{ icms_url("importer-postcode-lookup") }}',
           data: data,
           success: function(data, status, xhr) {
               $('#address_list').empty();

@@ -15,7 +15,7 @@
 <p>All fields are mandatory.</p>
 
 
-{% call forms.form(action=url('register'), method='post', csrf_input=csrf_input) -%}
+{% call forms.form(action=icms_url('register'), method='post', csrf_input=csrf_input) -%}
     {{fields.field(form.email, label_cols='four')}}
     {{fields.field(form.confirm_email, label_cols='four')}}
     {{fields.field(form.title, label_cols='four')}}
@@ -42,7 +42,7 @@
               </button>
             </li>
             <li>
-              <a href="{{url('login')}}" class="button link-button">
+              <a href="{{ icms_url('login')}}" class="button link-button">
                 Cancel
               </a>
             </li>

@@ -1,7 +1,7 @@
 <h4>Export Case</h4>
 <ul class="menu-out">
   <li>
-    <a href="{{ url('export:case-management', args=[object.pk]) }}">Case {{ object.pk }}</a>
+    <a href="{{ icms_url('export:case-management', args=[object.pk]) }}">Case {{ object.pk }}</a>
   </li>
   <li>
     <a href="#">Application Withdrawals (x/x)</a>
@@ -13,7 +13,7 @@
     <a href="#">Further Information Requests (x/x)</a>
   </li>
   <li>
-    <a href="{{ url('export:list-notes', args=[object.pk]) }}">
+    <a href="{{ icms_url('export:list-notes', args=[object.pk]) }}">
       Case Notes ({{ object.case_notes.completed().count() }}/{{object.case_notes.active().count()}})
     </a>
   </li>

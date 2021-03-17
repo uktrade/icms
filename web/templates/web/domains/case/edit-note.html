@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block content_actions %}
-  <form method="post" action="{{ url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
+  <form method="post" action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
     {{ csrf_input }}
     <button type="submit">Release Ownership</button>
   </form>
@@ -38,12 +38,12 @@
       </legend>
 
       {% if note.is_active %}
-        <form method="post" action="{{ url(url_namespace + ':archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
+        <form method="post" action="{{ icms_url(url_namespace + ':archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
           <button type="submit" class="small-button icon-bin">Delete</button>
         </form>
       {% else %}
-        <form method="post" action="{{ url(url_namespace + ':unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
+        <form method="post" action="{{ icms_url(url_namespace + ':unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
           <button type="submit" class="small-button icon-bin">Restore</button>
         </form>
@@ -53,7 +53,7 @@
         <div class="three columns"></div>
         <div class="six columns">
           <form method="post" 
-                action="{{ url(url_namespace + ':edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}"
+                action="{{ icms_url(url_namespace + ':edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}"
                 enctype="multipart/form-data">
             {{ csrf_input }}
             {{ note_form.as_p() }}
@@ -86,7 +86,7 @@
                 </td>
                 <td>
                   <form method="post"
-                        action={{ url(url_namespace + ':archive-note-file', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}>
+                        action={{ icms_url(url_namespace + ':archive-note-file', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}>
                     {{ csrf_input }}
                     <button type="submit" class="button link-button-no-padding">Delete</button>
                   </form>

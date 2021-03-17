@@ -16,7 +16,7 @@
     <tr>
       <td>
         <a
-          href="{{ url(
+          href="{{ icms_url(
                      'importer-section5-authorities-detail',
                      args=[object.pk, section5_authority.pk]) }}">
           {{ section5_authority.reference }}
@@ -29,20 +29,20 @@
       {% if not read_only %}
         <td>
           <a
-            href="{{ url('importer-section5-authorities-edit', args=[object.pk, section5_authority.pk]) }}"
+            href="{{ icms_url('importer-section5-authorities-edit', args=[object.pk, section5_authority.pk]) }}"
             class="button small-button icon-pencil">
             Edit
           </a>
           {% if section5_authority.is_active %}
             <form method="post"
-                  action="{{ url('importer-section5-authorities-archive', args=[object.pk, section5_authority.pk]) }}"
+                  action="{{ icms_url('importer-section5-authorities-archive', args=[object.pk, section5_authority.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Archive</button>
             </form>
           {% else %}
             <form method="post"
-                  action="{{ url('importer-section5-authorities-unarchive', args=[object.pk, section5_authority.pk]) }}"
+                  action="{{ icms_url('importer-section5-authorities-unarchive', args=[object.pk, section5_authority.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Restore</button>

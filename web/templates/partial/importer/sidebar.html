@@ -3,22 +3,22 @@
   <h5>Search</h5>
   <ul class="menu-out">
     <li>
-      <a href="{{ url('importer-list') }}">Importer</a>
+      <a href="{{ icms_url('importer-list') }}">Importer</a>
     </li>
     <li>
-      <a href="{{ url('access:importer-list') }}">Importer Access Requests</a>
+      <a href="{{ icms_url('access:importer-list') }}">Importer Access Requests</a>
     </li>
   </ul>
   {% if page_title == "Agent" %}
     <h5>Create Agent</h5>
     <ul class="menu-out">
       <li>
-        <a href="{{ url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'individual'}) }}">
+        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'individual'}) }}">
           Individual Agent
         </a>
       </li>
       <li>
-        <a href="{{ url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'organisation'}) }}">
+        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'organisation'}) }}">
           Organisation Agent
         </a>
       </li>
@@ -27,12 +27,12 @@
   <h5>Create Importer</h5>
   <ul class="menu-out">
     <li>
-      <a href="{{ url('importer-create', kwargs={'entity': 'individual'}) }}">
+      <a href="{{ icms_url('importer-create', kwargs={'entity': 'individual'}) }}">
         Main Individual Importer
       </a>
     </li>
     <li>
-      <a href="{{ url('importer-create', kwargs={'entity': 'organisation'}) }}">
+      <a href="{{ icms_url('importer-create', kwargs={'entity': 'organisation'}) }}">
         Main Organisation Importer
       </a>
     </li>

@@ -17,7 +17,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('workbasket') }}" class="prev-link">
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
           Workbasket
         </a>
       </li>
@@ -65,12 +65,12 @@
 {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
 <ul class="menu-out">
   <li>
-    <a href="{{ url('access:case-view', args=[process.pk, entity]) }}">
+    <a href="{{ icms_url('access:case-view', args=[process.pk, entity]) }}">
       Case {{ process.pk }}
     </a>
   </li>
   <li>
-    <a href="{{ url('access:list-firs', args=[process.pk]) }}">
+    <a href="{{ icms_url('access:list-firs', args=[process.pk]) }}">
       {% with
         closed = process.further_information_requests.closed().count(),
         total = process.further_information_requests.submitted().count()

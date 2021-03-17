@@ -9,7 +9,7 @@
 <div class="content-actions">
   <ul class="menu-out flow-across">
     <li>
-      <a href="{{ url('template-list') }}" class="prev-link">Template</a>
+      <a href="{{ icms_url('template-list') }}" class="prev-link">Template</a>
     </li>
   </ul>
 </div>
@@ -45,7 +45,7 @@
         </td>
         <td>
           <a
-            href="{{ url("template-endorsement-usage-edit", kwargs={"pk": usage.pk}) }}"
+            href="{{ icms_url("template-endorsement-usage-edit", kwargs={"pk": usage.pk}) }}"
             class="button small-button icon-pencil">
             Edit
           </a>

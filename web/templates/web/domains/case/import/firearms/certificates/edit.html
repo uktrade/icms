@@ -26,7 +26,7 @@
                 </td>
                 <td>
                   <form method="post"
-                        action={{ url(
+                        action={{ icms_url(
                                     'archive-user-import-certificate-file',
                                     kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk, 'file_pk': document.pk}) }}>
                     {{ csrf_input }}

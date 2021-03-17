@@ -26,7 +26,7 @@
       {% for certificate in verified_certificates %}
       <tr>
         <td>
-          <form action="{{ url(
+          <form action="{{ icms_url(
                            'import:toggle-verified-firearms',
                            kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
             {{ csrf_input }}
@@ -46,7 +46,7 @@
         <td>{{ certificate.end_date.strftime('%d-%b-%Y') }}</td>
         <td>
           <a
-            href="{{ url(
+            href="{{ icms_url(
                        'import:view-verified-firearms',
                        kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
             View Details

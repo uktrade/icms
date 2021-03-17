@@ -57,9 +57,9 @@
                         <td>{{ row.value }}</td>
                         <td>
                             <a class="link-button button icon-pencil" data-input_action="edit"
-                               href="{{ url('import:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
+                               href="{{ icms_url('import:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
 
-                            <form action="{{ url('import:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
+                            <form action="{{ icms_url('import:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
                                 {{ csrf_input }}
                                 <button role="action-button"
                                         type="submit"
@@ -80,7 +80,7 @@
             </div>
         {% endif %}
 
-        <a class="button small-button" href="{{ url('import:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
+        <a class="button small-button" href="{{ icms_url('import:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
 
 
     {% endif %}

@@ -12,7 +12,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url(url_namespace + ':manage-firs', args=[process.pk]) }}" class="prev-link">
+        <a href="{{ icms_url(url_namespace + ':manage-firs', args=[process.pk]) }}" class="prev-link">
           Manage Further Information Requests
         </a>
       </li>
@@ -22,7 +22,7 @@
   {% if url_namespace == "import" %}
     <form
       method="post"
-      action="{{ url(url_namespace + ':release-ownership', args=[process.pk]) }}"
+      action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}"
       class="form-inline">
         {{ csrf_input }}
         <button type="submit">Release Ownership</button>

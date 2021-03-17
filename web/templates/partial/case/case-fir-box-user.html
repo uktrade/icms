@@ -2,7 +2,7 @@
 
 {% block fir_action %}
   {% if fir.status == "OPEN" %}
-    <a href="{{ url(
+    <a href="{{ icms_url(
                   url_namespace + ':respond-fir',
                   kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
       class="button small-button icon-pencil">

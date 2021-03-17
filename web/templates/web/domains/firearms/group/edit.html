@@ -11,7 +11,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ url('obsolete-calibre-group-list') }}" class="prev-link">
+        <a href="{{ icms_url('obsolete-calibre-group-list') }}" class="prev-link">
           Maintain Obsolete Calibre
         </a>
       </li>
@@ -96,12 +96,12 @@
           </td>
           <td>
             {% if calibre.is_active %}
-              <a href="{{ url('obsolete-calibre-edit', args=[object.pk, calibre.pk]) }}"
+              <a href="{{ icms_url('obsolete-calibre-edit', args=[object.pk, calibre.pk]) }}"
                  class="button small-button icon-pencil">
                  Edit
               </a>
               <form method="post"
-                action="{{ url('obsolete-calibre-archive', args=[object.pk, calibre.pk]) }}"
+                action="{{ icms_url('obsolete-calibre-archive', args=[object.pk, calibre.pk]) }}"
                 class="form-inline">
 
                 {{ csrf_input }}
@@ -109,7 +109,7 @@
               </form>
             {% else %}
               <form method="post"
-                action="{{ url('obsolete-calibre-unarchive', args=[object.pk, calibre.pk]) }}"
+                action="{{ icms_url('obsolete-calibre-unarchive', args=[object.pk, calibre.pk]) }}"
                 class="form-inline">
 
                 {{ csrf_input }}
@@ -128,7 +128,7 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ url('obsolete-calibre-create', kwargs={'calibre_group_pk': object.pk}) }}"
+          href="{{ icms_url('obsolete-calibre-create', kwargs={'calibre_group_pk': object.pk}) }}"
           class="button small-button icon-office">
           Create Obsolete Calibre</a>
       </li>

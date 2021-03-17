@@ -3,11 +3,11 @@
 
 {% block sidebar %}
     <ul class="menu-out flow-across">
-        <li> <a href="{{url('product-legislation-new')}}">Create Product Legislation</a></li>
+        <li> <a href="{{ icms_url('product-legislation-new')}}">Create Product Legislation</a></li>
     </ul>
     <div class="section-break"></div>
     <h4> Filter </h4>
-    {% call forms.form(action=url('product-legislation-list'))%}
+    {% call forms.form(action=icms_url('product-legislation-list'))%}
       {% for field in filter.form %}
         {{ fields.field(field, show_optional_indicator=false, prompt='north', label_cols='twelve', input_cols='twelve') }}
       {% endfor %}
@@ -22,7 +22,7 @@
               </button>
             </li>
             <li>
-              <a href="{{url('product-legislation-list')}}" class="button link-button">
+              <a href="{{ icms_url('product-legislation-list')}}" class="button link-button">
                 Clear Filter
               </a>
             </li>

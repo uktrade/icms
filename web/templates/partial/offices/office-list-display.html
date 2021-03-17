@@ -22,20 +22,20 @@
       {% if not read_only %}
         <td>
           <a
-            href="{{ url(office_edit_url_name, args=[object.pk, office.pk]) }}"
+            href="{{ icms_url(office_edit_url_name, args=[object.pk, office.pk]) }}"
             class="button small-button icon-pencil">
             Edit
           </a>
           {% if office.is_active %}
             <form method="post"
-                  action="{{ url(office_archive_url_name, args=[object.pk, office.pk]) }}"
+                  action="{{ icms_url(office_archive_url_name, args=[object.pk, office.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Archive</button>
             </form>
           {% else %}
             <form method="post"
-                  action="{{ url(office_unarchive_url_name, args=[object.pk, office.pk]) }}"
+                  action="{{ icms_url(office_unarchive_url_name, args=[object.pk, office.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Restore</button>

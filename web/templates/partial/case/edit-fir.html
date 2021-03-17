@@ -6,7 +6,7 @@
   {% if fir.status in ["DRAFT", "OPEN"] %}
   <form
     method="post"
-    action="{{ url(
+    action="{{ icms_url(
                  url_namespace + ':archive-fir',
                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
     class="form-inline">
@@ -19,7 +19,7 @@
     <div class="three columns"></div>
     <div class="six columns">
       <form method="post"
-            action="{{ url(
+            action="{{ icms_url(
                          url_namespace + ':edit-fir',
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk}) }}"
             enctype="multipart/form-data">
@@ -55,7 +55,7 @@
             </td>
             <td>
               <form method="post"
-                    action={{ url(
+                    action={{ icms_url(
                                 url_namespace + ':archive-fir-file',
                                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
                 {{ csrf_input }}

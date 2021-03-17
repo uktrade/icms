@@ -36,7 +36,7 @@
         {% if not read_only %}
           <td>
             <a
-              href="{{ url('import:edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+              href="{{ icms_url('import:edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
               class="button small-button icon-pencil">
               Edit
             </a>
@@ -53,7 +53,7 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ url('import:create-user-import-certificate', kwargs={'pk': process.pk}) }}"
+          href="{{ icms_url('import:create-user-import-certificate', kwargs={'pk': process.pk}) }}"
           class="button small-button icon-plus">
         Add Certificate
         </a>

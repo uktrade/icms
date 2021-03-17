@@ -2,7 +2,7 @@
 
 {% block fir_action %}
   {% if fir.status == 'DRAFT' %}
-    <a href="{{ url(
+    <a href="{{ icms_url(
                   url_namespace + ':edit-fir',
                   kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
       class="button small-button icon-pencil">
@@ -10,7 +10,7 @@
     </a>
   {% elif fir.status == 'OPEN' %}
     <form method="post"
-          action="{{ url(
+          action="{{ icms_url(
                        url_namespace + ':withdraw-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
@@ -18,7 +18,7 @@
         <button type="submit" class="small-button icon-undo2">Withdraw Request</button>
     </form>
     <form method="post"
-          action="{{ url(
+          action="{{ icms_url(
                        url_namespace + ':close-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
@@ -27,7 +27,7 @@
     </form>
   {% elif fir.status == 'RESPONDED' %}
     <form method="post"
-          action="{{ url(
+          action="{{ icms_url(
                        url_namespace + ':close-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">
@@ -38,7 +38,7 @@
 
   {% if fir.status in ['DRAFT', 'OPEN'] %}
     <form method="post"
-          action="{{ url(
+          action="{{ icms_url(
                        url_namespace + ':archive-fir',
                        kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
           class="form-inline">

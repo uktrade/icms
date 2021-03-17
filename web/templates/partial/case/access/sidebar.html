@@ -2,12 +2,12 @@
 {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
 <ul class="menu-out">
   <li>
-    <a href="{{ url('access:case-management', args=[process.pk, entity]) }}">
+    <a href="{{ icms_url('access:case-management', args=[process.pk, entity]) }}">
       Case {{ process.pk }}
     </a>
   </li>
   <li>
-    <a href="{{ url('access:manage-firs', args=[process.pk]) }}">
+    <a href="{{ icms_url('access:manage-firs', args=[process.pk]) }}">
       {% with
         completed=process.further_information_requests.completed().count(),
         total=process.further_information_requests.exclude(status="DELETED").count() %}
@@ -17,12 +17,12 @@
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-management-access-approval', args=[process.pk, entity]) }}">
+    <a href="{{ icms_url('access:case-management-access-approval', args=[process.pk, entity]) }}">
       Access Approval
     </a>
   </li>
   <li>
-    <a href="{{ url('access:case-management-response', args=[process.pk, entity]) }}">
+    <a href="{{ icms_url('access:case-management-response', args=[process.pk, entity]) }}">
       Close Access Request
     </a>
   </li>
