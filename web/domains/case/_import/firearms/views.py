@@ -394,6 +394,14 @@ def submit_oil(request, pk):
 
             if form.is_valid():
                 application.status = ImportApplication.SUBMITTED
+                application.submit_datetime = timezone.now()
+                template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
+                application.cover_letter = template.get_content(
+                    {
+                        "CONTACT_NAME": application.contact,
+                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
+                    }
+                )
                 application.save()
 
                 task.is_active = False

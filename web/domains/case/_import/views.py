@@ -536,3 +536,34 @@ def prepare_response(request, pk):
             template_name="web/domains/case/import/prepare-response.html",
             context=context,
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_cover_letter(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = forms.CoverLetterForm(request.POST, instance=application)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+        else:
+            form = forms.CoverLetterForm(instance=application)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Cover Letter Response Preparation",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/edit-cover-letter.html",
+            context=context,
+        )

@@ -251,6 +251,7 @@ class ImportApplication(WorkbasketBase, Process):
     case_owner = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
+    cover_letter = models.TextField(blank=True, null=True)
 
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/import-case.html"

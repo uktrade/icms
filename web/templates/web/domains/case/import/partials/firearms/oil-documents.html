@@ -1,5 +1,15 @@
 {% if cover_letter_flag %}
   <h5>Cover Letter</h5>
+
+  <hr />
+  {{ process.cover_letter|safe }}
+  <hr />
+
+  <a
+    href="{{ icms_url('import:edit-cover-letter', args=[process.pk]) }}"
+    class="button small-button">
+    Edit Cover Letter
+  </a>
 {% endif %}
 
 {% if electronic_licence_flag %}

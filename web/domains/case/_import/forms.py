@@ -103,3 +103,10 @@ class ResponsePreparationForm(forms.ModelForm):
             and cleaned_data.get("refuse_reason") == ""
         ):
             self.add_error("response", "This field is required when the Application is refused")
+
+
+class CoverLetterForm(forms.ModelForm):
+    class Meta:
+        model = models.ImportApplication
+        fields = ("cover_letter",)
+        widgets = {"cover_letter": forms.Textarea(attrs={"lang": "html"})}

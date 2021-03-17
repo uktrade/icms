@@ -1392,6 +1392,7 @@ class Migration(migrations.Migration):
                     "further_information_requests",
                     models.ManyToManyField(to="web.FurtherInformationRequest"),
                 ),
+                ("cover_letter", models.TextField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
