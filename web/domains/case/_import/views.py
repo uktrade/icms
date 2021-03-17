@@ -65,7 +65,7 @@ def create_oil(request):
 def create_wood_quota(request):
     import_application_type = ImportApplicationType.TYPE_WOOD_QUOTA
     model_class = WoodQuotaApplication
-    redirect_view = "import:edit-wood-quota"
+    redirect_view = "import:wood:edit-quota"
     return _create_application(request, import_application_type, model_class, redirect_view)
 
 

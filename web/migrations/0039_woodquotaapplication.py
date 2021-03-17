@@ -33,6 +33,8 @@ class Migration(migrations.Migration):
                 ("goods_description", models.CharField(max_length=100, null=True)),
                 ("goods_qty", models.DecimalField(null=True, max_digits=9, decimal_places=2)),
                 ("goods_unit", models.CharField(max_length=40, null=True)),
+                ("additional_comments", models.CharField(blank=True, max_length=4000, null=True)),
+                ("supporting_documents", models.ManyToManyField(to="web.File")),
             ],
             bases=("web.importapplication",),
         ),

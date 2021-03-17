@@ -38,7 +38,9 @@ class PrepareWoodQuotaForm(forms.ModelForm):
         widget=forms.Select(choices=[(x, x) for x in _get_year_selection()]),
     )
 
-    exporter_address = forms.CharField(label="Exporter address", widget=forms.Textarea())
+    exporter_address = forms.CharField(
+        label="Exporter address", widget=forms.Textarea(attrs={"rows": 4})
+    )
 
     exporter_vat_nr = forms.CharField(label="Exporter VAT number")
 
@@ -59,6 +61,8 @@ class PrepareWoodQuotaForm(forms.ModelForm):
         choices=[(x, x) for x in ["cubic metres"]],
     )
 
+    additional_comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 4}))
+
     class Meta:
         model = models.WoodQuotaApplication
         fields = (
@@ -72,7 +76,12 @@ class PrepareWoodQuotaForm(forms.ModelForm):
             "goods_description",
             "goods_qty",
             "goods_unit",
+            "additional_comments",
         )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class SupportingDocumentForm(forms.Form):
+    document = forms.FileField(required=True, widget=forms.ClearableFileInput())

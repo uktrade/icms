@@ -1,5 +1,7 @@
 from django.db import models
 
+from web.domains.file.models import File
+
 from ..models import ImportApplication
 
 
@@ -19,6 +21,11 @@ class WoodQuotaApplication(ImportApplication):
     goods_qty = models.DecimalField(blank=False, null=True, max_digits=9, decimal_places=2)
     goods_unit = models.CharField(max_length=40, blank=False, null=True)
 
+    # misc
+    additional_comments = models.CharField(max_length=4000, blank=True, null=True)
+
+    #  supporting documents
+    supporting_documents = models.ManyToManyField(File)
+
     # TODO: add the fields for the rest of the data:
     #  ICMSLST-557: certificates/documents
-    #  ICMSLST-558: supporting documents

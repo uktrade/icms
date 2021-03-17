@@ -1,0 +1,31 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+    {% include "partial/case/import/wood/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ icms_url('import:wood:edit-quota', kwargs={'pk': process.pk }) }}"
+        class="prev-link">
+        Edit application
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% endblock %}
+
+{% block main_content %}
+  <h4>Add file</h4>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ fields.field(form.document) }}
+    <input type="submit" name="action" class="primary-button button" value="Add" />
+  {% endcall %}
+
+{% endblock %}
