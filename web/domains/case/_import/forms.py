@@ -1,9 +1,11 @@
 from django import forms
+from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.forms.widgets import DateInput
 
 from . import models
 
@@ -110,3 +112,27 @@ class CoverLetterForm(forms.ModelForm):
         model = models.ImportApplication
         fields = ("cover_letter",)
         widgets = {"cover_letter": forms.Textarea(attrs={"lang": "html"})}
+
+
+class LicenceDateForm(forms.ModelForm):
+    licence_start_date = forms.DateField(
+        required=True, label="Licence Start Date", widget=DateInput
+    )
+    licence_end_date = forms.DateField(required=True, label="Licence End Date", widget=DateInput)
+
+    class Meta:
+        model = models.ImportApplication
+        fields = ("licence_start_date", "licence_end_date")
+
+    def clean(self):
+        data = super().clean()
+        start_date = data.get("licence_start_date")
+        end_date = data.get("licence_end_date")
+        if not start_date or not end_date:
+            return
+        today = timezone.now().date()
+
+        if start_date < today:
+            self.add_error("licence_start_date", "Date must be in the future.")
+        if start_date > end_date:
+            self.add_error("licence_end_date", "End Date must be after Start Date.")

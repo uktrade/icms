@@ -100,6 +100,11 @@ urlpatterns = [
         views.edit_cover_letter,
         name="edit-cover-letter",
     ),
+    path(
+        "case/<int:pk>/licence/",
+        views.edit_licence,
+        name="edit-licence",
+    ),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]

@@ -567,3 +567,34 @@ def edit_cover_letter(request, pk):
             template_name="web/domains/case/import/edit-cover-letter.html",
             context=context,
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_licence(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = forms.LicenceDateForm(request.POST, instance=application)
+            if form.is_valid():
+                form.save()
+                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+        else:
+            form = forms.LicenceDateForm()
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Licence Response Preparation",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/edit-licence.html",
+            context=context,
+        )

@@ -370,7 +370,6 @@ def _close_fir(request, application_pk, fir_pk, model_class, url_namespace):
         fir_task.finished = timezone.now()
         fir_task.save()
 
-        application.get_task(model_class.SUBMITTED, "request")
         application.further_information_requests.filter(pk=fir_pk).update(
             is_active=False, status=FurtherInformationRequest.CLOSED
         )
