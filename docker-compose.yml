@@ -1,9 +1,11 @@
 # This docker-compose configuration is for ICMS development and CI environment.
 # Production deployment does not use this configuration.
+#
+# see https://hub.docker.com/ for the images used here
 version: "3"
 services:
     db:
-        image: postgres:11
+        image: postgres:11.11
         volumes:
             - pgdata:/var/lib/postgresql/data
         environment:
@@ -11,8 +13,8 @@ services:
             - POSTGRES_PASSWORD=password
         ports:
             - "5432:5432"
+
     web:
-        # stdin_open: true
         restart: unless-stopped
         build:
             context: .
@@ -44,6 +46,7 @@ services:
             - CLAM_AV_USERNAME
             - CLAM_AV_PASSWORD
             - CLAM_AV_URL
+        # stdin_open: true
         # tty: true
         ports:
             - "8080:8080"
@@ -55,7 +58,7 @@ services:
             - .:/code
 
     redis:
-        image: redis:latest
+        image: redis:6.2.1
         volumes:
             - redis_data:/data
         ports:
@@ -75,7 +78,10 @@ services:
             - .:/code
 
     localstack:
-        image: localstack/localstack
+        # https://github.com/localstack/localstack says that the web UI has been
+        # deprecated (PORT_WEB_UI / START_WEB), and needs a different image
+        # (localstack-full), so stick with this version.
+        image: localstack/localstack:0.11.3
         ports:
             - "4567-4599:4567-4599"
             - "8081:8080"
