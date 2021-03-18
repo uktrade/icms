@@ -83,8 +83,8 @@ def _create_application(request, import_application_type, model_class, redirect_
     else:
         form = forms.CreateImportApplicationForm(request.user)
 
-        context = {"form": form, "import_application_type": import_application_type}
-        return render(request, "web/domains/case/import/create.html", context)
+    context = {"form": form, "import_application_type": import_application_type}
+    return render(request, "web/domains/case/import/create.html", context)
 
 
 @login_required

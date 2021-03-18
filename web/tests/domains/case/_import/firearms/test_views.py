@@ -16,11 +16,6 @@ from web.tests.flow.factories import TaskFactory
 LOGIN_URL = "/"
 
 
-@pytest.mark.django_db
-def test_manage_checklist():
-    pass
-
-
 class ImportAppplicationCreateViewTest(AuthTestCase):
     url = "/import/create/firearms/oil/"
     redirect_url = f"{LOGIN_URL}?next={url}"
@@ -59,6 +54,23 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         task = application.tasks.get()
         self.assertEqual(task.task_type, "prepare")
         self.assertEqual(task.is_active, True)
+
+    def test_create_missing_office(self):
+        office = OfficeFactory.create(is_active=True)
+        importer = ImporterFactory.create(is_active=True, offices=[office])
+        assign_perm("web.is_contact_of_importer", self.user, importer)
+        self.login_with_permissions(["importer_access"])
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            reverse("import:create-oil"),
+            data={"importer": importer.pk},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML(
+            '<div class="error-message">You must enter this item', response.content.decode("utf-8")
+        )
 
     def test_anonymous_post_access_redirects(self):
         response = self.client.post(self.url)
