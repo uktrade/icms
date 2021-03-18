@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    {%- if page_title %}
+    {% set title=page_title %}
+    {% else %}
+    {% set title='Import Case Management System' %}
+    {% endif -%}
+    <title>{% block page_title %}{{title}}{% endblock %} - ICMS</title>
+
+    <style>
+      body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 0.8em;
+        line-height: 1.3em;
+      }
+
+      .url {
+        text-align: right;
+        font-weight: bold;
+      }
+
+      .bordered {
+        border: 1px solid #000;
+      }
+
+      img {
+        width: 300px;
+      }
+
+      table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
+
+      table:after {
+        margin-bottom: 2em;
+      }
+
+      tr {
+        padding: 1em 2em;
+      }
+
+      td {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <p>
+      <strong>ELECTRONIC LICENCE</strong> issued on {{ issue_date }}
+      and sent to HM Revenue and Customs.
+    </p>
+
+    <table>
+      <tr>
+        <td>&nbsp;</td>
+        <td class="bordered">
+          Applicant's own reference
+          <br/>
+          {{ process.reference }}
+        </td>
+        <td>
+          Quote both reference in all correspondence
+        </td>
+        <td class="bordered">
+          Licence No.
+          <br />
+          XXXX
+        </td>
+      </tr>
+    </table>
+
+    <p>Name of importer and address for licence.</p>
+    <table>
+      <tr>
+        <td class="bordered">
+          {{ process.contact }}
+          {{ process.importer_office|nl2br }}
+        </td>
+        <td>
+          <img
+            alt="DIT Logo"
+            src="{{ static('web/img/dit_logo.png') }}" />
+        </td>
+      </tr>
+    </table>
+
+    <p>
+      is hereby authorised by the Secretary of State to import into the United Kingdom
+      in accordance with the conditions set out below.
+    </p>
+    <table>
+      <tbody>
+        <tr>
+          <td class="bordered">
+            Commodity Code
+            <br />
+            {{ process.commodity_group }}
+          </td>
+          <td class="bordered">
+            Country from which consigned
+            <br />
+            {{ process.consignment_country }}
+          </td>
+          <td class="bordered">
+            Country of origin
+            <br />
+            {{ process.origin_country }}
+          </td>
+        </tr>
+        <tr>
+          <td class="bordered" colspan="3">
+            Description of goods
+            <p>
+              Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under
+              Section 5 of the Firearms Act 1968 as amended.
+              </p>
+            <p>
+              Unlimited
+            </p>
+
+            Exclusions:
+            <p>
+              Not valid for goods originating in or consigned from Iran, North Korea, Libya, Syria
+              or the Russian Federation, (including any previous name by which these territories have
+              been known).
+              Not valid for the import of deactivated firearms or any firearms exempt from certification
+              or prohibition under Section 58(2) of the Firearms Act 1968 (as amended).
+            </p>
+            <br />
+            <br />
+            <br />
+            <br />
+            This licence will cease to be valid for importations after
+            {% if process.licence_end_date %}
+              {{ process.licence_end_date.strftime("%d %B %Y") }}.
+            {% else %}
+              <strong>END DATE NOT SET.</strong>
+            {% endif %}
+
+            <div>
+              {{ issue_date }}
+            </div>
+            <div>
+              Signature Not Verified
+            </div>
+          </td>
+        </tr>
+    </table>
+
+    <p>
+      The issue of this licence does not provide any guarantee that any additional Government
+      permit or approval which may be necessary to effect importation will be granted.
+    </p>
+    <p>
+      This licence
+    </p>
+    <ul>
+      <li>
+        is not transferrable and may be used only for importations by the holder named above.
+      </li>
+      <li>
+        may be revoked at any time without reason given.
+      </li>
+      <li>
+        may be altered only by the Department for International Trade.
+      </li>
+  </body>
+</html>

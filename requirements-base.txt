@@ -26,4 +26,5 @@ requests==2.24.0
 s3chunkuploader==0.15
 sentry-sdk==0.19.2
 structlog==20.1.0
+WeasyPrint==52.4
 whitenoise==5.2.0

@@ -41,7 +41,7 @@
   {% if process.application_approved %}
     {% if cover_letter_flag %}
       <a
-        href="#todo"
+        href="{{ icms_url('import:preview-cover-letter', args=[process.pk]) }}"
         target="blank"
         class="button">
         Preview Cover Letter
@@ -50,7 +50,7 @@
 
     {% if electronic_licence_flag %}
       <a
-        href="#todo"
+        href="{{ icms_url('import:preview-licence', args=[process.pk]) }}"
         target="blank"
         class="button">
         Preview Licence

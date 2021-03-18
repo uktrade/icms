@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
@@ -264,6 +265,10 @@ class ImportApplication(WorkbasketBase, Process):
     @property
     def application_approved(self):
         return self.decision == self.APPROVE
+
+    @property
+    def licence_issue_date(self):
+        return self.issue_date or timezone.now().date()
 
 
 class ImportContact(models.Model):

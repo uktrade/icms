@@ -125,6 +125,16 @@ urlpatterns = [
         views.delete_endorsement,
         name="delete-endorsement",
     ),
+    path(
+        "case/<int:pk>/cover-letter/preview/",
+        views.preview_cover_letter,
+        name="preview-cover-letter",
+    ),
+    path(
+        "case/<int:pk>/licence/preview/",
+        views.preview_licence,
+        name="preview-licence",
+    ),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    {%- if page_title %}
+    {% set title=page_title %}
+    {% else %}
+    {% set title='Import Case Management System' %}
+    {% endif -%}
+    <title>{% block page_title %}{{title}}{% endblock %} - ICMS</title>
+
+    <style>
+      body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 0.8em;
+        line-height: 1.3em;
+      }
+
+      .url {
+        text-align: right;
+        font-weight: bold;
+      }
+
+      img {
+        width: 160px;
+      }
+
+      table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+      }
+
+      table:after {
+        margin-bottom: 2em;
+      }
+
+      td {
+        padding-bottom: 1em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="row">
+      <table>
+        <td>
+          <img
+            alt="DIT Logo"
+            height="20%"
+            src="{{ static('web/img/dit_logo.png') }}" />
+        </td>
+        <td>
+          Import Licencing Branch
+          <br />
+          Queensway House
+          <br />
+          West Precinct
+          <br />
+          Billingham
+          <br />
+          TS23 2NF
+        </td>
+        <td>
+          <span class="url">
+            gov.uk/dit
+          </span>
+        </td>
+      </tr>
+    </table>
+
+    <div>
+      {{ process.contact }}
+      {{ process.importer_office|nl2br }}
+    </div>
+
+    <div>
+      {{ issue_date }}
+    </div>
+
+    <div>
+      {{ process.cover_letter|safe }}
+    </div>
+
+    <div>
+      Signature Not Verified
+    </div>
+
+    <div>
+      {{ process.case_owner }}
+      <br />
+      ILB
+      <br />
+      E {{ ilb_contact_email }}
+    </div>
+  </body>
+</html>

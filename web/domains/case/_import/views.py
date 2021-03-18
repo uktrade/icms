@@ -1,9 +1,13 @@
+import weasyprint
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
@@ -694,3 +698,64 @@ def delete_endorsement(request, application_pk, endorsement_pk):
         endorsement.delete()
 
         return redirect(reverse("import:prepare-response", kwargs={"pk": application_pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def preview_cover_letter(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Cover Letter Preview",
+            "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
+            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        }
+
+        html_string = render_to_string(
+            request=request,
+            template_name="web/domains/case/import/preview-cover-letter.html",
+            context=context,
+        )
+
+        html = weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri())
+        pdf_file = html.write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = "filename=CoverLetter.pdf"
+        return response
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def preview_licence(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Licence Preview",
+            "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
+        }
+
+        html_string = render_to_string(
+            request=request,
+            template_name="web/domains/case/import/preview-licence.html",
+            context=context,
+        )
+
+        html = weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri())
+        pdf_file = html.write_pdf()
+
+        response = HttpResponse(pdf_file, content_type="application/pdf")
+        response["Content-Disposition"] = "filename=Licence.pdf"
+        return response
