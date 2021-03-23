@@ -21,6 +21,7 @@ from web.notify.email import send_email
 
 from .. import views as case_views
 from . import forms
+from .derogations.models import DerogationsApplication
 from .firearms.models import OpenIndividualLicenceApplication
 from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
 from .sanctions.models import SanctionsAndAdhocApplication
@@ -30,6 +31,15 @@ from .wood.models import WoodQuotaApplication
 class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
     template_name = "web/domains/case/import/choice.html"
     permission_required = "web.importer_access"
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_derogations(request):
+    import_application_type = ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
+    model_class = DerogationsApplication
+    redirect_view = "import:derogations:edit-derogations"
+    return _create_application(request, import_application_type, model_class, redirect_view)
 
 
 @login_required

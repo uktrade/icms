@@ -15,11 +15,13 @@ from web.flow.models import Process
 
 class ImportApplicationType(models.Model):
     TYPE_FIREARMS_AMMUNITION_CODE = "FA"
-    TYPE_SANCTION_ADHOC = "SAN"
+    TYPE_SANCTION_ADHOC = "SAN_ADHOC_TEMP"  # TODO: missing from legacy data extract, hence TEMP
     TYPE_WOOD_QUOTA = "WD"
+    TYPE_DEGROGATION_FROM_SANCTIONS_BAN = "SAN"
 
     TYPE = (
         (TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),
+        (TYPE_DEGROGATION_FROM_SANCTIONS_BAN, "Derogation from Sanctions Import Ban"),
         (TYPE_SANCTION_ADHOC, "Sanctions and Adhoc"),
         (TYPE_WOOD_QUOTA, "Wood (Quota)"),
     )

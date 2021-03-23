@@ -1,6 +1,6 @@
-import factory
 import factory.fuzzy
 
+from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.sanctions.models import (
@@ -35,3 +35,15 @@ class SanctionsAndAdhocLicenseApplicationFactory(factory.django.DjangoModelFacto
 class SanctionsAndAdhocApplicationGoodsFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
+
+
+class DerogationsApplicationFactory(factory.django.DjangoModelFactory):
+    process_type = DerogationsApplication.PROCESS_TYPE
+    application_type = factory.Iterator(
+        ImportApplicationType.objects.filter(
+            type=ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
+        )
+    )
+
+    class Meta:
+        model = DerogationsApplication

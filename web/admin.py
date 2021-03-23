@@ -17,6 +17,7 @@ from .models import (
     Commodity,
     CommodityGroup,
     CommodityType,
+    DerogationsApplication,
     Importer,
     PersonalEmail,
     PhoneNumber,
@@ -57,6 +58,7 @@ admin.site.register(VerifiedCertificate)
 admin.site.register(ExportApplication)
 admin.site.register(Exporter)
 admin.site.register(SanctionsAndAdhocApplicationGoods)
+admin.site.register(DerogationsApplication)
 
 
 @admin.register(Permission)

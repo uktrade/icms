@@ -7,12 +7,14 @@ app_name = "import"
 urlpatterns = [
     path("", views.ImportApplicationChoiceView.as_view(), name="choice"),
     path("create/sanctions/", views.create_sanctions, name="create-sanctions"),
+    path("create/derogations/", views.create_derogations, name="create-derogations"),
     path("create/firearms/oil/", views.create_oil, name="create-oil"),
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
     # Applications
     path("sanctions/", include("web.domains.case._import.sanctions.urls")),
     path("firearms/", include("web.domains.case._import.firearms.urls")),
     path("wood/", include("web.domains.case._import.wood.urls")),
+    path("derogations/", include("web.domains.case._import.derogations.urls")),
     # Importer case management
     path("case/<int:pk>/withdraw/", views.withdraw_case, name="withdraw-case"),
     path(
