@@ -137,6 +137,21 @@ urlpatterns = [
         views.preview_licence,
         name="preview-licence",
     ),
+    path(
+        "case/<int:pk>/authorisation/",
+        views.authorisation,
+        name="authorisation",
+    ),
+    path(
+        "case/<int:pk>/start-authorisation/",
+        views.start_authorisation,
+        name="start-authorisation",
+    ),
+    path(
+        "case/<int:pk>/cancel-authorisation/",
+        views.cancel_authorisation,
+        name="cancel-authorisation",
+    ),
     # Common to Importer/ILB Admin
     path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]

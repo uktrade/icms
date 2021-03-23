@@ -426,7 +426,7 @@ def submit_oil(request, pk):
             is_active=True,
             template_type=Template.DECLARATION,
             application_domain=Template.IMPORT_APPLICATION,
-            template_name="Declaration of Truth",
+            template_code="IMA_GEN_DECLARATION",
         ).first()
 
         context = {

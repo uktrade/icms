@@ -21,6 +21,13 @@
     {% else %}
       <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     {% endif %}
+  {% elif process.status == "PROCESSING" %}
+      <a href="#TODO">Authorise Documents</a>
+      <form method="post" action="{{ icms_url('import:cancel-authorisation', args=[process.pk]) }}">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+        <button type="submit" class="button link-button-no-padding">Cancel Authorisation</button>
+      </form>
+      <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
   {% endif %}
 
 {% elif process.process_type == "ExporterAccessRequest" %}

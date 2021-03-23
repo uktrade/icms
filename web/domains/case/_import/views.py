@@ -322,7 +322,12 @@ def view_case(request, pk):
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
 
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [
+                ImportApplication.SUBMITTED,
+                ImportApplication.WITHDRAWN,
+                ImportApplication.PROCESSING,
+            ],
+            "process",
         )
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
@@ -769,3 +774,70 @@ def preview_licence(request, pk):
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = "filename=Licence.pdf"
         return response
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def authorisation(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        application_errors = []
+        if not application.openindividuallicenceapplication.checklists.exists():
+            url = reverse("import:manage-checklist", args=[application.pk])
+            html = f"<a href='{url}'>Please complete checklist.</a>"
+            application_errors.append(html)
+
+        if application.decision == ImportApplication.REFUSE:
+            url = reverse("import:response-preparation", args=[application.pk])
+            html = f"<a href='{url}'>Please approve application.</a>"
+            application_errors.append(html)
+
+        if not application.licence_start_date or not application.licence_end_date:
+            url = reverse("import:response-preparation", args=[application.pk])
+            html = f"<a href='{url}'>Please complete start and end dates.</a>"
+            application_errors.append(html)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Authorisation",
+            "application_errors": application_errors,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/authorisation.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def start_authorisation(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
+
+        application.status = ImportApplication.PROCESSING
+        application.save()
+
+        return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def cancel_authorisation(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application.get_task(ImportApplication.PROCESSING, "process")
+
+        application.status = ImportApplication.SUBMITTED
+        application.save()
+
+        return redirect(reverse("workbasket"))
