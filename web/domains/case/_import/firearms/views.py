@@ -40,7 +40,7 @@ def edit_oil(request, pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:edit-oil", kwargs={"pk": pk}))
+                return redirect(reverse("import:firearms:edit-oil", kwargs={"pk": pk}))
 
         else:
             form = PrepareOILForm(instance=application, initial={"contact": request.user})
@@ -106,7 +106,7 @@ def create_user_import_certificate(request, pk):
 
                 return redirect(
                     reverse(
-                        "import:edit-user-import-certificate",
+                        "import:firearms:edit-user-import-certificate",
                         kwargs={"application_pk": pk, "certificate_pk": certificate.pk},
                     )
                 )
@@ -149,7 +149,7 @@ def edit_user_import_certificate(request, application_pk, certificate_pk):
 
                 return redirect(
                     reverse(
-                        "import:edit-user-import-certificate",
+                        "import:firearms:edit-user-import-certificate",
                         kwargs={"application_pk": application_pk, "certificate_pk": certificate_pk},
                     )
                 )
@@ -189,7 +189,7 @@ def archive_user_import_certificate_file(request, application_pk, certificate_pk
 
         return redirect(
             reverse(
-                "edit-user-import-certificate",
+                "import:firearms:edit-user-import-certificate",
                 kwargs={"application_pk": application_pk, "certificate_pk": certificate_pk},
             )
         )
@@ -254,7 +254,7 @@ def create_import_contact(request, pk, entity):
 
                 return redirect(
                     reverse(
-                        "import:edit-import-contact",
+                        "import:firearms:edit-import-contact",
                         kwargs={
                             "application_pk": pk,
                             "entity": entity,
@@ -308,7 +308,7 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
 
                 return redirect(
                     reverse(
-                        "import:edit-import-contact",
+                        "import:firearms:edit-import-contact",
                         kwargs={
                             "application_pk": application_pk,
                             "entity": entity,
@@ -387,7 +387,9 @@ def submit_oil(request, pk):
             or application.verified_certificates.exists()
         )
         if not application.commodity_group or not know_bought_from or not certificates:
-            return redirect(reverse("import:oil-validation", kwargs={"pk": application.pk}))
+            return redirect(
+                reverse("import:firearms:oil-validation", kwargs={"pk": application.pk})
+            )
 
         if request.POST:
             form = SubmitOILForm(data=request.POST)
@@ -465,7 +467,7 @@ def toggle_verified_firearms(request, application_pk, authority_pk):
             certificate.delete()
 
         return redirect(
-            reverse("import:list-user-import-certificates", kwargs={"pk": application_pk})
+            reverse("import:firearms:list-user-import-certificates", kwargs={"pk": application_pk})
         )
 
 
@@ -511,7 +513,7 @@ def manage_checklist(request, pk):
             form = ChecklistFirearmsOILApplicationForm(request.POST, instance=checklist)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:manage-checklist", kwargs={"pk": pk}))
+                return redirect(reverse("import:firearms:manage-checklist", kwargs={"pk": pk}))
         else:
             form = ChecklistFirearmsOILApplicationForm(instance=checklist)
 

@@ -56,7 +56,7 @@ def create_sanctions(request):
 def create_oil(request):
     import_application_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
     model_class = OpenIndividualLicenceApplication
-    redirect_view = "import:edit-oil"
+    redirect_view = "import:firearms:edit-oil"
     return _create_application(request, import_application_type, model_class, redirect_view)
 
 
@@ -787,7 +787,7 @@ def authorisation(request, pk):
 
         application_errors = []
         if not application.openindividuallicenceapplication.checklists.exists():
-            url = reverse("import:manage-checklist", args=[application.pk])
+            url = reverse("import:firearms:manage-checklist", args=[application.pk])
             html = f"<a href='{url}'>Please complete checklist.</a>"
             application_errors.append(html)
 
