@@ -1,6 +1,7 @@
 from django import forms
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
@@ -40,6 +41,32 @@ class DerogationsForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"cols": 50, "rows": 3}),
     )
 
+    # TODO restrict commodities to group when it becomes known
+    commodity_code = forms.ModelChoiceField(
+        label="Commodity Code",
+        help_text="""
+            It is the responsibility of the applicant to ensure that the commodity code in
+            this box is correct. If you are unsure of the correct commodity code,
+            consult the HM Revenue and Customs Integrated Tariff Book, Volume 2,
+            which is available from the Stationery Office. If you are still in doubt,
+            contact the Classification Advisory Service on (01702) 366077.
+        """,
+        queryset=Commodity.objects.all(),
+        required=True,
+    )
+    goods_description = forms.CharField(
+        label="Goods Description",
+        help_text="Details of the goods that are subject to the contract notification",
+        required=True,
+    )
+    quantity = forms.CharField(
+        required=True,
+    )
+    value = forms.CharField(
+        label="Value (euro CIF)",
+        required=True,
+    )
+
     class Meta:
         model = DerogationsApplication
         fields = (
@@ -50,6 +77,10 @@ class DerogationsForm(forms.ModelForm):
             "contract_sign_date",
             "contract_completion_date",
             "explanation",
+            "commodity_code",
+            "goods_description",
+            "quantity",
+            "value",
         )
 
     def __init__(self, *args, **kwargs):

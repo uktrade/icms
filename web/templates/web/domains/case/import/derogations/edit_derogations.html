@@ -20,7 +20,19 @@
     {{ fields.field(form.contract_completion_date) }}
     {{ fields.field(form.explanation) }}
 
-{% endblock form_content %}
+    <div class="info-box info-box-warning"><div class="screen-reader-only">Warning information box,</div>
+
+                        Please upload your contract in the Supporting Documents section below.
+
+    </div>
+
+    <h4>Goods</h4>
+    {{ fields.field(form.commodity_code) }}
+    {{ fields.field(form.goods_description) }}
+    {{ fields.field(form.quantity) }}
+    {{ fields.field(form.value) }}
+
+ {% endblock form_content %}
 
 {% block task_actions %}
 
