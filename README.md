@@ -161,42 +161,13 @@ In case of importer access requests it is `access:importer:fir-list` and `access
 
 
 ## File Uploads
-Files are uploaded directly to S3 without being saved into file system of the app. The app in turn sends the file to ClamAV for malware/virus checking. 
 
-### Adding file upload component to your forms
+Files are uploaded directly to S3 without being saved into file system of the
+app. The app in turn sends the file to ClamAV for malware/virus checking.
 
-#### Backend
+TODO: update this once ICMSLST-602 is done
 
-Reusable `FileUploadMixin` can be used with `FormView`, in order to add file upload functionality to a form view follow these steps.
 
-- Add mixin to your view and implement `get_file_queryset` method for initial list of files:
-```python
-from web.views.mixins import FileUploadMixin
-
-class FurtherInformationRequestStartView(FileUploadMixin, FormView):
-    def get_file_queryset(self):
-        return self.get_form().instance.files
-```
-- Once form is submitted new file list will be available via `self.get_files()`, use this to link files to your objects
-```python
-    def form_valid(self, form):
-        with transaction.atomic():
-            fir = form.save()
-            fir.files.set(self.get_files())
-            return super().form_valid(form)
-```
- 
- #### Frontend
-Reusable file macro can be used to add file uploader to your form as below:
-
-```html
-{% import "forms/files.html" as _files %}
-
-{{ _files.uploader(files, field=form.fields.files, readonly=False) }}
-
-```
-
- 
 ## Environment Variables
 
 | Environment variable              | Default                                    | Notes                                                  |

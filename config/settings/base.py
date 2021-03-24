@@ -168,8 +168,6 @@ S3_GENERATE_OBJECT_KEY_FUNCTION = "web.utils.s3upload.random_file_name"
 S3_DOCUMENT_ROOT_DIRECTORY = "documents"
 # END TODO
 
-AWS_BASE_URL = "http://localhost:4572/"  # base url used for file downloads
-
 FILE_UPLOAD_HANDLERS = ("s3chunkuploader.file_handler.S3FileUploadHandler",)
 
 # Anti virus settings

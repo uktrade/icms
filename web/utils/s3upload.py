@@ -70,24 +70,7 @@ class S3UploadService:
                     f"'{uploaded_file.original_name}' is not an allowed file"
                 )
 
-            return url_path_join(bucket, uploaded_file.name)
-
-            # TODO: File should be moved to its final destination when the model is saved.
-            #       It shouldn't happen here, but rather in web.views.mixins.FileUploadMixin
-
-            # move file to final destination
-            #  new_file_path = url_path_join(destination, os.path.basename(uploaded_file.name)).lstrip(
-            #      "/"
-            #  )
-            #  self.s3_client.copy_object(
-            #      Bucket=bucket,
-            #      CopySource=url_path_join(bucket, uploaded_file.name),
-            #      Key=new_file_path,
-            #  )
+            return uploaded_file.name
         except Exception as e:
             logger.warning(str(e))
             raise e
-        finally:
-            # delete uploaded file as it is no longer needed.
-            # it either failed validation or virus scanning or has been copied to the right place
-            self.s3_client.delete_object(Bucket=bucket, Key=uploaded_file.name)
