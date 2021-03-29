@@ -10,7 +10,7 @@ from web.utils.virus import ClamAV, InfectedFileException
 logger = logging.get_logger(__name__)
 
 
-def handle_uploaded_file(f, created_by, related_file_model):
+def handle_uploaded_file(f, created_by, related_file_model, extra_args=None):
     file_path = None
     error_message = None
     try:
@@ -30,6 +30,9 @@ def handle_uploaded_file(f, created_by, related_file_model):
         logger.exception(e)
         error_message = "Unknown error uploading file"
     finally:
+        if extra_args is None:
+            extra_args = {}
+
         return related_file_model.create(
             filename=f.original_name,
             file_size=f.file_size,
@@ -38,4 +41,5 @@ def handle_uploaded_file(f, created_by, related_file_model):
             error_message=error_message,
             path=file_path,
             created_by=created_by,
+            **extra_args,
         )

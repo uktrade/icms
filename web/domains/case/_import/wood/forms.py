@@ -3,6 +3,7 @@ import datetime
 from django import forms
 
 from web.domains.user.models import User
+from web.forms.widgets import DateInput
 
 from . import models
 
@@ -79,9 +80,41 @@ class PrepareWoodQuotaForm(forms.ModelForm):
             "additional_comments",
         )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
 
 class SupportingDocumentForm(forms.Form):
     document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+
+
+class AddContractDocumentForm(forms.Form):
+    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+
+    reference = forms.CharField(
+        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
+        required=True,
+    )
+
+    contract_date = forms.DateField(
+        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
+        required=True,
+        widget=DateInput(),
+    )
+
+
+class EditContractDocumentForm(forms.ModelForm):
+    reference = forms.CharField(
+        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
+        required=True,
+    )
+
+    contract_date = forms.DateField(
+        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
+        required=True,
+        widget=DateInput(),
+    )
+
+    class Meta:
+        model = models.WoodContractFile
+        fields = (
+            "reference",
+            "contract_date",
+        )

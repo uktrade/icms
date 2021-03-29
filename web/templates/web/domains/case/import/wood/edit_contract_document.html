@@ -22,10 +22,22 @@
 {% endblock %}
 
 {% block main_content %}
-  <h4>Add supporting document</h4>
-  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
-    {{ fields.field(form.document) }}
-    <input type="submit" name="action" class="primary-button button" value="Add" />
+  <h4>Edit contract document</h4>
+
+  <div class="row" >
+    <div class="three columns">
+      <label class="prompt west">Filename</label>
+    </div>
+    <div class="six columns">
+      <p>{{ form.instance.filename }}</p>
+    </div>
+      <div class="three columns"></div>
+  </div>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ fields.field(form.reference) }}
+    {{ fields.field(form.contract_date) }}
+    <input type="submit" name="action" class="primary-button button" value="Save" />
   {% endcall %}
 
 {% endblock %}

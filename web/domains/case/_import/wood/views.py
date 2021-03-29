@@ -8,7 +8,12 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.file.views import handle_uploaded_file
 
 from .. import views as import_views
-from .forms import PrepareWoodQuotaForm, SupportingDocumentForm
+from .forms import (
+    AddContractDocumentForm,
+    EditContractDocumentForm,
+    PrepareWoodQuotaForm,
+    SupportingDocumentForm,
+)
 from .models import WoodQuotaApplication
 
 
@@ -37,6 +42,7 @@ def edit_wood_quota(request, pk):
         # TODO: after ICMSLST-602 is done, we'll know whether we need to filter
         # by error_message being None or not
         supporting_documents = application.supporting_documents.filter(is_active=True)
+        contract_documents = application.contract_documents.filter(is_active=True)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -45,6 +51,7 @@ def edit_wood_quota(request, pk):
             "form": form,
             "page_title": "Wood (Quota) Import Licence",
             "supporting_documents": supporting_documents,
+            "contract_documents": contract_documents,
         }
 
         return render(request, "web/domains/case/import/wood/edit.html", context)
@@ -111,3 +118,112 @@ def delete_supporting_document(request, application_pk, document_pk):
         document.save()
 
         return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def add_contract_document(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if request.POST:
+            form = AddContractDocumentForm(data=request.POST, files=request.FILES)
+            document = request.FILES.get("document")
+
+            if form.is_valid():
+                handle_uploaded_file(
+                    document,
+                    request.user,
+                    application.contract_documents,
+                    extra_args={
+                        "reference": form.cleaned_data["reference"],
+                        "contract_date": form.cleaned_data["contract_date"],
+                    },
+                )
+
+                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": pk}))
+        else:
+            form = AddContractDocumentForm()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Wood (Quota) Import Licence - Add contract document",
+        }
+
+        return render(request, "web/domains/case/import/wood/add_contract_document.html", context)
+
+
+@require_GET
+@login_required
+def view_contract_document(request, application_pk, document_pk):
+    application = get_object_or_404(WoodQuotaApplication, pk=application_pk)
+
+    return import_views._view_file(
+        request, application, application.contract_documents, document_pk
+    )
+
+
+@require_POST
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def delete_contract_document(request, application_pk, document_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        document = application.contract_documents.get(pk=document_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_contract_document(request, application_pk, document_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        document = application.contract_documents.get(pk=document_pk)
+
+        if request.POST:
+            form = EditContractDocumentForm(data=request.POST, instance=document)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+
+        else:
+            form = EditContractDocumentForm(instance=document)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Wood (Quota) Import Licence - Edit contract document",
+        }
+
+        return render(request, "web/domains/case/import/wood/edit_contract_document.html", context)

@@ -36,8 +36,60 @@
      <input type="submit" name="action" class="primary-button button" value="Save" />
   {% endcall %}
 
-   <h4>Certificates/documents</h4>
-   <p>TODO: add what's needed (ICMSLST-557)</p>
+   <h4>Contract/pre-contract</h4>
+   <p>Please fill in the details of all relevant contracts or pre-contracts
+   between the importer and exporter, and upload the contract/pre-contract,
+   below.</p>
+
+   {% if contract_documents %}
+     <table class="setoutList">
+       <thead>
+         <tr>
+           <th>Reference No.</th>
+           <th>Date</th>
+           <th>Uploaded by</th>
+           <th>File (size)</th>
+           <th>Actions</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for doc in contract_documents %}
+         <tr>
+           <td>{{ doc.reference }}</td>
+           <td>{{ doc.contract_date.strftime('%d-%b-%Y')}}</td>
+           <td>
+            {{ doc.created_by.full_name }}<br>
+            {{ doc.created_datetime.strftime('%d-%b-%Y %H:%M')}}
+          </td>
+          <td><a href="{{ icms_url('import:wood:view-contract-document', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
+           {{ doc.filename }}</a> {{ doc.human_readable_file_size() }}
+          </td>
+           <td>
+             <form method="post"
+                 action="{{ icms_url('import:wood:delete-contract-document', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
+               {{ csrf_input }}
+               <button type="submit" class="link-button icon-bin button">Delete</button>
+
+              </form>
+
+              <p>
+                <a href="{{ icms_url('import:wood:edit-contract-document', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}"
+                   class="link-button icon-pencil button">
+                  Edit</a>
+              </p>
+           </form>
+        </td>
+         </tr>
+         {% endfor %}
+      </tbody>
+     </table>
+   {% else %}
+     <div class="info-box info-box-info">
+       There are no contract/pre-contract documents attached
+     </div>
+   {% endif %}
+
+   <a class="button small-button" href="{{ icms_url('import:wood:add-contract-document', kwargs={'pk': process.pk}) }}">Add contract</a>
 
    <h4>Supporting documents</h4>
    <p class="bold">Please provide any further supporting documents regarding this application.</p>
@@ -67,7 +119,7 @@
              <form method="post"
                  action="{{ icms_url('import:wood:delete-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
                {{ csrf_input }}
-               <button type="submit" class="small-button">Delete</button>
+               <button type="submit" class="link-button icon-bin button">Delete</button>
               </form>
            </td>
          </tr>

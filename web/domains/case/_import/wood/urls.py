@@ -21,4 +21,24 @@ urlpatterns = [
         views.delete_supporting_document,
         name="delete-supporting-document",
     ),
+    path(
+        "quota/<int:pk>/add-contract-document/",
+        views.add_contract_document,
+        name="add-contract-document",
+    ),
+    path(
+        "quota/<int:application_pk>/view-contract-document/<int:document_pk>/",
+        views.view_contract_document,
+        name="view-contract-document",
+    ),
+    path(
+        "quota/<int:application_pk>/delete-contract-document/<int:document_pk>/",
+        views.delete_contract_document,
+        name="delete-contract-document",
+    ),
+    path(
+        "quota/<int:application_pk>/edit-contract-document/<int:document_pk>/",
+        views.edit_contract_document,
+        name="edit-contract-document",
+    ),
 ]

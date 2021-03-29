@@ -12,6 +12,25 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name="WoodContractFile",
+            fields=[
+                (
+                    "file_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.file",
+                    ),
+                ),
+                ("reference", models.CharField(max_length=50)),
+                ("contract_date", models.DateField()),
+            ],
+            bases=("web.file",),
+        ),
+        migrations.CreateModel(
             name="WoodQuotaApplication",
             fields=[
                 (
@@ -31,10 +50,22 @@ class Migration(migrations.Migration):
                 ("exporter_vat_nr", models.CharField(max_length=100, null=True)),
                 ("commodity_code", models.CharField(max_length=40, null=True)),
                 ("goods_description", models.CharField(max_length=100, null=True)),
-                ("goods_qty", models.DecimalField(null=True, max_digits=9, decimal_places=2)),
+                ("goods_qty", models.DecimalField(decimal_places=2, max_digits=9, null=True)),
                 ("goods_unit", models.CharField(max_length=40, null=True)),
                 ("additional_comments", models.CharField(blank=True, max_length=4000, null=True)),
-                ("supporting_documents", models.ManyToManyField(to="web.File")),
+                (
+                    "contract_documents",
+                    models.ManyToManyField(
+                        related_name="_woodquotaapplication_contract_documents_+",
+                        to="web.WoodContractFile",
+                    ),
+                ),
+                (
+                    "supporting_documents",
+                    models.ManyToManyField(
+                        related_name="_woodquotaapplication_supporting_documents_+", to="web.File"
+                    ),
+                ),
             ],
             bases=("web.importapplication",),
         ),

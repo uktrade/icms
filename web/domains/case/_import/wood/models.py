@@ -5,6 +5,11 @@ from web.domains.file.models import File
 from ..models import ImportApplication
 
 
+class WoodContractFile(File):
+    reference = models.CharField(max_length=50, blank=False, null=False)
+    contract_date = models.DateField(blank=False, null=False)
+
+
 class WoodQuotaApplication(ImportApplication):
     PROCESS_TYPE = "WoodQuotaApplication"
 
@@ -25,7 +30,7 @@ class WoodQuotaApplication(ImportApplication):
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
 
     #  supporting documents
-    supporting_documents = models.ManyToManyField(File)
+    supporting_documents = models.ManyToManyField(File, related_name="+")
 
-    # TODO: add the fields for the rest of the data:
-    #  ICMSLST-557: certificates/documents
+    #  contracts/pre-contracts
+    contract_documents = models.ManyToManyField(WoodContractFile, related_name="+")

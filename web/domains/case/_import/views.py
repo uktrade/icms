@@ -849,22 +849,21 @@ def _view_file(request, application, related_file_model, file_pk):
     if not has_perm_importer and not has_perm_reference_data:
         raise PermissionDenied
 
-    with transaction.atomic():
-        # first check is for case managers (who are not marked as contacts of
-        # importers), second is for people submitting applications
-        if not has_perm_reference_data and not request.user.has_perm(
-            "web.is_contact_of_importer", application.importer
-        ):
-            raise PermissionDenied
+    # first check is for case managers (who are not marked as contacts of
+    # importers), second is for people submitting applications
+    if not has_perm_reference_data and not request.user.has_perm(
+        "web.is_contact_of_importer", application.importer
+    ):
+        raise PermissionDenied
 
-        document = related_file_model.get(pk=file_pk)
+    document = related_file_model.get(pk=file_pk)
 
-        client = s3_client()
+    client = s3_client()
 
-        s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path)
-        s3_file_content = s3_file["Body"].read()
+    s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path)
+    s3_file_content = s3_file["Body"].read()
 
-        response = HttpResponse(content=s3_file_content, content_type=document.content_type)
-        response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+    response = HttpResponse(content=s3_file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
 
-        return response
+    return response
