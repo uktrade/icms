@@ -83,6 +83,18 @@ A schema for the database can be generated using the following django-extensions
 
 - `python manage.py graph_models --output=output.png`
 
+## Rebuilding the database 
+
+A complete reset of the application database can be performed using:
+
+```
+make down
+docker volume rm icms_pgdata
+make migrate
+make createsuperuser
+make add_dummy_data
+```
+
 ## Deployments
 
 - Dev deployment Jenkins job: https://jenkins.ci.uktrade.digital/job/icms/
