@@ -47,7 +47,7 @@ urlpatterns = [
     ),
     path(
         "application-submit/<int:pk>/",
-        views.sanctions_application_submit,
-        name="sanctions-submit",
+        views.submit_sanctions,
+        name="submit-sanctions",
     ),
 ]
