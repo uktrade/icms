@@ -57,9 +57,9 @@
                         <td>{{ row.value }}</td>
                         <td>
                             <a class="link-button button icon-pencil" data-input_action="edit"
-                               href="{{ icms_url('import:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
+                               href="{{ icms_url('import:sanctions:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
 
-                            <form action="{{ icms_url('import:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
+                            <form action="{{ icms_url('import:sanctions:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
                                 {{ csrf_input }}
                                 <button role="action-button"
                                         type="submit"
@@ -80,8 +80,49 @@
             </div>
         {% endif %}
 
-        <a class="button small-button" href="{{ icms_url('import:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
+        <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
 
+
+        <h4>Supporting Documents</h4>
+
+   {% if supporting_documents %}
+     <table class="setoutList">
+       <thead>
+         <tr>
+           <th>Document type</th>
+           <th>Uploaded by</th>
+           <th>File (size)</th>
+           <th>Actions</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for file in supporting_documents %}
+         <tr>
+           <td>Supporting documents</td>
+           <td>
+             {{ file.created_by.full_name }}<br>
+             {{ file.created_datetime.strftime('%d-%b-%Y %H:%M')}}
+           </td>
+           <td><a href="{{ icms_url('import:sanctions:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+           {{ file.filename }}</a> {{ file.human_readable_file_size() }}</td>
+           <td>
+             <form method="post"
+                 action="{{ icms_url('import:sanctions:delete-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+               {{ csrf_input }}
+               <button type="submit" class="small-button">Delete</button>
+              </form>
+           </td>
+         </tr>
+         {% endfor %}
+      </tbody>
+     </table>
+   {% else %}
+     <div class="info-box info-box-info">
+         There are no supporting documents attached
+     </div>
+   {% endif %}
+
+        <a class="button small-button" href="{{ icms_url('import:sanctions:add-document', kwargs={'pk': process.pk}) }}">Add Document</a>
 
     {% endif %}
 

@@ -141,7 +141,7 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
         }
         self.client.post(
             reverse(
-                "import:edit-sanctions-and-adhoc-licence-application",
+                "import:sanctions:edit-sanctions-and-adhoc-licence-application",
                 kwargs={"pk": self.process.pk},
             ),
             data=data,
@@ -239,12 +239,13 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "value": 5,
         }
         response = self.client.post(
-            reverse("import:add-goods", kwargs={"pk": self.process.pk}),
+            reverse("import:sanctions:add-goods", kwargs={"pk": self.process.pk}),
             data=data,
         )
         assert response.status_code == 302
         assert response.url == reverse(
-            "import:edit-sanctions-and-adhoc-licence-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit-sanctions-and-adhoc-licence-application",
+            kwargs={"pk": self.process.pk},
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
@@ -302,7 +303,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         }
         response = self.client.post(
             reverse(
-                "import:edit-goods",
+                "import:sanctions:edit-goods",
                 kwargs={"application_pk": self.process.pk, "goods_pk": goods.pk},
             ),
             data=data,
@@ -310,7 +311,8 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
 
         assert response.status_code == 302
         assert response.url == reverse(
-            "import:edit-sanctions-and-adhoc-licence-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit-sanctions-and-adhoc-licence-application",
+            kwargs={"pk": self.process.pk},
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
@@ -334,13 +336,14 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         data = {"action": "delete", "item": goods.pk}
         response = self.client.post(
             reverse(
-                "import:delete-goods",
+                "import:sanctions:delete-goods",
                 kwargs={"application_pk": self.process.pk, "goods_pk": goods.pk},
             ),
             data=data,
         )
         assert response.status_code == 302
         assert response.url == reverse(
-            "import:edit-sanctions-and-adhoc-licence-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit-sanctions-and-adhoc-licence-application",
+            kwargs={"pk": self.process.pk},
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 1

@@ -2,6 +2,8 @@ from django.urls import path
 
 from . import views
 
+app_name = "sanctions"
+
 urlpatterns = [
     path(
         "<int:pk>/edit/",
@@ -22,6 +24,21 @@ urlpatterns = [
         "<int:application_pk>/goods/<int:goods_pk>/delete/",
         views.delete_goods,
         name="delete-goods",
+    ),
+    path(
+        "<int:pk>/add-document/",
+        views.add_supporting_document,
+        name="add-document",
+    ),
+    path(
+        "<int:application_pk>/view-supporting-document/<int:document_pk>/",
+        views.view_supporting_document,
+        name="view-supporting-document",
+    ),
+    path(
+        "<int:application_pk>/documents/<int:document_pk>/delete/",
+        views.delete_supporting_document,
+        name="delete-document",
     ),
     path(
         "validation-summary/<int:pk>/",

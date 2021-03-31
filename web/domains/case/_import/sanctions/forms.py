@@ -64,3 +64,7 @@ class GoodsForm(forms.ModelForm):
             "goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
         }
         labels = {"value": "Value (GBP CIF)"}
+
+
+class SupportingDocumentForm(forms.Form):
+    document = forms.FileField(required=True, widget=forms.ClearableFileInput())

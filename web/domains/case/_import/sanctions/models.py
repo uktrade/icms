@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.domains.commodity.models import Commodity
+from web.domains.file.models import File
 
 from ..models import ImportApplication
 
@@ -10,6 +11,7 @@ class SanctionsAndAdhocApplication(ImportApplication):
 
     exporter_name = models.CharField(max_length=4096, blank=True, null=True)
     exporter_address = models.CharField(max_length=4096, blank=True, null=True)
+    supporting_documents = models.ManyToManyField(File)
 
 
 class SanctionsAndAdhocApplicationGoods(models.Model):
