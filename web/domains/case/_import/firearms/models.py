@@ -33,12 +33,18 @@ class ConstabularyEmail(models.Model):
         ImportApplication, on_delete=models.PROTECT, blank=False, null=False
     )
     status = models.CharField(max_length=30, blank=False, null=False, default=DRAFT)
+    email_to = models.CharField(max_length=4000, blank=True, null=True)
     email_cc_address_list = models.CharField(max_length=4000, blank=True, null=True)
     email_subject = models.CharField(max_length=100, blank=False, null=True)
     email_body = models.TextField(max_length=4000, blank=False, null=True)
     email_response = models.TextField(max_length=4000, blank=True, null=True)
     email_sent_datetime = models.DateTimeField(blank=True, null=True)
     email_closed_datetime = models.DateTimeField(blank=True, null=True)
+    attachments = models.ManyToManyField(File)
+
+    @property
+    def is_draft(self):
+        return self.status == self.DRAFT
 
 
 class UserImportCertificate(models.Model):
@@ -70,7 +76,7 @@ class VerifiedCertificate(models.Model):
         ImportApplication, on_delete=models.PROTECT, related_name="verified_certificates"
     )
     firearms_authority = models.ForeignKey(
-        FirearmsAuthority, on_delete=models.PROTECT, related_name="+"
+        FirearmsAuthority, on_delete=models.PROTECT, related_name="verified_certificates"
     )
 
     created_datetime = models.DateTimeField(auto_now_add=True)

@@ -14,7 +14,10 @@
     </a>
   </li>
   <li>
-    <a href="#">Constabulary Emails</a>
+    <a
+      href="{{ icms_url('import:firearms:manage-constabulary-emails', args=[process.pk]) }}">
+      Constabulary Emails
+    </a>
   </li>
   <li>
     {% with total = process.withdrawals.count(),

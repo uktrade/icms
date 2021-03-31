@@ -1,0 +1,193 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <form
+    method="post"
+    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
+    class="form-inline">
+      {{ csrf_input }}
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/sidebar-management.html' %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Constabulary Emails</h3>
+  <div class="info-box info-box-info">
+    This screen is used to email relevant constabularies. You may attach multiple firearms
+    certificates to a single email. You can also record responses from the constabulary.
+  </div>
+
+  <div class="info-box info-box-info">
+    {% if not verified_certificates %}
+      There is no verified certificate.
+    {% else %}
+        <h4>Verified Firearms Authorities</h4>
+          <table class="setoutList">
+            <thead>
+              <tr>
+                <th scope="col">Reference</th>
+                <th scope="col">Certificate Type</th>
+                <th scope="col">Issuing Constabulary</th>
+                <th scope="col">Address</th>
+                <th scope="col">Postcode</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for certificate in verified_certificates %}
+                <tr>
+                  <td>
+                    {{ certificate.firearms_authority.reference }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.get_certificate_type_display() }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.issuing_constabulary }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.address }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.postcode }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+                  </td>
+                  <td>
+                    {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+                  </td>
+                  <td>
+                    <a
+                      href="{{ icms_url('importer-firearms-authorities-edit', args=[process.importer.pk, certificate.firearms_authority.pk]) }}">
+                      View Details
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    {% endif %}
+  </div>
+
+  <hr />
+  {% if not constabulary_emails %}
+    <div class="info-box info-box-info">
+      There is no Constabulary Email.
+    </div>
+  {% else %}
+    <h4>Emails</h4>
+
+    <table class="setoutList">
+      <thead>
+        <tr>
+          <th scope="col">Status</th>
+          <th scope="col">To</th>
+          <th scope="col">Subject</th>
+          <th scope="col">Response</th>
+          <th scope="col">Sent</th>
+          <th scope="col">Closed</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for constabulary_email in constabulary_emails %}
+          <tr>
+            <td>
+              {{ constabulary_email.status }}
+            </td>
+            <td>
+              {{ constabulary_email.email_to or '' }}
+            </td>
+            <td>
+              {{ constabulary_email.email_subject }}
+            </td>
+            <td>
+              {% if constabulary_email.email_response %}
+                Yes
+              {% else %}
+                No
+              {% endif %}
+            </td>
+            <td>
+              {% if constabulary_email.email_sent_datetime %}
+                {{ constabulary_email.email_sent_datetime.strftime("%d-%b-%Y") }}
+              {% endif %}
+            </td>
+            <td>
+              {% if constabulary_email.email_closed_datetime %}
+                {{ constabulary_email.email_closed_datetime.strftime("%d-%b-%Y") }}
+              {% endif %}
+            </td>
+            <td>
+              {% if constabulary_email.is_draft %}
+                <a
+                  href="{{ icms_url('import:firearms:edit-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  Edit/Send
+                </a>
+                <form
+                  method="post"
+                  action="{{ icms_url('import:firearms:delete-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  {{ csrf_input }}
+                  <button
+                    type="submit"
+                    class="button link-button-no-padding">
+                    Delete
+                  </button>
+                </form>
+              {% else %}
+                <a
+                  href="{{ icms_url('import:firearms:add-response-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  Record Response
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  <form
+    method="post"
+    action="{{ icms_url('import:firearms:create-constabulary-email', args=[process.pk]) }}">
+    {{ csrf_input }}
+    <input type="submit" class="button small-button icon-plus" value="New Email" />
+
+  {% for object in constabulary_emails %}
+    {% include 'web/domains/case/import/firearms/constabulary-email-box.html' %}
+  {% endfor %}
+{% endblock %}
+
+{% block page_js %}
+  {{super()}}
+  <script src="{{ static('web/js/pages/approval-response.js') }}" type="text/javascript"></script>
+{% endblock %}

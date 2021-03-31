@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
+from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case.forms import CloseCaseForm
 from web.domains.importer.models import Importer
@@ -792,12 +793,12 @@ def authorisation(request, pk):
             application_errors.append(html)
 
         if application.decision == ImportApplication.REFUSE:
-            url = reverse("import:response-preparation", args=[application.pk])
+            url = reverse("import:prepare-response", args=[application.pk])
             html = f"<a href='{url}'>Please approve application.</a>"
             application_errors.append(html)
 
         if not application.licence_start_date or not application.licence_end_date:
-            url = reverse("import:response-preparation", args=[application.pk])
+            url = reverse("import:prepare-response", args=[application.pk])
             html = f"<a href='{url}'>Please complete start and end dates.</a>"
             application_errors.append(html)
 
@@ -841,3 +842,31 @@ def cancel_authorisation(request, pk):
         application.save()
 
         return redirect(reverse("workbasket"))
+
+
+def _view_file(request, application, related_file_model, file_pk):
+    has_perm_importer = request.user.has_perm("web.importer_access")
+    has_perm_reference_data = request.user.has_perm("web.reference_data_access")
+
+    if not has_perm_importer and not has_perm_reference_data:
+        raise PermissionDenied
+
+    with transaction.atomic():
+        # first check is for case managers (who are not marked as contacts of
+        # importers), second is for people submitting applications
+        if not has_perm_reference_data and not request.user.has_perm(
+            "web.is_contact_of_importer", application.importer
+        ):
+            raise PermissionDenied
+
+        document = related_file_model.get(pk=file_pk)
+
+        client = s3_client()
+
+        s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path)
+        s3_file_content = s3_file["Body"].read()
+
+        response = HttpResponse(content=s3_file_content, content_type=document.content_type)
+        response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+        return response

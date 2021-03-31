@@ -27,7 +27,7 @@
                 <td>
                   <form method="post"
                         action={{ icms_url(
-                                    'archive-user-import-certificate-file',
+                                    'import:firearms:archive-user-import-certificate-file',
                                     kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk, 'file_pk': document.pk}) }}>
                     {{ csrf_input }}
                     <button type="submit" class="button link-button-no-padding">Delete</button>

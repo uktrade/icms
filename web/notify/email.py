@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from guardian.shortcuts import get_users_with_perms
 
 from config.celery import app
@@ -9,8 +11,16 @@ from . import utils
 
 
 @app.task(name="web.notify.email.send_email")
-def send_email(subject, message, recipients, html_message=None, cc_list=None):
-    utils.send_email(subject, message, recipients, html_message=html_message, cc_list=cc_list)
+def send_email(subject, message, recipients, cc=None, attachments=[], html_message=None):
+    message = EmailMultiAlternatives(subject, message, settings.EMAIL_FROM, recipients, cc=cc)
+
+    for attachment in attachments:
+        message.attach(*attachment)
+
+    if html_message:
+        message.attach_alternative(html_message, "text/html")
+
+    message.send()
 
 
 def send_to_importers(subject, message, html_message=None):

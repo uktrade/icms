@@ -1555,6 +1555,7 @@ class Migration(migrations.Migration):
                 ),
                 ("is_active", models.BooleanField(default=True)),
                 ("status", models.CharField(default="DRAFT", max_length=30)),
+                ("email_to", models.CharField(blank=True, max_length=4000, null=True)),
                 ("email_cc_address_list", models.CharField(blank=True, max_length=4000, null=True)),
                 ("email_subject", models.CharField(max_length=100, null=True)),
                 ("email_body", models.TextField(max_length=4000, null=True)),
@@ -1567,6 +1568,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT, to="web.importapplication"
                     ),
                 ),
+                ("attachments", models.ManyToManyField(to="web.File")),
             ],
         ),
         migrations.AddField(

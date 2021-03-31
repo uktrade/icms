@@ -14,6 +14,31 @@ urlpatterns = [
         views.manage_checklist,
         name="manage-checklist",
     ),
+    path(
+        "case/oil/<int:pk>/constabulary-emails/",
+        views.manage_constabulary_emails,
+        name="manage-constabulary-emails",
+    ),
+    path(
+        "case/oil/<int:pk>/constabulary-emails/create/",
+        views.create_constabulary_email,
+        name="create-constabulary-email",
+    ),
+    path(
+        "case/oil/<int:application_pk>/constabulary-emails/edit/<int:constabulary_email_pk>/",
+        views.edit_constabulary_email,
+        name="edit-constabulary-email",
+    ),
+    path(
+        "case/oil/<int:application_pk>/constabulary-emails/delete/<int:constabulary_email_pk>/",
+        views.delete_constabulary_email,
+        name="delete-constabulary-email",
+    ),
+    path(
+        "case/oil/<int:application_pk>/constabulary-emails/edit/<int:constabulary_email_pk>/response/",
+        views.add_response_constabulary_email,
+        name="add-response-constabulary-email",
+    ),
     # Firearms and Ammunition - User Certificates
     path(
         "oil/<int:pk>/certificates/",
@@ -35,6 +60,11 @@ urlpatterns = [
         views.archive_user_import_certificate_file,
         name="archive-user-import-certificate-file",
     ),
+    path(
+        "oil/<int:application_pk>/certificates/<int:certificate_pk>/files/<int:file_pk>/view/",
+        views.view_user_certificate_file,
+        name="view-user-certificate-file",
+    ),
     # Firearms and Ammunition - Verified Certificates
     path(
         "verified-firearms/oil/<int:application_pk>/authority/<int:authority_pk>/toggle/",
@@ -42,9 +72,14 @@ urlpatterns = [
         name="toggle-verified-firearms",
     ),
     path(
-        "verified-firearms/oil/<int:application_pk>/firearms/<int:authority_pk>/view/",
+        "verified-firearms/oil/<int:application_pk>/authority/<int:authority_pk>/view/",
         views.view_verified_firearms,
         name="view-verified-firearms",
+    ),
+    path(
+        "verified-firearms/oil/<int:application_pk>/authority/<int:authority_pk>/files/<int:file_pk>/view/",
+        views.view_verified_certificate_file,
+        name="view-verified-certificate-file",
     ),
     # Firearms and Ammunition - Import Contact
     path(

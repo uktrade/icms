@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                     "firearms_authority",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
-                        related_name="+",
+                        related_name="verified_certificates",
                         to="web.firearmsauthority",
                     ),
                 ),

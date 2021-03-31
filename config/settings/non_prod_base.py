@@ -22,3 +22,6 @@ ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 # used in email content
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", "enquiries.ilb@icms.trade.dev.uktrade.io")
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", "N/A")
+ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str(
+    "ICMS_FIREARMS_HOMEOFFICE_EMAIL", "firearms-homeoffice@example.com"
+)

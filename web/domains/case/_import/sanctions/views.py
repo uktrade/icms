@@ -1,16 +1,14 @@
 import structlog as logging
-from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.views.decorators.http import require_GET, require_POST
-from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.views import handle_uploaded_file
 
+from .. import views as import_views
 from .forms import GoodsForm, SanctionsAndAdhocLicenseForm, SupportingDocumentForm
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
@@ -216,35 +214,10 @@ def add_supporting_document(request, pk):
 @require_GET
 @login_required
 def view_supporting_document(request, application_pk, document_pk):
-    has_perm_importer = request.user.has_perm("web.importer_access")
-    has_perm_reference_data = request.user.has_perm("web.reference_data_access")
-
-    if not has_perm_importer and not has_perm_reference_data:
-        raise PermissionDenied
-
-    with transaction.atomic():
-        application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
-        )
-
-        # first check is for case managers (who are not marked as contacts of
-        # importers), second is for people submitting applications
-        if not has_perm_reference_data and not request.user.has_perm(
-            "web.is_contact_of_importer", application.importer
-        ):
-            raise PermissionDenied
-
-        document = application.supporting_documents.get(pk=document_pk)
-
-        client = s3_client()
-
-        s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path)
-        s3_file_content = s3_file["Body"].read()
-
-        response = HttpResponse(content=s3_file_content, content_type=document.content_type)
-        response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
-
-        return response
+    application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
+    return import_views._view_file(
+        request, application, application.supporting_documents, document_pk
+    )
 
 
 @require_POST

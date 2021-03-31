@@ -1,0 +1,72 @@
+<table id="{{ widget.attrs.id}}" class="setoutList">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>File</th>
+      <th>Title</th>
+      <th>Certificate Reference</th>
+      <th>Certificate Type</th>
+      <th>Issuing Constabulary</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for _, options, index in widget.optgroups %}
+      {% for widget in options %}
+        {% with file = qs[index],
+                verified = qs[index].firearmsauthority_set.first(),
+                user = qs[index].userimportcertificate_set.first() %}
+
+          <tr>
+            <td>
+              {% include widget.template_name %}
+            </td>
+            {% if verified %}
+              <td>
+                <a
+                  href="{{ icms_url(
+                             'import:firearms:view-verified-certificate-file',
+                             args=[process.pk, verified.pk, file.pk]) }}">
+                  {{ file.filename }}
+                </a>
+                <span class="filesize">{{ file.human_readable_file_size() }}</span>
+              </td>
+              <td>
+                Verified Firearms Authority
+              </td>
+              <td>
+                {{ verified.reference }}
+              </td>
+              <td>
+                {{ verified.get_certificate_type_display() }}
+              </td>
+              <td>
+                {{ verified.issuing_constabulary }}
+              </td>
+            {% elif user %}
+              <td>
+                <a
+                  href="{{ icms_url(
+                            'import:firearms:view-user-certificate-file',
+                             args=[process.pk, user.pk, file.pk]) }}">
+                  {{ file.filename}}
+                </a>
+              </td>
+              <td>
+                Firearms Authority
+              </td>
+              <td>
+                {{ verified.reference }}
+              </td>
+              <td>
+                {{ verified.get_certificate_type_display() }}
+              </td>
+              <td>
+                {{ verified.constabulary }}
+              </td>
+            {% endif %}
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>

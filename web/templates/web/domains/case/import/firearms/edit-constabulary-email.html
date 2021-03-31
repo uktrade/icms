@@ -1,0 +1,81 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block css %}
+  {{ super() }}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('import:firearms:manage-constabulary-emails', args=[process.pk]) }}" class="prev-link">
+          Constabulary Emails
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <form
+    method="post"
+    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
+    class="form-inline">
+      {{ csrf_input }}
+      <button type="submit">Release Ownership</button>
+  </form>
+  <a href="#" class="button">Reassign</a>
+  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'partial/case/import/sidebar-management.html' %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Edit Constabulary Email</h3>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                value="Save"
+                class="primary-button button" />
+
+              <input
+                type="submit"
+                name="send"
+                value="Save And Send"
+                class="primary-button button" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  {{ form.media.js }}
+{% endblock %}
+
+

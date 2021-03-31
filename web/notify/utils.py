@@ -1,24 +1,8 @@
 import itertools
 
-from django.conf import settings
 from django.contrib.auth.models import Permission
-from django.core.mail.message import EmailMultiAlternatives
 
 from web.domains.user.models import AlternativeEmail, PersonalEmail
-
-
-def send_email(subject, message, recipients, html_message=None, cc_list=None):
-    """Sends emails to given recipients. cc_list: ";" separated email list"""
-    if cc_list:
-        cc_list = ",".join(cc_list.split(";"))
-
-    email = EmailMultiAlternatives(
-        subject=subject, body=message, from_email=settings.EMAIL_FROM, to=recipients
-    )
-    if html_message:
-        email.attach_alternative(html_message, "text/html")
-
-    email.send()
 
 
 def get_user_emails_by_ids(user_ids):

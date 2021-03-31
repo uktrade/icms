@@ -1,0 +1,132 @@
+<fieldset>
+  <legend class="bold">Constabulary Email</legend>
+
+  {% if object.is_draft %}
+    <a
+      class="button small-button"
+      href="{{ icms_url('import:firearms:edit-constabulary-email', args=[process.pk, object.pk]) }}">
+      Edit/Send
+    </a>
+    <form
+      method="post"
+      action="{{ icms_url('import:firearms:delete-constabulary-email', args=[process.pk, object.pk]) }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button">
+        Delete
+      </button>
+    </form>
+  {% else %}
+    <a
+      class="button small-button"
+      href="{{ icms_url('import:firearms:add-response-constabulary-email', args=[process.pk, object.pk]) }}">
+      Record Response
+    </a>
+  {% endif %}
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Status
+      </label>
+    </div>
+    <div class="six columns">
+      <div class="status {{ object.status }}">
+        <div>
+          <span class="text-widget">{{ object.status }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        To
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.email_to }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Cc
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.email_cc_address_list }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Subject
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.email_subject }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Attachments
+      </label>
+    </div>
+    <div class="six columns">
+      {% for attachment in object.attachments.all() %}
+      {% endfor %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Body
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.email_body|nl2br }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Sent Date
+      </label>
+    </div>
+    <div class="six columns">
+      {% if object.email_sent_datetime %}
+        {{ object.email_sent_datetime.strftime("%d-%b-%Y") }}
+      {% endif %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Response Date
+      </label>
+    </div>
+    <div class="six columns">
+      {% if object.email_closed_datetime %}
+        {{ object.email_closed_datetime.strftime("%d-%b-%Y") }}
+      {% endif %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+</fieldset>

@@ -194,6 +194,34 @@ class TestEmail(TestCase):
         assert "test@example.com" in outbox[0].to
         assert "test2@example.com" in outbox[0].to
 
+    def test_multipart_email(self):
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        m = mail.outbox[0]
+        assert isinstance(m, mail.EmailMultiAlternatives)
+
+    def test_mail_subject(self):
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        m = mail.outbox[0]
+        assert m.subject == "Subject"
+
+    def test_mail_body(self):
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        m = mail.outbox[0]
+        assert m.body == "Message"
+
+    def test_mail_from(self):
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        m = mail.outbox[0]
+        assert m.from_email == "test@example.com"  # in config/settings/test
+
+    def test_mail_to(self):
+        email.send_email(
+            "Subject", "Message", ["test@example.com", "test2@example.com", "<p>Message</p>"]
+        )
+        m = mail.outbox[0]
+        assert m.to[0] == "test@example.com"
+        assert m.to[1] == "test2@example.com"
+
     def test_send_mailshot_to_importers(self):
         email.send_mailshot.delay(
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True

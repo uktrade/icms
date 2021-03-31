@@ -24,7 +24,7 @@ def send_notification(subject, template, context=None, recipients=None, cc_list=
 
     html_message = _render_email(template, context)
     message_text = html2text.html2text(html_message)
-    email.send_email.delay(subject, message_text, recipients, html_message, cc_list)
+    email.send_email.delay(subject, message_text, recipients, html_message=html_message, cc=cc_list)
 
 
 def send_case_officer_notification(subject, template, context=None):
@@ -37,7 +37,7 @@ def send_case_officer_notification(subject, template, context=None):
 def update_request(subject, content, contacts, cc_list):
     # TODO: investigate web.notify.utils.get_notification_emails
     recipients = [contact.email for contact in contacts]
-    email.send_email.delay(subject, content, recipients, cc_list=cc_list)
+    email.send_email.delay(subject, content, recipients, cc=cc_list)
 
 
 def register(user, password):
