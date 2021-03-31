@@ -1,7 +1,6 @@
 from django import forms
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
@@ -41,8 +40,7 @@ class DerogationsForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"cols": 50, "rows": 3}),
     )
 
-    # TODO restrict commodities to group when it becomes known
-    commodity_code = forms.ModelChoiceField(
+    commodity_code = forms.ChoiceField(
         label="Commodity Code",
         help_text="""
             It is the responsibility of the applicant to ensure that the commodity code in
@@ -51,9 +49,10 @@ class DerogationsForm(forms.ModelForm):
             which is available from the Stationery Office. If you are still in doubt,
             contact the Classification Advisory Service on (01702) 366077.
         """,
-        queryset=Commodity.objects.all(),
+        choices=[(x, x) for x in [None, "4403201110", "4403201910", "4403203110", "4403203910"]],
         required=True,
     )
+
     goods_description = forms.CharField(
         label="Goods Description",
         help_text="Details of the goods that are subject to the contract notification",
@@ -62,6 +61,12 @@ class DerogationsForm(forms.ModelForm):
     quantity = forms.CharField(
         required=True,
     )
+
+    unit = forms.ChoiceField(
+        label="Unit",
+        choices=[(x, x) for x in ["kilos"]],
+    )
+
     value = forms.CharField(
         label="Value (euro CIF)",
         required=True,
@@ -80,6 +85,7 @@ class DerogationsForm(forms.ModelForm):
             "commodity_code",
             "goods_description",
             "quantity",
+            "unit",
             "value",
         )
 

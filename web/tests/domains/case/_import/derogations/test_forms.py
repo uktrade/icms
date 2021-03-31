@@ -6,7 +6,7 @@ from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
-from web.tests.domains.commodity.factory import CommodityFactory, CommodityTypeFactory
+from web.tests.domains.commodity.factory import CommodityTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.flow.factories import TaskFactory
 
@@ -41,7 +41,6 @@ class DerogationsFormTest(AuthTestCase):
         self.login_with_permissions(["importer_access"])
 
         self.commodity_type = CommodityTypeFactory.create()
-        self.commodity = CommodityFactory.create(commodity_type=self.commodity_type)
 
     def test_da_form_valid(self):
         data = {
@@ -51,9 +50,10 @@ class DerogationsFormTest(AuthTestCase):
             "contract_sign_date": timezone.now(),
             "contract_completion_date": timezone.now(),
             "explanation": "Test explanation",
-            "commodity_code": self.commodity.pk,
+            "commodity_code": "4403201110",
             "goods_description": "Test description",
             "quantity": "1.00",
+            "unit": "kilos",
             "value": "2.00",
         }
         form = DerogationsForm(data, instance=self.process, initial={"contact": self.user})
@@ -77,4 +77,4 @@ class DerogationsFormTest(AuthTestCase):
         form = DerogationsForm(data, instance=self.process, initial={"contact": self.user})
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors)
-        self.assertEqual(len(form.errors), 10)
+        self.assertEqual(len(form.errors), 11)

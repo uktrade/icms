@@ -9,7 +9,7 @@ from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
-from web.tests.domains.commodity.factory import CommodityFactory, CommodityTypeFactory
+from web.tests.domains.commodity.factory import CommodityTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.flow.factories import TaskFactory
@@ -96,7 +96,6 @@ class DegrogationDetailsViewTest(AuthTestCase):
         ).first()
 
         self.commodity_type = CommodityTypeFactory.create()
-        self.commodity = CommodityFactory.create(commodity_type=self.commodity_type)
 
         assign_perm("web.is_contact_of_importer", self.user, self.importer)
 
@@ -138,9 +137,10 @@ class DegrogationDetailsViewTest(AuthTestCase):
             "contract_sign_date": contract_sign_date.strftime("%d-%b-%Y"),
             "contract_completion_date": contract_completion_date.strftime("%d-%b-%Y"),
             "explanation": "Test explanation",
-            "commodity_code": self.commodity.pk,
+            "commodity_code": "4403201110",
             "goods_description": "Test description",
             "quantity": "1.00",
+            "unit": "kilos",
             "value": "2.00",
         }
         self.client.post(
