@@ -178,9 +178,7 @@ def manage_case(request, pk):
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_withdrawals(request, pk):
     with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -288,7 +286,7 @@ def withdraw_case(request, pk):
 def archive_withdrawal(request, application_pk, withdrawal_pk):
     with transaction.atomic():
         application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+            ImportApplication.objects.select_for_update(), pk=application_pk
         )
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
@@ -703,7 +701,7 @@ def edit_endorsement(request, application_pk, endorsement_pk):
 def delete_endorsement(request, application_pk, endorsement_pk):
     with transaction.atomic():
         application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+            ImportApplication.objects.select_for_update(), pk=application_pk
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
         application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")

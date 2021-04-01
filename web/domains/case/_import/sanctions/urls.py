@@ -50,4 +50,10 @@ urlpatterns = [
         views.submit_sanctions,
         name="submit-sanctions",
     ),
+    # Management by ILB Admin
+    path(
+        "case/sanctions/<int:pk>/sanction-emails/",
+        views.manage_sanction_emails,
+        name="manage-sanction-emails",
+    ),
 ]

@@ -28,6 +28,12 @@
 
 {% block main_content %}
   <h3>Application Withdrawals</h3>
+  {% if not withdrawals %}
+    <div class="info-box info-box-info">
+      There aren't any application withdrawal requests.
+    </div>
+  {% endif %}
+
   {% if current_withdrawal %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     <fieldset>

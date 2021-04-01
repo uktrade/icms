@@ -7,18 +7,27 @@
       {{ process.reference or process.pk }}
     </a>
   </li>
-  <li>
-    <a
-      href="{{ icms_url('import:firearms:manage-checklist', args=[process.pk]) }}">
-      Checklist
-    </a>
-  </li>
-  <li>
-    <a
-      href="{{ icms_url('import:firearms:manage-constabulary-emails', args=[process.pk]) }}">
-      Constabulary Emails
-    </a>
-  </li>
+  {% if process.process_type == "OpenIndividualLicenceApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:firearms:manage-checklist', args=[process.pk]) }}">
+        Checklist
+      </a>
+    </li>
+    <li>
+      <a
+        href="{{ icms_url('import:firearms:manage-constabulary-emails', args=[process.pk]) }}">
+        Constabulary Emails
+      </a>
+    </li>
+  {% elif process.process_type == "SanctionsAndAdhocApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:sanctions:manage-sanction-emails', args=[process.pk]) }}">
+        Sanction Emails
+      </a>
+    </li>
+  {% endif %}
   <li>
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}
@@ -63,7 +72,9 @@
 <h4>Application</h4>
 <ul class="menu-out">
   <li>
-    <a href="#">View Application</a>
+    <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">
+      View Application
+    </a>
   </li>
   <li>
     <a href="#">Responses</a>

@@ -322,3 +322,12 @@ def submit_sanctions(request, pk):
         "declaration": declaration,
     }
     return render(request, "web/domains/case/import/sanctions/submit.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_sanction_emails(request, pk):
+    return render(
+        request=request,
+        template_name="web/domains/case/import/sanctions/manage-sanction-emails.html",
+    )
