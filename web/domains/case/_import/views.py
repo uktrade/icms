@@ -161,6 +161,7 @@ def manage_case(request, pk):
             form = CloseCaseForm()
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": f"{application.application_type.get_type_description()} - Management",
@@ -169,7 +170,7 @@ def manage_case(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/management.html",
+            template_name="web/domains/case/import/manage/case.html",
             context=context,
         )
 

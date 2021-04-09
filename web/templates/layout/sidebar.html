@@ -1,10 +1,19 @@
-{% extends "internal.html" %}
+{% extends "base.html" %}
 
 {% block header %}
-<header id="menu-bar">
-  {% include "web/menu/menu.html" %}
-</header>
-{{ super() }}
+  <header id="menu-bar">
+    {% include "web/menu/menu.html" %}
+  </header>
+
+  <div class="" id="context-header">
+    <h2>
+      {% block context_header %}
+        {{ title }} {# same as page title if not specified see web/templates/base.html #}
+      {% endblock %}
+    </h2>
+    {% block extra_header %}{% endblock %}
+  </div>
+
 {% endblock %}
 
 {% block content %}
