@@ -1,35 +1,5 @@
-{% extends "layout/sidebar.html" %}
+{% extends base_template %}
 
-
-{% block context_header %}
-  Edit Note
-{% endblock %}
-
-{% block extra_header %}
-  <div class="container contextHeaderGrid">
-    {% include process_template %}
-  </div>
-  {{ super() }}
-{% endblock %}
-
-{% block sidebar %}
-  {% if url_namespace == "export" %}
-    {% with object = process %}
-      {% include 'partial/case/export/sidebar.html' %}
-    {% endwith %}
-  {% else %}
-    {% include 'partial/case/import/sidebar-management.html' %}
-  {% endif %}
-{% endblock %}
-
-{% block content_actions %}
-  <form method="post" action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
-    {{ csrf_input }}
-    <button type="submit">Release Ownership</button>
-  </form>
-  <a href="#" class="button">Reassign</a>
-  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
-{% endblock %}
 
 {% block main_content %}
   <h3>Case Notes</h3>

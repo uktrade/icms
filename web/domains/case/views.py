@@ -14,21 +14,24 @@ from .fir import forms as fir_forms
 from .fir.models import FurtherInformationRequest
 
 
-def _list_notes(request, application_pk, model_class, url_namespace):
+def _list_notes(
+    request, application_pk, model_class, url_namespace, process_template, base_template
+):
     with transaction.atomic():
         application = get_object_or_404(
             klass=model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.SUBMITTED, "process")
         context = {
-            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+            "process_template": process_template,
+            "base_template": base_template,
             "process": application,
             "notes": application.case_notes,
             "url_namespace": url_namespace,
         }
     return render(
         request=request,
-        template_name="web/domains/case/list-notes.html",
+        template_name="web/domains/case/manage/list-notes.html",
         context=context,
     )
 
@@ -60,7 +63,9 @@ def _unarchive_note(request, application_pk, note_pk, model_class, url_namespace
     return redirect(reverse(f"{url_namespace}:list-notes", kwargs={"pk": application_pk}))
 
 
-def _edit_note(request, application_pk, note_pk, model_class, url_namespace):
+def _edit_note(
+    request, application_pk, note_pk, model_class, url_namespace, process_template, base_template
+):
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
@@ -82,7 +87,8 @@ def _edit_note(request, application_pk, note_pk, model_class, url_namespace):
             note_form = forms.CaseNoteForm(instance=note)
 
         context = {
-            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+            "process_template": process_template,
+            "base_template": base_template,
             "process": application,
             "note_form": note_form,
             "note": note,
@@ -91,7 +97,7 @@ def _edit_note(request, application_pk, note_pk, model_class, url_namespace):
 
     return render(
         request=request,
-        template_name="web/domains/case/edit-note.html",
+        template_name="web/domains/case/manage/edit-note.html",
         context=context,
     )
 

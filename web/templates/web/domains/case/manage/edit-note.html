@@ -1,33 +1,12 @@
-{% extends "layout/sidebar.html" %}
+{% extends base_template %}
 
-{% block context_header %}
-  Edit Note
-{% endblock %}
 
-{% block extra_header %}
-  <div class="container contextHeaderGrid">
-    {% include process_template %}
-  </div>
-  {{ super() }}
-{% endblock %}
-
-{% block sidebar %}
-  {% if url_namespace == "export" %}
-    {% with object = process %}
-      {% include 'partial/case/export/sidebar.html' %}
-    {% endwith %}
-  {% else %}
-    {% include 'partial/case/import/sidebar-management.html' %}
-  {% endif %}
-{% endblock %}
-
-{% block content_actions %}
-  <form method="post" action="{{ icms_url(url_namespace + ':release-ownership', args=[process.pk]) }}" class="form-inline">
-    {{ csrf_input }}
-    <button type="submit">Release Ownership</button>
-  </form>
-  <a href="#" class="button">Reassign</a>
-  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+{% block content_actions_link %}
+  <a
+    href="{{ icms_url(url_namespace + ':list-notes', args=[process.pk]) }}"
+    class="prev-link">
+    Manage Notes
+  </a>
 {% endblock %}
 
 {% block main_content %}
@@ -77,7 +56,8 @@
             {% for document in note.files.active() %}
               <tr>
                 <td>
-                  {{ document.filename }}<br />
+                  {{ document.filename }}
+                  <br />
                   <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
                 </td>
                 <td>

@@ -346,7 +346,11 @@ def view_case(request, pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def list_notes(request, pk):
-    return case_views._list_notes(request, pk, ImportApplication, "import")
+    process_template = "web/domains/case/import/partials/process.html"
+    base_template = "flow/task-manage-import.html"
+    return case_views._list_notes(
+        request, pk, ImportApplication, "import", process_template, base_template
+    )
 
 
 @login_required
@@ -373,7 +377,17 @@ def unarchive_note(request, application_pk, note_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_note(request, application_pk, note_pk):
-    return case_views._edit_note(request, application_pk, note_pk, ImportApplication, "import")
+    process_template = "web/domains/case/import/partials/process.html"
+    base_template = "flow/task-manage-import.html"
+    return case_views._edit_note(
+        request,
+        application_pk,
+        note_pk,
+        ImportApplication,
+        "import",
+        process_template,
+        base_template,
+    )
 
 
 @login_required
