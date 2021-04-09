@@ -221,6 +221,7 @@ def manage_withdrawals(request, pk):
             form = forms.WithdrawResponseForm(instance=current_withdrawal)
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": f"{application.application_type.get_type_description()} - Withdrawals",
@@ -231,7 +232,7 @@ def manage_withdrawals(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/management/withdrawals.html",
+            template_name="web/domains/case/import/manage/withdrawals.html",
             context=context,
         )
 
@@ -540,6 +541,7 @@ def prepare_response(request, pk):
             form = forms.ResponsePreparationForm()
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Response Preparation",
@@ -552,7 +554,7 @@ def prepare_response(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/prepare-response.html",
+            template_name="web/domains/case/import/manage/prepare-response.html",
             context=context,
         )
 
@@ -575,6 +577,7 @@ def edit_cover_letter(request, pk):
             form = forms.CoverLetterForm(instance=application)
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Cover Letter Response Preparation",
@@ -583,7 +586,7 @@ def edit_cover_letter(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/edit-cover-letter.html",
+            template_name="web/domains/case/import/manage/edit-cover-letter.html",
             context=context,
         )
 
@@ -606,6 +609,7 @@ def edit_licence(request, pk):
             form = forms.LicenceDateForm()
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Licence Response Preparation",
@@ -614,7 +618,7 @@ def edit_licence(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/edit-licence.html",
+            template_name="web/domains/case/import/manage/edit-licence.html",
             context=context,
         )
 
@@ -637,6 +641,7 @@ def _add_endorsement(request, pk, Form):
             form = Form()
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Endorsement Response Preparation",
@@ -645,7 +650,7 @@ def _add_endorsement(request, pk, Form):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/add-endorsement.html",
+            template_name="web/domains/case/import/manage/add-endorsement.html",
             context=context,
         )
 
@@ -683,6 +688,7 @@ def edit_endorsement(request, application_pk, endorsement_pk):
             form = forms.EndorsementImportApplicationForm(instance=endorsement)
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Endorsement Response Preparation",
@@ -691,7 +697,7 @@ def edit_endorsement(request, application_pk, endorsement_pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/edit-endorsement.html",
+            template_name="web/domains/case/import/manage/edit-endorsement.html",
             context=context,
         )
 
@@ -734,7 +740,7 @@ def preview_cover_letter(request, pk):
 
         html_string = render_to_string(
             request=request,
-            template_name="web/domains/case/import/preview-cover-letter.html",
+            template_name="web/domains/case/import/manage/preview-cover-letter.html",
             context=context,
         )
 
@@ -764,7 +770,7 @@ def preview_licence(request, pk):
 
         html_string = render_to_string(
             request=request,
-            template_name="web/domains/case/import/preview-licence.html",
+            template_name="web/domains/case/import/manage/preview-licence.html",
             context=context,
         )
 
@@ -786,10 +792,11 @@ def authorisation(request, pk):
         )
 
         application_errors = []
-        if not application.openindividuallicenceapplication.checklists.exists():
-            url = reverse("import:firearms:manage-checklist", args=[application.pk])
-            html = f"<a href='{url}'>Please complete checklist.</a>"
-            application_errors.append(html)
+        if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+            if not application.openindividuallicenceapplication.checklists.exists():
+                url = reverse("import:firearms:manage-checklist", args=[application.pk])
+                html = f"<a href='{url}'>Please complete checklist.</a>"
+                application_errors.append(html)
 
         if application.decision == ImportApplication.REFUSE:
             url = reverse("import:prepare-response", args=[application.pk])
@@ -802,6 +809,7 @@ def authorisation(request, pk):
             application_errors.append(html)
 
         context = {
+            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "page_title": "Authorisation",
@@ -810,7 +818,7 @@ def authorisation(request, pk):
 
         return render(
             request=request,
-            template_name="web/domains/case/import/authorisation.html",
+            template_name="web/domains/case/import/manage/authorisation.html",
             context=context,
         )
 

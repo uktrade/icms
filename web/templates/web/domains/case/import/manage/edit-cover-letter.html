@@ -1,39 +1,14 @@
-{% extends "layout/sidebar.html" %}
+{% extends "flow/task-manage-import.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
 
-{% block extra_header %}
-  <div class="container contextHeaderGrid">
-    {% include 'web/domains/case/import/partials/process.html' %}
-  </div>
-  {{ super() }}
-{% endblock %}
-
-{% block content_actions %}
-  <div class="content-actions">
-    <ul class="menu-out flow-across">
-      <li>
-        <a href="{{ icms_url('import:prepare-response', args=[process.pk]) }}" class="prev-link">
-          Response Preparation
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <form
-    method="post"
-    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
-    class="form-inline">
-      {{ csrf_input }}
-      <button type="submit">Release Ownership</button>
-  </form>
-  <a href="#" class="button">Reassign</a>
-  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
-{% endblock %}
-
-{% block sidebar %}
-  {% include 'partial/case/import/sidebar-management.html' %}
+{% block content_actions_link %}
+  <a
+    href="{{ icms_url('import:prepare-response', args=[process.pk]) }}"
+    class="prev-link">
+    Response Preparation
+  </a>
 {% endblock %}
 
 {% block main_content %}

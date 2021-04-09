@@ -1,0 +1,25 @@
+{% extends "flow/task-manage-import.html" %}
+
+
+{% block main_content %}
+  <h3>Authorisation</h3>
+  <div class="info-box info-box-info">
+    <p>After authorisation, generated documents (including licence documents, cover letters and schedules) will be digitally signed and filed into Matrix.</p>
+    <p>If you have selected an electronic licence, the documents will be issued to the applicant immediately.</p>
+    <p>If you have selected a paper licence, you will receive a link in your workbasket to print the documents after they have been signed and filed.</p>
+  </div>
+  {% for error in application_errors %}
+    <p>{{ error|safe }}</p>
+  {% else %}
+    <form
+      method="post"
+      action="{{ icms_url('import:start-authorisation', args=[process.pk]) }}">
+
+      {{ csrf_input }}
+      <input
+        type="submit"
+        class="button primary-button"
+        value="Start Authorisation (Close Case Processing)" />
+    </form>
+  {% endfor %}
+{% endblock %}
