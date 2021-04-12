@@ -1,0 +1,15 @@
+{% extends base_template %}
+
+
+{% block content_actions_link %}
+  <a
+    href="{{ icms_url(url_namespace + ':manage-firs', args=[process.pk]) }}"
+    class="prev-link">
+    Manage Further Information Requests
+  </a>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Edit FIR</h3>
+  {% include "partial/case/edit-fir.html" %}
+{% endblock %}

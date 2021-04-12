@@ -210,7 +210,6 @@ def _manage_firs(request, application_pk, model_class, url_namespace, **extra_co
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         task = application.get_task(model_class.SUBMITTED, "process")
         context = {
-            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
             "process": application,
             "task": task,
             "firs": application.further_information_requests.exclude(
@@ -222,7 +221,7 @@ def _manage_firs(request, application_pk, model_class, url_namespace, **extra_co
         }
     return render(
         request=request,
-        template_name="web/domains/case/manage-firs.html",
+        template_name="web/domains/case/manage/list-firs.html",
         context=context,
     )
 
@@ -257,7 +256,9 @@ def _add_fir(request, application_pk, model_class, url_namespace):
     )
 
 
-def _edit_fir(request, application_pk, fir_pk, model_class, url_namespace, contacts):
+def _edit_fir(
+    request, application_pk, fir_pk, model_class, url_namespace, contacts, **extra_context
+):
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
@@ -294,17 +295,17 @@ def _edit_fir(request, application_pk, fir_pk, model_class, url_namespace, conta
             form = fir_forms.FurtherInformationRequestForm(instance=fir)
 
         context = {
-            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
             "fir": fir,
             "url_namespace": url_namespace,
+            **extra_context,
         }
 
     return render(
         request=request,
-        template_name="web/domains/case/edit-fir.html",
+        template_name="web/domains/case/manage/edit-fir.html",
         context=context,
     )
 

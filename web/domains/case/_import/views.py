@@ -469,7 +469,11 @@ def respond_update_request(request, application_pk, update_request_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_firs(request, application_pk):
-    extra_context = {"show_firs": True}
+    extra_context = {
+        "show_firs": True,
+        "process_template": "web/domains/case/import/partials/process.html",
+        "base_template": "flow/task-manage-import.html",
+    }
     return case_views._manage_firs(
         request, application_pk, ImportApplication, "import", **extra_context
     )
@@ -490,8 +494,18 @@ def edit_fir(request, application_pk, fir_pk):
         application.importer, only_with_perms_in=["is_contact_of_importer"]
     ).filter(user_permissions__codename="importer_access")
 
+    extra_context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "base_template": "flow/task-manage-import.html",
+    }
     return case_views._edit_fir(
-        request, application_pk, fir_pk, ImportApplication, "import", importer_contacts
+        request,
+        application_pk,
+        fir_pk,
+        ImportApplication,
+        "import",
+        importer_contacts,
+        **extra_context,
     )
 
 

@@ -221,6 +221,7 @@ def management(request, pk, entity):
             form = Form(instance=application)
 
         context = {
+            "process_template": "web/domains/case/access/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
@@ -244,7 +245,7 @@ def management_response(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
 
-        task = application.get_task(AccessRequest.SUBMITTED, "request")
+        task = application.get_task(AccessRequest.SUBMITTED, "process")
 
         if request.POST:
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)
@@ -262,7 +263,12 @@ def management_response(request, pk, entity):
         else:
             form = forms.CloseAccessRequestForm(instance=application)
 
-        context = {"process": application, "task": task, "form": form}
+        context = {
+            "process_template": "web/domains/case/access/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+        }
 
     return render(
         request=request,
@@ -287,6 +293,8 @@ def manage_firs(request, application_pk):
 
     extra_context = {
         "show_firs": show_firs,
+        "process_template": "web/domains/case/access/partials/process.html",
+        "base_template": "flow/task-manage-access.html",
     }
 
     return case_views._manage_firs(
@@ -306,7 +314,13 @@ def add_fir(request, application_pk):
 def edit_fir(request, application_pk, fir_pk):
     application = get_object_or_404(AccessRequest, pk=application_pk)
     contacts = [application.submitted_by]
-    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access", contacts)
+    extra_context = {
+        "process_template": "web/domains/case/access/partials/process.html",
+        "base_template": "flow/task-manage-access.html",
+    }
+    return case_views._edit_fir(
+        request, application_pk, fir_pk, AccessRequest, "access", contacts, **extra_context
+    )
 
 
 @login_required
