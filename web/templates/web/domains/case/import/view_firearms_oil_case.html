@@ -1,43 +1,10 @@
-{% extends "layout/sidebar.html" %}
+{% extends "web/domains/case/import/view_case.html" %}
 
-
-{% block extra_header %}
-  <div class="container contextHeaderGrid">
-    {% include process_template %}
-  </div>
-{% endblock %}
-
-{% block content_actions %}
-  <div class="content-actions">
-    <ul class="menu-out flow-across">
-      <li>
-        <a href="{{ icms_url('workbasket') }}" class="prev-link">
-          Workbasket
-        </a>
-      </li>
-    </ul>
-  </div>
-{% endblock %}
 
 {% block main_content %}
-  <h4>Contact</h4>
-  <div class="container">
-    <dl>
-      <dt class="bold">Contact Name</dt>
-      <dd>{{ process.contact }}</dd>
-      <dt class="bold">Telephone(s)</dt>
-      <dd>
-        {% for phone_number in process.contact.phone_numbers.all() %}
-          {{ phone_number.get_type_display() }} - {{ phone_number.phone }}
-          {% if not loop.last %}<br />{% endif %}
-        {% else %}
-          N/A
-        {% endfor %}
-      </dd>
-      <dt class="bold">Email</dt>
-      <dd>{{ process.contact.email }}</dd>
-    </dl>
-  </div>
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
 
   <h4>Firearms and Ammunition</h4>
   <div class="container">
@@ -95,18 +62,17 @@
 
   <h4>Certificates/Documents</h4>
   <h5>Verified Firearms Authorities</h5>
-  <div class="info-box info-box-info">
-    There are no verified firearms authorities that may be used for this import.
-    Any certificates that have been verified for use will appear here.
-  </div>
+  {% with read_only=True %}
+    {% include "partial/certificates/list-verified.html" %}
+  {% endwith %}
 
   <h5>Other Certificates</h5>
-  {% with read_only = True, certificates = process.userimportcertificate_set.all() %}
+  {% with read_only = True %}
     {% include "partial/certificates/list.html" %}
   {% endwith %}
 
   <h4>Details of who bought from</h4>
-  {% with read_only = True, contacts = process.importcontact_set.all() %}
+  {% with read_only = True %}
     {% include "partial/import-contacts/list.html" %}
   {% endwith %}
 

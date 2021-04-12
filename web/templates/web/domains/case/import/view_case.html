@@ -1,0 +1,61 @@
+{% extends "layout/sidebar.html" %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include process_template %}
+  </div>
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {% block application_contact %}
+    <h4>Contact</h4>
+    {% if not process.contact %}
+      <div class="info-box info-box-info">
+        There is no contact attached.
+      </div>
+    {% else %}
+      <div class="container">
+        <dl>
+          <dt class="bold">Contact Name</dt>
+          <dd>{{ process.contact }}</dd>
+          <dt class="bold">Telephone(s)</dt>
+          <dd>
+            {% for phone_number in process.contact.phone_numbers.all() %}
+              {{ phone_number.get_type_display() }} - {{ phone_number.phone }}
+              {% if not loop.last %}<br />{% endif %}
+            {% else %}
+              N/A
+            {% endfor %}
+          </dd>
+          <dt class="bold">Email</dt>
+          <dd>{{ process.contact.email }}</dd>
+        </dl>
+      </div>
+    {% endif %}
+  {% endblock %}
+
+  <h4>Application Details</h4>
+  <div class="container">
+    <dl>
+      <dt class="bold">Applicant Reference</dt>
+      <dd>{{ process.applicant_reference or 'N/A' }}</dd>
+      <dt class="bold">Country Of Origin</dt>
+      <dd>{{ process.origin_country.name }}</dd>
+      <dt class="bold">Country Of Consignment</dt>
+      <dd>{{ process.consignment_country.name }}</dd>
+    </dl>
+  </div>
+{% endblock %}

@@ -15,6 +15,7 @@ from guardian.shortcuts import get_users_with_perms
 from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case.forms import CloseCaseForm
+from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -316,31 +317,59 @@ def archive_withdrawal(request, application_pk, withdrawal_pk):
 def view_case(request, pk):
     has_perm_importer = request.user.has_perm("web.importer_access")
     has_perm_reference_data = request.user.has_perm("web.reference_data_access")
+
     if not has_perm_importer and not has_perm_reference_data:
         raise PermissionDenied
 
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+    application = get_object_or_404(ImportApplication, pk=pk)
 
-        task = application.get_task(
-            [
-                ImportApplication.SUBMITTED,
-                ImportApplication.WITHDRAWN,
-                ImportApplication.PROCESSING,
-            ],
-            "process",
-        )
+    # first check is for case managers (who are not marked as contacts of
+    # importers), second is for people submitting applications
+    if not has_perm_reference_data and not request.user.has_perm(
+        "web.is_contact_of_importer", application.importer
+    ):
+        raise PermissionDenied
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+        return _view_firearms_oil_case(request, application.openindividuallicenceapplication)
+    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        return _view_sanctions_and_adhoc_case(request, application.sanctionsandadhocapplication)
+    else:
+        return _view_case(application)
 
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": application.application_type.get_type_description(),
-        }
-        return render(request, "web/domains/case/import/view.html", context)
+
+def _view_firearms_oil_case(request, application):
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "verified_certificates": FirearmsAuthority.objects.filter(
+            verified_certificates__in=application.verified_certificates.all()
+        ),
+        "certificates": application.userimportcertificate_set.all(),
+        "contacts": application.importcontact_set.all(),
+    }
+    return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)
+
+
+def _view_sanctions_and_adhoc_case(request, application):
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "goods": application.sanctionsandadhocapplicationgoods_set.all(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+    return render(request, "web/domains/case/import/view_sanctions_and_adhoc_case.html", context)
+
+
+def _view_case(request, application):
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+    }
+    return render(request, "web/domains/case/import/view_case.html", context)
 
 
 @login_required

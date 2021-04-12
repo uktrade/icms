@@ -36,7 +36,7 @@
     <a href="{{ icms_url('access:case-approval-respond', args=[process.access_request.exporteraccessrequest.pk, 'exporter', process.pk]) }}">Manage</a>
   {% endif %}
 
-{% elif process.process_type == "OpenIndividualLicenceApplication" %}
+{% elif process.process_type in ["OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication"] %}
   {% if process.status == "SUBMITTED" %}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>

@@ -4,14 +4,18 @@
     Any certificates that have been verified for use will appear here.
   </div>
 {% else %}
-  <div class="info-box info-box-info">
-    Please select your verified authorities. If you have a certificate that has not
-    yet been verified, you may attach it below.
-  </div>
+  {% if not read_only %}
+    <div class="info-box info-box-info">
+      Please select your verified authorities. If you have a certificate that has not
+      yet been verified, you may attach it below.
+    </div>
+  {% endif %}
   <table class="setoutList">
     <thead>
       <tr>
-        <th scope="col"></th>
+        {% if not read_only %}
+          <th scope="col"></th>
+        {% endif %}
         <th scope="col">Reference</th>
         <th scope="col">Certificate Type</th>
         <th scope="col">Issuing Constabulary</th>
@@ -19,24 +23,28 @@
         <th scope="col">Postcode</th>
         <th scope="col">Start Date</th>
         <th scope="col">End Date</th>
-        <th scope="col">Actions</th>
+        {% if not read_only %}
+          <th scope="col">Actions</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for certificate in verified_certificates %}
       <tr>
-        <td>
-          <form action="{{ icms_url(
-                           'import:firearms:toggle-verified-firearms',
-                           kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
-            {{ csrf_input }}
-            {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
-              <input type="submit" class="button small-button" value="Remove"/>
-            {% else %}
-              <input type="submit" class="button small-button" value="Select"/>
-            {% endif %}
-          </form>
-        </td>
+        {% if not read_only %}
+          <td>
+            <form action="{{ icms_url(
+                             'import:firearms:toggle-verified-firearms',
+                             kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
+              {{ csrf_input }}
+              {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
+                <input type="submit" class="button small-button" value="Remove"/>
+              {% else %}
+                <input type="submit" class="button small-button" value="Select"/>
+              {% endif %}
+            </form>
+          </td>
+        {% endif %}
         <td>{{ certificate.reference }}</td>
         <td>{{ certificate.get_certificate_type_display() }}</td>
         <td>{{ certificate.issuing_constabulary.name }}</td>
@@ -44,14 +52,16 @@
         <td>{{ certificate.postcode }}</td>
         <td>{{ certificate.start_date.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.end_date.strftime('%d-%b-%Y') }}</td>
-        <td>
-          <a
-            href="{{ icms_url(
-                       'import:firearms:view-verified-firearms',
-                       kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
-            View Details
-          </a>
-        </td>
+        {% if not read_only %}
+          <td>
+            <a
+              href="{{ icms_url(
+                         'import:firearms:view-verified-firearms',
+                         kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
+              View Details
+            </a>
+          </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
