@@ -95,3 +95,17 @@ class DerogationsForm(forms.ModelForm):
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+
+
+class SubmitDerogationsForm(forms.Form):
+    confirmation = forms.CharField(
+        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
+    )
+
+    def clean_confirmation(self):
+        confirmation = self.cleaned_data["confirmation"]
+
+        if confirmation != "I AGREE":
+            raise forms.ValidationError("Please agree to the declaration of truth.")
+
+        return confirmation
