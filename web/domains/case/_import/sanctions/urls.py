@@ -22,11 +22,6 @@ urlpatterns = [
         views.delete_supporting_document,
         name="delete-document",
     ),
-    path(
-        "validation-summary/<int:pk>/",
-        views.sanctions_validation_summary,
-        name="sanctions-validation-summary",
-    ),
     path("application-submit/<int:pk>/", views.submit_sanctions, name="submit-sanctions"),
     # Management by ILB Admin
     path(
