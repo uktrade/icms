@@ -1,0 +1,20 @@
+{% extends "model/list.html" %}
+
+{% block sidebar %}
+<ul class="menu-out">
+    <li>
+      <a href="{{ icms_url('sanction-emails:list') }}">
+        Manage Sanction Emails
+      </a>
+    </li>
+    <li>
+      <a href="{{ icms_url('sanction-emails:create')}}">
+        New Sanction Email
+      </a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block empty_message %}
+  There is no sanction emails.
+{% endblock %}

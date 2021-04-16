@@ -196,6 +196,7 @@ class Menu:
                     links=[
                         SubMenuLink(label="Commodities", view="commodity-list"),
                         SubMenuLink(label="Constabularies", view="constabulary-list"),
+                        SubMenuLink(label="Sanction Emails", view="sanction-emails:list"),
                         SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-group-list"),
                         SubMenuLink(label="Section 5 Clauses", view="section5:list"),
                         SubMenuLink(label="Product legislation", view="product-legislation-list"),

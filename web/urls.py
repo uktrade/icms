@@ -12,6 +12,7 @@ urlpatterns = [
     path("user/", include("web.domains.user.urls")),
     path("template/", include("web.domains.template.urls")),
     path("constabulary/", include("web.domains.constabulary.urls")),
+    path("sanction-emails/", include("web.domains.sanction_email.urls")),
     path("commodity/", include("web.domains.commodity.urls")),
     path("country/", include("web.domains.country.urls")),
     path("product-legislation/", include("web.domains.legislation.urls")),
