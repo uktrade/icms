@@ -11,7 +11,7 @@
         <ul class="menu-out flow-across">
             <li>
                 <a
-                        href="{{ icms_url('import:sanctions:edit-sanctions-and-adhoc-licence-application', kwargs={'pk': process.pk}) }}"
+                        href="{{ icms_url('import:sanctions:edit-application', kwargs={'pk': process.pk}) }}"
                         class="prev-link">
                     Application Details
                 </a>
@@ -46,5 +46,3 @@
 {% block task_actions %}
     <input type="submit" name="save" class="primary-button button" value="Save"/>
 {% endblock task_actions %}
-
-

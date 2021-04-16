@@ -5,31 +5,13 @@ from . import views
 app_name = "sanctions"
 
 urlpatterns = [
+    path("<int:pk>/edit/", views.edit_application, name="edit-application"),
+    path("<int:pk>/add-goods/", views.add_goods, name="add-goods"),
+    path("<int:application_pk>/goods/<int:goods_pk>/edit/", views.edit_goods, name="edit-goods"),
     path(
-        "<int:pk>/edit/",
-        views.edit_sanctions_and_adhoc_licence_application,
-        name="edit-sanctions-and-adhoc-licence-application",
+        "<int:application_pk>/goods/<int:goods_pk>/delete/", views.delete_goods, name="delete-goods"
     ),
-    path(
-        "<int:pk>/add-goods/",
-        views.add_goods,
-        name="add-goods",
-    ),
-    path(
-        "<int:application_pk>/goods/<int:goods_pk>/edit/",
-        views.edit_goods,
-        name="edit-goods",
-    ),
-    path(
-        "<int:application_pk>/goods/<int:goods_pk>/delete/",
-        views.delete_goods,
-        name="delete-goods",
-    ),
-    path(
-        "<int:pk>/add-document/",
-        views.add_supporting_document,
-        name="add-document",
-    ),
+    path("<int:pk>/add-document/", views.add_supporting_document, name="add-document"),
     path(
         "<int:application_pk>/view-supporting-document/<int:document_pk>/",
         views.view_supporting_document,
@@ -45,11 +27,7 @@ urlpatterns = [
         views.sanctions_validation_summary,
         name="sanctions-validation-summary",
     ),
-    path(
-        "application-submit/<int:pk>/",
-        views.submit_sanctions,
-        name="submit-sanctions",
-    ),
+    path("application-submit/<int:pk>/", views.submit_sanctions, name="submit-sanctions"),
     # Management by ILB Admin
     path(
         "case/sanctions/<int:pk>/sanction-emails/",

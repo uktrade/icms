@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_sanctions_and_adhoc_licence_application(request, pk):
+def edit_application(request, pk):
     with transaction.atomic():
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
@@ -37,14 +37,11 @@ def edit_sanctions_and_adhoc_licence_application(request, pk):
 
         if request.method == "POST":
             form = SanctionsAndAdhocLicenseForm(data=request.POST, instance=application)
+
             if form.is_valid():
                 form.save()
-                return redirect(
-                    reverse(
-                        "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-                        kwargs={"pk": pk},
-                    )
-                )
+
+                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
         else:
             form = SanctionsAndAdhocLicenseForm(
                 instance=application, initial={"contact": request.user}
@@ -64,11 +61,7 @@ def edit_sanctions_and_adhoc_licence_application(request, pk):
             "goods_list": goods_list,
             "supporting_documents": supporting_documents,
         }
-        return render(
-            request,
-            "web/domains/case/import/sanctions/edit_sanctions_and_adhoc_licence_application.html",
-            context,
-        )
+        return render(request, "web/domains/case/import/sanctions/edit_application.html", context)
 
 
 @login_required
@@ -89,12 +82,7 @@ def add_goods(request, pk):
                 obj = goods_form.save(commit=False)
                 obj.import_application = application
                 obj.save()
-                return redirect(
-                    reverse(
-                        "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-                        kwargs={"pk": pk},
-                    )
-                )
+                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
         else:
             goods_form = GoodsForm()
 
@@ -133,10 +121,7 @@ def edit_goods(request, application_pk, goods_pk):
                 obj.import_application = application
                 obj.save()
                 return redirect(
-                    reverse(
-                        "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-                        kwargs={"pk": application_pk},
-                    )
+                    reverse("import:sanctions:edit-application", kwargs={"pk": application_pk})
                 )
         else:
             form = GoodsForm(instance=goods)
@@ -168,12 +153,7 @@ def delete_goods(request, application_pk, goods_pk):
 
         get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk).delete()
 
-    return redirect(
-        reverse(
-            "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-            kwargs={"pk": application_pk},
-        )
-    )
+    return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": application_pk}))
 
 
 @login_required
@@ -192,12 +172,7 @@ def add_supporting_document(request, pk):
             document = request.FILES.get("document")
             if documents_form.is_valid():
                 handle_uploaded_file(document, request.user, application.supporting_documents)
-                return redirect(
-                    reverse(
-                        "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-                        kwargs={"pk": pk},
-                    )
-                )
+                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
         else:
             documents_form = SupportingDocumentForm()
 
@@ -242,12 +217,7 @@ def delete_supporting_document(request, application_pk, document_pk):
         document.is_active = False
         document.save()
 
-        return redirect(
-            reverse(
-                "import:sanctions:edit-sanctions-and-adhoc-licence-application",
-                kwargs={"pk": application_pk},
-            )
-        )
+        return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": application_pk}))
 
 
 @login_required

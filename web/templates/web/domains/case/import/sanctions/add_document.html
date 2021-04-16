@@ -11,7 +11,7 @@
         <ul class="menu-out flow-across">
             <li>
                 <a
-                        href="{{ icms_url('import:sanctions:edit-sanctions-and-adhoc-licence-application', kwargs={'pk': process.pk}) }}"
+                        href="{{ icms_url('import:sanctions:edit-application', kwargs={'pk': process.pk}) }}"
                         class="prev-link">
                     Application Details
                 </a>
@@ -48,7 +48,3 @@
   {%- endcall %}
 
 {% endblock main_content %}
-
-
-
-
