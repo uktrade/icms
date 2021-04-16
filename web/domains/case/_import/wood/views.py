@@ -253,7 +253,9 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
             page_name="Application details",
             url=reverse("import:wood:edit-quota", kwargs={"pk": pk}),
         )
-        create_page_errors(PrepareWoodQuotaForm(data=model_to_dict(application)), page_errors)
+        create_page_errors(
+            PrepareWoodQuotaForm(data=model_to_dict(application), instance=application), page_errors
+        )
         errors.add(page_errors)
 
         if request.POST:
