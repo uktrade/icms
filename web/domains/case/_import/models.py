@@ -259,11 +259,6 @@ class ImportApplication(WorkbasketBase, Process):
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/import-case.html"
 
-    def application_started(self):
-        if self.origin_country is not None and self.consignment_country is not None:
-            return True
-        return False
-
     @property
     def application_approved(self):
         return self.decision == self.APPROVE

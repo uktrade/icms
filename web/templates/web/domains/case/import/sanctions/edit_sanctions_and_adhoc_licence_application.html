@@ -29,7 +29,6 @@
 
 {% block subtasks %}
 
-    {% if process.application_started() %}
         <h4>Goods</h4>
 
         {% if goods_list %}
@@ -123,7 +122,5 @@
    {% endif %}
 
         <a class="button small-button" href="{{ icms_url('import:sanctions:add-document', kwargs={'pk': process.pk}) }}">Add Document</a>
-
-    {% endif %}
 
 {% endblock subtasks %}

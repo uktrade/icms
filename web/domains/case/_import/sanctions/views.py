@@ -35,10 +35,6 @@ def edit_sanctions_and_adhoc_licence_application(request, pk):
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        application_started = False
-        if application.origin_country is not None and application.consignment_country is not None:
-            application_started = True
-
         if request.method == "POST":
             form = SanctionsAndAdhocLicenseForm(data=request.POST, instance=application)
             if form.is_valid():
@@ -55,17 +51,17 @@ def edit_sanctions_and_adhoc_licence_application(request, pk):
             )
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
+        goods_list = SanctionsAndAdhocApplicationGoods.objects.filter(
+            import_application=application
+        )
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
-            "application_started": application_started,
-            "page_title": "Sanctions and Adhoc License Application",
-            "goods_list": SanctionsAndAdhocApplicationGoods.objects.filter(
-                import_application=application
-            ),
+            "page_title": "Sanctions and Adhoc License Application - Edit",
+            "goods_list": goods_list,
             "supporting_documents": supporting_documents,
         }
         return render(
