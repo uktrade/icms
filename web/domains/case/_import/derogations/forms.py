@@ -32,7 +32,7 @@ class DerogationsForm(forms.ModelForm):
         label="Contract Sign Date", required=True, widget=DateInput
     )
     contract_completion_date = forms.DateField(
-        label="Contract Sign Date", required=True, widget=DateInput
+        label="Contract Completion Date", required=True, widget=DateInput
     )
     explanation = forms.CharField(
         label="Provide details of why this is a pre-existing contract",
@@ -95,6 +95,10 @@ class DerogationsForm(forms.ModelForm):
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+
+
+class SupportingDocumentForm(forms.Form):
+    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
 
 
 class SubmitDerogationsForm(forms.Form):

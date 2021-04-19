@@ -1,5 +1,7 @@
 from django.db import models
 
+from web.domains.file.models import File
+
 from ..models import ImportApplication
 
 
@@ -14,3 +16,6 @@ class DerogationsApplication(ImportApplication):
     quantity = models.DecimalField(max_digits=9, decimal_places=2, null=True)
     unit = models.CharField(max_length=40, blank=False, null=True)
     value = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+
+    #  supporting documents
+    supporting_documents = models.ManyToManyField(File, related_name="+")
