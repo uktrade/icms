@@ -19,6 +19,8 @@ class OpenIndividualLicenceApplication(ImportApplication):
 
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
     section2 = models.BooleanField(verbose_name="Section 2", default=True)
+
+    # TODO ICMSLST-623 change to BooleanField(null=True)
     know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
 
 
@@ -29,6 +31,8 @@ class ConstabularyEmail(models.Model):
     STATUSES = ((OPEN, "Open"), (CLOSED, "Closed"), (DRAFT, "Draft"))
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
+
+    # TODO ICMSLST-624 link to OpenIndividualLicenceApplication instead, add a related_name
     application = models.ForeignKey(
         ImportApplication, on_delete=models.PROTECT, blank=False, null=False
     )
@@ -72,6 +76,7 @@ class UserImportCertificate(models.Model):
 
 
 class VerifiedCertificate(models.Model):
+    # TODO ICMSLST-624 link to OpenIndividualLicenceApplication instead
     import_application = models.ForeignKey(
         ImportApplication, on_delete=models.PROTECT, related_name="verified_certificates"
     )

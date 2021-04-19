@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.forms.models import model_to_dict
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
@@ -22,6 +24,12 @@ from web.domains.file.views import handle_uploaded_file
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import email
+from web.utils.validation import (
+    ApplicationErrors,
+    FieldError,
+    PageErrors,
+    create_page_errors,
+)
 
 from .. import views as import_views
 from .models import (
@@ -61,7 +69,7 @@ def edit_oil(request, pk):
             "process": application,
             "task": task,
             "form": form,
-            "page_title": "Open Individual Import Licence",
+            "page_title": "Open Individual Import Licence - Edit",
         }
 
         return render(request, "web/domains/case/import/firearms/oil/edit.html", context)
@@ -346,7 +354,7 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def validate_oil(request, pk):
+def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
@@ -357,55 +365,55 @@ def validate_oil(request, pk):
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        know_bought_from = application.know_bought_from is not None
-        if know_bought_from == OpenIndividualLicenceApplication.YES:
-            know_bought_from = application.importcontact_set.exists()
+        errors = ApplicationErrors()
 
-        certificates = (
+        page_errors = PageErrors(
+            page_name="Application details",
+            url=reverse("import:firearms:edit-oil", kwargs={"pk": pk}),
+        )
+        create_page_errors(
+            PrepareOILForm(data=model_to_dict(application), instance=application), page_errors
+        )
+        errors.add(page_errors)
+
+        has_certificates = (
             application.userimportcertificate_set.exists()
             or application.verified_certificates.exists()
         )
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": "Open Individual Import Licence - Validation",
-            "certificates": certificates,
-            "know_bought_from": know_bought_from,
-        }
 
-        return render(request, "web/domains/case/import/firearms/oil/validation.html", context)
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit_oil(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        know_bought_from = application.know_bought_from is not None
-        if know_bought_from == OpenIndividualLicenceApplication.YES:
-            know_bought_from = application.importcontact_set.exists()
-        certificates = (
-            application.userimportcertificate_set.exists()
-            or application.verified_certificates.exists()
-        )
-        if not application.commodity_group or not know_bought_from or not certificates:
-            return redirect(
-                reverse("import:firearms:oil-validation", kwargs={"pk": application.pk})
+        if not has_certificates:
+            page_errors = PageErrors(
+                page_name="Certificates",
+                url=reverse("import:firearms:list-user-import-certificates", kwargs={"pk": pk}),
             )
+
+            page_errors.add(
+                FieldError(
+                    field_name="Certificate", messages=["At least one certificate must be added"]
+                )
+            )
+
+            errors.add(page_errors)
+
+        # TODO ICMSLST-623 this will need adapting when this field becomes a nullable boolean
+        if (
+            application.know_bought_from == OpenIndividualLicenceApplication.YES
+        ) and not application.importcontact_set.exists():
+            page_errors = PageErrors(
+                page_name="Details of who bought from",
+                url=reverse("import:firearms:list-import-contacts", kwargs={"pk": pk}),
+            )
+
+            page_errors.add(
+                FieldError(field_name="Person", messages=["At least one person must be added"])
+            )
+
+            errors.add(page_errors)
 
         if request.POST:
             form = SubmitOILForm(data=request.POST)
 
-            if form.is_valid():
+            if form.is_valid() and not errors.has_errors():
                 application.status = ImportApplication.SUBMITTED
                 application.submit_datetime = timezone.now()
                 template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
@@ -449,6 +457,7 @@ def submit_oil(request, pk):
             "page_title": "Open Individual Import Licence - Submit Application",
             "form": form,
             "declaration": declaration,
+            "errors": errors if errors.has_errors() else None,
         }
 
         return render(request, "web/domains/case/import/firearms/oil/submit.html", context)

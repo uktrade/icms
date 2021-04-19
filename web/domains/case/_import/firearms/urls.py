@@ -6,7 +6,6 @@ app_name = "firearms"
 urlpatterns = [
     # Firearms and Ammunition - Open Individual Licence
     path("oil/<int:pk>/edit/", views.edit_oil, name="edit-oil"),
-    path("oil/<int:pk>/validation/", views.validate_oil, name="oil-validation"),
     path("oil/<int:pk>/submit/", views.submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Management by ILB Admin
     path(

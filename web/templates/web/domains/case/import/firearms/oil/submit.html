@@ -9,6 +9,15 @@
 
 
 {% block main_content %}
+
+  {% if errors %}
+    <h3>Error</h3>
+
+    <p>Please resolve the errors below before submitting the application.</p>
+
+    {% include "web/utils/validation.html" %}
+  {% else %}
+
   <h3>Declaration of Truth</h3>
   <div class="info-box info-box-warning">
     DIT does not accept responsibility for loss or expense which might arise from refusal of
@@ -26,7 +35,7 @@
     {{ declaration.template_content }}
   </p>
 
-  <form method="post" action="" class="form-inline">
+  <form method="post" action="" class="form-inline" novalidate>
     {{ csrf_input }}
     {{ fields.field(form.confirmation, padding='one', input_cols='one', label_cols='six') }}
 
@@ -47,5 +56,7 @@
 
 
   </form>
+
+  {% endif %}
 
 {% endblock %}

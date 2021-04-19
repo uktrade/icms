@@ -1,22 +1,24 @@
 <ul>
     {% for page_errors in errors.page_errors %}
-      <li>
-        {% if page_errors.url %}
-          <a href="{{ page_errors.url }}">{{ page_errors.page_name}}</a>
-        {% else %}
-          {{ page_errors.page_name}}
-        {% endif %}
-      </li>
-      <ul>
-        {% for field_error in page_errors.errors %}
-            <li>{{ field_error.field_name }}</li>
+      {% if page_errors.has_errors() %}
+        <li>
+          {% if page_errors.url %}
+            <a href="{{ page_errors.url }}">{{ page_errors.page_name}}</a>
+          {% else %}
+            {{ page_errors.page_name}}
+          {% endif %}
+        </li>
+        <ul>
+          {% for field_error in page_errors.errors %}
+              <li>{{ field_error.field_name }}</li>
 
-            <ul>
-                {% for message in field_error.messages %}
-                    <li class="error-message">{{ message }}</li>
-                {% endfor %}
-              </ul>
-        {% endfor %}
-      </ul>
+              <ul>
+                  {% for message in field_error.messages %}
+                      <li class="error-message">{{ message }}</li>
+                  {% endfor %}
+                </ul>
+          {% endfor %}
+        </ul>
+      {% endif %}
     {% endfor %}
 </ul>
