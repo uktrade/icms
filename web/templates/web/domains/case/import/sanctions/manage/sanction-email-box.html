@@ -1,0 +1,160 @@
+<fieldset>
+  <legend class="bold">Sanction Email</legend>
+
+  {% if object.is_draft %}
+    <a
+      class="button small-button"
+      href="{{ icms_url('import:sanctions:edit-sanction-email', args=[process.pk, object.pk]) }}">
+      Edit/Send
+    </a>
+    <form
+      method="post"
+      action="{{ icms_url('import:sanctions:delete-sanction-email', args=[process.pk, object.pk]) }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button">
+        Delete
+      </button>
+    </form>
+  {% else %}
+    <a
+      class="button small-button"
+      href="{{ icms_url('import:sanctions:add-response-sanction-email', args=[process.pk, object.pk]) }}">
+      Record Response
+    </a>
+  {% endif %}
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Status
+      </label>
+    </div>
+    <div class="six columns">
+      <div class="status {{ object.status }}">
+        <div>
+          <span class="text-widget">{{ object.status }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        To
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.to }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Cc
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.cc_address_list }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Subject
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.subject }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Attachments
+      </label>
+    </div>
+    <div class="six columns">
+      {% with attachments = object.attachments.all() %}
+        {% if not attachments %}
+          There is no document attached to this email.
+        {% else %}
+          <table class="setoutList">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for attachment in attachments %}
+                <tr>
+                  <td>
+                    <a
+                      href="{{ icms_url('import:sanctions:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': attachment.pk}) }}">
+                      {{ attachment.filename }}
+                    </a>
+                    {{ attachment.human_readable_file_size() }}
+                  </td>
+                  <td>
+                    Supporting Document
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      {% endwith %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Body
+      </label>
+    </div>
+    <div class="six columns">
+      {{ object.body|nl2br }}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Sent Date
+      </label>
+    </div>
+    <div class="six columns">
+      {% if object.sent_datetime %}
+        {{ object.sent_datetime.strftime("%d-%b-%Y") }}
+      {% endif %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Response Date
+      </label>
+    </div>
+    <div class="six columns">
+      {% if object.closed_datetime %}
+        {{ object.closed_datetime.strftime("%d-%b-%Y") }}
+      {% endif %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+</fieldset>

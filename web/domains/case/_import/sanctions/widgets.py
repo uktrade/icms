@@ -2,7 +2,7 @@ from django.forms.widgets import CheckboxSelectMultiple
 
 
 class CheckboxSelectMultipleTable(CheckboxSelectMultiple):
-    template_name = "forms/widgets/firearms/checkbox_select_table.html"
+    template_name = "forms/widgets/sanctions/checkbox_select_table.html"
     option_template_name = "django/forms/widgets/input.html"
 
     def get_context(self, name, value, attrs):

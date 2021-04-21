@@ -699,6 +699,37 @@ Yours sincerely,
         template_title="ICMS Licence [[LICENCE_NUMBER]] Revoked",
         template_content="Licence [[LICENCE_NUMBER]] has been revoked. Email enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
     )
+    # TODO: template extracted from the test system not from the db as missing
+    # search IMA_SANCTION_EMAIL to see usage
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Sanction email",
+        template_code="IMA_SANCTION_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="Import Sanctions and Adhoc Licence",
+        template_content="""
+Dear Colleagues
+
+We have received an import licence application from:
+[[IMPORTER_NAME]]
+[[IMPORTER_ADDRESS]]
+ 
+The application is for the following:
+
+[[GOODS_DESCRIPTION]]
+
+Thanks and best regards 
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]
+""",
+    )
+
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None

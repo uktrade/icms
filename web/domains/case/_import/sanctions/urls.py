@@ -25,8 +25,28 @@ urlpatterns = [
     path("application-submit/<int:pk>/", views.submit_sanctions, name="submit-sanctions"),
     # Management by ILB Admin
     path(
-        "case/sanctions/<int:pk>/sanction-emails/",
+        "case/<int:pk>/sanction-emails/",
         views.manage_sanction_emails,
         name="manage-sanction-emails",
+    ),
+    path(
+        "case/<int:pk>/sanction-emails/create/",
+        views.create_sanction_email,
+        name="create-sanction-email",
+    ),
+    path(
+        "case/<int:application_pk>/sanction-emails/edit/<int:sanction_email_pk>/",
+        views.edit_sanction_email,
+        name="edit-sanction-email",
+    ),
+    path(
+        "case/<int:application_pk>/sanction-emails/delete/<int:sanction_email_pk>/",
+        views.delete_sanction_email,
+        name="delete-sanction-email",
+    ),
+    path(
+        "case/<int:application_pk>/sanction-emails/edit/<int:sanction_email_pk>/response/",
+        views.add_response_sanction_email,
+        name="add-response-sanction-email",
     ),
 ]

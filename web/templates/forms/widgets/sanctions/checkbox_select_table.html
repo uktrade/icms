@@ -1,0 +1,34 @@
+<table id="{{ widget.attrs.id}}" class="setoutList">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>File</th>
+      <th>Type  </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for _, options, index in widget.optgroups %}
+      {% for widget in options %}
+        {% with file = qs[index] %}
+          <tr>
+            <td>
+              {% include widget.template_name %}
+            </td>
+            <td>
+              <a
+                href="{{ icms_url(
+                            'import:sanctions:view-supporting-document',
+                            args=[process.pk, file.pk]) }}">
+                {{ file.filename }}
+              </a>
+              <span class="filesize">{{ file.human_readable_file_size() }}</span>
+            </td>
+            <td>
+              Supporting Document
+            </td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
