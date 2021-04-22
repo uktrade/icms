@@ -1,7 +1,7 @@
-from django.forms.widgets import DateInput
+import django.forms.widgets as widgets
 
 
-class DateInput(DateInput):
+class DateInput(widgets.DateInput):
     template_name = "forms/widgets/date.html"
 
 

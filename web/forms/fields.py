@@ -1,8 +1,8 @@
-from phonenumber_field.formfields import PhoneNumberField
+import phonenumber_field.formfields
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 
 
-class PhoneNumberField(PhoneNumberField):
+class PhoneNumberField(phonenumber_field.formfields.PhoneNumberField):
     widget = PhoneNumberInternationalFallbackWidget
     max_length = 60
     help_text = "Customary input formats:\n\
