@@ -206,7 +206,7 @@ def add_supporting_document(request, pk):
 @login_required
 def view_supporting_document(request, application_pk, document_pk):
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
-    return import_views._view_file(
+    return import_views.view_file(
         request, application, application.supporting_documents, document_pk
     )
 

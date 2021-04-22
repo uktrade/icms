@@ -7,6 +7,28 @@ from web.domains.firearms.models import FirearmsAuthority
 from ..models import ImportApplication
 
 
+class UserImportCertificate(File):
+    """User imported certificates."""
+
+    class CertificateType(models.TextChoices):
+        firearms = ("firearms", "Firearms Certificate")
+        registered = ("registered", "Registered Firearms Dealer Certificate")
+        shotgun = ("shotgun", "Shotgun Certificate")
+
+        @classmethod
+        def registered_as_choice(cls):
+            return (cls.registered.value, cls.registered.label)
+
+    reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
+    certificate_type = models.CharField(
+        verbose_name="Certificate Type", choices=CertificateType.choices, max_length=200
+    )
+    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT)
+    date_issued = models.DateField(verbose_name="Date Issued")
+    expiry_date = models.DateField(verbose_name="Expiry Date")
+    updated_datetime = models.DateTimeField(auto_now=True)
+
+
 class OpenIndividualLicenceApplication(ImportApplication):
     PROCESS_TYPE = "OpenIndividualLicenceApplication"
 
@@ -22,6 +44,9 @@ class OpenIndividualLicenceApplication(ImportApplication):
 
     # TODO ICMSLST-623 change to BooleanField(null=True)
     know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
+    user_imported_certificates = models.ManyToManyField(
+        UserImportCertificate, related_name="import_application"
+    )
 
     commodity_code = models.CharField(max_length=40, blank=False, null=True)
 
@@ -54,34 +79,6 @@ class ConstabularyEmail(models.Model):
     @property
     def is_draft(self):
         return self.status == self.DRAFT
-
-
-class UserImportCertificate(models.Model):
-    REGISTERED_KEY = "registered"
-    REGISTERED_TEXT = "Registered Firearms Dealer Certificate"
-    REGISTERED = (REGISTERED_KEY, REGISTERED_TEXT)
-    CERTIFICATE_TYPE = (
-        ("firearms", "Firearms Certificate"),
-        REGISTERED,
-        ("shotgun", "Shotgun Certificate"),
-    )
-
-    import_application = models.ForeignKey(
-        OpenIndividualLicenceApplication,
-        on_delete=models.PROTECT,
-        related_name="user_imported_certificates",
-    )
-    reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
-    certificate_type = models.CharField(
-        verbose_name="Certificate Type", choices=CERTIFICATE_TYPE, max_length=200
-    )
-    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT)
-    date_issued = models.DateField(verbose_name="Date Issued")
-    expiry_date = models.DateField(verbose_name="Expiry Date")
-    files = models.ManyToManyField(File)
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
 
 
 class VerifiedCertificate(models.Model):

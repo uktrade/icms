@@ -55,14 +55,14 @@ urlpatterns = [
         name="edit-user-import-certificate",
     ),
     path(
-        "oil/<int:application_pk>/certificates/<int:certificate_pk>/files/<int:file_pk>/archive/",
-        views.archive_user_import_certificate_file,
-        name="archive-user-import-certificate-file",
+        "oil/<int:application_pk>/certificates/<int:certificate_pk>/view/",
+        views.view_user_import_certificate_file,
+        name="view-user-import-certificate-file",
     ),
     path(
-        "oil/<int:application_pk>/certificates/<int:certificate_pk>/files/<int:file_pk>/view/",
-        views.view_user_certificate_file,
-        name="view-user-certificate-file",
+        "oil/<int:application_pk>/certificates/<int:certificate_pk>/delete/",
+        views.delete_user_import_certificate,
+        name="delete-user-import-certificate",
     ),
     # Firearms and Ammunition - Verified Certificates
     path(

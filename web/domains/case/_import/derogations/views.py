@@ -97,7 +97,7 @@ def view_supporting_document(
 ) -> HttpResponse:
     application = get_object_or_404(DerogationsApplication, pk=application_pk)
 
-    return import_views._view_file(
+    return import_views.view_file(
         request, application, application.supporting_documents, document_pk
     )
 

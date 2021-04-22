@@ -15,9 +15,14 @@ class Migration(migrations.Migration):
             name="UserImportCertificate",
             fields=[
                 (
-                    "id",
-                    models.AutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    "file_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.file",
                     ),
                 ),
                 (
@@ -38,7 +43,6 @@ class Migration(migrations.Migration):
                 ),
                 ("date_issued", models.DateField(verbose_name="Date Issued")),
                 ("expiry_date", models.DateField(verbose_name="Expiry Date")),
-                ("created_datetime", models.DateTimeField(auto_now_add=True)),
                 ("updated_datetime", models.DateTimeField(auto_now=True)),
                 (
                     "constabulary",
@@ -46,15 +50,14 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT, to="web.constabulary"
                     ),
                 ),
-                ("files", models.ManyToManyField(to="web.File")),
-                (
-                    "import_application",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT,
-                        related_name="user_imported_certificates",
-                        to="web.openindividuallicenceapplication",
-                    ),
-                ),
             ],
+            bases=("web.file",),
+        ),
+        migrations.AddField(
+            model_name="openindividuallicenceapplication",
+            name="user_imported_certificates",
+            field=models.ManyToManyField(
+                related_name="import_application", to="web.UserImportCertificate"
+            ),
         ),
     ]

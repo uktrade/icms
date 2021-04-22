@@ -68,7 +68,9 @@ class PrepareOILForm(forms.ModelForm):
 
 class UserImportCertificateForm(forms.ModelForm):
     document = forms.FileField(required=True, widget=forms.ClearableFileInput())
-    certificate_type = forms.ChoiceField(choices=(models.UserImportCertificate.REGISTERED,))
+    certificate_type = forms.ChoiceField(
+        choices=(models.UserImportCertificate.CertificateType.registered_as_choice(),)
+    )
 
     class Meta:
         model = models.UserImportCertificate
@@ -84,7 +86,7 @@ class UserImportCertificateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.pk and self.instance.files.active().exists():
+        if self.instance.pk and self.instance.is_active:
             self.fields["document"].required = False
 
     def clean(self):

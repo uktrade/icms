@@ -2,42 +2,36 @@
 
 
 {% block main_content %}
-  {{ super() }}
 
-      {% if certificate.files.exists() %}
-          <table class="setoutList">
-            <thead>
-              <tr>
-                <th scope="col">File</th>
-                <th scope="col">Created By</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-            {% for document in certificate.files.active() %}
-              <tr>
-                <td>
-                  {{ document.filename }}<br />
-                  <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
-                </td>
-                <td>
-                  {{ document.created_by }}<br />
-                  <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
-                </td>
-                <td>
-                  <form method="post"
-                        action={{ icms_url(
-                                    'import:firearms:archive-user-import-certificate-file',
-                                    kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk, 'file_pk': document.pk}) }}>
-                    {{ csrf_input }}
-                    <button type="submit" class="button link-button-no-padding">Delete</button>
-                  </form>
-                </td>
-              </tr>
-            {% endfor %}
-            </tbody>
-          </table>
-          {% endif %}
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">Filename</label>
+    </div>
+    <div class="six columns">
+      <p>{{ form.instance.filename }}</p>
+    </div>
+    <div class="three columns"></div>
+  </div>
 
+   {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {% for field in form %}
+      {% if field.name != "document" %}
+        {{fields.field(field)}}
+      {% endif %}
+    {% endfor %}
 
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input type="submit" name="action" class="primary-button button" value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  {%- endcall %}
 {% endblock %}

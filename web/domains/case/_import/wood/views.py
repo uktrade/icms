@@ -101,7 +101,8 @@ def add_supporting_document(request, pk):
 @login_required
 def view_supporting_document(request, application_pk, document_pk):
     application = get_object_or_404(WoodQuotaApplication, pk=application_pk)
-    return import_views._view_file(
+
+    return import_views.view_file(
         request, application, application.supporting_documents, document_pk
     )
 
@@ -173,9 +174,7 @@ def add_contract_document(request, pk):
 def view_contract_document(request, application_pk, document_pk):
     application = get_object_or_404(WoodQuotaApplication, pk=application_pk)
 
-    return import_views._view_file(
-        request, application, application.contract_documents, document_pk
-    )
+    return import_views.view_file(request, application, application.contract_documents, document_pk)
 
 
 @require_POST

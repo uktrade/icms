@@ -12,7 +12,7 @@
         <th scope="col">Constabulary</th>
         <th scope="col">Date Issued</th>
         <th scope="col">Expiry Date</th>
-        <th scope="col">Files</th>
+        <th scope="col">File (size)</th>
         {% if not read_only %}
           <th scope="col">Actions</th>
         {% endif %}
@@ -27,19 +27,27 @@
         <td>{{ certificate.date_issued.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
         <td>
-          {% for document in certificate.files.filter(is_active=True) %}
-            {{ document.path or document.error_message }}
+          {% if not certificate.error_message %}
+            <a
+              href="{{ icms_url('import:firearms:view-user-import-certificate-file', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
+              {{ certificate.filename }}
+            </a> {{ certificate.human_readable_file_size() }}
           {% else %}
-            N/A
-          {% endfor %}
+            {{ certificate.error_message }}
+          {% endif %}
         </td>
         {% if not read_only %}
           <td>
-            <a
-              href="{{ icms_url('import:firearms:edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
-              class="button small-button icon-pencil">
-              Edit
-            </a>
+            <form method="post"
+               action="{{ icms_url('import:firearms:delete-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
+             {{ csrf_input }}
+             <button type="submit" class="link-button icon-bin button">Delete</button>
+            </form>
+            <p>
+              <a href="{{ icms_url('import:firearms:edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+                 class="link-button icon-pencil button">
+                Edit</a>
+            </p>
           </td>
         {% endif %}
       </tr>

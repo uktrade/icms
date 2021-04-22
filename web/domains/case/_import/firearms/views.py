@@ -42,7 +42,7 @@ from .models import (
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_oil(request, pk):
+def edit_oil(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
@@ -77,7 +77,7 @@ def edit_oil(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def list_user_import_certificates(request, pk):
+def list_user_import_certificates(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
@@ -92,7 +92,7 @@ def list_user_import_certificates(request, pk):
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
-            "certificates": application.user_imported_certificates.all(),
+            "certificates": application.user_imported_certificates.active(),
             "verified_certificates": application.importer.firearms_authorities.active(),
             "page_title": "Open Individual Import Licence - Certificates",
         }
@@ -102,9 +102,9 @@ def list_user_import_certificates(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_user_import_certificate(request, pk):
+def create_user_import_certificate(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
 
@@ -118,16 +118,21 @@ def create_user_import_certificate(request, pk):
             document = request.FILES.get("document")
 
             if form.is_valid():
-                certificate = form.save(commit=False)
-                certificate.import_application = application
-                certificate.save()
-                handle_uploaded_file(document, request.user, certificate.files)
+                extra_args = {
+                    field: value
+                    for (field, value) in form.cleaned_data.items()
+                    if field not in ["document"]
+                }
+
+                handle_uploaded_file(
+                    document,
+                    request.user,
+                    application.user_imported_certificates,
+                    extra_args=extra_args,
+                )
 
                 return redirect(
-                    reverse(
-                        "import:firearms:edit-user-import-certificate",
-                        kwargs={"application_pk": pk, "certificate_pk": certificate.pk},
-                    )
+                    reverse("import:firearms:list-user-import-certificates", kwargs={"pk": pk})
                 )
         else:
             form = UserImportCertificateForm()
@@ -145,7 +150,9 @@ def create_user_import_certificate(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_user_import_certificate(request, application_pk, certificate_pk):
+def edit_user_import_certificate(
+    request: HttpRequest, application_pk: int, certificate_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
@@ -161,15 +168,12 @@ def edit_user_import_certificate(request, application_pk, certificate_pk):
             form = UserImportCertificateForm(data=request.POST, instance=certificate)
 
             if form.is_valid():
-                certificate = form.save()
-                document = request.FILES.get("document")
-                if document:
-                    handle_uploaded_file(document, request.user, certificate.files)
+                form.save()
 
                 return redirect(
                     reverse(
-                        "import:firearms:edit-user-import-certificate",
-                        kwargs={"application_pk": application_pk, "certificate_pk": certificate_pk},
+                        "import:firearms:list-user-import-certificates",
+                        kwargs={"pk": application_pk},
                     )
                 )
 
@@ -188,29 +192,42 @@ def edit_user_import_certificate(request, application_pk, certificate_pk):
         return render(request, "web/domains/case/import/firearms/certificates/edit.html", context)
 
 
+@require_GET
+@login_required
+def view_user_import_certificate_file(
+    request: HttpRequest, application_pk: int, certificate_pk: int
+) -> HttpResponse:
+    application: OpenIndividualLicenceApplication = get_object_or_404(
+        OpenIndividualLicenceApplication, pk=application_pk
+    )
+    get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
+
+    return import_views.view_file(
+        request, application, application.user_imported_certificates, certificate_pk
+    )
+
+
+@require_POST
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-@require_POST
-def archive_user_import_certificate_file(request, application_pk, certificate_pk, file_pk):
+def delete_user_import_certificate(
+    request: HttpRequest, application_pk: int, certificate_pk: int
+) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(OpenIndividualLicenceApplication.IN_PROGRESS, "prepare")
-        certificate = get_object_or_404(UserImportCertificate, pk=certificate_pk)
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        document = certificate.files.get(pk=file_pk)
+        document = application.user_imported_certificates.get(pk=certificate_pk)
         document.is_active = False
         document.save()
 
         return redirect(
-            reverse(
-                "import:firearms:edit-user-import-certificate",
-                kwargs={"application_pk": application_pk, "certificate_pk": certificate_pk},
-            )
+            reverse("import:firearms:list-user-import-certificates", kwargs={"pk": application_pk})
         )
 
 
@@ -320,10 +337,7 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
             form = Form(data=request.POST, instance=person)
 
             if form.is_valid():
-                certificate = form.save()
-                document = request.FILES.get("document")
-                if document:
-                    handle_uploaded_file(document, request.user, certificate.files)
+                form.save()
 
                 return redirect(
                     reverse(
@@ -766,21 +780,12 @@ def add_response_constabulary_email(request, application_pk, constabulary_email_
 
 @require_GET
 @login_required
-def view_user_certificate_file(request, application_pk, certificate_pk, file_pk):
-    application = get_object_or_404(OpenIndividualLicenceApplication, pk=application_pk)
-    certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
-
-    return import_views._view_file(request, application, certificate.files, file_pk)
-
-
-@require_GET
-@login_required
 def view_verified_certificate_file(request, application_pk, authority_pk, file_pk):
     application = get_object_or_404(OpenIndividualLicenceApplication, pk=application_pk)
     certificate = get_object_or_404(
         VerifiedCertificate, import_application=application, firearms_authority__pk=authority_pk
     )
 
-    return import_views._view_file(
+    return import_views.view_file(
         request, application, certificate.firearms_authority.files, file_pk
     )
