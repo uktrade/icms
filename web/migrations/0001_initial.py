@@ -397,11 +397,8 @@ class Migration(migrations.Migration):
                 ("is_active", models.BooleanField(default=True)),
                 ("filename", models.CharField(max_length=300, null=True)),
                 ("content_type", models.CharField(max_length=100, null=True)),
-                ("browser_content_type", models.CharField(max_length=100, null=True)),
-                ("description", models.CharField(blank=True, max_length=300, null=True)),
                 ("file_size", models.IntegerField(null=True)),
                 ("path", models.CharField(blank=True, max_length=4000, null=True)),
-                ("error_message", models.CharField(blank=True, max_length=4000, null=True)),
                 ("created_datetime", models.DateTimeField(auto_now_add=True, null=True)),
                 (
                     "created_by",

@@ -8,6 +8,7 @@ from web.domains.case._import.models import ImportContact
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
+from web.domains.file.utils import ICMSFileField
 from web.domains.firearms.widgets import CheckboxSelectMultipleTable
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
@@ -74,7 +75,8 @@ class PrepareOILForm(forms.ModelForm):
 
 
 class UserImportCertificateForm(forms.ModelForm):
-    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+    document = ICMSFileField(required=True)
+
     certificate_type = forms.ChoiceField(
         choices=(models.UserImportCertificate.CertificateType.registered_as_choice(),)
     )

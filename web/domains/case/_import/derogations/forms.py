@@ -2,6 +2,7 @@ from django import forms
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.country.models import Country
+from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
 
@@ -98,7 +99,7 @@ class DerogationsForm(forms.ModelForm):
 
 
 class SupportingDocumentForm(forms.Form):
-    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+    document = ICMSFileField(required=True)
 
 
 class SubmitDerogationsForm(forms.Form):

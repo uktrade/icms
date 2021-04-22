@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
-from web.domains.file.views import handle_uploaded_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
@@ -46,8 +46,6 @@ def edit_wood_quota(request, pk):
         else:
             form = PrepareWoodQuotaForm(instance=application, initial={"contact": request.user})
 
-        # TODO: after ICMSLST-602 is done, we'll know whether we need to filter
-        # by error_message being None or not
         supporting_documents = application.supporting_documents.filter(is_active=True)
         contract_documents = application.contract_documents.filter(is_active=True)
 
@@ -80,7 +78,7 @@ def add_supporting_document(request, pk):
             document = request.FILES.get("document")
 
             if form.is_valid():
-                handle_uploaded_file(document, request.user, application.supporting_documents)
+                create_file_model(document, request.user, application.supporting_documents)
 
                 return redirect(reverse("import:wood:edit-quota", kwargs={"pk": pk}))
         else:
@@ -144,7 +142,7 @@ def add_contract_document(request, pk):
             document = request.FILES.get("document")
 
             if form.is_valid():
-                handle_uploaded_file(
+                create_file_model(
                     document,
                     request.user,
                     application.contract_documents,

@@ -8,13 +8,13 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
-from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case._import.models import ImportApplication
-from web.domains.file.views import handle_uploaded_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import email
+from web.utils.s3 import get_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .. import views as import_views
@@ -183,7 +183,7 @@ def add_supporting_document(request, pk):
             documents_form = SupportingDocumentForm(request.POST, request.FILES)
             document = request.FILES.get("document")
             if documents_form.is_valid():
-                handle_uploaded_file(document, request.user, application.supporting_documents)
+                create_file_model(document, request.user, application.supporting_documents)
                 return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
         else:
             documents_form = SupportingDocumentForm()
@@ -384,13 +384,11 @@ def edit_sanction_email(
 
                 if "send" in request.POST:
                     attachments = []
-                    client = s3_client()
+                    s3_client = get_s3_client()
+
                     for document in sanction_email.attachments.all():
-                        s3_file = client.get_object(
-                            Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path
-                        )
-                        s3_file_content = s3_file["Body"].read()
-                        attachments.append((document.filename, s3_file_content))
+                        file_content = get_file_from_s3(document.path, client=s3_client)
+                        attachments.append((document.filename, file_content))
 
                     email.send_email(
                         sanction_email.subject,

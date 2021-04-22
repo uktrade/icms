@@ -73,6 +73,8 @@ class ObsoleteCalibreForm(ModelForm):
 
 class FirearmsAuthorityForm(ModelForm):
     postcode = CharField()
+
+    # TODO: change UI to use single-file uploads and use ICMSFileField
     files = FileField(
         required=False,
         label="Documents",

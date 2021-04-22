@@ -12,6 +12,8 @@ from web.forms.widgets import DateInput
 
 class Section5AuthorityForm(forms.ModelForm):
     postcode = forms.CharField()
+
+    # TODO: change UI to use single-file uploads and use ICMSFileField
     files = forms.FileField(
         required=False,
         label="Documents",

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "compressor",
     "phonenumber_field",
     "guardian",
+    "django_chunk_upload_handlers",
     "django_filters",
     "django_select2",
     "django.forms",
@@ -156,24 +157,24 @@ Field.default_error_messages = {
     "required": "You must enter this item",
 }
 
-# Upload to S3
-# TODO: prefix this settings with CHUNK_UPLOADER_ when upstream library is pushed to registry
+# for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
+AWS_REGION = "eu-west-2"
 AWS_ACCESS_KEY_ID = "dev"
 AWS_SECRET_ACCESS_KEY = "bar"
-S3_APPEND_DATETIME_ON_UPLOAD = True
-# AWS_REGION = 'us-west-2'
 AWS_STORAGE_BUCKET_NAME = "icms.local"
 AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
-S3_GENERATE_OBJECT_KEY_FUNCTION = "web.utils.s3upload.random_file_name"
-S3_DOCUMENT_ROOT_DIRECTORY = "documents"
-# END TODO
+S3_ROOT_DIRECTORY = "documents"
 
-FILE_UPLOAD_HANDLERS = ("s3chunkuploader.file_handler.S3FileUploadHandler",)
+# Order is important
+FILE_UPLOAD_HANDLERS = (
+    "django_chunk_upload_handlers.clam_av.ClamAVFileUploadHandler",
+    "django_chunk_upload_handlers.s3.S3FileUploadHandler",
+)
 
 # Anti virus settings
 CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", "test")
 CLAM_AV_PASSWORD = env.str("CLAM_AV_PASSWORD", "")
-CLAM_AV_URL = env.str("CLAM_AV_URL", "https://clamav.london.cloudapps.digital/v2/scan")
+CLAM_AV_DOMAIN = env.str("CLAM_AV_DOMAIN", "clamav.london.cloudapps.digital")
 
 # Storage Folders
 PATH_STORAGE_FIR = "/documents/fir/"  # start with /

@@ -14,7 +14,6 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
-from s3chunkuploader.file_handler import s3_client
 
 from web.domains.case.forms import CloseCaseForm
 from web.domains.firearms.models import FirearmsAuthority
@@ -22,6 +21,7 @@ from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
+from web.utils.s3 import get_file_from_s3
 
 from .. import views as case_views
 from . import forms
@@ -954,13 +954,9 @@ def view_file(request, application, related_file_model, file_pk):
         raise PermissionDenied
 
     document = related_file_model.get(pk=file_pk)
+    file_content = get_file_from_s3(document.path)
 
-    client = s3_client()
-
-    s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=document.path)
-    s3_file_content = s3_file["Body"].read()
-
-    response = HttpResponse(content=s3_file_content, content_type=document.content_type)
+    response = HttpResponse(content=file_content, content_type=document.content_type)
     response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
 
     return response

@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.file.views import handle_uploaded_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import notify
@@ -76,7 +76,7 @@ def _edit_note(
             if note_form.is_valid():
                 note_form.save()
                 for f in files:
-                    handle_uploaded_file(f, request.user, note.files)
+                    create_file_model(f, request.user, note.files)
                 return redirect(
                     reverse(
                         f"{url_namespace}:edit-note",
@@ -272,7 +272,7 @@ def _edit_fir(
             if form.is_valid():
                 fir = form.save()
                 for f in files:
-                    handle_uploaded_file(f, request.user, fir.files)
+                    create_file_model(f, request.user, fir.files)
 
                 if "send" in form.data:
                     fir.status = FurtherInformationRequest.OPEN
@@ -437,7 +437,7 @@ def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
             if form.is_valid():
                 fir = form.save()
                 for f in files:
-                    handle_uploaded_file(f, request.user, fir.files)
+                    create_file_model(f, request.user, fir.files)
 
                 fir.response_datetime = timezone.now()
                 fir.status = FurtherInformationRequest.RESPONDED

@@ -298,8 +298,6 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             data=data,
         )
 
-        with open("error.html", "wb") as f:
-            f.write(response.content)
         assert response.status_code == 302
 
         assert response.url == reverse(

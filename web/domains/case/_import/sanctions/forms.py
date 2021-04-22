@@ -5,6 +5,7 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.country.models import Country
 from web.domains.file.models import File
+from web.domains.file.utils import ICMSFileField
 from web.domains.sanction_email.models import SanctionEmail
 from web.domains.user.models import User
 
@@ -84,7 +85,7 @@ class GoodsForm(forms.ModelForm):
 
 
 class SupportingDocumentForm(forms.Form):
-    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+    document = ICMSFileField(required=True)
 
 
 class SubmitSanctionsForm(forms.Form):

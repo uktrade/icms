@@ -1,5 +1,6 @@
 celery==4.4.7
 django-celery-results==1.2.1
+django-chunk-upload-handlers==0.0.7
 django-compressor==2.4
 django-environ==0.4.5
 django-filter==2.4.0
@@ -23,7 +24,6 @@ psycogreen==1.0.2
 psycopg2-binary==2.8.6
 redis==3.5.3
 requests==2.24.0
-s3chunkuploader==0.15
 sentry-sdk==0.19.2
 structlog==20.1.0
 WeasyPrint==52.4

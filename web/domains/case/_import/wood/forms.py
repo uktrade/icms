@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 
+from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
 
@@ -82,11 +83,11 @@ class PrepareWoodQuotaForm(forms.ModelForm):
 
 
 class SupportingDocumentForm(forms.Form):
-    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+    document = ICMSFileField(required=True)
 
 
 class AddContractDocumentForm(forms.Form):
-    document = forms.FileField(required=True, widget=forms.ClearableFileInput())
+    document = ICMSFileField(required=True)
 
     reference = forms.CharField(
         help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",

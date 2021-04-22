@@ -27,14 +27,10 @@
         <td>{{ certificate.date_issued.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
         <td>
-          {% if not certificate.error_message %}
             <a
               href="{{ icms_url('import:firearms:view-user-import-certificate-file', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
               {{ certificate.filename }}
             </a> {{ certificate.human_readable_file_size() }}
-          {% else %}
-            {{ certificate.error_message }}
-          {% endif %}
         </td>
         {% if not read_only %}
           <td>

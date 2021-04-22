@@ -10,7 +10,7 @@ from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
 from web.address.address import find as postcode_lookup
 from web.company.companieshouse import api_get_companies
-from web.domains.file.views import handle_uploaded_file
+from web.domains.file.utils import create_file_model
 from web.domains.importer.forms import (
     AgentIndividualForm,
     AgentOrganisationForm,
@@ -167,7 +167,7 @@ def create_section5_authorities(request, pk):
 
             files = request.FILES.getlist("files")
             for f in files:
-                handle_uploaded_file(f, request.user, section5_authority.files)
+                create_file_model(f, request.user, section5_authority.files)
 
             return redirect(
                 reverse(
@@ -222,7 +222,7 @@ def edit_section5_authorities(request, importer_pk, section5_authority_pk):
 
             files = request.FILES.getlist("files")
             for f in files:
-                handle_uploaded_file(f, request.user, section5_authority.files)
+                create_file_model(f, request.user, section5_authority.files)
 
             return redirect(
                 reverse(

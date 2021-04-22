@@ -45,7 +45,7 @@ developing, only within Docker.
     so run `aws configure`, the values don't really matter but aws cli won't run
     without a configuration file created.
 
-  - The S3 bucket is named `icms.dev` on the localstack S3 instance. The
+  - The S3 bucket is named `icms.local` on the localstack S3 instance. The
     localstack UI can be found on http://localhost:8081 and used to verify that
     the S3 bucket is created.
 
@@ -83,7 +83,7 @@ A schema for the database can be generated using the following django-extensions
 
 - `python manage.py graph_models --output=output.png`
 
-## Rebuilding the database 
+## Rebuilding the database
 
 A complete reset of the application database can be performed using:
 
@@ -101,6 +101,12 @@ make add_dummy_data
 - ci-pipeline config: https://github.com/uktrade/ci-pipeline-config/blob/master/icms.yaml
 
 ## Business Processes
+
+## File Uploads
+
+Files are uploaded directly to S3 without being saved into file system of the
+app. The app in turn sends the file to ClamAV for malware/virus checking. See
+ICMSFileField.
 
 ### Further Information Request Process
 
@@ -172,14 +178,6 @@ FIR views will be accessible with url name `<parent_process_namespace>:fir-list`
 In case of importer access requests it is `access:importer:fir-list` and `access:importer:fir-new`
 
 
-## File Uploads
-
-Files are uploaded directly to S3 without being saved into file system of the
-app. The app in turn sends the file to ClamAV for malware/virus checking.
-
-TODO: update this once ICMSLST-602 is done
-
-
 ## Environment Variables
 
 | Environment variable              | Default                                    | Notes                                                  |
@@ -190,11 +188,13 @@ TODO: update this once ICMSLST-602 is done
 | ICMS_MIGRATE                      | True                                       | Runs Django migrate before starting the app            |
 | ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
 | ICMS_ALLOWED_HOSTS                | localhost                                  | Comma separated list of hosts                          |
-| ICMS_AWS_S3_ACCESS_KEY_ID         |                                            | Access Key ID from AWS console                         |
-| ICMS_AWS_S3_SECRET_ACCESS_KEY     |                                            | Secret Access Key from AWS console                     |
-| ICMS_AWS_S3_REGION                |                                            | E.g. eu-west-2                                         |
-| ICMS_AWS_S3_BUCKET_NAME           |                                            | E.g. ICMS                                              |
-| ICMS_CLAMAV_URL                   |                                            | E.g. https://test:pass@clamav.digital/v2/scan          |
+| AWS_REGION                        |                                            | E.g. eu-west-2                                         |
+| AWS_ACCESS_KEY_ID                 |                                            | Access Key ID from AWS console                         |
+| AWS_SECRET_ACCESS_KEY             |                                            | Secret Access Key from AWS console                     |
+| AWS_STORAGE_BUCKET_NAME           |                                            | E.g. icms.staging                                      |
+| CLAM_AV_DOMAIN                    |                                            | E.g. scan.com                                          |
+| CLAM_AV_USERNAME                  |                                            |                                                        |
+| CLAM_AV_PASSWORD                  |                                            |                                                        |
 | ELASTIC_APM_SECRET_TOKEN          |                                            | Elastic APM server secret token for sending metrics    |
-| ELASTIC_APM_ENVIRONMENT          |                                             | ICMS deployment env to separate metrics per env. e.g. prod|
-| ELASTIC_APM_URL          |                                                     | Elastic APM server URL                                 |
+| ELASTIC_APM_ENVIRONMENT           |                                            | deployment env to separate metrics per env. e.g. prod  |
+| ELASTIC_APM_URL                   |                                            | Elastic APM server URL                                 |

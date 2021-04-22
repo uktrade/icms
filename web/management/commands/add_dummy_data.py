@@ -40,6 +40,11 @@ class Command(BaseCommand):
         )
         exporter.offices.add(office)
 
+        office = Office.objects.create(
+            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"
+        )
+        exporter.offices.add(office)
+
         # importer
         importer = Importer.objects.create(
             is_active=True,
@@ -51,6 +56,11 @@ class Command(BaseCommand):
 
         office = Office.objects.create(
             is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London"
+        )
+        importer.offices.add(office)
+
+        office = Office.objects.create(
+            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"
         )
         importer.offices.add(office)
 

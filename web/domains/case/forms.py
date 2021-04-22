@@ -5,6 +5,8 @@ from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote, UpdateRequest
 
 class CaseNoteForm(forms.ModelForm):
     status = forms.ChoiceField(choices=CASE_NOTE_STATUSES)
+
+    # TODO: change UI to use single-file uploads and use ICMSFileField
     files = forms.FileField(
         required=False,
         label="Upload New Documents",

@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from web.domains.file.views import handle_uploaded_file
+from web.domains.file.utils import create_file_model
 from web.domains.importer.models import Importer
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
@@ -257,7 +257,7 @@ def create_firearms_authorities(request, pk):
 
             files = request.FILES.getlist("files")
             for f in files:
-                handle_uploaded_file(f, request.user, firearms_authority.files)
+                create_file_model(f, request.user, firearms_authority.files)
 
             return redirect(
                 reverse(
@@ -312,7 +312,7 @@ def edit_firearms_authorities(request, importer_pk, firearms_authority_pk):
 
             files = request.FILES.getlist("files")
             for f in files:
-                handle_uploaded_file(f, request.user, firearms_authority.files)
+                create_file_model(f, request.user, firearms_authority.files)
 
             return redirect(
                 reverse(

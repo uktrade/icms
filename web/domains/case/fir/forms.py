@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 class FurtherInformationRequestForm(ModelForm):
     status = ChoiceField(choices=FurtherInformationRequest.STATUSES, disabled=True)
+
+    # TODO: change UI to use single-file uploads and use ICMSFileField
     files = FileField(
         required=False,
         label="Upload New Documents",
@@ -49,6 +51,7 @@ class FurtherInformationRequestForm(ModelForm):
 
 
 class FurtherInformationRequestResponseForm(ModelForm):
+    # TODO: change UI to use single-file uploads and use ICMSFileField
     files = FileField(
         required=False,
         label="Upload New Documents",
