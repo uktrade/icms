@@ -346,7 +346,7 @@ def _view_firearms_oil_case(request, application):
         "verified_certificates": FirearmsAuthority.objects.filter(
             verified_certificates__in=application.verified_certificates.all()
         ),
-        "certificates": application.userimportcertificate_set.all(),
+        "certificates": application.user_imported_certificates.all(),
         "contacts": application.importcontact_set.all(),
     }
     return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)

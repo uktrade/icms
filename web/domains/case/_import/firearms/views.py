@@ -92,7 +92,7 @@ def list_user_import_certificates(request, pk):
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
-            "certificates": application.userimportcertificate_set.all(),
+            "certificates": application.user_imported_certificates.all(),
             "verified_certificates": application.importer.firearms_authorities.active(),
             "page_title": "Open Individual Import Licence - Certificates",
         }
@@ -377,7 +377,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
         errors.add(page_errors)
 
         has_certificates = (
-            application.userimportcertificate_set.exists()
+            application.user_imported_certificates.exists()
             or application.verified_certificates.exists()
         )
 
@@ -565,7 +565,7 @@ def manage_constabulary_emails(request, pk):
             "task": task,
             "page_title": "Constabulary Emails",
             "verified_certificates": application.verified_certificates.all(),
-            "constabulary_emails": application.constabularyemail_set.filter(is_active=True),
+            "constabulary_emails": application.constabulary_emails.filter(is_active=True),
         }
 
         return render(
@@ -627,7 +627,7 @@ def edit_constabulary_email(request, application_pk, constabulary_email_pk):
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
         constabulary_email = get_object_or_404(
-            application.constabularyemail_set.filter(is_active=True), pk=constabulary_email_pk
+            application.constabulary_emails.filter(is_active=True), pk=constabulary_email_pk
         )
 
         if request.POST:
@@ -702,7 +702,7 @@ def delete_constabulary_email(request, application_pk, constabulary_email_pk):
         )
         application.get_task(ImportApplication.SUBMITTED, "process")
         constabulary_email = get_object_or_404(
-            application.constabularyemail_set.filter(is_active=True), pk=constabulary_email_pk
+            application.constabulary_emails.filter(is_active=True), pk=constabulary_email_pk
         )
 
         constabulary_email.is_active = False
@@ -727,7 +727,7 @@ def add_response_constabulary_email(request, application_pk, constabulary_email_
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
         constabulary_email = get_object_or_404(
-            application.constabularyemail_set, pk=constabulary_email_pk
+            application.constabulary_emails, pk=constabulary_email_pk
         )
 
         if request.POST:
@@ -768,7 +768,7 @@ def add_response_constabulary_email(request, application_pk, constabulary_email_
 @login_required
 def view_user_certificate_file(request, application_pk, certificate_pk, file_pk):
     application = get_object_or_404(OpenIndividualLicenceApplication, pk=application_pk)
-    certificate = get_object_or_404(application.userimportcertificate_set, pk=certificate_pk)
+    certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
 
     return import_views._view_file(request, application, certificate.files, file_pk)
 

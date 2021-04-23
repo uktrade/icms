@@ -50,7 +50,9 @@ class Migration(migrations.Migration):
                 (
                     "import_application",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT, to="web.importapplication"
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="user_imported_certificates",
+                        to="web.openindividuallicenceapplication",
                     ),
                 ),
             ],

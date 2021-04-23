@@ -32,9 +32,12 @@ class ConstabularyEmail(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    # TODO ICMSLST-624 link to OpenIndividualLicenceApplication instead, add a related_name
     application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, blank=False, null=False
+        OpenIndividualLicenceApplication,
+        on_delete=models.PROTECT,
+        related_name="constabulary_emails",
+        blank=False,
+        null=False,
     )
     status = models.CharField(max_length=30, blank=False, null=False, default=DRAFT)
     email_to = models.CharField(max_length=4000, blank=True, null=True)
@@ -61,7 +64,11 @@ class UserImportCertificate(models.Model):
         ("shotgun", "Shotgun Certificate"),
     )
 
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
+    import_application = models.ForeignKey(
+        OpenIndividualLicenceApplication,
+        on_delete=models.PROTECT,
+        related_name="user_imported_certificates",
+    )
     reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
     certificate_type = models.CharField(
         verbose_name="Certificate Type", choices=CERTIFICATE_TYPE, max_length=200
@@ -76,9 +83,10 @@ class UserImportCertificate(models.Model):
 
 
 class VerifiedCertificate(models.Model):
-    # TODO ICMSLST-624 link to OpenIndividualLicenceApplication instead
     import_application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, related_name="verified_certificates"
+        OpenIndividualLicenceApplication,
+        on_delete=models.PROTECT,
+        related_name="verified_certificates",
     )
     firearms_authority = models.ForeignKey(
         FirearmsAuthority, on_delete=models.PROTECT, related_name="verified_certificates"
