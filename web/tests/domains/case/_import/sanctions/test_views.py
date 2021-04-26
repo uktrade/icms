@@ -13,7 +13,6 @@ from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.domains.commodity.factory import CommodityFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.flow.factories import TaskFactory
@@ -177,9 +176,8 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         )
         TaskFactory.create(process=self.process, task_type="prepare")
 
-        self.commodity = CommodityFactory.create()
         self.goods = SanctionsAndAdhocApplicationGoodsFactory.create(
-            commodity_code=self.commodity,
+            commodity_code="2850009000",
             goods_description="old desc",
             quantity_amount=5,
             value=5,
@@ -227,10 +225,9 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
     def test_add_goods(self):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 1
         self.login_with_permissions(["importer_access"])
-        self.commodity = CommodityFactory.create()
 
         data = {
-            "commodity_code": self.commodity.pk,
+            "commodity_code": "2850009000",
             "goods_description": "test desc",
             "quantity_amount": 5,
             "value": 5,
@@ -280,22 +277,18 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 1
         self.login_with_permissions(["importer_access"])
 
-        old_commodity = CommodityFactory.create()
         goods = SanctionsAndAdhocApplicationGoodsFactory.create(
-            commodity_code=old_commodity,
+            commodity_code="2850009000",
             goods_description="old desc",
             quantity_amount=5,
             value=5,
             import_application=self.process,
         )
-        new_commodity = CommodityFactory.create()
-        new_desc = "updated desc"
-        new_num = 10
         data = {
-            "commodity_code": new_commodity.pk,
-            "goods_description": new_desc,
-            "quantity_amount": new_num,
-            "value": new_num,
+            "commodity_code": "2850002070",
+            "goods_description": "updated desc",
+            "quantity_amount": 10,
+            "value": 10,
         }
         response = self.client.post(
             reverse(
@@ -305,23 +298,25 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             data=data,
         )
 
+        with open("error.html", "wb") as f:
+            f.write(response.content)
         assert response.status_code == 302
+
         assert response.url == reverse(
             "import:sanctions:edit-application", kwargs={"pk": self.process.pk}
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
         good = SanctionsAndAdhocApplicationGoods.objects.latest("pk")
-        assert good.commodity_code == new_commodity
-        assert good.goods_description == new_desc
-        assert good.quantity_amount == new_num
-        assert good.value == new_num
+        assert good.commodity_code == "2850002070"
+        assert good.goods_description == "updated desc"
+        assert good.quantity_amount == 10
+        assert good.value == 10
 
     def test_delete_goods(self):
         self.login_with_permissions(["importer_access"])
-        commodity = CommodityFactory.create()
         goods = SanctionsAndAdhocApplicationGoods.objects.create(
-            commodity_code=commodity,
+            commodity_code="2850002070",
             goods_description="desc",
             quantity_amount=5,
             value=5,

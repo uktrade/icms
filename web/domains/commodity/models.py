@@ -1,8 +1,67 @@
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from web.domains.country.models import Country
 from web.models.mixins import Archivable
+
+COMMODITY_TYPES = {
+    **dict.fromkeys(
+        ["28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"], "Chemicals"
+    ),
+    **dict.fromkeys(["72", "73", "76"], "Iron, Steel and Aluminium"),
+    **dict.fromkeys(
+        [
+            "2707",
+            "2709",
+            "2710",
+            "2711",
+            "2712",
+            "2713",
+            "2714",
+            "2715",
+            "2812",
+            "2814",
+            "2901",
+            "2902",
+            "2903",
+            "2905",
+            "2907",
+            "2909",
+            "2910",
+            "2914",
+            "2917",
+            "2926",
+            "2929",
+            "3901",
+        ],
+        "Oil and Petrochemicals",
+    ),
+    **dict.fromkeys(
+        [
+            "50",
+            "51",
+            "52",
+            "53",
+            "54",
+            "55",
+            "56",
+            "57",
+            "58",
+            "59",
+            "60",
+            "61",
+            "62",
+            "63",
+            "9619",
+        ],
+        "Textiles",
+    ),
+    "93": "Firearms and Ammunition",
+    "97": "Firearms and Ammunition",
+    "87": "Vehicles",
+    "71": "Precious Metals and Stones",
+    "4403": "Wood",
+    "4402": "Wood Charcoal",
+}
 
 
 class Unit(models.Model):
@@ -16,23 +75,8 @@ class Unit(models.Model):
 
 
 class CommodityType(models.Model):
-    FIREARMS_AND_AMMUNITION = "Firearms and Ammunition"
-
-    COMMODITY_TYPES = [
-        "Chemicals",
-        FIREARMS_AND_AMMUNITION,
-        "Iron, Steel and Aluminium",
-        "Oil and Petrochemicals",
-        "Precious Metals and Stones",
-        "Textiles",
-        "Vehicles",
-        "Wood",
-        "Wood Charcoal",
-    ]
-    COMMODITY_TYPE_CHOICES = ((val, val) for val in COMMODITY_TYPES)
-
-    allowed_codes = ArrayField(models.CharField(max_length=10), blank=True, null=True)
-    type = models.CharField(max_length=50, choices=COMMODITY_TYPE_CHOICES)
+    type_code = models.CharField(max_length=20)
+    type = models.CharField(max_length=50)
 
     def __str__(self):
         return self.type
@@ -45,9 +89,6 @@ class Commodity(Archivable, models.Model):
     start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
-    commodity_type = models.ForeignKey(
-        CommodityType, on_delete=models.PROTECT, blank=True, null=True
-    )
     validity_start_date = models.DateField(blank=False, null=True)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
@@ -64,6 +105,18 @@ class Commodity(Archivable, models.Model):
             "-is_active",
             "commodity_code",
         )
+
+    @property
+    def commodity_type(self):
+        if self.commodity_code:
+            prefix_two_digits = self.commodity_code[:2]
+            prefix_four_digits = self.commodity_code[:4]
+            ct = COMMODITY_TYPES.get(prefix_two_digits)
+            if ct is None:
+                ct = COMMODITY_TYPES.get(prefix_four_digits, "N/A")
+            return ct
+        else:
+            return "N/A"
 
 
 class CommodityGroup(Archivable, models.Model):
@@ -91,7 +144,7 @@ class CommodityGroup(Archivable, models.Model):
 
     @property
     def group_type_verbose(self):
-        return dict(CommodityGroup.TYPES)[self.group_type]
+        return self.get_group_type_display()
 
     @property
     def commodity_type_verbose(self):

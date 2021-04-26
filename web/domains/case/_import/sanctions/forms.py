@@ -65,13 +65,21 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
 
 
 class GoodsForm(forms.ModelForm):
+    commodity_code = forms.ChoiceField(
+        label="Commodity Code",
+        help_text="""
+            It is the responsibility of the applicant to ensure that the commodity code in this box
+            is correct. If you are unsure of the correct commodity code, consult the HM Revenue and
+            Customs Integrated Tariff Book, Volume 2, which is available from the Stationery Office.
+            If you are still in doubt, contact the Classification Advisory Service on (01702) 366077.
+        """,
+        choices=[(x, x) for x in [None, "2850009000", "2850002070", "2828282828", "2801010101"]],
+    )
+
     class Meta:
-        # TODO restrict commodities to group when it becomes known
         model = SanctionsAndAdhocApplicationGoods
         fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
-        widgets = {
-            "goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
-        }
+        widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
         labels = {"value": "Value (GBP CIF)"}
 
 

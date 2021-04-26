@@ -10,16 +10,4 @@ class Migration(migrations.Migration):
         ("web", "0012_add_oil_application"),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name="commoditytype",
-            name="type_code",
-        ),
-        migrations.AddField(
-            model_name="commoditytype",
-            name="allowed_codes",
-            field=django.contrib.postgres.fields.ArrayField(
-                base_field=models.CharField(max_length=10), blank=True, null=True, size=None
-            ),
-        ),
-    ]
+    operations = []

@@ -23,6 +23,8 @@ class OpenIndividualLicenceApplication(ImportApplication):
     # TODO ICMSLST-623 change to BooleanField(null=True)
     know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
 
+    commodity_code = models.CharField(max_length=40, blank=False, null=True)
+
 
 class ConstabularyEmail(models.Model):
     OPEN = "OPEN"

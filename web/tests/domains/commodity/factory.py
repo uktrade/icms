@@ -22,10 +22,6 @@ class CommodityFactory(factory.django.DjangoModelFactory):
         )
     )
     commodity_code = factory.fuzzy.FuzzyText(length=10)
-    commodity_type = factory.SubFactory(
-        "web.tests.domains.commodity.factory.CommodityTypeFactory",
-        allowed_codes=[factory.SelfAttribute("commodity_code[:2]")],
-    )
     validity_start_date = fake.date_between(start_date="-1y", end_date="+1y")
     validity_end_date = factory.LazyAttribute(
         lambda c: fake.date_between(start_date=c.validity_start_date, end_date="+2y")
@@ -55,7 +51,7 @@ class CommodityTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = CommodityType
 
-    allowed_codes = [42]
+    type_code = "FIREARMS_AMMOE"
     type = factory.Faker("sentence", nb_words=2)
 
 

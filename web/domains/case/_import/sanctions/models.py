@@ -1,6 +1,5 @@
 from django.db import models
 
-from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 
 from ..models import ImportApplication
@@ -16,7 +15,7 @@ class SanctionsAndAdhocApplication(ImportApplication):
 
 class SanctionsAndAdhocApplicationGoods(models.Model):
     import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
-    commodity_code = models.ForeignKey(Commodity, on_delete=models.PROTECT)
+    commodity_code = models.CharField(max_length=40, blank=False, null=True)
     goods_description = models.CharField(max_length=4096)
     quantity_amount = models.DecimalField(max_digits=9, decimal_places=2)
     value = models.DecimalField(max_digits=9, decimal_places=2)

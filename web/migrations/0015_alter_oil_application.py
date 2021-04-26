@@ -27,4 +27,9 @@ class Migration(migrations.Migration):
             name="section2",
             field=models.BooleanField(default=True, verbose_name="Section 2"),
         ),
+        migrations.AddField(
+            model_name="openindividuallicenceapplication",
+            name="commodity_code",
+            field=models.CharField(max_length=40, null=True),
+        ),
     ]

@@ -31,20 +31,16 @@ class CommodityListView(AuthTestCase):
         self.assertEqual(response.context_data["page_title"], "Maintain Commodities")
 
     def test_number_of_pages(self):
-        # Create 51 product legislation as paging lists 50 items per page
-        CommodityFactory.create_batch(52)
-
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         page = response.context_data["page"]
-        self.assertEqual(page.paginator.num_pages, 2)
+        self.assertEqual(page.paginator.num_pages, 68)
 
     def test_page_results(self):
-        CommodityFactory.create_batch(55, is_active=True)
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 5)
+        self.assertEqual(len(page.object_list), 50)
 
 
 class CommodityCreateViewTest(AuthTestCase):

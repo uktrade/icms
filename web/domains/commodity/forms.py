@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.forms import (
     CharField,
     ChoiceField,
@@ -85,22 +84,6 @@ class CommodityForm(ModelForm):
             "sigl_product_type": "Mandatory for Iron, Steel, Aluminium and Textile commodities.",
         }
         widgets = {"validity_start_date": DateInput, "validity_end_date": DateInput}
-
-    def clean(self):
-        data = super().clean()
-        self.commodity_types = CommodityType.objects.filter(
-            Q(allowed_codes__contains=[data["commodity_code"][:2]])
-            | Q(allowed_codes__contains=[data["commodity_code"][:4]])
-        )
-        if not self.commodity_types.exists():
-            self.add_error("commodity_code", "Commodity Type for code doesn't exist")
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.commodity_type = self.commodity_types.first()
-        if commit:
-            instance.save()
-        return instance
 
 
 class CommodityEditForm(CommodityForm):
@@ -202,20 +185,6 @@ class CommodityGroupForm(ModelForm):
             group_code = cleaned_data.get("group_code", "")
             if group_type == CommodityGroup.AUTO and len(group_code) != 4:
                 self.add_error("group_code", "Group Code should be four characters long")
-
-            #  - CommodityGroup.group_code should match or start with CommodityType.allowed_codes
-            commodity_type = cleaned_data.get("commodity_type")
-            if len(group_code) == 4:
-                if (
-                    group_code[:2] not in commodity_type.allowed_codes
-                    and group_code not in commodity_type.allowed_codes
-                ):
-                    self.add_error(
-                        "group_code",
-                        "This code is not of the selected type. Allowed code prefixes: {}".format(
-                            ", ".join(commodity_type.allowed_codes)
-                        ),
-                    )
 
 
 class CommodityGroupEditForm(CommodityGroupForm):

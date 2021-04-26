@@ -10,7 +10,6 @@ from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.domains.commodity.factory import CommodityFactory, CommodityTypeFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.flow.factories import TaskFactory
 
@@ -81,11 +80,8 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
         self.assertEqual(len(form.errors), 3)
 
     def test_goods_form_valid(self):
-        commodity_type = CommodityTypeFactory.create()
-        commodity = CommodityFactory.create(commodity_type=commodity_type)
-
         data = {
-            "commodity_code": commodity.pk,
+            "commodity_code": "2801010101",
             "goods_description": "test desc",
             "quantity_amount": 5,
             "value": 5,

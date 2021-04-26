@@ -5,7 +5,6 @@ from django.db.models import Q
 from django_select2 import forms as s2forms
 
 from web.domains.case._import.models import ImportContact
-from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -26,17 +25,15 @@ class PrepareOILForm(forms.ModelForm):
         queryset=User.objects.all(),
         help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
     )
-    commodity_group = forms.ModelChoiceField(
+    commodity_code = forms.ChoiceField(
         label="Commodity Code",
-        queryset=CommodityGroup.objects.filter(
-            is_active=True, commodity_type__type=CommodityType.FIREARMS_AND_AMMUNITION
-        ),
         help_text="""
             You must pick the commodity code group that applies to the items that you wish to
             import. Please note that "ex Chapter 97" is only relevant to collectors pieces and
             items over 100 years old. Please contact HMRC classification advisory service,
             01702 366077, if you are unsure of the correct code.
         """,
+        choices=[(x, x) for x in [None, "ex Chapter 93", "ex Chapter 95"]],
     )
     origin_country = forms.ModelChoiceField(
         label="Country Of Origin",
@@ -60,7 +57,7 @@ class PrepareOILForm(forms.ModelForm):
             "section2",
             "origin_country",
             "consignment_country",
-            "commodity_group",
+            "commodity_code",
             "know_bought_from",
         )
 

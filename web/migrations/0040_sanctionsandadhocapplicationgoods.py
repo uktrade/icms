@@ -25,9 +25,7 @@ class Migration(migrations.Migration):
                 ("value", models.CharField(max_length=1024)),
                 (
                     "commodity_code",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT, to="web.commodity"
-                    ),
+                    models.CharField(max_length=40, null=True),
                 ),
                 (
                     "import_application",
