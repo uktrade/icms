@@ -1,3 +1,4 @@
+from web.models import Constabulary
 from web.tests.auth import AuthTestCase
 
 from .factory import ConstabularyFactory
@@ -9,6 +10,13 @@ PERMISSIONS = ["reference_data_access"]
 class ConstabularyListViewTest(AuthTestCase):
     url = "/constabulary/"
     redirect_url = f"{LOGIN_URL}?next={url}"
+
+    def setUp(self):
+        super(ConstabularyListViewTest, self).setUp()
+
+        # These tests pre-date the data migration that adds constabularies
+        # therefore delete all real constabulary records before running these tests
+        Constabulary.objects.all().delete()
 
     def test_anonymous_access_redirects(self):
         response = self.client.get(self.url)

@@ -8,6 +8,10 @@ from .factory import ConstabularyFactory
 
 class ConstabulariesFilterTest(TestCase):
     def setUp(self):
+        # These tests pre-date the data migration that adds constabularies
+        # therefore delete all real constabulary records before running these tests
+        Constabulary.objects.all().delete()
+
         ConstabularyFactory(
             name="Test Constabulary",
             region=Constabulary.EAST_MIDLANDS,
