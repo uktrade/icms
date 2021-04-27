@@ -284,8 +284,9 @@ def create_import_contact(request, pk, entity):
                 import_contact.entity = entity
                 import_contact.save()
 
-                if application.know_bought_from != OpenIndividualLicenceApplication.YES:
-                    application.know_bought_from = OpenIndividualLicenceApplication.YES
+                # Assume known_bought_from is True if we are adding an import contact
+                if not application.know_bought_from:
+                    application.know_bought_from = True
                     application.save()
 
                 return redirect(
@@ -409,10 +410,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
 
             errors.add(page_errors)
 
-        # TODO ICMSLST-623 this will need adapting when this field becomes a nullable boolean
-        if (
-            application.know_bought_from == OpenIndividualLicenceApplication.YES
-        ) and not application.importcontact_set.exists():
+        if application.know_bought_from and not application.importcontact_set.exists():
             page_errors = PageErrors(
                 page_name="Details of who bought from",
                 url=reverse("import:firearms:list-import-contacts", kwargs={"pk": pk}),

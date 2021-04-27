@@ -13,9 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="openindividuallicenceapplication",
             name="know_bought_from",
-            field=models.CharField(
-                choices=[("yes", "Yes"), ("no", "No")], max_length=10, null=True
-            ),
+            field=models.BooleanField(null=True),
         ),
         migrations.AddField(
             model_name="openindividuallicenceapplication",

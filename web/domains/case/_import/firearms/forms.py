@@ -65,6 +65,13 @@ class PrepareOILForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["know_bought_from"].required = True
 
+        # The default label for unknown is "Unknown"
+        self.fields["know_bought_from"].widget.choices = [
+            ("unknown", "---------"),
+            ("true", "Yes"),
+            ("false", "No"),
+        ]
+
 
 class UserImportCertificateForm(forms.ModelForm):
     document = forms.FileField(required=True, widget=forms.ClearableFileInput())

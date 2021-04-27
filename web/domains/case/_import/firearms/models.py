@@ -32,18 +32,10 @@ class UserImportCertificate(File):
 class OpenIndividualLicenceApplication(ImportApplication):
     PROCESS_TYPE = "OpenIndividualLicenceApplication"
 
-    YES = "yes"
-    NO = "no"
-    KNOW_BOUGHT_FROM_CHOICES = (
-        (YES, "Yes"),
-        (NO, "No"),
-    )
-
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
     section2 = models.BooleanField(verbose_name="Section 2", default=True)
 
-    # TODO ICMSLST-623 change to BooleanField(null=True)
-    know_bought_from = models.CharField(max_length=10, choices=KNOW_BOUGHT_FROM_CHOICES, null=True)
+    know_bought_from = models.BooleanField(null=True)
     user_imported_certificates = models.ManyToManyField(
         UserImportCertificate, related_name="import_application"
     )
