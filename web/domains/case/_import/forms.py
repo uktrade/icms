@@ -1,3 +1,5 @@
+from typing import Any, Dict, Optional
+
 from django import forms
 from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
@@ -40,7 +42,7 @@ class CreateImportApplicationForm(forms.Form):
         ),
     )
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, *args: Any, user: models.User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.user = user
         active_importers = Importer.objects.filter(is_active=True, main_importer__isnull=True)
@@ -55,6 +57,25 @@ class CreateImportApplicationForm(forms.Form):
         self.fields["importer_office"].queryset = Office.objects.filter(
             is_active=True, importer__in=importers
         )
+
+
+class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
+    """Create wood quota application form - Defines extra validation logic"""
+
+    def clean(self) -> Dict[str, Any]:
+        cleaned_data = super().clean()
+
+        if not self.has_error("importer_office"):
+            office: Office = cleaned_data["importer_office"]
+            postcode: Optional[str] = office.postcode
+
+            if not postcode or (not postcode.upper().startswith("BT")):
+                self.add_error(
+                    "importer_office",
+                    "Wood applications can only be made for Northern Ireland traders.",
+                )
+
+        return cleaned_data
 
 
 class WithdrawForm(forms.ModelForm):

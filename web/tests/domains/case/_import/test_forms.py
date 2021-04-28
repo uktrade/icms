@@ -3,7 +3,10 @@ import logging
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.forms import CreateImportApplicationForm
+from web.domains.case._import.forms import (
+    CreateImportApplicationForm,
+    CreateWoodQuotaApplicationForm,
+)
 from web.tests.domains.importer.factory import AgentImporterFactory, ImporterFactory
 from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.user.factory import ActiveUserFactory
@@ -19,11 +22,11 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         assign_perm("web.is_contact_of_importer", contact, importer)
 
         form = CreateImportApplicationForm(
-            contact,
             data={
                 "importer": importer.pk,
                 "importer_office": office.pk,
             },
+            user=contact,
         )
         self.assertTrue(form.is_valid())
 
@@ -34,11 +37,11 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         assign_perm("web.is_agent_of_importer", agent, agent_importer.main_importer)
 
         form = CreateImportApplicationForm(
-            agent,
             data={
                 "importer": agent_importer.main_importer.pk,
                 "importer_office": office.pk,
             },
+            user=agent,
         )
         self.assertTrue(form.is_valid())
 
@@ -48,8 +51,46 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         contact = ActiveUserFactory.create()
         assign_perm("web.is_contact_of_importer", contact, importer)
 
-        form = CreateImportApplicationForm(contact, data={})
+        form = CreateImportApplicationForm(data={}, user=contact)
         logger.debug(form.errors)
         self.assertEqual(len(form.errors), 2)
         message = form.errors["importer"][0]
         self.assertEqual(message, "You must enter this item")
+
+    def test_wood_application_valid_for_ni_importer(self):
+        office = OfficeFactory.create(is_active=True, postcode="BT328bz")
+        importer = ImporterFactory.create(is_active=True, offices=[office])
+        user = ActiveUserFactory.create()
+        assign_perm("web.is_contact_of_importer", user, importer)
+
+        form = CreateWoodQuotaApplicationForm(
+            data={
+                "importer": importer.pk,
+                "importer_office": office.pk,
+            },
+            user=user,
+        )
+
+        self.assertTrue(form.is_valid(), "Form has errors")
+
+    def test_wood_application_invalid_for_english_importer(self):
+        office = OfficeFactory.create(is_active=True, postcode="S410SG")
+        importer = ImporterFactory.create(is_active=True, offices=[office])
+        user = ActiveUserFactory.create()
+        assign_perm("web.is_contact_of_importer", user, importer)
+
+        form = CreateWoodQuotaApplicationForm(
+            data={
+                "importer": importer.pk,
+                "importer_office": office.pk,
+            },
+            user=user,
+        )
+
+        self.assertTrue(form.has_error("importer_office"))
+        self.assertEqual(len(form.errors), 1)
+
+        error_message = form.errors["importer_office"][0]
+        self.assertEqual(
+            error_message, "Wood applications can only be made for Northern Ireland traders."
+        )

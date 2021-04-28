@@ -1,3 +1,5 @@
+from typing import Type
+
 import weasyprint
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -5,7 +7,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -37,7 +39,7 @@ class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_derogations(request):
+def create_derogations(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
     model_class = DerogationsApplication
     redirect_view = "import:derogations:edit-derogations"
@@ -46,7 +48,7 @@ def create_derogations(request):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_sanctions(request):
+def create_sanctions(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.TYPE_SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
     redirect_view = "import:sanctions:edit-application"
@@ -55,7 +57,7 @@ def create_sanctions(request):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_oil(request):
+def create_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
     model_class = OpenIndividualLicenceApplication
     redirect_view = "import:firearms:edit-oil"
@@ -64,20 +66,47 @@ def create_oil(request):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_wood_quota(request):
+def create_wood_quota(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.TYPE_WOOD_QUOTA
     model_class = WoodQuotaApplication
     redirect_view = "import:wood:edit-quota"
-    return _create_application(request, import_application_type, model_class, redirect_view)
+
+    return _create_application(
+        request,
+        import_application_type,
+        model_class,
+        redirect_view,
+        form_class=forms.CreateWoodQuotaApplicationForm,
+    )
 
 
-def _create_application(request, import_application_type, model_class, redirect_view):
-    import_application_type = ImportApplicationType.objects.get(
+def _create_application(
+    request: HttpRequest,
+    import_application_type: str,
+    model_class: Type[ImportApplication],
+    redirect_view: str,
+    form_class: Type[forms.CreateImportApplicationForm] = None,
+) -> HttpResponse:
+    """Helper function to create one of several types of importer application.
+
+    :param request: Django request
+    :param import_application_type: ImportApplicationType type or sub_type
+    :param model_class: ImportApplication class
+    :param redirect_view: View to redirect to
+    :param form_class: Optional form class that defines extra logic
+    :return:
+    """
+
+    application_type: ImportApplicationType = ImportApplicationType.objects.get(
         Q(type=import_application_type) | Q(sub_type=import_application_type)
     )
 
+    if form_class is None:
+        form_class = forms.CreateImportApplicationForm
+
     if request.POST:
-        form = forms.CreateImportApplicationForm(request.user, request.POST)
+        form = form_class(request.POST, user=request.user)
+
         if form.is_valid():
             application = model_class()
             application.importer = form.cleaned_data["importer"]
@@ -86,16 +115,18 @@ def _create_application(request, import_application_type, model_class, redirect_
             application.created_by = request.user
             application.last_updated_by = request.user
             application.submitted_by = request.user
-            application.application_type = import_application_type
+            application.application_type = application_type
 
             with transaction.atomic():
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
+
             return redirect(reverse(redirect_view, kwargs={"pk": application.pk}))
     else:
-        form = forms.CreateImportApplicationForm(request.user)
+        form = form_class(user=request.user)
 
-    context = {"form": form, "import_application_type": import_application_type}
+    context = {"form": form, "import_application_type": application_type}
+
     return render(request, "web/domains/case/import/create.html", context)
 
 
