@@ -4,7 +4,7 @@
 {% block page_title %}View Importer{% endblock %}
 
 {% block context_header %}
-  Section5 Authority '{{ section5_authority.reference }}' for Importer '{{ object.display_name }}'
+  Section5 Authority '{{ section5.reference }}' for Importer '{{ object.display_name }}'
 {% endblock %}
 
 {% block sidebar %}
@@ -24,26 +24,26 @@
 {% endblock %}
 
 {% block main_content %}
-  <h3>Reference '{{ section5_authority.reference }}'</h3>
+  <h3>Reference '{{ section5.reference }}'</h3>
 
   <dl>
     <dt class="bold">
       Reference
     </dt>
     <dd>
-      {{ section5_authority.reference }}
+      {{ section5.reference }}
     </dd>
     <dt class="bold">
       Postcode
     </dt>
     <dd>
-      {{ section5_authority.postcode}}
+      {{ section5.postcode}}
     </dd>
     <dt class="bold">
       Address
     </dt>
     <dd>
-      {{ section5_authority.address|default("", True)|nl2br }}
+      {{ section5.address|default("", True)|nl2br }}
     </dd>
     <dt class="bold">
       Linked Offices
@@ -62,20 +62,20 @@
       Start Date
     </dt>
     <dd>
-      {{ section5_authority.start_date.strftime('%d-%b-%Y') }}
+      {{ section5.start_date.strftime('%d-%b-%Y') }}
     </dd>
     <dt class="bold">
       End Date
     </dt>
     <dd>
-      {{ section5_authority.end_date.strftime('%d-%b-%Y') }}
+      {{ section5.end_date.strftime('%d-%b-%Y') }}
     </dd>
     <dt class="bold">
       Further Details
     </dt>
     <dd>
-      {% if section5_authority.further_details %}
-        {{ section5_authority.further_details|nl2br }}
+      {% if section5.further_details %}
+        {{ section5.further_details|nl2br }}
       {% else %}
         N/A
       {% endif %}
@@ -84,7 +84,7 @@
       Documents
     </dt>
     <dd>
-    {% if section5_authority.files.exists() %}
+    {% if section5.files.exists() %}
       <table class="setoutList">
         <thead>
           <tr>
@@ -93,7 +93,7 @@
           </tr>
         </thead>
         <tbody>
-        {% for document in section5_authority.files.all() %}
+        {% for document in section5.files.active() %}
           <tr>
             <td>
               {{ document.filename }}<br />
@@ -124,7 +124,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for clause_quantity in section5_authority.clausequantity_set.all() %}
+          {% for clause_quantity in section5.clausequantity_set.all() %}
             <tr>
               <td>{{ clause_quantity.section5clause.clause }}</td>
               <td>

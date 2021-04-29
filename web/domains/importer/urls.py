@@ -50,36 +50,24 @@ urlpatterns = [
         firearms_views.archive_file_firearms_authorities,
         name="importer-firearms-authorities-file-archive",
     ),
-    # section 5 authorities
+    # section 5 authority
+    path("<int:pk>/section5/create/", views.create_section5, name="importer-section5-create"),
+    path("section5/<int:pk>/edit/", views.edit_section5, name="importer-section5-edit"),
+    path("section5/<int:pk>/view/", views.view_section5, name="importer-section5-view"),
+    path("section5/<int:pk>/archive/", views.archive_section5, name="importer-section5-archive"),
     path(
-        "<int:pk>/section5-authorities/create/",
-        views.create_section5_authorities,
-        name="importer-section5-authorities-create",
+        "section5/<int:pk>/unarchive/", views.unarchive_section5, name="importer-section5-unarchive"
+    ),
+    # section 5 authority - documents
+    path(
+        "section5/<int:pk>/add-document/",
+        views.add_document_section5,
+        name="importer-section5-add-document",
     ),
     path(
-        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/edit/",
-        views.edit_section5_authorities,
-        name="importer-section5-authorities-edit",
-    ),
-    path(
-        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/",
-        views.detail_section5_authorities,
-        name="importer-section5-authorities-detail",
-    ),
-    path(
-        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/archive/",
-        views.archive_section5_authorities,
-        name="importer-section5-authorities-archive",
-    ),
-    path(
-        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/unarchive/",
-        views.unarchive_section5_authorities,
-        name="importer-section5-authorities-unarchive",
-    ),
-    path(
-        "<int:importer_pk>/section5-authorities/<int:section5_authority_pk>/files/<int:file_pk>/",
-        views.archive_file_section5_authorities,
-        name="importer-section5-authorities-file-archive",
+        "section5/<int:section5_pk>/delete-document/<int:document_pk>/",
+        views.delete_document_section5,
+        name="importer-section5-delete-document",
     ),
     # offices
     path("<int:pk>/offices/create/", views.create_office, name="importer-office-create"),

@@ -12,37 +12,35 @@
     </tr>
   </thead>
   <tbody>
-    {% for section5_authority in section5_authorities_list %}
+    {% for section5 in section5_list %}
     <tr>
       <td>
         <a
-          href="{{ icms_url(
-                     'importer-section5-authorities-detail',
-                     args=[object.pk, section5_authority.pk]) }}">
-          {{ section5_authority.reference }}
+          href="{{ icms_url('importer-section5-view',args=[section5.pk]) }}">
+          {{ section5.reference }}
         </a>
       </td>
-      <td>{{ section5_authority.address|nl2br() or '' }}</td>
-      <td>{{ section5_authority.postcode }}</td>
-      <td>{{ section5_authority.start_date }}</td>
-      <td>{{ section5_authority.end_date }}</td>
+      <td>{{ section5.address|nl2br() or '' }}</td>
+      <td>{{ section5.postcode }}</td>
+      <td>{{ section5.start_date }}</td>
+      <td>{{ section5.end_date }}</td>
       {% if not read_only %}
         <td>
           <a
-            href="{{ icms_url('importer-section5-authorities-edit', args=[object.pk, section5_authority.pk]) }}"
+            href="{{ icms_url('importer-section5-edit', args=[section5.pk]) }}"
             class="button small-button icon-pencil">
             Edit
           </a>
-          {% if section5_authority.is_active %}
+          {% if section5.is_active %}
             <form method="post"
-                  action="{{ icms_url('importer-section5-authorities-archive', args=[object.pk, section5_authority.pk]) }}"
+                  action="{{ icms_url('importer-section5-archive', args=[section5.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Archive</button>
             </form>
           {% else %}
             <form method="post"
-                  action="{{ icms_url('importer-section5-authorities-unarchive', args=[object.pk, section5_authority.pk]) }}"
+                  action="{{ icms_url('importer-section5-unarchive', args=[section5.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Restore</button>

@@ -373,7 +373,7 @@ def test_create_section5_authority():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.get(f"/importer/{importer.pk}/section5-authorities/create/")
+    response = client.get(f"/importer/{importer.pk}/section5/create/")
     assert response.status_code == 200
 
     data = {
@@ -386,12 +386,9 @@ def test_create_section5_authority():
         "clausequantity_set-TOTAL_FORMS": 0,
         "clausequantity_set-INITIAL_FORMS": 0,
     }
-    response = client.post(f"/importer/{importer.pk}/section5-authorities/create/", data=data)
+    response = client.post(f"/importer/{importer.pk}/section5/create/", data=data)
     assert response.status_code == 302
 
-    section5_authority = Section5Authority.objects.get()
-    assert office_one == section5_authority.linked_offices.first()
-    assert (
-        response["Location"]
-        == f"/importer/{importer.pk}/section5-authorities/{section5_authority.pk}/edit/"
-    )
+    section5 = Section5Authority.objects.get()
+    assert office_one == section5.linked_offices.first()
+    assert response["Location"] == f"/importer/section5/{section5.pk}/edit/"

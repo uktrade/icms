@@ -1,0 +1,37 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+    {% include "partial/importer/sidebar.html" %}
+{% endblock %}
+
+{% block context_header %}
+  Edit Section5 Authority ({{ section5.reference }}) for Importer '{{ importer.display_name }}'
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('importer-section5-edit', kwargs={'pk': section5.pk}) }}" class="prev-link">
+            Section5 Authority ({{ section5.reference }})
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>Add document</h4>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ fields.field(form.document) }}
+    <input type="submit" name="action" class="primary-button button" value="Add" />
+  {% endcall %}
+
+{% endblock %}

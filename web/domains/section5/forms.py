@@ -1,6 +1,7 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
+from web.domains.file.utils import ICMSFileField
 from web.domains.office.models import Office
 from web.domains.section5.models import (
     ClauseQuantity,
@@ -10,17 +11,13 @@ from web.domains.section5.models import (
 from web.forms.widgets import DateInput
 
 
+class DocumentForm(forms.Form):
+    document = ICMSFileField(required=True)
+
+
 class Section5AuthorityForm(forms.ModelForm):
     postcode = forms.CharField()
 
-    # TODO: change UI to use single-file uploads and use ICMSFileField
-    files = forms.FileField(
-        required=False,
-        label="Documents",
-        widget=forms.widgets.ClearableFileInput(
-            attrs={"multiple": True, "onchange": "updateList()"}
-        ),
-    )
     linked_offices = forms.ModelMultipleChoiceField(
         label="Linked Offices",
         queryset=Office.objects.none(),
@@ -48,7 +45,6 @@ class Section5AuthorityForm(forms.ModelForm):
             "start_date",
             "end_date",
             "further_details",
-            "files",
         )
         widgets = {
             "address": forms.Textarea({"rows": 3}),
@@ -62,12 +58,11 @@ class Section5AuthorityForm(forms.ModelForm):
 
     def clean(self):
         data = super().clean()
-        # files handled in the view
-        data.pop("files", None)
 
         start_date = data.get("start_date")
         end_date = data.get("end_date")
-        if start_date and end_date and data["start_date"] > data["end_date"]:
+
+        if start_date and end_date and (data["start_date"] > data["end_date"]):
             self.add_error("end_date", "End Date must be after Start Date.")
 
     def save(self, commit=True):

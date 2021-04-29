@@ -8,7 +8,7 @@
 {% block submit_button %}Save{% endblock %}
 
 {% block section5_files %}
-  {% if section5_authority.files.exists() %}
+  {% if section5.files.active() %}
     <div class="container">
       <div class="row">
         <div class="three columns">
@@ -26,7 +26,7 @@
               </tr>
             </thead>
             <tbody>
-            {% for document in section5_authority.files.active() %}
+            {% for document in section5.files.active() %}
               <tr>
                 <td>
                   {{ document.filename }}<br />
@@ -39,13 +39,12 @@
                 <td>
                   <form method="post"
                         action={{ icms_url(
-                          'importer-section5-authorities-file-archive',
+                          'importer-section5-delete-document',
                           kwargs={
-                            'importer_pk': object.pk,
-                            'section5_authority_pk': section5_authority.pk,
-                            'file_pk': document.pk}) }}>
+                            'section5_pk': section5.pk,
+                            'document_pk': document.pk}) }}>
                     {{ csrf_input }}
-                    <button type="submit" class="button link-button-no-padding">Delete</button>
+                    <button type="submit" class="link-button icon-bin button">Delete</button>
                   </form>
                 </td>
               </tr>
@@ -55,6 +54,20 @@
         </div>
         <div class="three columns"></div>
       </div>
+
+    </div>
+  {% else %}
+    <div class="info-box info-box-info">
+        There are no documents attached
     </div>
   {% endif %}
+
+  <div class="container">
+    <div class="row">
+      <a class="button small-button" href="{{ icms_url('importer-section5-add-document', kwargs={'pk': section5.pk}) }}">
+        Add document
+      </a>
+    </div>
+  </div>
+
 {% endblock %}

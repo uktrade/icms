@@ -17,13 +17,13 @@
   </ul>
 
   <div aria-labelledby="authorities-current" class="tab-content " style="" data-tab-group="tg-authorities" data-tab-key="CURRENT" aria-hidden="false">
-    {% with section5_authorities_list = section5_authorities.filter(is_active=True) %}
+    {% with section5_list = section5_authorities.filter(is_active=True) %}
       {% include 'partial/section5-authorities/list.html' %}
     {% endwith %}
   </div>
 
   <div id="tcs1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-authorities" data-tab-key="ARCHIVED" aria-hidden="true">
-    {% with section5_authorities_list = section5_authorities.filter(is_active=False) %}
+    {% with section5_list = section5_authorities.filter(is_active=False) %}
       {% include 'partial/section5-authorities/list.html' %}
     {% endwith %}
   </div>
@@ -34,7 +34,7 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ icms_url('importer-section5-authorities-create', kwargs={'pk': object.pk}) }}"
+          href="{{ icms_url('importer-section5-create', kwargs={'pk': object.pk}) }}"
           class="button small-button icon-plus">
           Create Section 5 Authority</a>
       </li>

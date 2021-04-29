@@ -2,7 +2,7 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 from django.forms.models import inlineformset_factory
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -20,7 +20,11 @@ from web.domains.importer.forms import (
 )
 from web.domains.importer.models import Importer
 from web.domains.office.forms import OfficeEORIForm, OfficeForm
-from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
+from web.domains.section5.forms import (
+    ClauseQuantityForm,
+    DocumentForm,
+    Section5AuthorityForm,
+)
 from web.domains.section5.models import (
     ClauseQuantity,
     Section5Authority,
@@ -148,8 +152,8 @@ def add_contact(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def create_section5_authorities(request, pk):
-    importer = get_object_or_404(Importer, pk=pk)
+def create_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.POST:
         form = Section5AuthorityForm(importer, request.POST, request.FILES)
@@ -159,25 +163,14 @@ def create_section5_authorities(request, pk):
         clause_quantity_formset = ClauseQuantityFormSet(request.POST)
 
         if form.is_valid() and clause_quantity_formset.is_valid():
-            section5_authority = form.save()
+            section5 = form.save()
+
             for clause_quantity_form in clause_quantity_formset:
                 clause_quantity = clause_quantity_form.save(commit=False)
-                clause_quantity.section5authority = section5_authority
+                clause_quantity.section5authority = section5
                 clause_quantity.save()
 
-            files = request.FILES.getlist("files")
-            for f in files:
-                create_file_model(f, request.user, section5_authority.files)
-
-            return redirect(
-                reverse(
-                    "importer-section5-authorities-edit",
-                    kwargs={
-                        "importer_pk": importer.pk,
-                        "section5_authority_pk": section5_authority.pk,
-                    },
-                )
-            )
+            return redirect(reverse("importer-section5-edit", kwargs={"pk": section5.pk}))
     else:
         form = Section5AuthorityForm(importer)
 
@@ -203,47 +196,35 @@ def create_section5_authorities(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_section5_authorities(request, importer_pk, section5_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    section5_authority = get_object_or_404(Section5Authority, pk=section5_authority_pk)
+def edit_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
     if request.POST:
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
-        clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=section5_authority)
+        clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=section5)
 
         form = Section5AuthorityForm(
-            importer, request.POST, request.FILES, instance=section5_authority
+            section5.importer, request.POST, request.FILES, instance=section5
         )
+
         if form.is_valid() and clause_quantity_formset.is_valid():
-            section5_authority = form.save()
+            section5 = form.save()
             clause_quantity_formset.save()
 
-            files = request.FILES.getlist("files")
-            for f in files:
-                create_file_model(f, request.user, section5_authority.files)
-
-            return redirect(
-                reverse(
-                    "importer-section5-authorities-edit",
-                    kwargs={
-                        "importer_pk": importer.pk,
-                        "section5_authority_pk": section5_authority.pk,
-                    },
-                )
-            )
+            return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
     else:
-        form = Section5AuthorityForm(importer, instance=section5_authority)
+        form = Section5AuthorityForm(section5.importer, instance=section5)
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
-        clause_quantity_formset = ClauseQuantityFormSet(instance=section5_authority)
+        clause_quantity_formset = ClauseQuantityFormSet(instance=section5)
 
     context = {
-        "object": importer,
+        "object": section5.importer,
         "form": form,
-        "section5_authority": section5_authority,
+        "section5": section5,
         "formset": clause_quantity_formset,
     }
 
@@ -252,13 +233,12 @@ def edit_section5_authorities(request, importer_pk, section5_authority_pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def detail_section5_authorities(request, importer_pk, section5_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    section5_authority = get_object_or_404(Section5Authority, pk=section5_authority_pk)
+def view_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    section5 = get_object_or_404(Section5Authority, pk=pk)
 
     context = {
-        "object": importer,
-        "section5_authority": section5_authority,
+        "object": section5.importer,
+        "section5": section5,
     }
 
     return render(request, "web/domains/importer/detail-section5-authority.html", context)
@@ -267,48 +247,69 @@ def detail_section5_authorities(request, importer_pk, section5_authority_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_section5_authorities(request, importer_pk, section5_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    authority = get_object_or_404(
-        importer.section5_authorities.filter(is_active=True), pk=section5_authority_pk
+def archive_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(
+        Section5Authority.objects.filter(is_active=True), pk=pk
     )
-    authority.is_active = False
-    authority.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    section5.is_active = False
+    section5.save()
+
+    return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def unarchive_section5_authorities(request, importer_pk, section5_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    authority = get_object_or_404(
-        importer.section5_authorities.filter(is_active=False), pk=section5_authority_pk
+def unarchive_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(
+        Section5Authority.objects.filter(is_active=False), pk=pk
     )
-    authority.is_active = True
-    authority.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    section5.is_active = True
+    section5.save()
+
+    return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_document_section5(request: HttpRequest, pk: int) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
+
+    if request.POST:
+        form = DocumentForm(data=request.POST, files=request.FILES)
+        document = request.FILES.get("document")
+
+        if form.is_valid():
+            create_file_model(document, request.user, section5.files)
+
+            return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
+    else:
+        form = DocumentForm()
+
+    context = {
+        "importer": section5.importer,
+        "form": form,
+        "section5": section5,
+    }
+
+    return render(request, "web/domains/importer/add-document-section5-authority.html", context)
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_file_section5_authorities(request, importer_pk, section5_authority_pk, file_pk):
-    authority = get_object_or_404(
-        Section5Authority, pk=section5_authority_pk, importer_id=importer_pk
-    )
-    document = authority.files.get(pk=file_pk)
+def delete_document_section5(
+    request: HttpRequest, section5_pk: int, document_pk: int
+) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
+
+    document = section5.files.get(pk=document_pk)
     document.is_active = False
     document.save()
 
-    return redirect(
-        reverse(
-            "importer-section5-authorities-edit",
-            kwargs={"importer_pk": importer_pk, "section5_authority_pk": section5_authority_pk},
-        )
-    )
+    return redirect(reverse("importer-section5-edit", kwargs={"pk": section5_pk}))
 
 
 @login_required
