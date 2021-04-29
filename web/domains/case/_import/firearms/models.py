@@ -88,45 +88,46 @@ class VerifiedCertificate(models.Model):
 
 
 class ChecklistFirearmsOILApplication(models.Model):
-    CHOICES = (
-        ("yes", "Yes"),
-        ("no", "No"),
-        ("n/a", "N/A"),
-    )
     import_application = models.ForeignKey(
         OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklists"
     )
+
+    class Response(models.TextChoices):
+        yes = ("yes", "Yes")
+        no = ("no", "No")
+        not_applicable = ("n/a", "N/A")
+
     authority_required = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Authority to possess required?",
     )
     authority_received = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Authority to possess received?",
     )
     authority_police = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Authority to possess checked with police?",
     )
     case_update = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Case update required from applicant?",
     )
     fir_required = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Further information request required?",
@@ -137,14 +138,14 @@ class ChecklistFirearmsOILApplication(models.Model):
     )
     validity_match = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Validity period of licence matches that of the RFD certificate?",
     )
     endorsements_listed = models.CharField(
         max_length=10,
-        choices=CHOICES,
+        choices=Response.choices,
         blank=True,
         null=True,
         verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
