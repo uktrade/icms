@@ -1,8 +1,7 @@
 from django.forms import (
     CharField,
-    ClearableFileInput,
     DateField,
-    FileField,
+    Form,
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
@@ -13,6 +12,7 @@ from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
 
+from web.domains.file.utils import ICMSFileField
 from web.domains.office.models import Office
 from web.forms.widgets import DateInput
 
@@ -71,15 +71,13 @@ class ObsoleteCalibreForm(ModelForm):
         labels = {"name": "Calibre Name"}
 
 
+class DocumentForm(Form):
+    document = ICMSFileField(required=True)
+
+
 class FirearmsAuthorityForm(ModelForm):
     postcode = CharField()
 
-    # TODO: change UI to use single-file uploads and use ICMSFileField
-    files = FileField(
-        required=False,
-        label="Documents",
-        widget=ClearableFileInput(attrs={"multiple": True, "onchange": "updateList()"}),
-    )
     linked_offices = ModelMultipleChoiceField(
         label="Linked Offices",
         queryset=Office.objects.none(),
@@ -108,7 +106,6 @@ class FirearmsAuthorityForm(ModelForm):
             "start_date",
             "end_date",
             "further_details",
-            "files",
         )
         widgets = {
             "address": Textarea({"rows": 3}),
@@ -122,12 +119,11 @@ class FirearmsAuthorityForm(ModelForm):
 
     def clean(self):
         data = super().clean()
-        # files handled in the view
-        data.pop("files", None)
 
         start_date = data.get("start_date")
         end_date = data.get("end_date")
-        if start_date and end_date and data["start_date"] > data["end_date"]:
+
+        if start_date and end_date and (data["start_date"] > data["end_date"]):
             self.add_error("end_date", "End Date must be after Start Date.")
 
     def save(self, commit=True):

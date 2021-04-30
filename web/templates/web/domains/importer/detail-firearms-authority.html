@@ -84,7 +84,7 @@
       Documents
     </dt>
     <dd>
-    {% if firearms_authority.files.exists() %}
+    {% if firearms_authority.files.active() %}
       <table class="setoutList">
         <thead>
           <tr>
@@ -96,7 +96,10 @@
         {% for document in firearms_authority.files.active() %}
           <tr>
             <td>
-              {{ document.filename }}<br />
+              <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': firearms_authority.pk, 'document_pk': document.pk}) }}">
+                {{ document.filename }}
+              </a>
+              <br />
               <span class="extra-info">{{ document.file_size }}</span>
             </td>
             <td>

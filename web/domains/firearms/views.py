@@ -10,11 +10,13 @@ from django.views.decorators.http import require_POST
 
 from web.domains.file.utils import create_file_model
 from web.domains.importer.models import Importer
+from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
 from web.views.mixins import PostActionMixin
 
 from .forms import (
+    DocumentForm,
     FirearmsAuthorityForm,
     FirearmsQuantityForm,
     ObsoleteCalibreForm,
@@ -257,10 +259,6 @@ def create_firearms(request: HttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.firearmsauthority = firearms
                 clause_quantity.save()
 
-            files = request.FILES.getlist("files")
-            for f in files:
-                create_file_model(f, request.user, firearms.files)
-
             return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
     else:
         form = FirearmsAuthorityForm(importer)
@@ -303,10 +301,6 @@ def edit_firearms(request: HttpRequest, pk: int) -> HttpResponse:
         if form.is_valid() and clause_quantity_formset.is_valid():
             firearms = form.save()
             clause_quantity_formset.save()
-
-            files = request.FILES.getlist("files")
-            for f in files:
-                create_file_model(f, request.user, firearms.files)
 
             return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
     else:
@@ -363,6 +357,47 @@ def unarchive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
     firearms.save()
 
     return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_document_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
+
+    if request.POST:
+        form = DocumentForm(data=request.POST, files=request.FILES)
+        document = request.FILES.get("document")
+
+        if form.is_valid():
+            create_file_model(document, request.user, firearms.files)
+
+            return redirect(reverse("importer-firearms-edit", kwargs={"pk": pk}))
+    else:
+        form = DocumentForm()
+
+    context = {
+        "importer": firearms.importer,
+        "form": form,
+        "firearms": firearms,
+    }
+
+    return render(request, "web/domains/importer/add-document-firearms.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_document_firearms(
+    request: HttpRequest, firearms_pk: int, document_pk: int
+) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
+
+    document = firearms.files.get(pk=document_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
 
 
 @login_required

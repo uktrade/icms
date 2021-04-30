@@ -37,6 +37,16 @@ urlpatterns = [
     ),
     # firearms authority - documents
     path(
+        "firearms/<int:pk>/add-document/",
+        firearms_views.add_document_firearms,
+        name="importer-firearms-add-document",
+    ),
+    path(
+        "firearms/<int:firearms_pk>/view-document/<int:document_pk>/",
+        firearms_views.view_document_firearms,
+        name="importer-firearms-view-document",
+    ),
+    path(
         "firearms/<int:firearms_pk>/delete-document/<int:document_pk>/",
         firearms_views.delete_document_firearms,
         name="importer-firearms-delete-document",

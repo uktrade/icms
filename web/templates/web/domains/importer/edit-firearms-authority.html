@@ -8,7 +8,7 @@
 {% block submit_button %}Save{% endblock %}
 
 {% block firearms_files %}
-  {% if firearms_authority.files.exists() %}
+  {% if firearms_authority.files.active() %}
     <div class="container">
       <div class="row">
         <div class="three columns">
@@ -29,7 +29,10 @@
             {% for document in firearms_authority.files.active() %}
               <tr>
                 <td>
-                  {{ document.filename }}<br />
+                  <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': firearms_authority.pk, 'document_pk': document.pk}) }}">
+                    {{ document.filename }}
+                  </a>
+                  <br />
                   <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
                 </td>
                 <td>
@@ -44,7 +47,7 @@
                             'firearms_pk': firearms_authority.pk,
                             'document_pk': document.pk}) }}>
                     {{ csrf_input }}
-                    <button type="submit" class="button link-button-no-padding">Delete</button>
+                    <button type="submit" class="link-button icon-bin button">Delete</button>
                   </form>
                 </td>
               </tr>
@@ -55,5 +58,19 @@
         <div class="three columns"></div>
       </div>
     </div>
+  {% else %}
+    <div class="info-box info-box-info">
+        There are no documents attached
+    </div>
   {% endif %}
+
+  <div class="container">
+    <div class="row">
+      <a class="button small-button" href="{{ icms_url('importer-firearms-add-document', kwargs={'pk': firearms_authority.pk}) }}">
+        Add document
+      </a>
+    </div>
+  </div>
+
+
 {% endblock %}
