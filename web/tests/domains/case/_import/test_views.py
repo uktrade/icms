@@ -37,7 +37,7 @@ def test_preview_cover_letter():
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 20000 < len(pdf) < 30000
+    assert 19000 < len(pdf) < 30000
 
 
 @pytest.mark.django_db
@@ -68,4 +68,4 @@ def test_preview_licence():
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 20000 < len(pdf) < 30000
+    assert 19000 < len(pdf) < 30000
