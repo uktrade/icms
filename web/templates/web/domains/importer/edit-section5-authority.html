@@ -29,7 +29,10 @@
             {% for document in section5.files.active() %}
               <tr>
                 <td>
-                  {{ document.filename }}<br />
+                  <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
+                    {{ document.filename }}
+                  </a>
+                  <br />
                   <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
                 </td>
                 <td>

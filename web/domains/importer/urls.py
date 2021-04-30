@@ -65,6 +65,11 @@ urlpatterns = [
         name="importer-section5-add-document",
     ),
     path(
+        "section5/<int:section5_pk>/view-document/<int:document_pk>/",
+        views.view_document_section5,
+        name="importer-section5-view-document",
+    ),
+    path(
         "section5/<int:section5_pk>/delete-document/<int:document_pk>/",
         views.delete_document_section5,
         name="importer-section5-delete-document",

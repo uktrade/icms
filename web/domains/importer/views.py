@@ -32,6 +32,7 @@ from web.domains.section5.models import (
 )
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
+from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
 from web.views.actions import (
     Archive,
@@ -295,6 +296,22 @@ def add_document_section5(request: HttpRequest, pk: int) -> HttpResponse:
     }
 
     return render(request, "web/domains/importer/add-document-section5-authority.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_document_section5(
+    request: HttpRequest, section5_pk: int, document_pk: int
+) -> HttpResponse:
+    section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
+
+    document = section5.files.get(pk=document_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
 
 
 @login_required
