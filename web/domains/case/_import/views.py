@@ -133,14 +133,16 @@ def _create_application(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def take_ownership(request, pk):
+def take_ownership(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=pk
+        )
         application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
         application.case_owner = request.user
         application.save()
 
-        return redirect(reverse("workbasket"))
+        return redirect(reverse("import:case-management", kwargs={"pk": application.pk}))
 
 
 @login_required
@@ -363,8 +365,13 @@ def view_case(request, pk):
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _view_firearms_oil_case(request, application.openindividuallicenceapplication)
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _view_sanctions_and_adhoc_case(request, application.sanctionsandadhocapplication)
+
+    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
+        return _view_wood_quota_application(request, application.woodquotaapplication)
+
     else:
         return _view_case(application)
 
@@ -392,6 +399,20 @@ def _view_sanctions_and_adhoc_case(request, application):
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
     return render(request, "web/domains/case/import/view_sanctions_and_adhoc_case.html", context)
+
+
+def _view_wood_quota_application(
+    request: HttpRequest, application: WoodQuotaApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "contract_documents": application.contract_documents.filter(is_active=True),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/wood/view.html", context)
 
 
 def _view_case(request, application):

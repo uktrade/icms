@@ -1,5 +1,22 @@
 {% extends "layout/sidebar.html" %}
 
+{# VIEW APPLICATION MACROS #}
+{% macro application_section(section_title=None) -%}
+  {% if section_title %}
+    <h4>{{ section_title }}</h4>
+  {% endif %}
+  <div class="container">
+    <dl>
+      {% if caller %}{{ caller() }}{% endif %}
+    </dl>
+  </div>
+{%- endmacro %}
+
+{% macro application_field(field, label, default="") -%}
+  <dt class="bold">{{ label }}</dt>
+  <dd>{{ field or default }}</dd>
+{%- endmacro %}
+{# END VIEW APPLICATION MACROS #}
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">

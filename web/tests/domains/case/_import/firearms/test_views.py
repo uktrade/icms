@@ -98,8 +98,12 @@ def test_take_ownership():
     response_workbasket = client.get("/workbasket/")
     assert "Take Ownership" in response_workbasket.content.decode()
 
+    # After taking ownership we now navigate to the case management "view application" view.
     response = client.post(f"/import/case/{process.pk}/take_ownership/", follow=True)
-    assert "Manage" in response.content.decode()
+
+    assert response.status_code == 200
+    view_application_response = response.content.decode()
+    assert "Firearms and Ammunition Open Individual Import Licence" in view_application_response
 
 
 @pytest.mark.django_db
