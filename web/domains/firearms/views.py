@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import F
 from django.forms.models import inlineformset_factory
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -238,8 +239,8 @@ def view_obsolete_calibre_group(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def create_firearms_authorities(request, pk):
-    importer = get_object_or_404(Importer, pk=pk)
+def create_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.POST:
         form = FirearmsAuthorityForm(importer, request.POST, request.FILES)
@@ -249,25 +250,18 @@ def create_firearms_authorities(request, pk):
         clause_quantity_formset = ClauseQuantityFormSet(request.POST)
 
         if form.is_valid() and clause_quantity_formset.is_valid():
-            firearms_authority = form.save()
+            firearms = form.save()
+
             for clause_quantity_form in clause_quantity_formset:
                 clause_quantity = clause_quantity_form.save(commit=False)
-                clause_quantity.firearmsauthority = firearms_authority
+                clause_quantity.firearmsauthority = firearms
                 clause_quantity.save()
 
             files = request.FILES.getlist("files")
             for f in files:
-                create_file_model(f, request.user, firearms_authority.files)
+                create_file_model(f, request.user, firearms.files)
 
-            return redirect(
-                reverse(
-                    "importer-firearms-authorities-edit",
-                    kwargs={
-                        "importer_pk": importer.pk,
-                        "firearms_authority_pk": firearms_authority.pk,
-                    },
-                )
-            )
+            return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
     else:
         form = FirearmsAuthorityForm(importer)
 
@@ -293,47 +287,39 @@ def create_firearms_authorities(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_firearms_authorities(request, importer_pk, firearms_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    firearms_authority = get_object_or_404(FirearmsAuthority, pk=firearms_authority_pk)
+def edit_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     if request.POST:
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
         )
-        clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=firearms_authority)
+        clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=firearms)
 
         form = FirearmsAuthorityForm(
-            importer, request.POST, request.FILES, instance=firearms_authority
+            firearms.importer, request.POST, request.FILES, instance=firearms
         )
+
         if form.is_valid() and clause_quantity_formset.is_valid():
-            firearms_authority = form.save()
+            firearms = form.save()
             clause_quantity_formset.save()
 
             files = request.FILES.getlist("files")
             for f in files:
-                create_file_model(f, request.user, firearms_authority.files)
+                create_file_model(f, request.user, firearms.files)
 
-            return redirect(
-                reverse(
-                    "importer-firearms-authorities-edit",
-                    kwargs={
-                        "importer_pk": importer.pk,
-                        "firearms_authority_pk": firearms_authority.pk,
-                    },
-                )
-            )
+            return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
     else:
-        form = FirearmsAuthorityForm(importer, instance=firearms_authority)
+        form = FirearmsAuthorityForm(firearms.importer, instance=firearms)
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
         )
-        clause_quantity_formset = ClauseQuantityFormSet(instance=firearms_authority)
+        clause_quantity_formset = ClauseQuantityFormSet(instance=firearms)
 
     context = {
-        "object": importer,
+        "object": firearms.importer,
         "form": form,
-        "firearms_authority": firearms_authority,
+        "firearms_authority": firearms,
         "formset": clause_quantity_formset,
     }
 
@@ -342,13 +328,12 @@ def edit_firearms_authorities(request, importer_pk, firearms_authority_pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def detail_firearms_authorities(request, importer_pk, firearms_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    firearms_authority = get_object_or_404(FirearmsAuthority, pk=firearms_authority_pk)
+def view_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     context = {
-        "object": importer,
-        "firearms_authority": firearms_authority,
+        "object": firearms.importer,
+        "firearms_authority": firearms,
     }
 
     return render(request, "web/domains/importer/detail-firearms-authority.html", context)
@@ -357,45 +342,39 @@ def detail_firearms_authorities(request, importer_pk, firearms_authority_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_firearms_authorities(request, importer_pk, firearms_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    authority = get_object_or_404(
-        importer.firearms_authorities.filter(is_active=True), pk=firearms_authority_pk
+def archive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(
+        FirearmsAuthority.objects.filter(is_active=True), pk=pk
     )
-    authority.is_active = False
-    authority.save()
+    firearms.is_active = False
+    firearms.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def unarchive_firearms_authorities(request, importer_pk, firearms_authority_pk):
-    importer = get_object_or_404(Importer, pk=importer_pk)
-    authority = get_object_or_404(
-        importer.firearms_authorities.filter(is_active=False), pk=firearms_authority_pk
+def unarchive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(
+        FirearmsAuthority.objects.filter(is_active=False), pk=pk
     )
-    authority.is_active = True
-    authority.save()
+    firearms.is_active = True
+    firearms.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+    return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_file_firearms_authorities(request, importer_pk, firearms_authority_pk, file_pk):
-    authority = get_object_or_404(
-        FirearmsAuthority, pk=firearms_authority_pk, importer_id=importer_pk
-    )
-    document = authority.files.get(pk=file_pk)
+def delete_document_firearms(
+    request: HttpRequest, firearms_pk: int, document_pk: int
+) -> HttpResponse:
+    firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
+
+    document = firearms.files.get(pk=document_pk)
     document.is_active = False
     document.save()
 
-    return redirect(
-        reverse(
-            "importer-firearms-authorities-edit",
-            kwargs={"importer_pk": importer_pk, "firearms_authority_pk": firearms_authority_pk},
-        )
-    )
+    return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms_pk}))

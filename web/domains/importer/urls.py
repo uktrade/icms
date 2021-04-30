@@ -19,36 +19,27 @@ urlpatterns = [
         views.delete_contact,
         name="importer-contact-delete",
     ),
-    # firearms authorities
+    # firearms authority
     path(
-        "<int:pk>/firearms-authorities/create/",
-        firearms_views.create_firearms_authorities,
-        name="importer-firearms-authorities-create",
+        "<int:pk>/firearms/create/", firearms_views.create_firearms, name="importer-firearms-create"
+    ),
+    path("firearms/<int:pk>/edit/", firearms_views.edit_firearms, name="importer-firearms-edit"),
+    path("firearms/<int:pk>/view/", firearms_views.view_firearms, name="importer-firearms-view"),
+    path(
+        "firearms/<int:pk>/archive/",
+        firearms_views.archive_firearms,
+        name="importer-firearms-archive",
     ),
     path(
-        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/edit/",
-        firearms_views.edit_firearms_authorities,
-        name="importer-firearms-authorities-edit",
+        "firearms/<int:pk>/unarchive/",
+        firearms_views.unarchive_firearms,
+        name="importer-firearms-unarchive",
     ),
+    # firearms authority - documents
     path(
-        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/",
-        firearms_views.detail_firearms_authorities,
-        name="importer-firearms-authorities-detail",
-    ),
-    path(
-        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/archive/",
-        firearms_views.archive_firearms_authorities,
-        name="importer-firearms-authorities-archive",
-    ),
-    path(
-        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/unarchive/",
-        firearms_views.unarchive_firearms_authorities,
-        name="importer-firearms-authorities-unarchive",
-    ),
-    path(
-        "<int:importer_pk>/firearms-authorities/<int:firearms_authority_pk>/files/<int:file_pk>/",
-        firearms_views.archive_file_firearms_authorities,
-        name="importer-firearms-authorities-file-archive",
+        "firearms/<int:firearms_pk>/delete-document/<int:document_pk>/",
+        firearms_views.delete_document_firearms,
+        name="importer-firearms-delete-document",
     ),
     # section 5 authority
     path("<int:pk>/section5/create/", views.create_section5, name="importer-section5-create"),

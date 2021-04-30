@@ -61,7 +61,7 @@ def test_create_firearms_authority():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.get(f"/importer/{importer.pk}/firearms-authorities/create/")
+    response = client.get(f"/importer/{importer.pk}/firearms/create/")
     assert response.status_code == 200
 
     constabulary = ConstabularyFactory.create(is_active=True)
@@ -82,12 +82,9 @@ def test_create_firearms_authority():
         "actquantity_set-1-firearmsact": firearms_act_two.pk,
         "actquantity_set-1-quantity": "1",
     }
-    response = client.post(f"/importer/{importer.pk}/firearms-authorities/create/", data=data)
+    response = client.post(f"/importer/{importer.pk}/firearms/create/", data=data)
     assert response.status_code == 302
 
-    firearms_authority = FirearmsAuthority.objects.get()
-    assert office_one == firearms_authority.linked_offices.first()
-    assert (
-        response["Location"]
-        == f"/importer/{importer.pk}/firearms-authorities/{firearms_authority.pk}/edit/"
-    )
+    firearms = FirearmsAuthority.objects.get()
+    assert office_one == firearms.linked_offices.first()
+    assert response["Location"] == f"/importer/firearms/{firearms.pk}/edit/"

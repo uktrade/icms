@@ -18,9 +18,7 @@
     <tr>
       <td>
         <a
-          href="{{ icms_url(
-                     'importer-firearms-authorities-detail',
-                     args=[object.pk, firearms_authority.pk]) }}">
+          href="{{ icms_url('importer-firearms-view', args=[firearms_authority.pk]) }}">
           {{ firearms_authority.reference }}
         </a>
       </td>
@@ -33,20 +31,20 @@
       {% if not read_only %}
         <td>
           <a
-            href="{{ icms_url('importer-firearms-authorities-edit', args=[object.pk, firearms_authority.pk]) }}"
+            href="{{ icms_url('importer-firearms-edit', args=[firearms_authority.pk]) }}"
             class="button small-button icon-pencil">
             Edit
           </a>
           {% if firearms_authority.is_active %}
             <form method="post"
-                  action="{{ icms_url('importer-firearms-authorities-archive', args=[object.pk, firearms_authority.pk]) }}"
+                  action="{{ icms_url('importer-firearms-archive', args=[firearms_authority.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Archive</button>
             </form>
           {% else %}
             <form method="post"
-                  action="{{ icms_url('importer-firearms-authorities-unarchive', args=[object.pk, firearms_authority.pk]) }}"
+                  action="{{ icms_url('importer-firearms-unarchive', args=[firearms_authority.pk]) }}"
                   class="form-inline">
               {{ csrf_input }}
               <button type="submit" class="button small-button icon-bin">Restore</button>

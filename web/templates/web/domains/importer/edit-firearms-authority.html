@@ -39,11 +39,10 @@
                 <td>
                   <form method="post"
                         action={{ icms_url(
-                          'importer-firearms-authorities-file-archive',
+                          'importer-firearms-delete-document',
                           kwargs={
-                            'importer_pk': object.pk,
-                            'firearms_authority_pk': firearms_authority.pk,
-                            'file_pk': document.pk}) }}>
+                            'firearms_pk': firearms_authority.pk,
+                            'document_pk': document.pk}) }}>
                     {{ csrf_input }}
                     <button type="submit" class="button link-button-no-padding">Delete</button>
                   </form>
