@@ -1,8 +1,14 @@
+# Circleci 2.0 config:
+# https://circleci.com/docs/2.0/configuration-reference
+
+# Available machine images:
+# https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
+
 version: 2
 jobs:
     build:
         machine:
-            image: ubuntu-1604:202004-01
+            image: ubuntu-2004:202104-01
 
         steps:
             - checkout
