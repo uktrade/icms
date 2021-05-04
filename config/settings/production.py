@@ -42,6 +42,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Elastic APM config
 INSTALLED_APPS += [  # NOQA
     "elasticapm.contrib.django",
+    "django_audit_log_middleware",
+]
+
+MIDDLEWARE += [  # NOQA
+    "django_audit_log_middleware.AuditLogMiddleware",
 ]
 
 ELASTIC_APM = {
@@ -91,3 +96,6 @@ sentry_sdk.init(
 
 # minifi html (djano-htmlmin)
 HTML_MINIFY = True
+
+# Audit log middleware user field
+AUDIT_LOG_USER_FIELD = "username"
