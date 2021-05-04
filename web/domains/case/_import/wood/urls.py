@@ -7,6 +7,7 @@ app_name = "wood"
 urlpatterns = [
     path("quota/<int:pk>/edit/", views.edit_wood_quota, name="edit-quota"),
     path("quota/<int:pk>/submit/", views.submit_wood_quota, name="submit-quota"),
+    path("<int:pk>/checklist/", views.manage_checklist, name="manage-checklist"),
     # supporting documents
     path(
         "quota/<int:pk>/add-supporting-document/",

@@ -27,6 +27,13 @@
         Sanction Emails
       </a>
     </li>
+  {% elif process.process_type == "WoodQuotaApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:wood:manage-checklist', args=[process.pk]) }}">
+        Checklist
+      </a>
+    </li>
   {% endif %}
   <li>
     {% with total = process.withdrawals.count(),

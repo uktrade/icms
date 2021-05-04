@@ -133,3 +133,22 @@ class SubmitWoodQuotaForm(forms.Form):
             raise forms.ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class WoodQuotaChecklistForm(forms.ModelForm):
+    sigl_wood_application_logged = forms.BooleanField(required=True)
+    response_preparation = forms.BooleanField(required=True)
+    authorisation = forms.BooleanField(required=True)
+
+    class Meta:
+        model = models.WoodQuotaChecklist
+
+        fields = (
+            "sigl_wood_application_logged",
+            "case_update",
+            "fir_required",
+            "response_preparation",
+            "validity_period_correct",
+            "endorsements_listed",
+            "authorisation",
+        )

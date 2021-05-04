@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
@@ -20,6 +20,7 @@ from .forms import (
     PrepareWoodQuotaForm,
     SubmitWoodQuotaForm,
     SupportingDocumentForm,
+    WoodQuotaChecklistForm,
 )
 from .models import WoodQuotaApplication
 
@@ -292,3 +293,35 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/case/import/wood/submit.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: HttpRequest, pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        checklist, _ = application.checklists.get_or_create()
+
+        if request.POST:
+            form = WoodQuotaChecklistForm(request.POST, instance=checklist)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(reverse("import:wood:manage-checklist", kwargs={"pk": pk}))
+        else:
+            form = WoodQuotaChecklistForm(instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Wood (Quota) Import Licence - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )

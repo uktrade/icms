@@ -31,7 +31,7 @@
   <h4>Checklist</h4>
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
-    {% if field.name in ['response_preparation', 'authorisation'] %}
+    {% if field.name in ['response_preparation', 'authorisation', 'sigl_wood_application_logged'] %}
       {{fields.field(field, show_optional_indicator=False, input_cols="two", checkbox_label="Completed")}}
     {% else %}
       {{fields.field(field, show_optional_indicator=False, input_cols="two")}}
