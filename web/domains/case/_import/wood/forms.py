@@ -136,10 +136,6 @@ class SubmitWoodQuotaForm(forms.Form):
 
 
 class WoodQuotaChecklistForm(forms.ModelForm):
-    sigl_wood_application_logged = forms.BooleanField(required=True)
-    response_preparation = forms.BooleanField(required=True)
-    authorisation = forms.BooleanField(required=True)
-
     class Meta:
         model = models.WoodQuotaChecklist
 
@@ -152,3 +148,9 @@ class WoodQuotaChecklistForm(forms.ModelForm):
             "endorsements_listed",
             "authorisation",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in ["sigl_wood_application_logged", "response_preparation", "authorisation"]:
+            self.fields[field].required = True
