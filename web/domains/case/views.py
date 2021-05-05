@@ -1,5 +1,8 @@
+from typing import Type, Union
+
 from django.db import transaction
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -7,6 +10,7 @@ from django.utils import timezone
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
+from web.models import ExportApplication, ImportApplication
 from web.notify import notify
 
 from . import forms, models
@@ -102,7 +106,15 @@ def _edit_note(
     )
 
 
-def archive_file_note(request, application_pk, note_pk, file_pk, model_class, url_namespace):
+def archive_file_note(
+    request: HttpRequest,
+    application_pk: int,
+    note_pk: int,
+    file_pk: int,
+    model_class: Union[Type[ExportApplication], Type[ImportApplication]],
+    url_namespace: str,
+) -> HttpResponse:
+
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")

@@ -474,8 +474,11 @@ def edit_note(request, application_pk, note_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_note_file(request, application_pk, note_pk, file_pk):
-    return case_views._archive_note_file(
+def archive_note_file(
+    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
+) -> HttpResponse:
+
+    return case_views.archive_file_note(
         request, application_pk, note_pk, file_pk, ImportApplication, "import"
     )
 
@@ -526,14 +529,16 @@ def close_update_requests(request, application_pk, update_request_pk):
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def list_update_requests(request, pk):
-    return case_views._list_update_requests(request, pk, ImportApplication, "import")
+    # TODO Remove mypy ignore when doing ICMSLST-648
+    return case_views._list_update_requests(request, pk, ImportApplication, "import")  # type: ignore[attr-defined]
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 @require_POST
 def start_update_request(request, application_pk, update_request_pk):
-    return case_views._start_update_request(
+    # TODO Remove mypy ignore when doing ICMSLST-648
+    return case_views._start_update_request(  # type: ignore[attr-defined]
         request, application_pk, update_request_pk, ImportApplication, "import"
     )
 
@@ -542,7 +547,8 @@ def start_update_request(request, application_pk, update_request_pk):
 @permission_required("web.importer_access", raise_exception=True)
 def respond_update_request(request, application_pk, update_request_pk):
     # TODO: make url more generic
-    return case_views._respond_update_request(
+    # TODO Remove mypy ignore when doing ICMSLST-648
+    return case_views._respond_update_request(  # type: ignore[attr-defined]
         request, application_pk, update_request_pk, ImportApplication, "import"
     )
 

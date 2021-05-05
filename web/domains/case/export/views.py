@@ -2,6 +2,7 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -304,7 +305,10 @@ def edit_note(request, application_pk, note_pk):
 @login_required
 @permission_required(export_case_officer_permission, raise_exception=True)
 @require_POST
-def archive_note_file(request, application_pk, note_pk, file_pk):
-    return case_views._archive_note_file(
+def archive_note_file(
+    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
+) -> HttpResponse:
+
+    return case_views.archive_file_note(
         request, application_pk, note_pk, file_pk, ExportApplication, "export"
     )
