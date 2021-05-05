@@ -6,7 +6,7 @@ from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
 
-from .models import DerogationsApplication
+from .models import DerogationsApplication, DerogationsChecklist
 
 
 class DerogationsForm(forms.ModelForm):
@@ -114,3 +114,45 @@ class SubmitDerogationsForm(forms.Form):
             raise forms.ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class DerogationsChecklistForm(forms.ModelForm):
+    class Meta:
+        model = DerogationsChecklist
+
+        fields = (
+            "supporting_document_received",
+            "case_update",
+            "fir_required",
+            "response_preparation",
+            "validity_period_correct",
+            "endorsements_listed",
+            "authorisation",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields:
+            self.fields[field].required = True
+
+
+class GoodsDerogationsLicenceForm(forms.ModelForm):
+    quantity = forms.DecimalField()
+    unit = forms.ChoiceField(
+        label="Unit",
+        choices=[(x, x) for x in ["kilos"]],
+    )
+
+    value = forms.CharField(
+        label="Value (euro CIF)",
+        required=True,
+    )
+
+    class Meta:
+        model = DerogationsApplication
+        fields = ("commodity_code", "goods_description", "quantity", "unit", "value")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["commodity_code"].widget.attrs["readonly"] = True

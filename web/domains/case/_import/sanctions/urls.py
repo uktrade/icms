@@ -49,4 +49,9 @@ urlpatterns = [
         views.add_response_sanction_email,
         name="add-response-sanction-email",
     ),
+    path(
+        "case/<int:application_pk>/goods/<int:goods_pk>/edit/",
+        views.edit_goods_licence,
+        name="edit-goods-licence",
+    ),
 ]

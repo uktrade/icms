@@ -4,7 +4,8 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
@@ -437,6 +438,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
                 )
                 application.save()
 
+                # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(
                     is_active=True,
                     template_type=Template.ENDORSEMENT,

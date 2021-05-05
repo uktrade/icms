@@ -1,11 +1,15 @@
+from typing import Type
+
 import structlog as logging
+from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
@@ -20,6 +24,7 @@ from web.utils.validation import ApplicationErrors, PageErrors, create_page_erro
 from .. import views as import_views
 from .forms import (
     GoodsForm,
+    GoodsSanctionsLicenceForm,
     SanctionEmailMessageForm,
     SanctionEmailMessageResponseForm,
     SanctionsAndAdhocLicenseForm,
@@ -114,42 +119,78 @@ def add_goods(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_goods(request, application_pk, goods_pk):
+def edit_goods(request: HttpRequest, application_pk: int, goods_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
-        goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
-
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        if request.method == "POST":
-            form = GoodsForm(request.POST, instance=goods)
-            if form.is_valid():
-                obj = form.save(commit=False)
-                obj.import_application = application
-                obj.save()
-                return redirect(
-                    reverse("import:sanctions:edit-application", kwargs={"pk": application_pk})
-                )
-        else:
-            form = GoodsForm(instance=goods)
+        form_class = GoodsForm
+        success_url = reverse("import:sanctions:edit-application", kwargs={"pk": application_pk})
+        template_name = "web/domains/case/import/sanctions/add_or_edit_goods.html"
 
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "form": form,
-            "page_title": "Sanctions and Adhoc License Application",
-        }
-        return render(
-            request,
-            "web/domains/case/import/sanctions/add_or_edit_goods.html",
-            context,
+        return _edit_goods(
+            request, application, task, form_class, goods_pk, success_url, template_name
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: SanctionsAndAdhocApplication = get_object_or_404(
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        form_class = GoodsSanctionsLicenceForm
+        success_url = reverse("import:prepare-response", kwargs={"pk": application.pk})
+        template_name = "web/domains/case/import/manage/edit-goods-licence.html"
+
+        return _edit_goods(
+            request, application, task, form_class, goods_pk, success_url, template_name
+        )
+
+
+def _edit_goods(
+    request: HttpRequest,
+    application: SanctionsAndAdhocApplication,
+    task: Task,
+    form_class: Type[forms.ModelForm],
+    goods_pk: int,
+    success_url: str,
+    template_name: str,
+) -> HttpResponse:
+    goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
+
+    if request.POST:
+        form = form_class(request.POST, instance=goods)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.import_application = application
+            obj.save()
+            return redirect(success_url)
+    else:
+        form = form_class(instance=goods)
+
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "task": task,
+        "form": form,
+        "page_title": "Edit Goods",
+    }
+    return render(
+        request,
+        template_name,
+        context,
+    )
 
 
 @login_required

@@ -76,12 +76,28 @@ class GoodsForm(forms.ModelForm):
         """,
         choices=[(x, x) for x in [None, "2850009000", "2850002070", "2828282828", "2801010101"]],
     )
+    quantity_amount = forms.DecimalField(label="Quantity Amount")
+    value = forms.DecimalField(label="Value")
 
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
         fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
         widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
         labels = {"value": "Value (GBP CIF)"}
+
+
+class GoodsSanctionsLicenceForm(forms.ModelForm):
+    quantity_amount = forms.DecimalField(label="Quantity Amount")
+    value = forms.DecimalField(label="Value")
+
+    class Meta:
+        model = SanctionsAndAdhocApplicationGoods
+        fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
+        widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["commodity_code"].widget.attrs["readonly"] = True
 
 
 class SupportingDocumentForm(forms.Form):

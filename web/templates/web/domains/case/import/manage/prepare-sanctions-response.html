@@ -1,0 +1,41 @@
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>Commodity Code</th>
+        <th>Goods Description</th>
+        <th>Quantity</th>
+        <th>Value</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for goods_item in goods %}
+        <tr>
+          <td>
+            {{ goods_item.commodity_code }}
+          </td>
+          <td>
+            {{ goods_item.goods_description }}
+          </td>
+          <td>
+            {{ goods_item.quantity_amount }}
+          </td>
+          <td>
+            {{ goods_item.value}}
+          </td>
+          <td>
+            <a
+              href={{ icms_url('import:sanctions:edit-goods-licence', args=[process.pk, goods_item.pk]) }}>
+              Edit
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

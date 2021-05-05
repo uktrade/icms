@@ -1,0 +1,39 @@
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>Commodity Code</th>
+        <th>Goods Description</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{ process.commodity_code }}
+        </td>
+        <td>
+          {{ process.goods_description }}
+        </td>
+        <td>
+          {{ process.goods_qty }}
+        </td>
+        <td>
+          {{ process.goods_unit }}
+        </td>
+        <td>
+          <a
+            href={{ icms_url('import:wood:edit-goods-licence', args=[process.pk]) }}>
+            Edit
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endblock %}

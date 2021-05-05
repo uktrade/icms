@@ -154,3 +154,20 @@ class WoodQuotaChecklistForm(forms.ModelForm):
 
         for field in ["sigl_wood_application_logged", "response_preparation", "authorisation"]:
             self.fields[field].required = True
+
+
+class GoodsWoodQuotaLicenceForm(forms.ModelForm):
+    goods_qty = forms.DecimalField(label="Quantity")
+
+    goods_unit = forms.ChoiceField(
+        label="Unit",
+        choices=[(x, x) for x in ["cubic metres"]],
+    )
+
+    class Meta:
+        model = models.WoodQuotaApplication
+        fields = ("commodity_code", "goods_description", "goods_qty", "goods_unit")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["commodity_code"].widget.attrs["readonly"] = True

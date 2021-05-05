@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Any, Dict, Type
 
 import weasyprint
 from django.conf import settings
@@ -8,8 +8,9 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
@@ -140,6 +141,8 @@ def take_ownership(request: HttpRequest, pk: int) -> HttpResponse:
         )
         application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
         application.case_owner = request.user
+        # Licence start date is set when ILB Admin takes the case
+        application.licence_start_date = timezone.now().date()
         application.save()
 
         return redirect(reverse("import:case-management", kwargs={"pk": application.pk}))
@@ -347,14 +350,14 @@ def archive_withdrawal(request, application_pk, withdrawal_pk):
 
 
 @login_required
-def view_case(request, pk):
+def view_case(request: HttpRequest, pk: int) -> HttpResponse:
     has_perm_importer = request.user.has_perm("web.importer_access")
     has_perm_reference_data = request.user.has_perm("web.reference_data_access")
 
     if not has_perm_importer and not has_perm_reference_data:
         raise PermissionDenied
 
-    application = get_object_or_404(ImportApplication, pk=pk)
+    application: ImportApplication = get_object_or_404(ImportApplication, pk=pk)
 
     # first check is for case managers (who are not marked as contacts of
     # importers), second is for people submitting applications
@@ -372,11 +375,16 @@ def view_case(request, pk):
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
         return _view_wood_quota_application(request, application.woodquotaapplication)
 
+    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
+        return _view_derogations(request, application.derogationsapplication)
+
     else:
-        return _view_case(application)
+        return _view_case(request, application)
 
 
-def _view_firearms_oil_case(request, application):
+def _view_firearms_oil_case(
+    request: HttpRequest, application: OpenIndividualLicenceApplication
+) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -390,7 +398,9 @@ def _view_firearms_oil_case(request, application):
     return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)
 
 
-def _view_sanctions_and_adhoc_case(request, application):
+def _view_sanctions_and_adhoc_case(
+    request: HttpRequest, application: SanctionsAndAdhocApplication
+) -> HttpRequest:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -415,7 +425,17 @@ def _view_wood_quota_application(
     return render(request, "web/domains/case/import/wood/view.html", context)
 
 
-def _view_case(request, application):
+def _view_derogations(request: HttpRequest, application: DerogationsApplication) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+    return render(request, "web/domains/case/import/view_derogations.html", context)
+
+
+def _view_case(request: HttpRequest, application: ImportApplication) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -640,9 +660,11 @@ def respond_fir(request, application_pk, fir_pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def prepare_response(request, pk):
+def prepare_response(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -657,21 +679,74 @@ def prepare_response(request, pk):
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
             "task": task,
             "page_title": "Response Preparation",
             "form": form,
-            "goods_template": "web/domains/case/import/partials/firearms/oil-goods.html",
-            "documents_template": "web/domains/case/import/partials/firearms/oil-documents.html",
             "cover_letter_flag": application.application_type.cover_letter_flag,
-            "electronic_licence_flag": application.application_type.electronic_licence_flag,
         }
 
-        return render(
-            request=request,
-            template_name="web/domains/case/import/manage/prepare-response.html",
-            context=context,
+    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+        return _prepare_response_oil(request, application.openindividuallicenceapplication, context)
+    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        return _prepare_sanctions_and_adhoc_response(
+            request, application.sanctionsandadhocapplication, context
         )
+    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
+        return _prepare_derogations_response(request, application.derogationsapplication, context)
+    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
+        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
+    else:
+        raise NotImplementedError
+
+
+def _prepare_response_oil(
+    request: HttpRequest, application: OpenIndividualLicenceApplication, context: Dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-firearms-oil-response.html",
+        context=context,
+    )
+
+
+def _prepare_sanctions_and_adhoc_response(
+    request: HttpRequest, application: SanctionsAndAdhocApplication, context: Dict[str, Any]
+) -> HttpResponse:
+    context.update(
+        {"process": application, "goods": application.sanctionsandadhocapplicationgoods_set.all()}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-sanctions-response.html",
+        context=context,
+    )
+
+
+def _prepare_derogations_response(
+    request: HttpRequest, application: DerogationsApplication, context: Dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-derogations-response.html",
+        context=context,
+    )
+
+
+def _prepare_wood_quota_response(
+    request: HttpRequest, application: WoodQuotaApplication, context: Dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-wood-quota-response.html",
+        context=context,
+    )
 
 
 @login_required

@@ -1,24 +1,29 @@
-<div class="container">
-  <div class="row">
-    <div class="three column">
-      <span class="prompt west">
-        Category
-      </span>
-    </div>
-    <div class="six column">
-      ex Chapter 93
-    </div>
-    <div class="three column">
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <div class="container">
+    <div class="row">
+      <div class="three column">
+        <span class="prompt west">
+          Category
+        </span>
+      </div>
+      <div class="six column">
+        ex Chapter 93
+      </div>
+      <div class="three column">
+      </div>
     </div>
   </div>
-</div>
 
   <table class="setoutList">
     <thead>
       <tr>
-        <th> Goods Description </th>
-        <th> Quantity </th>
-        <th> Unit </th>
+        <th>Goods Description </th>
+        <th>Quantity </th>
+        <th>Unit </th>
       </tr>
     </thead>
     <tbody>
@@ -44,3 +49,5 @@
       </tr>
     </tbody>
   </table>
+
+{% endblock %}

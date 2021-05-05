@@ -45,4 +45,5 @@ urlpatterns = [
         views.edit_contract_document,
         name="edit-contract-document",
     ),
+    path("quota/<int:pk>/edit-goods-licence/", views.edit_goods, name="edit-goods-licence"),
 ]

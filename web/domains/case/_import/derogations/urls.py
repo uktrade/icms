@@ -22,4 +22,7 @@ urlpatterns = [
         name="delete-supporting-document",
     ),
     path("<int:pk>/submit/", views.submit_derogations, name="submit-derogations"),
+    # ILB Admin Case management
+    path("<int:pk>/checklist/", views.manage_checklist, name="manage-checklist"),
+    path("<int:pk>/edit-goods-licence/", views.edit_goods_licence, name="edit-goods-licence"),
 ]

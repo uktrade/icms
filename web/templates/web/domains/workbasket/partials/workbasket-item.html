@@ -8,7 +8,12 @@
     <a href="{{ icms_url('export:case-management', args=[process.pk]) }}">Manage</a>
   {% endif %}
 
-  {% elif process.process_type in ["OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication"] %}
+  {% elif process.process_type in [
+    "OpenIndividualLicenceApplication",
+    "WoodQuotaApplication",
+    "SanctionsAndAdhocApplication",
+    "DerogationsApplication",
+    ] %}
   {% if process.status in ["SUBMITTED", "WITHDRAWN"] %}
     {% if not process.case_owner %}
       <form method="post" action="{{ icms_url('import:take-ownership', args=[process.pk]) }}">
