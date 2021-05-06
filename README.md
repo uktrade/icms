@@ -13,7 +13,7 @@ Django / PostgreSQL port of it from the original Oracle-based system.
 
 ## Requirements
 
-- [Python 3.7+](https://www.python.org/downloads/)
+- [Python 3.9+](https://www.python.org/downloads/)
 - [PostgreSQL](https://www.postgresql.org/)
 - Development only
   - [Docker Compose 1.21.0+](https://docs.docker.com/compose/)

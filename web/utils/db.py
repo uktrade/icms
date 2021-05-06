@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Dict, Iterator, List
+from typing import Iterator, List, TypedDict
 
 import sqlparse
 from django.db import connections
@@ -7,12 +7,10 @@ from pygments import highlight
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexers.sql import MySqlLexer
 
-# TODO: When upgrading to python 3.8 TypedDict can be used. (ICMSLST-627)
-# class Query(TypedDict):
-#     sql: str
-#     time: str
 
-Query = Dict[str, str]
+class Query(TypedDict):
+    sql: str
+    time: str
 
 
 @contextmanager
