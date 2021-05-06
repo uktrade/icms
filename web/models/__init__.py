@@ -1,5 +1,5 @@
 from web.domains.case._import.derogations.models import *  # NOQA
-from web.domains.case._import.firearms.models import *  # NOQA
+from web.domains.case._import.fa_oil.models import *  # NOQA
 from web.domains.case._import.models import *  # NOQA
 from web.domains.case._import.sanctions.models import *  # NOQA
 from web.domains.case._import.wood.models import *  # NOQA

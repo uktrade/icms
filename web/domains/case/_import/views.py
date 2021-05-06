@@ -27,7 +27,7 @@ from web.utils.s3 import get_file_from_s3
 from .. import views as case_views
 from . import forms
 from .derogations.models import DerogationsApplication
-from .firearms.models import OpenIndividualLicenceApplication
+from .fa_oil.models import OpenIndividualLicenceApplication
 from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
@@ -61,7 +61,7 @@ def create_sanctions(request: HttpRequest) -> HttpResponse:
 def create_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
     model_class = OpenIndividualLicenceApplication
-    redirect_view = "import:firearms:edit-oil"
+    redirect_view = "import:fa-oil:edit-oil"
     return _create_application(request, import_application_type, model_class, redirect_view)
 
 
@@ -984,7 +984,7 @@ def authorisation(request, pk):
         application_errors = []
         if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
             if not application.openindividuallicenceapplication.checklists.exists():
-                url = reverse("import:firearms:manage-checklist", args=[application.pk])
+                url = reverse("import:fa-oil:manage-checklist", args=[application.pk])
                 html = f"<a href='{url}'>Please complete checklist.</a>"
                 application_errors.append(html)
 

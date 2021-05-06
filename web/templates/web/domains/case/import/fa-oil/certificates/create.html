@@ -1,7 +1,6 @@
-{% extends "layout/sidebar.html" %}
+{% extends "flow/task-base.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
-
 
 {% block sidebar %}
   {% include "partial/case/import/oil/sidebar.html" %}
@@ -12,17 +11,19 @@
   <ul class="menu-out flow-across">
     <li>
       <a
-        href="{{ icms_url('import:firearms:list-import-contacts', kwargs={'pk': process.pk}) }}"
+        href="{{ icms_url('import:fa-oil:list-user-import-certificates', kwargs={'pk': process.pk}) }}"
         class="prev-link">
-        Details of Who Bought From
+        Certificates
       </a>
     </li>
   </ul>
 </div>
 {% endblock %}
 
+
+
 {% block main_content %}
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
     {% for field in form %}
       {{fields.field(field)}}
     {% endfor %}

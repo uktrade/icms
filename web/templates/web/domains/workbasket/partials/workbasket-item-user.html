@@ -53,6 +53,6 @@
     <br/>
     <a href="{{ icms_url('import:withdraw-case', args=[process.pk]) }}">Pending Withdrawal</a>
   {% elif process.status == "IN_PROGRESS" %}
-    <a href="{{ icms_url('import:firearms:edit-oil', args=[process.pk]) }}">Resume</a>
+    <a href="{{ icms_url('import:fa-oil:edit-oil', args=[process.pk]) }}">Resume</a>
   {% endif %}
 {% endif %}

@@ -2,7 +2,7 @@ import pytest
 from django.test import Client
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplication
 from web.domains.importer.models import Importer
 from web.flow.models import Task

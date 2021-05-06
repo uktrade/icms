@@ -4,12 +4,12 @@
   {% if object.is_draft %}
     <a
       class="button small-button"
-      href="{{ icms_url('import:firearms:edit-constabulary-email', args=[process.pk, object.pk]) }}">
+      href="{{ icms_url('import:fa-oil:edit-constabulary-email', args=[process.pk, object.pk]) }}">
       Edit/Send
     </a>
     <form
       method="post"
-      action="{{ icms_url('import:firearms:delete-constabulary-email', args=[process.pk, object.pk]) }}">
+      action="{{ icms_url('import:fa-oil:delete-constabulary-email', args=[process.pk, object.pk]) }}">
       {{ csrf_input }}
       <button
         type="submit"
@@ -20,7 +20,7 @@
   {% else %}
     <a
       class="button small-button"
-      href="{{ icms_url('import:firearms:add-response-constabulary-email', args=[process.pk, object.pk]) }}">
+      href="{{ icms_url('import:fa-oil:add-response-constabulary-email', args=[process.pk, object.pk]) }}">
       Record Response
     </a>
   {% endif %}

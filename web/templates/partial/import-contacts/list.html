@@ -33,7 +33,7 @@
           <td>
             <a
               href="{{ icms_url(
-                         'import:firearms:edit-import-contact',
+                         'import:fa-oil:edit-import-contact',
                          kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
               class="button small-button icon-pencil">
               Edit
@@ -51,12 +51,12 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ icms_url('import:firearms:create-import-contact', kwargs={'pk': process.pk, 'entity': 'legal'}) }}"
+          href="{{ icms_url('import:fa-oil:create-import-contact', kwargs={'pk': process.pk, 'entity': 'legal'}) }}"
           class="button small-button icon-plus">
         Add Who Bought From (Legal Person)
         </a>
         <a
-          href="{{ icms_url('import:firearms:create-import-contact', kwargs={'pk': process.pk, 'entity': 'natural'}) }}"
+          href="{{ icms_url('import:fa-oil:create-import-contact', kwargs={'pk': process.pk, 'entity': 'natural'}) }}"
           class="button small-button icon-plus">
         Add Who Bought From (Natural Person)
         </a>

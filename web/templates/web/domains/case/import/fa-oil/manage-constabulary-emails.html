@@ -150,12 +150,12 @@
             <td>
               {% if constabulary_email.is_draft %}
                 <a
-                  href="{{ icms_url('import:firearms:edit-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  href="{{ icms_url('import:fa-oil:edit-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
                   Edit/Send
                 </a>
                 <form
                   method="post"
-                  action="{{ icms_url('import:firearms:delete-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  action="{{ icms_url('import:fa-oil:delete-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
                   {{ csrf_input }}
                   <button
                     type="submit"
@@ -165,7 +165,7 @@
                 </form>
               {% else %}
                 <a
-                  href="{{ icms_url('import:firearms:add-response-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
+                  href="{{ icms_url('import:fa-oil:add-response-constabulary-email', args=[process.pk, constabulary_email.pk]) }}">
                   Record Response
                 </a>
               {% endif %}
@@ -178,12 +178,12 @@
 
   <form
     method="post"
-    action="{{ icms_url('import:firearms:create-constabulary-email', args=[process.pk]) }}">
+    action="{{ icms_url('import:fa-oil:create-constabulary-email', args=[process.pk]) }}">
     {{ csrf_input }}
     <input type="submit" class="button small-button icon-plus" value="New Email" />
 
   {% for object in constabulary_emails %}
-    {% include 'web/domains/case/import/firearms/constabulary-email-box.html' %}
+    {% include 'web/domains/case/import/fa-oil/constabulary-email-box.html' %}
   {% endfor %}
 {% endblock %}
 

@@ -3,7 +3,7 @@ from django.test import Client
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.firearms.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
@@ -39,7 +39,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 200)
 
         self.client.post(
-            reverse("import:create-oil"),
+            reverse("import:create-fa-oil"),
             data={"importer": importer.pk, "importer_office": office.pk},
         )
         application = OpenIndividualLicenceApplication.objects.get()
@@ -63,10 +63,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.post(
-            reverse("import:create-oil"),
-            data={"importer": importer.pk},
-        )
+        response = self.client.post(reverse("import:create-fa-oil"), data={"importer": importer.pk})
         self.assertEqual(response.status_code, 200)
         self.assertInHTML(
             '<div class="error-message">You must enter this item', response.content.decode("utf-8")

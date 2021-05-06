@@ -34,7 +34,7 @@
         {% if not read_only %}
           <td>
             <form action="{{ icms_url(
-                             'import:firearms:toggle-verified-firearms',
+                             'import:fa-oil:toggle-verified-firearms',
                              kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
               {{ csrf_input }}
               {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
@@ -56,7 +56,7 @@
           <td>
             <a
               href="{{ icms_url(
-                         'import:firearms:view-verified-firearms',
+                         'import:fa-oil:view-verified-firearms',
                          kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
               View Details
             </a>

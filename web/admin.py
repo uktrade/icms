@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
 
-from web.domains.case._import.firearms.models import VerifiedCertificate
+from web.domains.case._import.fa_oil.models import VerifiedCertificate
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.domains.case.export.models import (
