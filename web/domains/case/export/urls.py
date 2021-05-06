@@ -11,6 +11,7 @@ urlpatterns = [
     path("case/<int:pk>/take_ownership/", views.take_ownership, name="case-take-ownership"),
     path("case/<int:pk>/release_ownership/", views.release_ownership, name="release-ownership"),
     path("case/<int:pk>/management/", views.management, name="case-management"),
+    # notes
     path("case/<int:pk>/management/notes/", views.list_notes, name="list-notes"),
     path("case/<int:pk>/management/notes/add/", views.add_note, name="add-note"),
     path(
@@ -29,9 +30,19 @@ urlpatterns = [
         name="unarchive-note",
     ),
     path(
-        "case/<int:application_pk>/management/notes/<int:note_pk>/files/<int:file_pk>",
-        views.archive_note_file,
-        name="archive-note-file",
+        "case/<int:application_pk>/notes/<int:note_pk>/add-document/",
+        views.add_note_document,
+        name="add-note-document",
+    ),
+    path(
+        "case/<int:application_pk>/notes/<int:note_pk>/view-document/<int:file_pk>",
+        views.view_note_document,
+        name="view-note-document",
+    ),
+    path(
+        "case/<int:application_pk>/management/notes/<int:note_pk>/delete-document/<int:file_pk>",
+        views.delete_note_document,
+        name="delete-note-document",
     ),
     # TODO: add certificate of free sale URLs
 ]

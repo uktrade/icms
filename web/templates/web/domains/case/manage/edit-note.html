@@ -31,19 +31,19 @@
       <div class="row">
         <div class="three columns"></div>
         <div class="six columns">
-          <form method="post" 
+          <form method="post"
                 action="{{ icms_url(url_namespace + ':edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}"
                 enctype="multipart/form-data">
             {{ csrf_input }}
             {{ note_form.as_p() }}
-            <p>Selected files:</p>
-            <p>
-              <label>Documents</label>
-            </p>
-            <div id="fileList"></div>
             <button type="submit" class="button primary-button">Save</button>
           </form>
-          {% if note.files.exists() %}
+
+        <br>
+        <p>
+          <label>Documents</label>
+        </p>
+        {% if note.files.active() %}
           <table class="setoutList">
             <thead>
               <tr>
@@ -56,7 +56,9 @@
             {% for document in note.files.active() %}
               <tr>
                 <td>
-                  {{ document.filename }}
+                  <a href="{{ icms_url(url_namespace + ':view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}">
+                    {{ document.filename }}
+                  </a>
                   <br />
                   <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
                 </td>
@@ -66,7 +68,7 @@
                 </td>
                 <td>
                   <form method="post"
-                        action={{ icms_url(url_namespace + ':archive-note-file', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}>
+                        action="{{ icms_url(url_namespace + ':delete-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}"">
                     {{ csrf_input }}
                     <button type="submit" class="button link-button-no-padding">Delete</button>
                   </form>
@@ -75,7 +77,19 @@
             {% endfor %}
             </tbody>
           </table>
-          {% endif %}
+        {% else %}
+          <div class="info-box info-box-info">
+            There are no documents attached
+          </div>
+        {% endif %}
+
+        <div class="container">
+          <div class="row">
+            <a class="button small-button" href="{{ icms_url(url_namespace + ':add-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}">
+              Add document
+            </a>
+          </div>
+        </div>
 
         </div>
         <div class="three columns"></div>

@@ -1,26 +1,19 @@
 from django import forms
 
 from web.domains.case.models import CASE_NOTE_STATUSES, CaseNote, UpdateRequest
+from web.domains.file.utils import ICMSFileField
+
+
+class DocumentForm(forms.Form):
+    document = ICMSFileField(required=True)
 
 
 class CaseNoteForm(forms.ModelForm):
     status = forms.ChoiceField(choices=CASE_NOTE_STATUSES)
 
-    # TODO: change UI to use single-file uploads and use ICMSFileField
-    files = forms.FileField(
-        required=False,
-        label="Upload New Documents",
-        widget=forms.ClearableFileInput(attrs={"multiple": True, "onchange": "updateList()"}),
-    )
-
     class Meta:
         model = CaseNote
-        fields = ["status", "note", "files"]
-
-    def clean(self):
-        data = super().clean()
-        data.pop("files", None)
-        return data
+        fields = ["status", "note"]
 
 
 class CloseCaseForm(forms.Form):

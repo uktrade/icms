@@ -12,6 +12,7 @@ from web.domains.template.models import Template
 from web.flow.models import Task
 from web.models import ExportApplication, ImportApplication
 from web.notify import notify
+from web.utils.s3 import get_file_from_s3
 
 from . import forms, models
 from .fir import forms as fir_forms
@@ -68,19 +69,25 @@ def _unarchive_note(request, application_pk, note_pk, model_class, url_namespace
 
 
 def _edit_note(
-    request, application_pk, note_pk, model_class, url_namespace, process_template, base_template
-):
+    request: HttpRequest,
+    application_pk: int,
+    note_pk: int,
+    model_class: Type[Union[ImportApplication, ExportApplication]],
+    url_namespace: str,
+    process_template: str,
+    base_template: str,
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
+
         if request.POST:
             note_form = forms.CaseNoteForm(request.POST, instance=note)
-            files = request.FILES.getlist("files")
+
             if note_form.is_valid():
                 note_form.save()
-                for f in files:
-                    create_file_model(f, request.user, note.files)
+
                 return redirect(
                     reverse(
                         f"{url_namespace}:edit-note",
@@ -106,7 +113,71 @@ def _edit_note(
     )
 
 
-def archive_file_note(
+def _add_note_document(
+    request: HttpRequest,
+    application_pk: int,
+    note_pk: int,
+    model_class: Type[Union[ImportApplication, ExportApplication]],
+    url_namespace: str,
+    process_template: str,
+    base_template: str,
+) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application.get_task(model_class.SUBMITTED, "process")
+        note = application.case_notes.get(pk=note_pk)
+
+        if request.POST:
+            form = forms.DocumentForm(data=request.POST, files=request.FILES)
+            document = request.FILES.get("document")
+
+            if form.is_valid():
+                create_file_model(document, request.user, note.files)
+
+                return redirect(
+                    reverse(
+                        f"{url_namespace}:edit-note",
+                        kwargs={"application_pk": application_pk, "note_pk": note_pk},
+                    )
+                )
+        else:
+            form = forms.DocumentForm()
+
+        context = {
+            "process_template": process_template,
+            "base_template": base_template,
+            "process": application,
+            "form": form,
+            "note": note,
+            "url_namespace": url_namespace,
+        }
+
+    return render(
+        request=request,
+        template_name="web/domains/case/manage/add-note-document.html",
+        context=context,
+    )
+
+
+def view_note_document(
+    request: HttpRequest,
+    application_pk: int,
+    note_pk: int,
+    file_pk: int,
+    model_class: Union[Type[ExportApplication], Type[ImportApplication]],
+) -> HttpResponse:
+    application = get_object_or_404(model_class, pk=application_pk)
+    note = application.case_notes.get(pk=note_pk)
+    document = note.files.get(pk=file_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
+
+
+def delete_note_document(
     request: HttpRequest,
     application_pk: int,
     note_pk: int,
@@ -280,9 +351,14 @@ def _edit_fir(
 
         if request.POST:
             form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
+
+            # TODO: ICMSLST-655
             files = request.FILES.getlist("files")
+
             if form.is_valid():
                 fir = form.save()
+
+                # TODO: ICMSLST-655
                 for f in files:
                     create_file_model(f, request.user, fir.files)
 
@@ -445,9 +521,14 @@ def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
 
         if request.POST:
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
+
+            # TODO: ICMSLST-655
             files = request.FILES.getlist("files")
+
             if form.is_valid():
                 fir = form.save()
+
+                # TODO: ICMSLST-655
                 for f in files:
                     create_file_model(f, request.user, fir.files)
 

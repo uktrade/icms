@@ -242,7 +242,6 @@ class ImportApplication(WorkbasketBase, Process):
         related_name="import_applications_to",
     )
     variation_requests = models.ManyToManyField(VariationRequest)
-    case_notes = models.ManyToManyField(CaseNote)
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)

@@ -38,7 +38,7 @@
         <dd>{{ note.note|default('N/A', true) }}</dd>
         <dt class="bold">Documents</dt>
         <dd>
-          {% if note.files.exists() %}
+          {% if note.files.active() %}
             <table class="setoutList">
               <thead>
                 <tr>
@@ -47,10 +47,13 @@
                 </tr>
               </thead>
               <tbody>
-              {% for document in note.files.all() %}
+              {% for document in note.files.active() %}
                 <tr>
                   <td>
-                    {{ document.filename }}<br />
+                    <a href="{{ icms_url(url_namespace + ':view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}">
+                      {{ document.filename }}
+                    </a>
+                    <br />
                     <span class="extra-info">{{ document.file_size }}</span>
                   </td>
                   <td>

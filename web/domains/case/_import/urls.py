@@ -25,27 +25,15 @@ urlpatterns = [
         views.archive_withdrawal,
         name="archive-withdrawal",
     ),
-    path(
-        "case/<int:application_pk>/firs/list/",
-        views.list_firs,
-        name="list-firs",
-    ),
+    path("case/<int:application_pk>/firs/list/", views.list_firs, name="list-firs"),
     path(
         "case/<int:application_pk>/firs/<int:fir_pk>/respond/",
         views.respond_fir,
         name="respond-fir",
     ),
     # ILB Admin Case management
-    path(
-        "case/<int:pk>/take_ownership/",
-        views.take_ownership,
-        name="take-ownership",
-    ),
-    path(
-        "case/<int:pk>/release_ownership/",
-        views.release_ownership,
-        name="release-ownership",
-    ),
+    path("case/<int:pk>/take_ownership/", views.take_ownership, name="take-ownership"),
+    path("case/<int:pk>/release_ownership/", views.release_ownership, name="release-ownership"),
     path("case/<int:pk>/management/", views.manage_case, name="case-management"),
     path("case/<int:pk>/withdrawals/", views.manage_withdrawals, name="manage-withdrawals"),
     path(
@@ -58,13 +46,10 @@ urlpatterns = [
         views.close_update_requests,
         name="close-update-requests",
     ),
+    # notes
     path("case/<int:pk>/notes/", views.list_notes, name="list-notes"),
     path("case/<int:pk>/notes/add/", views.add_note, name="add-note"),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/edit/",
-        views.edit_note,
-        name="edit-note",
-    ),
+    path("case/<int:application_pk>/notes/<int:note_pk>/edit/", views.edit_note, name="edit-note"),
     path(
         "case/<int:application_pk>/notes/<int:note_pk>/archive/",
         views.archive_note,
@@ -76,10 +61,21 @@ urlpatterns = [
         name="unarchive-note",
     ),
     path(
-        "case/<int:application_pk>/notes/<int:note_pk>/files/<int:file_pk>",
-        views.archive_note_file,
-        name="archive-note-file",
+        "case/<int:application_pk>/notes/<int:note_pk>/add-document/",
+        views.add_note_document,
+        name="add-note-document",
     ),
+    path(
+        "case/<int:application_pk>/notes/<int:note_pk>/view-document/<int:file_pk>",
+        views.view_note_document,
+        name="view-note-document",
+    ),
+    path(
+        "case/<int:application_pk>/notes/<int:note_pk>/delete-document/<int:file_pk>",
+        views.delete_note_document,
+        name="delete-note-document",
+    ),
+    # further information requests
     path("case/<int:application_pk>/firs/", views.manage_firs, name="manage-firs"),
     path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),
     path("case/<int:application_pk>/firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
@@ -100,16 +96,8 @@ urlpatterns = [
         name="archive-fir-file",
     ),
     path("case/<int:pk>/prepare-response/", views.prepare_response, name="prepare-response"),
-    path(
-        "case/<int:pk>/cover-letter/",
-        views.edit_cover_letter,
-        name="edit-cover-letter",
-    ),
-    path(
-        "case/<int:pk>/licence/",
-        views.edit_licence,
-        name="edit-licence",
-    ),
+    path("case/<int:pk>/cover-letter/", views.edit_cover_letter, name="edit-cover-letter"),
+    path("case/<int:pk>/licence/", views.edit_licence, name="edit-licence"),
     path(
         "case/<int:pk>/endorsements/add/",
         views.add_endorsement,
@@ -135,20 +123,10 @@ urlpatterns = [
         views.preview_cover_letter,
         name="preview-cover-letter",
     ),
+    path("case/<int:pk>/licence/preview/", views.preview_licence, name="preview-licence"),
+    path("case/<int:pk>/authorisation/", views.authorisation, name="authorisation"),
     path(
-        "case/<int:pk>/licence/preview/",
-        views.preview_licence,
-        name="preview-licence",
-    ),
-    path(
-        "case/<int:pk>/authorisation/",
-        views.authorisation,
-        name="authorisation",
-    ),
-    path(
-        "case/<int:pk>/start-authorisation/",
-        views.start_authorisation,
-        name="start-authorisation",
+        "case/<int:pk>/start-authorisation/", views.start_authorisation, name="start-authorisation"
     ),
     path(
         "case/<int:pk>/cancel-authorisation/",

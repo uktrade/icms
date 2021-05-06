@@ -143,8 +143,6 @@ class ExportApplication(WorkbasketBase, Process):
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
-    case_notes = models.ManyToManyField(CaseNote)
-
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/export-case.html"
 
