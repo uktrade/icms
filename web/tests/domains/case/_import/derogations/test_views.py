@@ -49,9 +49,7 @@ class DerogationAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application.process_type, DerogationsApplication.PROCESS_TYPE)
 
         application_type = application.application_type
-        self.assertEqual(
-            application_type.type, ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
-        )
+        self.assertEqual(application_type.type, ImportApplicationType.Types.DEROGATION)
 
         task = application.tasks.get()
         self.assertEqual(task.task_type, "prepare")

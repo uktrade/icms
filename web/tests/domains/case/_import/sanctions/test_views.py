@@ -52,7 +52,7 @@ class SanctionsAndAdhocImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application.process_type, SanctionsAndAdhocApplication.PROCESS_TYPE)
 
         application_type = application.application_type
-        self.assertEqual(application_type.type, ImportApplicationType.TYPE_SANCTION_ADHOC)
+        self.assertEqual(application_type.type, ImportApplicationType.Types.SANCTION_ADHOC)
 
         task = application.tasks.get()
         self.assertEqual(task.task_type, "prepare")

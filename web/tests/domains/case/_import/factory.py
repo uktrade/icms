@@ -13,8 +13,7 @@ class OILApplicationFactory(factory.django.DjangoModelFactory):
     process_type = OpenIndividualLicenceApplication.PROCESS_TYPE
     application_type = factory.Iterator(
         ImportApplicationType.objects.filter(
-            type=ImportApplicationType.TYPE_FIREARMS_AMMUNITION_CODE,
-            sub_type=ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE,
+            type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.OIL
         )
     )
 
@@ -25,7 +24,7 @@ class OILApplicationFactory(factory.django.DjangoModelFactory):
 class SanctionsAndAdhocLicenseApplicationFactory(factory.django.DjangoModelFactory):
     process_type = SanctionsAndAdhocApplication.PROCESS_TYPE
     application_type = factory.Iterator(
-        ImportApplicationType.objects.filter(type=ImportApplicationType.TYPE_SANCTION_ADHOC)
+        ImportApplicationType.objects.filter(type=ImportApplicationType.Types.SANCTION_ADHOC)
     )
 
     class Meta:
@@ -40,9 +39,7 @@ class SanctionsAndAdhocApplicationGoodsFactory(factory.django.DjangoModelFactory
 class DerogationsApplicationFactory(factory.django.DjangoModelFactory):
     process_type = DerogationsApplication.PROCESS_TYPE
     application_type = factory.Iterator(
-        ImportApplicationType.objects.filter(
-            type=ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
-        )
+        ImportApplicationType.objects.filter(type=ImportApplicationType.Types.DEROGATION)
     )
 
     class Meta:

@@ -14,24 +14,19 @@ from web.flow.models import Process
 
 
 class ImportApplicationType(models.Model):
-    TYPE_FIREARMS_AMMUNITION_CODE = "FA"
-    TYPE_SANCTION_ADHOC = "SAN_ADHOC_TEMP"  # TODO: missing from legacy data extract, hence TEMP
-    TYPE_WOOD_QUOTA = "WD"
-    TYPE_DEGROGATION_FROM_SANCTIONS_BAN = "SAN"
+    class Types(models.TextChoices):
+        FIREARMS = ("FA", "Firearms and Ammunition")
+        DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
+        # TODO: missing from legacy data extract, hence TEMP
+        SANCTION_ADHOC = ("SAN_ADHOC_TEMP", "Sanctions and Adhoc")
+        WOOD_QUOTA = ("WD", "Wood (Quota)")
 
-    TYPE = (
-        (TYPE_FIREARMS_AMMUNITION_CODE, "Firearms and Ammunition"),
-        (TYPE_DEGROGATION_FROM_SANCTIONS_BAN, "Derogation from Sanctions Import Ban"),
-        (TYPE_SANCTION_ADHOC, "Sanctions and Adhoc"),
-        (TYPE_WOOD_QUOTA, "Wood (Quota)"),
-    )
-
-    SUBTYPE_OPEN_INDIVIDUAL_LICENCE = "OIL"
-    SUBTYPE = ((SUBTYPE_OPEN_INDIVIDUAL_LICENCE, "Open Individual Import Licence"),)
+    class SubTypes(models.TextChoices):
+        OIL = ("OIL", "Open Individual Import Licence")
 
     is_active = models.BooleanField(blank=False, null=False)
-    type = models.CharField(max_length=70, blank=False, null=False, choices=TYPE)
-    sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SUBTYPE)
+    type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
+    sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SubTypes.choices)
     licence_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField(blank=False, null=False)

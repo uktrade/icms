@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, Union
 
 import weasyprint
 from django.conf import settings
@@ -41,40 +41,58 @@ class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_derogations(request: HttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.TYPE_DEGROGATION_FROM_SANCTIONS_BAN
+    import_application_type = ImportApplicationType.Types.DEROGATION
     model_class = DerogationsApplication
     redirect_view = "import:derogations:edit-derogations"
-    return _create_application(request, import_application_type, model_class, redirect_view)
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_sanctions(request: HttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.TYPE_SANCTION_ADHOC
+    import_application_type = ImportApplicationType.Types.SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
     redirect_view = "import:sanctions:edit-application"
-    return _create_application(request, import_application_type, model_class, redirect_view)
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_oil(request: HttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
+    import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
     redirect_view = "import:fa-oil:edit-oil"
-    return _create_application(request, import_application_type, model_class, redirect_view)
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_wood_quota(request: HttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.TYPE_WOOD_QUOTA
+    import_application_type = ImportApplicationType.Types.WOOD_QUOTA
     model_class = WoodQuotaApplication
     redirect_view = "import:wood:edit-quota"
 
     return _create_application(
         request,
-        import_application_type,
+        import_application_type,  # type: ignore[arg-type]
         model_class,
         redirect_view,
         form_class=forms.CreateWoodQuotaApplicationForm,
@@ -83,7 +101,7 @@ def create_wood_quota(request: HttpRequest) -> HttpResponse:
 
 def _create_application(
     request: HttpRequest,
-    import_application_type: str,
+    import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
     model_class: Type[ImportApplication],
     redirect_view: str,
     form_class: Type[forms.CreateImportApplicationForm] = None,

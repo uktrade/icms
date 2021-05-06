@@ -53,7 +53,7 @@ class ImportApplicationTest(TestCase):
         return ImportApplication.objects.create(
             is_active=True,
             application_type=ImportApplicationType.objects.get(
-                type=ImportApplicationType.TYPE_SANCTION_ADHOC
+                type=ImportApplicationType.Types.SANCTION_ADHOC
             ),
             created_by=UserFactory(is_active=True),
             last_updated_by=UserFactory(is_active=True),

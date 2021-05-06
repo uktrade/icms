@@ -46,10 +46,8 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application.process_type, OpenIndividualLicenceApplication.PROCESS_TYPE)
 
         application_type = application.application_type
-        self.assertEqual(application_type.type, ImportApplicationType.TYPE_FIREARMS_AMMUNITION_CODE)
-        self.assertEqual(
-            application_type.sub_type, ImportApplicationType.SUBTYPE_OPEN_INDIVIDUAL_LICENCE
-        )
+        self.assertEqual(application_type.type, ImportApplicationType.Types.FIREARMS)
+        self.assertEqual(application_type.sub_type, ImportApplicationType.SubTypes.OIL)
 
         task = application.tasks.get()
         self.assertEqual(task.task_type, "prepare")
