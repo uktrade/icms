@@ -72,7 +72,7 @@ class ExportApplication(WorkbasketBase, Process):
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
     )
-    reference = models.CharField(max_length=50, blank=True, null=True)
+    reference = models.CharField(max_length=100, blank=True, null=True)
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
     )

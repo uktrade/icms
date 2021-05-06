@@ -6,7 +6,7 @@ from ..models import ImportApplication
 
 
 class WoodContractFile(File):
-    reference = models.CharField(max_length=50, blank=False, null=False)
+    reference = models.CharField(max_length=100, blank=False, null=False)
     contract_date = models.DateField(blank=False, null=False)
 
 

@@ -15,7 +15,7 @@ class Section5Authority(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     reference = models.CharField(
-        max_length=50,
+        max_length=100,
         blank=False,
         null=True,
         help_text="Section 5 Authority reference. Example format: '14/A/D/0001'.",

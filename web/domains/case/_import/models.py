@@ -157,7 +157,7 @@ class ImportApplication(WorkbasketBase, Process):
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
     )
-    reference = models.CharField(max_length=50, blank=True, null=True)
+    reference = models.CharField(max_length=100, blank=True, null=True)
     applicant_reference = models.CharField(max_length=500, blank=True, null=True)
     submit_datetime = models.DateTimeField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)

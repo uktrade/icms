@@ -22,7 +22,7 @@ class AccessRequest(WorkbasketBase, Process):
     CLOSED = "CLOSED"
     STATUSES = ((SUBMITTED, "Submitted"), (CLOSED, "Closed"))
 
-    reference = models.CharField(max_length=50, blank=False, null=False)
+    reference = models.CharField(max_length=100, blank=False, null=False)
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=SUBMITTED
     )

@@ -40,7 +40,8 @@ showmigrations: ## make db migrations
 
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations web
+	docker-compose run --rm web python ./manage.py makemigrations web && \
+	docker-compose run --rm web chown "${UID}" web/migrations/*.py
 
 migrate: ## execute db migration
 	unset UID && \

@@ -36,7 +36,7 @@ class FirearmsAuthority(models.Model):
     objects = ActiveFirearmsAuthorityManager()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    reference = models.CharField(max_length=50, blank=False, null=True)
+    reference = models.CharField(max_length=100, blank=False, null=True)
     certificate_type = models.CharField(
         max_length=20, choices=CERTIFICATE_TYPES, blank=False, null=True
     )
