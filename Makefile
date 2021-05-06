@@ -15,6 +15,9 @@ help: ## Show this screen
 	@echo ""
 
 ##@ Local
+mypy: ## run mypy
+	unset UID && .venv/bin/python -m mypy web config
+
 flake8: ## run flake8
 	unset UID && .venv/bin/python -m flake8
 
@@ -77,7 +80,7 @@ docker_isort: ## run isort in check mode
 	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m isort -j 4 --check .
 
-mypy: ## run mypy
+docker_mypy: ## run mypy
 	unset UID && \
 	ICMS_DEBUG=False \
 	docker-compose run --rm web mypy web config
