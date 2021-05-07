@@ -27,6 +27,7 @@ from web.utils.s3 import get_file_from_s3
 from .. import views as case_views
 from . import forms
 from .derogations.models import DerogationsApplication
+from .fa_dfl.models import DFLApplication
 from .fa_oil.models import OpenIndividualLicenceApplication
 from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
 from .sanctions.models import SanctionsAndAdhocApplication
@@ -74,6 +75,21 @@ def create_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
     redirect_view = "import:fa-oil:edit-oil"
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
+    import_application_type = ImportApplicationType.SubTypes.DFL
+    model_class = DFLApplication
+    redirect_view = "import:fa-dfl:edit"
 
     return _create_application(
         request,

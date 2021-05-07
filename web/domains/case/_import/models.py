@@ -23,6 +23,7 @@ class ImportApplicationType(models.Model):
 
     class SubTypes(models.TextChoices):
         OIL = ("OIL", "Open Individual Import Licence")
+        DFL = ("DEACTIVATED", "Deactivated Firearms Import Licence")
 
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
