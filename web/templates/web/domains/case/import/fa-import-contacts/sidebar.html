@@ -1,0 +1,7 @@
+{% if process.process_type == "OpenIndividualLicenceApplication" %}
+  {% include "partial/case/import/fa-oil/sidebar.html" %}
+{% else %}
+  <ul class="menu-out">
+    <li>Sidebar missing for {{ process.process_type }}</li>
+  </ul>
+{% endif %}

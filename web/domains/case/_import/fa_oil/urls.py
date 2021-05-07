@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from . import views
 
@@ -75,17 +75,5 @@ urlpatterns = [
         "<int:application_pk>/authority/<int:authority_pk>/files/<int:file_pk>/view/",
         views.view_verified_certificate_file,
         name="view-verified-certificate-file",
-    ),
-    # Firearms and Ammunition - Import Contact
-    path("<int:pk>/import-contacts/", views.list_import_contacts, name="list-import-contacts"),
-    re_path(
-        "^(?P<pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/create/$",
-        views.create_import_contact,
-        name="create-import-contact",
-    ),
-    re_path(
-        "^(?P<application_pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/(?P<contact_pk>[0-9]+)/edit/$",
-        views.edit_import_contact,
-        name="edit-import-contact",
     ),
 ]

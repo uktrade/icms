@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django_select2 import forms as s2forms
 
-from web.domains.case._import.models import ImportContact
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -103,48 +102,6 @@ class UserImportCertificateForm(forms.ModelForm):
 
         # document is handled in the view
         data.pop("document", None)
-
-
-class ImportContactPersonForm(forms.ModelForm):
-    last_name = forms.CharField(required=True, label="Surname")
-
-    class Meta:
-        model = ImportContact
-        fields = (
-            "first_name",
-            "last_name",
-            "street",
-            "city",
-            "postcode",
-            "region",
-            "country",
-            "dealer",
-        )
-        labels = {
-            "first_name": "First Name",
-            "last_name": "Surname",
-            "dealer": "Did you buy from a dealer?",
-        }
-
-
-class ImportContactLegalEntityForm(forms.ModelForm):
-    class Meta:
-        model = ImportContact
-        fields = (
-            "first_name",
-            "registration_number",
-            "street",
-            "city",
-            "postcode",
-            "region",
-            "country",
-            "dealer",
-        )
-        labels = {
-            "first_name": "Name of Legal Person",
-            "registration_number": "Registration Number",
-            "dealer": "Did you buy from a dealer?",
-        }
 
 
 class SubmitOILForm(forms.Form):

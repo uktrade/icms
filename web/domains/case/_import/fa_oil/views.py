@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.models import ImportApplication, ImportContact
+from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -27,8 +27,6 @@ from .forms import (
     ChecklistFirearmsOILApplicationForm,
     ConstabularyEmailForm,
     ConstabularyEmailResponseForm,
-    ImportContactLegalEntityForm,
-    ImportContactPersonForm,
     PrepareOILForm,
     SubmitOILForm,
     UserImportCertificateForm,
@@ -234,138 +232,6 @@ def delete_user_import_certificate(
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def list_import_contacts(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "contacts": application.importcontact_set.all(),
-            "page_title": "Open Individual Import Licence - Contacts",
-        }
-
-        return render(request, "web/domains/case/import/fa-oil/import-contacts/list.html", context)
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-def create_import_contact(request, pk, entity):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        if entity == ImportContact.LEGAL:
-            Form = ImportContactLegalEntityForm
-        else:
-            Form = ImportContactPersonForm
-
-        if request.POST:
-            form = Form(data=request.POST, files=request.FILES)
-
-            if form.is_valid():
-                import_contact = form.save(commit=False)
-                import_contact.import_application = application
-                import_contact.entity = entity
-                import_contact.save()
-
-                # Assume known_bought_from is True if we are adding an import contact
-                if not application.know_bought_from:
-                    application.know_bought_from = True
-                    application.save()
-
-                return redirect(
-                    reverse(
-                        "import:fa-oil:edit-import-contact",
-                        kwargs={
-                            "application_pk": pk,
-                            "entity": entity,
-                            "contact_pk": import_contact.pk,
-                        },
-                    )
-                )
-        else:
-            form = Form()
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "form": form,
-            "page_title": "Open Individual Import Licence",
-        }
-
-        return render(
-            request, "web/domains/case/import/fa-oil/import-contacts/create.html", context
-        )
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-def edit_import_contact(request, application_pk, entity, contact_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-        person = get_object_or_404(ImportContact, pk=contact_pk)
-
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        if entity == ImportContact.LEGAL:
-            Form = ImportContactLegalEntityForm
-        else:
-            Form = ImportContactPersonForm
-
-        if request.POST:
-            form = Form(data=request.POST, instance=person)
-
-            if form.is_valid():
-                form.save()
-
-                return redirect(
-                    reverse(
-                        "import:fa-oil:edit-import-contact",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "entity": entity,
-                            "contact_pk": contact_pk,
-                        },
-                    )
-                )
-
-        else:
-            form = Form(instance=person)
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "form": form,
-            "page_title": "Open Individual Import Licence - Edit Import Contact",
-        }
-
-        return render(request, "web/domains/case/import/fa-oil/import-contacts/edit.html", context)
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
 def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -410,7 +276,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
         if application.know_bought_from and not application.importcontact_set.exists():
             page_errors = PageErrors(
                 page_name="Details of who bought from",
-                url=reverse("import:fa-oil:list-import-contacts", kwargs={"pk": pk}),
+                url=reverse("import:fa-list-import-contacts", kwargs={"pk": pk}),
             )
 
             page_errors.add(

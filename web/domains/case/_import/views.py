@@ -29,7 +29,13 @@ from . import forms
 from .derogations.models import DerogationsApplication
 from .fa_dfl.models import DFLApplication
 from .fa_oil.models import OpenIndividualLicenceApplication
-from .models import ImportApplication, ImportApplicationType, WithdrawImportApplication
+from .forms import ImportContactLegalEntityForm, ImportContactPersonForm
+from .models import (
+    ImportApplication,
+    ImportApplicationType,
+    ImportContact,
+    WithdrawImportApplication,
+)
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
 
@@ -434,7 +440,7 @@ def _view_firearms_oil_case(
 
 def _view_sanctions_and_adhoc_case(
     request: HttpRequest, application: SanctionsAndAdhocApplication
-) -> HttpRequest:
+) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -1126,3 +1132,149 @@ def view_file(request, application, related_file_model, file_pk):
     response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
 
     return response
+
+
+# TODO: Create ticket to talk about splitting up this file:
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def list_import_contacts(request, pk):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Open Individual Import Licence - Contacts",
+        }
+
+        return render(request, "web/domains/case/import/fa-import-contacts/list.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_import_contact(request, pk, entity):
+    with transaction.atomic():
+        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if entity == ImportContact.LEGAL:
+            Form = ImportContactLegalEntityForm
+        else:
+            Form = ImportContactPersonForm
+
+        if request.POST:
+            form = Form(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                import_contact = form.save(commit=False)
+                import_contact.import_application = application
+                import_contact.entity = entity
+                import_contact.save()
+
+                # Assume known_bought_from is True if we are adding an import contact
+                _update_know_bought_from(application)
+
+                return redirect(
+                    reverse(
+                        "import:fa-edit-import-contact",
+                        kwargs={
+                            "application_pk": pk,
+                            "entity": entity,
+                            "contact_pk": import_contact.pk,
+                        },
+                    )
+                )
+        else:
+            form = Form()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Open Individual Import Licence",
+        }
+
+        return render(request, "web/domains/case/import/fa-import-contacts/create.html", context)
+
+
+def _update_know_bought_from(application: ImportApplication) -> None:
+    # Map process types to the ImportApplication link to that class
+    process_type_link = {
+        OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
+    }
+
+    try:
+        link = process_type_link[application.process_type]
+    except KeyError:
+        raise NotImplementedError(
+            f"Unable to check know_bought_from: Unknown Firearm process_type: {application.process_type}"
+        )
+
+    # e.g. application.openindividuallicenceapplication to get access to OpenIndividualLicenceApplication
+    firearms_application: OpenIndividualLicenceApplication = getattr(application, link)
+
+    if not firearms_application.know_bought_from:
+        firearms_application.know_bought_from = True
+        firearms_application.save()
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_import_contact(request, application_pk, entity, contact_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        person = get_object_or_404(ImportContact, pk=contact_pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if entity == ImportContact.LEGAL:
+            Form = ImportContactLegalEntityForm
+        else:
+            Form = ImportContactPersonForm
+
+        if request.POST:
+            form = Form(data=request.POST, instance=person)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa-edit-import-contact",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "entity": entity,
+                            "contact_pk": contact_pk,
+                        },
+                    )
+                )
+
+        else:
+            form = Form(instance=person)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Open Individual Import Licence - Edit Import Contact",
+        }
+
+        return render(request, "web/domains/case/import/fa-import-contacts/edit.html", context)

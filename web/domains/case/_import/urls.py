@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import include, path, re_path
 
 from . import views
 
@@ -13,11 +13,34 @@ urlpatterns = [
     path("create/firearms/oil/", views.create_oil, name="create-fa-oil"),
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
     # Application urls
-    path("sanctions/", include("web.domains.case._import.sanctions.urls")),
-    path("firearms/dfl/", include("web.domains.case._import.fa_dfl.urls")),
-    path("firearms/oil/", include("web.domains.case._import.fa_oil.urls")),
-    path("wood/", include("web.domains.case._import.wood.urls")),
     path("derogations/", include("web.domains.case._import.derogations.urls")),
+    path("sanctions/", include("web.domains.case._import.sanctions.urls")),
+    path(
+        "firearms/",
+        include(
+            [
+                path("dfl/", include("web.domains.case._import.fa_dfl.urls")),
+                path("oil/", include("web.domains.case._import.fa_oil.urls")),
+                # Firearms and Ammunition - Import Contact urls
+                path(
+                    "<int:pk>/import-contacts/",
+                    views.list_import_contacts,
+                    name="fa-list-import-contacts",
+                ),
+                re_path(
+                    "^(?P<pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/create/$",
+                    views.create_import_contact,
+                    name="fa-create-import-contact",
+                ),
+                re_path(
+                    "^(?P<application_pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/(?P<contact_pk>[0-9]+)/edit/$",
+                    views.edit_import_contact,
+                    name="fa-edit-import-contact",
+                ),
+            ]
+        ),
+    ),
+    path("wood/", include("web.domains.case._import.wood.urls")),
     # Importer case management
     path("case/<int:pk>/withdraw/", views.withdraw_case, name="withdraw-case"),
     path(
