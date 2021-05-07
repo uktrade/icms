@@ -265,9 +265,10 @@ class ImportApplication(WorkbasketBase, Process):
 
 class ImportContact(models.Model):
     LEGAL = "legal"
+    NATURAL = "natural"
     ENTITIES = (
         (LEGAL, "Legal Person"),
-        ("natural", "Natural Person"),
+        (NATURAL, "Natural Person"),
     )
     DEALER_CHOICES = (
         ("yes", "Yes"),

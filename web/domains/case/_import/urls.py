@@ -1,4 +1,4 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 
 from . import views
 
@@ -27,13 +27,13 @@ urlpatterns = [
                     views.list_import_contacts,
                     name="fa-list-import-contacts",
                 ),
-                re_path(
-                    "^(?P<pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/create/$",
+                path(
+                    "<int:pk>/import-contacts/<entity>/create/",
                     views.create_import_contact,
                     name="fa-create-import-contact",
                 ),
-                re_path(
-                    "^(?P<application_pk>[0-9]+)/import-contacts/(?P<entity>legal|natural)/(?P<contact_pk>[0-9]+)/edit/$",
+                path(
+                    "<int:application_pk>/import-contacts/<entity>/<int:contact_pk>/edit/",
                     views.edit_import_contact,
                     name="fa-edit-import-contact",
                 ),

@@ -2,7 +2,6 @@
 
 
 {% block sidebar %}
-  {# TODO: Move to partials maybe? #}
   {% include "web/domains/case/import/fa-import-contacts/sidebar.html" %}
 {% endblock %}
 
@@ -11,6 +10,9 @@
 {% if process.process_type == "OpenIndividualLicenceApplication" %}
   {% set url = 'import:fa-oil:edit-oil' %}
   {% set label = 'Edit Open Individual Licence' %}
+{% elif process.process_type == "DFLApplication" %}
+  {% set url = 'import:fa-dfl:edit' %}
+  {% set label = 'Edit Deactivated Firearms Licence' %}
 {% else %}
   {% set url = 'import:UNKNOWN-EDIT-ACTION' %}
   {% set label = 'Unknown application type' %}

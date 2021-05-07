@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
                         to="web.importapplication",
                     ),
                 ),
+                ("know_bought_from", models.BooleanField(null=True)),
             ],
             bases=("web.importapplication",),
         ),

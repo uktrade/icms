@@ -1134,10 +1134,10 @@ def view_file(request, application, related_file_model, file_pk):
     return response
 
 
-# TODO: Create ticket to talk about splitting up this file:
+# TODO: Revisit these if we get around to ICMSLST-657
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def list_import_contacts(request, pk):
+def list_import_contacts(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
 
@@ -1159,7 +1159,9 @@ def list_import_contacts(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_import_contact(request, pk, entity):
+def create_import_contact(request: HttpRequest, pk: int, entity: str) -> HttpResponse:
+    form_class = _get_entity_form(entity)
+
     with transaction.atomic():
         application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
 
@@ -1168,13 +1170,8 @@ def create_import_contact(request, pk, entity):
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        if entity == ImportContact.LEGAL:
-            Form = ImportContactLegalEntityForm
-        else:
-            Form = ImportContactPersonForm
-
         if request.POST:
-            form = Form(data=request.POST, files=request.FILES)
+            form = form_class(data=request.POST, files=request.FILES)
 
             if form.is_valid():
                 import_contact = form.save(commit=False)
@@ -1196,7 +1193,7 @@ def create_import_contact(request, pk, entity):
                     )
                 )
         else:
-            form = Form()
+            form = form_class()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -1213,7 +1210,10 @@ def _update_know_bought_from(application: ImportApplication) -> None:
     # Map process types to the ImportApplication link to that class
     process_type_link = {
         OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
+        DFLApplication.PROCESS_TYPE: "dflapplication",
     }
+
+    supported_types = Union[OpenIndividualLicenceApplication, DFLApplication]
 
     try:
         link = process_type_link[application.process_type]
@@ -1223,7 +1223,7 @@ def _update_know_bought_from(application: ImportApplication) -> None:
         )
 
     # e.g. application.openindividuallicenceapplication to get access to OpenIndividualLicenceApplication
-    firearms_application: OpenIndividualLicenceApplication = getattr(application, link)
+    firearms_application: supported_types = getattr(application, link)
 
     if not firearms_application.know_bought_from:
         firearms_application.know_bought_from = True
@@ -1232,7 +1232,12 @@ def _update_know_bought_from(application: ImportApplication) -> None:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_import_contact(request, application_pk, entity, contact_pk):
+def edit_import_contact(
+    request: HttpRequest, application_pk: int, entity: str, contact_pk: int
+) -> HttpResponse:
+
+    form_class = _get_entity_form(entity)
+
     with transaction.atomic():
         application = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -1244,13 +1249,8 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        if entity == ImportContact.LEGAL:
-            Form = ImportContactLegalEntityForm
-        else:
-            Form = ImportContactPersonForm
-
         if request.POST:
-            form = Form(data=request.POST, instance=person)
+            form = form_class(data=request.POST, instance=person)
 
             if form.is_valid():
                 form.save()
@@ -1267,7 +1267,7 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
                 )
 
         else:
-            form = Form(instance=person)
+            form = form_class(instance=person)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -1278,3 +1278,19 @@ def edit_import_contact(request, application_pk, entity, contact_pk):
         }
 
         return render(request, "web/domains/case/import/fa-import-contacts/edit.html", context)
+
+
+def _get_entity_form(
+    entity: str,
+) -> Type[Union[ImportContactLegalEntityForm, ImportContactPersonForm]]:
+
+    if entity == ImportContact.LEGAL:
+        form_class = ImportContactLegalEntityForm
+
+    elif entity == ImportContact.NATURAL:
+        form_class = ImportContactPersonForm
+
+    else:
+        raise NotImplementedError(f"View does not support entity type: {entity}")
+
+    return form_class
