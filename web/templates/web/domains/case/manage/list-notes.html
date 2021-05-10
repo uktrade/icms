@@ -20,11 +20,7 @@
 
   <div class="list-actions">
     <ul class="menu-out flow-across">
-      {% if url_namespace == "export" %}
-        <form method="post" action="{{ icms_url('export:add-note', args=[process.pk]) }}" class="form-inline">
-      {% else %}
-        <form method="post" action="{{ icms_url('import:add-note', args=[process.pk]) }}" class="form-inline">
-      {% endif %}
+        <form method="post" action="{{ icms_url('case:add-note', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="form-inline">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button icon-plus">New Case note</button>
       </form>

@@ -2,11 +2,10 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 
 from web.domains.case.forms import CloseCaseForm
 from web.domains.template.models import Template
@@ -14,7 +13,6 @@ from web.flow.models import Task
 from web.notify.email import send_email
 from web.views import ModelCreateView
 
-from .. import views as case_views
 from .forms import (
     NewExportApplicationForm,
     PrepareCertManufactureForm,
@@ -252,93 +250,4 @@ def management(request, pk):
 
     return render(
         request=request, template_name="web/domains/case/export/management.html", context=context
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def list_notes(request, pk):
-    process_template = "web/domains/case/export/partials/process.html"
-    base_template = "flow/task-manage-export.html"
-    return case_views._list_notes(
-        request, pk, ExportApplication, "export", process_template, base_template
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def add_note(request, pk):
-    return case_views._add_note(request, pk, ExportApplication, "export")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def archive_note(request, application_pk, note_pk):
-    return case_views._archive_note(request, application_pk, note_pk, ExportApplication, "export")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def unarchive_note(request, application_pk, note_pk):
-    return case_views._unarchive_note(request, application_pk, note_pk, ExportApplication, "export")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def edit_note(request: HttpRequest, application_pk: int, note_pk: int) -> HttpResponse:
-    process_template = "web/domains/case/export/partials/process.html"
-    base_template = "flow/task-manage-export.html"
-
-    return case_views._edit_note(
-        request,
-        application_pk,
-        note_pk,
-        ExportApplication,
-        "export",
-        process_template,
-        base_template,
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def add_note_document(request: HttpRequest, application_pk: int, note_pk: int) -> HttpResponse:
-    process_template = "web/domains/case/export/partials/process.html"
-    base_template = "flow/task-manage-export.html"
-
-    return case_views._add_note_document(
-        request,
-        application_pk,
-        note_pk,
-        ExportApplication,
-        "export",
-        process_template,
-        base_template,
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_GET
-def view_note_document(
-    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
-) -> HttpResponse:
-
-    return case_views.view_note_document(
-        request, application_pk, note_pk, file_pk, ExportApplication
-    )
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def delete_note_document(
-    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
-) -> HttpResponse:
-
-    return case_views.delete_note_document(
-        request, application_pk, note_pk, file_pk, ExportApplication, "export"
     )

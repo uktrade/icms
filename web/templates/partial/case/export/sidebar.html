@@ -3,6 +3,14 @@
   <li>
     <a href="{{ icms_url('export:case-management', args=[object.pk]) }}">Case {{ object.pk }}</a>
   </li>
+  {# TODO: add everything importer has (web/templates/partial/case/import/sidebar-management.html)
+     as working on tickets:
+       - ICMSLST-665
+       - ICMSLST-666
+       - ICMSLST-667
+       - ICMSLST-668
+       - ICMSLST-669
+  #}
   <li>
     <a href="#">Application Withdrawals (x/x)</a>
   </li>
@@ -13,7 +21,7 @@
     <a href="#">Further Information Requests (x/x)</a>
   </li>
   <li>
-    <a href="{{ icms_url('export:list-notes', args=[object.pk]) }}">
+    <a href="{{ icms_url('case:list-notes', kwargs={'application_pk': object.pk, 'case_type': 'export'}) }}">
       Case Notes ({{ object.case_notes.completed().count() }}/{{object.case_notes.active().count()}})
     </a>
   </li>

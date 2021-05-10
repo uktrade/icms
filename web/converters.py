@@ -6,3 +6,16 @@ class NegativeIntConverter:
 
     def to_url(self, value):
         return "%d" % value
+
+
+class CaseTypeConverter:
+    regex = "import|export|access"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        if value not in ["import", "export", "access"]:
+            raise ValueError
+
+        return value

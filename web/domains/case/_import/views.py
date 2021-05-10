@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
@@ -497,95 +497,6 @@ def _view_case(request: HttpRequest, application: ImportApplication) -> HttpResp
         "page_title": application.application_type.get_type_description(),
     }
     return render(request, "web/domains/case/import/view_case.html", context)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def list_notes(request, pk):
-    process_template = "web/domains/case/import/partials/process.html"
-    base_template = "flow/task-manage-import.html"
-    return case_views._list_notes(
-        request, pk, ImportApplication, "import", process_template, base_template
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def add_note(request, pk):
-    return case_views._add_note(request, pk, ImportApplication, "import")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def archive_note(request, application_pk, note_pk):
-    return case_views._archive_note(request, application_pk, note_pk, ImportApplication, "import")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def unarchive_note(request, application_pk, note_pk):
-    return case_views._unarchive_note(request, application_pk, note_pk, ImportApplication, "import")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def edit_note(request: HttpRequest, application_pk: int, note_pk: int) -> HttpResponse:
-    process_template = "web/domains/case/import/partials/process.html"
-    base_template = "flow/task-manage-import.html"
-
-    return case_views._edit_note(
-        request,
-        application_pk,
-        note_pk,
-        ImportApplication,
-        "import",
-        process_template,
-        base_template,
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def add_note_document(request: HttpRequest, application_pk: int, note_pk: int) -> HttpResponse:
-    process_template = "web/domains/case/import/partials/process.html"
-    base_template = "flow/task-manage-import.html"
-
-    return case_views._add_note_document(
-        request,
-        application_pk,
-        note_pk,
-        ImportApplication,
-        "import",
-        process_template,
-        base_template,
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_GET
-def view_note_document(
-    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
-) -> HttpResponse:
-
-    return case_views.view_note_document(
-        request, application_pk, note_pk, file_pk, ImportApplication
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def delete_note_document(
-    request: HttpRequest, application_pk: int, note_pk: int, file_pk: int
-) -> HttpResponse:
-
-    return case_views.delete_note_document(
-        request, application_pk, note_pk, file_pk, ImportApplication, "import"
-    )
 
 
 @login_required

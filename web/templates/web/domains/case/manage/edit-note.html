@@ -1,9 +1,8 @@
 {% extends base_template %}
 
-
 {% block content_actions_link %}
   <a
-    href="{{ icms_url(url_namespace + ':list-notes', args=[process.pk]) }}"
+    href="{{ icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
     class="prev-link">
     Manage Notes
   </a>
@@ -17,12 +16,12 @@
       </legend>
 
       {% if note.is_active %}
-        <form method="post" action="{{ icms_url(url_namespace + ':archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
+        <form method="post" action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}" class="form-inline">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
           <button type="submit" class="small-button icon-bin">Delete</button>
         </form>
       {% else %}
-        <form method="post" action="{{ icms_url(url_namespace + ':unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}" class="form-inline">
+        <form method="post" action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}" class="form-inline">
           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
           <button type="submit" class="small-button icon-bin">Restore</button>
         </form>
@@ -32,7 +31,7 @@
         <div class="three columns"></div>
         <div class="six columns">
           <form method="post"
-                action="{{ icms_url(url_namespace + ':edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}"
+                action="{{ icms_url('case:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}"
                 enctype="multipart/form-data">
             {{ csrf_input }}
             {{ note_form.as_p() }}
@@ -56,7 +55,7 @@
             {% for document in note.files.active() %}
               <tr>
                 <td>
-                  <a href="{{ icms_url(url_namespace + ':view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}">
+                  <a href="{{ icms_url('case:view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
                     {{ document.filename }}
                   </a>
                   <br />
@@ -68,7 +67,7 @@
                 </td>
                 <td>
                   <form method="post"
-                        action="{{ icms_url(url_namespace + ':delete-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}"">
+                        action="{{ icms_url('case:delete-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
                     {{ csrf_input }}
                     <button type="submit" class="button link-button-no-padding">Delete</button>
                   </form>
@@ -85,7 +84,7 @@
 
         <div class="container">
           <div class="row">
-            <a class="button small-button" href="{{ icms_url(url_namespace + ':add-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}">
+            <a class="button small-button" href="{{ icms_url('case:add-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}">
               Add document
             </a>
           </div>

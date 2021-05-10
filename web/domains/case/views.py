@@ -1,16 +1,18 @@
 from typing import Type, Union
 
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.models import ExportApplication, ImportApplication
+from web.models import AccessRequest, ExportApplication, ImportApplication
 from web.notify import notify
 from web.utils.s3 import get_file_from_s3
 
@@ -18,22 +20,52 @@ from . import forms, models
 from .fir import forms as fir_forms
 from .fir.models import FurtherInformationRequest
 
+ImpOrExp = Union[ImportApplication, ExportApplication]
+ImpOrExpT = Type[ImpOrExp]
 
-def _list_notes(
-    request, application_pk, model_class, url_namespace, process_template, base_template
-):
+ImpOrExpOrAccess = Union[ImportApplication, ExportApplication, AccessRequest]
+ImpOrExpOrAccessT = Type[ImpOrExpOrAccess]
+
+
+def _get_class_imp_or_exp(case_type: str) -> ImpOrExpT:
+    if case_type == "import":
+        return ImportApplication
+    elif case_type == "export":
+        return ExportApplication
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def _get_class_imp_or_exp_or_access(case_type: str) -> ImpOrExpOrAccessT:
+    if case_type == "import":
+        return ImportApplication
+    elif case_type == "export":
+        return ExportApplication
+    elif case_type == "access":
+        return AccessRequest
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(
             klass=model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.SUBMITTED, "process")
         context = {
-            "process_template": process_template,
-            "base_template": base_template,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "notes": application.case_notes,
-            "url_namespace": url_namespace,
+            "case_type": case_type,
+            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
+
     return render(
         request=request,
         template_name="web/domains/case/manage/list-notes.html",
@@ -41,44 +73,81 @@ def _list_notes(
     )
 
 
-def _add_note(request, application_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def add_note(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
 
-    return redirect(reverse(f"{url_namespace}:list-notes", kwargs={"pk": application_pk}))
+    return redirect(
+        reverse(
+            "case:list-notes", kwargs={"application_pk": application_pk, "case_type": case_type}
+        )
+    )
 
 
-def _archive_note(request, application_pk, note_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def archive_note(
+    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         application.case_notes.filter(pk=note_pk).update(is_active=False)
 
-    return redirect(reverse(f"{url_namespace}:list-notes", kwargs={"pk": application_pk}))
+    return redirect(
+        reverse(
+            "case:list-notes", kwargs={"application_pk": application_pk, "case_type": case_type}
+        )
+    )
 
 
-def _unarchive_note(request, application_pk, note_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def unarchive_note(
+    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         application.case_notes.filter(pk=note_pk).update(is_active=True)
 
-    return redirect(reverse(f"{url_namespace}:list-notes", kwargs={"pk": application_pk}))
+    return redirect(
+        reverse(
+            "case:list-notes", kwargs={"application_pk": application_pk, "case_type": case_type}
+        )
+    )
 
 
-def _edit_note(
-    request: HttpRequest,
-    application_pk: int,
-    note_pk: int,
-    model_class: Type[Union[ImportApplication, ExportApplication]],
-    url_namespace: str,
-    process_template: str,
-    base_template: str,
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_note(
+    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
 
@@ -90,20 +159,25 @@ def _edit_note(
 
                 return redirect(
                     reverse(
-                        f"{url_namespace}:edit-note",
-                        kwargs={"application_pk": application_pk, "note_pk": note_pk},
+                        "case:edit-note",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "note_pk": note_pk,
+                            "case_type": case_type,
+                        },
                     )
                 )
         else:
             note_form = forms.CaseNoteForm(instance=note)
 
         context = {
-            "process_template": process_template,
-            "base_template": base_template,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "note_form": note_form,
             "note": note,
-            "url_namespace": url_namespace,
+            "case_type": case_type,
+            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
 
     return render(
@@ -113,17 +187,21 @@ def _edit_note(
     )
 
 
-def _add_note_document(
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_note_document(
     request: HttpRequest,
+    *,
     application_pk: int,
     note_pk: int,
-    model_class: Type[Union[ImportApplication, ExportApplication]],
-    url_namespace: str,
-    process_template: str,
-    base_template: str,
+    case_type: str,
 ) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
 
@@ -136,20 +214,25 @@ def _add_note_document(
 
                 return redirect(
                     reverse(
-                        f"{url_namespace}:edit-note",
-                        kwargs={"application_pk": application_pk, "note_pk": note_pk},
+                        "case:edit-note",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "note_pk": note_pk,
+                            "case_type": case_type,
+                        },
                     )
                 )
         else:
             form = forms.DocumentForm()
 
         context = {
-            "process_template": process_template,
-            "base_template": base_template,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "form": form,
             "note": note,
-            "url_namespace": url_namespace,
+            "case_type": case_type,
+            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
 
     return render(
@@ -159,14 +242,20 @@ def _add_note_document(
     )
 
 
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_GET
 def view_note_document(
     request: HttpRequest,
+    *,
     application_pk: int,
     note_pk: int,
     file_pk: int,
-    model_class: Union[Type[ExportApplication], Type[ImportApplication]],
+    case_type: str,
 ) -> HttpResponse:
-    application = get_object_or_404(model_class, pk=application_pk)
+    model_class = _get_class_imp_or_exp(case_type)
+
+    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
     note = application.case_notes.get(pk=note_pk)
     document = note.files.get(pk=file_pk)
     file_content = get_file_from_s3(document.path)
@@ -177,17 +266,23 @@ def view_note_document(
     return response
 
 
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
 def delete_note_document(
     request: HttpRequest,
+    *,
     application_pk: int,
     note_pk: int,
     file_pk: int,
-    model_class: Union[Type[ExportApplication], Type[ImportApplication]],
-    url_namespace: str,
+    case_type: str,
 ) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         document = application.case_notes.get(pk=note_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -195,8 +290,8 @@ def delete_note_document(
 
     return redirect(
         reverse(
-            f"{url_namespace}:edit-note",
-            kwargs={"application_pk": application_pk, "note_pk": note_pk},
+            "case:edit-note",
+            kwargs={"application_pk": application_pk, "note_pk": note_pk, "case_type": case_type},
         )
     )
 

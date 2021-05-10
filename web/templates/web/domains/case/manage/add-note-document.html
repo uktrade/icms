@@ -4,7 +4,7 @@
 
 {% block content_actions_link %}
   <a
-    href="{{ icms_url(url_namespace + ':edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk}) }}"
+    href="{{ icms_url('case:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}"
     class="prev-link">
     Edit note
   </a>
@@ -12,10 +12,11 @@
 
 {% block main_content %}
 
-  <h4>Add document</h4>
-  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+<h4>Add document</h4>
+
+{% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
   {{ fields.field(form.document) }}
   <input type="submit" name="action" class="primary-button button" value="Add" />
-  {% endcall %}
+{% endcall %}
 
 {% endblock %}

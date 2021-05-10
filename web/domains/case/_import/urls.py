@@ -71,35 +71,6 @@ urlpatterns = [
         views.close_update_requests,
         name="close-update-requests",
     ),
-    # notes
-    path("case/<int:pk>/notes/", views.list_notes, name="list-notes"),
-    path("case/<int:pk>/notes/add/", views.add_note, name="add-note"),
-    path("case/<int:application_pk>/notes/<int:note_pk>/edit/", views.edit_note, name="edit-note"),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/archive/",
-        views.archive_note,
-        name="archive-note",
-    ),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/unarchive/",
-        views.unarchive_note,
-        name="unarchive-note",
-    ),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/add-document/",
-        views.add_note_document,
-        name="add-note-document",
-    ),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/view-document/<int:file_pk>",
-        views.view_note_document,
-        name="view-note-document",
-    ),
-    path(
-        "case/<int:application_pk>/notes/<int:note_pk>/delete-document/<int:file_pk>",
-        views.delete_note_document,
-        name="delete-note-document",
-    ),
     # further information requests
     path("case/<int:application_pk>/firs/", views.manage_firs, name="manage-firs"),
     path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),

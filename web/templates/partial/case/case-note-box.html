@@ -3,27 +3,15 @@
     Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
   </legend>
 
-  {% if url_namespace == "export" %}
-    <a href="{{ icms_url('export:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
-      class="button small-button icon-pencil">
-      Edit
-    </a>
-  {% else %}
-    <a href="{{ icms_url('import:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
-      class="button small-button icon-pencil">
-      Edit
-    </a>
-  {% endif %}
+  <a href="{{ icms_url('case:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}"
+    class="button small-button icon-pencil">
+    Edit
+  </a>
+
   {% if note.status != 'DELETED' %}
-    {% if url_namespace == "export" %}
       <form method="post"
-            action="{{ icms_url('export:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
+            action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
             class="form-inline">
-    {% else %}
-      <form method="post"
-            action="{{ icms_url('import:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk }) }}"
-            class="form-inline">
-    {% endif %}
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
         <button type="submit" class="small-button icon-bin">Delete</button>
     </form>
@@ -50,7 +38,7 @@
               {% for document in note.files.active() %}
                 <tr>
                   <td>
-                    <a href="{{ icms_url(url_namespace + ':view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk}) }}">
+                    <a href="{{ icms_url('case:view-note-document', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
                       {{ document.filename }}
                     </a>
                     <br />

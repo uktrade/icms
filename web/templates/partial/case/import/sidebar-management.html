@@ -71,7 +71,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ icms_url('import:list-notes', args=[process.pk]) }}">
+    <a href="{{ icms_url('case:list-notes', kwargs={'case_type': 'import', 'application_pk': process.pk}) }}">
       Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
     </a>
   </li>
