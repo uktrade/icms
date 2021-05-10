@@ -8,6 +8,9 @@ class DFLApplication(ImportApplication):
 
     PROCESS_TYPE = "DFLApplication"
 
+    deactivated_firearm = models.BooleanField(verbose_name="Deactivated Firearm", default=True)
+    proof_checked = models.BooleanField(verbose_name="Proof Checked", default=False)
+
     know_bought_from = models.BooleanField(
         null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
     )

@@ -11,7 +11,11 @@
   {{ fields.field(form.contact) }}
 
   <h4>Firearms and Ammunition</h4>
-  <p>Placeholder</p>
+  {{ fields.field(form.applicant_reference) }}
+  {{ fields.field(form.deactivated_firearm, checkbox_label="Deactivated Firearm") }}
+  {{ fields.field(form.proof_checked, checkbox_label="I confirm that this firearm has been proof marked as required by UK or EU law where applicable") }}
+  {{ fields.field(form.origin_country) }}
+  {{ fields.field(form.consignment_country) }}
 
   <h4>Goods</h4>
   <p>Placeholder</p>

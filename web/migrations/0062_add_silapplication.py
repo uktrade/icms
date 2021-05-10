@@ -58,13 +58,6 @@ class Migration(migrations.Migration):
             bases=("web.importapplication",),
         ),
         migrations.AlterField(
-            model_name="dflapplication",
-            name="know_bought_from",
-            field=models.BooleanField(
-                null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
-            ),
-        ),
-        migrations.AlterField(
             model_name="importapplicationtype",
             name="sub_type",
             field=models.CharField(

@@ -25,7 +25,18 @@ class Migration(migrations.Migration):
                         to="web.importapplication",
                     ),
                 ),
-                ("know_bought_from", models.BooleanField(null=True)),
+                (
+                    "deactivated_firearm",
+                    models.BooleanField(default=True, verbose_name="Deactivated Firearm"),
+                ),
+                ("proof_checked", models.BooleanField(default=False, verbose_name="Proof Checked")),
+                (
+                    "know_bought_from",
+                    models.BooleanField(
+                        null=True,
+                        verbose_name="Do you know who you plan to buy/obtain these items from?",
+                    ),
+                ),
             ],
             bases=("web.importapplication",),
         ),
