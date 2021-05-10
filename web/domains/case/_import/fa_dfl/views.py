@@ -30,11 +30,7 @@ def edit_dlf(request: HttpRequest, pk: int) -> HttpResponse:
                 return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": pk}))
 
         else:
-            form = PrepareDFLForm(
-                instance=application,
-                # This will be needed when doing the rest of the form
-                # initial={"contact": request.user}
-            )
+            form = PrepareDFLForm(instance=application, initial={"contact": request.user})
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
