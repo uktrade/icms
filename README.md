@@ -83,6 +83,13 @@ A schema for the database can be generated using the following django-extensions
 
 - `python manage.py graph_models --output=output.png`
 
+## Updating package-lock.json
+Run the following to update the sub-dependencies of pinned packages:
+```bash
+npm i --package-lock-only
+npm audit fix
+```
+
 ## Rebuilding the database
 
 A complete reset of the application database can be performed using:
