@@ -29,6 +29,7 @@ from . import forms
 from .derogations.models import DerogationsApplication
 from .fa_dfl.models import DFLApplication
 from .fa_oil.models import OpenIndividualLicenceApplication
+from .fa_sil.models import SILApplication
 from .forms import ImportContactLegalEntityForm, ImportContactPersonForm
 from .models import (
     ImportApplication,
@@ -77,7 +78,7 @@ def create_sanctions(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_oil(request: HttpRequest) -> HttpResponse:
+def create_firearms_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
     redirect_view = "import:fa-oil:edit-oil"
@@ -97,6 +98,20 @@ def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
     model_class = DFLApplication
     redirect_view = "import:fa-dfl:edit"
 
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_firearms_sil(request: HttpRequest) -> HttpResponse:
+    import_application_type = ImportApplicationType.SubTypes.SIL
+    model_class = SILApplication
+    redirect_view = "import:fa-sil:edit"
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]

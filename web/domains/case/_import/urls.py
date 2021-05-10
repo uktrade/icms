@@ -10,7 +10,8 @@ urlpatterns = [
     path("create/sanctions/", views.create_sanctions, name="create-sanctions"),
     path("create/derogations/", views.create_derogations, name="create-derogations"),
     path("create/firearms/dfl/", views.create_firearms_dfl, name="create-fa-dfl"),
-    path("create/firearms/oil/", views.create_oil, name="create-fa-oil"),
+    path("create/firearms/oil/", views.create_firearms_oil, name="create-fa-oil"),
+    path("create/firearms/sil/", views.create_firearms_sil, name="create-fa-sil"),
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
     # Application urls
     path("derogations/", include("web.domains.case._import.derogations.urls")),
@@ -21,6 +22,7 @@ urlpatterns = [
             [
                 path("dfl/", include("web.domains.case._import.fa_dfl.urls")),
                 path("oil/", include("web.domains.case._import.fa_oil.urls")),
+                path("sil/", include("web.domains.case._import.fa_sil.urls")),
                 # Firearms and Ammunition - Import Contact urls
                 path(
                     "<int:pk>/import-contacts/",
