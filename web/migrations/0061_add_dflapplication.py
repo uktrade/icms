@@ -31,10 +31,30 @@ class Migration(migrations.Migration):
                 ),
                 ("proof_checked", models.BooleanField(default=False, verbose_name="Proof Checked")),
                 (
+                    "commodity_code",
+                    models.CharField(
+                        choices=[
+                            ("ex Chapter 93", "ex Chapter 93"),
+                            ("ex Chapter 97", "ex Chapter 97"),
+                        ],
+                        max_length=40,
+                        null=True,
+                        verbose_name="Commodity Code",
+                    ),
+                ),
+                (
                     "know_bought_from",
                     models.BooleanField(
                         null=True,
                         verbose_name="Do you know who you plan to buy/obtain these items from?",
+                    ),
+                ),
+                (
+                    "constabulary",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="web.constabulary",
                     ),
                 ),
             ],

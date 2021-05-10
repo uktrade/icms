@@ -155,7 +155,11 @@ class ImportApplication(WorkbasketBase, Process):
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
     )
     reference = models.CharField(max_length=100, blank=True, null=True)
-    applicant_reference = models.CharField(max_length=500, blank=True, null=True)
+
+    applicant_reference = models.CharField(
+        max_length=500, blank=True, null=True, verbose_name="Applicant's Reference"
+    )
+
     submit_datetime = models.DateTimeField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     variation_no = models.IntegerField(blank=False, null=False, default=0)
@@ -234,6 +238,7 @@ class ImportApplication(WorkbasketBase, Process):
         blank=True,
         null=True,
         related_name="import_applications_from",
+        verbose_name="Country Of Origin",
     )
     consignment_country = models.ForeignKey(
         Country,
@@ -241,6 +246,7 @@ class ImportApplication(WorkbasketBase, Process):
         blank=True,
         null=True,
         related_name="import_applications_to",
+        verbose_name="Country Of Consignment",
     )
     variation_requests = models.ManyToManyField(VariationRequest)
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)

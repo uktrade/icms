@@ -3,7 +3,7 @@
 {% import "forms/fields.html" as fields %}
 
 {% block sidebar %}
-    {% include "partial/case/import/fa-dfl/sidebar.html" %}
+  {% include "partial/case/import/fa-dfl/sidebar.html" %}
 {% endblock %}
 
 {% block form_content %}
@@ -18,14 +18,21 @@
   {{ fields.field(form.consignment_country) }}
 
   <h4>Goods</h4>
-  <p>Placeholder</p>
+  {{ fields.field(form.commodity_code) }}
+  {{ fields.field(form.constabulary) }}
 
   <h4>Details of who bought from</h4>
-  <p>Placeholder</p>
   {{ fields.field(form.know_bought_from) }}
 
 {% endblock %}
 
 {% block task_actions %}
-  <input type="submit" name="action" class="primary-button button" value="Save" />
+  <input type="submit" name="action" class="primary-button button" value="Save"/>
+{% endblock %}
+
+{% block subtasks %}
+  <h4>Goods Certificates</h4>
+  {% with read_only = false %}
+    {% include "partial/case/import/fa-dfl/goods-list.html" %}
+  {% endwith %}
 {% endblock %}

@@ -1235,7 +1235,12 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("reference", models.CharField(blank=True, max_length=50, null=True)),
-                ("applicant_reference", models.CharField(blank=True, max_length=500, null=True)),
+                (
+                    "applicant_reference",
+                    models.CharField(
+                        blank=True, max_length=500, null=True, verbose_name="Applicant's Reference"
+                    ),
+                ),
                 ("submit_datetime", models.DateTimeField(blank=True, null=True)),
                 ("create_datetime", models.DateTimeField(auto_now_add=True)),
                 ("variation_no", models.IntegerField(default=0)),
@@ -1318,6 +1323,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="import_applications_to",
                         to="web.country",
+                        verbose_name="Country Of Consignment",
                     ),
                 ),
                 (
@@ -1371,6 +1377,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="import_applications_from",
                         to="web.country",
+                        verbose_name="Country Of Origin",
                     ),
                 ),
                 (

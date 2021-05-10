@@ -1,0 +1,57 @@
+{% if goods_list %}
+  <table class="setoutList" id="tbl-search-results">
+    <thead>
+    <tr>
+      <th>Goods Description</th>
+      <th>Deactivated Certificate Reference</th>
+      <th>Issuing Country</th>
+      <th>File (size)</th>
+      {% if not read_only %}
+        <th>Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+
+    {% for row in goods_list %}
+      <tr class="result-row">
+        <td>{{ row.goods_description }}</td>
+        <td>{{ row.deactivated_certificate_reference }}</td>
+        <td>{{ row.issuing_country }}</td>
+        <td><a
+          href="{{ icms_url('import:fa-dfl:view-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}">
+          {{ row.filename }}</a> {{ row.human_readable_file_size() }}
+        </td>
+        {% if not read_only %}
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-dfl:edit-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"></a>
+
+            <form
+              action="{{ icms_url('import:fa-dfl:delete-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"
+              method="POST">
+              {{ csrf_input }}
+              <button role="action-button"
+                      type="submit"
+                      class="link-button button no-prompt-action tooltipstered icon-bin"
+                      aria-label="Delete"
+                      data-confirm="Are you sure you want to delete this record?">
+              </button>
+            </form>
+
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+
+  </table>
+
+{% else %}
+  <div class="info-box info-box-info">
+    There are no goods attached
+  </div>
+{% endif %}
+
+{% if not read_only %}
+  <a class="button small-button" href="{{ icms_url('import:fa-dfl:add-goods', kwargs={'pk': process.pk}) }}">Add
+    Goods</a>
+{% endif %}

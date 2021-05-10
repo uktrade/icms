@@ -1,0 +1,22 @@
+{% extends "web/domains/case/import/fa-dfl/add_goods_certificate.html" %}
+
+{% block main_content %}
+  <h4>Edit goods certificate</h4>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">Filename</label>
+    </div>
+    <div class="six columns">
+      <p>{{ form.instance.filename }}</p>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ fields.field(form.goods_description) }}
+    {{ fields.field(form.deactivated_certificate_reference) }}
+    {{ fields.field(form.issuing_country) }}
+    <input type="submit" name="action" class="primary-button button" value="Save"/>
+  {% endcall %}
+{% endblock %}
