@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 from guardian.shortcuts import get_users_with_perms
 
@@ -76,28 +78,25 @@ class PrepareDFLForm(forms.ModelForm):
         self.fields["consignment_country"].required = True
 
 
-class AddDLFGoodsCertificateForm(forms.Form):
+class AddDLFGoodsCertificateForm(forms.ModelForm):
     document = ICMSFileField(required=True)
 
-    goods_description = forms.CharField(
-        help_text=(
-            "The firearm entered here must correspond with the firearm listed on the deactivation certificate."
-            " You must list only one deactivated firearm per goods line."
-        ),
-        required=True,
-    )
+    class Meta:
+        model = models.DFLGoodsCertificate
+        fields = ("goods_description", "deactivated_certificate_reference", "issuing_country")
 
-    deactivated_certificate_reference = forms.CharField(
-        label="Deactivated Certificate Reference",
-        required=True,
-    )
+        help_texts = {
+            "goods_description": (
+                "The firearm entered here must correspond with the firearm listed on the deactivation certificate."
+                " You must list only one deactivated firearm per goods line."
+            )
+        }
 
-    issuing_country = forms.ModelChoiceField(
-        label="Issuing Country",
-        queryset=Country.objects.filter(
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["issuing_country"].queryset = Country.objects.filter(
             country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-        ),
-    )
+        )
 
 
 class EditDLFGoodsCertificateForm(forms.ModelForm):
