@@ -114,3 +114,55 @@ class PrepareSILForm(forms.ModelForm):
 
         if cleaned_data.get("section58_other") and not cleaned_data.get("other_description"):
             self.add_error("other_description", "You must enter this item")
+
+
+class SILGoodsSection1Form(forms.ModelForm):
+    class Meta:
+        models = models.SILGoodsSection1
+        fields = ("manufacture", "description", "quantity")
+
+
+class SILGoodsSection2Form(forms.ModelForm):
+    class Meta:
+        models = models.SILGoodsSection2
+        fields = ("manufacture", "description", "quantity")
+
+
+class SILGoodsSection5Form(forms.ModelForm):
+    class Meta:
+        models = models.SILGoodsSection5
+        fields = ("subsection", "manufacture", "description", "quantity", "unlimited_quantity")
+
+
+class SILGoodsSection582ObsoleteForm(forms.ModelForm):
+    class Meta:
+        models = models.SILGoodsSection582Obsolete
+        fields = (
+            "curiosity_ornament",
+            "acknowledgment",
+            "centrefire",
+            "manufacture",
+            "original_chambering",
+            "obsolete_calibre",
+            "description",
+            "quantity",
+        )
+
+
+class SILGoodsSection582Other(forms.ModelForm):
+    class Meta:
+        models = models.SILGoodsSection582Other
+        fields = (
+            "curiosity_ornament",
+            "acknowledgment",
+            "muzzle_loading",
+            "rimfire",
+            "rimfire_details",
+            "ignition",
+            "ignition_details",
+            "chamber",
+            "bore",
+            "bore_details",
+            "description",
+            "quantity",
+        )
