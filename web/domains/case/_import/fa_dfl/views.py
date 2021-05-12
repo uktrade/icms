@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -12,7 +13,12 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.utils.validation import ApplicationErrors
+from web.utils.validation import (
+    ApplicationErrors,
+    FieldError,
+    PageErrors,
+    create_page_errors,
+)
 
 from .. import views as import_views
 from .forms import (
@@ -193,8 +199,7 @@ def submit_dfl(request: HttpRequest, pk: int) -> HttpResponse:
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
-        # TODO: Add Validation (ICMSLST-551)
-        errors = ApplicationErrors()
+        errors = _get_dfl_errors(application)
 
         if request.POST:
             form = SubmitDFLForm(data=request.POST)
@@ -245,3 +250,40 @@ def submit_dfl(request: HttpRequest, pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/case/import/fa-dfl/submit.html", context)
+
+
+def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
+    errors = ApplicationErrors()
+
+    edit_url = reverse("import:fa-dfl:edit", kwargs={"pk": application.pk})
+
+    # Check main form
+    application_details_errors = PageErrors(page_name="Application details", url=edit_url)
+    application_form = PrepareDFLForm(data=model_to_dict(application), instance=application)
+    create_page_errors(application_form, application_details_errors)
+    errors.add(application_details_errors)
+
+    # Check goods certificates
+    if not application.goods_certificates.exists():
+        goods_errors = PageErrors(page_name="Goods Certificates", url=edit_url)
+        goods_errors.add(
+            FieldError(
+                field_name="Goods Certificate", messages=["At least one certificate must be added"]
+            )
+        )
+        errors.add(goods_errors)
+
+    # Check know bought from
+    if application.know_bought_from and not application.importcontact_set.exists():
+        page_errors = PageErrors(
+            page_name="Details of who bought from",
+            url=reverse("import:fa-list-import-contacts", kwargs={"pk": application.pk}),
+        )
+
+        page_errors.add(
+            FieldError(field_name="Person", messages=["At least one person must be added"])
+        )
+
+        errors.add(page_errors)
+
+    return errors

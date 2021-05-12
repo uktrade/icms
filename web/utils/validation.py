@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from django.forms import Form
+from django.forms import BaseForm
 from django.forms.utils import pretty_name
 
 
@@ -43,7 +43,7 @@ class ApplicationErrors:
         self.page_errors.append(page_errors)
 
 
-def create_page_errors(form: Form, page_errors: PageErrors) -> None:
+def create_page_errors(form: BaseForm, page_errors: PageErrors) -> None:
     """Convert Django form validation errors to FieldError and add them to the
     given PageErrors."""
 

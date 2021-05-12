@@ -1166,7 +1166,7 @@ def list_import_contacts(request: HttpRequest, pk: int) -> HttpResponse:
             "process": application,
             "task": task,
             "contacts": application.importcontact_set.all(),
-            "page_title": "Open Individual Import Licence - Contacts",
+            "page_title": "Firearms & Ammunition - Contacts",
         }
 
         return render(request, "web/domains/case/import/fa-import-contacts/list.html", context)
