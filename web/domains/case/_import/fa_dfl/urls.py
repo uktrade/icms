@@ -18,4 +18,5 @@ urlpatterns = [
             ]
         ),
     ),
+    path("<int:pk>/submit/", views.submit_dfl, name="submit"),
 ]

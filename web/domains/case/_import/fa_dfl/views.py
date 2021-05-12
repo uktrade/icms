@@ -4,17 +4,22 @@ from django.db import transaction
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
+from web.domains.template.models import Template
+from web.flow.models import Task
+from web.utils.validation import ApplicationErrors
 
 from .. import views as import_views
 from .forms import (
     AddDLFGoodsCertificateForm,
     EditDLFGoodsCertificateForm,
     PrepareDFLForm,
+    SubmitDFLForm,
 )
 from .models import DFLApplication
 
@@ -175,3 +180,68 @@ def delete_goods_certificate(
         document.save()
 
         return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": application_pk}))
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def submit_dfl(request: HttpRequest, pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(DFLApplication.objects.select_for_update(), pk=pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        # TODO: Add Validation (ICMSLST-551)
+        errors = ApplicationErrors()
+
+        if request.POST:
+            form = SubmitDFLForm(data=request.POST)
+
+            if form.is_valid() and not errors.has_errors():
+                application.status = ImportApplication.SUBMITTED
+                application.submit_datetime = timezone.now()
+
+                # TODO: Add back in when coming back to response preparation (ICMSLST-660)
+                # template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
+                # application.cover_letter = template.get_content(
+                #     {
+                #         "CONTACT_NAME": application.contact,
+                #         "LICENCE_NUMBER": None,  # TODO: Does this need adding?
+                #         "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
+                #         "LICENCE_END_DATE": None,  # TODO: Does this need adding?
+                #     }
+                # )
+
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
+
+                Task.objects.create(process=application, task_type="process", previous=task)
+
+                return redirect(reverse("home"))
+
+        else:
+            form = SubmitDFLForm()
+
+        declaration = Template.objects.filter(
+            is_active=True,
+            template_type=Template.DECLARATION,
+            application_domain=Template.IMPORT_APPLICATION,
+            template_code="IMA_GEN_DECLARATION",
+        ).first()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": _get_page_title("Submit Application"),
+            "form": form,
+            "declaration": declaration,
+            "errors": errors if errors.has_errors() else None,
+        }
+
+        return render(request, "web/domains/case/import/fa-dfl/submit.html", context)
