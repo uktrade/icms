@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="WithdrawImportApplication",
+            name="WithdrawApplication",
             fields=[
                 (
                     "id",
@@ -38,8 +38,18 @@ class Migration(migrations.Migration):
                 ("created_datetime", models.DateTimeField(auto_now_add=True)),
                 ("updated_datetime", models.DateTimeField(auto_now=True)),
                 (
+                    "export_application",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="withdrawals",
+                        to="web.exportapplication",
+                    ),
+                ),
+                (
                     "import_application",
                     models.ForeignKey(
+                        null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="withdrawals",
                         to="web.importapplication",
@@ -62,5 +72,27 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
+        ),
+        migrations.AddConstraint(
+            model_name="withdrawapplication",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("import_application__isnull", False),
+                    ("export_application__isnull", False),
+                    _connector="OR",
+                ),
+                name="application_one_null",
+            ),
+        ),
+        migrations.AddConstraint(
+            model_name="withdrawapplication",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("import_application__isnull", True),
+                    ("export_application__isnull", True),
+                    _connector="OR",
+                ),
+                name="application_one_not_null",
+            ),
         ),
     ]

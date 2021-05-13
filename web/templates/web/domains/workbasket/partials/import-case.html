@@ -22,6 +22,9 @@
     {% for task in process.tasks.all() %}
       {% if request.user.has_perm("web.reference_data_access") %}
         {% include 'web/domains/workbasket/partials/workbasket-item.html' %}
+
+        {# TODO: this is not the right thing, but we need to be able to test the system #}
+        {% include 'web/domains/workbasket/partials/workbasket-item-user.html' %}
       {% else %}
         {% include 'web/domains/workbasket/partials/workbasket-item-user.html' %}
       {% endif %}

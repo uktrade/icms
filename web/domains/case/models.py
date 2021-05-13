@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from web.domains.file.models import File
 from web.domains.user.models import User
@@ -131,3 +132,57 @@ class CaseNote(models.Model):
 
     class Meta:
         ordering = ["-create_datetime"]
+
+
+class WithdrawApplication(models.Model):
+    STATUS_OPEN = "open"
+    STATUS_REJECTED = "rejected"
+    STATUS_ACCEPTED = "accepted"
+
+    OPEN = (STATUS_OPEN, "OPEN")
+    REJECTED = (STATUS_REJECTED, "REJECTED")
+    ACCEPTED = (STATUS_ACCEPTED, "ACCEPTED")
+    STATUSES = (OPEN, REJECTED, ACCEPTED)
+
+    # alternative to having two foreignkeys here would be to have
+    # ManyToMany(WithdrawApplication, ...) on both Import/ExportApplication, but
+    # that is not really better:
+    #
+    #  -it would allow for weird bugs where a single WithdrawApplication is
+    #  linked to multiple import/exportapplications
+    #
+    # see constraints below, the DB will enforce that exactly one of these is
+    # always set
+
+    import_application = models.ForeignKey(
+        "ImportApplication", on_delete=models.PROTECT, related_name="withdrawals", null=True
+    )
+
+    export_application = models.ForeignKey(
+        "ExportApplication", on_delete=models.PROTECT, related_name="withdrawals", null=True
+    )
+
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=10, choices=STATUSES, default=STATUS_OPEN)
+    reason = models.TextField()
+    request_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+
+    response = models.TextField()
+    response_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+    )
+
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(import_application__isnull=False) | Q(export_application__isnull=False),
+                name="application_one_null",
+            ),
+            models.CheckConstraint(
+                check=Q(import_application__isnull=True) | Q(export_application__isnull=True),
+                name="application_one_not_null",
+            ),
+        ]

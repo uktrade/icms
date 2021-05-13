@@ -16,7 +16,9 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
+import web.domains.case.forms as case_forms
 from web.domains.case.forms import CloseCaseForm
+from web.domains.case.models import WithdrawApplication
 from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
@@ -31,12 +33,7 @@ from .fa_dfl.models import DFLApplication
 from .fa_oil.models import OpenIndividualLicenceApplication
 from .fa_sil.models import SILApplication
 from .forms import ImportContactLegalEntityForm, ImportContactPersonForm
-from .models import (
-    ImportApplication,
-    ImportApplicationType,
-    ImportContact,
-    WithdrawImportApplication,
-)
+from .models import ImportApplication, ImportApplicationType, ImportContact
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
 
@@ -276,12 +273,10 @@ def manage_withdrawals(request, pk):
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
         withdrawals = application.withdrawals.filter(is_active=True)
-        current_withdrawal = withdrawals.filter(
-            status=WithdrawImportApplication.STATUS_OPEN
-        ).first()
+        current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
         if request.POST:
-            form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
+            form = case_forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
             if form.is_valid():
                 withdrawal = form.save(commit=False)
                 withdrawal.response_by = request.user
@@ -289,7 +284,7 @@ def manage_withdrawals(request, pk):
 
                 # withdrawal accepted - case is closed
                 # else case still open
-                if withdrawal.status == WithdrawImportApplication.STATUS_ACCEPTED:
+                if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
                     application.is_active = False
                     application.save()
 
@@ -310,7 +305,7 @@ def manage_withdrawals(request, pk):
 
                     return redirect(reverse("import:manage-withdrawals", kwargs={"pk": pk}))
         else:
-            form = forms.WithdrawResponseForm(instance=current_withdrawal)
+            form = case_forms.WithdrawResponseForm(instance=current_withdrawal)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -343,7 +338,8 @@ def withdraw_case(request, pk):
             raise PermissionDenied
 
         if request.POST:
-            form = forms.WithdrawForm(request.POST)
+            form = case_forms.WithdrawForm(request.POST)
+
             if form.is_valid():
                 withdrawal = form.save(commit=False)
                 withdrawal.import_application = application
@@ -361,7 +357,7 @@ def withdraw_case(request, pk):
 
                 return redirect(reverse("workbasket"))
         else:
-            form = forms.WithdrawForm()
+            form = case_forms.WithdrawForm()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

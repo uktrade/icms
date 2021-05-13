@@ -78,38 +78,6 @@ class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
         return cleaned_data
 
 
-class WithdrawForm(forms.ModelForm):
-    class Meta:
-        model = models.WithdrawImportApplication
-        fields = ("reason",)
-
-
-class WithdrawResponseForm(forms.ModelForm):
-    STATUSES = (
-        models.WithdrawImportApplication.ACCEPTED,
-        models.WithdrawImportApplication.REJECTED,
-    )
-    status = forms.ChoiceField(label="Withdraw Decision", choices=STATUSES)
-    response = forms.CharField(
-        required=False, label="Withdraw Reject Reason", widget=forms.Textarea
-    )
-
-    class Meta:
-        model = models.WithdrawImportApplication
-        fields = (
-            "status",
-            "response",
-        )
-
-    def clean(self):
-        cleaned_data = super().clean()
-        if (
-            cleaned_data.get("status") == models.WithdrawImportApplication.STATUS_REJECTED
-            and cleaned_data.get("response") == ""
-        ):
-            self.add_error("response", "This field is required when Withdrawal is refused")
-
-
 class ResponsePreparationForm(forms.ModelForm):
     class Meta:
         model = models.ImportApplication
