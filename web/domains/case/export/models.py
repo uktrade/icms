@@ -15,8 +15,14 @@ class ExportApplicationType(models.Model):
     CERT_FREE_SALE = 1
     CERT_MANUFACTURE = 2
 
+    class Types(models.TextChoices):
+        FREE_SALE = ("CFS", "Certificate of Free Sale")
+        MANUFACTURE = ("COM", "Certificate of Manufacture")
+
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    type_code = models.CharField(max_length=30, blank=False, null=False, unique=True)
+    type_code = models.CharField(
+        max_length=30, blank=False, null=False, unique=True, choices=Types.choices
+    )
     type = models.CharField(max_length=70, blank=False, null=False)
     allow_multiple_products = models.BooleanField(blank=False, null=False)
     generate_cover_letter = models.BooleanField(blank=False, null=False)
@@ -31,6 +37,11 @@ class ExportApplicationType(models.Model):
         null=True,
         related_name="manufacture_export_application_types",
     )
+
+    def get_type_description(self):
+        title = self.get_type_code_display()
+
+        return title
 
     def __str__(self):
         return f"{self.type}"
@@ -146,10 +157,12 @@ class ExportApplication(WorkbasketBase, Process):
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/export-case.html"
 
+    @staticmethod
+    def get_process_type() -> str:
+        raise NotImplementedError
+
 
 class CertificateOfManufactureApplication(ExportApplication):
-    PROCESS_TYPE = "CertificateOfManufactureApplication"
-
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
 
@@ -165,6 +178,10 @@ class CertificateOfManufactureApplication(ExportApplication):
             return "/"
         else:
             raise Exception(f"Unknown task_type {task.task_type}")
+
+    @staticmethod
+    def get_process_type() -> str:
+        return "CertificateOfManufactureApplication"
 
 
 # TODO: add certificate of free sale model

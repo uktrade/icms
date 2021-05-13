@@ -19,3 +19,17 @@ class CaseTypeConverter:
             raise ValueError
 
         return value
+
+
+class ExportApplicationTypeConverter:
+    regex = "CFS|COM"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+
+        if value not in ["CFS", "COM"]:
+            raise ValueError
+
+        return value

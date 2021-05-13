@@ -1,11 +1,16 @@
+from typing import NamedTuple, Type
+
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.generic import TemplateView
 
 from web.domains.case.forms import CloseCaseForm
 from web.domains.template.models import Template
@@ -14,6 +19,7 @@ from web.notify.email import send_email
 from web.views import ModelCreateView
 
 from .forms import (
+    CreateExportApplicationForm,
     NewExportApplicationForm,
     PrepareCertManufactureForm,
     SubmitCertManufactureForm,
@@ -27,6 +33,78 @@ from .models import (
 logger = logging.get_logger(__name__)
 
 export_case_officer_permission = "web.export_case_officer"
+
+
+class ExportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
+    template_name = "web/domains/case/export/choice.html"
+    permission_required = "web.importer_access"
+
+
+class CreateExportApplicationConfig(NamedTuple):
+    model_class: Type[ExportApplication]
+    form_class: Type[CreateExportApplicationForm]
+    redirect_view: str
+    certificate_message: str
+
+
+@login_required
+@permission_required("web.exporter_access", raise_exception=True)
+def create_export_application(request: HttpRequest, *, type_code: str) -> HttpResponse:
+    application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
+
+    config = _get_export_app_config(type_code)
+
+    if request.POST:
+        form = config.form_class(request.POST, user=request.user)
+
+        if form.is_valid():
+            application = config.model_class()
+            application.exporter = form.cleaned_data["exporter"]
+            application.exporter_office = form.cleaned_data["exporter_office"]
+            application.process_type = config.model_class.get_process_type()
+            application.created_by = request.user
+            application.last_updated_by = request.user
+            application.submitted_by = request.user
+            application.application_type = application_type
+
+            with transaction.atomic():
+                application.save()
+                Task.objects.create(process=application, task_type="prepare", owner=request.user)
+
+            return redirect(reverse(config.redirect_view, kwargs={"pk": application.pk}))
+    else:
+        form = config.form_class(user=request.user)
+
+    context = {
+        "form": form,
+        "export_application_type": application_type,
+        "certificate_message": config.certificate_message,
+    }
+
+    # FIXME: Remove new when happy
+    return render(request, "web/domains/case/export/create-new.html", context)
+
+
+def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
+    if type_code == ExportApplicationType.Types.MANUFACTURE:
+        return CreateExportApplicationConfig(
+            model_class=CertificateOfManufactureApplication,
+            form_class=CreateExportApplicationForm,
+            redirect_view="export:com-edit",
+            certificate_message=(
+                "Certificates of Manufacture are applicable only to pesticides that are for export"
+                " only and not on free sale on the domestic market."
+            ),
+        )
+
+    # cfs message to add when supporting Certificate of Free Sale application type
+    # cfs_cert_message = (
+    #     "If you are supplying the product to a client in the UK/EU then you do not require a certificate."
+    #     " Your client will need to apply for a certificate if they subsequently export it to one of their"
+    #     " clients outside of the EU."
+    # )
+
+    raise NotImplementedError(f"type_code not supported: {type_code}")
 
 
 class ExportApplicationCreateView(ModelCreateView):
@@ -93,7 +171,7 @@ class ExportApplicationCreateView(ModelCreateView):
                 raise PermissionDenied
 
             appl = model_class(
-                process_type=model_class.PROCESS_TYPE,
+                process_type=model_class.get_process_type(),
                 application_type=data["application_type"],
                 exporter=data["exporter"],
                 exporter_office=data["exporter_office"],
@@ -127,6 +205,7 @@ def edit_com(request, pk):
             if form.is_valid():
                 form.save()
 
+                # Todo: change this to redirect to the edit view.
                 return redirect(reverse("export:com-submit", kwargs={"pk": pk}))
 
         else:

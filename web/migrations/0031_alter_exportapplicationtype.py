@@ -13,6 +13,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="exportapplicationtype",
             name="type_code",
-            field=models.CharField(max_length=30, unique=True),
+            field=models.CharField(
+                choices=[
+                    ("CFS", "Certificate of Free Sale"),
+                    ("COM", "Certificate of Manufacture"),
+                ],
+                max_length=30,
+                unique=True,
+            ),
         ),
     ]

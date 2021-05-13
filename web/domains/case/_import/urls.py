@@ -5,7 +5,7 @@ from . import views
 app_name = "import"
 
 urlpatterns = [
-    path("", views.ImportApplicationChoiceView.as_view(), name="choice"),
+    path("", views.ImportApplicationChoiceView.as_view(), name="choose"),
     # Create import application urls
     path("create/sanctions/", views.create_sanctions, name="create-sanctions"),
     path("create/derogations/", views.create_derogations, name="create-derogations"),
