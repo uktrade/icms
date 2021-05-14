@@ -60,7 +60,6 @@ urlpatterns = [
     path("case/<int:pk>/take_ownership/", views.take_ownership, name="take-ownership"),
     path("case/<int:pk>/release_ownership/", views.release_ownership, name="release-ownership"),
     path("case/<int:pk>/management/", views.manage_case, name="case-management"),
-    path("case/<int:pk>/withdrawals/", views.manage_withdrawals, name="manage-withdrawals"),
     path(
         "case/<int:pk>/update-requests/",
         views.manage_update_requests,

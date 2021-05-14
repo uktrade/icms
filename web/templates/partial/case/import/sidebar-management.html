@@ -46,7 +46,7 @@
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}
       <a
-        href="{{ icms_url('import:manage-withdrawals', args=[process.pk]) }}">
+        href="{{ icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Application Withdrawals ({{ processed }}/{{ total }})
       </a>
     {% endwith %}

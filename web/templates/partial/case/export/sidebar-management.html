@@ -1,0 +1,40 @@
+<h4>Export Case</h4>
+<ul class="menu-out">
+  <li>
+    <a href="{{ icms_url('export:case-management', args=[process.pk]) }}">Case {{ process.pk }}</a>
+  </li>
+  {# TODO: add everything importer has (web/templates/partial/case/import/sidebar-management.html)
+     as working on tickets:
+       - ICMSLST-665
+       - ICMSLST-666
+       - ICMSLST-667
+       - ICMSLST-668
+       - ICMSLST-669
+  #}
+  <li>
+    {% with total = process.withdrawals.count(),
+            processed = process.withdrawals.exclude(status="open").count() %}
+      <a
+        href="{{ icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+        Application Withdrawals ({{ processed }}/{{ total }})
+      </a>
+    {% endwith %}
+  </li>
+  <li>
+    <a href="#">Application Updates (x/x)</a>
+  </li>
+  <li>
+    <a href="#">Further Information Requests (x/x)</a>
+  </li>
+  <li>
+    <a href="{{ icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+      Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
+    </a>
+  </li>
+  <li>
+    <a href="#">Response Preparation</a>
+  </li>
+  <li>
+    <a href="#">Authorisation</a>
+  </li>
+</ul>

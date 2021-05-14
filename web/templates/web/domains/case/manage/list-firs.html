@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "web/domains/case/manage/base.html" %}
 
 
 {% block main_content %}
@@ -6,7 +6,7 @@
 
   {% if show_firs %}
     {% include "partial/case/firs.html" %}
-  {% else %} 
+  {% else %}
     {% if process.process_type == "ExporterAccessRequest" %}
       <div class="info-box info-box-info">
         You must first <a href=" {{ icms_url(url_namespace + ':case-management', args=[process.pk, 'exporter']) }}">

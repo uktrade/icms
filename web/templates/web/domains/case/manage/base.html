@@ -1,0 +1,39 @@
+{% extends "layout/sidebar.html" %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include "web/domains/case/" + case_type + "/partials/process.html" %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        {% block content_actions_link %}
+          <a href="{{ icms_url('workbasket') }}" class="prev-link">
+            Workbasket
+          </a>
+        {% endblock %}
+      </li>
+    </ul>
+  </div>
+
+  {% if case_type != "access" %}
+    <form
+      method="post"
+      action="{{ icms_url(case_type + ':release-ownership', args=[process.pk]) }}"
+      class="form-inline">
+        {{ csrf_input }}
+        <input type="submit" class="button" value="Release Ownership" />
+    </form>
+    <a href="#" class="button">Reassign</a>
+    <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+  {% endif %}
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/case/" + case_type + "/sidebar-management.html" %}
+{% endblock %}

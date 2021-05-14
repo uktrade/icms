@@ -230,8 +230,10 @@ def management(request, pk):
         application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
         task = application.get_task(ExportApplication.SUBMITTED, "process")
         form = CloseCaseForm()
+
         context = {
-            "object": application,
+            "case_type": "export",
+            "process": application,
             "task": task,
             "form": form,
         }

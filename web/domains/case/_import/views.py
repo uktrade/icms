@@ -18,7 +18,6 @@ from guardian.shortcuts import get_users_with_perms
 
 import web.domains.case.forms as case_forms
 from web.domains.case.forms import CloseCaseForm
-from web.domains.case.models import WithdrawApplication
 from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
@@ -250,7 +249,7 @@ def manage_case(request, pk):
             form = CloseCaseForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": f"{application.application_type.get_type_description()} - Management",
@@ -260,66 +259,6 @@ def manage_case(request, pk):
         return render(
             request=request,
             template_name="web/domains/case/import/manage/case.html",
-            context=context,
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_withdrawals(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
-        )
-        withdrawals = application.withdrawals.filter(is_active=True)
-        current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
-
-        if request.POST:
-            form = case_forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
-            if form.is_valid():
-                withdrawal = form.save(commit=False)
-                withdrawal.response_by = request.user
-                withdrawal.save()
-
-                # withdrawal accepted - case is closed
-                # else case still open
-                if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
-                    application.is_active = False
-                    application.save()
-
-                    task.is_active = False
-                    task.finished = timezone.now()
-                    task.save()
-
-                    return redirect(reverse("workbasket"))
-                else:
-                    application.status = ImportApplication.SUBMITTED
-                    application.save()
-
-                    task.is_active = False
-                    task.finished = timezone.now()
-                    task.save()
-
-                    Task.objects.create(process=application, task_type="process", previous=task)
-
-                    return redirect(reverse("import:manage-withdrawals", kwargs={"pk": pk}))
-        else:
-            form = case_forms.WithdrawResponseForm(instance=current_withdrawal)
-
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Withdrawals",
-            "form": form,
-            "withdrawals": withdrawals,
-            "current_withdrawal": current_withdrawal,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/manage/withdrawals.html",
             context=context,
         )
 
@@ -568,11 +507,8 @@ def respond_update_request(request, application_pk, update_request_pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_firs(request, application_pk):
-    extra_context = {
-        "show_firs": True,
-        "process_template": "web/domains/case/import/partials/process.html",
-        "base_template": "flow/task-manage-import.html",
-    }
+    extra_context = {"show_firs": True}
+
     return case_views._manage_firs(
         request, application_pk, ImportApplication, "import", **extra_context
     )
@@ -593,18 +529,8 @@ def edit_fir(request, application_pk, fir_pk):
         application.importer, only_with_perms_in=["is_contact_of_importer"]
     ).filter(user_permissions__codename="importer_access")
 
-    extra_context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "base_template": "flow/task-manage-import.html",
-    }
     return case_views._edit_fir(
-        request,
-        application_pk,
-        fir_pk,
-        ImportApplication,
-        "import",
-        importer_contacts,
-        **extra_context,
+        request, application_pk, fir_pk, ImportApplication, "import", importer_contacts
     )
 
 
@@ -670,7 +596,7 @@ def prepare_response(request: HttpRequest, pk: int) -> HttpResponse:
             form = forms.ResponsePreparationForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "task": task,
             "page_title": "Response Preparation",
             "form": form,
@@ -823,7 +749,7 @@ def _add_endorsement(request, pk, Form):
             form = Form()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Endorsement Response Preparation",
@@ -991,7 +917,7 @@ def authorisation(request, pk):
             application_errors.append(html)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Authorisation",

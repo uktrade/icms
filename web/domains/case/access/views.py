@@ -221,7 +221,7 @@ def management(request, pk, entity):
             form = Form(instance=application)
 
         context = {
-            "process_template": "web/domains/case/access/partials/process.html",
+            "case_type": "access",
             "process": application,
             "task": task,
             "form": form,
@@ -264,7 +264,7 @@ def management_response(request, pk, entity):
             form = forms.CloseAccessRequestForm(instance=application)
 
         context = {
-            "process_template": "web/domains/case/access/partials/process.html",
+            "case_type": "access",
             "process": application,
             "task": task,
             "form": form,
@@ -291,11 +291,7 @@ def manage_firs(request, application_pk):
     else:
         show_firs = application.exporteraccessrequest.link_id
 
-    extra_context = {
-        "show_firs": show_firs,
-        "process_template": "web/domains/case/access/partials/process.html",
-        "base_template": "flow/task-manage-access.html",
-    }
+    extra_context = {"show_firs": show_firs}
 
     return case_views._manage_firs(
         request, application_pk, AccessRequest, "access", **extra_context
@@ -314,13 +310,8 @@ def add_fir(request, application_pk):
 def edit_fir(request, application_pk, fir_pk):
     application = get_object_or_404(AccessRequest, pk=application_pk)
     contacts = [application.submitted_by]
-    extra_context = {
-        "process_template": "web/domains/case/access/partials/process.html",
-        "base_template": "flow/task-manage-access.html",
-    }
-    return case_views._edit_fir(
-        request, application_pk, fir_pk, AccessRequest, "access", contacts, **extra_context
-    )
+
+    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access", contacts)
 
 
 @login_required

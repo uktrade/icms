@@ -12,7 +12,12 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.models import AccessRequest, ExportApplication, ImportApplication
+from web.models import (
+    AccessRequest,
+    ExportApplication,
+    ImportApplication,
+    WithdrawApplication,
+)
 from web.notify import notify
 from web.utils.s3 import get_file_from_s3
 
@@ -58,8 +63,6 @@ def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> 
         )
         application.get_task(model_class.SUBMITTED, "process")
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
-            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "notes": application.case_notes,
             "case_type": case_type,
@@ -171,8 +174,6 @@ def edit_note(
             note_form = forms.CaseNoteForm(instance=note)
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
-            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "note_form": note_form,
             "note": note,
@@ -226,8 +227,6 @@ def add_note_document(
             form = forms.DocumentForm()
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
-            "base_template": f"flow/task-manage-{case_type}.html",
             "process": application,
             "form": form,
             "note": note,
@@ -394,6 +393,7 @@ def _manage_firs(request, application_pk, model_class, url_namespace, **extra_co
                 status=FurtherInformationRequest.DELETED
             ),
             "url_namespace": url_namespace,
+            "case_type": url_namespace,
             "page_title": "Further Information Requests",
             **extra_context,
         }
@@ -483,6 +483,7 @@ def _edit_fir(
             "form": form,
             "fir": fir,
             "url_namespace": url_namespace,
+            "case_type": url_namespace,
             **extra_context,
         }
 
@@ -602,7 +603,9 @@ def _list_firs(request, application_pk, model_class, url_namespace):
             | Q(status=FurtherInformationRequest.CLOSED)
         ),
         "url_namespace": url_namespace,
+        "case_type": url_namespace,
     }
+
     return render(request, "web/domains/case/list-firs.html", context)
 
 
@@ -650,5 +653,76 @@ def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
         "fir": fir,
         "form": form,
         "url_namespace": url_namespace,
+        "case_type": url_namespace,
     }
     return render(request, "web/domains/case/respond-fir.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_withdrawals(
+    request: HttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        withdrawals = application.withdrawals.filter(is_active=True)
+        current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
+
+        if request.POST:
+            form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
+
+            if form.is_valid():
+                withdrawal = form.save(commit=False)
+                withdrawal.response_by = request.user
+                withdrawal.save()
+
+                # withdrawal accepted - case is closed, else case still open
+                if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
+                    application.is_active = False
+                    application.save()
+
+                    task.is_active = False
+                    task.finished = timezone.now()
+                    task.save()
+
+                    return redirect(reverse("workbasket"))
+                else:
+                    application.status = model_class.SUBMITTED
+                    application.save()
+
+                    task.is_active = False
+                    task.finished = timezone.now()
+                    task.save()
+
+                    Task.objects.create(process=application, task_type="process", previous=task)
+
+                    return redirect(
+                        reverse(
+                            "case:manage-withdrawals",
+                            kwargs={"application_pk": application_pk, "case_type": case_type},
+                        )
+                    )
+        else:
+            form = forms.WithdrawResponseForm(instance=current_withdrawal)
+
+        context = {
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": f"{application.application_type.get_type_description()} - Withdrawals",
+            "form": form,
+            "withdrawals": withdrawals,
+            "current_withdrawal": current_withdrawal,
+            "case_type": case_type,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/manage/withdrawals.html",
+            context=context,
+        )

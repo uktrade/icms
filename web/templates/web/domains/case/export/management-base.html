@@ -3,15 +3,13 @@
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">
-    {% with process=object %}
-      {% include 'web/domains/case/export/partials/process.html' %}
-    {% endwith %}
+    {% include 'web/domains/case/export/partials/process.html' %}
   </div>
   {{ super() }}
 {% endblock %}
 
 {% block content_actions %}
-  <form method="post" action="{{ icms_url('export:release-ownership', args=[object.pk]) }}" class="form-inline">
+  <form method="post" action="{{ icms_url('export:release-ownership', args=[process.pk]) }}" class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>
   </form>
@@ -20,5 +18,5 @@
 {% endblock %}
 
 {% block sidebar %}
-  {% include 'partial/case/export/sidebar.html' %}
+  {% include 'partial/case/export/sidebar-management.html' %}
 {% endblock %}

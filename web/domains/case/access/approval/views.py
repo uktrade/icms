@@ -88,7 +88,7 @@ def management_access_approval(request, pk, entity):
             form = Form(application, instance=approval_request)
 
         context = {
-            "process_template": "web/domains/case/access/partials/process.html",
+            "case_type": "access",
             "process": application,
             "task": task,
             "form": form,
