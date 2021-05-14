@@ -9,7 +9,7 @@ from web.tests.domains.case.export.factories import (
 
 
 class TestCreate(AuthTestCase):
-    url = reverse("export:create")
+    url = reverse("export:choose")
     permission = "exporter_access"
 
     def test_create_no_access(self):
@@ -34,6 +34,7 @@ class TestFlow(AuthTestCase):
         self.login_with_permissions(["exporter_access"])
         assign_perm("web.is_contact_of_exporter", self.user, appl.exporter)
 
+        url_edit = reverse("export:com-edit", kwargs={"pk": appl.pk})
         url_submit = reverse("export:com-submit", kwargs={"pk": appl.pk})
 
         response = self.client.post(
@@ -49,8 +50,8 @@ class TestFlow(AuthTestCase):
             },
         )
 
-        # when form is submitted successfully go to declaration of truth
-        self.assertRedirects(response, url_submit)
+        # when form is submitted it stays on the same url
+        self.assertRedirects(response, url_edit)
 
         # process and task haven't changed
         appl.refresh_from_db()
@@ -104,7 +105,7 @@ class TestEditCom(AuthTestCase):
 
         self.assertRedirects(
             response,
-            reverse("export:com-submit", kwargs={"pk": self.appl.pk}),
+            reverse("export:com-edit", kwargs={"pk": self.appl.pk}),
             fetch_redirect_response=False,
         )
 
@@ -126,7 +127,16 @@ class TestEditCom(AuthTestCase):
 class TestSubmitCom(AuthTestCase):
     def setUp(self):
         super().setUp()
+        # Make the application valid (now we have a validation summary)
         self.appl = CertificateOfManufactureApplicationFactory.create()
+        self.appl.contact = self.user
+        self.appl.countries.add(Country.objects.all().first())
+        self.appl.is_pesticide_on_free_sale_uk = False
+        self.appl.is_manufacturer = True
+        self.appl.product_name = "new product export"
+        self.appl.chemical_name = "some chemical name"
+        self.appl.manufacturing_process = "squeeze a few drops"
+        self.appl.save()
         self.url = reverse("export:com-submit", kwargs={"pk": self.appl.pk})
 
     def test_submit_ok(self):
@@ -151,7 +161,10 @@ class TestSubmitCom(AuthTestCase):
 
         response = self.client.post(self.url, data={"confirmation": "NOPE"})
         assert response.status_code == 200
-        assert "Please agree to the declaration of truth" in response.content.decode()
+
+        print(response.content.decode())
+
+        assert "Please agree to the declaration of truth." in response.content.decode()
 
     def test_no_task(self):
         """Assert an application/flow requires an active task."""

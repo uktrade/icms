@@ -11,11 +11,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
 
-from .models import (
-    CertificateOfManufactureApplication,
-    ExportApplication,
-    ExportApplicationType,
-)
+from .models import CertificateOfManufactureApplication
 
 logger = logging.get_logger(__name__)
 
@@ -71,92 +67,6 @@ class CreateExportApplicationForm(forms.Form):
         self.fields["exporter_office"].queryset = Office.objects.filter(
             is_active=True, exporter__in=exporters
         )
-
-
-# FIXME: Remove this when happy
-class NewExportApplicationForm(forms.ModelForm):
-
-    application_type = forms.ModelChoiceField(
-        queryset=ExportApplicationType.objects.filter(is_active=True),
-        help_text=mark_safe(
-            """DIT does not issue Certificates of Free Sale for food, food
-        supplements, pesticides and CE marked medical devices.<br><br>
-
-        Certificates of Manufacture are applicable only to pesticides that are
-        for export only and not on free sale on the domestic market."""
-        ),
-    )
-
-    exporter = forms.ModelChoiceField(queryset=Exporter.objects.none())
-
-    exporter_office = forms.ModelChoiceField(
-        queryset=Office.objects.none(),
-        help_text="The office that this certificate will be issued to.",
-    )
-
-    def _get_agent_exporter_ids(self, user):
-        """Get ids for main exporters of the given agent. """
-
-        active_exporters = Exporter.objects.filter(is_active=True)
-
-        exporters = get_objects_for_user(
-            user, "web.is_agent_of_exporter", active_exporters, with_superuser=False
-        )
-
-        return set([exporter.pk for exporter in exporters])
-
-    def _update_offices(self, exporter):
-        if exporter in self.fields["exporter"].queryset:
-            self.fields["exporter_office"].queryset = exporter.offices.filter(is_active=True)
-
-    def _update_exporters(self, request, application_type):
-        main_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
-
-        main_exporters = get_objects_for_user(
-            request.user, "web.is_contact_of_exporter", main_exporters, with_superuser=False
-        )
-
-        main_exporter_ids = set([exporter.pk for exporter in main_exporters])
-        agent_exporter_ids = self._get_agent_exporter_ids(request.user)
-
-        exporters = Exporter.objects.filter(pk__in=(main_exporter_ids | agent_exporter_ids))
-
-        self.fields["exporter"].queryset = exporters
-
-    def _update_form(self, request):
-        type_pk = self.data.get("application_type", None)
-
-        if not type_pk:
-            return
-
-        app_type = ExportApplicationType.objects.get(pk=type_pk)
-        self._update_exporters(request, app_type)
-
-        exporter_pk = self.data.get("exporter", None)
-
-        if not exporter_pk:
-            return
-
-        exporter = Exporter.objects.get(pk=exporter_pk)
-        self._update_offices(exporter)
-
-    # TODO: remove once free sale certs are supported (ICMSLST-340 or ICMSLST-330)
-    def clean_application_type(self):
-        appl_type = self.cleaned_data["application_type"]
-
-        if appl_type.pk == ExportApplicationType.CERT_FREE_SALE:
-            raise forms.ValidationError("Certificates of free sale are not supported yet.")
-
-        return appl_type
-
-    def __init__(self, request, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._update_form(request)
-
-    class Meta:
-        model = ExportApplication
-        fields = ["application_type", "exporter", "exporter_office"]
 
 
 class PrepareCertManufactureForm(forms.ModelForm):

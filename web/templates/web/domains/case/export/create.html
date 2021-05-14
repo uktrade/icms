@@ -1,19 +1,55 @@
-{% extends "model/edit.html" %}
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
-{% set show_errors = not (request.POST and request.POST.change) %}
+{% block css %}
+  {{ super() }}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/case/export/application-sidebar.html" %}
+{% endblock %}
 
 {% block main_content %}
-  Please select the type of certificate application you wish to make, and the exporter (and agent if applicable) you are acting as.
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>{{ export_application_type.get_type_description() }}</h3>
+    <p>Please choose the exporter (and agent if applicable) you are acting as.</p>
+    {% if certificate_message %}
+      <div class="info-box info-box-info">
+        {{ certificate_message }}
+      </div>
+    {% endif %}
 
-  {% if cert_msg %}
-    <div class="info-box info-box-info">
-      {{ cert_msg }}
+    <p>DIT does not issue Certificates of Free Sale for food, foodsupplements, pesticides and CE marked medical devices.</p>
+    <p>Certificates of Manufacture are applicable only to pesticides that are for export only and not on free sale on the domestic market.</p>
+
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                name="action"
+                class="primary-button button"
+                value="Create"/>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-  {% endif %}
 
-  {#  Do now show field errors if form is posted by change in drop-down selections #}
+  {% endcall %}
+{% endblock %}
 
-  <div class="section-break"></div>
 
-  {{super()}}
+{% block page_js %}
+  {{ super() }}
+  {{ form.media.js }}
 {% endblock %}

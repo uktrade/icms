@@ -5,8 +5,6 @@ from . import views
 app_name = "export"
 
 urlpatterns = [
-    # FIXME: Remove Old create
-    path("create/", views.ExportApplicationCreateView.as_view(), name="create"),
     # List export applications
     path("", views.ExportApplicationChoiceView.as_view(), name="choose"),
     # Create all export applications

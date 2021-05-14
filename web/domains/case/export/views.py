@@ -8,7 +8,7 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
@@ -18,11 +18,9 @@ from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
-from web.views import ModelCreateView
 
 from .forms import (
     CreateExportApplicationForm,
-    NewExportApplicationForm,
     PrepareCertManufactureForm,
     SubmitCertManufactureForm,
 )
@@ -37,9 +35,9 @@ logger = logging.get_logger(__name__)
 export_case_officer_permission = "web.export_case_officer"
 
 
-class ExportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
-    template_name = "web/domains/case/export/choice.html"
-    permission_required = "web.importer_access"
+class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
+    template_name = "web/domains/case/export/choose.html"
+    permission_required = "web.exporter_access"
 
 
 class CreateExportApplicationConfig(NamedTuple):
@@ -63,7 +61,7 @@ def create_export_application(request: HttpRequest, *, type_code: str) -> HttpRe
             application = config.model_class()
             application.exporter = form.cleaned_data["exporter"]
             application.exporter_office = form.cleaned_data["exporter_office"]
-            application.process_type = config.model_class.get_process_type()
+            application.process_type = config.model_class.PROCESS_TYPE
             application.created_by = request.user
             application.last_updated_by = request.user
             application.submitted_by = request.user
@@ -83,8 +81,7 @@ def create_export_application(request: HttpRequest, *, type_code: str) -> HttpRe
         "certificate_message": config.certificate_message,
     }
 
-    # FIXME: Remove new when happy
-    return render(request, "web/domains/case/export/create-new.html", context)
+    return render(request, "web/domains/case/export/create.html", context)
 
 
 def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
@@ -107,85 +104,6 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
     # )
 
     raise NotImplementedError(f"type_code not supported: {type_code}")
-
-
-class ExportApplicationCreateView(ModelCreateView):
-    template_name = "web/domains/case/export/create.html"
-    model = ExportApplication
-    success_url = reverse_lazy("workbasket")
-    cancel_url = reverse_lazy("workbasket")
-    form_class = NewExportApplicationForm
-    page_title = "Create Certificate Application"
-    permission_required = "web.exporter_access"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = context.get("form")
-
-        if form:
-            app_type = form["application_type"].data
-
-            if app_type == str(ExportApplicationType.CERT_MANUFACTURE):
-                msg = """Certificates of Manufacture are applicable only to
-                pesticides that are for export only and not on free sale on the
-                domestic market."""
-            elif app_type == str(ExportApplicationType.CERT_FREE_SALE):
-                msg = """If you are supplying the product to a client in the
-                UK/EU then you do not require a certificate. Your client will
-                need to apply for a certificate if they subsequently export it
-                to one of their clients outside of the EU."""
-            else:
-                msg = None
-
-            context["cert_msg"] = msg
-
-        return context
-
-    def get_form(self):
-        if hasattr(self, "form"):
-            return self.form
-
-        if self.request.POST:
-            self.form = NewExportApplicationForm(self.request, data=self.request.POST)
-        else:
-            self.form = NewExportApplicationForm(self.request)
-
-        return self.form
-
-    def post(self, request, *args, **kwargs):
-        # see web/static/web/js/main.js::initialize
-        if request.POST and request.POST.get("change", None):
-            return super().get(request, *args, **kwargs)
-
-        return super().post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        with transaction.atomic():
-            data = form.cleaned_data
-
-            if data["application_type"].pk == ExportApplicationType.CERT_FREE_SALE:
-                # TODO: implement for certificate of free sale
-                raise Exception("Not implemented")
-            elif data["application_type"].pk == ExportApplicationType.CERT_MANUFACTURE:
-                model_class = CertificateOfManufactureApplication
-
-            if not self.request.user.has_perm("web.is_contact_of_exporter", data["exporter"]):
-                raise PermissionDenied
-
-            appl = model_class(
-                process_type=model_class.get_process_type(),
-                application_type=data["application_type"],
-                exporter=data["exporter"],
-                exporter_office=data["exporter_office"],
-                created_by=self.request.user,
-                last_updated_by=self.request.user,
-                submitted_by=self.request.user,
-            )
-            appl.save()
-
-            Task.objects.create(process=appl, task_type="prepare", owner=self.request.user)
-
-            return redirect(reverse("export:com-edit", kwargs={"pk": appl.pk}))
 
 
 @login_required
@@ -251,7 +169,7 @@ def submit_com(request, pk):
             if go_back_to_edit:
                 return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
 
-            if form.is_valid():
+            if form.is_valid() and not errors.has_errors():
                 appl.status = ExportApplication.SUBMITTED
                 appl.save()
 

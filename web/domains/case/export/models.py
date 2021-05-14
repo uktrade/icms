@@ -39,9 +39,7 @@ class ExportApplicationType(models.Model):
     )
 
     def get_type_description(self):
-        title = self.get_type_code_display()
-
-        return title
+        return self.get_type_code_display()
 
     def __str__(self):
         return f"{self.type}"
@@ -157,12 +155,10 @@ class ExportApplication(WorkbasketBase, Process):
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/export-case.html"
 
-    @staticmethod
-    def get_process_type() -> str:
-        raise NotImplementedError
-
 
 class CertificateOfManufactureApplication(ExportApplication):
+    PROCESS_TYPE = "CertificateOfManufactureApplication"
+
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
 
@@ -178,10 +174,6 @@ class CertificateOfManufactureApplication(ExportApplication):
             return "/"
         else:
             raise Exception(f"Unknown task_type {task.task_type}")
-
-    @staticmethod
-    def get_process_type() -> str:
-        return "CertificateOfManufactureApplication"
 
 
 # TODO: add certificate of free sale model

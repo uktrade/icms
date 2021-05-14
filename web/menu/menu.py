@@ -211,9 +211,7 @@ class Menu:
             ],
         ),
         MenuButton(label="New Import Application", view="import:choose"),
-        # FIXME: Delete this and the view
-        MenuButton(label="New Certificate Application", view="export:create"),
-        MenuButton(label="New Certificate Application new", view="export:choose"),
+        MenuButton(label="New Certificate Application", view="export:choose"),
     ]
 
     def as_html(self, request):

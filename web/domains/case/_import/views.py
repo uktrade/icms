@@ -38,8 +38,8 @@ from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
 
 
-class ImportApplicationChoiceView(TemplateView, PermissionRequiredMixin):
-    template_name = "web/domains/case/import/choice.html"
+class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
+    template_name = "web/domains/case/import/choose.html"
     permission_required = "web.importer_access"
 
 
