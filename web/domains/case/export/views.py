@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -16,6 +17,7 @@ from web.domains.case.forms import CloseCaseForm
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify.email import send_email
+from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 from web.views import ModelCreateView
 
 from .forms import (
@@ -205,8 +207,7 @@ def edit_com(request, pk):
             if form.is_valid():
                 form.save()
 
-                # Todo: change this to redirect to the edit view.
-                return redirect(reverse("export:com-submit", kwargs={"pk": pk}))
+                return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
 
         else:
             form = PrepareCertManufactureForm(instance=appl, initial={"contact": request.user})
@@ -234,8 +235,17 @@ def submit_com(request, pk):
         if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
             raise PermissionDenied
 
+        errors = ApplicationErrors()
+        page_errors = PageErrors(
+            page_name="Application details", url=reverse("export:com-edit", kwargs={"pk": pk})
+        )
+        create_page_errors(
+            PrepareCertManufactureForm(data=model_to_dict(appl), instance=appl), page_errors
+        )
+        errors.add(page_errors)
+
         if request.POST:
-            form = SubmitCertManufactureForm(request, data=request.POST)
+            form = SubmitCertManufactureForm(data=request.POST)
             go_back_to_edit = "_edit_application" in request.POST
 
             if go_back_to_edit:
@@ -255,7 +265,7 @@ def submit_com(request, pk):
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitCertManufactureForm(request)
+            form = SubmitCertManufactureForm()
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
@@ -263,6 +273,7 @@ def submit_com(request, pk):
             "task": task,
             "exporter_name": appl.exporter.name,
             "form": form,
+            "errors": errors if errors.has_errors() else None,
         }
 
         return render(request, "web/domains/case/export/submit-com.html", context)

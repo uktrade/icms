@@ -2,45 +2,45 @@
 
 {% import "forms/fields.html" as fields %}
 
-{% block form_content %}
-    <div class="info-box info-box-info">
-        This form is in respect of the Exporting Company. Please provide all the information requested.
-        The information will be used to create a Certificate of Manufacture and a legal declaration in the form of a Schedule.
-    </div>
-
-    {{super()}}
-
-    <h3>Declaration of Truth</h3>
-
-    <p>I am authorised to act on behalf of "{{ exporter_name }}".</p>
-
-    <p>I declare that the information provided is true.</p>
-
-    <p><b>Confirm that you agree to the above by typing "I AGREE", in capitals, in this box</b>
-
-    {{fields.field(form.confirmation)}}
-    </p>
+{% block sidebar %}
+  {% include "partial/case/export/com/sidebar.html" %}
 {% endblock %}
 
+{% block main_content %}
+  {% if errors %}
+    <h3>Error</h3>
 
-{% block task_actions %}
-  <li>
-    <button
-      type="submit"
-      role="action-button"
-      name="_edit_application"
-      class="button icon-arrow-left2">
-        Edit Application
-    </button>
-  </li>
+    <p>Please resolve the errors below before submitting the application.</p>
 
-  <li>
-    <button
-      type="submit"
-      role="action-button"
-      name="submit_application"
-      class="primary-button button">
-        Submit Application
-    </button>
-  </li>
+    {% include "web/utils/validation.html" %}
+  {% else %}
+
+    <div class="info-box info-box-info">
+      This form is in respect of the Exporting Company. Please provide all the information requested.
+      The information will be used to create a Certificate of Manufacture and a legal declaration in the form of a
+      Schedule.
+    </div>
+    <h3>Declaration of Truth</h3>
+    <div class="info-box info-box-warning">I am authorised to act on behalf of "{{ exporter_name }}". I declare that the
+      information provided is true.
+    </div>
+
+    <form method="post" action="" class="form-inline" novalidate>
+      {{ csrf_input }}
+      {{ fields.field(form.confirmation, padding='one', input_cols='one', label_cols='six') }}
+      <br/>
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input type="submit" class="button primary-button" value="Submit Application"/>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% endif %}
 {% endblock %}

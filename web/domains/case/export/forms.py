@@ -2,7 +2,6 @@ from typing import Any
 
 import structlog as logging
 from django import forms
-from django.forms import CharField, Form, ModelChoiceField, ModelForm, ValidationError
 from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
 from django_select2.forms import ModelSelect2Widget
@@ -75,9 +74,9 @@ class CreateExportApplicationForm(forms.Form):
 
 
 # FIXME: Remove this when happy
-class NewExportApplicationForm(ModelForm):
+class NewExportApplicationForm(forms.ModelForm):
 
-    application_type = ModelChoiceField(
+    application_type = forms.ModelChoiceField(
         queryset=ExportApplicationType.objects.filter(is_active=True),
         help_text=mark_safe(
             """DIT does not issue Certificates of Free Sale for food, food
@@ -88,9 +87,9 @@ class NewExportApplicationForm(ModelForm):
         ),
     )
 
-    exporter = ModelChoiceField(queryset=Exporter.objects.none())
+    exporter = forms.ModelChoiceField(queryset=Exporter.objects.none())
 
-    exporter_office = ModelChoiceField(
+    exporter_office = forms.ModelChoiceField(
         queryset=Office.objects.none(),
         help_text="The office that this certificate will be issued to.",
     )
@@ -146,7 +145,7 @@ class NewExportApplicationForm(ModelForm):
         appl_type = self.cleaned_data["application_type"]
 
         if appl_type.pk == ExportApplicationType.CERT_FREE_SALE:
-            raise ValidationError("Certificates of free sale are not supported yet.")
+            raise forms.ValidationError("Certificates of free sale are not supported yet.")
 
         return appl_type
 
@@ -160,7 +159,7 @@ class NewExportApplicationForm(ModelForm):
         fields = ["application_type", "exporter", "exporter_office"]
 
 
-class PrepareCertManufactureForm(ModelForm):
+class PrepareCertManufactureForm(forms.ModelForm):
     class Meta:
         model = CertificateOfManufactureApplication
 
@@ -209,10 +208,10 @@ class PrepareCertManufactureForm(ModelForm):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
 
         if val is None:
-            raise ValidationError("You must enter this item.")
+            raise forms.ValidationError("You must enter this item.")
 
         if val:
-            raise ValidationError(
+            raise forms.ValidationError(
                 mark_safe(
                     """
                     <div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>
@@ -233,10 +232,10 @@ class PrepareCertManufactureForm(ModelForm):
         val = self.cleaned_data["is_manufacturer"]
 
         if val is None:
-            raise ValidationError("You must enter this item.")
+            raise forms.ValidationError("You must enter this item.")
 
         if not val:
-            raise ValidationError(
+            raise forms.ValidationError(
                 mark_safe(
                     """
                     <div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>
@@ -249,29 +248,15 @@ class PrepareCertManufactureForm(ModelForm):
         return val
 
 
-class SubmitCertManufactureForm(Form):
-    confirmation = CharField()
+class SubmitCertManufactureForm(forms.Form):
+    confirmation = forms.CharField(
+        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
+    )
 
-    def __init__(self, request, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def clean_confirmation(self):
+        confirmation = self.cleaned_data["confirmation"]
 
-        self.request = request
+        if confirmation != "I AGREE":
+            raise forms.ValidationError("Please agree to the declaration of truth.")
 
-    def clean(self):
-        # get rid of the "this item is required" error
-        self.errors.pop("confirmation", None)
-
-        if "_edit_application" in self.request.POST:
-            return
-
-        val = self.cleaned_data.get("confirmation")
-
-        if val != "I AGREE":
-            self.add_error(
-                "confirmation", ValidationError("Please agree to the declaration of truth.")
-            )
-
-    def save(self, *args, **kwargs):
-        # we're not a modelform, there's nothing to save, but the view is an
-        # updateview so it calls this, so just blank this out
-        return None
+        return confirmation
