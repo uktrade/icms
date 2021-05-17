@@ -44,12 +44,6 @@ urlpatterns = [
     ),
     path("wood/", include("web.domains.case._import.wood.urls")),
     # Importer case management
-    path("case/<int:pk>/withdraw/", views.withdraw_case, name="withdraw-case"),
-    path(
-        "case/<int:application_pk>/withdraw/<int:withdrawal_pk>/archive/",
-        views.archive_withdrawal,
-        name="archive-withdrawal",
-    ),
     path("case/<int:application_pk>/firs/list/", views.list_firs, name="list-firs"),
     path(
         "case/<int:application_pk>/firs/<int:fir_pk>/respond/",

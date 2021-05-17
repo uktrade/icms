@@ -48,6 +48,13 @@ admin_urls = [
     path("manage-withdrawals/", views.manage_withdrawals, name="manage-withdrawals"),
 ]
 
+applicant_case_management_urls = [
+    path("withdraw/", views.withdraw_case, name="withdraw-case"),
+    path(
+        "withdraw/<int:withdrawal_pk>/archive/", views.archive_withdrawal, name="archive-withdrawal"
+    ),
+]
+
 urlpatterns = [
     path(
         "<casetype:case_type>/<int:application_pk>/",
@@ -70,13 +77,8 @@ urlpatterns = [
                 #     name="archive-fir-file",
                 # ),
                 #
-                # --- applicant case management (TODO: ICMSLST-666)
-                # path("withdraw/", views.withdraw_case, name="withdraw-case"),
-                # path(
-                #     "withdraw/<int:withdrawal_pk>/archive/",
-                #     views.archive_withdrawal,
-                #     name="archive-withdrawal",
-                # ),
+                # --- applicant case management
+                path("applicant-case-management/", include(applicant_case_management_urls)),
                 #
                 # -- ILB Admin Case management (TODO: ICMSLST-667)
                 #

@@ -29,7 +29,8 @@
       </dl>
 
       {% if withdrawal.status == "open" %}
-      <form method="post" action="{{ icms_url(case_type + ":archive-withdrawal", args=[process.pk, withdrawal.pk]) }}">
+      {# TODO: make this work for exporters #}
+      <form method="post" action="{{ icms_url("case:archive-withdrawal", kwargs={'application_pk': process.pk, 'withdrawal_pk': withdrawal.pk, 'case_type': 'import'}) }}">
           {{ csrf_input }}
           <input type="submit" class="button" value="Retract Request" />
         </form>

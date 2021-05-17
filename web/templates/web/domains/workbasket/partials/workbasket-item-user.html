@@ -40,7 +40,8 @@
   {% if process.status == "SUBMITTED" %}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
-    <a href="{{ icms_url('import:withdraw-case', args=[process.pk]) }}">Withdraw</a>
+    {# TODO: Make this work for exporters #}
+    <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">Withdraw</a>
     <br />
     {% for fir in process.further_information_requests.open() %}
       <br/>
@@ -51,7 +52,8 @@
   {% elif process.status == "WITHDRAWN" %}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
-    <a href="{{ icms_url('import:withdraw-case', args=[process.pk]) }}">Pending Withdrawal</a>
+    {# TODO: Make this work for exporters #}
+    <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">Pending Withdrawal</a>
   {% elif process.status == "IN_PROGRESS" %}
     <a href="{{ icms_url('import:fa-oil:edit-oil', args=[process.pk]) }}">Resume</a>
   {% endif %}
