@@ -36,24 +36,26 @@
     <a href="{{ icms_url('access:case-approval-respond', args=[process.access_request.exporteraccessrequest.pk, 'exporter', process.pk]) }}">Manage</a>
   {% endif %}
 
-{#  TODO Extend for exporter  #}
 {% elif process.process_type in ["OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication", "CertificateOfManufactureApplication"] %}
   {% if process.status == "SUBMITTED" %}
+    {# TODO: FIX in ICMSLST-669 #}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
     <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Withdraw</a>
     <br />
     {% for fir in process.further_information_requests.open() %}
       <br/>
-      <a href="{{ icms_url('import:respond-fir', args=[process.pk, fir.pk]) }}">
+      <a href="{{ icms_url(case_type + ':respond-fir', args=[process.pk, fir.pk]) }}">
         Respond FIR
       </a>
     {% endfor %}
   {% elif process.status == "WITHDRAWN" %}
+    {# TODO: FIX in ICMSLST-669 #}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
     <br/>
     <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Pending Withdrawal</a>
   {% elif process.status == "IN_PROGRESS" %}
-    <a href="{{ icms_url('import:fa-oil:edit-oil', args=[process.pk]) }}">Resume</a>
+    {# TODO: Fix this for importer and exporter applications #}
+    <a href="#">Resume</a>
   {% endif %}
 {% endif %}

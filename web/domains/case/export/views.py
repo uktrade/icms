@@ -228,7 +228,10 @@ def release_ownership(request, pk):
 def management(request, pk):
     with transaction.atomic():
         application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(ExportApplication.SUBMITTED, "process")
+        task = application.get_task(
+            [ExportApplication.SUBMITTED, ExportApplication.WITHDRAWN], "process"
+        )
+
         form = CloseCaseForm()
 
         context = {

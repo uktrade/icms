@@ -42,5 +42,9 @@ def test_resume_oil_application():
     response = client.get("/workbasket/")
 
     assert response.status_code == 200
-    assert f'/import/firearms/oil/{in_progress.pk}/edit/">Resume' in response.content.decode()
-    assert f'/import/firearms/oil/{submitted.pk}/edit/">Resume' not in response.content.decode()
+
+    # NOTE: The workbasket action links need refactoring.
+    # See the fix me in this file (we disabled the incorrect link)
+    # icms/web/templates/web/domains/workbasket/partials/workbasket-item-user.html
+    link = '<td><a href="#">Resume</a></td>'
+    assert link in response.content.decode()

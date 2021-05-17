@@ -16,7 +16,6 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
-import web.domains.case.forms as case_forms
 from web.domains.case.forms import CloseCaseForm
 from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
