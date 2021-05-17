@@ -12,6 +12,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.domains.user.models import User
 from web.flow.models import Task
 from web.models import (
     AccessRequest,
@@ -51,6 +52,25 @@ def _get_class_imp_or_exp_or_access(case_type: str) -> ImpOrExpOrAccessT:
         return AccessRequest
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def _has_importer_exporter_access(user: User, case_type: str) -> bool:
+    if case_type == "import":
+        return user.has_perm("web.importer_access")
+    elif case_type == "export":
+        return user.has_perm("web.exporter_access")
+
+    raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def _is_importer_exporter_contact(user: User, application: ImpOrExp, case_type: str) -> bool:
+    if case_type == "import":
+        return user.has_perm("web.is_contact_of_importer", application.importer)
+
+    elif case_type == "export":
+        return user.has_perm("web.is_contact_of_exporter", application.exporter)
+
+    raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
 @login_required
@@ -298,22 +318,20 @@ def delete_note_document(
 
 # "Applicant Case Management" Views
 @login_required
-# TODO: this wont work for exporters
-@permission_required("web.importer_access", raise_exception=True)
 def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    has_access = _has_importer_exporter_access(request.user, case_type)
+    if not has_access:
+        raise PermissionDenied
+
     with transaction.atomic():
-        # TODO: Make this work for exporters
-        application = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
+        model_class = _get_class_imp_or_exp(case_type)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
         )
+        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
 
-        # TODO: will need way to get export tasks
-        task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
-        )
-
-        # TODO: will need to work for export applications (export perms)
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+        is_contact = _is_importer_exporter_contact(request.user, application, case_type)
+        if not is_contact:
             raise PermissionDenied
 
         if request.POST:
@@ -322,14 +340,15 @@ def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) 
             if form.is_valid():
                 withdrawal = form.save(commit=False)
 
-                # TODO: needs to work for exporters
-                withdrawal.import_application = application
+                if case_type == "import":
+                    withdrawal.import_application = application
+                elif case_type == "export":
+                    withdrawal.export_application = application
 
                 withdrawal.request_by = request.user
                 withdrawal.save()
 
-                # TODO: needs to work for exporters
-                application.status = ImportApplication.WITHDRAWN
+                application.status = model_class.WITHDRAWN
                 application.save()
 
                 task.is_active = False
@@ -342,41 +361,41 @@ def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) 
         else:
             form = forms.WithdrawForm()
 
-        # TODO: move process_template and withdraw template
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
             "task": task,
             "page_title": f"{application.application_type.get_type_description()} - Management",
             "form": form,
             "withdrawals": application.withdrawals.filter(is_active=True),
+            "case_type": case_type,
         }
-        return render(request, "web/domains/case/import/withdraw.html", context)
+        return render(request, "web/domains/case/withdraw.html", context)
 
 
 @login_required
-# TODO: this wont work for exporters
-@permission_required("web.importer_access", raise_exception=True)
 @require_POST
 def archive_withdrawal(
     request: HttpRequest, *, application_pk: int, withdrawal_pk: int, case_type: str
 ) -> HttpResponse:
+    has_access = _has_importer_exporter_access(request.user, case_type)
+    if not has_access:
+        raise PermissionDenied
+
     with transaction.atomic():
-        # TODO: Make this work for exporters
-        application = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
+        model_class = _get_class_imp_or_exp(case_type)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
         )
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
-        # TODO: will need way to get export tasks
-        task = application.get_task(ImportApplication.WITHDRAWN, "process")
+        task = application.get_task(model_class.WITHDRAWN, "process")
 
-        # TODO: will need to work for export applications (export perms)
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+        is_contact = _is_importer_exporter_contact(request.user, application, case_type)
+        if not is_contact:
             raise PermissionDenied
 
-        # TODO: needs to work for exporters
-        application.status = ImportApplication.SUBMITTED
+        application.status = model_class.SUBMITTED
         application.save()
 
         withdrawal.is_active = False
