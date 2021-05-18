@@ -256,7 +256,7 @@ def edit_goods_licence(request: HttpRequest, pk: int) -> HttpResponse:
             form = GoodsDerogationsLicenceForm(instance=application)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Edit Goods",

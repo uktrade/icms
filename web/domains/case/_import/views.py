@@ -608,7 +608,7 @@ def edit_cover_letter(request, pk):
             form = forms.CoverLetterForm(instance=application)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Cover Letter Response Preparation",
@@ -637,10 +637,10 @@ def edit_licence(request, pk):
                 form.save()
                 return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
         else:
-            form = forms.LicenceDateForm()
+            form = forms.LicenceDateForm(instance=application)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Licence Response Preparation",
