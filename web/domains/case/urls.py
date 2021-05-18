@@ -83,7 +83,11 @@ urlpatterns = [
         "<casetype:case_type>/<int:application_pk>/",
         include(
             [
-                # --- further information requests
+                # --- Common to applicant/ILB Admin (import/export/accessrequest)
+                #
+                path("view/", views.view_case, name="view"),
+                #
+                # --- further information requests ((import/export/accessrequest))
                 #
                 path("firs/", include(further_information_requests_urls)),
                 #
@@ -150,9 +154,6 @@ urlpatterns = [
                 #     name="delete-endorsement",
                 # ),
                 #
-                # --- Common to Importer/ILB Admin (TODO: probably part of ICMSLST-669?)
-                #
-                # path("view/", views.view_case, name="view-case"),
             ]
         ),
     ),

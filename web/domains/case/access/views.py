@@ -156,24 +156,6 @@ def exporter_access_request(request):
     return render(request, "web/domains/case/access/request-exporter-access.html", context)
 
 
-@login_required
-def case_view(request, application_pk, entity):
-    with transaction.atomic():
-        if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=application_pk
-            )
-        application.get_task(AccessRequest.SUBMITTED, "process")
-
-    context = {"process": application}
-    return render(request, "web/domains/case/access/case-view.html", context)
-
-
-@login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def management(request, pk, entity):
     with transaction.atomic():

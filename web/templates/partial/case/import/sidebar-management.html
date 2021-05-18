@@ -86,7 +86,7 @@
 <h4>Application</h4>
 <ul class="menu-out">
   <li>
-    <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">
+    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
       View Application
     </a>
   </li>

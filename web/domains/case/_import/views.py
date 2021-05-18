@@ -17,7 +17,6 @@ from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.forms import CloseCaseForm
-from web.domains.firearms.models import FirearmsAuthority
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -260,101 +259,6 @@ def manage_case(request, pk):
             template_name="web/domains/case/import/manage/case.html",
             context=context,
         )
-
-
-@login_required
-def view_case(request: HttpRequest, pk: int) -> HttpResponse:
-    has_perm_importer = request.user.has_perm("web.importer_access")
-    has_perm_reference_data = request.user.has_perm("web.reference_data_access")
-
-    if not has_perm_importer and not has_perm_reference_data:
-        raise PermissionDenied
-
-    application: ImportApplication = get_object_or_404(ImportApplication, pk=pk)
-
-    # first check is for case managers (who are not marked as contacts of
-    # importers), second is for people submitting applications
-    if not has_perm_reference_data and not request.user.has_perm(
-        "web.is_contact_of_importer", application.importer
-    ):
-        raise PermissionDenied
-
-    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _view_firearms_oil_case(request, application.openindividuallicenceapplication)
-
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return _view_sanctions_and_adhoc_case(request, application.sanctionsandadhocapplication)
-
-    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _view_wood_quota_application(request, application.woodquotaapplication)
-
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _view_derogations(request, application.derogationsapplication)
-
-    else:
-        return _view_case(request, application)
-
-
-def _view_firearms_oil_case(
-    request: HttpRequest, application: OpenIndividualLicenceApplication
-) -> HttpResponse:
-    context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "process": application,
-        "page_title": application.application_type.get_type_description(),
-        "verified_certificates": FirearmsAuthority.objects.filter(
-            verified_certificates__in=application.verified_certificates.all()
-        ),
-        "certificates": application.user_imported_certificates.active(),
-        "contacts": application.importcontact_set.all(),
-    }
-    return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)
-
-
-def _view_sanctions_and_adhoc_case(
-    request: HttpRequest, application: SanctionsAndAdhocApplication
-) -> HttpResponse:
-    context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "process": application,
-        "page_title": application.application_type.get_type_description(),
-        "goods": application.sanctionsandadhocapplicationgoods_set.all(),
-        "supporting_documents": application.supporting_documents.filter(is_active=True),
-    }
-    return render(request, "web/domains/case/import/view_sanctions_and_adhoc_case.html", context)
-
-
-def _view_wood_quota_application(
-    request: HttpRequest, application: WoodQuotaApplication
-) -> HttpResponse:
-    context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "process": application,
-        "page_title": application.application_type.get_type_description(),
-        "contract_documents": application.contract_documents.filter(is_active=True),
-        "supporting_documents": application.supporting_documents.filter(is_active=True),
-    }
-
-    return render(request, "web/domains/case/import/wood/view.html", context)
-
-
-def _view_derogations(request: HttpRequest, application: DerogationsApplication) -> HttpResponse:
-    context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "process": application,
-        "page_title": application.application_type.get_type_description(),
-        "supporting_documents": application.supporting_documents.filter(is_active=True),
-    }
-    return render(request, "web/domains/case/import/view_derogations.html", context)
-
-
-def _view_case(request: HttpRequest, application: ImportApplication) -> HttpResponse:
-    context = {
-        "process_template": "web/domains/case/import/partials/process.html",
-        "process": application,
-        "page_title": application.application_type.get_type_description(),
-    }
-    return render(request, "web/domains/case/import/view_case.html", context)
 
 
 @login_required

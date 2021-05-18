@@ -11,11 +11,6 @@ urlpatterns = [
     path("importer/request/", views.importer_access_request, name="importer-request"),
     path("exporter/request/", views.exporter_access_request, name="exporter-request"),
     path("requested/", views.AccessRequestCreatedView.as_view(), name="requested"),
-    re_path(
-        "case/(?P<application_pk>[0-9]+)/(?P<entity>importer|exporter)/view/$",
-        views.case_view,
-        name="case-view",
-    ),
     # access request management
     re_path(
         "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/management/$",

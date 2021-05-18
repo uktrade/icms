@@ -17,9 +17,17 @@ from web.domains.user.models import User
 from web.flow.models import Task
 from web.models import (
     AccessRequest,
+    CertificateOfManufactureApplication,
+    DerogationsApplication,
     ExportApplication,
+    ExporterAccessRequest,
+    FirearmsAuthority,
     ImportApplication,
+    ImporterAccessRequest,
+    OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplication,
     WithdrawApplication,
+    WoodQuotaApplication,
 )
 from web.notify import notify
 from web.utils.s3 import get_file_from_s3
@@ -932,3 +940,119 @@ def manage_withdrawals(
             template_name="web/domains/case/manage/withdrawals.html",
             context=context,
         )
+
+
+@login_required
+def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp_or_access(case_type)
+    application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+
+    if case_type == "access":
+        # TODO: existing code in access/views.py did not check for any
+        # permissions...we probably should
+        pass
+    else:
+        has_imp_or_exp_access = _has_importer_exporter_access(request.user, case_type)
+        has_perm_reference_data = request.user.has_perm("web.reference_data_access")
+
+        if not has_imp_or_exp_access and not has_perm_reference_data:
+            raise PermissionDenied
+
+        # first check is for case managers (who are not marked as contacts of
+        # importers), second is for people submitting applications
+        if not has_perm_reference_data and not _is_importer_exporter_contact(
+            request.user, application, case_type
+        ):
+
+            raise PermissionDenied
+
+    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+        return _view_fa_oil(request, application.openindividuallicenceapplication)
+
+    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)
+
+    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
+        return _view_wood_quota(request, application.woodquotaapplication)
+
+    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
+        return _view_derogations(request, application.derogationsapplication)
+
+    elif application.process_type == ImporterAccessRequest.PROCESS_TYPE:
+        return _view_accessrequest(request, application.importeraccessrequest)
+
+    elif application.process_type == ExporterAccessRequest.PROCESS_TYPE:
+        return _view_accessrequest(request, application.exporteraccessrequest)
+
+    elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
+        return _view_com(request, application.certificateofmanufactureapplication)
+
+    else:
+        raise NotImplementedError(f"Unknown process_type {application.process_type}")
+
+
+def _view_fa_oil(
+    request: HttpRequest, application: OpenIndividualLicenceApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "verified_certificates": FirearmsAuthority.objects.filter(
+            verified_certificates__in=application.verified_certificates.all()
+        ),
+        "certificates": application.user_imported_certificates.active(),
+        "contacts": application.importcontact_set.all(),
+    }
+
+    return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)
+
+
+def _view_sanctions_and_adhoc(
+    request: HttpRequest, application: SanctionsAndAdhocApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "goods": application.sanctionsandadhocapplicationgoods_set.all(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/view_sanctions_and_adhoc_case.html", context)
+
+
+def _view_wood_quota(request: HttpRequest, application: WoodQuotaApplication) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "contract_documents": application.contract_documents.filter(is_active=True),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/wood/view.html", context)
+
+
+def _view_derogations(request: HttpRequest, application: DerogationsApplication) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/view_derogations.html", context)
+
+
+def _view_accessrequest(request: HttpRequest, application: AccessRequest) -> HttpResponse:
+    context = {"process": application}
+
+    return render(request, "web/domains/case/access/case-view.html", context)
+
+
+def _view_com(
+    request: HttpRequest, application: CertificateOfManufactureApplication
+) -> HttpResponse:
+    # TODO: implement (ICMSLST-678)
+    raise NotImplementedError

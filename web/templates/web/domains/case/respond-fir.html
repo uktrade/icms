@@ -25,11 +25,9 @@
 <ul class="menu-out">
   {% if case_type == "access" %}
     <li>
-      {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
-        <a href="{{ icms_url('access:case-view', args=[process.pk, entity]) }}">
-          Case {{ process.pk }}
-        </a>
-      {% endwith %}
+      <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">
+        Case {{ process.pk }}
+      </a>
     </li>
   {% endif %}
     <li>
@@ -54,7 +52,7 @@
             action="."
             enctype="multipart/form-data">
         {{ csrf_input }}
- 
+
         {{ form.as_p() }}
         <p>Selected files:</p>
         <p>

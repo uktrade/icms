@@ -3,25 +3,15 @@ clearer what are admin actions and what are applicant actions -->
 <br>
 <p>Applicant</p>
 
-{% if process.process_type == "ImporterAccessRequest" %}
-  <a href="{{ icms_url('access:case-view', args=[process.pk, 'importer']) }}">View</a>
+{% if process.process_type in ["ImporterAccessRequest", "ExporterAccessRequest"] %}
+  <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">View</a>
   <br>
   {% for fir in process.further_information_requests.open() %}
     <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
       Respond FIR
     </a>
     <br>
-    {% endfor %}
-
-{% elif process.process_type == "ExporterAccessRequest" %}
-  <a href="{{ icms_url('access:case-view', args=[process.pk, 'exporter']) }}">View</a>
-  <br>
-  {% for fir in process.further_information_requests.open() %}
-    <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
-      Respond FIR
-    </a>
-    <br>
-    {% endfor %}
+  {% endfor %}
 
 {% elif process.process_type == "ImporterApprovalRequest" %}
   {% if not process.requested_from %}
@@ -49,8 +39,7 @@ clearer what are admin actions and what are applicant actions -->
 
 {% elif process.process_type in ["DerogationsApplication", "OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication", "CertificateOfManufactureApplication"] %}
   {% if process.status == "SUBMITTED" %}
-    {# TODO: FIX in ICMSLST-669 #}
-    <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
+    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
     <br>
     <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Withdraw</a>
     <br>
@@ -61,8 +50,7 @@ clearer what are admin actions and what are applicant actions -->
       <br>
     {% endfor %}
   {% elif process.status == "WITHDRAWN" %}
-    {# TODO: FIX in ICMSLST-669 #}
-    <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
+    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
     <br>
     <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Pending Withdrawal</a>
     <br>

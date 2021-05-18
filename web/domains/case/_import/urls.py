@@ -95,6 +95,4 @@ urlpatterns = [
         views.cancel_authorisation,
         name="cancel-authorisation",
     ),
-    # Common to Importer/ILB Admin
-    path("case/<int:pk>/view/", views.view_case, name="view-case"),
 ]
