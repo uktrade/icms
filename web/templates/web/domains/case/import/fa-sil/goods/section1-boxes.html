@@ -1,0 +1,50 @@
+{% for section in process.goods_section1.filter(is_active=True) %}
+  <div class="container setoutForm">
+    <h5>Section 1 - {{ section.description }}</h5>
+    <a
+      href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section1', 'section_pk': section.pk}) }}"
+      class="link-button icon-pencil button">
+      Edit
+    </a>
+    <form
+      method="POST"
+      action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section1', 'section_pk': section.pk}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button link-button icon-bin">
+        Remove
+      </button>
+    </form>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Licence for</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">Section 1</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Was the firearm manufactured before 1900?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.manufacture else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Quantity</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ section.quantity}}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  </div>
+  <hr />
+{% endfor %}

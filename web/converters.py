@@ -33,3 +33,22 @@ class ExportApplicationTypeConverter:
             raise ValueError
 
         return value
+
+
+class SILSectionTypeConverter:
+    regex = "section1|section2|section5|section582-obsolete|section582-other"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        if value not in [
+            "section1",
+            "section2",
+            "section5",
+            "section582-obsolete",
+            "section582-other",
+        ]:
+            raise ValueError
+
+        return value

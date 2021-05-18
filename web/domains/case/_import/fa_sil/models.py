@@ -42,8 +42,11 @@ class SILGoodsSection1(models.Model):
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section1"
     )
+    is_active = models.BooleanField(default=True)
 
-    manufacture = models.BooleanField(verbose_name="Was the firearm manufactured before 1900?")
+    manufacture = models.BooleanField(
+        verbose_name="Was the firearm manufactured before 1900?", null=True
+    )
 
     description = models.CharField(max_length=4096)
 
@@ -54,8 +57,11 @@ class SILGoodsSection2(models.Model):
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section2"
     )
+    is_active = models.BooleanField(default=True)
 
-    manufacture = models.BooleanField(verbose_name="Was the firearm manufactured before 1900?")
+    manufacture = models.BooleanField(
+        verbose_name="Was the firearm manufactured before 1900?", null=True
+    )
 
     description = models.CharField(max_length=4096)
 
@@ -66,35 +72,43 @@ class SILGoodsSection5(models.Model):
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section5"
     )
+    is_active = models.BooleanField(default=True)
 
-    subsection = models.CharField(max_length=200, verbose_name="Section 5 subsection")
+    subsection = models.CharField(max_length=300, verbose_name="Section 5 subsection")
 
-    manufacture = models.BooleanField(verbose_name="Was the firearm manufactured before 1900?")
+    manufacture = models.BooleanField(
+        verbose_name="Was the firearm manufactured before 1900?", null=True
+    )
 
     description = models.CharField(max_length=4096)
 
-    quantity = models.IntegerField()
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", null=True)
+    quantity = models.IntegerField(blank=True, null=True)
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
 class SILGoodsSection582Obsolete(models.Model):
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
     )
+    is_active = models.BooleanField(default=True)
 
     curiosity_ornament = models.BooleanField(
-        verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?"
+        verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?", null=True
     )
-    acknowledgment = models.BooleanField(verbose_name="Do you acknowledge the above statement?")
+    acknowledgment = models.BooleanField(
+        verbose_name="Do you acknowledge the above statement?", default=False
+    )
 
-    centrefire = models.BooleanField(verbose_name="Is this a breech-loading centrefire firearm?")
+    centrefire = models.BooleanField(
+        verbose_name="Is this a breech-loading centrefire firearm?", null=True
+    )
 
     manufacture = models.BooleanField(
-        verbose_name="Was the firearm manufactured after 1899 and before 1939?"
+        verbose_name="Was the firearm manufactured after 1899 and before 1939?", null=True
     )
 
     original_chambering = models.BooleanField(
-        verbose_name="Does the firearm retain its original chambering?"
+        verbose_name="Does the firearm retain its original chambering?", null=True
     )
 
     obsolete_calibre = models.CharField(max_length=50, verbose_name="Obsolete Calibre")
@@ -108,38 +122,54 @@ class SILGoodsSection582Other(models.Model):
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section582_others"
     )
+    is_active = models.BooleanField(default=True)
 
     curiosity_ornament = models.BooleanField(
-        verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?"
+        verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?", null=True
     )
-    acknowledgment = models.BooleanField(verbose_name="Do you acknowledge the above statement?")
+    acknowledgment = models.BooleanField(
+        verbose_name="Do you acknowledge the above statement?",
+        default=False,
+    )
 
     manufacture = models.BooleanField(
-        verbose_name="Was the firearm manufactured after 1899 and before 1939?"
+        verbose_name="Was the firearm manufactured after 1899 and before 1939?", null=True
     )
 
-    muzzle_loading = models.BooleanField(verbose_name="Is the firearm muzzle-loading?")
+    muzzle_loading = models.BooleanField(verbose_name="Is the firearm muzzle-loading?", null=True)
 
     rimfire = models.BooleanField(
-        verbose_name="Is the firearm breech-loading capable of discharging a rimfire cartridge other than .22 inch, .23 inch, 6mm or 9mm?"
+        verbose_name="Is the firearm breech-loading capable of discharging a rimfire cartridge other than .22 inch, .23 inch, 6mm or 9mm?",
+        null=True,
     )
-    rimfire_details = models.CharField(max_length=50, verbose_name="If Yes, please specify")
+    rimfire_details = models.CharField(
+        max_length=50, verbose_name="If Yes, please specify", blank=True
+    )
 
     ignition = models.BooleanField(
-        verbose_name="Is the firearm breech-loading using an ignition system other than rimfire or centrefire?"
+        verbose_name="Is the firearm breech-loading using an ignition system other than rimfire or centrefire?",
+        null=True,
     )
-    ignition_details = models.BooleanField(verbose_name="If Yes, please specify ignition system")
+    ignition_details = models.CharField(
+        max_length=10, verbose_name="If Yes, please specify ignition system", blank=True
+    )
+    ignition_other = models.CharField(
+        max_length=20, verbose_name="If Other, please specify", blank=True
+    )
 
     chamber = models.BooleanField(
-        verbose_name="Is the firearm a shotgun, punt gun or rifle chambered for one of the following cartridges (expressed in imperial measurements)?"
+        verbose_name="Is the firearm a shotgun, punt gun or rifle chambered for one of the following cartridges (expressed in imperial measurements)?",
+        null=True,
     )
 
     bore = models.BooleanField(
-        verbose_name="Is the firearm a shotgun, punt gun or rifle with a bore greater than 10?"
+        verbose_name="Is the firearm a shotgun, punt gun or rifle with a bore greater than 10?",
+        null=True,
     )
     bore_details = models.CharField(
         max_length=50,
-        verbose_name="Is the firearm a shotgun, punt gun or rifle with a bore greater than 10?",
+        verbose_name="If Yes, please specify",
+        blank=True,
     )
 
     description = models.CharField(max_length=4096)

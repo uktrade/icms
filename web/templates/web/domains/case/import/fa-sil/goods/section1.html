@@ -1,0 +1,58 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('import:fa-sil:edit', kwargs={'pk': process.pk}) }}" class="prev-link">
+          Application
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/case/import/fa-sil/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Licence For Section 1</h3>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                value="Save"
+                class="primary-button button" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}
+
+{% block task_actions %}
+  <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock %}

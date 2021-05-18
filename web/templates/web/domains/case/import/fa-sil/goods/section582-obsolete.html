@@ -1,0 +1,93 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block extra_header %}
+  <div class="container contextHeaderGrid">
+    {% include 'web/domains/case/import/partials/process.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('import:fa-sil:edit', kwargs={'pk': process.pk}) }}" class="prev-link">
+          Application
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  {% include "partial/case/import/fa-sil/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  <h3>Licence For Section 58(2) - Obsolete Calibre</h3>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
+    {{ fields.field(form.curiosity_ornament) }}
+
+    <hr />
+
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        Antique firearms which are sold, transferred, purchased, acquired or possessed as a
+        "curiosity or ornament" are exempt from most aspects of firearms law, including
+        certificate controls under section 1 and 2, and prohibition under section 5.
+        In addition to being possessed etc as a "curiosity or ornament", Home Office
+        guidance is that an antique firearm must have been manufactured before 1939
+        and be of a type specified in the Home Office Guide on Firearms Licensing Law.
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {{ fields.field(form.acknowledgment,
+                    checkbox_label='I acknowledge the above statement as true',
+                    show_optional_indicator=False) }}
+
+    <hr />
+
+    {{ fields.field(form.centrefire, show_optional_indicator=False) }}
+    {{ fields.field(form.manufacture, show_optional_indicator=False) }}
+    {{ fields.field(form.original_chambering, show_optional_indicator=False) }}
+
+    <hr />
+
+    {{ fields.field(form.obsolete_calibre, show_optional_indicator=False) }}
+
+    <hr />
+
+    {{ fields.field(form.description, show_optional_indicator=False) }}
+    {{ fields.field(form.quantity, show_optional_indicator=False) }}
+
+
+
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                value="Save"
+                class="primary-button button" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}
+
+{% block task_actions %}
+  <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock %}

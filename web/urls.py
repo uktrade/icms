@@ -6,6 +6,7 @@ from .views import home
 register_converter(converters.NegativeIntConverter, "negint")
 register_converter(converters.CaseTypeConverter, "casetype")
 register_converter(converters.ExportApplicationTypeConverter, "exportapplicationtype")
+register_converter(converters.SILSectionTypeConverter, "silsectiontype")
 
 urlpatterns = [
     path("", include("web.auth.urls")),

@@ -1,0 +1,113 @@
+{% for section in process.goods_section582_obsoletes.filter(is_active=True) %}
+  <div class="container setoutForm">
+    <h5>Section 58(2) - Obsolete - {{ section.description }}</h5>
+    <a
+      href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-obsolete', 'section_pk': section.pk}) }}"
+      class="link-button icon-pencil button">
+      Edit
+    </a>
+    <form
+      method="POST"
+      action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-obsolete', 'section_pk': section.pk}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button link-button icon-bin">
+        Remove
+      </button>
+    </form>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Licence for</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">Section 58(2) - Obsolete Calibre</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Do you intend to possess the firearm as a 'curiosity or ornament'?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.curiosity_ornament else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        <p>
+          Antique firearms which are sold, transferred, purchased, acquired or possessed as a
+          "curiosity or ornament" are exempt from most aspects of firearms law, including
+          certificate controls under section 1 and 2, and prohibition under section 5. In
+          addition to being possessed etc as a "curiosity or ornament", Home Office guidance
+          is that an antique firearm must have been manufactured before 1939 and be of a type
+          specified in the Home Office Guide on Firearms Licensing Law.
+        </p>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Do you acknowledge the above statement?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">
+          {% if section.acknowledgment %}
+            I acknowledge the above statement as true
+          {% endif %}
+        </span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Is this a breech-loading centrefire firearm?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.centrefire else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Was the firearm manufactured after 1899 and before 1939?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.manufacture else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Does the firearm retain its original chambering?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.original_chambering else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Obsolete Calibre</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ section.obsolete_calibre }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Quantity</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ section.quantity }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  </div>
+  <hr />
+{% endfor %}

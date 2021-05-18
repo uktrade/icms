@@ -1,0 +1,186 @@
+{% for section in process.goods_section582_others.filter(is_active=True) %}
+  <div class="container setoutForm">
+    <h5>Section 58(2) - Other - {{ section.description }}</h5>
+    <a
+      href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-other', 'section_pk': section.pk}) }}"
+      class="link-button icon-pencil button">
+      Edit
+    </a>
+    <form
+      method="POST"
+      action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-other', 'section_pk': section.pk}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button link-button icon-bin">
+        Remove
+      </button>
+    </form>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Licence for</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">Section 58(2) - Other</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Do you intend to possess the firearm as a 'curiosity or ornament'?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.curiosity_ornament else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        <p>
+          Antique firearms which are sold, transferred, purchased, acquired or possessed as a
+          "curiosity or ornament" are exempt from most aspects of firearms law, including
+          certificate controls under section 1 and 2, and prohibition under section 5. In
+          addition to being possessed etc as a "curiosity or ornament", Home Office guidance
+          is that an antique firearm must have been manufactured before 1939 and be of a type
+          specified in the Home Office Guide on Firearms Licensing Law.
+        </p>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Do you acknowledge the above statement?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">
+          {% if section.acknowledgment %}
+            I acknowledge the above statement as true
+          {% endif %}
+        </span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Was the firearm manufactured after 1899 and before 1939?</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ 'Yes' if section.manufacture else 'No' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Quantity</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">{{ section.quantity }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    {% if section.muzzle_loading %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">Is the firearm muzzle-loading?</label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">Yes</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% elif section.rimfire %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Is the firearm breech-loading capable of discharging a rimfire cartridge other than
+            .22 inch, .23 inch, 6mm or 9mm?
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">Yes</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">If Yes, please specify</label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">{{ section.rimfire_details }}</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% elif section.ignition %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Is the firearm breech-loading using an ignition system other than rimfire or centrefire?
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">Yes</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">If Yes, please specify ignition system</label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">{{ section.ignition_details }}</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      {% if section.ignition_other %}
+        <div class="row">
+          <div class="three columns">
+            <label class="prompt west">If Other, please specify</label>
+          </div>
+          <div class="six columns">
+            <span class="text-widget ">{{ section.ignition_other }}</span>
+          </div>
+          <div class="three columns"></div>
+        </div>
+      {% endif %}
+    {% elif section.chamber %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Is the firearm a shotgun, punt gun or rifle chambered for one of the following
+            cartridges (expressed in imperial measurements)?
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">Yes</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% elif section.bore %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Is the firearm a shotgun, punt gun or rifle with a bore greater than 10?
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">Yes</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">If Other, please specify</label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget ">{{ section.bore_details }}</span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
+  </div>
+  <hr />
+{% endfor %}

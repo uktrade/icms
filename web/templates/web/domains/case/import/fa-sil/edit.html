@@ -39,3 +39,21 @@
 {% block task_actions %}
   <input type="submit" name="action" class="primary-button button" value="Save" />
 {% endblock %}
+
+{% block after_form %}
+  <h4>Goods - Licence for</h4>
+  {% include "web/domains/case/import/fa-sil/goods/section1-boxes.html" %}
+  {% include "web/domains/case/import/fa-sil/goods/section2-boxes.html" %}
+  {% include "web/domains/case/import/fa-sil/goods/section5-boxes.html" %}
+  {% include "web/domains/case/import/fa-sil/goods/section582-obsolete-boxes.html" %}
+  {% include "web/domains/case/import/fa-sil/goods/section582-other-boxes.html" %}
+
+  <p>
+    <a
+      href="{{ icms_url('import:fa-sil:choose-goods-section', kwargs={'pk': process.pk}) }}"
+      class="button button-small">
+      Add Goods Item
+    </a>
+  </p>
+
+{% endblock %}

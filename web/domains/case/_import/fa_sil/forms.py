@@ -6,6 +6,12 @@ from web.domains.user.models import User
 
 from . import models
 
+TRUE_FALSE_CHOICES = (
+    ("unknown", "---------"),
+    (True, "Yes"),
+    (False, "No"),
+)
+
 
 class PrepareSILForm(forms.ModelForm):
     applicant_reference = forms.CharField(
@@ -118,25 +124,70 @@ class PrepareSILForm(forms.ModelForm):
 
 class SILGoodsSection1Form(forms.ModelForm):
     class Meta:
-        models = models.SILGoodsSection1
+        model = models.SILGoodsSection1
         fields = ("manufacture", "description", "quantity")
+        help_texts = {
+            "description": (
+                "You no longer need to type the part of the Firearms Act that applies to the"
+                " item listed in this box. You must select it from the 'Licence for' section."
+            ),
+            "quantity": "Enter a whole number",
+        }
+        widgets = {
+            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "description": forms.Textarea({"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["manufacture"].required = True
 
 
 class SILGoodsSection2Form(forms.ModelForm):
     class Meta:
-        models = models.SILGoodsSection2
+        model = models.SILGoodsSection2
         fields = ("manufacture", "description", "quantity")
+        help_texts = {
+            "description": (
+                "You no longer need to type the part of the Firearms Act that applies to the"
+                " item listed in this box. You must select it from the 'Licence for' section."
+            ),
+            "quantity": "Enter a whole number",
+        }
+        widgets = {
+            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "description": forms.Textarea({"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["manufacture"].required = True
 
 
 class SILGoodsSection5Form(forms.ModelForm):
     class Meta:
-        models = models.SILGoodsSection5
+        model = models.SILGoodsSection5
         fields = ("subsection", "manufacture", "description", "quantity", "unlimited_quantity")
+        help_texts = {
+            "description": (
+                "You no longer need to type the part of the Firearms Act that applies to the"
+                " item listed in this box. You must select it from the 'Licence for' section."
+            ),
+            "quantity": "Enter a whole number",
+        }
+        widgets = {
+            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "description": forms.Textarea({"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["manufacture"].required = True
 
 
 class SILGoodsSection582ObsoleteForm(forms.ModelForm):
     class Meta:
-        models = models.SILGoodsSection582Obsolete
+        model = models.SILGoodsSection582Obsolete
         fields = (
             "curiosity_ornament",
             "acknowledgment",
@@ -147,22 +198,74 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):
             "description",
             "quantity",
         )
+        widgets = {
+            "curiosity_ornament": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "centrefire": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "original_chambering": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "description": forms.Textarea({"rows": 3}),
+        }
+        help_texts = {
+            "description": (
+                "You no longer need to type the part of the Firearms Act that applies to the"
+                " item listed in this box. You must select it from the 'Licence for' section."
+            ),
+            "quantity": "Enter a whole number",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["curiosity_ornament"].required = True
+        self.fields["centrefire"].required = True
+        self.fields["manufacture"].required = True
+        self.fields["original_chambering"].required = True
 
 
-class SILGoodsSection582Other(forms.ModelForm):
+class SILGoodsSection582OtherForm(forms.ModelForm):
     class Meta:
-        models = models.SILGoodsSection582Other
+        model = models.SILGoodsSection582Other
         fields = (
             "curiosity_ornament",
             "acknowledgment",
+            "manufacture",
+            "description",
+            "quantity",
             "muzzle_loading",
             "rimfire",
             "rimfire_details",
             "ignition",
             "ignition_details",
+            "ignition_other",
             "chamber",
             "bore",
             "bore_details",
-            "description",
-            "quantity",
         )
+        widgets = {
+            "curiosity_ornament": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "muzzle_loading": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "rimfire": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "ignition": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "chamber": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "bore": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "description": forms.Textarea({"rows": 3}),
+        }
+        help_texts = {
+            "description": (
+                "You no longer need to type the part of the Firearms Act that applies to the"
+                " item listed in this box. You must select it from the 'Licence for' section."
+            ),
+            "chamber": (
+                "32 bore, 24 bore, 14 bore, 10 bore (2 5/8 and 2 7/8 inch only), 8 bore, 4 bore,"
+                " 3 bore, 2 bore, 1 1/8 bore, 1 1/2 bore, 1 1/4 bore"
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["curiosity_ornament"].required = True
+        self.fields["manufacture"].required = True
+        self.fields["muzzle_loading"].required = True
+        self.fields["rimfire"].required = True
+        self.fields["ignition"].required = True
+        self.fields["chamber"].required = True
+        self.fields["bore"].required = True
