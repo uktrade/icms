@@ -46,5 +46,5 @@ def test_resume_oil_application():
     # NOTE: The workbasket action links need refactoring.
     # See the fix me in this file (we disabled the incorrect link)
     # icms/web/templates/web/domains/workbasket/partials/workbasket-item-user.html
-    link = '<td><a href="#">Resume</a></td>'
+    link = '<a href="#">Resume</a>'
     assert link in response.content.decode()
