@@ -33,7 +33,7 @@
     </li>
   {% endif %}
     <li>
-      <a href="{{ icms_url(url_namespace + ':list-firs', args=[process.pk]) }}">
+      <a href="{{ icms_url('case:list-firs', kwargs={'application_pk': process.pk, 'case_type': url_namespace}) }}">
         {% with
           closed = process.further_information_requests.closed().count(),
           total = process.further_information_requests.submitted().count()

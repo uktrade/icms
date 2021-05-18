@@ -7,8 +7,8 @@
   <form
     method="post"
     action="{{ icms_url(
-                 url_namespace + ':archive-fir',
-                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                 'case:delete-fir',
+                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
     class="form-inline">
       {{ csrf_input }}
       <button type="submit" class="small-button icon-bin">Delete</button>
@@ -20,8 +20,8 @@
     <div class="six columns">
       <form method="post"
             action="{{ icms_url(
-                         url_namespace + ':edit-fir',
-                         kwargs={'application_pk': process.pk, 'fir_pk': fir.pk}) }}"
+                         'case:edit-fir',
+                         kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace}) }}"
             enctype="multipart/form-data">
         {{ csrf_input }}
         {{ form.as_p() }}
@@ -56,8 +56,8 @@
             <td>
               <form method="post"
                     action={{ icms_url(
-                                url_namespace + ':archive-fir-file',
-                                kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
+                              'case:delete-fir-file',
+                              kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': url_namespace}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>
               </form>

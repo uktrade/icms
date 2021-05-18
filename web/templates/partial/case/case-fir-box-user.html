@@ -3,8 +3,8 @@
 {% block fir_action %}
   {% if fir.status == "OPEN" %}
     <a href="{{ icms_url(
-                  url_namespace + ':respond-fir',
-                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                  'case:respond-fir',
+                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
       class="button small-button icon-pencil">
       Respond
     </a>

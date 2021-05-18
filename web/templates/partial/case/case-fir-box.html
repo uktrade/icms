@@ -3,16 +3,16 @@
 {% block fir_action %}
   {% if fir.status == 'DRAFT' %}
     <a href="{{ icms_url(
-                  url_namespace + ':edit-fir',
-                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                  'case:edit-fir',
+                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
       class="button small-button icon-pencil">
       Edit
     </a>
   {% elif fir.status == 'OPEN' %}
     <form method="post"
           action="{{ icms_url(
-                       url_namespace + ':withdraw-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                       'case:withdraw-fir',
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button icon-undo2">Withdraw Request</button>
@@ -20,8 +20,8 @@
   {% elif fir.status == 'RESPONDED' %}
     <form method="post"
           action="{{ icms_url(
-                       url_namespace + ':close-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                       'case:close-fir',
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button">Close</button>
@@ -31,8 +31,8 @@
   {% if fir.status in ['DRAFT', 'OPEN'] %}
     <form method="post"
           action="{{ icms_url(
-                       url_namespace + ':archive-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk }) }}"
+                       'case:delete-fir',
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button icon-bin">Delete</button>

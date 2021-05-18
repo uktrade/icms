@@ -5,10 +5,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-from web.domains.case import views as case_views
 from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
@@ -176,16 +174,6 @@ def case_view(request, application_pk, entity):
 
 
 @login_required
-def list_firs(request, application_pk):
-    return case_views._list_firs(request, application_pk, AccessRequest, "access")
-
-
-@login_required
-def respond_fir(request, application_pk, fir_pk):
-    return case_views._respond_fir(request, application_pk, fir_pk, AccessRequest, "access")
-
-
-@login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def management(request, pk, entity):
     with transaction.atomic():
@@ -279,66 +267,3 @@ def management_response(request, pk, entity):
 
 class AccessRequestCreatedView(TemplateView):
     template_name = "web/domains/case/access/request-access-success.html"
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_firs(request, application_pk):
-    application = get_object_or_404(AccessRequest, pk=application_pk)
-
-    if application.process_type == "ImporterAccessRequest":
-        show_firs = application.importeraccessrequest.link_id
-    else:
-        show_firs = application.exporteraccessrequest.link_id
-
-    extra_context = {"show_firs": show_firs}
-
-    return case_views._manage_firs(
-        request, application_pk, AccessRequest, "access", **extra_context
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def add_fir(request, application_pk):
-    return case_views._add_fir(request, application_pk, AccessRequest, "access")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def edit_fir(request, application_pk, fir_pk):
-    application = get_object_or_404(AccessRequest, pk=application_pk)
-    contacts = [application.submitted_by]
-
-    return case_views._edit_fir(request, application_pk, fir_pk, AccessRequest, "access", contacts)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def archive_fir(request, application_pk, fir_pk):
-    return case_views._archive_fir(request, application_pk, fir_pk, AccessRequest, "access")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def withdraw_fir(request, application_pk, fir_pk):
-    return case_views._withdraw_fir(request, application_pk, fir_pk, AccessRequest, "access")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def close_fir(request, application_pk, fir_pk):
-    return case_views._close_fir(request, application_pk, fir_pk, AccessRequest, "access")
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def archive_fir_file(request, application_pk, fir_pk, file_pk):
-    return case_views._archive_fir_file(
-        request, application_pk, fir_pk, file_pk, AccessRequest, "access"
-    )

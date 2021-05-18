@@ -33,7 +33,7 @@
     </li>
   {% endif %}
     <li>
-      <a href="{{ icms_url(url_namespace + ':list-firs', args=[process.pk]) }}">
+      <a href="{{ icms_url('case:list-firs', kwargs={'application_pk': process.pk, 'case_type': url_namespace}) }}">
         {% with
           closed = process.further_information_requests.closed().count(),
           total = process.further_information_requests.submitted().count()
@@ -90,8 +90,8 @@
               {% if document.created_by == request.user %}
               <form method="post"
                     action={{ icms_url(
-                                url_namespace + ':case-management-fir-files-archive',
-                                kwargs={'application_pk': object.pk, 'entity':entity, 'fir_pk': fir.pk, 'file_pk': document.pk}) }}>
+                                'case:delete-fir-file',
+                                kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': url_namespace}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>
               </form>

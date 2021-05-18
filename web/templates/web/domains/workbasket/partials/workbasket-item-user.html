@@ -7,7 +7,7 @@ clearer what are admin actions and what are applicant actions -->
   <a href="{{ icms_url('access:case-view', args=[process.pk, 'importer']) }}">View</a>
   <br>
   {% for fir in process.further_information_requests.open() %}
-    <a href="{{ icms_url('access:respond-fir', args=[process.pk, fir.pk]) }}">
+    <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
       Respond FIR
     </a>
     <br>
@@ -17,7 +17,7 @@ clearer what are admin actions and what are applicant actions -->
   <a href="{{ icms_url('access:case-view', args=[process.pk, 'exporter']) }}">View</a>
   <br>
   {% for fir in process.further_information_requests.open() %}
-    <a href="{{ icms_url('access:respond-fir', args=[process.pk, fir.pk]) }}">
+    <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
       Respond FIR
     </a>
     <br>
@@ -55,7 +55,7 @@ clearer what are admin actions and what are applicant actions -->
     <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Withdraw</a>
     <br>
     {% for fir in process.further_information_requests.open() %}
-      <a href="{{ icms_url(case_type + ':respond-fir', args=[process.pk, fir.pk]) }}">
+      <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}">
         Respond FIR
       </a>
       <br>

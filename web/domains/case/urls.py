@@ -55,29 +55,40 @@ applicant_urls = [
     ),
 ]
 
+further_information_requests_urls = [
+    path("manage/", views.manage_firs, name="manage-firs"),
+    path("list/", views.list_firs, name="list-firs"),
+    path("add/", views.add_fir, name="add-fir"),
+    path(
+        "<int:fir_pk>/",
+        include(
+            [
+                path("edit/", views.edit_fir, name="edit-fir"),
+                path("respond/", views.respond_fir, name="respond-fir"),
+                path("delete/", views.delete_fir, name="delete-fir"),
+                path("withdraw/", views.withdraw_fir, name="withdraw-fir"),
+                path("close/", views.close_fir, name="close-fir"),
+                path(
+                    "files/<int:file_pk>/delete/",
+                    views.delete_fir_file,
+                    name="delete-fir-file",
+                ),
+            ]
+        ),
+    ),
+]
+
 urlpatterns = [
     path(
         "<casetype:case_type>/<int:application_pk>/",
         include(
             [
-                # --- further information requests (TODO: ICMSLST-665)
-                #     NOTE: these are the only ones that take AcceptRequest
+                # --- further information requests
                 #
-                # path("firs/list/", views.list_firs, name="list-firs"),
-                # path("firs/", views.manage_firs, name="manage-firs"),
-                # path("firs/add/", views.add_fir, name="add-fir"),
-                # path("firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
-                # path("firs/<int:fir_pk>/respond/", views.respond_fir, name="respond-fir"),
-                # path("firs/<int:fir_pk>/archive/", views.archive_fir, name="archive-fir"),
-                # path("firs/<int:fir_pk>/withdraw/", views.withdraw_fir, name="withdraw-fir"),
-                # path("firs/<int:fir_pk>/close/", views.close_fir, name="close-fir"),
-                # path(
-                #     "firs/<int:fir_pk/files/<int:file_pk/archive/",
-                #     views.archive_fir_file,
-                #     name="archive-fir-file",
-                # ),
+                path("firs/", include(further_information_requests_urls)),
                 #
                 # --- applicant case management
+                #
                 path("applicant/", include(applicant_urls)),
                 #
                 # -- ILB Admin Case management (TODO: ICMSLST-667)

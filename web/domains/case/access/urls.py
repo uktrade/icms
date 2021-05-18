@@ -16,16 +16,6 @@ urlpatterns = [
         views.case_view,
         name="case-view",
     ),
-    path(
-        "case/<int:application_pk>/firs/list/",
-        views.list_firs,
-        name="list-firs",
-    ),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/respond/",
-        views.respond_fir,
-        name="respond-fir",
-    ),
     # access request management
     re_path(
         "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/management/$",
@@ -39,24 +29,4 @@ urlpatterns = [
     ),
     # approval request
     path("", include("web.domains.case.access.approval.urls")),
-    # management for further information requests
-    path("case/<int:application_pk>/firs/manage/", views.manage_firs, name="manage-firs"),
-    path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),
-    path("case/<int:application_pk>/firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/archive/",
-        views.archive_fir,
-        name="archive-fir",
-    ),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/withdraw/",
-        views.withdraw_fir,
-        name="withdraw-fir",
-    ),
-    path("case/<int:application_pk>/firs/<int:fir_pk>/close/", views.close_fir, name="close-fir"),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk/files/<int:file_pk/archive/",
-        views.archive_fir_file,
-        name="archive-fir-file",
-    ),
 ]

@@ -12,9 +12,6 @@ from web.flow.models import Process
 
 
 class ExportApplicationType(models.Model):
-    CERT_FREE_SALE = 1
-    CERT_MANUFACTURE = 2
-
     class Types(models.TextChoices):
         FREE_SALE = ("CFS", "Certificate of Free Sale")
         MANUFACTURE = ("COM", "Certificate of Manufacture")

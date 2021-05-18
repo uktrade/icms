@@ -43,13 +43,6 @@ urlpatterns = [
         ),
     ),
     path("wood/", include("web.domains.case._import.wood.urls")),
-    # Importer case management
-    path("case/<int:application_pk>/firs/list/", views.list_firs, name="list-firs"),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/respond/",
-        views.respond_fir,
-        name="respond-fir",
-    ),
     # ILB Admin Case management
     path("case/<int:pk>/take_ownership/", views.take_ownership, name="take-ownership"),
     path("case/<int:pk>/release_ownership/", views.release_ownership, name="release-ownership"),
@@ -63,26 +56,6 @@ urlpatterns = [
         "case/<int:application_pk>/update-requests/<int:update_request_pk>/close/",
         views.close_update_requests,
         name="close-update-requests",
-    ),
-    # further information requests
-    path("case/<int:application_pk>/firs/", views.manage_firs, name="manage-firs"),
-    path("case/<int:application_pk>/firs/add/", views.add_fir, name="add-fir"),
-    path("case/<int:application_pk>/firs/<int:fir_pk>/edit/", views.edit_fir, name="edit-fir"),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/archive/",
-        views.archive_fir,
-        name="archive-fir",
-    ),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk>/withdraw/",
-        views.withdraw_fir,
-        name="withdraw-fir",
-    ),
-    path("case/<int:application_pk>/firs/<int:fir_pk>/close/", views.close_fir, name="close-fir"),
-    path(
-        "case/<int:application_pk>/firs/<int:fir_pk/files/<int:file_pk/archive/",
-        views.archive_fir_file,
-        name="archive-fir-file",
     ),
     path("case/<int:pk>/prepare-response/", views.prepare_response, name="prepare-response"),
     path("case/<int:pk>/cover-letter/", views.edit_cover_letter, name="edit-cover-letter"),

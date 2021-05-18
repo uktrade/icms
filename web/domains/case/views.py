@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
+from guardian.shortcuts import get_users_with_perms
 
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -497,10 +498,35 @@ def _close_update_requests(request, application_pk, update_request_pk, model_cla
     )
 
 
-def _manage_firs(request, application_pk, model_class, url_namespace, **extra_context):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    url_namespace = case_type
+
+    model_class = _get_class_imp_or_exp_or_access(case_type)
+
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         task = application.get_task(model_class.SUBMITTED, "process")
+
+        if case_type == "import":
+            show_firs = True
+
+        elif case_type == "access":
+            if application.process_type == "ImporterAccessRequest":
+                show_firs = application.importeraccessrequest.link_id
+            else:
+                show_firs = application.exporteraccessrequest.link_id
+
+        # TODO: Add support for exporter (maybe just set show_firs to True)
+        # elif case_type == "export":
+        #     pass
+
+        else:
+            raise NotImplementedError(f"Unknown case_type {case_type}")
+
+        extra_context = {"show_firs": show_firs}
+
         context = {
             "process": application,
             "task": task,
@@ -519,7 +545,21 @@ def _manage_firs(request, application_pk, model_class, url_namespace, **extra_co
     )
 
 
-def _add_fir(request, application_pk, model_class, url_namespace):
+def _manage_fir_redirect(application_pk: int, case_type: str) -> HttpResponse:
+    return redirect(
+        reverse(
+            "case:manage-firs",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
+        )
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp_or_access(case_type)
+
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
@@ -541,19 +581,29 @@ def _add_fir(request, application_pk, model_class, url_namespace):
 
         Task.objects.create(process=fir, task_type="check_draft", owner=request.user)
 
-    return redirect(
-        reverse(
-            f"{url_namespace}:manage-firs",
-            kwargs={"application_pk": application_pk},
-        )
-    )
+    return _manage_fir_redirect(application_pk, case_type)
 
 
-def _edit_fir(
-    request, application_pk, fir_pk, model_class, url_namespace, contacts, **extra_context
-):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> HttpResponse:
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+
+        if case_type == "access":
+            contacts = [application.submitted_by]
+        elif case_type == "import":
+            application = get_object_or_404(ImportApplication, pk=application_pk)
+            contacts = get_users_with_perms(
+                application.importer, only_with_perms_in=["is_contact_of_importer"]
+            ).filter(user_permissions__codename="importer_access")
+        # TODO: Add for export
+        # elif case_type == "export":
+        #     ...
+        else:
+            raise NotImplementedError(f"Unknown case_type {case_type}")
+
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
         task = application.get_task(model_class.SUBMITTED, "process")
@@ -583,12 +633,7 @@ def _edit_fir(
 
                     Task.objects.create(process=fir, task_type="notify_contacts", previous=fir_task)
 
-                return redirect(
-                    reverse(
-                        f"{url_namespace}:manage-firs",
-                        kwargs={"application_pk": application_pk},
-                    )
-                )
+                return _manage_fir_redirect(application_pk, case_type)
         else:
             form = fir_forms.FurtherInformationRequestForm(instance=fir)
 
@@ -597,9 +642,8 @@ def _edit_fir(
             "task": task,
             "form": form,
             "fir": fir,
-            "url_namespace": url_namespace,
-            "case_type": url_namespace,
-            **extra_context,
+            "url_namespace": case_type,
+            "case_type": case_type,
         }
 
     return render(
@@ -609,8 +653,14 @@ def _edit_fir(
     )
 
 
-def _archive_fir(request, application_pk, fir_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def delete_fir(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
@@ -623,16 +673,17 @@ def _archive_fir(request, application_pk, fir_pk, model_class, url_namespace):
 
         fir_tasks.update(is_active=False, finished=timezone.now())
 
-    return redirect(
-        reverse(
-            f"{url_namespace}:manage-firs",
-            kwargs={"application_pk": application_pk},
-        )
-    )
+    return _manage_fir_redirect(application_pk, case_type)
 
 
-def _withdraw_fir(request, application_pk, fir_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def withdraw_fir(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
@@ -652,16 +703,17 @@ def _withdraw_fir(request, application_pk, fir_pk, model_class, url_namespace):
             is_active=True, status=FurtherInformationRequest.DRAFT
         )
 
-    return redirect(
-        reverse(
-            f"{url_namespace}:manage-firs",
-            kwargs={"application_pk": application_pk},
-        )
-    )
+    return _manage_fir_redirect(application_pk, case_type)
 
 
-def _close_fir(request, application_pk, fir_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def close_fir(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
@@ -680,16 +732,17 @@ def _close_fir(request, application_pk, fir_pk, model_class, url_namespace):
             is_active=False, status=FurtherInformationRequest.CLOSED
         )
 
-    return redirect(
-        reverse(
-            f"{url_namespace}:manage-firs",
-            kwargs={"application_pk": application_pk},
-        )
-    )
+    return _manage_fir_redirect(application_pk, case_type)
 
 
-def _archive_fir_file(request, application_pk, fir_pk, file_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def delete_fir_file(
+    request: HttpRequest, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+) -> HttpResponse:
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
@@ -698,34 +751,62 @@ def _archive_fir_file(request, application_pk, fir_pk, file_pk, model_class, url
 
     return redirect(
         reverse(
-            f"{url_namespace}:edit-fir",
-            kwargs={"application_pk": application_pk, "fir_pk": fir_pk},
+            "case:edit-fir",
+            kwargs={"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type},
         )
     )
 
 
-def _list_firs(request, application_pk, model_class, url_namespace):
+@login_required
+def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    if case_type in ["import", "export"]:
+        has_access = _has_importer_exporter_access(request.user, case_type)
+    elif case_type == "access":
+        has_access = True
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")
+
+    if not has_access:
+        raise PermissionDenied
+
+    model_class = _get_class_imp_or_exp_or_access(case_type)
+
     with transaction.atomic():
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         application.get_task(model_class.SUBMITTED, "process")
 
     context = {
         "process": application,
-        "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+        "process_template": f"web/domains/case/{case_type}/partials/process.html",
         "firs": application.further_information_requests.filter(
             Q(status=FurtherInformationRequest.OPEN)
             | Q(status=FurtherInformationRequest.RESPONDED)
             | Q(status=FurtherInformationRequest.CLOSED)
         ),
-        "url_namespace": url_namespace,
-        "case_type": url_namespace,
+        "url_namespace": case_type,
+        "case_type": case_type,
     }
 
     return render(request, "web/domains/case/list-firs.html", context)
 
 
-def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
+@login_required
+def respond_fir(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
+
+    if case_type in ["import", "export"]:
+        has_access = _has_importer_exporter_access(request.user, case_type)
+    elif case_type == "access":
+        has_access = True
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")
+
+    if not has_access:
+        raise PermissionDenied
+
     with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
         application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
@@ -764,11 +845,11 @@ def _respond_fir(request, application_pk, fir_pk, model_class, url_namespace):
 
     context = {
         "process": application,
-        "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
+        "process_template": f"web/domains/case/{case_type}/partials/process.html",
         "fir": fir,
         "form": form,
-        "url_namespace": url_namespace,
-        "case_type": url_namespace,
+        "url_namespace": case_type,
+        "case_type": case_type,
     }
     return render(request, "web/domains/case/respond-fir.html", context)
 

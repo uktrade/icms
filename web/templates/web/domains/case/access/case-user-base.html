@@ -70,7 +70,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ icms_url('access:list-firs', args=[process.pk]) }}">
+    <a href="{{ icms_url('case:list-firs', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">
       {% with
         closed = process.further_information_requests.closed().count(),
         total = process.further_information_requests.submitted().count()
