@@ -3,6 +3,11 @@
 {% import "forms/fields.html" as fields %}
 
 
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
 {% block extra_header %}
   <div class="container contextHeaderGrid">
     {% include 'web/domains/case/import/partials/process.html' %}
@@ -30,9 +35,16 @@
   <h3>Licence For Section 5</h3>
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {% for field in form %}
-      {{ fields.field(field, show_optional_indicator=False) }}
-    {% endfor %}
+    {{ fields.field(form.subsection, show_optional_indicator=False) }}
+    {{ fields.field(form.manufacture, show_optional_indicator=False) }}
+    {{ fields.field(form.description, show_optional_indicator=False) }}
+
+    <hr />
+
+    {{ fields.field(form.quantity, show_optional_indicator=False) }}
+    {{ fields.field(form.unlimited_quantity,
+                    checkbox_label='Unlimited Quantity',
+                    show_optional_indicator=False) }}
 
     <div class="container">
       <div class="row">
@@ -55,4 +67,9 @@
 
 {% block task_actions %}
   <input type="submit" name="action" class="primary-button button" value="Save" />
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+  {{ super() }}
 {% endblock %}

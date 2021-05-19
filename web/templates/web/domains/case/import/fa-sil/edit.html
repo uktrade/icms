@@ -13,14 +13,15 @@
   <h4>Firearms and Ammunition</h4>
   {{ fields.field(form.applicant_reference) }}
 
-  <div class="label-grouped">
-    {{ fields.field(form.section1, checkbox_label="Section 1", show_optional_indicator=False) }}
-    {{ fields.field(form.section2, checkbox_label="Section 2", show_optional_indicator=False) }}
-    {{ fields.field(form.section5, checkbox_label="Section 5", show_optional_indicator=False) }}
-    {{ fields.field(form.section58_obsolete, checkbox_label="Section 58(2) - Obsolete Calibre", show_optional_indicator=False) }}
-    {{ fields.field(form.section58_other, checkbox_label="Section 58(2) - Other", show_optional_indicator=False) }}
-    {{ fields.field(form.other_description) }}
-  </div>
+  <h4>Licence For</h4>
+  {{ fields.field(form.section1, show_optional_indicator=False) }}
+  {{ fields.field(form.section2, show_optional_indicator=False) }}
+  {{ fields.field(form.section5, show_optional_indicator=False) }}
+  {{ fields.field(form.section58_obsolete, show_optional_indicator=False) }}
+  {{ fields.field(form.section58_other, show_optional_indicator=False) }}
+  {{ fields.field(form.other_description) }}
+
+  <hr />
 
   {{ fields.field(form.origin_country) }}
   {{ fields.field(form.consignment_country) }}
@@ -28,6 +29,9 @@
   {{ fields.field(form.military_police) }}
   {{ fields.field(form.eu_single_market) }}
   {{ fields.field(form.manufactured) }}
+
+  <h4>Goods</h4>
+  {{ fields.field(form.commodity_code) }}
 
   <h4>Details of who bought from</h4>
   {{ fields.field(form.know_bought_from) }}

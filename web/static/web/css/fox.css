@@ -4024,6 +4024,7 @@ label {
 }
 
 .setoutForm input,
+.setoutForm checkbox,
 .setoutForm button,
 .setoutForm .button,
 .setoutForm select,
@@ -4035,7 +4036,7 @@ label {
 .setoutForm .mce-panel,
 .setoutForm .prompt,
 .setoutForm .prefixed-or-suffixed-input,
-setoutForm .radio-label {
+.setoutForm .radio-label {
     margin-top: 0.7em;
     margin-bottom: 0.3em;
 }
@@ -4218,8 +4219,8 @@ input[type='radio'],
 input[type='checkbox'] {
     position: absolute;
     top: 0.55em;
-    left: 0;
-    margin: 0;
+    left: 4px;
+    margin: 0.7em 0.3em 0.3em 0;
     border: none;
     padding: 0;
 }
@@ -4368,6 +4369,7 @@ input[type='checkbox'].radio-relative{
 }
 
 .input-error input,
+.input-error checkbox,
 .input-error .prefixed-or-suffixed-input,
 .input-error select,
 .input-error textarea,
@@ -4383,7 +4385,11 @@ input[type='checkbox'].radio-relative{
 .error-message {
     color: #cf1111;
     font-size: 0.8em;
-    margin: 0.3em 0 0.3em 0.3em;
+    margin: 1em 0 0 0;
+}
+
+input[type='checkbox'] ~ .error-message {
+  margin-top: 3em;
 }
 
 .error-url {
