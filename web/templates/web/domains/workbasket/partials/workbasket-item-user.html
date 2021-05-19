@@ -47,7 +47,7 @@ clearer what are admin actions and what are applicant actions -->
     <br>
     {% endif %}
 
-{% elif process.process_type in ["OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication", "CertificateOfManufactureApplication"] %}
+{% elif process.process_type in ["DerogationsApplication", "OpenIndividualLicenceApplication", "WoodQuotaApplication", "SanctionsAndAdhocApplication", "CertificateOfManufactureApplication"] %}
   {% if process.status == "SUBMITTED" %}
     {# TODO: FIX in ICMSLST-669 #}
     <a href="{{ icms_url('import:view-case', args=[process.pk]) }}">View</a>
