@@ -2,7 +2,7 @@
 
 {% block content_actions_link %}
   <a
-    href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': url_namespace}) }}"
+    href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
     class="prev-link">
     Manage Further Information Requests
   </a>

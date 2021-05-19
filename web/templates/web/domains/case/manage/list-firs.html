@@ -9,12 +9,12 @@
   {% else %}
     {% if process.process_type == "ExporterAccessRequest" %}
       <div class="info-box info-box-info">
-        You must first <a href=" {{ icms_url(url_namespace + ':case-management', args=[process.pk, 'exporter']) }}">
+        You must first <a href=" {{ icms_url(case_type + ':case-management', args=[process.pk, 'exporter']) }}">
         link an exporter</a> to the access request if you wish to start exporter access approval.
       </div>
     {% else %}
       <div class="info-box info-box-info">
-        You must first <a href=" {{ icms_url(url_namespace + ':case-management', args=[process.pk, 'importer']) }}">
+        You must first <a href=" {{ icms_url(case_type + ':case-management', args=[process.pk, 'importer']) }}">
         link an importer</a> to the access request if you wish to start importer access approval.
       </div>
     {% endif %}

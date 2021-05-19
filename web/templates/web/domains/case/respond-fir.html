@@ -23,7 +23,7 @@
 {% block sidebar %}
 <h4>Case {{ process.pk }}</h4>
 <ul class="menu-out">
-  {% if url_namespace == "access" %}
+  {% if case_type == "access" %}
     <li>
       {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
         <a href="{{ icms_url('access:case-view', args=[process.pk, entity]) }}">
@@ -33,7 +33,7 @@
     </li>
   {% endif %}
     <li>
-      <a href="{{ icms_url('case:list-firs', kwargs={'application_pk': process.pk, 'case_type': url_namespace}) }}">
+      <a href="{{ icms_url('case:list-firs', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
         {% with
           closed = process.further_information_requests.closed().count(),
           total = process.further_information_requests.submitted().count()
@@ -91,7 +91,7 @@
               <form method="post"
                     action={{ icms_url(
                                 'case:delete-fir-file',
-                                kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': url_namespace}) }}>
+                                kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': case_type}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>
               </form>

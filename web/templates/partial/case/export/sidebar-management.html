@@ -23,7 +23,14 @@
     <a href="#">Application Updates (x/x)</a>
   </li>
   <li>
-    <a href="#">Further Information Requests (x/x)</a>
+    <a href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+      {% with
+        completed=process.further_information_requests.completed().count(),
+        total=process.further_information_requests.exclude(status="DELETED").count() %}
+
+        Further Information Requests ({{ completed }}/{{ total }})
+      {% endwith %}
+    </a>
   </li>
   <li>
     <a href="{{ icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">

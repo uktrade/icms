@@ -501,15 +501,15 @@ def _close_update_requests(request, application_pk, update_request_pk, model_cla
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
-    url_namespace = case_type
-
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(model_class.SUBMITTED, "process")
 
-        if case_type == "import":
+        if case_type in ["import", "export"]:
             show_firs = True
 
         elif case_type == "access":
@@ -517,11 +517,6 @@ def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) ->
                 show_firs = application.importeraccessrequest.link_id
             else:
                 show_firs = application.exporteraccessrequest.link_id
-
-        # TODO: Add support for exporter (maybe just set show_firs to True)
-        # elif case_type == "export":
-        #     pass
-
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 
@@ -533,8 +528,7 @@ def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) ->
             "firs": application.further_information_requests.exclude(
                 status=FurtherInformationRequest.DELETED
             ),
-            "url_namespace": url_namespace,
-            "case_type": url_namespace,
+            "case_type": case_type,
             "page_title": "Further Information Requests",
             **extra_context,
         }
@@ -561,7 +555,9 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
         # TODO: use case reference
@@ -589,18 +585,23 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
 def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
 
         if case_type == "access":
             contacts = [application.submitted_by]
+
         elif case_type == "import":
-            application = get_object_or_404(ImportApplication, pk=application_pk)
             contacts = get_users_with_perms(
                 application.importer, only_with_perms_in=["is_contact_of_importer"]
             ).filter(user_permissions__codename="importer_access")
-        # TODO: Add for export
-        # elif case_type == "export":
-        #     ...
+
+        elif case_type == "export":
+            contacts = get_users_with_perms(
+                application.exporter, only_with_perms_in=["is_contact_of_exporter"]
+            ).filter(user_permissions__codename="exporter_access")
+
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 
@@ -642,7 +643,6 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
             "task": task,
             "form": form,
             "fir": fir,
-            "url_namespace": case_type,
             "case_type": case_type,
         }
 
@@ -661,7 +661,9 @@ def delete_fir(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
         application.get_task(model_class.SUBMITTED, "process")
@@ -684,7 +686,9 @@ def withdraw_fir(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
         application.get_task(model_class.SUBMITTED, "process")
@@ -714,7 +718,9 @@ def close_fir(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
         fir_task = fir.get_task(
@@ -743,7 +749,9 @@ def delete_fir_file(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -772,7 +780,9 @@ def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> H
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(model_class.SUBMITTED, "process")
 
     context = {
@@ -783,7 +793,6 @@ def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> H
             | Q(status=FurtherInformationRequest.RESPONDED)
             | Q(status=FurtherInformationRequest.CLOSED)
         ),
-        "url_namespace": case_type,
         "case_type": case_type,
     }
 
@@ -807,7 +816,9 @@ def respond_fir(
 
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
+        application: ImpOrExpOrAccess = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
         application.get_task(model_class.SUBMITTED, "process")
@@ -848,7 +859,6 @@ def respond_fir(
         "process_template": f"web/domains/case/{case_type}/partials/process.html",
         "fir": fir,
         "form": form,
-        "url_namespace": case_type,
         "case_type": case_type,
     }
     return render(request, "web/domains/case/respond-fir.html", context)

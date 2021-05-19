@@ -12,7 +12,7 @@
   <ul class="menu-out flow-across">
     <form
       method="post"
-      action="{{ icms_url('case:add-fir', kwargs={'application_pk': process.pk, 'case_type': url_namespace}) }}"
+      action="{{ icms_url('case:add-fir', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
       class="form-inline">
 
       {{ csrf_input }}

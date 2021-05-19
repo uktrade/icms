@@ -4,7 +4,7 @@
   {% if fir.status == "OPEN" %}
     <a href="{{ icms_url(
                   'case:respond-fir',
-                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
+                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
       class="button small-button icon-pencil">
       Respond
     </a>

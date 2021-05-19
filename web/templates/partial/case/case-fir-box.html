@@ -1,10 +1,9 @@
 {% extends "partial/case/fir.html" %}
-
 {% block fir_action %}
   {% if fir.status == 'DRAFT' %}
     <a href="{{ icms_url(
                   'case:edit-fir',
-                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
+                  kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
       class="button small-button icon-pencil">
       Edit
     </a>
@@ -12,7 +11,7 @@
     <form method="post"
           action="{{ icms_url(
                        'case:withdraw-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button icon-undo2">Withdraw Request</button>
@@ -21,7 +20,7 @@
     <form method="post"
           action="{{ icms_url(
                        'case:close-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button">Close</button>
@@ -32,7 +31,7 @@
     <form method="post"
           action="{{ icms_url(
                        'case:delete-fir',
-                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': url_namespace }) }}"
+                       kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
           class="form-inline">
         {{ csrf_input }}
         <button type="submit" class="small-button icon-bin">Delete</button>
