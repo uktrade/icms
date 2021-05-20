@@ -14,7 +14,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('import:case-management', args=[process.pk]) }}" class="prev-link">
+        <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}" class="prev-link">
           Application
         </a>
       </li>
@@ -23,7 +23,7 @@
 
   <form
     method="post"
-    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
+    action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}"
     class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>

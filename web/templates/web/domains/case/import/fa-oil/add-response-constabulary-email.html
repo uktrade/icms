@@ -28,7 +28,7 @@
 
   <form
     method="post"
-    action="{{ icms_url('import:release-ownership', args=[process.pk]) }}"
+    action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}"
     class="form-inline">
       {{ csrf_input }}
       <button type="submit">Release Ownership</button>
@@ -72,5 +72,3 @@
   {{ super() }}
   {{ form.media.js }}
 {% endblock %}
-
-

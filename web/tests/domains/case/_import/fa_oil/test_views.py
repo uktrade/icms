@@ -94,7 +94,7 @@ def test_take_ownership():
     assert "Take Ownership" in response_workbasket.content.decode()
 
     # After taking ownership we now navigate to the case management "view application" view.
-    response = client.post(f"/import/case/{process.pk}/take_ownership/", follow=True)
+    response = client.post(f"/case/import/{process.pk}/admin/take-ownership/", follow=True)
 
     assert response.status_code == 200
     view_application_response = response.content.decode()
@@ -118,7 +118,7 @@ def test_release_ownership():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.post(f"/import/case/{process.pk}/release_ownership/", follow=True)
+    response = client.post(f"/case/import/{process.pk}/admin/release-ownership/", follow=True)
     assert "Manage" in response.content.decode()
 
 
@@ -139,11 +139,7 @@ def test_close_case():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    client.post(
-        f"/import/case/{process.pk}/management/",
-        data={"send_email": True},
-        follow=True,
-    )
+    client.post(f"/case/import/{process.pk}/admin/manage/", data={"send_email": True}, follow=True)
 
     process.refresh_from_db()
     assert process.status == "STOPPED"

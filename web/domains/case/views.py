@@ -30,6 +30,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.notify import notify
+from web.notify.email import send_email
 from web.utils.s3 import get_file_from_s3
 
 from . import forms, models
@@ -1056,3 +1057,104 @@ def _view_com(
 ) -> HttpResponse:
     # TODO: implement (ICMSLST-678)
     raise NotImplementedError
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def take_ownership(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        application.case_owner = request.user
+
+        if case_type == "import":
+            # Licence start date is set when ILB Admin takes the case
+            application.licence_start_date = timezone.now().date()
+
+        application.save()
+
+        return redirect(
+            reverse(
+                "case:manage", kwargs={"application_pk": application.pk, "case_type": case_type}
+            )
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def release_ownership(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        application.case_owner = None
+        application.save()
+
+        return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+
+        if request.POST:
+            form = forms.CloseCaseForm(request.POST)
+
+            if form.is_valid():
+                application.status = model_class.STOPPED
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
+
+                if form.cleaned_data.get("send_email"):
+                    template = Template.objects.get(template_code="STOP_CASE")
+
+                    subject = template.get_title({"CASE_REFERENCE": application.pk})
+                    body = template.get_content({"CASE_REFERENCE": application.pk})
+
+                    if case_type == "import":
+                        users = get_users_with_perms(
+                            application.importer, only_with_perms_in=["is_contact_of_importer"]
+                        ).filter(user_permissions__codename="importer_access")
+                    else:
+                        users = get_users_with_perms(
+                            application.exporter, only_with_perms_in=["is_contact_of_exporter"]
+                        ).filter(user_permissions__codename="exporter_access")
+
+                    recipients = set(users.values_list("email", flat=True))
+
+                    send_email(subject, body, recipients)
+
+                return redirect(reverse("workbasket"))
+        else:
+            form = forms.CloseCaseForm()
+
+        context = {
+            "case_type": case_type,
+            "process": application,
+            "task": task,
+            "page_title": f"{application.application_type.get_type_description()} - Manage",
+            "form": form,
+        }
+
+        return render(
+            request=request, template_name="web/domains/case/manage/manage.html", context=context
+        )

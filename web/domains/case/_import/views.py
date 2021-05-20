@@ -11,16 +11,13 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case.forms import CloseCaseForm
 from web.domains.importer.models import Importer
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.notify.email import send_email
 from web.utils.s3 import get_file_from_s3
 
 from .. import views as case_views
@@ -178,87 +175,6 @@ def _create_application(
     context = {"form": form, "import_application_type": application_type}
 
     return render(request, "web/domains/case/import/create.html", context)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def take_ownership(request: HttpRequest, pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=pk
-        )
-        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
-        application.case_owner = request.user
-        # Licence start date is set when ILB Admin takes the case
-        application.licence_start_date = timezone.now().date()
-        application.save()
-
-        return redirect(reverse("import:case-management", kwargs={"pk": application.pk}))
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def release_ownership(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ImportApplication.SUBMITTED, "process")
-        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
-        application.case_owner = None
-        application.save()
-
-        return redirect(reverse("workbasket"))
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_case(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
-        )
-
-        if request.POST:
-            form = CloseCaseForm(request.POST)
-            if form.is_valid():
-                application.status = ImportApplication.STOPPED
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                if form.cleaned_data.get("send_email"):
-                    template = Template.objects.get(template_code="STOP_CASE")
-
-                    subject = template.get_title({"CASE_REFERENCE": application.pk})
-                    body = template.get_content({"CASE_REFERENCE": application.pk})
-                    users = get_users_with_perms(
-                        application.importer, only_with_perms_in=["is_contact_of_importer"]
-                    ).filter(user_permissions__codename="importer_access")
-                    recipients = set(users.values_list("email", flat=True))
-
-                    send_email(subject, body, recipients)
-
-                return redirect(reverse("workbasket"))
-        else:
-            form = CloseCaseForm()
-
-        context = {
-            "case_type": "import",
-            "process": application,
-            "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Management",
-            "form": form,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/manage/case.html",
-            context=context,
-        )
 
 
 @login_required

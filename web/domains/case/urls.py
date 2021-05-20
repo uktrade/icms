@@ -45,6 +45,9 @@ note_urls = [
 ]
 
 admin_urls = [
+    path("manage/", views.manage_case, name="manage"),
+    path("take-ownership/", views.take_ownership, name="take-ownership"),
+    path("release-ownership/", views.release_ownership, name="release-ownership"),
     path("manage-withdrawals/", views.manage_withdrawals, name="manage-withdrawals"),
 ]
 
@@ -83,24 +86,19 @@ urlpatterns = [
         "<casetype:case_type>/<int:application_pk>/",
         include(
             [
-                # --- Common to applicant/ILB Admin (import/export/accessrequest)
-                #
+                # Common to applicant/ILB Admin (import/export/accessrequest)
                 path("view/", views.view_case, name="view"),
                 #
-                # --- further information requests ((import/export/accessrequest))
-                #
+                # further information requests ((import/export/accessrequest))
                 path("firs/", include(further_information_requests_urls)),
                 #
-                # --- applicant case management
-                #
+                # applicant case management
                 path("applicant/", include(applicant_urls)),
                 #
-                # -- ILB Admin Case management (TODO: ICMSLST-667)
-                #
+                # ILB Admin Case management (import/export)
                 path("admin/", include(admin_urls)),
-                # path("take_ownership/", views.take_ownership, name="take-ownership"),
-                # path("release_ownership/", views.release_ownership, name="release-ownership"),
-                # path("management/", views.manage_case, name="case-management"),
+                #
+                # TODO: (ICMSLST-648)
                 # path(
                 #     "update-requests/", views.manage_update_requests, name="manage-update-requests"
                 # ),
@@ -110,12 +108,10 @@ urlpatterns = [
                 #     name="close-update-requests",
                 # ),
                 #
-                # --- notes
-                #
+                # notes (import/export)
                 path("notes/", include(note_urls)),
                 #
-                # --- ??? (TODO: ICMSLST-669)
-                #
+                # ??? (TODO: ICMSLST-669)
                 # path("prepare-response/", views.prepare_response, name="prepare-response"),
                 # path("cover-letter/", views.edit_cover_letter, name="edit-cover-letter"),
                 # path(
@@ -135,8 +131,7 @@ urlpatterns = [
                 #     name="cancel-authorisation",
                 # ),
                 #
-                # --- endorsements (TODO: ICMSLST-668)
-                #
+                # endorsements (TODO: ICMSLST-668)
                 # path("endorsements/add/", views.add_endorsement, name="add-endorsement"),
                 # path(
                 #     "endorsements/add-custom/",
@@ -153,7 +148,6 @@ urlpatterns = [
                 #     views.delete_endorsement,
                 #     name="delete-endorsement",
                 # ),
-                #
             ]
         ),
     ),

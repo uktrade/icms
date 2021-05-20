@@ -10,13 +10,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 
-from web.domains.case.forms import CloseCaseForm
-from web.domains.template.models import Template
 from web.flow.models import Task
-from web.notify.email import send_email
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import (
@@ -31,8 +27,6 @@ from .models import (
 )
 
 logger = logging.get_logger(__name__)
-
-export_case_officer_permission = "web.export_case_officer"
 
 
 class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
@@ -195,72 +189,3 @@ def submit_com(request, pk):
         }
 
         return render(request, "web/domains/case/export/submit-com.html", context)
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def take_ownership(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        application.case_owner = request.user
-        application.save()
-
-    return redirect(reverse("workbasket"))
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-@require_POST
-def release_ownership(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        application.get_task(ExportApplication.SUBMITTED, "process")
-        application.case_owner = None
-        application.save()
-
-    return redirect(reverse("workbasket"))
-
-
-@login_required
-@permission_required(export_case_officer_permission, raise_exception=True)
-def management(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(ExportApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(
-            [ExportApplication.SUBMITTED, ExportApplication.WITHDRAWN], "process"
-        )
-
-        form = CloseCaseForm()
-
-        context = {
-            "case_type": "export",
-            "process": application,
-            "task": task,
-            "form": form,
-        }
-        if request.POST:
-            application.status = ExportApplication.STOPPED
-            application.save()
-
-            task.is_active = False
-            task.finished = timezone.now()
-            task.save()
-
-            if request.POST.get("send_email"):
-                template = Template.objects.get(template_code="STOP_CASE")
-                subject = template.get_title({"CASE_REFERENCE": application.pk})
-                body = template.get_content({"CASE_REFERENCE": application.pk})
-                recipients = [application.contact.email]
-                recipients.extend(
-                    application.exporter.baseteam_ptr.members.values_list("email", flat=True)
-                )
-                recipients = set(recipients)
-                send_email(subject, body, recipients)
-
-            return redirect(reverse("workbasket"))
-
-    return render(
-        request=request, template_name="web/domains/case/export/management.html", context=context
-    )
