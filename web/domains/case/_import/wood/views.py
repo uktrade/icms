@@ -343,7 +343,9 @@ def edit_goods(request: HttpRequest, pk: int) -> HttpResponse:
             form = GoodsWoodQuotaLicenceForm(request.POST, instance=application)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": application.pk}))
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application.pk})
+                )
         else:
             form = GoodsWoodQuotaLicenceForm(instance=application)
 

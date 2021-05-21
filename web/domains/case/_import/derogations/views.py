@@ -251,7 +251,9 @@ def edit_goods_licence(request: HttpRequest, pk: int) -> HttpResponse:
             form = GoodsDerogationsLicenceForm(request.POST, instance=application)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": application.pk}))
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application.pk})
+                )
         else:
             form = GoodsDerogationsLicenceForm(instance=application)
 

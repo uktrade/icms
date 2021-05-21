@@ -116,13 +116,13 @@
             </td>
             <td>
               <a
-                href="{{ icms_url('import:edit-endorsement', args=[process.pk, endorsement.pk]) }}"
+                href="{{ icms_url('import:edit-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
                 class="button small-button">
                 Edit
               </a>
               <form
                 method="post"
-                action="{{ icms_url('import:delete-endorsement', args=[process.pk, endorsement.pk]) }}"
+                action="{{ icms_url('import:delete-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
                 class="form-inline">
                 {{ csrf_input }}
                 <input type="submit" class="button small-button" value="Remove" />
@@ -134,12 +134,12 @@
     </table>
     <div class="list-actions">
       <a
-        href="{{ icms_url('import:add-endorsement', args=[process.pk]) }}"
+        href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
         class="button small-button icon-plus">
         Add Endorsement
       </a>
       <a
-        href="{{ icms_url('import:add-custom-endorsement', args=[process.pk]) }}"
+        href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
         class="button small-button icon-plus">
         Add Custom Endorsement
       </a>

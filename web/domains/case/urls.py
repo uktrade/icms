@@ -130,24 +130,6 @@ urlpatterns = [
                 #     views.cancel_authorisation,
                 #     name="cancel-authorisation",
                 # ),
-                #
-                # endorsements (TODO: ICMSLST-668)
-                # path("endorsements/add/", views.add_endorsement, name="add-endorsement"),
-                # path(
-                #     "endorsements/add-custom/",
-                #     views.add_custom_endorsement,
-                #     name="add-custom-endorsement",
-                # ),
-                # path(
-                #     "endorsements/<int:endorsement_pk>/edit/",
-                #     views.edit_endorsement,
-                #     name="edit-endorsement",
-                # ),
-                # path(
-                #     "endorsements/<int:endorsement_pk>/delete/",
-                #     views.delete_endorsement,
-                #     name="delete-endorsement",
-                # ),
             ]
         ),
     ),

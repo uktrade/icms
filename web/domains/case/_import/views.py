@@ -1,5 +1,6 @@
 from typing import Any, Dict, Type, Union
 
+import django.forms as django_forms
 import weasyprint
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -179,21 +180,21 @@ def _create_application(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_update_requests(request, pk):
-    application = get_object_or_404(ImportApplication, pk=pk)
+def manage_update_requests(request, application_pk):
+    application = get_object_or_404(ImportApplication, pk=application_pk)
     template = Template.objects.get(template_code="IMA_APP_UPDATE", is_active=True)
 
-    importer = Importer.objects.get(import_applications__pk=pk)
+    importer = Importer.objects.get(import_applications__pk=application_pk)
 
     # TODO: replace with case reference
     placeholder_content = {
-        "CASE_REFERENCE": pk,
+        "CASE_REFERENCE": application_pk,
         "IMPORTER_NAME": importer.display_name,
         "CASE_OFFICER_NAME": request.user,
     }
 
     # TODO: replace with case reference
-    email_subject = template.get_title({"CASE_REFERENCE": pk})
+    email_subject = template.get_title({"CASE_REFERENCE": application_pk})
     email_content = template.get_content(placeholder_content)
 
     importer_contacts = get_users_with_perms(
@@ -222,9 +223,9 @@ def close_update_requests(request, application_pk, update_request_pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def list_update_requests(request, pk):
+def list_update_requests(request, application_pk):
     # TODO Remove mypy ignore when doing ICMSLST-648
-    return case_views._list_update_requests(request, pk, ImportApplication, "import")  # type: ignore[attr-defined]
+    return case_views._list_update_requests(request, application_pk, ImportApplication, "import")  # type: ignore[attr-defined]
 
 
 @login_required
@@ -249,10 +250,10 @@ def respond_update_request(request, application_pk, update_request_pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def prepare_response(request: HttpRequest, pk: int) -> HttpResponse:
+def prepare_response(request: HttpRequest, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=pk
+            ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
@@ -262,7 +263,9 @@ def prepare_response(request: HttpRequest, pk: int) -> HttpResponse:
             form = forms.ResponsePreparationForm(request.POST, instance=application)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                )
         else:
             form = forms.ResponsePreparationForm()
 
@@ -340,9 +343,11 @@ def _prepare_wood_quota_response(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_cover_letter(request, pk):
+def edit_cover_letter(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -351,7 +356,9 @@ def edit_cover_letter(request, pk):
             form = forms.CoverLetterForm(request.POST, instance=application)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                )
         else:
             form = forms.CoverLetterForm(instance=application)
 
@@ -372,9 +379,11 @@ def edit_cover_letter(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_licence(request, pk):
+def edit_licence(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -383,7 +392,9 @@ def edit_licence(request, pk):
             form = forms.LicenceDateForm(request.POST, instance=application)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                )
         else:
             form = forms.LicenceDateForm(instance=application)
 
@@ -402,20 +413,40 @@ def edit_licence(request, pk):
         )
 
 
-def _add_endorsement(request, pk, Form):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    return _add_endorsement(request, application_pk, forms.EndorsementChoiceImportApplicationForm)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_custom_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    return _add_endorsement(request, application_pk, forms.EndorsementImportApplicationForm)
+
+
+def _add_endorsement(
+    request: HttpRequest, application_pk: int, Form: Type[django_forms.ModelForm]
+) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
 
         if request.POST:
             form = Form(request.POST)
+
             if form.is_valid():
                 endorsement = form.save(commit=False)
                 endorsement.import_application = application
                 endorsement.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": pk}))
+
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                )
         else:
             form = Form()
 
@@ -436,19 +467,9 @@ def _add_endorsement(request, pk, Form):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def add_endorsement(request, pk):
-    return _add_endorsement(request, pk, forms.EndorsementChoiceImportApplicationForm)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def add_custom_endorsement(request, pk):
-    return _add_endorsement(request, pk, forms.EndorsementImportApplicationForm)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def edit_endorsement(request, application_pk, endorsement_pk):
+def edit_endorsement(
+    request: HttpRequest, *, application_pk: int, endorsement_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -460,14 +481,18 @@ def edit_endorsement(request, application_pk, endorsement_pk):
 
         if request.POST:
             form = forms.EndorsementImportApplicationForm(request.POST, instance=endorsement)
+
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:prepare-response", kwargs={"pk": application_pk}))
+
+                return redirect(
+                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                )
         else:
             form = forms.EndorsementImportApplicationForm(instance=endorsement)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
             "process": application,
             "task": task,
             "page_title": "Endorsement Response Preparation",
@@ -484,7 +509,9 @@ def edit_endorsement(request, application_pk, endorsement_pk):
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 @require_POST
-def delete_endorsement(request, application_pk, endorsement_pk):
+def delete_endorsement(
+    request: HttpRequest, *, application_pk: int, endorsement_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -497,14 +524,18 @@ def delete_endorsement(request, application_pk, endorsement_pk):
 
         endorsement.delete()
 
-        return redirect(reverse("import:prepare-response", kwargs={"pk": application_pk}))
+        return redirect(
+            reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def preview_cover_letter(request, pk):
+def preview_cover_letter(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -533,9 +564,11 @@ def preview_cover_letter(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def preview_licence(request, pk):
+def preview_licence(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -563,9 +596,11 @@ def preview_licence(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def authorisation(request, pk):
+def authorisation(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
@@ -605,9 +640,11 @@ def authorisation(request, pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def start_authorisation(request, pk):
+def start_authorisation(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
 
         application.status = ImportApplication.PROCESSING
@@ -619,9 +656,11 @@ def start_authorisation(request, pk):
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def cancel_authorisation(request, pk):
+def cancel_authorisation(request, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(ImportApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
         application.get_task(ImportApplication.PROCESSING, "process")
 
         application.status = ImportApplication.SUBMITTED

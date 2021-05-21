@@ -150,7 +150,7 @@ def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int)
         )
 
         form_class = GoodsSanctionsLicenceForm
-        success_url = reverse("import:prepare-response", kwargs={"pk": application.pk})
+        success_url = reverse("import:prepare-response", kwargs={"application_pk": application.pk})
         template_name = "web/domains/case/import/manage/edit-goods-licence.html"
 
         return _edit_goods(
