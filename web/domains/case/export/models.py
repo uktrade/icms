@@ -2,13 +2,16 @@ from django.db import models
 from django.urls import reverse
 
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
+from web.domains.case.models import (
+    ApplicationBase,
+    CaseNote,
+    UpdateRequest,
+    VariationRequest,
+)
 from web.domains.country.models import Country, CountryGroup
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
-from web.flow.models import Process
 
 
 class ExportApplicationType(models.Model):
@@ -45,7 +48,7 @@ class ExportApplicationType(models.Model):
         ordering = ("type",)
 
 
-class ExportApplication(WorkbasketBase, Process):
+class ExportApplication(ApplicationBase):
     IN_PROGRESS = "IN_PROGRESS"
     SUBMITTED = "SUBMITTED"
     PROCESSING = "PROCESSING"
@@ -70,11 +73,6 @@ class ExportApplication(WorkbasketBase, Process):
         (UPDATE_REQUESTED, "Update Requested"),
     )
 
-    # Decision
-    REFUSE = "REFUSE"
-    APPROVE = "APPROVE"
-    DECISIONS = ((REFUSE, "Refuse"), (APPROVE, "Approve"))
-
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
     )
@@ -82,8 +80,6 @@ class ExportApplication(WorkbasketBase, Process):
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
     )
-    decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
-    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
     last_updated_by = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_export_cases"

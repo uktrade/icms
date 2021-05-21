@@ -76,7 +76,7 @@
     </a>
   </li>
   <li>
-    <a href="{{ icms_url('import:prepare-response', args=[process.pk]) }}">Response Preparation</a>
+    <a href="{{ icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}) }}">Response Preparation</a>
   </li>
   <li>
     <a href="{{ icms_url('import:authorisation', args=[process.pk]) }}">Authorisation</a>

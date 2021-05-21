@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Any, Type, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -1202,3 +1202,106 @@ def manage_case(request: HttpRequest, *, application_pk: int, case_type: str) ->
         return render(
             request=request, template_name="web/domains/case/manage/manage.html", context=context
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def prepare_response(request: HttpRequest, application_pk: int, case_type: str) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+
+        if request.POST:
+            form = forms.ResponsePreparationForm(request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": case_type},
+                    )
+                )
+        else:
+            form = forms.ResponsePreparationForm()
+
+        cover_letter_flag = (
+            application.application_type.cover_letter_flag if case_type == "import" else False
+        )
+
+        context = {
+            "case_type": case_type,
+            "task": task,
+            "page_title": "Response Preparation",
+            "form": form,
+            "cover_letter_flag": cover_letter_flag,
+        }
+
+    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+        return _prepare_response_oil(request, application.openindividuallicenceapplication, context)
+    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        return _prepare_sanctions_and_adhoc_response(
+            request, application.sanctionsandadhocapplication, context
+        )
+    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
+        return _prepare_derogations_response(request, application.derogationsapplication, context)
+    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
+        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
+    # TODO: implement other types (export-COM, import-FA-DFL, import-FA-SIL)
+    else:
+        raise NotImplementedError
+
+
+def _prepare_response_oil(
+    request: HttpRequest, application: OpenIndividualLicenceApplication, context: dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-firearms-oil-response.html",
+        context=context,
+    )
+
+
+def _prepare_sanctions_and_adhoc_response(
+    request: HttpRequest, application: SanctionsAndAdhocApplication, context: dict[str, Any]
+) -> HttpResponse:
+    context.update(
+        {"process": application, "goods": application.sanctionsandadhocapplicationgoods_set.all()}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-sanctions-response.html",
+        context=context,
+    )
+
+
+def _prepare_derogations_response(
+    request: HttpRequest, application: DerogationsApplication, context: dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-derogations-response.html",
+        context=context,
+    )
+
+
+def _prepare_wood_quota_response(
+    request: HttpRequest, application: WoodQuotaApplication, context: dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-wood-quota-response.html",
+        context=context,
+    )

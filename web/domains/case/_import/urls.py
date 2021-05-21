@@ -57,8 +57,6 @@ urlpatterns = [
             [
                 # endorsements. import-specific, no reason to move these up to case-level
                 path("endorsements/", include(endorsements_urls)),
-                #
-                path("prepare-response/", views.prepare_response, name="prepare-response"),
                 path("licence/", views.edit_licence, name="edit-licence"),
                 path("licence/preview/", views.preview_licence, name="preview-licence"),
                 path("cover-letter/", views.edit_cover_letter, name="edit-cover-letter"),

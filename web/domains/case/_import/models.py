@@ -2,15 +2,18 @@ from django.db import models
 from django.utils import timezone
 
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import CaseNote, UpdateRequest, VariationRequest
+from web.domains.case.models import (
+    ApplicationBase,
+    CaseNote,
+    UpdateRequest,
+    VariationRequest,
+)
 from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country, CountryGroup
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
-from web.flow.models import Process
 
 
 class ImportApplicationType(models.Model):
@@ -109,7 +112,7 @@ class ImportApplicationType(models.Model):
         ordering = ("type", "sub_type")
 
 
-class ImportApplication(WorkbasketBase, Process):
+class ImportApplication(ApplicationBase):
     IN_PROGRESS = "IN_PROGRESS"
     SUBMITTED = "SUBMITTED"
     PROCESSING = "PROCESSING"
@@ -146,11 +149,6 @@ class ImportApplication(WorkbasketBase, Process):
         (SURRENDERED, "S"),
     )
 
-    # Decision
-    REFUSE = "REFUSE"
-    APPROVE = "APPROVE"
-    DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
-
     status = models.CharField(
         max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
     )
@@ -168,9 +166,9 @@ class ImportApplication(WorkbasketBase, Process):
         max_length=1, choices=CHIEF_STATUSES, blank=True, null=True
     )
     under_appeal_flag = models.BooleanField(blank=False, null=False, default=False)
-    decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
-    variation_decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
-    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    variation_decision = models.CharField(
+        max_length=10, choices=ApplicationBase.DECISIONS, blank=True, null=True
+    )
     variation_refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
     issue_date = models.DateField(blank=True, null=True)
     licence_start_date = models.DateField(blank=True, null=True)

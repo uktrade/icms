@@ -1,12 +1,14 @@
 from django import forms
 
-from web.domains.case.models import (
+from web.domains.file.utils import ICMSFileField
+
+from .models import (
     CASE_NOTE_STATUSES,
+    ApplicationBase,
     CaseNote,
     UpdateRequest,
     WithdrawApplication,
 )
-from web.domains.file.utils import ICMSFileField
 
 
 class DocumentForm(forms.Form):
@@ -64,3 +66,23 @@ class WithdrawResponseForm(forms.ModelForm):
             and cleaned_data.get("response") == ""
         ):
             self.add_error("response", "This field is required when Withdrawal is refused")
+
+
+class ResponsePreparationForm(forms.ModelForm):
+    class Meta:
+        model = ApplicationBase
+        fields = ("decision", "refuse_reason")
+        widgets = {"refuse_reason": forms.Textarea}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["decision"].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            cleaned_data.get("decision") == ApplicationBase.REFUSE
+            and cleaned_data.get("refuse_reason") == ""
+        ):
+            self.add_error("response", "This field is required when the Application is refused")

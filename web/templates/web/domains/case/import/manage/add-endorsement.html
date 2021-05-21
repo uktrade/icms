@@ -5,7 +5,7 @@
 
 {% block content_actions_link %}
   <a
-    href="{{ icms_url('import:prepare-response', args=[process.pk]) }}"
+    href="{{ icms_url('case:prepare-response', kwargs={'case_type': case_type, 'application_pk': process.pk}) }}"
     class="prev-link">
     Response Preparation
   </a>

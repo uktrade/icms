@@ -3,8 +3,8 @@ from django.db.models import Q
 
 from web.domains.file.models import File
 from web.domains.user.models import User
-
-# from config.settings.base import DATETIME_FORMAT
+from web.domains.workbasket.base import WorkbasketBase
+from web.flow.models import Process
 
 CASE_NOTE_DRAFT = "DRAFT"
 CASE_NOTE_COMPLETED = "COMPLETED"
@@ -186,3 +186,23 @@ class WithdrawApplication(models.Model):
                 name="application_one_not_null",
             ),
         ]
+
+
+class ApplicationBase(WorkbasketBase, Process):
+    """Common base class for Import/ExportApplication. Needed because some
+    common code needs a Django model class to work with (see
+    ResponsePreparationForm).
+
+    TODO: possibly move more duplicated stuff from Import/ExportApplication to here.
+    """
+
+    class Meta:
+        abstract = True
+
+    # Decision
+    REFUSE = "REFUSE"
+    APPROVE = "APPROVE"
+    DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
+
+    decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
+    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)

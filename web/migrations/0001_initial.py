@@ -607,7 +607,7 @@ class Migration(migrations.Migration):
                     "decision",
                     models.CharField(
                         blank=True,
-                        choices=[("REFUSE", "Refuse"), ("APPROVE", "Approve")],
+                        choices=[("APPROVE", "Approve"), ("REFUSE", "Refuse")],
                         max_length=10,
                         null=True,
                     ),

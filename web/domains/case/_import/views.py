@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type, Union
+from typing import Type, Union
 
 import django.forms as django_forms
 import weasyprint
@@ -176,99 +176,6 @@ def _create_application(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def prepare_response(request: HttpRequest, application_pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
-        )
-        task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
-        )
-
-        if request.POST:
-            form = forms.ResponsePreparationForm(request.POST, instance=application)
-            if form.is_valid():
-                form.save()
-                return redirect(
-                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
-                )
-        else:
-            form = forms.ResponsePreparationForm()
-
-        context = {
-            "case_type": "import",
-            "task": task,
-            "page_title": "Response Preparation",
-            "form": form,
-            "cover_letter_flag": application.application_type.cover_letter_flag,
-        }
-
-    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _prepare_response_oil(request, application.openindividuallicenceapplication, context)
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return _prepare_sanctions_and_adhoc_response(
-            request, application.sanctionsandadhocapplication, context
-        )
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _prepare_derogations_response(request, application.derogationsapplication, context)
-    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
-    else:
-        raise NotImplementedError
-
-
-def _prepare_response_oil(
-    request: HttpRequest, application: OpenIndividualLicenceApplication, context: Dict[str, Any]
-) -> HttpResponse:
-    context.update({"process": application})
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-firearms-oil-response.html",
-        context=context,
-    )
-
-
-def _prepare_sanctions_and_adhoc_response(
-    request: HttpRequest, application: SanctionsAndAdhocApplication, context: Dict[str, Any]
-) -> HttpResponse:
-    context.update(
-        {"process": application, "goods": application.sanctionsandadhocapplicationgoods_set.all()}
-    )
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-sanctions-response.html",
-        context=context,
-    )
-
-
-def _prepare_derogations_response(
-    request: HttpRequest, application: DerogationsApplication, context: Dict[str, Any]
-) -> HttpResponse:
-    context.update({"process": application})
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-derogations-response.html",
-        context=context,
-    )
-
-
-def _prepare_wood_quota_response(
-    request: HttpRequest, application: WoodQuotaApplication, context: Dict[str, Any]
-) -> HttpResponse:
-    context.update({"process": application})
-
-    return render(
-        request=request,
-        template_name="web/domains/case/import/manage/prepare-wood-quota-response.html",
-        context=context,
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
 def edit_cover_letter(request, application_pk):
     with transaction.atomic():
         application = get_object_or_404(
@@ -280,10 +187,15 @@ def edit_cover_letter(request, application_pk):
 
         if request.POST:
             form = forms.CoverLetterForm(request.POST, instance=application)
+
             if form.is_valid():
                 form.save()
+
                 return redirect(
-                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
                 )
         else:
             form = forms.CoverLetterForm(instance=application)
@@ -316,10 +228,15 @@ def edit_licence(request, application_pk):
 
         if request.POST:
             form = forms.LicenceDateForm(request.POST, instance=application)
+
             if form.is_valid():
                 form.save()
+
                 return redirect(
-                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
                 )
         else:
             form = forms.LicenceDateForm(instance=application)
@@ -371,7 +288,10 @@ def _add_endorsement(
                 endorsement.save()
 
                 return redirect(
-                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
                 )
         else:
             form = Form()
@@ -412,7 +332,10 @@ def edit_endorsement(
                 form.save()
 
                 return redirect(
-                    reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
                 )
         else:
             form = forms.EndorsementImportApplicationForm(instance=endorsement)
@@ -451,7 +374,10 @@ def delete_endorsement(
         endorsement.delete()
 
         return redirect(
-            reverse("import:prepare-response", kwargs={"application_pk": application_pk})
+            reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application_pk, "case_type": "import"},
+            )
         )
 
 
@@ -539,12 +465,18 @@ def authorisation(request, application_pk):
                 application_errors.append(html)
 
         if application.decision == ImportApplication.REFUSE:
-            url = reverse("import:prepare-response", args=[application.pk])
+            url = reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
             html = f"<a href='{url}'>Please approve application.</a>"
             application_errors.append(html)
 
         if not application.licence_start_date or not application.licence_end_date:
-            url = reverse("import:prepare-response", args=[application.pk])
+            url = reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
             html = f"<a href='{url}'>Please complete start and end dates.</a>"
             application_errors.append(html)
 
