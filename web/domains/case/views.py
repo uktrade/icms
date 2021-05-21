@@ -3,7 +3,7 @@ from typing import Any, Type, Union
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import ManyToManyField, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -81,6 +81,27 @@ def _is_importer_exporter_contact(user: User, application: ImpOrExp, case_type: 
         return user.has_perm("web.is_contact_of_exporter", application.exporter)
 
     raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
+    """Check the given user has permission to access the given application."""
+
+    if user.has_perm("web.reference_data_access"):
+        return
+
+    if case_type == "access":
+        if user != application.submitted_by:
+            raise PermissionDenied
+
+    elif case_type in ["import", "export"]:
+        if not _has_importer_exporter_access(user, case_type) or not _is_importer_exporter_contact(
+            user, application, case_type
+        ):
+            raise PermissionDenied
+
+    else:
+        # Should never get here.
+        raise PermissionDenied
 
 
 @login_required
@@ -666,15 +687,8 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
         if request.POST:
             form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
 
-            # TODO: ICMSLST-655
-            files = request.FILES.getlist("files")
-
             if form.is_valid():
                 fir = form.save()
-
-                # TODO: ICMSLST-655
-                for f in files:
-                    create_file_model(f, request.user, fir.files)
 
                 if "send" in form.data:
                     fir.status = FurtherInformationRequest.OPEN
@@ -796,23 +810,147 @@ def close_fir(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
+def add_fir_file(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
+    redirect_url = "case:edit-fir"
+    template_name = "web/domains/case/fir/add-fir-file.html"
+
+    return _add_fir_file(request, application_pk, fir_pk, case_type, redirect_url, template_name)
+
+
+@login_required
+def add_fir_response_file(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+) -> HttpResponse:
+    redirect_url = "case:respond-fir"
+    template_name = "web/domains/case/fir/add-fir-response-file.html"
+
+    return _add_fir_file(request, application_pk, fir_pk, case_type, redirect_url, template_name)
+
+
+def _add_fir_file(
+    request: HttpRequest,
+    application_pk: int,
+    fir_pk: int,
+    case_type: str,
+    redirect_url: str,
+    template_name: str,
+) -> HttpResponse:
+    with transaction.atomic():
+        model_class = _get_class_imp_or_exp_or_access(case_type)
+        application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+        check_application_permission(application, request.user, case_type)
+
+        fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
+
+        if request.POST:
+            form = forms.DocumentForm(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
+                create_file_model(document, request.user, fir.files)
+
+                return redirect(
+                    reverse(
+                        redirect_url,
+                        kwargs={
+                            "application_pk": application_pk,
+                            "fir_pk": fir_pk,
+                            "case_type": case_type,
+                        },
+                    )
+                )
+        else:
+            form = forms.DocumentForm()
+
+        context = {
+            "process": application,
+            "form": form,
+            "fir": fir,
+            "case_type": case_type,
+            "prev_link": redirect_url,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+        }
+
+    return render(
+        request=request,
+        template_name=template_name,
+        context=context,
+    )
+
+
+@login_required
+@require_GET
+def view_fir_file(
+    request: HttpRequest, *, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+) -> HttpResponse:
+
+    model_class = _get_class_imp_or_exp_or_access(case_type)
+    application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+    fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
+
+    return view_application_file(request.user, application, fir.files, file_pk, case_type)
+
+
+def view_application_file(
+    user: User,
+    application: ImpOrExpOrAccess,
+    related_file_model: ManyToManyField,
+    file_pk: int,
+    case_type: str,
+) -> HttpResponse:
+
+    check_application_permission(application, user, case_type)
+
+    document = related_file_model.get(pk=file_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_fir_file(
     request: HttpRequest, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+) -> HttpResponse:
+    redirect_url = "case:edit-fir"
+
+    return _delete_fir_file(request.user, application_pk, fir_pk, file_pk, case_type, redirect_url)
+
+
+@login_required
+@require_POST
+def delete_fir_response_file(
+    request: HttpRequest, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+):
+    redirect_url = "case:respond-fir"
+
+    return _delete_fir_file(request.user, application_pk, fir_pk, file_pk, case_type, redirect_url)
+
+
+def _delete_fir_file(
+    user: User, application_pk: int, fir_pk: int, file_pk: int, case_type: str, redirect_url: str
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
+        check_application_permission(application, user, case_type)
         application.get_task(model_class.SUBMITTED, "process")
+
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
         document.save()
 
     return redirect(
         reverse(
-            "case:edit-fir",
+            redirect_url,
             kwargs={"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type},
         )
     )
@@ -820,22 +958,13 @@ def delete_fir_file(
 
 @login_required
 def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
-    if case_type in ["import", "export"]:
-        has_access = _has_importer_exporter_access(request.user, case_type)
-    elif case_type == "access":
-        has_access = True
-    else:
-        raise NotImplementedError(f"Unknown case_type {case_type}")
-
-    if not has_access:
-        raise PermissionDenied
-
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
+        check_application_permission(application, request.user, case_type)
         application.get_task(model_class.SUBMITTED, "process")
 
     context = {
@@ -857,38 +986,22 @@ def respond_fir(
     request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
 
-    if case_type in ["import", "export"]:
-        has_access = _has_importer_exporter_access(request.user, case_type)
-    elif case_type == "access":
-        has_access = True
-    else:
-        raise NotImplementedError(f"Unknown case_type {case_type}")
-
-    if not has_access:
-        raise PermissionDenied
-
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
+        check_application_permission(application, request.user, case_type)
 
+        fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
         application.get_task(model_class.SUBMITTED, "process")
         fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
 
         if request.POST:
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
 
-            # TODO: ICMSLST-655
-            files = request.FILES.getlist("files")
-
             if form.is_valid():
                 fir = form.save()
-
-                # TODO: ICMSLST-655
-                for f in files:
-                    create_file_model(f, request.user, fir.files)
 
                 fir.response_datetime = timezone.now()
                 fir.status = FurtherInformationRequest.RESPONDED
@@ -914,6 +1027,7 @@ def respond_fir(
         "form": form,
         "case_type": case_type,
     }
+
     return render(request, "web/domains/case/respond-fir.html", context)
 
 

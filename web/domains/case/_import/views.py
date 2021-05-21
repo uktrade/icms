@@ -533,6 +533,8 @@ def cancel_authorisation(request, application_pk):
         return redirect(reverse("workbasket"))
 
 
+# TODO: This can be replaced by the following:
+# icms/web/domains/case/views.py -> def view_application_file
 def view_file(request, application, related_file_model, file_pk):
     has_perm_importer = request.user.has_perm("web.importer_access")
     has_perm_reference_data = request.user.has_perm("web.reference_data_access")

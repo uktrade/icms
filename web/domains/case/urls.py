@@ -72,9 +72,39 @@ further_information_requests_urls = [
                 path("withdraw/", views.withdraw_fir, name="withdraw-fir"),
                 path("close/", views.close_fir, name="close-fir"),
                 path(
-                    "files/<int:file_pk>/delete/",
-                    views.delete_fir_file,
-                    name="delete-fir-file",
+                    "files/",
+                    include(
+                        [
+                            path("add/", views.add_fir_file, name="add-fir-file"),
+                            path(
+                                "response/add/",
+                                views.add_fir_response_file,
+                                name="add-fir-response-file",
+                            ),
+                            path(
+                                "<int:file_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "view/",
+                                            views.view_fir_file,
+                                            name="view-fir-file",
+                                        ),
+                                        path(
+                                            "delete/",
+                                            views.delete_fir_file,
+                                            name="delete-fir-file",
+                                        ),
+                                        path(
+                                            "response/delete/",
+                                            views.delete_fir_response_file,
+                                            name="delete-fir-response-file",
+                                        ),
+                                    ]
+                                ),
+                            ),
+                        ]
+                    ),
                 ),
             ]
         ),

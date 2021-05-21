@@ -1,3 +1,6 @@
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
 <fieldset>
   <legend class="bold">
     FIR requested by {{ fir.requested_by }} on {{ fir.requested_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
@@ -15,25 +18,26 @@
     </form>
   {% endif %}
 
+<div class="container setoutForm">
   <div class="row">
-    <div class="three columns"></div>
-    <div class="six columns">
+    <div class="nine columns">
       <form method="post"
             action="{{ icms_url(
                          'case:edit-fir',
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type}) }}"
-            enctype="multipart/form-data">
+            enctype="multipart/form-data"
+            novalidate
+      >
         {{ csrf_input }}
-        {{ form.as_p() }}
-        <p>Selected files:</p>
-        <p>
-          <label>Documents</label>
-        </p>
-        <div id="fileList"></div>
+        {% for field in form %}
+            {{fields.field(field, mark_safe=True)}}
+        {% endfor %}
         <button type="submit" name="send" class="button primary-button">Send Request</button>
         <button type="submit" name="save" class="button primary-button">Save</button>
       </form>
-      {% if fir.files.exists() %}
+      <br>
+      <p><label>Documents</label></p>
+      {% if fir.files.active().exists() %}
       <table class="setoutList">
         <thead>
           <tr>
@@ -46,8 +50,11 @@
         {% for document in fir.files.active() %}
           <tr>
             <td>
-              {{ document.filename }}<br />
-              <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+              <a
+                href="{{ icms_url('case:view-fir-file', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
+                {{ document.filename }}
+              </a>
+              <br>{{ document.human_readable_file_size() }}
             </td>
             <td>
               {{ document.created_by }}<br />
@@ -66,9 +73,20 @@
         {% endfor %}
         </tbody>
       </table>
+      {% else %}
+        <div class="info-box info-box-info">
+          There are no documents attached
+        </div>
       {% endif %}
-
+      <div class="container">
+        <div class="row">
+          <a class="button small-button" href="{{ icms_url('case:add-fir-file', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type}) }}">
+            Add document
+          </a>
+        </div>
+      </div>
     </div>
     <div class="three columns"></div>
   </div>
+</div>
 </fieldset>

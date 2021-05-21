@@ -26,7 +26,7 @@
         <dd>{{ fir.request_detail|default('N/A', true)|nl2br }}</dd>
         <dt class="bold">Documents</dt>
         <dd>
-          {% if fir.files.exists() %}
+          {% if fir.files.active().exists() %}
             <table class="setoutList">
               <thead>
                 <tr>
@@ -35,11 +35,14 @@
                 </tr>
               </thead>
               <tbody>
-              {% for document in fir.files.all() %}
+              {% for document in fir.files.active() %}
                 <tr>
                   <td>
-                    {{ document.filename }}<br />
-                    <span class="extra-info">{{ document.file_size }}</span>
+                    <a
+                      href="{{ icms_url('case:view-fir-file', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
+                      {{ document.filename }}
+                    </a>
+                    <br />{{ document.human_readable_file_size() }}
                   </td>
                   <td>
                     {{ document.created_by }}<br />

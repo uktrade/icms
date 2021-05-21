@@ -1,4 +1,6 @@
 {% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 
 {% block extra_header %}
@@ -48,23 +50,8 @@
   <div class="row">
     <div class="three columns"></div>
     <div class="six columns">
-      <form method="post"
-            action="."
-            enctype="multipart/form-data">
-        {{ csrf_input }}
-
-        {{ form.as_p() }}
-        <p>Selected files:</p>
-        <p>
-          <label>Documents</label>
-        </p>
-        <div id="fileList"></div>
-
-        <button type="submit" name="action" value="save" class="primary-button button">
-          Submit Response
-        </button>
-      </form>
-      {% if fir.files.exists() %}
+      <p><label>Please attach any documents before submitting response</label></p>
+      {% if fir.files.active().exists() %}
       <table class="setoutList">
         <thead>
           <tr>
@@ -77,8 +64,11 @@
         {% for document in fir.files.active() %}
           <tr>
             <td>
-              {{ document.filename }}<br />
-              <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+              <a
+                href="{{ icms_url('case:view-fir-file', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': case_type}) }}">
+                {{ document.filename }}
+              </a>
+              <br />{{ document.human_readable_file_size() }}
             </td>
             <td>
               {{ document.created_by }}<br />
@@ -88,7 +78,7 @@
               {% if document.created_by == request.user %}
               <form method="post"
                     action={{ icms_url(
-                                'case:delete-fir-file',
+                                'case:delete-fir-response-file',
                                 kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'file_pk': document.pk, 'case_type': case_type}) }}>
                 {{ csrf_input }}
                 <button type="submit" class="button link-button-no-padding">Delete</button>
@@ -99,7 +89,31 @@
         {% endfor %}
         </tbody>
       </table>
+      {% else %}
+        <div class="info-box info-box-info">
+          There are no documents attached
+        </div>
       {% endif %}
+      <div class="container">
+        <div class="row">
+          <a class="button small-button" href="{{ icms_url('case:add-fir-response-file', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type}) }}">
+            Add document
+          </a>
+        </div>
+      </div>
+      <form method="post"
+            action="."
+            enctype="multipart/form-data"
+            novalidate
+      >
+        {{ csrf_input }}
+        {% for field in form %}
+            {{fields.field(field)}}
+        {% endfor %}
+        <button type="submit" name="action" value="save" class="primary-button button">
+          Submit Response
+        </button>
+      </form>
     </div>
     <div class="three columns"></div>
   </div>

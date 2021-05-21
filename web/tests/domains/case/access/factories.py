@@ -30,7 +30,6 @@ class AccessRequestFactory(factory.django.DjangoModelFactory):
     submit_datetime = timezone.now()
     submitted_by = factory.SubFactory(UserFactory, is_active=True)
     last_update_datetime = timezone.now()
-    submitted_by = factory.SubFactory(UserFactory, is_active=True)
     last_updated_by = factory.SubFactory(UserFactory, is_active=True)
     response_reason = ""
 

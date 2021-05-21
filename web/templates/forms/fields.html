@@ -1,4 +1,4 @@
-{% macro _field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, lookup=False) -%}
+{% macro _field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, lookup=False, mark_safe=False) -%}
   {% set field_markup %}
 
     {% if field_description %}
@@ -28,7 +28,11 @@
     {% if tooltip %}
       {{ tooltip }}
     {% else %}
-      <p class="helptext">{{ field.help_text }}</p>
+      {% if mark_safe %}
+        <p class="helptext">{{ field.help_text|safe }}</p>
+      {% else %}
+        <p class="helptext">{{ field.help_text }}</p>
+      {% endif %}
     {% endif %}
   {% elif lookup %}
     <div class="nine-column-input">
@@ -46,20 +50,20 @@
 {%- endmacro %}
 
 {# Renders a single form field with icms styling #}
-{% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False) -%}
+{% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False) -%}
   <div class="row row_{{ field.id_for_label  }}" >
-    {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors, show_optional_indicator, prompt, padding, input_cols, label_cols, lookup) }}
+    {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors, show_optional_indicator, prompt, padding, input_cols, label_cols, lookup, mark_safe) }}
   </div>
 {%- endmacro %}
 
 {# Renders a single INLINE form field with icms styling #}
-{% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False) -%}
+{% macro inline_field_with_label(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False) -%}
   {% set config=field.field.config %}
 
   {{ label(field, show_optional_indicator, prompt, label_cols) }}
 
   <div class="{{ input_cols }} columns input-group {% if show_errors and field.errors %}input-error{% endif %}">
-    {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description, show_errors=show_errors, lookup=lookup)}}
+    {{_field(field, tooltip=tooltip, checkbox_label=checkbox_label, field_description=field_description, show_errors=show_errors, lookup=lookup, mark_safe=mark_safe)}}
   </div>
   {% if padding %}
     <div class="{{ padding }} columns"> </div>

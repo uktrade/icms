@@ -4867,10 +4867,6 @@ form .display.closed [value=withdraw] {
 }
 
 
-ul.fileList {
-    list-style-type: none;
-}
-
 .fileInfo.readonly {
     background: transparent;
     padding: 0;
