@@ -55,7 +55,7 @@
     {% with total = process.update_requests.count(),
     processed = process.update_requests.exclude(status="OPEN").count() %}
       <a
-        href="{{ icms_url('import:manage-update-requests', args=[process.pk]) }}">
+        href="{{ icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Application Updates ({{ processed }}/{{ total }})
       </a>
     {% endwith %}

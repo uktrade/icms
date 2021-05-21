@@ -420,15 +420,47 @@ def archive_withdrawal(
         return redirect(reverse("workbasket"))
 
 
-def _manage_update_requests(
-    request, application, model_class, email_subject, email_content, contacts, url_namespace
-):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_update_requests(
+    request: HttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+
         update_requests = application.update_requests.filter(is_active=True)
         current_update_request = update_requests.filter(
             status__in=[models.UpdateRequest.OPEN, models.UpdateRequest.UPDATE_IN_PROGRESS]
         ).first()
+
+        if case_type == "import":
+            template_code = "IMA_APP_UPDATE"
+
+            # TODO: replace with case reference ICMSLST-348
+            placeholder_content = {
+                "CASE_REFERENCE": application_pk,
+                "IMPORTER_NAME": application.importer.display_name,
+                "CASE_OFFICER_NAME": request.user,
+            }
+        elif case_type == "export":
+            template_code = "CA_APPLICATION_UPDATE_EMAIL"
+
+            # TODO: replace with case reference ICMSLST-348
+            placeholder_content = {
+                "CASE_REFERENCE": application_pk,
+                "EXPORTER_NAME": application.exporter.name,
+                "CASE_OFFICER_NAME": request.user,
+            }
+
+        # TODO: replace with case reference ICMSLST-348
+        template = Template.objects.get(template_code=template_code, is_active=True)
+        email_subject = template.get_title({"CASE_REFERENCE": application_pk})
+        email_content = template.get_content(placeholder_content)
 
         if request.POST:
             form = forms.UpdateRequestForm(request.POST)
@@ -449,8 +481,20 @@ def _manage_update_requests(
 
                 Task.objects.create(process=application, task_type="prepare", previous=task)
 
+                if case_type == "import":
+                    contacts = get_users_with_perms(
+                        application.importer, only_with_perms_in=["is_contact_of_importer"]
+                    ).filter(user_permissions__codename="importer_access")
+                elif case_type == "export":
+                    contacts = get_users_with_perms(
+                        application.exporter, only_with_perms_in=["is_contact_of_exporter"]
+                    ).filter(user_permissions__codename="exporter_access")
+
                 notify.update_request(
-                    email_subject, email_content, contacts, update_request.email_cc_address_list
+                    update_request.request_subject,
+                    update_request.request_detail,
+                    contacts,
+                    update_request.email_cc_address_list,
                 )
 
                 return redirect(reverse("workbasket"))
@@ -463,14 +507,13 @@ def _manage_update_requests(
             )
 
         context = {
-            "process_template": f"web/domains/case/{url_namespace}/partials/process.html",
             "process": application,
             "task": task,
             "page_title": f"{application.application_type.get_type_description()} - Update Requests",
             "form": form,
             "update_requests": update_requests,
             "current_update_request": current_update_request,
-            "url_namespace": url_namespace,
+            "case_type": case_type,
         }
 
         return render(
@@ -480,20 +523,21 @@ def _manage_update_requests(
         )
 
 
-def _close_update_requests(request, application_pk, update_request_pk, model_class, url_namespace):
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def close_update_request(
+    request: HttpRequest, *, application_pk: int, update_request_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
     with transaction.atomic():
-        application = get_object_or_404(model_class.objects.select_for_update(), pk=application_pk)
-        task = application.get_task(model_class.UPDATE_REQUESTED, "process")
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        application.get_task(model_class.SUBMITTED, "process")
+        update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
-        application.status = model_class.SUBMITTED
-
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
-        Task.objects.create(process=application, task_type="process", previous=task)
-
-        update_request = application.update_requests.get(pk=update_request_pk)
         update_request.status = models.UpdateRequest.CLOSED
         update_request.closed_by = request.user
         update_request.closed_datetime = timezone.now()
@@ -501,8 +545,8 @@ def _close_update_requests(request, application_pk, update_request_pk, model_cla
 
     return redirect(
         reverse(
-            f"{url_namespace}:manage-update-requests",
-            kwargs={"application_pk": application_pk},
+            "case:manage-update-requests",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
         )
     )
 

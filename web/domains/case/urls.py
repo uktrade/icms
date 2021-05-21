@@ -81,6 +81,18 @@ further_information_requests_urls = [
     ),
 ]
 
+update_requests_urls = [
+    path("manage/", views.manage_update_requests, name="manage-update-requests"),
+    path(
+        "<int:update_request_pk>/",
+        include(
+            [
+                path("close/", views.close_update_request, name="close-update-request"),
+            ]
+        ),
+    ),
+]
+
 urlpatterns = [
     path(
         "<casetype:case_type>/<int:application_pk>/",
@@ -98,15 +110,9 @@ urlpatterns = [
                 # ILB Admin Case management (import/export)
                 path("admin/", include(admin_urls)),
                 #
-                # TODO: (ICMSLST-648)
-                # path(
-                #     "update-requests/", views.manage_update_requests, name="manage-update-requests"
-                # ),
-                # path(
-                #     "update-requests/<int:update_request_pk>/close/",
-                #     views.close_update_requests,
-                #     name="close-update-requests",
-                # ),
+                # update requests
+                # TODO: implement importer/exporter response: (ICMSLST-679)
+                path("update-requests/", include(update_requests_urls)),
                 #
                 # notes (import/export)
                 path("notes/", include(note_urls)),

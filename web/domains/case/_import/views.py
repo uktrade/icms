@@ -14,14 +14,10 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
-from guardian.shortcuts import get_users_with_perms
 
-from web.domains.importer.models import Importer
-from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.s3 import get_file_from_s3
 
-from .. import views as case_views
 from . import forms
 from .derogations.models import DerogationsApplication
 from .fa_dfl.models import DFLApplication
@@ -176,76 +172,6 @@ def _create_application(
     context = {"form": form, "import_application_type": application_type}
 
     return render(request, "web/domains/case/import/create.html", context)
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_update_requests(request, application_pk):
-    application = get_object_or_404(ImportApplication, pk=application_pk)
-    template = Template.objects.get(template_code="IMA_APP_UPDATE", is_active=True)
-
-    importer = Importer.objects.get(import_applications__pk=application_pk)
-
-    # TODO: replace with case reference
-    placeholder_content = {
-        "CASE_REFERENCE": application_pk,
-        "IMPORTER_NAME": importer.display_name,
-        "CASE_OFFICER_NAME": request.user,
-    }
-
-    # TODO: replace with case reference
-    email_subject = template.get_title({"CASE_REFERENCE": application_pk})
-    email_content = template.get_content(placeholder_content)
-
-    importer_contacts = get_users_with_perms(
-        application.importer, only_with_perms_in=["is_contact_of_importer"]
-    ).filter(user_permissions__codename="importer_access")
-
-    return case_views._manage_update_requests(
-        request,
-        application,
-        ImportApplication,
-        email_subject,
-        email_content,
-        importer_contacts,
-        "import",
-    )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def close_update_requests(request, application_pk, update_request_pk):
-    return case_views._close_update_requests(
-        request, application_pk, update_request_pk, ImportApplication, "import"
-    )
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-def list_update_requests(request, application_pk):
-    # TODO Remove mypy ignore when doing ICMSLST-648
-    return case_views._list_update_requests(request, application_pk, ImportApplication, "import")  # type: ignore[attr-defined]
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-@require_POST
-def start_update_request(request, application_pk, update_request_pk):
-    # TODO Remove mypy ignore when doing ICMSLST-648
-    return case_views._start_update_request(  # type: ignore[attr-defined]
-        request, application_pk, update_request_pk, ImportApplication, "import"
-    )
-
-
-@login_required
-@permission_required("web.importer_access", raise_exception=True)
-def respond_update_request(request, application_pk, update_request_pk):
-    # TODO: make url more generic
-    # TODO Remove mypy ignore when doing ICMSLST-648
-    return case_views._respond_update_request(  # type: ignore[attr-defined]
-        request, application_pk, update_request_pk, ImportApplication, "import"
-    )
 
 
 @login_required
