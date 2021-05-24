@@ -120,12 +120,6 @@ urlpatterns = [
                 # misc stuff (import/export)
                 path("prepare-response/", views.prepare_response, name="prepare-response"),
                 #
-                # TODO: ICMSLST-682
-                # path("cover-letter/", views.edit_cover_letter, name="edit-cover-letter"),
-                # path(
-                #     "cover-letter/preview/", views.preview_cover_letter, name="preview-cover-letter"
-                # ),
-                #
                 # TODO: ICMSLST-669
                 # path("licence/", views.edit_licence, name="edit-licence"),
                 # path("licence/preview/", views.preview_licence, name="preview-licence"),

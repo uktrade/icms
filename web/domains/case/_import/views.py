@@ -176,9 +176,9 @@ def _create_application(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_cover_letter(request, application_pk):
+def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -383,9 +383,9 @@ def delete_endorsement(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def preview_cover_letter(request, application_pk):
+def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -411,6 +411,7 @@ def preview_cover_letter(request, application_pk):
 
         response = HttpResponse(pdf_file, content_type="application/pdf")
         response["Content-Disposition"] = "filename=CoverLetter.pdf"
+
         return response
 
 

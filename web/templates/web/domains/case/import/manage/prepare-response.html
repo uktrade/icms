@@ -8,7 +8,7 @@
   {% if process.application_approved %}
     {% if cover_letter_flag %}
       <a
-        href="{{ icms_url('import:preview-cover-letter', args=[process.pk]) }}"
+        href="{{ icms_url('import:preview-cover-letter', kwargs={'application_pk': process.pk}) }}"
         target="blank"
         class="button">
         Preview Cover Letter
@@ -60,7 +60,7 @@
       <hr />
 
       <a
-        href="{{ icms_url('import:edit-cover-letter', args=[process.pk]) }}"
+        href="{{ icms_url('import:edit-cover-letter', kwargs={'application_pk': process.pk}) }}"
         class="button small-button">
         Edit Cover Letter
       </a>
