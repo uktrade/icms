@@ -120,10 +120,6 @@ urlpatterns = [
                 # misc stuff (import/export)
                 path("prepare-response/", views.prepare_response, name="prepare-response"),
                 #
-                # TODO: ICMSLST-669
-                # path("licence/", views.edit_licence, name="edit-licence"),
-                # path("licence/preview/", views.preview_licence, name="preview-licence"),
-                #
                 # TODO: ICMSLST-681
                 # path("authorisation/", views.authorisation, name="authorisation"),
                 # path(

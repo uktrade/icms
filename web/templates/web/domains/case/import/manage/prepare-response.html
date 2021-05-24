@@ -17,7 +17,7 @@
 
     {% if electronic_licence_flag %}
       <a
-        href="{{ icms_url('import:preview-licence', args=[process.pk]) }}"
+        href="{{ icms_url('import:preview-licence', kwargs={'application_pk': process.pk}) }}"
         target="blank"
         class="button">
         Preview Licence
@@ -93,7 +93,7 @@
           </td>
           <td>
             <a
-              href="{{ icms_url('import:edit-licence', args=[process.pk]) }}">
+              href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}">
               Edit
             </a>
         </tr>

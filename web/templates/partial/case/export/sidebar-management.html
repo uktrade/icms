@@ -3,10 +3,6 @@
   <li>
     <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">Case {{ process.pk }}</a>
   </li>
-  {# TODO: add everything importer has (web/templates/partial/case/import/sidebar-management.html)
-     as working on tickets:
-       - ICMSLST-669
-  #}
   <li>
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}
@@ -44,6 +40,10 @@
     <a href="{{ icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}) }}">Response Preparation</a>
   </li>
   <li>
-    <a href="#">Authorisation</a>
+    {# TODO: add everything importer has (web/templates/partial/case/import/sidebar-management.html)
+      as working on tickets:
+        - ICMSLST-681
+    #}
+     <a href="#">Authorisation</a>
   </li>
 </ul>

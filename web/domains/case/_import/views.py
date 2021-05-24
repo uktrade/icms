@@ -12,7 +12,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 
 from web.flow.models import Task
@@ -217,9 +217,9 @@ def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespo
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_licence(request, application_pk):
+def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -383,6 +383,7 @@ def delete_endorsement(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
+@require_GET
 def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
@@ -417,9 +418,10 @@ def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRe
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def preview_licence(request, application_pk):
+@require_GET
+def preview_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -433,6 +435,9 @@ def preview_licence(request, application_pk):
             "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
         }
 
+        # TODO: preview-licence.html contents are hard-coded and seem to be for
+        # a specific type of firearms application. needs to be generalized for
+        # other application types.
         html_string = render_to_string(
             request=request,
             template_name="web/domains/case/import/manage/preview-licence.html",

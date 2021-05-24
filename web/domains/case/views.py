@@ -1230,9 +1230,12 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
         else:
             form = forms.ResponsePreparationForm()
 
-        cover_letter_flag = (
-            application.application_type.cover_letter_flag if case_type == "import" else False
-        )
+        if case_type == "import":
+            cover_letter_flag = application.application_type.cover_letter_flag
+            electronic_licence_flag = application.application_type.electronic_licence_flag
+        else:
+            cover_letter_flag = False
+            electronic_licence_flag = False
 
         context = {
             "case_type": case_type,
@@ -1240,6 +1243,7 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
             "page_title": "Response Preparation",
             "form": form,
             "cover_letter_flag": cover_letter_flag,
+            "electronic_licence_flag": electronic_licence_flag,
         }
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
