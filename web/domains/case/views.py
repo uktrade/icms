@@ -118,7 +118,6 @@ def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> 
             "process": application,
             "notes": application.case_notes,
             "case_type": case_type,
-            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
 
     return render(
@@ -230,7 +229,6 @@ def edit_note(
             "note_form": note_form,
             "note": note,
             "case_type": case_type,
-            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
 
     return render(
@@ -283,7 +281,6 @@ def add_note_document(
             "form": form,
             "note": note,
             "case_type": case_type,
-            "url_namespace": case_type,  # TODO: ICMSLST-670 remove
         }
 
     return render(
