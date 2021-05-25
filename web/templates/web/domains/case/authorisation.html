@@ -1,0 +1,30 @@
+{% extends "web/domains/case/manage/base.html" %}
+
+
+{% block main_content %}
+  <h3>Authorisation</h3>
+  <div class="info-box info-box-info">
+    {% if case_type == "import" %}
+      <p>After authorisation, generated documents (including licence documents, cover letters and schedules) will be digitally signed and filed into Matrix.</p>
+      <p>If you have selected an electronic licence, the documents will be issued to the applicant immediately.</p>
+      <p>If you have selected a paper licence, you will receive a link in your workbasket to print the documents after they have been signed and filed.</p>
+    {% elif case_type == "export" %}
+      <p>After authorisation, generated documents will be digitally signed, filed into Matrix and issued to the applicant.</p>
+    {% endif %}
+  </div>
+  {% if errors %}
+    <h3>Error</h3>
+    <p>Please resolve the errors.</p>
+    {% include "web/utils/validation.html" %}
+  {% else %}
+    <form
+      method="post"
+      action="{{ icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
+      {{ csrf_input }}
+      <input
+        type="submit"
+        class="button primary-button"
+        value="Start Authorisation (Close Case Processing)" />
+    </form>
+  {% endif %}
+{% endblock %}

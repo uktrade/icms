@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import ManyToManyField, Q
+from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -11,6 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -32,6 +34,12 @@ from web.models import (
 from web.notify import notify
 from web.notify.email import send_email
 from web.utils.s3 import get_file_from_s3
+from web.utils.validation import (
+    ApplicationErrors,
+    FieldError,
+    PageErrors,
+    create_page_errors,
+)
 
 from . import forms, models
 from .fir import forms as fir_forms
@@ -1420,3 +1428,132 @@ def _prepare_wood_quota_response(
         template_name="web/domains/case/import/manage/prepare-wood-quota-response.html",
         context=context,
     )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def start_authorisation(
+    request: HttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+
+        application_errors = ApplicationErrors()
+
+        prepare_errors = PageErrors(
+            page_name="Response Preparation",
+            url=reverse(
+                "case:prepare-response",
+                kwargs={"application_pk": application.pk, "case_type": case_type},
+            ),
+        )
+
+        if case_type == "import":
+            _get_import_errors(application, application_errors, prepare_errors)
+
+        elif case_type == "export":
+            _get_export_errors(application, application_errors, prepare_errors)
+
+        # Import & export checks
+        if application.decision == model_class.REFUSE:
+            prepare_errors.add(
+                FieldError(field_name="Decision", messages=["Please approve application."])
+            )
+
+        application_errors.add(prepare_errors)
+
+        if request.POST and not application_errors.has_errors():
+            application.status = model_class.PROCESSING
+            application.save()
+
+            return redirect(reverse("workbasket"))
+
+        else:
+            context = {
+                "case_type": case_type,
+                "process": application,
+                "task": task,
+                "page_title": "Authorisation",
+                "errors": application_errors if application_errors.has_errors() else None,
+            }
+
+            return render(
+                request=request,
+                template_name="web/domains/case/authorisation.html",
+                context=context,
+            )
+
+
+def _get_import_errors(application, application_errors, prepare_errors):
+    # Application specific checks
+    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+        application_errors.add(_get_fa_oil_errors(application))
+
+    else:
+        raise NotImplementedError(
+            f"process_type {application.process_type!r} hasn't been implemented yet."
+        )
+
+    if not application.licence_start_date:
+        prepare_errors.add(
+            FieldError(field_name="Licence start date", messages=["Licence start date missing."])
+        )
+
+    if not application.licence_end_date:
+        prepare_errors.add(
+            FieldError(field_name="Licence end date", messages=["Licence end date missing."])
+        )
+
+
+def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
+    checklist_errors = PageErrors(
+        page_name="Checklist",
+        url=reverse("import:fa-oil:manage-checklist", kwargs={"pk": application.pk}),
+    )
+
+    oil: OpenIndividualLicenceApplication = application.openindividuallicenceapplication
+
+    if not oil.checklists.exists():
+        checklist_errors.add(
+            FieldError(field_name="Checklist", messages=["Please complete checklist."])
+        )
+
+    else:
+        checklist = oil.checklists.first()
+        create_page_errors(
+            ChecklistFirearmsOILApplicationForm(data=model_to_dict(checklist), instance=checklist),
+            checklist_errors,
+        )
+
+    return checklist_errors
+
+
+def _get_export_errors(application, application_errors, prepare_errors):
+    raise NotImplementedError(
+        f"process_type {application.process_type!r} hasn't been implemented yet."
+    )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def cancel_authorisation(
+    request: HttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+        application.get_task(model_class.PROCESSING, "process")
+
+        application.status = model_class.SUBMITTED
+        application.save()
+
+        return redirect(reverse("workbasket"))

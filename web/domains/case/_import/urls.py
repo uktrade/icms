@@ -57,8 +57,7 @@ urlpatterns = [
         "case/<int:application_pk>/",
         include(
             [
-                # endorsements, cover letters, and licences are import-specific,
-                # no reason to move them up to case-level
+                # These are import-specific, no reason to move them up to case-level
                 path("endorsements/", include(endorsements_urls)),
                 path("cover-letter/edit/", views.edit_cover_letter, name="edit-cover-letter"),
                 path(
@@ -66,12 +65,6 @@ urlpatterns = [
                 ),
                 path("licence/edit", views.edit_licence, name="edit-licence"),
                 path("licence/preview/", views.preview_licence, name="preview-licence"),
-                #
-                path("authorisation/", views.authorisation, name="authorisation"),
-                path("start-authorisation/", views.start_authorisation, name="start-authorisation"),
-                path(
-                    "cancel-authorisation/", views.cancel_authorisation, name="cancel-authorisation"
-                ),
             ]
         ),
     ),

@@ -123,6 +123,11 @@ update_requests_urls = [
     ),
 ]
 
+authorisation_urls = [
+    path("start/", views.start_authorisation, name="start-authorisation"),
+    path("cancel/", views.cancel_authorisation, name="cancel-authorisation"),
+]
+
 urlpatterns = [
     path(
         "<casetype:case_type>/<int:application_pk>/",
@@ -150,16 +155,8 @@ urlpatterns = [
                 # misc stuff (import/export)
                 path("prepare-response/", views.prepare_response, name="prepare-response"),
                 #
-                # TODO: ICMSLST-681
-                # path("authorisation/", views.authorisation, name="authorisation"),
-                # path(
-                #     "start-authorisation/", views.start_authorisation, name="start-authorisation"
-                # ),
-                # path(
-                #     "cancel-authorisation/",
-                #     views.cancel_authorisation,
-                #     name="cancel-authorisation",
-                # ),
+                # Application Authorisation (import/export)
+                path("authorisation/", include(authorisation_urls)),
             ]
         ),
     ),

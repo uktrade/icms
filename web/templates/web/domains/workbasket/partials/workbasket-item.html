@@ -24,7 +24,7 @@
   {% elif process.status == "PROCESSING" %}
     <a href="#TODO">Authorise Documents</a>
     <br>
-    <form method="post" action="{{ icms_url(case_type + ':cancel-authorisation', args=[process.pk]) }}">
+    <form method="post" action="{{ icms_url('case:cancel-authorisation', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
       <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
       <button type="submit" class="button link-button-no-padding">Cancel Authorisation</button>
     </form>

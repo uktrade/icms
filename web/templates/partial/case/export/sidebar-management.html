@@ -40,10 +40,6 @@
     <a href="{{ icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}) }}">Response Preparation</a>
   </li>
   <li>
-    {# TODO: add everything importer has (web/templates/partial/case/import/sidebar-management.html)
-      as working on tickets:
-        - ICMSLST-681
-    #}
-     <a href="#">Authorisation</a>
+    <a href="{{ icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">Authorisation</a>
   </li>
 </ul>
