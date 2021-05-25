@@ -23,6 +23,7 @@ class ImportApplicationType(models.Model):
         # TODO: missing from legacy data extract, hence TEMP
         SANCTION_ADHOC = ("SAN_ADHOC_TEMP", "Sanctions and Adhoc")
         WOOD_QUOTA = ("WD", "Wood (Quota)")
+        OPT = ("OPT", "Outward Processing Trade")
 
     class SubTypes(models.TextChoices):
         OIL = ("OIL", "Open Individual Import Licence")

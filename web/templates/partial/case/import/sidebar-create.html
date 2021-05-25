@@ -1,5 +1,4 @@
 <ul class="menu-out">
-
     <h5>Derogation from Sanctions Import Ban</h5>
 
     <li>
@@ -31,5 +30,13 @@
     <li>
         <a href="{{ icms_url('import:create-wood-quota') }}">Wood (Quota)</a>
     </li>
+
+    {% if show_opt %}
+    <h5>Outward processing trade</h5>
+
+    <li>
+      <a href="{{ icms_url('import:create-opt') }}">Outward Processing Trade</a>
+    </li>
+    {% endif %}
 
 </ul>

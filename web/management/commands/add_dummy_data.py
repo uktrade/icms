@@ -7,6 +7,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.models import ImportApplicationType
 
 
 class Command(BaseCommand):
@@ -15,6 +16,13 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         if not settings.DEBUG:
             raise CommandError("DEBUG flag is not set, refusing to run!")
+
+        # enable disabled application types so we can test/develop them
+        ImportApplicationType.objects.filter(
+            type__in=[
+                ImportApplicationType.Types.OPT,
+            ]
+        ).update(is_active=True)
 
         user = User.objects.get(username="admin")
 

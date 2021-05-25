@@ -25,6 +25,7 @@ from .fa_oil.models import OpenIndividualLicenceApplication
 from .fa_sil.models import SILApplication
 from .forms import ImportContactLegalEntityForm, ImportContactPersonForm
 from .models import ImportApplication, ImportApplicationType, ImportContact
+from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .wood.models import WoodQuotaApplication
 
@@ -32,6 +33,15 @@ from .wood.models import WoodQuotaApplication
 class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/import/choose.html"
     permission_required = "web.importer_access"
+
+    def get_context_data(self):
+        context = super().get_context_data()
+
+        show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
+
+        context.update({"show_opt": show_opt})
+
+        return context
 
 
 @login_required
@@ -124,6 +134,21 @@ def create_wood_quota(request: HttpRequest) -> HttpResponse:
     )
 
 
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_opt(request: HttpRequest) -> HttpResponse:
+    import_application_type = ImportApplicationType.Types.OPT
+    model_class = OutwardProcessingTradeApplication
+    redirect_view = "import:opt:edit"
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+        redirect_view,
+    )
+
+
 def _create_application(
     request: HttpRequest,
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
@@ -144,6 +169,11 @@ def _create_application(
     application_type: ImportApplicationType = ImportApplicationType.objects.get(
         Q(type=import_application_type) | Q(sub_type=import_application_type)
     )
+
+    if not application_type.is_active:
+        raise ValueError(
+            f"Import application of type {application_type.type} ({application_type.sub_type}) is not active"
+        )
 
     if form_class is None:
         form_class = forms.CreateImportApplicationForm
@@ -169,7 +199,13 @@ def _create_application(
     else:
         form = form_class(user=request.user)
 
-    context = {"form": form, "import_application_type": application_type}
+    show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
+
+    context = {
+        "form": form,
+        "import_application_type": application_type,
+        "show_opt": show_opt,
+    }
 
     return render(request, "web/domains/case/import/create.html", context)
 
