@@ -139,7 +139,7 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
             "exporter_address": exporter_address,
         }
         self.client.post(
-            reverse("import:sanctions:edit-application", kwargs={"pk": self.process.pk}),
+            reverse("import:sanctions:edit", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
 
@@ -238,7 +238,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         )
         assert response.status_code == 302
         assert response.url == reverse(
-            "import:sanctions:edit-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
@@ -301,7 +301,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         assert response.status_code == 302
 
         assert response.url == reverse(
-            "import:sanctions:edit-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
@@ -331,6 +331,6 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         )
         assert response.status_code == 302
         assert response.url == reverse(
-            "import:sanctions:edit-application", kwargs={"pk": self.process.pk}
+            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 1

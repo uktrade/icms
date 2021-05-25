@@ -5,7 +5,7 @@ from . import views
 app_name = "derogations"
 
 urlpatterns = [
-    path("<int:pk>/edit/", views.edit_derogations, name="edit-derogations"),
+    path("<int:application_pk>/edit/", views.edit_derogations, name="edit"),
     path(
         "<int:pk>/add-supporting-document/",
         views.add_supporting_document,

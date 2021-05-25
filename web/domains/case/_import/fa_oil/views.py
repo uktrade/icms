@@ -41,10 +41,10 @@ from .models import (
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_oil(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_oil(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
@@ -58,7 +58,9 @@ def edit_oil(request: HttpRequest, pk: int) -> HttpResponse:
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:fa-oil:edit-oil", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:fa-oil:edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = PrepareOILForm(instance=application, initial={"contact": request.user})
@@ -247,7 +249,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:fa-oil:edit-oil", kwargs={"pk": pk}),
+            url=reverse("import:fa-oil:edit", kwargs={"application_pk": pk}),
         )
         create_page_errors(
             PrepareOILForm(data=model_to_dict(application), instance=application), page_errors

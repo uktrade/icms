@@ -28,9 +28,11 @@ from .models import WoodQuotaApplication
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_wood_quota(request, pk):
+def edit_wood_quota(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        application: WoodQuotaApplication = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
+        )
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
@@ -43,7 +45,9 @@ def edit_wood_quota(request, pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:wood:edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = PrepareWoodQuotaForm(instance=application, initial={"contact": request.user})
@@ -82,7 +86,7 @@ def add_supporting_document(request, pk):
             if form.is_valid():
                 create_file_model(document, request.user, application.supporting_documents)
 
-                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": pk}))
+                return redirect(reverse("import:wood:edit", kwargs={"application_pk": pk}))
         else:
             form = SupportingDocumentForm()
 
@@ -125,7 +129,7 @@ def delete_supporting_document(request, application_pk, document_pk):
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+        return redirect(reverse("import:wood:edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required
@@ -154,7 +158,7 @@ def add_contract_document(request, pk):
                     },
                 )
 
-                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": pk}))
+                return redirect(reverse("import:wood:edit", kwargs={"application_pk": pk}))
         else:
             form = AddContractDocumentForm()
 
@@ -195,7 +199,7 @@ def delete_contract_document(request, application_pk, document_pk):
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+        return redirect(reverse("import:wood:edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required
@@ -219,7 +223,9 @@ def edit_contract_document(request, application_pk, document_pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:wood:edit-quota", kwargs={"pk": application_pk}))
+                return redirect(
+                    reverse("import:wood:edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = EditContractDocumentForm(instance=document)
@@ -250,7 +256,7 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:wood:edit-quota", kwargs={"pk": pk}),
+            url=reverse("import:wood:edit", kwargs={"application_pk": pk}),
         )
         create_page_errors(
             PrepareWoodQuotaForm(data=model_to_dict(application), instance=application), page_errors

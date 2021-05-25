@@ -26,9 +26,11 @@ from .models import DerogationsApplication
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_derogations(request, pk):
+def edit_derogations(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(DerogationsApplication.objects.select_for_update(), pk=pk)
+        application: DerogationsApplication = get_object_or_404(
+            DerogationsApplication.objects.select_for_update(), pk=application_pk
+        )
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
@@ -40,7 +42,9 @@ def edit_derogations(request, pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:derogations:edit-derogations", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = DerogationsForm(instance=application, initial={"contact": request.user})
 
@@ -77,7 +81,7 @@ def add_supporting_document(request: HttpRequest, pk: int) -> HttpResponse:
             if form.is_valid():
                 create_file_model(document, request.user, application.supporting_documents)
 
-                return redirect(reverse("import:derogations:edit-derogations", kwargs={"pk": pk}))
+                return redirect(reverse("import:derogations:edit", kwargs={"application_pk": pk}))
         else:
             form = SupportingDocumentForm()
 
@@ -127,7 +131,7 @@ def delete_supporting_document(
         document.save()
 
         return redirect(
-            reverse("import:derogations:edit-derogations", kwargs={"pk": application_pk})
+            reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
         )
 
 
@@ -145,7 +149,7 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:derogations:edit-derogations", kwargs={"pk": pk}),
+            url=reverse("import:derogations:edit", kwargs={"application_pk": pk}),
         )
         create_page_errors(
             DerogationsForm(data=model_to_dict(application), instance=application), page_errors

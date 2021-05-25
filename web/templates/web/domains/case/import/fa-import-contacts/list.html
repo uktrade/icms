@@ -8,7 +8,7 @@
 {% block content_actions %}
 
 {% if process.process_type == "OpenIndividualLicenceApplication" %}
-  {% set url = 'import:fa-oil:edit-oil' %}
+  {% set url = 'import:fa-oil:edit' %}
   {% set label = 'Edit Open Individual Licence' %}
 {% elif process.process_type == "DFLApplication" %}
   {% set url = 'import:fa-dfl:edit' %}
@@ -21,7 +21,7 @@
 <div class="content-actions">
   <ul class="menu-out flow-across">
     <li>
-      <a href="{{ icms_url(url, kwargs={'pk': process.pk}) }}" class="prev-link">
+      <a href="{{ icms_url(url, kwargs={'application_pk': process.pk}) }}" class="prev-link">
         {{ label }}
         {% if process.applicant_reference %}
           '{{ process.applicant_reference }}'

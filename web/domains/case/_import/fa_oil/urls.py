@@ -3,9 +3,10 @@ from django.urls import path
 from . import views
 
 app_name = "fa-oil"
+
 urlpatterns = [
     # Firearms and Ammunition - Open Individual Licence
-    path("<int:pk>/edit/", views.edit_oil, name="edit-oil"),
+    path("<int:application_pk>/edit/", views.edit_oil, name="edit"),
     path("<int:pk>/submit/", views.submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Management by ILB Admin
     path("case/<int:pk>/checklist/", views.manage_checklist, name="manage-checklist"),

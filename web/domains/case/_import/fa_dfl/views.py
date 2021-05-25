@@ -36,9 +36,11 @@ def _get_page_title(page: str) -> str:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_dlf(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(DFLApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
@@ -50,7 +52,9 @@ def edit_dlf(request: HttpRequest, pk: int) -> HttpResponse:
 
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = PrepareDFLForm(instance=application, initial={"contact": request.user})
@@ -99,7 +103,7 @@ def add_goods_certificate(request: HttpRequest, pk: int) -> HttpResponse:
                     extra_args=extra_args,
                 )
 
-                return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": pk}))
+                return redirect(reverse("import:fa-dfl:edit", kwargs={"application_pk": pk}))
         else:
             form = AddDLFGoodsCertificateForm()
 
@@ -137,7 +141,9 @@ def edit_goods_certificate(
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": application_pk}))
+                return redirect(
+                    reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = EditDLFGoodsCertificateForm(instance=document)
@@ -185,7 +191,7 @@ def delete_goods_certificate(
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:fa-dfl:edit", kwargs={"pk": application_pk}))
+        return redirect(reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required
@@ -255,7 +261,7 @@ def submit_dfl(request: HttpRequest, pk: int) -> HttpResponse:
 def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
     errors = ApplicationErrors()
 
-    edit_url = reverse("import:fa-dfl:edit", kwargs={"pk": application.pk})
+    edit_url = reverse("import:fa-dfl:edit", kwargs={"application_pk": application.pk})
 
     # Check main form
     application_details_errors = PageErrors(page_name="Application details", url=edit_url)

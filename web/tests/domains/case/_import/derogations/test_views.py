@@ -142,10 +142,7 @@ class DegrogationDetailsViewTest(AuthTestCase):
             "value": "2.00",
         }
         self.client.post(
-            reverse(
-                "import:derogations:edit-derogations",
-                kwargs={"pk": self.process.pk},
-            ),
+            reverse("import:derogations:edit", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
         response = self.client.get(self.url)

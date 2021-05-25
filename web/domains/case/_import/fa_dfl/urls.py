@@ -6,7 +6,7 @@ app_name = "fa-dfl"
 
 # Firearms and Ammunition - Deactivated Firearms Licence urls
 urlpatterns = [
-    path("<int:pk>/edit/", views.edit_dlf, name="edit"),
+    path("<int:application_pk>/edit/", views.edit_dfl, name="edit"),
     path("<int:pk>/add-goods-certificate/", views.add_goods_certificate, name="add-goods"),
     path(
         "<int:application_pk>/goods-certificate/<int:document_pk>/",

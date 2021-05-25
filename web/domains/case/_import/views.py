@@ -39,7 +39,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 def create_derogations(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.DEROGATION
     model_class = DerogationsApplication
-    redirect_view = "import:derogations:edit-derogations"
+    redirect_view = "import:derogations:edit"
 
     return _create_application(
         request,
@@ -54,7 +54,7 @@ def create_derogations(request: HttpRequest) -> HttpResponse:
 def create_sanctions(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
-    redirect_view = "import:sanctions:edit-application"
+    redirect_view = "import:sanctions:edit"
 
     return _create_application(
         request,
@@ -69,7 +69,7 @@ def create_sanctions(request: HttpRequest) -> HttpResponse:
 def create_firearms_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
-    redirect_view = "import:fa-oil:edit-oil"
+    redirect_view = "import:fa-oil:edit"
 
     return _create_application(
         request,
@@ -113,7 +113,7 @@ def create_firearms_sil(request: HttpRequest) -> HttpResponse:
 def create_wood_quota(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.WOOD_QUOTA
     model_class = WoodQuotaApplication
-    redirect_view = "import:wood:edit-quota"
+    redirect_view = "import:wood:edit"
 
     return _create_application(
         request,
@@ -165,7 +165,7 @@ def _create_application(
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
 
-            return redirect(reverse(redirect_view, kwargs={"pk": application.pk}))
+            return redirect(reverse(redirect_view, kwargs={"application_pk": application.pk}))
     else:
         form = form_class(user=request.user)
 

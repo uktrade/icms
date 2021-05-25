@@ -42,10 +42,10 @@ logger = logging.getLogger(__name__)
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_application(request, pk):
+def edit_application(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
+        application: SanctionsAndAdhocApplication = get_object_or_404(
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
@@ -58,7 +58,9 @@ def edit_application(request, pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = SanctionsAndAdhocLicenseForm(
                 instance=application, initial={"contact": request.user}
@@ -95,11 +97,13 @@ def add_goods(request, pk):
 
         if request.method == "POST":
             goods_form = GoodsForm(request.POST)
+
             if goods_form.is_valid():
                 obj = goods_form.save(commit=False)
                 obj.import_application = application
                 obj.save()
-                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
+
+                return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
         else:
             goods_form = GoodsForm()
 
@@ -130,7 +134,7 @@ def edit_goods(request: HttpRequest, application_pk: int, goods_pk: int) -> Http
             raise PermissionDenied
 
         form_class = GoodsForm
-        success_url = reverse("import:sanctions:edit-application", kwargs={"pk": application_pk})
+        success_url = reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
         template_name = "web/domains/case/import/sanctions/add_or_edit_goods.html"
 
         return _edit_goods(
@@ -209,7 +213,7 @@ def delete_goods(request, application_pk, goods_pk):
 
         get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk).delete()
 
-    return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": application_pk}))
+    return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required
@@ -223,12 +227,15 @@ def add_supporting_document(request, pk):
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
+
         if request.method == "POST":
             documents_form = SupportingDocumentForm(request.POST, request.FILES)
             document = request.FILES.get("document")
+
             if documents_form.is_valid():
                 create_file_model(document, request.user, application.supporting_documents)
-                return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": pk}))
+
+                return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
         else:
             documents_form = SupportingDocumentForm()
 
@@ -273,7 +280,7 @@ def delete_supporting_document(request, application_pk, document_pk):
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:sanctions:edit-application", kwargs={"pk": application_pk}))
+        return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required
@@ -293,7 +300,7 @@ def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:sanctions:edit-application", kwargs={"pk": pk}),
+            url=reverse("import:sanctions:edit", kwargs={"application_pk": pk}),
         )
         create_page_errors(
             SanctionsAndAdhocLicenseForm(data=model_to_dict(application), instance=application),

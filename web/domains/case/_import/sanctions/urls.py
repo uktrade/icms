@@ -5,7 +5,7 @@ from . import views
 app_name = "sanctions"
 
 urlpatterns = [
-    path("<int:pk>/edit/", views.edit_application, name="edit-application"),
+    path("<int:application_pk>/edit/", views.edit_application, name="edit"),
     path("<int:pk>/add-goods/", views.add_goods, name="add-goods"),
     path("<int:application_pk>/goods/<int:goods_pk>/edit/", views.edit_goods, name="edit-goods"),
     path(

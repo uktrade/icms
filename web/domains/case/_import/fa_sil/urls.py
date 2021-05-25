@@ -3,8 +3,9 @@ from django.urls import include, path
 from . import views
 
 app_name = "fa-sil"
+
 urlpatterns = [
-    path("<int:pk>/edit/", views.edit, name="edit"),
+    path("<int:application_pk>/edit/", views.edit, name="edit"),
     path("<int:pk>/submit/", views.submit, name="submit"),
     # Goods
     path("<int:pk>/sections/choose/", views.choose_goods_section, name="choose-goods-section"),
