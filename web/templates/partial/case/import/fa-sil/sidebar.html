@@ -3,6 +3,9 @@
     <a href="{{ icms_url('import:fa-sil:edit', kwargs={'application_pk': process.pk}) }}">Application Details</a>
   </li>
   <li>
+    <a href="{{ icms_url('import:fa-list-import-contacts', kwargs={'pk': process.pk}) }}">Details of Who Bought From</a>
+  </li>
+  <li>
     <a href="{{ icms_url('import:fa-sil:submit', kwargs={'application_pk': process.pk}) }}">Submit</a>
   </li>
 </ul>

@@ -98,6 +98,19 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     create_page_errors(application_form, application_details_errors)
     errors.add(application_details_errors)
 
+    # Check know bought from
+    if application.know_bought_from and not application.importcontact_set.exists():
+        page_errors = PageErrors(
+            page_name="Details of who bought from",
+            url=reverse("import:fa-list-import-contacts", kwargs={"pk": application.pk}),
+        )
+
+        page_errors.add(
+            FieldError(field_name="Person", messages=["At least one person must be added"])
+        )
+
+        errors.add(page_errors)
+
     # Goods validation
     if application.section1 and not application.goods_section1.filter(is_active=True).exists():
         url = reverse(

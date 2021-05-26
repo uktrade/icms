@@ -18,6 +18,7 @@
       {% for contact in contacts %}
       <tr>
         <td>
+          {{ contact.get_entity_display() }}<br />
           {{ contact.first_name}}<br />
           {{ contact.last_name or contact.registration_number }}
         </td>

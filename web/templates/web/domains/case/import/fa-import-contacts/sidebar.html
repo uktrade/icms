@@ -2,6 +2,8 @@
   {% include "partial/case/import/fa-oil/sidebar.html" %}
 {% elif process.process_type == "DFLApplication" %}
   {% include "partial/case/import/fa-dfl/sidebar.html" %}
+{% elif process.process_type == "SILApplication" %}
+  {% include "partial/case/import/fa-sil/sidebar.html" %}
 {% else %}
   <ul class="menu-out">
     <li>Sidebar missing for application type "{{ process.process_type }}"</li>

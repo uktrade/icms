@@ -13,6 +13,9 @@
 {% elif process.process_type == "DFLApplication" %}
   {% set url = 'import:fa-dfl:edit' %}
   {% set label = 'Edit Deactivated Firearms Licence' %}
+{% elif process.process_type == "SILApplication" %}
+  {% set url = 'import:fa-sil:edit' %}
+  {% set label = 'Edit Specific Import Licence' %}
 {% else %}
   {% set url = 'import:UNKNOWN-EDIT-ACTION' %}
   {% set label = 'Unknown application type' %}

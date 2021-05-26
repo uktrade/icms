@@ -590,6 +590,7 @@ def _update_know_bought_from(application: ImportApplication) -> None:
     process_type_link = {
         OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
         DFLApplication.PROCESS_TYPE: "dflapplication",
+        SILApplication.PROCESS_TYPE: "silapplication",
     }
 
     supported_types = Union[OpenIndividualLicenceApplication, DFLApplication]
