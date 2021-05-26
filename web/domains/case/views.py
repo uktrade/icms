@@ -21,6 +21,7 @@ from web.models import (
     AccessRequest,
     CertificateOfManufactureApplication,
     DerogationsApplication,
+    DFLApplication,
     ExportApplication,
     ExporterAccessRequest,
     FirearmsAuthority,
@@ -1151,6 +1152,9 @@ def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> H
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
         return _view_com(request, application.certificateofmanufactureapplication)
 
+    elif application.process_type == DFLApplication.PROCESS_TYPE:
+        return _view_dfl(request, application.dflapplication)
+
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
@@ -1207,6 +1211,23 @@ def _view_derogations(request: HttpRequest, application: DerogationsApplication)
     }
 
     return render(request, "web/domains/case/import/view_derogations.html", context)
+
+
+def _view_dfl(request: HttpRequest, application: DFLApplication) -> HttpResponse:
+    goods_list = application.goods_certificates.filter(is_active=True).select_related(
+        "issuing_country"
+    )
+    contact_list = application.importcontact_set.all()
+
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "goods_list": goods_list,
+        "contacts": contact_list,
+    }
+
+    return render(request, "web/domains/case/import/fa-dfl/view.html", context)
 
 
 def _view_accessrequest(request: HttpRequest, application: AccessRequest) -> HttpResponse:

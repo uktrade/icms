@@ -1,0 +1,47 @@
+{% extends "web/domains/case/import/view_case.html" %}
+
+{% block css %}
+  {{ super() }}
+  <style>
+      /** Override the default styling for the checkbox */
+      input[type='checkbox'].disabled-cb {
+          position: relative;
+          top: 0;
+      }
+  </style>
+{% endblock %}
+
+{% block main_content %}
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call application_section("Firearms and Ammunition (Deactivated Firearms Licence)") %}
+    {{ application_field(process.applicant_reference, "Applicant's Reference", "N/a") }}
+    <dt class="bold">Firearms Licence for</dt>
+    <dd>
+      <input class="disabled-cb" type="checkbox" aria-label="Deactivated Firearm" checked="checked" disabled="disabled"> Deactivated Firearm
+    </dd>
+    <dt class="bold">Proof checked</dt>
+    <dd>
+      <input class="disabled-cb" type="checkbox" aria-label="Deactivated Firearm" checked="checked" disabled="disabled"> I confirm that this firearm has been proof marked as required by UK or EU law where applicable.
+    </dd>
+    {{ application_field(process.origin_country, "Country Of Origin") }}
+    {{ application_field(process.consignment_country, "Country Of Consignment") }}
+  {% endcall %}
+
+  {% call application_section("Goods") %}
+    {{ application_field(process.commodity_code, "Commodity Code") }}
+    {{ application_field(process.constabulary, "Constabulary") }}
+  {% endcall %}
+
+  {% with read_only = True %}
+    {% include "partial/case/import/fa-dfl/goods-list.html" %}
+  {% endwith %}
+
+  <h4>Details of who bought from</h4>
+  {% with read_only = True %}
+    {% include "partial/import-contacts/list.html" %}
+  {% endwith %}
+
+{% endblock %}
