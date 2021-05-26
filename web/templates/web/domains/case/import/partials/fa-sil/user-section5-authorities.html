@@ -1,0 +1,53 @@
+{% if user_section5 %}
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>Document Type</th>
+        <th>Uploaded By</th>
+        <th>File (size)</th>
+        {% if not read_only %}
+          <th>Action</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for section in user_section5 %}
+        <tr>
+          <td>Section 5 Authority</td>
+          <td>
+            {{ section.created_by.full_name }}<br />
+            {{ section.created_datetime.strftime('%d-%b-%Y') }}
+          </td>
+          <td>
+            <a
+              href="{{ icms_url('import:fa-sil:view-section5-document', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+              {{ section.filename }}
+            </a>
+            {{ section.human_readable_file_size() }}
+          </td>
+          {% if not read_only %}
+            <td>
+              <form method="post"
+                    action="{{ icms_url('import:fa-sil:archive-section5-document', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+                {{ csrf_input }}
+                <button type="submit" class="link-button icon-bin button">Delete</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="info-box info-box-info">
+    There are no Section 5 documents attached.
+  </div>
+{% endif %}
+
+{% if not read_only %}
+  <a
+    class="button small-button"
+    href="{{ icms_url('import:fa-sil:add-section5-document', kwargs={'application_pk': process.pk}) }}">
+    Add Section 5 Authority
+  </a>
+{% endif %}

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 from web.domains.file.models import File
 from web.domains.importer.models import Importer
@@ -7,11 +8,20 @@ from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 
+class Section5AuthorityManager(models.Manager):
+    def currently_active(self):
+        today = timezone.now().date()
+
+        return self.filter(is_active=True, start_date__gte=today, end_date__lte=today)
+
+
 class Section5Authority(models.Model):
     # Address Entry type
     MANUAL = "MANUAL"
     SEARCH = "SEARCH"
     ENTRY_TYPES = ((MANUAL, "Manual"), (SEARCH, "Search"))
+
+    objects = Section5AuthorityManager()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     reference = models.CharField(

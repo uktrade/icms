@@ -54,10 +54,25 @@
 
   <p>
     <a
-      href="{{ icms_url('import:fa-sil:choose-goods-section', kwargs={'pk': process.pk}) }}"
+      href="{{ icms_url('import:fa-sil:choose-goods-section', kwargs={'application_pk': process.pk}) }}"
       class="button button-small">
       Add Goods Item
     </a>
   </p>
 
+  <h4>Certificates/Documents</h4>
+  {# TODO: Verified firearms authorities ICMLST-554 #}
+  {# TODO: Other certificates or user certificates ICMLST-554 #}
+
+  <h5>Section 5 Authorities</h5>
+  {% if verified_section5 %}
+    {% with read_only = False %}
+      {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
+    {% endwith %}
+  {% else %}
+    <p class="strong">Please upload any Section 5 Authority Document(s) below</p>
+    {% with read_only = False %}
+      {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
+    {% endwith %}
+  {% endif %}
 {% endblock %}

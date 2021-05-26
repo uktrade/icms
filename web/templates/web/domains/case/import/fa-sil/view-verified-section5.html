@@ -1,0 +1,152 @@
+{% extends "flow/task-base.html" %}
+
+{% block sidebar %}
+  {% include "partial/case/import/fa-sil/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ icms_url('import:fa-sil:edit', kwargs={'application_pk': process.pk}) }}"
+        class="prev-link">
+        Main Application
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Verified Section5 Authority</h3>
+  <div class="container">
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Reference</label>
+      </div>
+      <div class="six columns">
+        {{ section5.reference or "" }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Address</label>
+      </div>
+      <div class="six columns">
+        {{ section5.address|nl2br }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Postcode</label>
+      </div>
+      <div class="six columns">
+        {{ section5.postcode }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Start Date</label>
+      </div>
+      <div class="six columns">
+        {{ section5.start_date.strftime('%d-%b-%Y') }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">End Date</label>
+      </div>
+      <div class="six columns">
+        {{ section5.end_date.strftime('%d-%b-%Y') }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Authority Details</label>
+      </div>
+      <div class="six columns">
+        <table class="setoutList">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Quantity</th>
+          </thead>
+          <tbody>
+            {% for clause in section5.clausequantity_set.all() %}
+              <tr>
+                <td>{{ clause.section5clause.clause }}</td>
+                <td>
+                  {% if clause.infinity %}
+                    Unlimited
+                  {% else %}
+                    {{ clause.quantity }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="2">
+                  <div class="info-box info-box-info">
+                    There are no section 5 clause attached
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <h3>Documents</h3>
+
+    {% if section5.files.active() %}
+      <table class="setoutList">
+        <thead>
+          <tr>
+            <th scope="col">Document Type</th>
+            <th scope="col">Uploaded By</th>
+            <th scope="col">File (Size)</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for document in section5.files.active() %}
+          <tr>
+            <td>
+               Verified Section 5 Authority
+            </td>
+            <td>
+              {{ document.created_by }}<br />
+              <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+            </td>
+            <td>
+              <a
+                href="{{ icms_url('import:fa-sil:view-verified-section5-document', kwargs={'application_pk': process.pk, 'document_pk': document.pk}) }}">
+                {{ document.filename }}
+              </a>
+              <br />
+              <span class="extra-info">{{ document.human_readable_file_size() }}</span>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+    {% else %}
+      <div class="info-box info-box-info">
+        There are no documents attached
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

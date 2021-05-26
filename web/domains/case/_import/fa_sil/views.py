@@ -1,15 +1,17 @@
 from typing import NamedTuple, Type, Union
 
-from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
+from web.domains.case import forms as case_forms
+from web.domains.case import views as case_views
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.validation import (
@@ -164,6 +166,43 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
+    importer_has_section5 = application.importer.section5_authorities.currently_active().exists()
+    selected_section5 = application.verified_section5.currently_active().exists()
+
+    # Verified Section 5
+    if application.section5 and importer_has_section5 and not selected_section5:
+        section_errors = PageErrors(
+            page_name="Application Details - Certificates - Section 5", url=edit_url
+        )
+        section_errors.add(
+            FieldError(
+                field_name="Verified Section 5 Authorities",
+                messages=[
+                    "Please ensure you have selected at least one verified Section 5 Authority"
+                ],
+            )
+        )
+        errors.add(section_errors)
+
+    # User Section 5
+    if (
+        application.section5
+        and not importer_has_section5
+        and not application.user_section5.filter(is_active=True).exists()
+    ):
+        section_errors = PageErrors(
+            page_name="Application Details - Documents - Section 5", url=edit_url
+        )
+        section_errors.add(
+            FieldError(
+                field_name="Section 5 Authorities",
+                messages=[
+                    "Please ensure you have uploaded at least one Section 5 Authority document."
+                ],
+            )
+        )
+        errors.add(section_errors)
+
     # Select existing certificate errors
     # TODO: implement ICMSLST-476
 
@@ -173,24 +212,18 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     # Check know bought from
     # TODO: implement ICMSLST-676
 
-    # Add section 5 authorities
-    # TODO: implement ICMSLST-658
-
     return errors
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
+        case_views.check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         if request.POST:
             form = forms.PrepareSILForm(data=request.POST, instance=application)
@@ -205,11 +238,20 @@ def edit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         else:
             form = forms.PrepareSILForm(instance=application, initial={"contact": request.user})
 
+        verified_section5 = application.importer.section5_authorities.currently_active()
+        available_verified_section5 = verified_section5.exclude(
+            pk__in=application.verified_section5.all()
+        )
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
+            "user_section5": application.user_section5.filter(is_active=True),
+            "verified_section5": verified_section5,
+            "available_verified_section5": available_verified_section5,
+            "selected_section5": application.verified_section5.all(),
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit",
         }
 
@@ -217,17 +259,14 @@ def edit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def choose_goods_section(request: HttpRequest, *, pk: int) -> HttpResponse:
+def choose_goods_section(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
-            models.SILApplication.objects.select_for_update(), pk=pk
+            models.SILApplication.objects.select_for_update(), pk=application_pk
         )
+        case_views.check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -240,19 +279,18 @@ def choose_goods_section(request: HttpRequest, *, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_section(request: HttpRequest, application_pk: int, sil_section_type: str) -> HttpResponse:
+def add_section(
+    request: HttpRequest, *, application_pk: int, sil_section_type: str
+) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
+        case_views.check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         config = _get_sil_section_app_config(sil_section_type)
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         if request.POST:
             form = config.form_class(request.POST)
@@ -280,9 +318,9 @@ def add_section(request: HttpRequest, application_pk: int, sil_section_type: str
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_section(
     request: HttpRequest,
+    *,
     application_pk: int,
     sil_section_type: str,
     section_pk: int,
@@ -291,13 +329,11 @@ def edit_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
+        case_views.check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
         goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         if request.POST:
             form = config.form_class(request.POST, instance=goods)
@@ -319,22 +355,19 @@ def edit_section(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 @require_POST
 def delete_section(
-    request: HttpRequest, application_pk: int, sil_section_type: str, section_pk: int
+    request: HttpRequest, *, application_pk: int, sil_section_type: str, section_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
+        case_views.check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
         goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
         application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         goods.is_active = False
         goods.save()
@@ -343,15 +376,14 @@ def delete_section(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit(request: HttpRequest, pk: int) -> HttpResponse:
+def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(models.SILApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         errors = _get_sil_errors(application)
 
@@ -393,3 +425,153 @@ def submit(request: HttpRequest, pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/case/import/fa-sil/submit.html", context)
+
+
+@login_required
+def add_section5_document(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = case_forms.DocumentForm(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
+
+                create_file_model(document, request.user, application.user_section5)
+
+                return redirect(
+                    reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk})
+                )
+        else:
+            form = case_forms.DocumentForm()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Firearms and Ammunition (Specific Import Licence) - Create Section 5",
+        }
+
+        return render(request, "web/domains/case/import/fa-sil/add-section5-document.html", context)
+
+
+@require_POST
+@login_required
+def archive_section5_document(
+    request: HttpRequest, *, application_pk: int, section5_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        document = application.user_section5.get(pk=section5_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+
+
+@require_GET
+@login_required
+def view_section5_document(
+    request: HttpRequest, *, application_pk: int, section5_pk: int
+) -> HttpResponse:
+    application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
+    get_object_or_404(application.user_section5, pk=section5_pk)
+
+    return case_views.view_application_file(
+        request.user, application, application.user_section5, section5_pk, "import"
+    )
+
+
+@login_required
+@require_POST
+def add_verified_section5(
+    request: HttpRequest, *, application_pk: int, section5_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
+        section5 = get_object_or_404(
+            application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        application.verified_section5.add(section5)
+
+        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+
+
+@login_required
+@require_POST
+def delete_verified_section5(
+    request: HttpRequest, *, application_pk: int, section5_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
+        section5 = get_object_or_404(application.verified_section5, pk=section5_pk)
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        application.verified_section5.remove(section5)
+
+        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+
+
+@login_required
+def view_verified_section5(
+    request: HttpRequest, *, application_pk: int, section5_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        case_views.check_application_permission(application, request.user, "import")
+        section5 = get_object_or_404(
+            application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Firearms and Ammunition (Specific Import Licence) - View Verified Section 5",
+            "section5": section5,
+        }
+
+        return render(
+            request, "web/domains/case/import/fa-sil/view-verified-section5.html", context
+        )
+
+
+@require_GET
+@login_required
+def view_verified_section5_document(
+    request: HttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    application = get_object_or_404(models.SILApplication, pk=application_pk)
+    section5 = get_object_or_404(
+        application.importer.section5_authorities.filter(is_active=True), files__pk=document_pk
+    )
+
+    return case_views.view_application_file(
+        request.user, application, section5.files, document_pk, "import"
+    )

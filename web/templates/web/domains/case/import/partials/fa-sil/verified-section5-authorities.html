@@ -1,0 +1,112 @@
+{% if verified_section5 %}
+  {% if available_verified_section5 %}
+    <div class="info-box info-box-info">
+      Please select your verified authorities from the list below. Contact the Home Office if
+      the correct authority is not listed and request that they verify it on ICMS.
+    </div>
+
+    <h6>Available Verified Section 5</h6>
+
+    <table class="setoutList">
+      <thead>
+        <tr>
+          {% if not read_only %}
+            <th></th>
+          {% endif %}
+          <th>Reference</th>
+          <th>Address</th>
+          <th>Postcode</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          {% if not read_only %}
+            <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for section in available_verified_section5 %}
+          <tr>
+            {% if not read_only %}
+              <td>
+                <form
+                  method="POST"
+                  action="{{ icms_url('import:fa-sil:add-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+                  {{ csrf_input }}
+                  <input type="submit" class="button small-button" value="Select" />
+                </form>
+              </td>
+            {% endif %}
+            <td>{{ section.reference }}</td>
+            <td>{{ section.address|nl2br }}</td>
+            <td>{{ section.postcode }}</td>
+            <td>{{ section.start_date.strftime('%d-%b-%Y') }}</td>
+            <td>{{ section.end_date.strftime('%d-%b-%Y') }}</td>
+            {% if not read_only %}
+              <td>
+                <a
+                  href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+                View Details
+                </a>
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if selected_section5 %}
+    <h6>Selected Verified Section 5</h6>
+    <table class="setoutList">
+      <thead>
+        <tr>
+          {% if not read_only %}
+            <th></th>
+          {% endif %}
+          <th>Reference</th>
+          <th>Address</th>
+          <th>Postcode</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          {% if not read_only %}
+            <th>Actions</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for section in selected_section5 %}
+          <tr>
+            {% if not read_only %}
+              <td>
+                <form
+                  method="POST"
+                  action="{{ icms_url('import:fa-sil:delete-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+                  {{ csrf_input }}
+                  <input type="submit" class="button small-button" value="Remove" />
+                </form>
+              </td>
+            {% endif %}
+            <td>{{ section.reference }}</td>
+            <td>{{ section.address|nl2br }}</td>
+            <td>{{ section.postcode }}</td>
+            <td>{{ section.start_date.strftime('%d-%b-%Y') }}</td>
+            <td>{{ section.end_date.strftime('%d-%b-%Y') }}</td>
+            {% if not read_only %}
+              <td>
+                <a
+                  href="{{ icms_url('import:fa-sil:view-verified-section5', kwargs={'application_pk': process.pk, 'section5_pk': section.pk}) }}">
+                View Details
+                </a>
+              </td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+{% else %}
+  <div class="info-box info-box-info">
+    There are no Verified Section 5 Authorities
+  </div>
+{% endif %}

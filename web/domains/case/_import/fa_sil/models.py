@@ -1,6 +1,13 @@
 from django.db import models
 
+from web.domains.file.models import File
+from web.domains.section5.models import Section5Authority
+
 from ..models import ImportApplication
+
+
+class SILUserSection5(File):
+    """User uploaded section 5 documents."""
 
 
 class SILApplication(ImportApplication):
@@ -36,6 +43,10 @@ class SILApplication(ImportApplication):
 
     # misc
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
+
+    # section 5
+    user_section5 = models.ManyToManyField(SILUserSection5, related_name="+")
+    verified_section5 = models.ManyToManyField(Section5Authority, related_name="+")
 
 
 class SILGoodsSection1(models.Model):

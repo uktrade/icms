@@ -12,6 +12,23 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name="SILUserSection5",
+            fields=[
+                (
+                    "file_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.file",
+                    ),
+                ),
+            ],
+            bases=("web.file",),
+        ),
+        migrations.CreateModel(
             name="SILApplication",
             fields=[
                 (
@@ -54,6 +71,14 @@ class Migration(migrations.Migration):
                 ("commodity_code", models.CharField(max_length=40, null=True)),
                 ("know_bought_from", models.BooleanField(null=True)),
                 ("additional_comments", models.CharField(blank=True, max_length=4000, null=True)),
+                (
+                    "user_section5",
+                    models.ManyToManyField(related_name="+", to="web.SILUserSection5"),
+                ),
+                (
+                    "verified_section5",
+                    models.ManyToManyField(related_name="+", to="web.Section5Authority"),
+                ),
             ],
             bases=("web.importapplication",),
         ),
