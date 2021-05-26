@@ -6,8 +6,12 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.forms import DocumentForm
+from web.domains.case.views import view_application_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
@@ -44,15 +48,17 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 instance=application, initial={"contact": request.user}
             )
 
+        supporting_documents = application.supporting_documents.filter(is_active=True)
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit",
+            "supporting_documents": supporting_documents,
         }
 
-        # TODO: ICMSLST-593 implement
         return render(request, "web/domains/case/import/opt/edit.html", context)
 
 
@@ -100,7 +106,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         else:
             form = SubmitOutwardProcessingTradeForm()
 
-        # TODO: ICMSLST-593 what template to use?
+        # TODO: ICMSLST-599 what template to use?
         declaration = Template.objects.filter(
             is_active=True,
             template_type=Template.DECLARATION,
@@ -118,4 +124,78 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/wood/submit.html", context)
+        return render(request, "web/domains/case/import/opt/submit.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def add_supporting_document(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if request.POST:
+            form = DocumentForm(data=request.POST, files=request.FILES)
+            document = request.FILES.get("document")
+
+            if form.is_valid():
+                create_file_model(document, request.user, application.supporting_documents)
+
+                return redirect(
+                    reverse("import:opt:edit", kwargs={"application_pk": application_pk})
+                )
+        else:
+            form = DocumentForm()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Outward Processing Trade Licence - Add supporting document",
+        }
+
+        return render(request, "web/domains/case/import/opt/add_supporting_document.html", context)
+
+
+@require_GET
+@login_required
+def view_supporting_document(
+    request: HttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    application: OutwardProcessingTradeApplication = get_object_or_404(
+        OutwardProcessingTradeApplication, pk=application_pk
+    )
+
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk, "import"
+    )
+
+
+@require_POST
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def delete_supporting_document(
+    request: HttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        document = application.supporting_documents.get(pk=document_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(reverse("import:opt:edit", kwargs={"application_pk": application_pk}))

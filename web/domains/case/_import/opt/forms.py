@@ -1,13 +1,24 @@
 from django import forms
 
+from web.domains.user.models import User
+
 from . import models
 
 
 # TODO: ICMSLST-593 implement
 class EditOutwardProcessingTradeForm(forms.ModelForm):
+    # TODO: filter users here correctly (users with access to the importer)
+    contact = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
+    )
+
     class Meta:
         model = models.OutwardProcessingTradeApplication
-        fields = ("contact",)
+        fields = (
+            "contact",
+            "applicant_reference",
+        )
 
 
 class SubmitOutwardProcessingTradeForm(forms.Form):

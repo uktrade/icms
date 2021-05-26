@@ -1,0 +1,49 @@
+{% if supporting_documents %}
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Document type</th>
+      <th>Uploaded by</th>
+      <th>File (size)</th>
+      {% if not read_only %}
+        <th>Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for file in supporting_documents %}
+      <tr>
+        <td>Supporting documents</td>
+        <td>
+          {{ file.created_by.full_name }}<br>
+          {{ file.created_datetime.strftime('%d-%b-%Y %H:%M') }}
+        </td>
+        <td>
+          <a
+            href="{{ icms_url('import:opt:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+            {{ file.filename }}</a> {{ file.human_readable_file_size() }}
+        </td>
+        {% if not read_only %}
+          <td>
+            <form method="post"
+                  action="{{ icms_url('import:opt:delete-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+              {{ csrf_input }}
+              <button type="submit" class="link-button icon-bin button">Delete</button>
+            </form>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="info-box info-box-info">
+    There are no supporting documents attached
+  </div>
+{% endif %}
+
+{% if not read_only %}
+  <a class="button small-button"
+     href="{{ icms_url('import:opt:add-supporting-document', kwargs={'application_pk': process.pk}) }}">Add
+    supporting document</a>
+{% endif %}

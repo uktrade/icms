@@ -1,0 +1,42 @@
+{% extends "flow/task-base.html" %}
+ {% import "forms/forms.html" as forms %}
+ {% import "forms/fields.html" as fields %}
+
+ {% block sidebar %}
+     {% include "partial/case/import/opt/sidebar.html" %}
+ {% endblock %}
+
+ {% block main_content %}
+   {% block task_details %}
+     {{ super() }}
+   {% endblock %}
+
+   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+     <h4>Contact</h4>
+     {{ fields.field(form.contact) }}
+
+     <h4>Outward Processing Trade</h4>
+     {{ fields.field(form.applicant_reference) }}
+
+     <p>TODO: ICMLST-593 add rest of fields</p>
+
+     <h4>Compensating Products</h4>
+     <p>TODO: ICMLST-594 add this section</p>
+
+     <h4>Temporary Exported Goods</h4>
+     <p>TODO: ICMLST-596 add this section</p>
+
+     <h4>Further Questions</h4>
+     <p>TODO: ICMLST-598 add this section (maybe move to its own page?)</p>
+
+     <input type="submit" name="action" class="primary-button button" value="Save" />
+  {% endcall %}
+
+   <h4>Supporting documents</h4>
+   <p class="bold">Please provide any further supporting documents regarding this application.</p>
+   <p>This may include invoices, evidence of past trade, or contracts.</p>
+   {% with read_only = false %}
+     {% include "web/domains/case/import/partials/opt/supporting_documents_list.html" %}
+   {% endwith %}
+
+{% endblock %}
