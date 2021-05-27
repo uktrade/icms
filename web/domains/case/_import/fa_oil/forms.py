@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django_select2 import forms as s2forms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -118,25 +119,19 @@ class SubmitOILForm(forms.Form):
         return confirmation
 
 
-class ChecklistFirearmsOILApplicationForm(forms.ModelForm):
+class ChecklistFirearmsOILApplicationForm(ChecklistBaseForm):
     class Meta:
         model = models.ChecklistFirearmsOILApplication
+
         fields = (
             "authority_required",
             "authority_received",
             "authority_police",
-            "case_update",
-            "fir_required",
-            "response_preparation",
-            "validity_match",
-            "endorsements_listed",
-            "authorisation",
-        )
+        ) + ChecklistBaseForm.Meta.fields
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].required = True
+        labels = {
+            "validity_period_correct": "Validity period of licence matches that of the RFD certificate?",
+        }
 
 
 class ConstabularyEmailForm(forms.ModelForm):

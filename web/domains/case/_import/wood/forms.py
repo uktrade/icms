@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
@@ -135,25 +136,14 @@ class SubmitWoodQuotaForm(forms.Form):
         return confirmation
 
 
-class WoodQuotaChecklistForm(forms.ModelForm):
+class WoodQuotaChecklistForm(ChecklistBaseForm):
     class Meta:
         model = models.WoodQuotaChecklist
-
-        fields = (
-            "sigl_wood_application_logged",
-            "case_update",
-            "fir_required",
-            "response_preparation",
-            "validity_period_correct",
-            "endorsements_listed",
-            "authorisation",
-        )
+        fields = ("sigl_wood_application_logged",) + ChecklistBaseForm.Meta.fields
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        for field in ["sigl_wood_application_logged", "response_preparation", "authorisation"]:
-            self.fields[field].required = True
+        self.fields["sigl_wood_application_logged"].required = True
 
 
 class GoodsWoodQuotaLicenceForm(forms.ModelForm):

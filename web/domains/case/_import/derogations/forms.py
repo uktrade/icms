@@ -1,6 +1,7 @@
 from django import forms
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
@@ -116,25 +117,11 @@ class SubmitDerogationsForm(forms.Form):
         return confirmation
 
 
-class DerogationsChecklistForm(forms.ModelForm):
+class DerogationsChecklistForm(ChecklistBaseForm):
     class Meta:
         model = DerogationsChecklist
 
-        fields = (
-            "supporting_document_received",
-            "case_update",
-            "fir_required",
-            "response_preparation",
-            "validity_period_correct",
-            "endorsements_listed",
-            "authorisation",
-        )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for field in self.fields:
-            self.fields[field].required = True
+        fields = ("supporting_document_received",) + ChecklistBaseForm.Meta.fields
 
 
 class GoodsDerogationsLicenceForm(forms.ModelForm):

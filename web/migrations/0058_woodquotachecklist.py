@@ -21,13 +21,6 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "sigl_wood_application_logged",
-                    models.BooleanField(
-                        default=False,
-                        verbose_name="Log on to SIGL Wood via this screen. Processing done on SIGL Wood.",
-                    ),
-                ),
-                (
                     "case_update",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
@@ -78,6 +71,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "sigl_wood_application_logged",
+                    models.BooleanField(
+                        default=False,
+                        verbose_name="Log on to SIGL Wood via this screen. Processing done on SIGL Wood.",
+                    ),
+                ),
+                (
                     "import_application",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
@@ -86,5 +86,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
+            options={
+                "abstract": False,
+            },
         ),
     ]

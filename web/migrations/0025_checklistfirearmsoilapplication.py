@@ -21,41 +21,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "authority_required",
-                    models.CharField(
-                        blank=True,
-                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
-                        null=True,
-                        verbose_name="Authority to possess required?",
-                    ),
-                ),
-                (
-                    "authority_received",
-                    models.CharField(
-                        blank=True,
-                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
-                        null=True,
-                        verbose_name="Authority to possess received?",
-                    ),
-                ),
-                (
-                    "authority_police",
-                    models.CharField(
-                        blank=True,
-                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
-                        null=True,
-                        verbose_name="Authority to possess checked with police?",
-                    ),
-                ),
-                (
                     "case_update",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Case update required from applicant?",
                     ),
@@ -63,9 +32,8 @@ class Migration(migrations.Migration):
                 (
                     "fir_required",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Further information request required?",
                     ),
@@ -78,21 +46,19 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "validity_match",
+                    "validity_period_correct",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
-                        verbose_name="Validity period of licence matches that of the RFD certificate?",
+                        verbose_name="Validity period correct?",
                     ),
                 ),
                 (
                     "endorsements_listed",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
                     ),
@@ -105,6 +71,33 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "authority_required",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        max_length=10,
+                        null=True,
+                        verbose_name="Authority to possess required?",
+                    ),
+                ),
+                (
+                    "authority_received",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        max_length=10,
+                        null=True,
+                        verbose_name="Authority to possess received?",
+                    ),
+                ),
+                (
+                    "authority_police",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        max_length=10,
+                        null=True,
+                        verbose_name="Authority to possess checked with police?",
+                    ),
+                ),
+                (
                     "import_application",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
@@ -113,5 +106,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
+            options={
+                "abstract": False,
+            },
         ),
     ]

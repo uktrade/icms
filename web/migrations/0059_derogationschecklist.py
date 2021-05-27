@@ -21,21 +21,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "supporting_document_received",
-                    models.CharField(
-                        blank=True,
-                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
-                        null=True,
-                        verbose_name="Supporting documentation received?",
-                    ),
-                ),
-                (
                     "case_update",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Case update required from applicant?",
                     ),
@@ -43,9 +32,8 @@ class Migration(migrations.Migration):
                 (
                     "fir_required",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Further information request required?",
                     ),
@@ -60,9 +48,8 @@ class Migration(migrations.Migration):
                 (
                     "validity_period_correct",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Validity period correct?",
                     ),
@@ -70,9 +57,8 @@ class Migration(migrations.Migration):
                 (
                     "endorsements_listed",
                     models.CharField(
-                        blank=True,
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
                     ),
@@ -85,6 +71,15 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "supporting_document_received",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        max_length=10,
+                        null=True,
+                        verbose_name="Supporting documentation received?",
+                    ),
+                ),
+                (
                     "import_application",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.PROTECT,
@@ -93,5 +88,8 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
+            options={
+                "abstract": False,
+            },
         ),
     ]

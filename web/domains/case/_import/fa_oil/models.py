@@ -4,7 +4,7 @@ from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.firearms.models import FirearmsAuthority
 
-from ..models import ImportApplication
+from ..models import ChecklistBase, ImportApplication
 
 
 class UserImportCertificate(File):
@@ -87,72 +87,26 @@ class VerifiedCertificate(models.Model):
     updated_datetime = models.DateTimeField(auto_now=True)
 
 
-# FIXME: Refactor to use base class
-class ChecklistFirearmsOILApplication(models.Model):
+class ChecklistFirearmsOILApplication(ChecklistBase):
     import_application = models.ForeignKey(
         OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklists"
     )
 
-    class Response(models.TextChoices):
-        yes = ("yes", "Yes")
-        no = ("no", "No")
-        not_applicable = ("n/a", "N/A")
-
     authority_required = models.CharField(
         max_length=10,
-        choices=Response.choices,
-        blank=True,
+        choices=ChecklistBase.Response.choices,
         null=True,
         verbose_name="Authority to possess required?",
     )
     authority_received = models.CharField(
         max_length=10,
-        choices=Response.choices,
-        blank=True,
+        choices=ChecklistBase.Response.choices,
         null=True,
         verbose_name="Authority to possess received?",
     )
     authority_police = models.CharField(
         max_length=10,
-        choices=Response.choices,
-        blank=True,
+        choices=ChecklistBase.Response.choices,
         null=True,
         verbose_name="Authority to possess checked with police?",
-    )
-    case_update = models.CharField(
-        max_length=10,
-        choices=Response.choices,
-        blank=True,
-        null=True,
-        verbose_name="Case update required from applicant?",
-    )
-    fir_required = models.CharField(
-        max_length=10,
-        choices=Response.choices,
-        blank=True,
-        null=True,
-        verbose_name="Further information request required?",
-    )
-    response_preparation = models.BooleanField(
-        default=False,
-        verbose_name="Response Preparation - approve/refuse the request, edit details if necessary",
-    )
-    # FIXME: Rename Has different db name and verbose name (validity_period_correct & "Validity period correct?")
-    validity_match = models.CharField(
-        max_length=10,
-        choices=Response.choices,
-        blank=True,
-        null=True,
-        verbose_name="Validity period of licence matches that of the RFD certificate?",
-    )
-    endorsements_listed = models.CharField(
-        max_length=10,
-        choices=Response.choices,
-        blank=True,
-        null=True,
-        verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
-    )
-    authorisation = models.BooleanField(
-        default=False,
-        verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
     )
