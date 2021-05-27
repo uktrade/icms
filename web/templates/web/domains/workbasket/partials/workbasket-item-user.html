@@ -1,11 +1,9 @@
-<!-- TODO: rework this when workbaset is redone, but for now this will make it
-clearer what are admin actions and what are applicant actions -->
-<br>
-<p>Applicant</p>
-
 {% if process.process_type in ["ImporterAccessRequest", "ExporterAccessRequest"] %}
+  <!-- TODO: ICMSLST-701 adapt to new workbasket -->
   <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">View</a>
   <br>
+
+  <!-- TODO: ICMSLST-703 adapt to new workbasket -->
   {% for fir in process.further_information_requests.open() %}
     <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
       Respond FIR
@@ -14,58 +12,29 @@ clearer what are admin actions and what are applicant actions -->
   {% endfor %}
 
 {% elif process.process_type == "ImporterApprovalRequest" %}
+  <!-- TODO: ICMSLST-702 adapt to new workbasket -->
   {% if not process.requested_from %}
     <form method="post" action="{{ icms_url('access:case-approval-take-ownership', args=[process.pk, 'importer']) }}">
       <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
       <button type="submit" class="button link-button-no-padding">Take Ownership</button>
     </form>
     <br>
-    {% else %}
+  {% else %}
     <a href="{{ icms_url('access:case-approval-respond', args=[process.access_request.importeraccessrequest.pk, 'importer', object.pk]) }}">Manage</a>
     <br>
-    {% endif %}
+  {% endif %}
 
 {% elif process.process_type == "ExporterApprovalRequest" %}
+  <!-- TODO: ICMSLST-702 adapt to new workbasket -->
   {% if not process.requested_from %}
     <form method="post" action="{{ icms_url('access:case-approval-take-ownership', args=[process.pk, 'exporter']) }}">
       <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
       <button type="submit" class="button link-button-no-padding">Take Ownership</button>
     </form>
     <br>
-    {% else %}
+  {% else %}
     <a href="{{ icms_url('access:case-approval-respond', args=[process.access_request.exporteraccessrequest.pk, 'exporter', process.pk]) }}">Manage</a>
     <br>
-    {% endif %}
+  {% endif %}
 
-{% elif process.process_type in [
-    "DerogationsApplication",
-    "OpenIndividualLicenceApplication",
-    "WoodQuotaApplication",
-    "SanctionsAndAdhocApplication",
-    "CertificateOfManufactureApplication",
-    "DFLApplication",
-    "OutwardProcessingTradeApplication"
-    ]
-  %}
-  {% if process.status == "SUBMITTED" %}
-    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
-    <br>
-    <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Withdraw</a>
-    <br>
-    {% for fir in process.further_information_requests.open() %}
-      <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}">
-        Respond FIR
-      </a>
-      <br>
-    {% endfor %}
-  {% elif process.status == "WITHDRAWN" %}
-    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
-    <br>
-    <a href="{{ icms_url('case:withdraw-case', kwargs={'application_pk': process.pk, 'case_type': case_type }) }}">Pending Withdrawal</a>
-    <br>
-    {% elif process.status == "IN_PROGRESS" %}
-    {# TODO: Fix this for importer and exporter applications #}
-    <a href="#">Resume</a>
-    <br>
-    {% endif %}
 {% endif %}

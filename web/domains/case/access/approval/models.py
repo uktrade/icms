@@ -10,6 +10,7 @@ from web.flow.models import Process
 from ..models import AccessRequest
 
 
+# TODO: ICMSLST-702 adapt to new workbasket
 class ApprovalRequest(WorkbasketBase, Process):
     """
     Approval request for submitted access requests.
@@ -69,6 +70,7 @@ class ApprovalRequest(WorkbasketBase, Process):
     def is_complete(self):
         return self.status == self.COMPLETED
 
+    # TODO: ICMSLST-702 adapt to new workbasket
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/approval-request.html"
 
@@ -76,9 +78,11 @@ class ApprovalRequest(WorkbasketBase, Process):
         ordering = ("-request_date",)
 
 
+# TODO: ICMSLST-702 adapt to new workbasket
 class ExporterApprovalRequest(ApprovalRequest):
     PROCESS_TYPE = "ExporterApprovalRequest"
 
 
+# TODO: ICMSLST-702 adapt to new workbasket
 class ImporterApprovalRequest(ApprovalRequest):
     PROCESS_TYPE = "ImporterApprovalRequest"

@@ -1,9 +1,10 @@
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
+from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
 from web.flow.models import Process
 
 CASE_NOTE_DRAFT = "DRAFT"
@@ -206,3 +207,129 @@ class ApplicationBase(WorkbasketBase, Process):
 
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
     refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+
+    def is_import_application(self) -> bool:
+        raise NotImplementedError
+
+    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+        """Get data to show in the workbasket."""
+
+        r = WorkbasketRow()
+
+        # TODO: use self.reference once that's properly filled in
+        r.reference = self.pk
+
+        # TODO: do something better (process.get_summary()?)
+        r.subject = self.process_type
+
+        r.timestamp = self.created
+
+        r.status = self.get_status_display()
+
+        # TODO: this was harcoded in the template, no idea what this should be
+        r.information = "Application Processing"
+
+        if self.is_import_application():
+            r.company = self.importer
+            case_type = "import"
+        else:
+            r.company = self.exporter
+            case_type = "export"
+
+        # common kwargs
+        kwargs = {"application_pk": self.pk, "case_type": case_type}
+
+        view_action = WorkbasketAction(
+            is_post=False, name="View", url=reverse("case:view", kwargs=kwargs)
+        )
+
+        task = self.get_active_task()
+
+        if user.has_perm("web.reference_data_access"):
+            admin_actions: list[WorkbasketAction] = []
+
+            if self.status in [self.SUBMITTED, self.WITHDRAWN]:
+                if not self.case_owner:
+                    admin_actions.append(
+                        WorkbasketAction(
+                            is_post=True,
+                            name="Take Ownership",
+                            url=reverse("case:take-ownership", kwargs=kwargs),
+                        ),
+                    )
+
+                    admin_actions.append(view_action)
+
+                elif (self.case_owner == user) and task and task.task_type == "process":
+                    admin_actions.append(
+                        WorkbasketAction(
+                            is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
+                        )
+                    )
+                else:
+                    admin_actions.append(view_action)
+
+            elif self.status == self.PROCESSING:
+                # TODO: implement this
+                admin_actions.append(
+                    WorkbasketAction(is_post=False, name="Authorise Documents", url="#TODO")
+                )
+
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="Cancel Authorisation",
+                        url=reverse("case:cancel-authorisation", kwargs=kwargs),
+                    )
+                )
+
+                admin_actions.append(view_action)
+
+            if admin_actions:
+                r.actions.append(admin_actions)
+
+        # TODO: we shouldn't always show the applicant actions, but we need to be able to test the system.
+        if True:
+            applicant_actions: list[WorkbasketAction] = []
+
+            if self.status == self.SUBMITTED:
+                applicant_actions.append(view_action)
+
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Withdraw",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
+
+                for fir in self.further_information_requests.open():
+                    applicant_actions.append(
+                        WorkbasketAction(
+                            is_post=False,
+                            name="Respond FIR",
+                            url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
+                        )
+                    )
+
+            elif self.status == self.WITHDRAWN:
+                applicant_actions.append(view_action)
+
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Pending Withdrawal",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
+
+            elif self.status == self.IN_PROGRESS:
+                # TODO: implement this
+                applicant_actions.append(
+                    WorkbasketAction(is_post=False, name="Resume", url="#TODO")
+                )
+
+            if applicant_actions:
+                r.actions.append(applicant_actions)
+
+        return r

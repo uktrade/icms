@@ -13,6 +13,7 @@ from web.flow.models import Process
 logger = logging.getLogger(__name__)
 
 
+# TODO: ICMSLST-701 adapt to new workbasket
 class AccessRequest(WorkbasketBase, Process):
     APPROVED = "APPROVED"
     REFUSED = "REFUSED"
@@ -62,9 +63,11 @@ class AccessRequest(WorkbasketBase, Process):
 
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
 
+    # TODO: ICMSLST-701 adapt to new workbasket
     def get_workbasket_template(self):
         return "web/domains/workbasket/partials/access-request.html"
 
+    # TODO: ICMSLST-701 adapt to new workbasket
     def get_task_url(self, task, user):
         if task.task_type == "notify":
             return reverse("access:management", kwargs={"pk": self.pk})
@@ -78,6 +81,7 @@ class AccessRequest(WorkbasketBase, Process):
         return None
 
 
+# TODO: ICMSLST-701 adapt to new workbasket
 class ImporterAccessRequest(AccessRequest):
     PROCESS_TYPE = "ImporterAccessRequest"
 
@@ -105,6 +109,7 @@ class ImporterAccessRequest(AccessRequest):
     )
 
 
+# TODO: ICMSLST-701 adapt to new workbasket
 class ExporterAccessRequest(AccessRequest):
     PROCESS_TYPE = "ExporterAccessRequest"
 

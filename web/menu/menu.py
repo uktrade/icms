@@ -24,6 +24,10 @@ def has_view_access(request, view_name):
     if not view_name:
         return True
 
+    # TODO: ICMSLST-705 do this properly somehow (see comment on line 157)
+    if view_name == "workbasket":
+        return True
+
     url = reverse(view_name)
     view = resolve(url).func.view_class()
     view.request = request

@@ -44,7 +44,6 @@ def test_resume_oil_application():
     assert response.status_code == 200
 
     # NOTE: The workbasket action links need refactoring.
-    # See the fix me in this file (we disabled the incorrect link)
-    # icms/web/templates/web/domains/workbasket/partials/workbasket-item-user.html
-    link = '<a href="#">Resume</a>'
+    # See the TODO in this file: web/domains/case/models.py
+    link = '<a href="#TODO">Resume</a>'
     assert link in response.content.decode()

@@ -257,8 +257,8 @@ class ImportApplication(ApplicationBase):
     )
     cover_letter = models.TextField(blank=True, null=True)
 
-    def get_workbasket_template(self):
-        return "web/domains/workbasket/partials/import-case.html"
+    def is_import_application(self) -> bool:
+        return True
 
     @property
     def application_approved(self):

@@ -1,5 +1,4 @@
 from django.db import models
-from django.urls import reverse
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
@@ -145,8 +144,8 @@ class ExportApplication(ApplicationBase):
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
-    def get_workbasket_template(self):
-        return "web/domains/workbasket/partials/export-case.html"
+    def is_import_application(self) -> bool:
+        return False
 
 
 class CertificateOfManufactureApplication(ExportApplication):
@@ -158,15 +157,6 @@ class CertificateOfManufactureApplication(ExportApplication):
     product_name = models.CharField(max_length=1000, blank=False)
     chemical_name = models.CharField(max_length=500, blank=False)
     manufacturing_process = models.TextField(max_length=4000, blank=False)
-
-    def get_task_url(self, task, user):
-        if task.task_type == "prepare":
-            return reverse("export:com-edit", kwargs={"pk": self.pk})
-        elif task.task_type == "process":
-            # TODO: implement when case processing flow is implemented
-            return "/"
-        else:
-            raise Exception(f"Unknown task_type {task.task_type}")
 
 
 # TODO: add certificate of free sale model

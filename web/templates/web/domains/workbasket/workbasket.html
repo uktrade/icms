@@ -134,25 +134,53 @@
 
 
             </thead>
-            {% for process in object_list %}
-              {# TODO: left in place to see what templates they use, remove as these are converted #}
-              {#   {% if process.approval_request %} #}
-              {#     {% include "web/domains/workbasket/partials/approval-request.html" %} #}
-              {#   {% elif process.access_request %} #}
-              {#     {% include "web/domains/workbasket/partials/access-request.html" %} #}
-              {#   {% elif process.parent_process %} #}
-              {#     {% include "web/domains/workbasket/partials/fir.html" %} #}
-              {#   {% endif %} #}
 
-              {% include process.get_workbasket_template() %}
+            {% for row in rows %}
+              <tr>
+                <td>{{ row.reference }}</td>
 
+                <td>{{ row.subject }}</td>
+
+                <td>{{ row.company }}</td>
+
+                <td>
+                  {{ row.status }}
+                  <br>
+                  {{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
+                </td>
+
+                <td>{{ row.information }}</td>
+
+                <td>
+                  {% for action_block in row.actions %}
+                    {% for action in action_block %}
+                      {% if action.is_post %}
+                        <form method="post" action="{{ action.url }}">
+                          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                          <button type="submit" class="button link-button-no-padding">{{ action.name }}</button>
+                        </form>
+                      {% else %}
+                        <a href="{{ action.url }}">{{ action.name }}</a>
+
+                        {% if not loop.last %}
+                          <br>
+                        {% endif %}
+                      {% endif %}
+
+                    {% endfor %}
+
+                    {% if not loop.last %}
+                      <hr>
+                    {% endif %}
+                  {% endfor %}
+                  </td>
+              </tr>
             {% endfor %}
 
         </table>
 
-
         <div class="result-count">
-            12 workbasket items
+            {{ rows|length }} workbasket items
         </div>
 
         <div class="content-actions"></div>

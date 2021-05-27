@@ -29,6 +29,7 @@ class FIRStatuses(models.Manager):
         return self.filter(status__in=[self.model.OPEN, self.model.RESPONDED, self.model.CLOSED])
 
 
+# TODO: ICMSLST-703 adapt to new workbasket -->
 class FurtherInformationRequest(WorkbasketBase, Process):
     """Further information requests for cases requested from
     applicant by case officers"""

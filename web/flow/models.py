@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 from django.conf import settings
 from django.db import models
@@ -61,6 +61,20 @@ class Process(models.Model):
         Useful when soft deleting a process.
         """
         return self.tasks.filter(is_active=True).select_for_update()
+
+    def get_active_task(self) -> "Optional[Task]":
+        """Get the only active task attached to this process. If there is more
+        than one active task, raises an error. If there is no active task,
+        returns None."""
+
+        tasks = self.tasks.filter(is_active=True)
+
+        if len(tasks) == 1:
+            return tasks[0]
+        elif len(tasks) == 0:
+            return None
+        else:
+            raise errors.TaskError(f"Expected one/zero active tasks, got {len(tasks)}")
 
 
 class Task(models.Model):

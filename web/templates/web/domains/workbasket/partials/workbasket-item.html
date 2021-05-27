@@ -1,49 +1,13 @@
-{% if process.process_type in [
-    "OpenIndividualLicenceApplication",
-    "WoodQuotaApplication",
-    "SanctionsAndAdhocApplication",
-    "DerogationsApplication",
-    "CertificateOfManufactureApplication",
-    "DFLApplication",
-    "OutwardProcessingTradeApplication"
-    ] %}
-  {% if process.status in ["SUBMITTED", "WITHDRAWN"] %}
-    {% if not process.case_owner %}
-      <form method="post" action="{{ icms_url('case:take-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
-        <button type="submit" class="button link-button-no-padding">Take Ownership</button>
-      </form>
-      <br>
-      <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
-      <br>
-    {% elif process.case_owner == request.user and task.task_type == "process" %}
-      <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">Manage</a>
-      <br>
-    {% else %}
-      <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
-      <br>
-    {% endif %}
-  {% elif process.status == "PROCESSING" %}
-    <a href="#TODO">Authorise Documents</a>
-    <br>
-    <form method="post" action="{{ icms_url('case:cancel-authorisation', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
-      <button type="submit" class="button link-button-no-padding">Cancel Authorisation</button>
-    </form>
-    <br>
-    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">View</a>
-    <br>
-    {% endif %}
-
-{% elif process.process_type == "ExporterAccessRequest" %}
+<!-- TODO: ICMSLST-701 adapt to new workbasket -->
+{% if process.process_type == "ExporterAccessRequest" %}
   {% if request.user.has_perm("web.reference_data_access") %}
     <a href="{{ icms_url('access:case-management', args=[process.pk, 'exporter']) }}">Manage</a>
     <br>
-    {% endif %}
+  {% endif %}
 
 {% elif process.process_type == "ImporterAccessRequest" %}
   {% if request.user.has_perm("web.reference_data_access") %}
     <a href="{{ icms_url('access:case-management', args=[process.pk, 'importer']) }}">Manage</a>
     <br>
-    {% endif %}
+  {% endif %}
 {% endif %}
