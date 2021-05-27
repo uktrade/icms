@@ -30,6 +30,7 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
+        # TODO: use check_application_permission
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
@@ -72,6 +73,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
+        # TODO: use check_application_permission
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
@@ -137,6 +139,7 @@ def add_supporting_document(request: HttpRequest, *, application_pk: int) -> Htt
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
+        # TODO: use check_application_permission
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 
@@ -191,6 +194,7 @@ def delete_supporting_document(
 
         application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
+        # TODO: use check_application_permission
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
 

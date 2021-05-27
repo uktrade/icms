@@ -1,11 +1,13 @@
+import datetime
+
 from django import forms
 
 from web.domains.user.models import User
+from web.forms.widgets import DateInput
 
 from . import models
 
 
-# TODO: ICMSLST-593 implement
 class EditOutwardProcessingTradeForm(forms.ModelForm):
     # TODO: filter users here correctly (users with access to the importer)
     contact = forms.ModelChoiceField(
@@ -18,7 +20,31 @@ class EditOutwardProcessingTradeForm(forms.ModelForm):
         fields = (
             "contact",
             "applicant_reference",
+            "customs_office_name",
+            "customs_office_address",
+            "rate_of_yield",
+            "rate_of_yield_calc_method",
+            "last_export_day",
+            "reimport_period",
+            "nature_process_ops",
+            "suggested_id",
         )
+
+        widgets = {
+            "last_export_day": DateInput(),
+            "customs_office_address": forms.Textarea({"rows": 4}),
+            "rate_of_yield_calc_method": forms.Textarea({"rows": 2}),
+            "nature_process_ops": forms.Textarea({"rows": 2}),
+            "suggested_id": forms.Textarea({"rows": 2}),
+        }
+
+    def clean_last_export_day(self):
+        day = self.cleaned_data["last_export_day"]
+
+        if day <= datetime.date.today():
+            raise forms.ValidationError("Date must be in the future.")
+
+        return day
 
 
 class SubmitOutwardProcessingTradeForm(forms.Form):

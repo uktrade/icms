@@ -17,8 +17,14 @@
 
      <h4>Outward Processing Trade</h4>
      {{ fields.field(form.applicant_reference) }}
-
-     <p>TODO: ICMLST-593 add rest of fields</p>
+     {{ fields.field(form.customs_office_name) }}
+     {{ fields.field(form.customs_office_address) }}
+     {{ fields.field(form.rate_of_yield) }}
+     {{ fields.field(form.rate_of_yield_calc_method) }}
+     {{ fields.field(form.last_export_day) }}
+     {{ fields.field(form.reimport_period) }}
+     {{ fields.field(form.nature_process_ops) }}
+     {{ fields.field(form.suggested_id) }}
 
      <h4>Compensating Products</h4>
      <p>TODO: ICMLST-594 add this section</p>
