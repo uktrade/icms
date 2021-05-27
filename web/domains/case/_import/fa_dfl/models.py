@@ -1,6 +1,6 @@
 from django.db import models
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -60,3 +60,23 @@ class DFLApplication(ImportApplication):
 
     def __str__(self):
         return f"DFLApplication(id={self.pk}, status={self.status!r}, is_active={self.is_active})"
+
+
+class DFLChecklist(ChecklistBase):
+    import_application = models.ForeignKey(
+        DFLApplication, on_delete=models.PROTECT, related_name="checklists"
+    )
+
+    deactivation_certificate_attached = models.CharField(
+        max_length=3,
+        choices=ChecklistBase.Response.choices,
+        null=True,
+        verbose_name="Deactivation certificate attached?",
+    )
+
+    deactivation_certificate_issued = models.CharField(
+        max_length=3,
+        choices=ChecklistBase.Response.choices,
+        null=True,
+        verbose_name="Deactivation certificate issued by competent authority?",
+    )

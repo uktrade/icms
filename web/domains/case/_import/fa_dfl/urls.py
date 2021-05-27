@@ -5,6 +5,7 @@ from . import views
 app_name = "fa-dfl"
 
 # Firearms and Ammunition - Deactivated Firearms Licence urls
+# TODO refactor endpoints to have <application_pk>
 urlpatterns = [
     path("<int:application_pk>/edit/", views.edit_dfl, name="edit"),
     path("<int:pk>/add-goods-certificate/", views.add_goods_certificate, name="add-goods"),
@@ -19,4 +20,5 @@ urlpatterns = [
         ),
     ),
     path("<int:pk>/submit/", views.submit_dfl, name="submit"),
+    path("<int:application_pk>/checklist/", views.manage_checklist, name="manage-checklist"),
 ]

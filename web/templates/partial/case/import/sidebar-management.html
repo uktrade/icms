@@ -7,6 +7,8 @@
       {{ process.reference or process.pk }}
     </a>
   </li>
+
+  {# Specific import application links #}
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
     <li>
       <a
@@ -41,7 +43,16 @@
         Checklist
       </a>
     </li>
+  {% elif process.process_type == "DFLApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:fa-dfl:manage-checklist', kwargs={"application_pk": process.pk}) }}">
+        Checklist
+      </a>
+    </li>
   {% endif %}
+
+  {# Common import application links #}
   <li>
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}

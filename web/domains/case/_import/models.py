@@ -304,3 +304,51 @@ class EndorsementImportApplication(models.Model):
     content = models.TextField()
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
+
+
+class ChecklistBase(models.Model):
+    class Response(models.TextChoices):
+        yes = ("yes", "Yes")
+        no = ("no", "No")
+        not_applicable = ("n/a", "N/A")
+
+    class Meta:
+        abstract = True
+
+    case_update = models.CharField(
+        max_length=3,
+        choices=Response.choices,
+        null=True,
+        verbose_name="Case update required from applicant?",
+    )
+
+    fir_required = models.CharField(
+        max_length=3,
+        choices=Response.choices,
+        null=True,
+        verbose_name="Further information request required?",
+    )
+
+    response_preparation = models.BooleanField(
+        default=False,
+        verbose_name="Response Preparation - approve/refuse the request, edit details if necessary",
+    )
+
+    validity_period_correct = models.CharField(
+        max_length=3,
+        choices=Response.choices,
+        null=True,
+        verbose_name="Validity period correct?",
+    )
+
+    endorsements_listed = models.CharField(
+        max_length=3,
+        choices=Response.choices,
+        null=True,
+        verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
+    )
+
+    authorisation = models.BooleanField(
+        default=False,
+        verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
+    )

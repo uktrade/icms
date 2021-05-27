@@ -36,6 +36,7 @@ class WoodQuotaApplication(ImportApplication):
     contract_documents = models.ManyToManyField(WoodContractFile, related_name="+")
 
 
+# FIXME: Refactor to use base class
 class WoodQuotaChecklist(models.Model):
     class Response(models.TextChoices):
         yes = ("yes", "Yes")

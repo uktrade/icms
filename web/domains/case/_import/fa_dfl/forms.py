@@ -3,6 +3,7 @@ from typing import Any
 from django import forms
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.file.utils import ICMSFileField
 from web.models import Country
 
@@ -133,3 +134,13 @@ class SubmitDFLForm(forms.Form):
             raise forms.ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class DFLChecklistForm(ChecklistBaseForm):
+    class Meta:
+        model = models.DFLChecklist
+
+        fields = (
+            "deactivation_certificate_attached",
+            "deactivation_certificate_issued",
+        ) + ChecklistBaseForm.Meta.fields

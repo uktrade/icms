@@ -87,6 +87,7 @@ class VerifiedCertificate(models.Model):
     updated_datetime = models.DateTimeField(auto_now=True)
 
 
+# FIXME: Refactor to use base class
 class ChecklistFirearmsOILApplication(models.Model):
     import_application = models.ForeignKey(
         OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklists"
@@ -136,6 +137,7 @@ class ChecklistFirearmsOILApplication(models.Model):
         default=False,
         verbose_name="Response Preparation - approve/refuse the request, edit details if necessary",
     )
+    # FIXME: Rename Has different db name and verbose name (validity_period_correct & "Validity period correct?")
     validity_match = models.CharField(
         max_length=10,
         choices=Response.choices,

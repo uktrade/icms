@@ -21,6 +21,7 @@ class DerogationsApplication(ImportApplication):
     supporting_documents = models.ManyToManyField(File, related_name="+")
 
 
+# FIXME: Refactor to use base class
 class DerogationsChecklist(models.Model):
     class Response(models.TextChoices):
         yes = ("yes", "Yes")

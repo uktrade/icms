@@ -23,6 +23,7 @@ from web.utils.validation import (
 from .. import views as import_views
 from .forms import (
     AddDLFGoodsCertificateForm,
+    DFLChecklistForm,
     EditDLFGoodsCertificateForm,
     PrepareDFLForm,
     SubmitDFLForm,
@@ -293,3 +294,41 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
         errors.add(page_errors)
 
     return errors
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: HttpRequest, *, application_pk):
+    with transaction.atomic():
+        application = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        checklist, _ = application.checklists.get_or_create()
+
+        if request.POST:
+            form = DFLChecklistForm(request.POST, instance=checklist)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa-dfl:manage-checklist", kwargs={"application_pk": application_pk}
+                    )
+                )
+        else:
+            form = DFLChecklistForm(instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": _get_page_title("Checklist"),
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )

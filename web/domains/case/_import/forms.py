@@ -169,3 +169,22 @@ class ImportContactLegalEntityForm(forms.ModelForm):
             "registration_number": "Registration Number",
             "dealer": "Did you buy from a dealer?",
         }
+
+
+class ChecklistBaseForm(forms.ModelForm):
+    class Meta:
+        fields = (
+            "case_update",
+            "fir_required",
+            "response_preparation",
+            "validity_period_correct",
+            "endorsements_listed",
+            "authorisation",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Change checklist fields to required (e.g. only selected is valid)
+        for field in ["response_preparation", "authorisation"]:
+            self.fields[field].required = True
