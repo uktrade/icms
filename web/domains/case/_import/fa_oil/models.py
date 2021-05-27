@@ -88,8 +88,8 @@ class VerifiedCertificate(models.Model):
 
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
-    import_application = models.ForeignKey(
-        OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklists"
+    import_application = models.OneToOneField(
+        OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklist"
     )
 
     authority_required = models.CharField(

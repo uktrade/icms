@@ -307,13 +307,13 @@ class EndorsementImportApplication(models.Model):
 
 
 class ChecklistBase(models.Model):
+    class Meta:
+        abstract = True
+
     class Response(models.TextChoices):
         yes = ("yes", "Yes")
         no = ("no", "No")
         not_applicable = ("n/a", "N/A")
-
-    class Meta:
-        abstract = True
 
     case_update = models.CharField(
         max_length=3,

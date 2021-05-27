@@ -21,7 +21,7 @@ from .forms import (
     SubmitDerogationsForm,
     SupportingDocumentForm,
 )
-from .models import DerogationsApplication
+from .models import DerogationsApplication, DerogationsChecklist
 
 
 @login_required
@@ -214,9 +214,11 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_checklist(request, pk):
     with transaction.atomic():
-        application = get_object_or_404(DerogationsApplication.objects.select_for_update(), pk=pk)
+        application: DerogationsApplication = get_object_or_404(
+            DerogationsApplication.objects.select_for_update(), pk=pk
+        )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = application.checklists.get_or_create()
+        checklist, _ = DerogationsChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
             form = DerogationsChecklistForm(request.POST, instance=checklist)

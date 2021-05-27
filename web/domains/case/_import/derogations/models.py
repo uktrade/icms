@@ -22,8 +22,8 @@ class DerogationsApplication(ImportApplication):
 
 
 class DerogationsChecklist(ChecklistBase):
-    import_application = models.ForeignKey(
-        DerogationsApplication, on_delete=models.PROTECT, related_name="checklists"
+    import_application = models.OneToOneField(
+        DerogationsApplication, on_delete=models.PROTECT, related_name="checklist"
     )
 
     supporting_document_received = models.CharField(

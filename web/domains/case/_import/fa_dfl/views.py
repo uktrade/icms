@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
@@ -10,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -20,7 +20,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .. import views as import_views
 from .forms import (
     AddDLFGoodsCertificateForm,
     DFLChecklistForm,
@@ -28,7 +27,7 @@ from .forms import (
     PrepareDFLForm,
     SubmitDFLForm,
 )
-from .models import DFLApplication
+from .models import DFLApplication, DFLChecklist
 
 
 def _get_page_title(page: str) -> str:
@@ -36,17 +35,14 @@ def _get_page_title(page: str) -> str:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
+        check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         if request.POST:
             form = PrepareDFLForm(data=request.POST, instance=application)
@@ -77,14 +73,13 @@ def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_goods_certificate(request: HttpRequest, pk: int) -> HttpResponse:
+def add_goods_certificate(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(DFLApplication.objects.select_for_update(), pk=pk)
+        application: DFLApplication = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "import")
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         if request.POST:
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
@@ -104,7 +99,9 @@ def add_goods_certificate(request: HttpRequest, pk: int) -> HttpResponse:
                     extra_args=extra_args,
                 )
 
-                return redirect(reverse("import:fa-dfl:edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = AddDLFGoodsCertificateForm()
 
@@ -120,19 +117,16 @@ def add_goods_certificate(request: HttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_goods_certificate(
-    request: HttpRequest, application_pk: int, document_pk: int
+    request: HttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
+        check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -165,28 +159,27 @@ def edit_goods_certificate(
 @require_GET
 @login_required
 def view_goods_certificate(
-    request: HttpRequest, application_pk: int, document_pk: int
+    request: HttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
-    application = get_object_or_404(DFLApplication, pk=application_pk)
+    application: DFLApplication = get_object_or_404(DFLApplication, pk=application_pk)
 
-    return import_views.view_file(request, application, application.goods_certificates, document_pk)
+    return view_application_file(
+        request.user, application, application.goods_certificates, document_pk, "import"
+    )
 
 
 @require_POST
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def delete_goods_certificate(
-    request: HttpRequest, application_pk: int, document_pk: int
+    request: HttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(
+        application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
+        check_application_permission(application, request.user, "import")
 
         application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         document = application.goods_certificates.get(pk=document_pk)
         document.is_active = False
@@ -196,15 +189,14 @@ def delete_goods_certificate(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit_dfl(request: HttpRequest, pk: int) -> HttpResponse:
+def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(DFLApplication.objects.select_for_update(), pk=pk)
+        application: DFLApplication = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         errors = _get_dfl_errors(application)
 
@@ -300,11 +292,11 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_checklist(request: HttpRequest, *, application_pk):
     with transaction.atomic():
-        application = get_object_or_404(
+        application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = application.checklists.get_or_create()
+        checklist, _ = DFLChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
             form = DFLChecklistForm(request.POST, instance=checklist)

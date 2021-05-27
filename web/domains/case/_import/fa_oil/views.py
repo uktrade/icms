@@ -32,6 +32,7 @@ from .forms import (
     UserImportCertificateForm,
 )
 from .models import (
+    ChecklistFirearmsOILApplication,
     ConstabularyEmail,
     OpenIndividualLicenceApplication,
     UserImportCertificate,
@@ -401,11 +402,13 @@ def view_verified_firearms(request, application_pk, authority_pk):
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_checklist(request, pk):
     with transaction.atomic():
-        application = get_object_or_404(
+        application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = application.checklists.get_or_create()
+        checklist, _ = ChecklistFirearmsOILApplication.objects.get_or_create(
+            import_application=application
+        )
 
         if request.POST:
             form = ChecklistFirearmsOILApplicationForm(request.POST, instance=checklist)

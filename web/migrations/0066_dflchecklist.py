@@ -90,9 +90,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "import_application",
-                    models.ForeignKey(
+                    models.OneToOneField(
                         on_delete=django.db.models.deletion.PROTECT,
-                        related_name="checklists",
+                        related_name="checklist",
                         to="web.dflapplication",
                     ),
                 ),

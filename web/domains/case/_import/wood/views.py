@@ -23,7 +23,7 @@ from .forms import (
     SupportingDocumentForm,
     WoodQuotaChecklistForm,
 )
-from .models import WoodQuotaApplication
+from .models import WoodQuotaApplication, WoodQuotaChecklist
 
 
 @login_required
@@ -306,9 +306,11 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_checklist(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        application: WoodQuotaApplication = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=pk
+        )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = application.checklists.get_or_create()
+        checklist, _ = WoodQuotaChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
             form = WoodQuotaChecklistForm(request.POST, instance=checklist)

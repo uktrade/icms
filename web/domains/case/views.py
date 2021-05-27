@@ -3,7 +3,7 @@ from typing import Any, Type, Union
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import ManyToManyField, Q
+from django.db.models import ManyToManyField, ObjectDoesNotExist, Q
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1539,16 +1539,17 @@ def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
 
     oil: OpenIndividualLicenceApplication = application.openindividuallicenceapplication
 
-    if not oil.checklists.exists():
-        checklist_errors.add(
-            FieldError(field_name="Checklist", messages=["Please complete checklist."])
+    try:
+        create_page_errors(
+            ChecklistFirearmsOILApplicationForm(
+                data=model_to_dict(oil.checklist), instance=oil.checklist
+            ),
+            checklist_errors,
         )
 
-    else:
-        checklist = oil.checklists.first()
-        create_page_errors(
-            ChecklistFirearmsOILApplicationForm(data=model_to_dict(checklist), instance=checklist),
-            checklist_errors,
+    except ObjectDoesNotExist:
+        checklist_errors.add(
+            FieldError(field_name="Checklist", messages=["Please complete checklist."])
         )
 
     return checklist_errors

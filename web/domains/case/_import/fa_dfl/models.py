@@ -63,8 +63,8 @@ class DFLApplication(ImportApplication):
 
 
 class DFLChecklist(ChecklistBase):
-    import_application = models.ForeignKey(
-        DFLApplication, on_delete=models.PROTECT, related_name="checklists"
+    import_application = models.OneToOneField(
+        DFLApplication, on_delete=models.PROTECT, related_name="checklist"
     )
 
     deactivation_certificate_attached = models.CharField(

@@ -37,8 +37,8 @@ class WoodQuotaApplication(ImportApplication):
 
 
 class WoodQuotaChecklist(ChecklistBase):
-    import_application = models.ForeignKey(
-        WoodQuotaApplication, on_delete=models.PROTECT, related_name="checklists"
+    import_application = models.OneToOneField(
+        WoodQuotaApplication, on_delete=models.PROTECT, related_name="checklist"
     )
 
     sigl_wood_application_logged = models.BooleanField(
