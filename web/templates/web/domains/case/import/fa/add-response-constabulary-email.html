@@ -19,7 +19,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('import:fa-oil:manage-constabulary-emails', args=[process.pk]) }}" class="prev-link">
+        <a href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}" class="prev-link">
           Constabulary Emails
         </a>
       </li>
@@ -42,7 +42,9 @@
 {% endblock %}
 
 {% block main_content %}
-  <h3>Edit Constabulary Email</h3>
+  <h3>Add Response to Constabulary Email</h3>
+
+  {% include 'web/domains/case/import/fa/constabulary-email-box.html' %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
@@ -57,15 +59,8 @@
             <li>
               <input
                 type="submit"
-                value="Save"
+                value="Close"
                 class="primary-button button" />
-
-              <input
-                type="submit"
-                name="send"
-                value="Save And Send"
-                class="primary-button button" />
-            </li>
           </ul>
         </div>
       </div>

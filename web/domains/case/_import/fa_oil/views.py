@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
@@ -13,8 +12,6 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
-from web.notify import email
-from web.utils.s3 import get_file_from_s3, get_s3_client
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -25,15 +22,12 @@ from web.utils.validation import (
 from .. import views as import_views
 from .forms import (
     ChecklistFirearmsOILApplicationForm,
-    ConstabularyEmailForm,
-    ConstabularyEmailResponseForm,
     PrepareOILForm,
     SubmitOILForm,
     UserImportCertificateForm,
 )
 from .models import (
     ChecklistFirearmsOILApplication,
-    ConstabularyEmail,
     OpenIndividualLicenceApplication,
     UserImportCertificate,
     VerifiedCertificate,
@@ -428,217 +422,6 @@ def manage_checklist(request, pk):
         return render(
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
-            context=context,
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def manage_constabulary_emails(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Constabulary Emails",
-            "verified_certificates": application.verified_certificates.all(),
-            "constabulary_emails": application.constabulary_emails.filter(is_active=True),
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa-oil/manage-constabulary-emails.html",
-            context=context,
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def create_constabulary_email(request, pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
-        )
-        application.get_task(ImportApplication.SUBMITTED, "process")
-        template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
-        # TODO: replace with case reference
-        goods_description = """Firearms, component parts thereof, or ammunition of any applicable
-commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended."""
-        body = template.get_content(
-            {
-                "CASE_REFERENCE": application.pk,
-                "IMPORTER_NAME": application.importer.display_name,
-                "IMPORTER_ADDRESS": application.importer_office,
-                "GOODS_DESCRIPTION": goods_description,
-                "CASE_OFFICER_NAME": request.user.full_name,
-                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-            }
-        )
-        constabulary_email = ConstabularyEmail.objects.create(
-            application=application,
-            status=ConstabularyEmail.DRAFT,
-            email_subject=template.template_title,
-            email_body=body,
-            email_cc_address_list=settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL,
-        )
-
-        return redirect(
-            reverse(
-                "import:fa-oil:edit-constabulary-email",
-                kwargs={
-                    "application_pk": application.pk,
-                    "constabulary_email_pk": constabulary_email.pk,
-                },
-            )
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def edit_constabulary_email(request, application_pk, constabulary_email_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
-        constabulary_email = get_object_or_404(
-            application.constabulary_emails.filter(is_active=True), pk=constabulary_email_pk
-        )
-
-        if request.POST:
-            form = ConstabularyEmailForm(request.POST, instance=constabulary_email)
-            if form.is_valid():
-                constabulary_email = form.save()
-
-                if "send" in request.POST:
-                    attachments = []
-                    s3_client = get_s3_client()
-
-                    for document in constabulary_email.attachments.all():
-                        file_content = get_file_from_s3(document.path, client=s3_client)
-                        attachments.append((document.filename, file_content))
-
-                    email.send_email(
-                        constabulary_email.email_subject,
-                        constabulary_email.email_body,
-                        [constabulary_email.email_to],
-                        constabulary_email.email_cc_address_list.split(","),
-                        attachments,
-                    )
-
-                    constabulary_email.status = ConstabularyEmail.OPEN
-                    constabulary_email.email_sent_datetime = timezone.now()
-                    constabulary_email.save()
-
-                    return redirect(
-                        reverse(
-                            "import:fa-oil:manage-constabulary-emails",
-                            kwargs={
-                                "pk": application_pk,
-                            },
-                        )
-                    )
-
-                return redirect(
-                    reverse(
-                        "import:fa-oil:edit-constabulary-email",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "constabulary_email_pk": constabulary_email_pk,
-                        },
-                    )
-                )
-        else:
-            form = ConstabularyEmailForm(instance=constabulary_email)
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Edit Constabulary Email",
-            "form": form,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa-oil/edit-constabulary-email.html",
-            context=context,
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-@require_POST
-def delete_constabulary_email(request, application_pk, constabulary_email_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-        application.get_task(ImportApplication.SUBMITTED, "process")
-        constabulary_email = get_object_or_404(
-            application.constabulary_emails.filter(is_active=True), pk=constabulary_email_pk
-        )
-
-        constabulary_email.is_active = False
-        constabulary_email.save()
-
-        return redirect(
-            reverse(
-                "import:fa-oil:manage-constabulary-emails",
-                kwargs={
-                    "pk": application_pk,
-                },
-            )
-        )
-
-
-@login_required
-@permission_required("web.reference_data_access", raise_exception=True)
-def add_response_constabulary_email(request, application_pk, constabulary_email_pk):
-    with transaction.atomic():
-        application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
-        )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
-        constabulary_email = get_object_or_404(
-            application.constabulary_emails, pk=constabulary_email_pk
-        )
-
-        if request.POST:
-            form = ConstabularyEmailResponseForm(request.POST, instance=constabulary_email)
-            if form.is_valid():
-                constabulary_email = form.save(commit=False)
-                constabulary_email.status = ConstabularyEmail.CLOSED
-                constabulary_email.email_closed_datetime = timezone.now()
-                constabulary_email.save()
-
-                return redirect(
-                    reverse(
-                        "import:fa-oil:manage-constabulary-emails",
-                        kwargs={
-                            "pk": application_pk,
-                        },
-                    )
-                )
-        else:
-            form = ConstabularyEmailResponseForm(instance=constabulary_email)
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Add Response for Constabulary Email",
-            "form": form,
-            "object": constabulary_email,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa-oil/add-response-constabulary-email.html",
             context=context,
         )
 

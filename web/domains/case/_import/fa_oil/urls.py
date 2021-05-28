@@ -4,37 +4,13 @@ from . import views
 
 app_name = "fa-oil"
 
+
 urlpatterns = [
     # Firearms and Ammunition - Open Individual Licence
     path("<int:application_pk>/edit/", views.edit_oil, name="edit"),
     path("<int:pk>/submit/", views.submit_oil, name="submit-oil"),
     # Firearms and Ammunition - Management by ILB Admin
     path("case/<int:pk>/checklist/", views.manage_checklist, name="manage-checklist"),
-    path(
-        "case/<int:pk>/constabulary-emails/",
-        views.manage_constabulary_emails,
-        name="manage-constabulary-emails",
-    ),
-    path(
-        "case/<int:pk>/constabulary-emails/create/",
-        views.create_constabulary_email,
-        name="create-constabulary-email",
-    ),
-    path(
-        "case/<int:application_pk>/constabulary-emails/edit/<int:constabulary_email_pk>/",
-        views.edit_constabulary_email,
-        name="edit-constabulary-email",
-    ),
-    path(
-        "case/<int:application_pk>/constabulary-emails/delete/<int:constabulary_email_pk>/",
-        views.delete_constabulary_email,
-        name="delete-constabulary-email",
-    ),
-    path(
-        "case/<int:application_pk>/constabulary-emails/edit/<int:constabulary_email_pk>/response/",
-        views.add_response_constabulary_email,
-        name="add-response-constabulary-email",
-    ),
     # Firearms and Ammunition - User Certificates
     path(
         "<int:pk>/certificates/",

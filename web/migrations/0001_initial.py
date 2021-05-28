@@ -1566,13 +1566,15 @@ class Migration(migrations.Migration):
                 ("email_response", models.TextField(blank=True, max_length=4000, null=True)),
                 ("email_sent_datetime", models.DateTimeField(blank=True, null=True)),
                 ("email_closed_datetime", models.DateTimeField(blank=True, null=True)),
+                ("attachments", models.ManyToManyField(to="web.File")),
                 (
-                    "application",
+                    "import_application",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.PROTECT, to="web.importapplication"
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="constabulary_emails",
+                        to="web.importapplication",
                     ),
                 ),
-                ("attachments", models.ManyToManyField(to="web.File")),
             ],
         ),
         migrations.AddField(

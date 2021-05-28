@@ -2,15 +2,15 @@
   <legend class="bold">Constabulary Email</legend>
 
   {% if object.is_draft %}
-    <a
-      class="button small-button"
-      href="{{ icms_url('import:fa-oil:edit-constabulary-email', args=[process.pk, object.pk]) }}">
-      Edit/Send
-    </a>
     <form
       method="post"
-      action="{{ icms_url('import:fa-oil:delete-constabulary-email', args=[process.pk, object.pk]) }}">
+      action="{{ icms_url('import:fa:delete-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
       {{ csrf_input }}
+      <a
+        class="button small-button"
+        href="{{ icms_url('import:fa:edit-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
+        Edit/Send
+      </a>
       <button
         type="submit"
         class="button small-button">
@@ -20,7 +20,7 @@
   {% else %}
     <a
       class="button small-button"
-      href="{{ icms_url('import:fa-oil:add-response-constabulary-email', args=[process.pk, object.pk]) }}">
+      href="{{ icms_url('import:fa:add-response-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
       Record Response
     </a>
   {% endif %}

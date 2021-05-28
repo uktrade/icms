@@ -12360,7 +12360,7 @@ def add_commodities(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0052_constabularyemail_change_application_related_name"),
+        ("web", "0051_sanctionemailmessage"),
     ]
 
     operations = [

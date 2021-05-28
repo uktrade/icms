@@ -1,4 +1,5 @@
 from web.domains.case._import.derogations.models import *  # NOQA
+from web.domains.case._import.fa.models import *  # NOQA
 from web.domains.case._import.fa_dfl.models import *  # NOQA
 from web.domains.case._import.fa_oil.models import *  # NOQA
 from web.domains.case._import.fa_sil.models import *  # NOQA
