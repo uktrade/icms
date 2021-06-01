@@ -50,9 +50,13 @@
         Checklist
       </a>
     </li>
+    <li>
+      <a
+        href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}">
+        Constabulary Emails
+      </a>
+    </li>
   {% endif %}
-  {# FIXME: Remove #}
-  <li><hr></li>
 
   {# Common import application links #}
   <li>

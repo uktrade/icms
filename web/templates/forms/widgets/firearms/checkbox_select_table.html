@@ -12,9 +12,12 @@
   <tbody>
     {% for _, options, index in widget.optgroups %}
       {% for widget in options %}
-        {% with file = qs[index],
-                verified = qs[index].firearmsauthority_set.first(),
-                user = qs[index].userimportcertificate %}
+        {% with
+            file = qs[index],
+            verified = qs[index].firearmsauthority_set.first(),
+            user = qs[index].userimportcertificate,
+            dfl_certificate = qs[index].dflgoodscertificate
+        %}
           <tr>
             <td>
               {% include widget.template_name %}
@@ -59,6 +62,27 @@
               </td>
               <td>
                 {{ user.constabulary }}
+              </td>
+            {% elif dfl_certificate %}
+              <td>
+                <a
+                  href="{{ icms_url('import:fa-dfl:view-goods', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}"
+                >
+                  {{ file.filename }}
+                </a>
+                <span class="filesize">{{ file.human_readable_file_size() }}</span>
+              </td>
+              <td>
+                Firearms Certificate
+              </td>
+              <td>
+                {{ dfl_certificate.deactivated_certificate_reference }}
+              </td>
+              <td>
+                Deactivation Certificate
+              </td>
+              <td>
+                {{ dfl_certificate.dfl_application.first().constabulary.name }}
               </td>
             {% endif %}
         </tr>

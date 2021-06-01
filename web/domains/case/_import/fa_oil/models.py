@@ -43,7 +43,6 @@ class OpenIndividualLicenceApplication(ImportApplication):
     commodity_code = models.CharField(max_length=40, blank=False, null=True)
 
 
-# I think this is specific to FA-OIL
 class VerifiedCertificate(models.Model):
     import_application = models.ForeignKey(
         OpenIndividualLicenceApplication,

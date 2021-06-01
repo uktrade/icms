@@ -6,8 +6,12 @@ from django_select2 import forms as s2forms
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.firearms.widgets import CheckboxSelectMultipleTable
-
-from . import models
+from web.models import (
+    ConstabularyEmail,
+    DFLApplication,
+    ImportApplication,
+    OpenIndividualLicenceApplication,
+)
 
 
 class ConstabularyEmailForm(forms.ModelForm):
@@ -25,7 +29,7 @@ class ConstabularyEmailForm(forms.ModelForm):
     email_body = forms.CharField(label="Body", widget=forms.Textarea)
 
     class Meta:
-        model = models.ConstabularyEmail
+        model = ConstabularyEmail
         fields = (
             "status",
             "email_to",
@@ -49,17 +53,30 @@ class ConstabularyEmailForm(forms.ModelForm):
 
         application = self.instance.import_application
 
-        files = File.objects.filter(
-            Q(firearmsauthority__verified_certificates__import_application=application)
-            | Q(userimportcertificate__import_application=application)
-        ).filter(is_active=True)
+        application_files_filter = self._get_file_filter(application)
+        files = File.objects.filter(application_files_filter, is_active=True)
+
         self.fields["attachments"].queryset = files
         # set files and process on the widget to make them available in the widget's template
         self.fields["attachments"].widget.qs = files
         self.fields["attachments"].widget.process = application
 
+    def _get_file_filter(self, application: ImportApplication) -> Q:
+
+        process_type = application.process_type
+
+        if process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+            return Q(firearmsauthority__verified_certificates__import_application=application) | Q(
+                userimportcertificate__import_application=application
+            )
+
+        elif process_type == DFLApplication.PROCESS_TYPE:
+            return Q(dflgoodscertificate__dfl_application=application)
+
+        raise NotImplementedError(f"process_type: {application.process_type} not supported")
+
 
 class ConstabularyEmailResponseForm(forms.ModelForm):
     class Meta:
-        model = models.ConstabularyEmail
+        model = ConstabularyEmail
         fields = ("email_response",)

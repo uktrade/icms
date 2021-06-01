@@ -36,9 +36,9 @@ urlpatterns = [
                                             name="edit-constabulary-email",
                                         ),
                                         path(
-                                            "delete/",
-                                            views.delete_constabulary_email,
-                                            name="delete-constabulary-email",
+                                            "archive/",
+                                            views.archive_constabulary_email,
+                                            name="archive-constabulary-email",
                                         ),
                                         path(
                                             "response/",

@@ -50,7 +50,7 @@ class DFLApplication(ImportApplication):
         verbose_name="Commodity Code",
     )
     constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
-    goods_certificates = models.ManyToManyField(DFLGoodsCertificate, related_name="+")
+    goods_certificates = models.ManyToManyField(DFLGoodsCertificate, related_name="dfl_application")
 
     know_bought_from = models.BooleanField(
         blank=False,

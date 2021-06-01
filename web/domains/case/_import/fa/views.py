@@ -14,8 +14,9 @@ from web.domains.case._import.fa.forms import (
     ConstabularyEmailResponseForm,
 )
 from web.domains.template.models import Template
-from web.models import (  # DFLApplication,; SILApplication
+from web.models import (  # SILApplication
     ConstabularyEmail,
+    DFLApplication,
     ImportApplication,
     OpenIndividualLicenceApplication,
 )
@@ -24,7 +25,7 @@ from web.utils.s3 import get_file_from_s3, get_s3_client
 
 FaImportApplication = Union[
     OpenIndividualLicenceApplication,
-    # DFLApplication,
+    DFLApplication,
     # SILApplication
 ]
 FaImportApplicationT = Type[FaImportApplication]
@@ -34,7 +35,6 @@ FaImportApplicationT = Type[FaImportApplication]
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        # TODO: Why is this select for update
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
@@ -47,9 +47,17 @@ def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> 
             "task": task,
             "page_title": "Constabulary Emails",
             "constabulary_emails": import_application.constabulary_emails.filter(is_active=True),
-            # TODO: This key is only for FA-OIL applications
-            "verified_certificates": application.verified_certificates.all(),
+            "show_verified_certificates": False,
+            "verified_certificates": None,
         }
+
+        if import_application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+            context.update(
+                {
+                    "show_verified_certificates": True,
+                    "verified_certificates": application.verified_certificates.all(),
+                }
+            )
 
         return render(
             request=request,
@@ -184,7 +192,7 @@ def edit_constabulary_email(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def delete_constabulary_email(
+def archive_constabulary_email(
     request: HttpRequest, *, application_pk: int, constabulary_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
@@ -260,7 +268,7 @@ def add_response_constabulary_email(
 def _get_fa_application(application: ImportApplication) -> FaImportApplication:
     process_type_link = {
         OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
-        # DFLApplication.PROCESS_TYPE: "dflapplication",
+        DFLApplication.PROCESS_TYPE: "dflapplication",
         # SILApplication.PROCESS_TYPE: "silapplication",
     }
 

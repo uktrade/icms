@@ -585,7 +585,6 @@ def create_import_contact(request: HttpRequest, pk: int, entity: str) -> HttpRes
         return render(request, "web/domains/case/import/fa-import-contacts/create.html", context)
 
 
-# TODO: Revisit this
 def _update_know_bought_from(application: ImportApplication) -> None:
     # Map process types to the ImportApplication link to that class
     process_type_link = {

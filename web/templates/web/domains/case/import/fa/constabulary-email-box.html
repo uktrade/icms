@@ -4,7 +4,7 @@
   {% if object.is_draft %}
     <form
       method="post"
-      action="{{ icms_url('import:fa:delete-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
+      action="{{ icms_url('import:fa:archive-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
       {{ csrf_input }}
       <a
         class="button small-button"

@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
             model_name="dflapplication",
             name="goods_certificates",
             field=models.ManyToManyField(
-                related_name="_dflapplication_goods_certificates_+", to="web.DFLGoodsCertificate"
+                related_name="dfl_application", to="web.DFLGoodsCertificate"
             ),
         ),
     ]

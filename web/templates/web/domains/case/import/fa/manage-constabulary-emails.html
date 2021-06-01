@@ -42,61 +42,62 @@
     This screen is used to email relevant constabularies. You may attach multiple firearms
     certificates to a single email. You can also record responses from the constabulary.
   </div>
-
-  <div class="info-box info-box-info">
-    {% if not verified_certificates %}
-      There is no verified certificate.
-    {% else %}
+  {% if show_verified_certificates %}
+    <div class="info-box info-box-info">
+      {% if not verified_certificates %}
+        There is no verified certificate.
+      {% else %}
         <h4>Verified Firearms Authorities</h4>
-          <table class="setoutList">
-            <thead>
-              <tr>
-                <th scope="col">Reference</th>
-                <th scope="col">Certificate Type</th>
-                <th scope="col">Issuing Constabulary</th>
-                <th scope="col">Address</th>
-                <th scope="col">Postcode</th>
-                <th scope="col">Start Date</th>
-                <th scope="col">End Date</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for certificate in verified_certificates %}
-                <tr>
-                  <td>
-                    {{ certificate.firearms_authority.reference }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.get_certificate_type_display() }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.issuing_constabulary }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.address }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.postcode }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
-                  </td>
-                  <td>
-                    {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
-                  </td>
-                  <td>
-                    <a
-                      href="{{ icms_url('importer-firearms-edit', args=[certificate.firearms_authority.pk]) }}">
-                      View Details
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-    {% endif %}
-  </div>
+        <table class="setoutList">
+          <thead>
+          <tr>
+            <th scope="col">Reference</th>
+            <th scope="col">Certificate Type</th>
+            <th scope="col">Issuing Constabulary</th>
+            <th scope="col">Address</th>
+            <th scope="col">Postcode</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">End Date</th>
+            <th scope="col">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for certificate in verified_certificates %}
+            <tr>
+              <td>
+                {{ certificate.firearms_authority.reference }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.get_certificate_type_display() }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.issuing_constabulary }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.address }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.postcode }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+              </td>
+              <td>
+                {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+              </td>
+              <td>
+                <a
+                  href="{{ icms_url('importer-firearms-edit', args=[certificate.firearms_authority.pk]) }}">
+                  View Details
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+    </div>
+  {% endif %}
 
   <hr />
   {% if not constabulary_emails %}
@@ -155,7 +156,7 @@
                 </a>
                 <form
                   method="post"
-                  action="{{ icms_url('import:fa:delete-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
+                  action="{{ icms_url('import:fa:archive-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
                   {{ csrf_input }}
                   <button
                     type="submit"
@@ -190,6 +191,4 @@
 
 {% block page_js %}
   {{super()}}
-{#  FIXME: Check if this is needed, I suspect it is a mistake #}
-{#  <script src="{{ static('web/js/pages/approval-response.js') }}" type="text/javascript"></script>#}
 {% endblock %}
