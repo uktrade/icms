@@ -26,6 +26,10 @@ class PostAction(ListAction):
     template = "model/actions/submit.html"
     template_inline = "model/actions/submit-inline.html"
 
+    # Overridden in child classes
+    action = "unset"
+    label = "unset"
+
     confirm = True  # confirm action before submitting
 
     def as_html(self, object, csrf_token, **kwargs):
@@ -48,13 +52,17 @@ class PostAction(ListAction):
             "icon_only": self.icon_only,
         }
 
-    def handle(self, request, view, *args):
+    def handle(self, request, view, *args, **kwargs):
         raise SuspiciousOperation("Not implemented!")
 
 
 class LinkAction(ListAction):
     template = "model/actions/link.html"
     template_inline = "model/actions/link-inline.html"
+
+    # Overridden in child classes
+    icon = "unset"
+    label = "unset"
 
     def href(self, object):
         return f"{object.id}/"

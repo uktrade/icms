@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, TypedDict
+
 import structlog as logging
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,7 +23,15 @@ from .forms import (
 )
 from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
 
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
 logger = logging.getLogger(__name__)
+
+
+class MissingTranslationsDict(TypedDict):
+    countries: list[Country]
+    remaining: int
 
 
 class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
@@ -77,6 +87,7 @@ def search_countries(request, selected_countries):
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
     template_name = "web/domains/country/groups/view.html"
+
     form_class = CountryGroupEditForm
     cancel_url = reverse_lazy("country-group-view")
     permission_required = "web.reference_data_access"
@@ -235,8 +246,10 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
 
         return super().get(request)
 
-    def get_missing_translations(self, country_list, country_translations):
-        missing_translations = []
+    def get_missing_translations(
+        self, country_list: "QuerySet[Country]", country_translations: dict[int, str]
+    ) -> MissingTranslationsDict:
+        missing_translations: list[Country] = []
         remaining_count = 0
         for country in country_list:
             if country.id not in country_translations:
@@ -245,7 +258,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
                 else:
                     remaining_count += 1
 
-        return {"countries": missing_translations, "remaining": remaining_count}
+        return MissingTranslationsDict(countries=missing_translations, remaining=remaining_count)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

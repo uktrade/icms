@@ -16,8 +16,8 @@ class UserImportCertificate(File):
         shotgun = ("shotgun", "Shotgun Certificate")
 
         @classmethod
-        def registered_as_choice(cls):
-            return (cls.registered.value, cls.registered.label)
+        def registered_as_choice(cls) -> tuple[str, str]:
+            return (cls.registered.value, cls.registered.label)  # type: ignore[attr-defined]
 
     reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
     certificate_type = models.CharField(

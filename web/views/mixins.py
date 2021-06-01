@@ -46,4 +46,4 @@ class PostActionMixin(object):
                 return getattr(self, action)(request, *args, **kwargs)
 
         # If action does not exist continue with regular post request
-        return super().post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)  # type: ignore[misc]
