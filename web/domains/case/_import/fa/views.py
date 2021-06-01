@@ -46,6 +46,7 @@ def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> 
             "process": application,
             "task": task,
             "page_title": "Constabulary Emails",
+            "case_type": "import",
             "constabulary_emails": import_application.constabulary_emails.filter(is_active=True),
             "show_verified_certificates": False,
             "verified_certificates": None,
@@ -179,6 +180,7 @@ def edit_constabulary_email(
             "process": application,
             "task": task,
             "page_title": "Edit Constabulary Email",
+            "case_type": "import",
             "form": form,
         }
 
@@ -254,6 +256,7 @@ def add_response_constabulary_email(
             "process": application,
             "task": task,
             "page_title": "Add Response for Constabulary Email",
+            "case_type": "import",
             "form": form,
             "object": constabulary_email,
         }

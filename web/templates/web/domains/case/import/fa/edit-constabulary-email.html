@@ -1,4 +1,4 @@
-{% extends "layout/sidebar.html" %}
+{% extends "web/domains/case/manage/base.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
@@ -8,37 +8,11 @@
   {{ form.media.css }}
 {% endblock %}
 
-{% block extra_header %}
-  <div class="container contextHeaderGrid">
-    {% include 'web/domains/case/import/partials/process.html' %}
-  </div>
-  {{ super() }}
-{% endblock %}
-
-{% block content_actions %}
-  <div class="content-actions">
-    <ul class="menu-out flow-across">
-      <li>
-        <a href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}" class="prev-link">
-          Constabulary Emails
-        </a>
-      </li>
-    </ul>
-  </div>
-
-  <form
-    method="post"
-    action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}"
-    class="form-inline">
-      {{ csrf_input }}
-      <button type="submit">Release Ownership</button>
-  </form>
-  <a href="#" class="button">Reassign</a>
-  <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
-{% endblock %}
-
-{% block sidebar %}
-  {% include 'partial/case/import/sidebar-management.html' %}
+{% block content_actions_link %}
+  <a href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}"
+     class="prev-link">
+    Constabulary Emails
+  </a>
 {% endblock %}
 
 {% block main_content %}
@@ -58,13 +32,13 @@
               <input
                 type="submit"
                 value="Save"
-                class="primary-button button" />
+                class="primary-button button"/>
 
               <input
                 type="submit"
                 name="send"
                 value="Save And Send"
-                class="primary-button button" />
+                class="primary-button button"/>
             </li>
           </ul>
         </div>
