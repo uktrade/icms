@@ -276,7 +276,9 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
     if application.know_bought_from and not application.importcontact_set.exists():
         page_errors = PageErrors(
             page_name="Details of who bought from",
-            url=reverse("import:fa-list-import-contacts", kwargs={"pk": application.pk}),
+            url=reverse(
+                "import:fa:list-import-contacts", kwargs={"application_pk": application.pk}
+            ),
         )
 
         page_errors.add(

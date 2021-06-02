@@ -10,6 +10,7 @@ from web.models import (
     ConstabularyEmail,
     DFLApplication,
     ImportApplication,
+    ImportContact,
     OpenIndividualLicenceApplication,
 )
 
@@ -80,3 +81,45 @@ class ConstabularyEmailResponseForm(forms.ModelForm):
     class Meta:
         model = ConstabularyEmail
         fields = ("email_response",)
+
+
+class ImportContactPersonForm(forms.ModelForm):
+    last_name = forms.CharField(required=True, label="Surname")
+
+    class Meta:
+        model = ImportContact
+        fields = (
+            "first_name",
+            "last_name",
+            "street",
+            "city",
+            "postcode",
+            "region",
+            "country",
+            "dealer",
+        )
+        labels = {
+            "first_name": "First Name",
+            "last_name": "Surname",
+            "dealer": "Did you buy from a dealer?",
+        }
+
+
+class ImportContactLegalEntityForm(forms.ModelForm):
+    class Meta:
+        model = ImportContact
+        fields = (
+            "first_name",
+            "registration_number",
+            "street",
+            "city",
+            "postcode",
+            "region",
+            "country",
+            "dealer",
+        )
+        labels = {
+            "first_name": "Name of Legal Person",
+            "registration_number": "Registration Number",
+            "dealer": "Did you buy from a dealer?",
+        }

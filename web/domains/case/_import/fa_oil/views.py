@@ -273,7 +273,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
         if application.know_bought_from and not application.importcontact_set.exists():
             page_errors = PageErrors(
                 page_name="Details of who bought from",
-                url=reverse("import:fa-list-import-contacts", kwargs={"pk": pk}),
+                url=reverse("import:fa:list-import-contacts", kwargs={"application_pk": pk}),
             )
 
             page_errors.add(

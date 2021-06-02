@@ -12,22 +12,23 @@ from django.views.decorators.http import require_POST
 from web.domains.case._import.fa.forms import (
     ConstabularyEmailForm,
     ConstabularyEmailResponseForm,
+    ImportContactLegalEntityForm,
+    ImportContactPersonForm,
 )
+from web.domains.case.views import check_application_permission
 from web.domains.template.models import Template
-from web.models import (  # SILApplication
+from web.models import (
     ConstabularyEmail,
     DFLApplication,
     ImportApplication,
+    ImportContact,
     OpenIndividualLicenceApplication,
+    SILApplication,
 )
 from web.notify import email
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
-FaImportApplication = Union[
-    OpenIndividualLicenceApplication,
-    DFLApplication,
-    # SILApplication
-]
+FaImportApplication = Union[OpenIndividualLicenceApplication, DFLApplication, SILApplication]
 FaImportApplicationT = Type[FaImportApplication]
 
 
@@ -268,11 +269,154 @@ def add_response_constabulary_email(
         )
 
 
+@login_required
+def list_import_contacts(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Firearms & Ammunition - Contacts",
+        }
+
+        return render(request, "web/domains/case/import/fa/import-contacts/list.html", context)
+
+
+@login_required
+def create_import_contact(
+    request: HttpRequest, *, application_pk: int, entity: str
+) -> HttpResponse:
+    form_class = _get_entity_form(entity)
+
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = form_class(data=request.POST)
+
+            if form.is_valid():
+                import_contact = form.save(commit=False)
+                import_contact.import_application = application
+                import_contact.entity = entity
+                import_contact.save()
+
+                # Assume known_bought_from is True if we are adding an import contact
+                _update_know_bought_from(application)
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-import-contact",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "entity": entity,
+                            "contact_pk": import_contact.pk,
+                        },
+                    )
+                )
+        else:
+            form = form_class()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Firearms & Ammunition - Create Contact",
+        }
+
+        return render(request, "web/domains/case/import/fa/import-contacts/create.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_import_contact(
+    request: HttpRequest, *, application_pk: int, entity: str, contact_pk: int
+) -> HttpResponse:
+
+    form_class = _get_entity_form(entity)
+
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "import")
+        person = get_object_or_404(ImportContact, pk=contact_pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = form_class(data=request.POST, instance=person)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-import-contact",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "entity": entity,
+                            "contact_pk": contact_pk,
+                        },
+                    )
+                )
+
+        else:
+            form = form_class(instance=person)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Firearms & Ammunition - Edit Contact",
+        }
+
+        return render(request, "web/domains/case/import/fa/import-contacts/edit.html", context)
+
+
+def _update_know_bought_from(firearms_application: FaImportApplication) -> None:
+    if not firearms_application.know_bought_from:
+        firearms_application.know_bought_from = True
+        firearms_application.save()
+
+
+def _get_entity_form(
+    entity: str,
+) -> Type[Union[ImportContactLegalEntityForm, ImportContactPersonForm]]:
+
+    if entity == ImportContact.LEGAL:
+        form_class = ImportContactLegalEntityForm
+
+    elif entity == ImportContact.NATURAL:
+        form_class = ImportContactPersonForm
+
+    else:
+        raise NotImplementedError(f"View does not support entity type: {entity}")
+
+    return form_class
+
+
 def _get_fa_application(application: ImportApplication) -> FaImportApplication:
     process_type_link = {
         OpenIndividualLicenceApplication.PROCESS_TYPE: "openindividuallicenceapplication",
         DFLApplication.PROCESS_TYPE: "dflapplication",
-        # SILApplication.PROCESS_TYPE: "silapplication",
+        SILApplication.PROCESS_TYPE: "silapplication",
     }
 
     try:

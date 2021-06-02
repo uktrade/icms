@@ -9,19 +9,6 @@ firearms_urls = [
     path("dfl/", include("web.domains.case._import.fa_dfl.urls")),
     path("oil/", include("web.domains.case._import.fa_oil.urls")),
     path("sil/", include("web.domains.case._import.fa_sil.urls")),
-    # FIXME: These are going
-    # Firearms and Ammunition - Import Contact urls
-    path("<int:pk>/import-contacts/", views.list_import_contacts, name="fa-list-import-contacts"),
-    path(
-        "<int:pk>/import-contacts/<entity>/create/",
-        views.create_import_contact,
-        name="fa-create-import-contact",
-    ),
-    path(
-        "<int:application_pk>/import-contacts/<entity>/<int:contact_pk>/edit/",
-        views.edit_import_contact,
-        name="fa-edit-import-contact",
-    ),
 ]
 
 endorsements_urls = [

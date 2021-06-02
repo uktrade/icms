@@ -269,34 +269,6 @@ class ImportApplication(ApplicationBase):
         return self.issue_date or timezone.now().date()
 
 
-class ImportContact(models.Model):
-    LEGAL = "legal"
-    NATURAL = "natural"
-    ENTITIES = (
-        (LEGAL, "Legal Person"),
-        (NATURAL, "Natural Person"),
-    )
-    DEALER_CHOICES = (
-        ("yes", "Yes"),
-        ("no", "No"),
-    )
-
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
-    entity = models.CharField(max_length=10, choices=ENTITIES)
-    first_name = models.CharField(max_length=200)
-    last_name = models.CharField(max_length=200, null=True, blank=True)
-    registration_number = models.CharField(max_length=200, null=True, blank=True)
-    street = models.CharField(max_length=200, verbose_name="Street and Number")
-    city = models.CharField(max_length=200, verbose_name="Town/City")
-    postcode = models.CharField(max_length=200, null=True, blank=True)
-    region = models.CharField(max_length=200, null=True, blank=True)
-    country = models.ForeignKey(Country, on_delete=models.PROTECT, related_name="+")
-    dealer = models.CharField(max_length=10, choices=DEALER_CHOICES, null=True)
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
-
-
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
         ImportApplication, on_delete=models.PROTECT, related_name="endorsements"

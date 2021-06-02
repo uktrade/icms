@@ -4,7 +4,7 @@
 
 
 {% block sidebar %}
-  {% include "web/domains/case/import/fa-import-contacts/sidebar.html" %}
+  {% include "partial/case/import/fa/import-contacts/sidebar.html" %}
 {% endblock %}
 
 {% block content_actions %}
@@ -12,7 +12,7 @@
   <ul class="menu-out flow-across">
     <li>
       <a
-        href="{{ icms_url('import:fa-list-import-contacts', kwargs={'pk': process.pk}) }}"
+        href="{{ icms_url('import:fa:list-import-contacts', kwargs={'application_pk': process.pk}) }}"
         class="prev-link">
         Details of Who Bought From
       </a>
