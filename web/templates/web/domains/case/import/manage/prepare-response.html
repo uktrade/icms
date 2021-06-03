@@ -88,9 +88,16 @@
               {{ process.licence_end_date.strftime('%d-%b-%Y') }}
             {% endif %}
           </td>
-          {# FIXME: This is hardcoded #}
           <td>
-            No
+            <p>
+              {% if process.issue_paper_licence_only == True %}
+                Yes
+              {% elif process.issue_paper_licence_only == False %}
+                No
+              {% else %}
+                Please select a value
+              {% endif %}
+            </p>
           </td>
           <td>
             <a

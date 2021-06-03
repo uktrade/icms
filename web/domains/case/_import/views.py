@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Optional, Type, Union
 
 import django.forms as django_forms
 import weasyprint
@@ -18,11 +18,19 @@ from django.views.generic import TemplateView
 from web.flow.models import Task
 from web.utils.s3 import get_file_from_s3
 
-from . import forms
 from .derogations.models import DerogationsApplication
 from .fa_dfl.models import DFLApplication
 from .fa_oil.models import OpenIndividualLicenceApplication
 from .fa_sil.models import SILApplication
+from .forms import (
+    CoverLetterForm,
+    CreateImportApplicationForm,
+    CreateWoodQuotaApplicationForm,
+    EndorsementChoiceImportApplicationForm,
+    EndorsementImportApplicationForm,
+    LicenceDateAndPaperLicenceForm,
+    LicenceDateForm,
+)
 from .models import ImportApplication, ImportApplicationType
 from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
@@ -129,7 +137,7 @@ def create_wood_quota(request: HttpRequest) -> HttpResponse:
         import_application_type,  # type: ignore[arg-type]
         model_class,
         redirect_view,
-        form_class=forms.CreateWoodQuotaApplicationForm,
+        form_class=CreateWoodQuotaApplicationForm,
     )
 
 
@@ -153,7 +161,7 @@ def _create_application(
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
     model_class: Type[ImportApplication],
     redirect_view: str,
-    form_class: Type[forms.CreateImportApplicationForm] = None,
+    form_class: Type[CreateImportApplicationForm] = None,
 ) -> HttpResponse:
     """Helper function to create one of several types of importer application.
 
@@ -175,7 +183,7 @@ def _create_application(
         )
 
     if form_class is None:
-        form_class = forms.CreateImportApplicationForm
+        form_class = CreateImportApplicationForm
 
     if request.POST:
         form = form_class(request.POST, user=request.user)
@@ -189,6 +197,7 @@ def _create_application(
             application.last_updated_by = request.user
             application.submitted_by = request.user
             application.application_type = application_type
+            application.issue_paper_licence_only = _get_paper_licence_only(application_type)
 
             with transaction.atomic():
                 application.save()
@@ -209,6 +218,25 @@ def _create_application(
     return render(request, "web/domains/case/import/create.html", context)
 
 
+def _get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
+    """Get initial value for `issue_paper_licence_only` field.
+
+    Some application types have a fixed value, others can choose it in the response
+    preparation screen.
+    """
+
+    # For when it is hardcoded True
+    if app_t.paper_licence_flag and not app_t.electronic_licence_flag:
+        return True
+
+    # For when it is hardcoded False
+    if app_t.electronic_licence_flag and not app_t.paper_licence_flag:
+        return False
+
+    # Default to None so the user can pick it later
+    return None
+
+
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
@@ -221,7 +249,7 @@ def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespo
         )
 
         if request.POST:
-            form = forms.CoverLetterForm(request.POST, instance=application)
+            form = CoverLetterForm(request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -233,7 +261,7 @@ def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespo
                     )
                 )
         else:
-            form = forms.CoverLetterForm(instance=application)
+            form = CoverLetterForm(instance=application)
 
         context = {
             "case_type": "import",
@@ -257,12 +285,20 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
+        application_type: ImportApplicationType = application.application_type
+
         task = application.get_task(
             [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
         )
 
+        # If both true then allow editing of the paper licence field
+        if application_type.paper_licence_flag and application_type.electronic_licence_flag:
+            form_class = LicenceDateAndPaperLicenceForm
+        else:
+            form_class = LicenceDateForm
+
         if request.POST:
-            form = forms.LicenceDateForm(request.POST, instance=application)
+            form = form_class(request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -274,7 +310,7 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                     )
                 )
         else:
-            form = forms.LicenceDateForm(instance=application)
+            form = form_class(instance=application)
 
         context = {
             "case_type": "import",
@@ -294,13 +330,13 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
-    return _add_endorsement(request, application_pk, forms.EndorsementChoiceImportApplicationForm)
+    return _add_endorsement(request, application_pk, EndorsementChoiceImportApplicationForm)
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_custom_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
-    return _add_endorsement(request, application_pk, forms.EndorsementImportApplicationForm)
+    return _add_endorsement(request, application_pk, EndorsementImportApplicationForm)
 
 
 def _add_endorsement(
@@ -361,7 +397,7 @@ def edit_endorsement(
         )
 
         if request.POST:
-            form = forms.EndorsementImportApplicationForm(request.POST, instance=endorsement)
+            form = EndorsementImportApplicationForm(request.POST, instance=endorsement)
 
             if form.is_valid():
                 form.save()
@@ -373,7 +409,7 @@ def edit_endorsement(
                     )
                 )
         else:
-            form = forms.EndorsementImportApplicationForm(instance=endorsement)
+            form = EndorsementImportApplicationForm(instance=endorsement)
 
         context = {
             "case_type": "import",

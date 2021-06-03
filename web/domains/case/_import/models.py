@@ -257,6 +257,14 @@ class ImportApplication(ApplicationBase):
     )
     cover_letter = models.TextField(blank=True, null=True)
 
+    # A nullable boolean field that is either hardcoded or left to the user to
+    # set later depending on the application type.
+    issue_paper_licence_only = models.BooleanField(
+        blank=False,
+        null=True,
+        verbose_name="Issue paper licence only?",
+    )
+
     def is_import_application(self) -> bool:
         return True
 

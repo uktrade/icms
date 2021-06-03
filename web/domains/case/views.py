@@ -1391,7 +1391,7 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
             request, application.openindividuallicenceapplication, context
         )
 
-    if application.process_type == DFLApplication.PROCESS_TYPE:
+    elif application.process_type == DFLApplication.PROCESS_TYPE:
         return _prepare_fa_dfl_response(request, application.dflapplication, context)
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
