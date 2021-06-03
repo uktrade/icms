@@ -122,6 +122,19 @@ class EditDLFGoodsCertificateForm(forms.ModelForm):
         self.fields["issuing_country"].queryset = countries
 
 
+class EditDFLGoodsCertificateDescriptionForm(forms.ModelForm):
+    class Meta:
+        model = models.DFLGoodsCertificate
+        fields = ("goods_description",)
+
+        help_texts = {
+            "goods_description": (
+                "The firearm entered here must correspond with the firearm listed on the deactivation certificate."
+                " You must list only one deactivated firearm per goods line."
+            )
+        }
+
+
 class SubmitDFLForm(forms.Form):
     confirmation = forms.CharField(
         label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'

@@ -1387,28 +1387,54 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
         }
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _prepare_response_oil(request, application.openindividuallicenceapplication, context)
+        return _prepare_fa_oil_response(
+            request, application.openindividuallicenceapplication, context
+        )
+
+    if application.process_type == DFLApplication.PROCESS_TYPE:
+        return _prepare_fa_dfl_response(request, application.dflapplication, context)
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _prepare_sanctions_and_adhoc_response(
             request, application.sanctionsandadhocapplication, context
         )
+
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
         return _prepare_derogations_response(request, application.derogationsapplication, context)
+
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
         return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
-    # TODO: implement other types (export-COM, import-FA-DFL, import-FA-SIL)
+
+    # TODO: implement other types (export-COM, import-FA-SIL)
     else:
         raise NotImplementedError
 
 
-def _prepare_response_oil(
+def _prepare_fa_oil_response(
     request: HttpRequest, application: OpenIndividualLicenceApplication, context: dict[str, Any]
 ) -> HttpResponse:
     context.update({"process": application})
 
     return render(
         request=request,
-        template_name="web/domains/case/import/manage/prepare-firearms-oil-response.html",
+        template_name="web/domains/case/import/manage/prepare-fa-oil-response.html",
+        context=context,
+    )
+
+
+def _prepare_fa_dfl_response(
+    request: HttpRequest, application: DFLApplication, context: dict[str, Any]
+):
+    context.update(
+        {
+            "process": application,
+            "goods": application.goods_certificates.all().filter(is_active=True),
+        }
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-fa-dfl-response.html",
         context=context,
     )
 

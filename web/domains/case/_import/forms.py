@@ -85,6 +85,7 @@ class CoverLetterForm(forms.ModelForm):
         widgets = {"cover_letter": forms.Textarea(attrs={"lang": "html"})}
 
 
+# TODO Extend this form and include `issue_paper_licence_only` when required
 class LicenceDateForm(forms.ModelForm):
     licence_start_date = forms.DateField(
         required=True, label="Licence Start Date", widget=DateInput

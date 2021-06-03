@@ -23,6 +23,7 @@ from web.utils.validation import (
 from .forms import (
     AddDLFGoodsCertificateForm,
     DFLChecklistForm,
+    EditDFLGoodsCertificateDescriptionForm,
     EditDLFGoodsCertificateForm,
     PrepareDFLForm,
     SubmitDFLForm,
@@ -156,6 +157,54 @@ def edit_goods_certificate(
         )
 
 
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_goods_certificate_description(
+    request: HttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    """Admin only view accessed via the response preparation screen"""
+
+    with transaction.atomic():
+        application: DFLApplication = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        document = application.goods_certificates.get(pk=document_pk)
+
+        if request.POST:
+            form = EditDFLGoodsCertificateDescriptionForm(data=request.POST, instance=document)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application.pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = EditDFLGoodsCertificateDescriptionForm(instance=document)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": _get_page_title("Edit Goods Certificate"),
+        }
+
+        return render(
+            request,
+            "web/domains/case/import/manage/fa-dfl-edit-goods-certificate-description.html",
+            context,
+        )
+
+
 @require_GET
 @login_required
 def view_goods_certificate(
@@ -207,16 +256,15 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 application.status = ImportApplication.SUBMITTED
                 application.submit_datetime = timezone.now()
 
-                # TODO: Add back in when coming back to response preparation (ICMSLST-660)
-                # template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
-                # application.cover_letter = template.get_content(
-                #     {
-                #         "CONTACT_NAME": application.contact,
-                #         "LICENCE_NUMBER": None,  # TODO: Does this need adding?
-                #         "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
-                #         "LICENCE_END_DATE": None,  # TODO: Does this need adding?
-                #     }
-                # )
+                template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
+                application.cover_letter = template.get_content(
+                    {
+                        "CONTACT_NAME": application.contact,
+                        "LICENCE_NUMBER": None,  # TODO: What should this be?
+                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
+                        "LICENCE_END_DATE": None,  # TODO: What should this be?
+                    }
+                )
 
                 application.save()
 

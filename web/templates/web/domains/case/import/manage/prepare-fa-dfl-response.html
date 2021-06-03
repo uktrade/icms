@@ -1,0 +1,50 @@
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <div class="container">
+    <div class="row">
+      <div class="three column">
+        <span class="prompt west">
+          Category
+        </span>
+      </div>
+      <div class="six column">
+        ex Chapter 93
+      </div>
+      <div class="three column">
+      </div>
+    </div>
+  </div>
+
+{% if goods %}
+  <table class="setoutList" id="tbl-search-results">
+    <thead>
+      <tr>
+        <th>Goods Description</th>
+        <th>Quantity</th>
+        <th>Units</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    {% for row in goods %}
+      <tr class="result-row">
+        <td>{{ row.goods_description }}</td>
+        <td>Unlimited</td>
+        <td>units</td>
+        <td>
+          <a class="link-button button icon-pencil" data-input_action="edit"
+             href="{{ icms_url('import:fa-dfl:edit-goods-description', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}">
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+{% else %}
+  <div class="info-box info-box-info">There are no goods attached</div>
+{% endif %}
+
+{% endblock %}

@@ -187,6 +187,7 @@ def _edit_goods(
         form = form_class(instance=goods)
 
     context = {
+        "case_type": "import",
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "task": task,
