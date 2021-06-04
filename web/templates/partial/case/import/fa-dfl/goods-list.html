@@ -24,17 +24,17 @@
         {% if not read_only %}
           <td>
             <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-dfl:edit-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"></a>
-
+               href="{{ icms_url('import:fa-dfl:edit-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"
+            >Edit</a>
             <form
               action="{{ icms_url('import:fa-dfl:delete-goods', kwargs={'application_pk': process.pk, 'document_pk': row.pk}) }}"
               method="POST">
               {{ csrf_input }}
               <button role="action-button"
                       type="submit"
-                      class="link-button button no-prompt-action tooltipstered icon-bin"
+                      class="link-button icon-bin button tooltipstered"
                       aria-label="Delete"
-                      data-confirm="Are you sure you want to delete this record?">
+                      data-confirm="Are you sure you want to delete this record?">Delete
               </button>
             </form>
 

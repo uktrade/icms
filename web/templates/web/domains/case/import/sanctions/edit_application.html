@@ -55,17 +55,18 @@
                         <td>kilos</td>
                         <td>{{ row.value }}</td>
                         <td>
-                            <a class="link-button button icon-pencil" data-input_action="edit"
-                               href="{{ icms_url('import:sanctions:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"></a>
+                          <a class="link-button button icon-pencil" data-input_action="edit"
+                             href="{{ icms_url('import:sanctions:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"
+                          >Edit</a>
 
                             <form action="{{ icms_url('import:sanctions:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
                                 {{ csrf_input }}
-                                <button role="action-button"
-                                        type="submit"
-                                        class="link-button button no-prompt-action tooltipstered icon-bin"
-                                        aria-label="Delete"
-                                        data-confirm="Are you sure you want to delete this record?">
-                                </button>
+                              <button role="action-button"
+                                      type="submit"
+                                      class="link-button icon-bin button tooltipstered"
+                                      aria-label="Delete"
+                                      data-confirm="Are you sure you want to delete this record?">Delete
+                              </button>
                             </form>
                         </td>
                     </tr>
@@ -108,7 +109,12 @@
              <form method="post"
                  action="{{ icms_url('import:sanctions:delete-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
                {{ csrf_input }}
-               <button type="submit" class="small-button">Delete</button>
+               <button
+                  type="submit"
+                  class="link-button icon-bin button tooltipstered"
+                  aria-label="Delete"
+                  data-confirm="Are you sure you want to delete this record?">Delete
+                </button>
               </form>
            </td>
          </tr>
