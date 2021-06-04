@@ -10,6 +10,11 @@ urlpatterns = [
         include(
             [
                 path("edit/", views.edit_opt, name="edit"),
+                path(
+                    "edit-further-questions/",
+                    views.edit_further_questions,
+                    name="edit-further-questions",
+                ),
                 path("submit/", views.submit_opt, name="submit"),
                 path(
                     "supporting-document/",

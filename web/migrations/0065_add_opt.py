@@ -90,6 +90,45 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "fq_similar_to_own_factory",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        help_text="This question only needs to be completed once per year. If you have already completed this question on a previous application this year, you may select 'N/A'.",
+                        max_length=3,
+                        null=True,
+                        verbose_name="Do you manufacture goods which are similar to and at the same stage of processing in your own factory within the EU as the products to be re-imported? (Article 2 (2) (a) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_manufacturing_within_eu",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        help_text="This question only needs to be completed once per year. If you have already completed this question on a previous application this year, you may select 'N/A'.",
+                        max_length=3,
+                        null=True,
+                        verbose_name="Are the main manufacturing processes of the similar goods performed in your own factory within the EU (i.e. sewing and assembly or knitting in the case of fully-fashioned garments obtained from yarn)? (Article 2 (2) (a) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_maintained_in_eu",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        help_text="This question only needs to be completed once per year. If you have already completed this question on a previous application this year, you may select 'N/A'.",
+                        max_length=3,
+                        null=True,
+                        verbose_name="Have you maintained your textile manufacturing activity in the EU with respect to the nature of the products and their quantities? (Article 3 (3) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_maintained_in_eu_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If not, please indicate reasons for the above or make reference to past correspondence.",
+                    ),
+                ),
+                (
                     "supporting_documents",
                     models.ManyToManyField(
                         related_name="_outwardprocessingtradeapplication_supporting_documents_+",

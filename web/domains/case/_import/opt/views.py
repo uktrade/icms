@@ -16,7 +16,7 @@ from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import EditOutwardProcessingTradeForm, SubmitOutwardProcessingTradeForm
+from .forms import EditOPTForm, FurtherQuestionsOPTForm, SubmitOPTForm
 from .models import OutwardProcessingTradeApplication
 
 
@@ -35,7 +35,7 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             raise PermissionDenied
 
         if request.POST:
-            form = EditOutwardProcessingTradeForm(data=request.POST, instance=application)
+            form = EditOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -45,9 +45,7 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 )
 
         else:
-            form = EditOutwardProcessingTradeForm(
-                instance=application, initial={"contact": request.user}
-            )
+            form = EditOPTForm(instance=application, initial={"contact": request.user})
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
@@ -61,6 +59,47 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/case/import/opt/edit.html", context)
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def edit_further_questions(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        # TODO: use check_application_permission
+        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
+            raise PermissionDenied
+
+        if request.POST:
+            form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:opt:edit-further-questions",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+
+        else:
+            form = FurtherQuestionsOPTForm(instance=application)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
+        }
+
+        return render(request, "web/domains/case/import/opt/edit-further-questions.html", context)
 
 
 @login_required
@@ -79,18 +118,29 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
         errors = ApplicationErrors()
 
-        page_errors = PageErrors(
+        edit_errors = PageErrors(
             page_name="Application details",
             url=reverse("import:opt:edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
-            EditOutwardProcessingTradeForm(data=model_to_dict(application), instance=application),
-            page_errors,
+            EditOPTForm(data=model_to_dict(application), instance=application), edit_errors
         )
-        errors.add(page_errors)
+        errors.add(edit_errors)
+
+        fq_errors = PageErrors(
+            page_name="Further Questions",
+            url=reverse(
+                "import:opt:edit-further-questions", kwargs={"application_pk": application_pk}
+            ),
+        )
+        create_page_errors(
+            FurtherQuestionsOPTForm(data=model_to_dict(application), instance=application),
+            fq_errors,
+        )
+        errors.add(fq_errors)
 
         if request.POST:
-            form = SubmitOutwardProcessingTradeForm(data=request.POST)
+            form = SubmitOPTForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.status = ImportApplication.SUBMITTED
@@ -106,7 +156,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitOutwardProcessingTradeForm()
+            form = SubmitOPTForm()
 
         # TODO: ICMSLST-599 what template to use?
         declaration = Template.objects.filter(

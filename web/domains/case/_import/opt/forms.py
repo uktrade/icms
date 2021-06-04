@@ -4,11 +4,12 @@ from django import forms
 
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
+from web.models.shared import YesNoNAChoices
 
 from . import models
 
 
-class EditOutwardProcessingTradeForm(forms.ModelForm):
+class EditOPTForm(forms.ModelForm):
     # TODO: filter users here correctly (users with access to the importer)
     contact = forms.ModelChoiceField(
         queryset=User.objects.all(),
@@ -17,6 +18,7 @@ class EditOutwardProcessingTradeForm(forms.ModelForm):
 
     class Meta:
         model = models.OutwardProcessingTradeApplication
+
         fields = (
             "contact",
             "applicant_reference",
@@ -47,7 +49,35 @@ class EditOutwardProcessingTradeForm(forms.ModelForm):
         return day
 
 
-class SubmitOutwardProcessingTradeForm(forms.Form):
+class FurtherQuestionsOPTForm(forms.ModelForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_similar_to_own_factory",
+            "fq_manufacturing_within_eu",
+            "fq_maintained_in_eu",
+            "fq_maintained_in_eu_reasons",
+        )
+
+        widgets = {
+            "fq_maintained_in_eu_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (cleaned_data.get("fq_maintained_in_eu") == YesNoNAChoices.no) and not cleaned_data.get(
+            "fq_maintained_in_eu_reasons"
+        ):
+            self.add_error(
+                "fq_maintained_in_eu_reasons", forms.Field.default_error_messages["required"]
+            )
+
+        return cleaned_data
+
+
+class SubmitOPTForm(forms.Form):
     confirmation = forms.CharField(
         label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
     )
