@@ -3,9 +3,7 @@ from django.core.exceptions import ValidationError
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
-from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
-from web.forms.widgets import DateInput
 
 from . import models
 
@@ -66,37 +64,6 @@ class PrepareOILForm(forms.ModelForm):
             ("true", "Yes"),
             ("false", "No"),
         ]
-
-
-class UserImportCertificateForm(forms.ModelForm):
-    document = ICMSFileField(required=True)
-
-    certificate_type = forms.ChoiceField(
-        choices=(models.UserImportCertificate.CertificateType.registered_as_choice(),)
-    )
-
-    class Meta:
-        model = models.UserImportCertificate
-        fields = (
-            "reference",
-            "certificate_type",
-            "constabulary",
-            "date_issued",
-            "expiry_date",
-            "document",
-        )
-        widgets = {"date_issued": DateInput, "expiry_date": DateInput}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance.pk and self.instance.is_active:
-            self.fields["document"].required = False
-
-    def clean(self):
-        data = super().clean()
-
-        # document is handled in the view
-        data.pop("document", None)
 
 
 class SubmitOILForm(forms.Form):

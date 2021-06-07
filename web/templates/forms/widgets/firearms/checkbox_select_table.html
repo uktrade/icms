@@ -47,7 +47,7 @@
             {% elif user %}
               <td>
                 <a
-                  href="{{ icms_url('import:fa-oil:view-user-import-certificate-file', kwargs={'application_pk': process.pk, 'certificate_pk': file.pk}) }}">
+                  href="{{ icms_url('import:fa:view-certificate-document', kwargs={'application_pk': process.pk, 'certificate_pk': file.pk}) }}">
                   {{ file.filename }}
                 </a>
               </td>

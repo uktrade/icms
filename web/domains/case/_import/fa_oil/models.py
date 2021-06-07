@@ -1,32 +1,8 @@
 from django.db import models
 
-from web.domains.constabulary.models import Constabulary
-from web.domains.file.models import File
-from web.domains.firearms.models import FirearmsAuthority
+from web.models import UserImportCertificate
 
 from ..models import ChecklistBase, ImportApplication
-
-
-class UserImportCertificate(File):
-    """User imported certificates."""
-
-    class CertificateType(models.TextChoices):
-        firearms = ("firearms", "Firearms Certificate")
-        registered = ("registered", "Registered Firearms Dealer Certificate")
-        shotgun = ("shotgun", "Shotgun Certificate")
-
-        @classmethod
-        def registered_as_choice(cls) -> tuple[str, str]:
-            return (cls.registered.value, cls.registered.label)  # type: ignore[attr-defined]
-
-    reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
-    certificate_type = models.CharField(
-        verbose_name="Certificate Type", choices=CertificateType.choices, max_length=200
-    )
-    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT)
-    date_issued = models.DateField(verbose_name="Date Issued")
-    expiry_date = models.DateField(verbose_name="Expiry Date")
-    updated_datetime = models.DateTimeField(auto_now=True)
 
 
 class OpenIndividualLicenceApplication(ImportApplication):
@@ -36,9 +12,8 @@ class OpenIndividualLicenceApplication(ImportApplication):
     section2 = models.BooleanField(verbose_name="Section 2", default=True)
 
     know_bought_from = models.BooleanField(null=True)
-    user_imported_certificates = models.ManyToManyField(
-        UserImportCertificate, related_name="import_application"
-    )
+
+    user_imported_certificates = models.ManyToManyField(UserImportCertificate, related_name="+")
 
     commodity_code = models.CharField(max_length=40, blank=False, null=True)
 
@@ -50,7 +25,7 @@ class VerifiedCertificate(models.Model):
         related_name="verified_certificates",
     )
     firearms_authority = models.ForeignKey(
-        FirearmsAuthority, on_delete=models.PROTECT, related_name="verified_certificates"
+        "FirearmsAuthority", on_delete=models.PROTECT, related_name="verified_certificates"
     )
 
     created_datetime = models.DateTimeField(auto_now_add=True)

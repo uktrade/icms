@@ -28,22 +28,22 @@
         <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
         <td>
             <a
-              href="{{ icms_url('import:fa-oil:view-user-import-certificate-file', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
-              {{ certificate.filename }}
-            </a> {{ certificate.human_readable_file_size() }}
+              href="{{ icms_url('import:fa:view-certificate-document', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
+              {{ certificate.filename }}</a>
+            <span class="extra-info">{{ certificate.human_readable_file_size() }}</span>
         </td>
         {% if not read_only %}
           <td>
-            <form method="post"
-               action="{{ icms_url('import:fa-oil:delete-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">
+            <a href="{{ icms_url('import:fa:edit-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+                class="link-button button icon-pencil">
+              Edit</a>
+            <form
+              method="post"
+              action="{{ icms_url('import:fa:archive-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
+              class="form-inline">
              {{ csrf_input }}
-             <button type="submit" class="link-button icon-bin button">Delete</button>
+             <button type="submit" class="link-button button icon-bin">Delete</button>
             </form>
-            <p>
-              <a href="{{ icms_url('import:fa-oil:edit-user-import-certificate', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}"
-                 class="link-button icon-pencil button">
-                Edit</a>
-            </p>
           </td>
         {% endif %}
       </tr>
@@ -57,7 +57,7 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ icms_url('import:fa-oil:create-user-import-certificate', kwargs={'pk': process.pk}) }}"
+          href="{{ icms_url('import:fa:create-certificate', kwargs={'application_pk': process.pk}) }}"
           class="button small-button icon-plus">
         Add Certificate
         </a>

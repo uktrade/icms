@@ -1,0 +1,40 @@
+{% extends "flow/task-base.html" %}
+
+
+{% block sidebar %}
+  {% if process.process_type == "OpenIndividualLicenceApplication" %}
+    {% include "partial/case/import/fa-oil/sidebar.html" %}
+  {% elif process.process_type == "SILApplication" %}
+    {% include "partial/case/import/fa-sil/sidebar.html" %}
+  {% endif %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      {% if process.process_type == "OpenIndividualLicenceApplication" %}
+        <a
+          href="{{ icms_url('import:fa-oil:edit', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Main Application
+        </a>
+      {% elif process.process_type == "SILApplication" %}
+        <a
+          href="{{ icms_url('import:fa-sil:edit', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Main Application
+        </a>
+      {% endif %}
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Certificates/Documents</h3>
+  {% include "partial/certificates/list-verified.html" %}
+
+  <h3>Other Certificates</h3>
+  {% include "partial/certificates/list.html" %}
+{% endblock %}

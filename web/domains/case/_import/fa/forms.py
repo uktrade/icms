@@ -5,13 +5,16 @@ from django_select2 import forms as s2forms
 
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
+from web.domains.file.utils import ICMSFileField
 from web.domains.firearms.widgets import CheckboxSelectMultipleTable
+from web.forms.widgets import DateInput
 from web.models import (
     ConstabularyEmail,
     DFLApplication,
     ImportApplication,
     ImportContact,
     OpenIndividualLicenceApplication,
+    UserImportCertificate,
 )
 
 
@@ -123,3 +126,34 @@ class ImportContactLegalEntityForm(forms.ModelForm):
             "registration_number": "Registration Number",
             "dealer": "Did you buy from a dealer?",
         }
+
+
+class UserImportCertificateForm(forms.ModelForm):
+    document = ICMSFileField(required=True)
+
+    certificate_type = forms.ChoiceField(
+        choices=(UserImportCertificate.CertificateType.registered_as_choice(),)
+    )
+
+    class Meta:
+        model = UserImportCertificate
+        fields = (
+            "reference",
+            "certificate_type",
+            "constabulary",
+            "date_issued",
+            "expiry_date",
+            "document",
+        )
+        widgets = {"date_issued": DateInput, "expiry_date": DateInput}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk and self.instance.is_active:
+            self.fields["document"].required = False
+
+    def clean(self):
+        data = super().clean()
+
+        # document is handled in the view
+        data.pop("document", None)

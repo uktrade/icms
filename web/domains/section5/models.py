@@ -12,7 +12,7 @@ class Section5AuthorityManager(models.Manager):
     def currently_active(self):
         today = timezone.now().date()
 
-        return self.filter(is_active=True, start_date__gte=today, end_date__lte=today)
+        return self.filter(is_active=True, start_date__lte=today, end_date__gte=today)
 
 
 class Section5Authority(models.Model):

@@ -7,15 +7,17 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.fa.forms import (
     ConstabularyEmailForm,
     ConstabularyEmailResponseForm,
     ImportContactLegalEntityForm,
     ImportContactPersonForm,
+    UserImportCertificateForm,
 )
-from web.domains.case.views import check_application_permission
+from web.domains.case.views import check_application_permission, view_application_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.models import (
     ConstabularyEmail,
@@ -388,6 +390,156 @@ def edit_import_contact(
         }
 
         return render(request, "web/domains/case/import/fa/import-contacts/edit.html", context)
+
+
+@login_required
+def manage_certificates(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "certificates": application.user_imported_certificates.active(),
+            "verified_certificates": application.importer.firearms_authorities.active(),
+            "page_title": "Firearms and Ammunition - Certificates",
+        }
+
+        return render(request, "web/domains/case/import/fa/certificates/manage.html", context)
+
+
+@login_required
+def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = UserImportCertificateForm(data=request.POST, files=request.FILES)
+            document = request.FILES.get("document")
+
+            if form.is_valid():
+                extra_args = {
+                    field: value
+                    for (field, value) in form.cleaned_data.items()
+                    if field not in ["document"]
+                }
+
+                create_file_model(
+                    document,
+                    request.user,
+                    application.user_imported_certificates,
+                    extra_args=extra_args,
+                )
+
+                return redirect(
+                    reverse(
+                        "import:fa:manage-certificates", kwargs={"application_pk": application_pk}
+                    )
+                )
+        else:
+            form = UserImportCertificateForm()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Firearms and Ammunition - Create Certificate",
+        }
+
+        return render(request, "web/domains/case/import/fa/certificates/create.html", context)
+
+
+@login_required
+def edit_certificate(
+    request: HttpRequest, *, application_pk: int, certificate_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+        check_application_permission(application, request.user, "import")
+
+        certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = UserImportCertificateForm(data=request.POST, instance=certificate)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:manage-certificates",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+
+        else:
+            form = UserImportCertificateForm(instance=certificate)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": f"Firearms and Ammunition - Edit Certificate '{certificate.reference}'",
+            "certificate": certificate,
+        }
+
+        return render(request, "web/domains/case/import/fa/certificates/edit.html", context)
+
+
+@require_GET
+@login_required
+def view_certificate_document(
+    request: HttpRequest, *, application_pk: int, certificate_pk: int
+) -> HttpResponse:
+    import_application: ImportApplication = get_object_or_404(ImportApplication, pk=application_pk)
+    application: FaImportApplication = _get_fa_application(import_application)
+
+    return view_application_file(
+        request.user, application, application.user_imported_certificates, certificate_pk, "import"
+    )
+
+
+@require_POST
+@login_required
+def archive_certificate(
+    request: HttpRequest, *, application_pk: int, certificate_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        document = application.user_imported_certificates.get(pk=certificate_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
 
 
 def _update_know_bought_from(firearms_application: FaImportApplication) -> None:

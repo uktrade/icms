@@ -78,6 +78,35 @@ urlpatterns = [
                         ]
                     ),
                 ),
+                path(
+                    "certificates/",
+                    include(
+                        [
+                            path("manage/", views.manage_certificates, name="manage-certificates"),
+                            path("create/", views.create_certificate, name="create-certificate"),
+                            path(
+                                "<int:certificate_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "edit/", views.edit_certificate, name="edit-certificate"
+                                        ),
+                                        path(
+                                            "view/",
+                                            views.view_certificate_document,
+                                            name="view-certificate-document",
+                                        ),
+                                        path(
+                                            "archive/",
+                                            views.archive_certificate,
+                                            name="archive-certificate",
+                                        ),
+                                    ]
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
             ]
         ),
     )

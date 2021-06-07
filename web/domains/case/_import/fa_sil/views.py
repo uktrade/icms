@@ -218,11 +218,26 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
+    # User certificates errors
+    if (
+        application.section1
+        and not application.user_imported_certificates.filter(is_active=True).exists()
+    ):
+        certificate_errors = PageErrors(
+            page_name="Certificates",
+            url=reverse("import:fa:manage-certificates", kwargs={"application_pk": application.pk}),
+        )
+
+        certificate_errors.add(
+            FieldError(
+                field_name="Certificate", messages=["At least one certificate must be added"]
+            )
+        )
+
+        errors.add(certificate_errors)
+
     # Select existing certificate errors
     # TODO: implement ICMSLST-476
-
-    # User certificates errors
-    # TODO: implement ICMSLST-675
 
     # Check know bought from
     # TODO: implement ICMSLST-676

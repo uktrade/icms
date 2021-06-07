@@ -37,6 +37,7 @@
                              'import:fa-oil:toggle-verified-firearms',
                              kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
               {{ csrf_input }}
+              {# TODO fix in ICMSLST-554 #}
               {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
                 <input type="submit" class="button small-button" value="Remove"/>
               {% else %}

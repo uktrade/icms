@@ -79,6 +79,10 @@ class Migration(migrations.Migration):
                     "verified_section5",
                     models.ManyToManyField(related_name="+", to="web.Section5Authority"),
                 ),
+                (
+                    "user_imported_certificates",
+                    models.ManyToManyField(related_name="+", to="UserImportCertificate"),
+                ),
             ],
             bases=("web.importapplication",),
         ),
