@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.domains.file.models import File
+from web.models.shared import YesNoNAChoices
 
 from ..models import ChecklistBase, ImportApplication
 
@@ -28,7 +29,7 @@ class DerogationsChecklist(ChecklistBase):
 
     supporting_document_received = models.CharField(
         max_length=10,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Supporting documentation received?",
     )

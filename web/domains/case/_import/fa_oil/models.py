@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.models import UserImportCertificate
+from web.models.shared import YesNoNAChoices
 
 from ..models import ChecklistBase, ImportApplication
 
@@ -39,19 +40,19 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
 
     authority_required = models.CharField(
         max_length=10,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Authority to possess required?",
     )
     authority_received = models.CharField(
         max_length=10,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Authority to possess received?",
     )
     authority_police = models.CharField(
         max_length=10,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Authority to possess checked with police?",
     )

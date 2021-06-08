@@ -4,6 +4,7 @@ from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
+from web.models.shared import YesNoNAChoices
 
 
 class DFLGoodsCertificate(File):
@@ -69,14 +70,14 @@ class DFLChecklist(ChecklistBase):
 
     deactivation_certificate_attached = models.CharField(
         max_length=3,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Deactivation certificate attached?",
     )
 
     deactivation_certificate_issued = models.CharField(
         max_length=3,
-        choices=ChecklistBase.Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Deactivation certificate issued by competent authority?",
     )

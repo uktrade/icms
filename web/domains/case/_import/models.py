@@ -14,6 +14,7 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
+from web.models.shared import YesNoNAChoices
 
 
 class ImportApplicationType(models.Model):
@@ -290,21 +291,16 @@ class ChecklistBase(models.Model):
     class Meta:
         abstract = True
 
-    class Response(models.TextChoices):
-        yes = ("yes", "Yes")
-        no = ("no", "No")
-        not_applicable = ("n/a", "N/A")
-
     case_update = models.CharField(
         max_length=3,
-        choices=Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Case update required from applicant?",
     )
 
     fir_required = models.CharField(
         max_length=3,
-        choices=Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Further information request required?",
     )
@@ -316,14 +312,14 @@ class ChecklistBase(models.Model):
 
     validity_period_correct = models.CharField(
         max_length=3,
-        choices=Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Validity period correct?",
     )
 
     endorsements_listed = models.CharField(
         max_length=3,
-        choices=Response.choices,
+        choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
     )
