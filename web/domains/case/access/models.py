@@ -7,13 +7,12 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
+from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
 from web.flow.models import Process
 
 logger = logging.getLogger(__name__)
 
 
-# TODO: ICMSLST-701 adapt to new workbasket
 class AccessRequest(WorkbasketBase, Process):
     APPROVED = "APPROVED"
     REFUSED = "REFUSED"
@@ -63,25 +62,93 @@ class AccessRequest(WorkbasketBase, Process):
 
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
 
-    # TODO: ICMSLST-701 adapt to new workbasket
-    def get_workbasket_template(self):
-        return "web/domains/workbasket/partials/access-request.html"
-
-    # TODO: ICMSLST-701 adapt to new workbasket
-    def get_task_url(self, task, user):
-        if task.task_type == "notify":
-            return reverse("access:management", kwargs={"pk": self.pk})
-        else:
-            raise Exception(f"Unknown task_type {task.task_type}")
-
     @cached_property
     def submitted_by_email(self):
         if self.submitted_by:
             return self.submitted_by.email
         return None
 
+    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+        r = WorkbasketRow()
 
-# TODO: ICMSLST-701 adapt to new workbasket
+        # TODO: use self.reference once that's properly filled in
+        r.reference = self.pk
+
+        r.subject = self.process_type
+
+        r.company = "\n".join(
+            [
+                f"{self.submitted_by} {self.submitted_by.email}",
+                self.organisation_name,
+                self.organisation_address,
+            ]
+        )
+
+        r.status = self.get_status_display()
+
+        r.timestamp = self.created
+
+        info_rows = ["Access Request"]
+
+        if self.further_information_requests.open():
+            info_rows.append("Further Information Requested")
+
+        if self.approval_requests.filter(is_active=True) and user.has_perm(
+            "web.reference_data_access"
+        ):
+            info_rows.append("Approval Requested")
+
+        r.information = "\n".join(info_rows)
+
+        task = self.get_active_task()
+
+        if user.has_perm("web.reference_data_access"):
+            admin_actions: list[WorkbasketAction] = []
+
+            if self.process_type == "ExporterAccessRequest":
+                entity = "exporter"
+            elif self.process_type == "ImporterAccessRequest":
+                entity = "importer"
+            else:
+                raise NotImplementedError(f"process_type: {self.process_type} not supported")
+
+            admin_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name="Manage",
+                    url=reverse("access:case-management", kwargs={"pk": self.pk, "entity": entity}),
+                ),
+            )
+
+            r.actions.append(admin_actions)
+
+        if task and task.owner == user:
+            owner_actions: list[WorkbasketAction] = [
+                WorkbasketAction(
+                    is_post=False,
+                    name="View",
+                    url=reverse(
+                        "case:view", kwargs={"application_pk": self.pk, "case_type": "access"}
+                    ),
+                )
+            ]
+
+            for fir in self.further_information_requests.open():
+                kwargs = {"application_pk": self.pk, "fir_pk": fir.pk, "case_type": "access"}
+
+                owner_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Respond FIR",
+                        url=reverse("case:respond-fir", kwargs=kwargs),
+                    ),
+                )
+
+            r.actions.append(owner_actions)
+
+        return r
+
+
 class ImporterAccessRequest(AccessRequest):
     PROCESS_TYPE = "ImporterAccessRequest"
 
@@ -109,7 +176,6 @@ class ImporterAccessRequest(AccessRequest):
     )
 
 
-# TODO: ICMSLST-701 adapt to new workbasket
 class ExporterAccessRequest(AccessRequest):
     PROCESS_TYPE = "ExporterAccessRequest"
 

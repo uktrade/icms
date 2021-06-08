@@ -1,17 +1,4 @@
-{% if process.process_type in ["ImporterAccessRequest", "ExporterAccessRequest"] %}
-  <!-- TODO: ICMSLST-701 adapt to new workbasket -->
-  <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">View</a>
-  <br>
-
-  <!-- TODO: ICMSLST-703 adapt to new workbasket -->
-  {% for fir in process.further_information_requests.open() %}
-    <a href="{{ icms_url('case:respond-fir', kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': 'access' }) }}">
-      Respond FIR
-    </a>
-    <br>
-  {% endfor %}
-
-{% elif process.process_type == "ImporterApprovalRequest" %}
+{% if process.process_type == "ImporterApprovalRequest" %}
   <!-- TODO: ICMSLST-702 adapt to new workbasket -->
   {% if not process.requested_from %}
     <form method="post" action="{{ icms_url('access:case-approval-take-ownership', args=[process.pk, 'importer']) }}">

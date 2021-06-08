@@ -141,7 +141,7 @@
 
                 <td>{{ row.subject }}</td>
 
-                <td>{{ row.company }}</td>
+                <td>{{ row.company|nl2br }}</td>
 
                 <td>
                   {{ row.status }}
@@ -149,7 +149,7 @@
                   {{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
                 </td>
 
-                <td>{{ row.information }}</td>
+                <td>{{ row.information|nl2br }}</td>
 
                 <td>
                   {% for action_block in row.actions %}
