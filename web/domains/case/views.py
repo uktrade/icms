@@ -12,7 +12,9 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -1541,6 +1543,9 @@ def _get_import_errors(application, application_errors, prepare_errors):
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         application_errors.add(_get_fa_oil_errors(application))
 
+    elif application.process_type == DFLApplication.PROCESS_TYPE:
+        application_errors.add(_get_fa_dfl_errors(application))
+
     else:
         raise NotImplementedError(
             f"process_type {application.process_type!r} hasn't been implemented yet."
@@ -1556,6 +1561,16 @@ def _get_import_errors(application, application_errors, prepare_errors):
             FieldError(field_name="Licence end date", messages=["Licence end date missing."])
         )
 
+    app_t: ImportApplicationType = application.application_type
+
+    if app_t.paper_licence_flag and app_t.electronic_licence_flag:
+        if application.issue_paper_licence_only is None:
+            prepare_errors.add(
+                FieldError(
+                    field_name="Issue paper licence only?", messages=["You must enter this item"]
+                )
+            )
+
 
 def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
     checklist_errors = PageErrors(
@@ -1570,6 +1585,28 @@ def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
             ChecklistFirearmsOILApplicationForm(
                 data=model_to_dict(oil.checklist), instance=oil.checklist
             ),
+            checklist_errors,
+        )
+
+    except ObjectDoesNotExist:
+        checklist_errors.add(
+            FieldError(field_name="Checklist", messages=["Please complete checklist."])
+        )
+
+    return checklist_errors
+
+
+def _get_fa_dfl_errors(application: ImportApplication) -> PageErrors:
+    checklist_errors = PageErrors(
+        page_name="Checklist",
+        url=reverse("import:fa-dfl:manage-checklist", kwargs={"application_pk": application.pk}),
+    )
+
+    dfl: DFLApplication = application.dflapplication
+
+    try:
+        create_page_errors(
+            DFLChecklistForm(data=model_to_dict(dfl.checklist), instance=dfl.checklist),
             checklist_errors,
         )
 
