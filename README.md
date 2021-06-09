@@ -90,6 +90,25 @@ npm i --package-lock-only
 npm audit fix
 ```
 
+
+## Updating Javascript dependencies (When they get updated):
+Run the following command, this will install dependencies and copy them to the correct place
+
+```bash
+make requirements-web
+```
+
+see the following file for the config:
+
+```
+# icms/config/settings/development.py
+NPM_STATIC_FILES_LOCATION =
+NPM_FILE_PATTERNS
+```
+
+Currently we only have this config defined in the development.py settings file.
+
+
 ## Rebuilding the database
 
 A complete reset of the application database can be performed using:

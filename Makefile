@@ -110,7 +110,7 @@ requirements-web: ## install javascript dependencies
 	unset UID && \
 	ICMS_DEBUG=True \
 	ICMS_MIGRATE=False \
-	docker-compose run --rm web sh -c "python manage.py npm && python manage.py collect-npm"
+	docker-compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
 
 collectstatic: ## copies static files to STATIC_ROOT
 	docker-compose run --rm web python ./manage.py collectstatic --noinput --traceback
@@ -138,6 +138,13 @@ local_s3: ## creates s3 buckets on localstack container
 
 list_s3: ## list S3 bucket contents on localstack container
 	aws --endpoint-url=http://localhost:4572 s3 ls s3://icms.local
+
+query_task_result: ## local development tool to query task results
+	unset UID && \
+	ICMS_DEBUG=True \
+	ICMS_MIGRATE=False \
+	docker-compose run --rm web python ./manage.py query_task_result
+
 
 ##@ Server
 debug: ## runs system in debug mode
