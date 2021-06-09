@@ -1,16 +1,13 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from django.db import models
+from django.urls import reverse
 
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
+from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
 from web.flow.models import Process
 
 from ..models import AccessRequest
 
 
-# TODO: ICMSLST-702 adapt to new workbasket
 class ApprovalRequest(WorkbasketBase, Process):
     """
     Approval request for submitted access requests.
@@ -70,19 +67,81 @@ class ApprovalRequest(WorkbasketBase, Process):
     def is_complete(self):
         return self.status == self.COMPLETED
 
-    # TODO: ICMSLST-702 adapt to new workbasket
-    def get_workbasket_template(self):
-        return "web/domains/workbasket/partials/approval-request.html"
+    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+        r = WorkbasketRow()
+
+        # TODO: use self.reference once that's properly filled in
+        r.reference = self.pk
+
+        r.subject = self.process_type
+
+        acc_req: AccessRequest = self.access_request
+
+        r.company = "\n".join(
+            [
+                f"{acc_req.submitted_by} {acc_req.submitted_by.email}",
+                acc_req.organisation_name,
+                acc_req.organisation_address,
+            ]
+        )
+
+        r.status = self.get_status_display()
+
+        r.timestamp = self.created
+
+        r.information = "Approval Request"
+
+        actions: list[WorkbasketAction] = []
+
+        if self.process_type == "ExporterApprovalRequest":
+            entity = "exporter"
+            access_request_pk = acc_req.exporteraccessrequest.pk
+
+        elif self.process_type == "ImporterApprovalRequest":
+            entity = "importer"
+            access_request_pk = acc_req.importeraccessrequest.pk
+
+        else:
+            raise NotImplementedError(f"process_type: {self.process_type} not supported")
+
+        if not self.requested_from:
+            actions.append(
+                WorkbasketAction(
+                    is_post=True,
+                    url=reverse(
+                        "access:case-approval-take-ownership",
+                        kwargs={"pk": self.pk, "entity": entity},
+                    ),
+                    name="Take Ownership",
+                )
+            )
+
+        else:
+            kwargs = {
+                "application_pk": access_request_pk,
+                "entity": entity,
+                "approval_request_pk": self.pk,
+            }
+
+            actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    url=reverse("access:case-approval-respond", kwargs=kwargs),
+                    name="Manage",
+                )
+            )
+
+        r.actions.append(actions)
+
+        return r
 
     class Meta:
         ordering = ("-request_date",)
 
 
-# TODO: ICMSLST-702 adapt to new workbasket
 class ExporterApprovalRequest(ApprovalRequest):
     PROCESS_TYPE = "ExporterApprovalRequest"
 
 
-# TODO: ICMSLST-702 adapt to new workbasket
 class ImporterApprovalRequest(ApprovalRequest):
     PROCESS_TYPE = "ImporterApprovalRequest"
