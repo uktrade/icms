@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 
+from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoNAChoices
@@ -47,6 +48,33 @@ class EditOPTForm(forms.ModelForm):
             raise forms.ValidationError("Date must be in the future.")
 
         return day
+
+
+class CompensatingProductsOPTForm(forms.ModelForm):
+    cp_origin_country = forms.ModelChoiceField(
+        label="Country Of Origin",
+        queryset=Country.objects.filter(country_groups__name="OPT COOs"),
+        required=True,
+        help_text="Select the country that the compensating products originate from.",
+    )
+
+    cp_processing_country = forms.ModelChoiceField(
+        label="Country Of Processing",
+        queryset=Country.objects.filter(country_groups__name="OPT COOs"),
+        required=True,
+        help_text="Select the country that the compensating products were processed in.",
+    )
+
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "cp_origin_country",
+            "cp_processing_country",
+            "cp_category",
+            "cp_total_quantity",
+            "cp_total_value",
+        )
 
 
 class FurtherQuestionsOPTForm(forms.ModelForm):

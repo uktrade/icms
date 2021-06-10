@@ -1,7 +1,8 @@
 from django.db import models
 
+from web.domains.country.models import Country
 from web.domains.file.models import File
-from web.models.shared import YesNoNAChoices
+from web.models.shared import YesNoNAChoices, at_least_0
 
 from ..models import ImportApplication
 
@@ -10,6 +11,10 @@ you have already completed this question on a previous application this year,
 you may select 'N/A'.""".replace(
     "\n", " "
 )
+
+_CP_CATEGORIES = [
+    (x, x) for x in ["4", "5", "6", "7", "8", "15", "21", "24", "26", "27", "29", "73"]
+]
 
 
 class OutwardProcessingTradeApplication(ImportApplication):
@@ -50,7 +55,53 @@ class OutwardProcessingTradeApplication(ImportApplication):
         help_text="Enter the suggested means of identification of re-imported compensating products.",
     )
 
-    # TODO: ICMLST-594 add Compensating Products
+    # Compensating Products fields (cp_ prefix)
+    cp_origin_country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Country Of Origin",
+        help_text="Select the country that the compensating products originate from.",
+    )
+
+    cp_processing_country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Country Of Processing",
+        help_text="Select the country that the compensating products were processed in.",
+    )
+
+    cp_category = models.CharField(
+        null=True,
+        max_length=2,
+        choices=_CP_CATEGORIES,
+        verbose_name="Category",
+        help_text="The category defines what commodities you are applying to import.",
+    )
+
+    cp_total_quantity = models.DecimalField(
+        null=True,
+        max_digits=9,
+        decimal_places=2,
+        verbose_name="Total Quantity",
+        validators=[at_least_0],
+        help_text=(
+            "Please note that maximum allocations apply. Please check the"
+            " guidance to ensure that you do not apply for more than is allowable."
+        ),
+    )
+
+    cp_total_value = models.DecimalField(
+        null=True,
+        max_digits=9,
+        decimal_places=2,
+        verbose_name="Total Value (Euro)",
+        validators=[at_least_0],
+        help_text="Value of processing of the fabric/yarn",
+    )
 
     # TODO: ICMLST-596 add Temporary Exported Goods
 

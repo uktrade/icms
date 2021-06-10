@@ -11,6 +11,11 @@ urlpatterns = [
             [
                 path("edit/", views.edit_opt, name="edit"),
                 path(
+                    "edit-compensating-products/",
+                    views.edit_compensating_products,
+                    name="edit-compensating-products",
+                ),
+                path(
                     "edit-further-questions/",
                     views.edit_further_questions,
                     name="edit-further-questions",

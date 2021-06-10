@@ -1,11 +1,20 @@
 <ul class="menu-out">
-    <li>
-      <a href="{{ icms_url('import:opt:edit', kwargs={'application_pk': process.pk}) }}">Application Details</a>
-    </li>
-    <li>
-      <a href="{{ icms_url('import:opt:edit-further-questions', kwargs={'application_pk': process.pk}) }}">Further Questions</a>
-    </li>
-    <li>
-      <a href="{{ icms_url('import:opt:submit', kwargs={'application_pk': process.pk}) }}">Submit</a>
-    </li>
-  </ul>
+  <li>
+    <a href="{{ icms_url('import:opt:edit', kwargs={'application_pk': process.pk}) }}">Application Details</a>
+  </li>
+  <li>
+    <a href="{{ icms_url('import:opt:edit-compensating-products', kwargs={'application_pk': process.pk}) }}">
+      Compensating Products
+    </a>
+  </li>
+  <li>
+    <a href="#">Temporary Exported Goods TODO: ICMLST-596</a>
+  </li>
+  <li>
+    <a href="{{ icms_url('import:opt:edit-further-questions', kwargs={'application_pk': process.pk}) }}">Further
+      Questions</a>
+  </li>
+  <li>
+    <a href="{{ icms_url('import:opt:submit', kwargs={'application_pk': process.pk}) }}">Submit</a>
+  </li>
+</ul>

@@ -10,13 +10,18 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm
-from web.domains.case.views import view_application_file
+from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import EditOPTForm, FurtherQuestionsOPTForm, SubmitOPTForm
+from .forms import (
+    CompensatingProductsOPTForm,
+    EditOPTForm,
+    FurtherQuestionsOPTForm,
+    SubmitOPTForm,
+)
 from .models import OutwardProcessingTradeApplication
 
 
@@ -59,6 +64,46 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/case/import/opt/edit.html", context)
+
+
+@login_required
+def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = CompensatingProductsOPTForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:opt:edit-compensating-products",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+
+        else:
+            form = CompensatingProductsOPTForm(instance=application)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
+        }
+
+        return render(
+            request, "web/domains/case/import/opt/edit-compensating-products.html", context
+        )
 
 
 @login_required

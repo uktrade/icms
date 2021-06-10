@@ -1,0 +1,35 @@
+{% extends "web/domains/case/import/opt/edit.html" %}
+
+{% block main_content %}
+  {% block task_details %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    <h4>Compensating Products</h4>
+    {{ fields.field(form.cp_origin_country) }}
+    {{ fields.field(form.cp_processing_country) }}
+    {{ fields.field(form.cp_category) }}
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        <p>Shirts, T-shirts, lightweight fine knit roll, polo or turtle necked jumpers
+          and pullovers (other than of wool or fine animal hair), undervests and the like, knitted or crocheted.
+        </p>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {{ fields.field(form.cp_total_quantity) }}
+    <div class="row">
+      <div class="three columns bold">
+        <div class="float-right">Units</div>
+      </div>
+      <div class="six columns"><p>Pieces</p></div>
+      <div class="three columns"></div>
+    </div>
+    {{ fields.field(form.cp_total_value) }}
+
+    <input type="submit" name="action" class="primary-button button" value="Save"/>
+  {% endcall %}
+
+{% endblock %}
