@@ -1,11 +1,12 @@
 import datetime
+from typing import Any
 
 from django import forms
 
 from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
-from web.models.shared import YesNoNAChoices
+from web.models.shared import YesNoChoices, YesNoNAChoices
 
 from . import models
 
@@ -122,6 +123,176 @@ class FurtherQuestionsOPTForm(forms.ModelForm):
         ):
             self.add_error(
                 "fq_maintained_in_eu_reasons", forms.Field.default_error_messages["required"]
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsBaseOPTForm(forms.ModelForm):
+    def __init__(self, *args: Any, has_files: bool, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.has_files = has_files
+
+
+class FurtherQuestionsEmploymentDecreasedOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_employment_decreased",
+            "fq_employment_decreased_reasons",
+        )
+
+        widgets = {
+            "fq_employment_decreased_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            (cleaned_data.get("fq_employment_decreased") == YesNoNAChoices.yes)
+            and not cleaned_data.get("fq_employment_decreased_reasons")
+            and not self.has_files
+        ):
+            self.add_error(
+                "fq_employment_decreased_reasons", "You must enter this item, or attach a file"
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsPriorAuthorisationOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_prior_authorisation",
+            "fq_prior_authorisation_reasons",
+        )
+
+        widgets = {
+            "fq_prior_authorisation_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            (cleaned_data.get("fq_prior_authorisation") == YesNoChoices.yes)
+            and not cleaned_data.get("fq_prior_authorisation_reasons")
+            and not self.has_files
+        ):
+            self.add_error(
+                "fq_prior_authorisation_reasons", "You must enter this item, or attach a file"
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsPastBeneficiaryOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_past_beneficiary",
+            "fq_past_beneficiary_reasons",
+        )
+
+        widgets = {
+            "fq_past_beneficiary_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            (cleaned_data.get("fq_past_beneficiary") == YesNoChoices.yes)
+            and not cleaned_data.get("fq_past_beneficiary_reasons")
+            and not self.has_files
+        ):
+            self.add_error(
+                "fq_past_beneficiary_reasons", "You must enter this item, or attach a file"
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsNewApplicationOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_new_application",
+            "fq_new_application_reasons",
+        )
+
+        widgets = {
+            "fq_new_application_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            (cleaned_data.get("fq_new_application") == YesNoChoices.yes)
+            and not cleaned_data.get("fq_new_application_reasons")
+            and not self.has_files
+        ):
+            self.add_error(
+                "fq_new_application_reasons", "You must enter this item, or attach a file"
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsFurtherAuthorisationOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "fq_further_authorisation",
+            "fq_further_authorisation_reasons",
+        )
+
+        widgets = {
+            "fq_further_authorisation_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            (cleaned_data.get("fq_further_authorisation") == YesNoChoices.yes)
+            and not cleaned_data.get("fq_further_authorisation_reasons")
+            and not self.has_files
+        ):
+            self.add_error(
+                "fq_further_authorisation_reasons", "You must enter this item, or attach a file"
+            )
+
+        return cleaned_data
+
+
+class FurtherQuestionsSubcontractProductionOPTForm(FurtherQuestionsBaseOPTForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = ("fq_subcontract_production",)
+
+        widgets = {
+            "_reasons": forms.Textarea({"rows": 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if (
+            cleaned_data.get("fq_subcontract_production") == YesNoChoices.yes
+        ) and not self.has_files:
+            self.add_error(
+                "fq_subcontract_production",
+                "Please ensure you have uploaded a declaration from the subcontractor",
             )
 
         return cleaned_data

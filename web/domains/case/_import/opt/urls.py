@@ -25,29 +25,24 @@ urlpatterns = [
                     views.edit_further_questions,
                     name="edit-further-questions",
                 ),
+                path(
+                    "edit-further-questions/<str:fq_type>/",
+                    views.edit_further_questions_shared,
+                    name="edit-further-questions-shared",
+                ),
                 path("submit/", views.submit_opt, name="submit"),
                 path(
-                    "supporting-document/",
+                    "document/",
                     include(
                         [
-                            path(
-                                "add/",
-                                views.add_supporting_document,
-                                name="add-supporting-document",
-                            ),
+                            path("add/<str:file_type>", views.add_document, name="add-document"),
                             path(
                                 "<int:document_pk>/",
                                 include(
                                     [
+                                        path("view/", views.view_document, name="view-document"),
                                         path(
-                                            "view/",
-                                            views.view_supporting_document,
-                                            name="view-supporting-document",
-                                        ),
-                                        path(
-                                            "delete/",
-                                            views.delete_supporting_document,
-                                            name="delete-supporting-document",
+                                            "delete/", views.delete_document, name="delete-document"
                                         ),
                                     ]
                                 ),

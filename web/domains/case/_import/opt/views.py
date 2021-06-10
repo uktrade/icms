@@ -1,5 +1,6 @@
-from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from typing import Any, Type
+
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
@@ -19,26 +20,30 @@ from web.utils.validation import ApplicationErrors, PageErrors, create_page_erro
 from .forms import (
     CompensatingProductsOPTForm,
     EditOPTForm,
+    FurtherQuestionsBaseOPTForm,
+    FurtherQuestionsEmploymentDecreasedOPTForm,
+    FurtherQuestionsFurtherAuthorisationOPTForm,
+    FurtherQuestionsNewApplicationOPTForm,
     FurtherQuestionsOPTForm,
+    FurtherQuestionsPastBeneficiaryOPTForm,
+    FurtherQuestionsPriorAuthorisationOPTForm,
+    FurtherQuestionsSubcontractProductionOPTForm,
     SubmitOPTForm,
     TempExportedGoodsOPTForm,
 )
-from .models import OutwardProcessingTradeApplication
+from .models import OutwardProcessingTradeApplication, OutwardProcessingTradeFile
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        # TODO: use check_application_permission
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = EditOPTForm(data=request.POST, instance=application)
@@ -53,7 +58,9 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         else:
             form = EditOPTForm(instance=application, initial={"contact": request.user})
 
-        supporting_documents = application.supporting_documents.filter(is_active=True)
+        supporting_documents = application.documents.filter(
+            is_active=True, file_type=OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT
+        )
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -62,6 +69,7 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit",
             "supporting_documents": supporting_documents,
+            "prev_link": reverse("import:opt:edit", kwargs={"application_pk": application_pk}),
         }
 
         return render(request, "web/domains/case/import/opt/edit.html", context)
@@ -148,18 +156,15 @@ def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_further_questions(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        # TODO: use check_application_permission
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
@@ -189,18 +194,67 @@ def edit_further_questions(request: HttpRequest, *, application_pk: int) -> Http
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+def edit_further_questions_shared(
+    request: HttpRequest, *, application_pk: int, fq_type: str
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        form_class = _get_fq_form(fq_type)
+
+        if request.POST:
+            has_files = application.documents.filter(is_active=True, file_type=fq_type).exists()
+
+            form = form_class(data=request.POST, instance=application, has_files=has_files)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:opt:edit-further-questions-shared",
+                        kwargs={"application_pk": application_pk, "fq_type": fq_type},
+                    )
+                )
+
+        else:
+            # no validation done on GETs, so pass in dummy has_files
+            form = form_class(instance=application, has_files=False)
+
+        supporting_documents = application.documents.filter(is_active=True, file_type=fq_type)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
+            "supporting_documents": supporting_documents,
+            "file_type": fq_type,
+            "fq_page_name": _get_fq_page_name(fq_type),
+        }
+
+        return render(
+            request, "web/domains/case/import/opt/edit-further-questions-shared.html", context
+        )
+
+
+@login_required
 def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        # TODO: use check_application_permission
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
 
@@ -224,6 +278,27 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             fq_errors,
         )
         errors.add(fq_errors)
+
+        for file_type in OutwardProcessingTradeFile.Type.values:
+            if not file_type.startswith("fq_"):
+                continue
+
+            form_class = _get_fq_form(file_type)
+            page_name = "Further Questions - " + _get_fq_page_name(file_type)
+            has_files = application.documents.filter(is_active=True, file_type=file_type).exists()
+
+            fq_shared_errors = PageErrors(
+                page_name=page_name, url=_get_edit_url(application_pk, file_type)
+            )
+
+            create_page_errors(
+                form_class(
+                    data=model_to_dict(application), instance=application, has_files=has_files
+                ),
+                fq_shared_errors,
+            )
+
+            errors.add(fq_shared_errors)
 
         if request.POST:
             form = SubmitOPTForm(data=request.POST)
@@ -265,30 +340,79 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         return render(request, "web/domains/case/import/opt/submit.html", context)
 
 
+def _get_edit_url(application_pk: int, file_type: str) -> str:
+    """Get edit URL to the page responsible for editing the given filetype."""
+
+    if file_type not in OutwardProcessingTradeFile.Type:  # type: ignore[operator]
+        raise ValueError(f"Invalid file_type {file_type}")
+
+    kwargs: dict[str, Any] = {"application_pk": application_pk}
+
+    if file_type == OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT:
+        return reverse("import:opt:edit", kwargs=kwargs)
+
+    else:
+        return reverse(
+            "import:opt:edit-further-questions-shared", kwargs=kwargs | {"fq_type": file_type}
+        )
+
+
+def _get_fq_form(file_type: str) -> Type[FurtherQuestionsBaseOPTForm]:
+    """Get the edit form for a specific Further Questions type."""
+
+    form_class_map = {
+        OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED: FurtherQuestionsEmploymentDecreasedOPTForm,
+        OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION: FurtherQuestionsPriorAuthorisationOPTForm,
+        OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY: FurtherQuestionsPastBeneficiaryOPTForm,
+        OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION: FurtherQuestionsNewApplicationOPTForm,
+        OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION: FurtherQuestionsFurtherAuthorisationOPTForm,
+        OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION: FurtherQuestionsSubcontractProductionOPTForm,
+    }
+
+    return form_class_map[file_type]  # type: ignore[index]
+
+
+def _get_fq_page_name(file_type: str) -> str:
+    """Get a human-readable page name for a specific Further Questions type."""
+
+    form_class_map = {
+        OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED: "Level of employment",
+        OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION: "Prior Authorisation",
+        OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY: "Past Beneficiary",
+        OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION: "New Application",
+        OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION: "Further Authorisation",
+        OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION: "Subcontract production",
+    }
+
+    return form_class_map[file_type]  # type: ignore[index]
+
+
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_supporting_document(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def add_document(request: HttpRequest, *, application_pk: int, file_type: str) -> HttpResponse:
+    prev_link = _get_edit_url(application_pk, file_type)
+
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        # TODO: use check_application_permission
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
             document = request.FILES.get("document")
 
             if form.is_valid():
-                create_file_model(document, request.user, application.supporting_documents)
-
-                return redirect(
-                    reverse("import:opt:edit", kwargs={"application_pk": application_pk})
+                create_file_model(
+                    document,
+                    request.user,
+                    application.documents,
+                    extra_args={"file_type": file_type},
                 )
+
+                return redirect(prev_link)
         else:
             form = DocumentForm()
 
@@ -298,6 +422,7 @@ def add_supporting_document(request: HttpRequest, *, application_pk: int) -> Htt
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Licence - Add supporting document",
+            "prev_link": prev_link,
         }
 
         return render(request, "web/domains/case/import/opt/add_supporting_document.html", context)
@@ -305,37 +430,32 @@ def add_supporting_document(request: HttpRequest, *, application_pk: int) -> Htt
 
 @require_GET
 @login_required
-def view_supporting_document(
-    request: HttpRequest, *, application_pk: int, document_pk: int
-) -> HttpResponse:
+def view_document(request: HttpRequest, *, application_pk: int, document_pk: int) -> HttpResponse:
     application: OutwardProcessingTradeApplication = get_object_or_404(
         OutwardProcessingTradeApplication, pk=application_pk
     )
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.documents, document_pk, "import"
     )
 
 
 @require_POST
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def delete_supporting_document(
-    request: HttpRequest, *, application_pk: int, document_pk: int
-) -> HttpResponse:
+def delete_document(request: HttpRequest, *, application_pk: int, document_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
+        check_application_permission(application, request.user, "import")
+
         application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
-        # TODO: use check_application_permission
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
-        document = application.supporting_documents.get(pk=document_pk)
+        document = application.documents.get(pk=document_pk)
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:opt:edit", kwargs={"application_pk": application_pk}))
+        edit_link = _get_edit_url(application_pk, document.file_type)
+
+        return redirect(edit_link)

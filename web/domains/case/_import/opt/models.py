@@ -2,7 +2,7 @@ from django.db import models
 
 from web.domains.country.models import Country
 from web.domains.file.models import File
-from web.models.shared import YesNoNAChoices, at_least_0
+from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 
 from ..models import ImportApplication
 
@@ -15,6 +15,19 @@ you may select 'N/A'.""".replace(
 _CP_CATEGORIES = [
     (x, x) for x in ["4", "5", "6", "7", "8", "15", "21", "24", "26", "27", "29", "73"]
 ]
+
+
+class OutwardProcessingTradeFile(File):
+    class Type(models.TextChoices):
+        SUPPORTING_DOCUMENT = ("supporting_document", "Supporting Documents")
+        FQ_EMPLOYMENT_DECREASED = ("fq_employment_decreased", "Statistics")
+        FQ_PRIOR_AUTHORISATION = ("fq_prior_authorisation", "Copy of Prior Authorisation")
+        FQ_PAST_BENEFICIARY = ("fq_past_beneficiary", "Justification")
+        FQ_NEW_APPLICATION = ("fq_new_application", "Justification")
+        FQ_FURTHER_AUTHORISATION = ("fq_further_authorisation", "Evidence/Past Correspondence")
+        FQ_SUBCONTRACT_PRODUCTION = ("fq_subcontract_production", "Declaration from Subcontractor")
+
+    file_type = models.CharField(max_length=32, choices=Type.choices)
 
 
 class OutwardProcessingTradeApplication(ImportApplication):
@@ -136,6 +149,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         null=True, max_length=4096, verbose_name="Goods Description"
     )
 
+    # further questions (fq_ prefix)
     fq_similar_to_own_factory = models.CharField(
         max_length=3,
         choices=YesNoNAChoices.choices,
@@ -181,70 +195,114 @@ class OutwardProcessingTradeApplication(ImportApplication):
         verbose_name="If not, please indicate reasons for the above or make reference to past correspondence.",
     )
 
-    # TODO: add the rest of these "Further Questions"
+    fq_employment_decreased = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Has your level of employment decreased? (Article 5 (4) of Regulation (EC) No. 3036/94)",
+        help_text=_ONCE_PER_YEAR,
+    )
 
-    # Has your level of employment decreased?
-    # (Article 5 (4) of Regulation (EC) No. 3036/94)
-    # CHOICES: Yes,No,N/A
-    # TOOLTIP: This question only needs to be completed once per year. If you
-    # have already completed this question on a previous application this year,
-    # you may select 'N/A'.
-    #
-    #   ^ if above is "Yes", this shows up (3-line textbox):
-    #   Please indicate reasons and attach statistics below if necessary, or make reference to past correspondence.
-    #
-    #   also allows to upload files. either textbox must be filled in or file(s) uploaded ("You must enter this item, or attach statistics.")
+    # if above is "Yes" this must be filled
+    fq_employment_decreased_reasons = models.CharField(
+        max_length=4000,
+        blank=True,
+        null=True,
+        verbose_name="If so, please indicate reasons and attach statistics below if necessary, or make reference to past correspondence.",
+    )
 
-    # Have you applied for a prior authorisation in another Member State for the
-    # same quota period? (Article 3(4) or (5) of Regulation (EC) No. 3036/94)
-    # CHOICES: Yes,No
-    #
-    #   ^ if above is "Yes", this shows up (3-line textbox):
-    #   Please attach a copy of your authorisation below, or make reference to past correspondence.
-    #
-    #   also allows to upload files. either textbox must be filled in or file(s) uploaded  ("You must enter this item, or attach a copy.")
+    fq_prior_authorisation = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name=(
+            "Have you applied for a prior authorisation in another Member State"
+            " for the same quota period? (Article 3(4) or (5) of Regulation (EC) No. 3036/94)"
+        ),
+    )
 
-    # Are you applying as a past beneficiary with regard to the category and
-    # country concerned? (Article 3(4) of Regulation (EC) No. 3036/94)
-    # CHOICES: Yes,No
-    #
-    #   ^ if above is "Yes", this shows up (3-line textbox):
-    #   Please attach justification below, or make reference to past correspondence.
-    #
-    #   also allows to upload files. either textbox must be filled in or file(s) uploaded  ("You must enter this item, or attach justification.")
+    # if above is "Yes" this must be filled
+    fq_prior_authorisation_reasons = models.CharField(
+        max_length=4000,
+        blank=True,
+        null=True,
+        verbose_name="If so, please attach a copy of your authorisation below, or make reference to past correspondence.",
+    )
 
-    # Is this a new application with regard to the category and country
-    # concerned? (Article 3(5) (2) and (3) of Regulation (EC) No. 3036/94)
-    # CHOICES: Yes,No
-    #
-    #   ^ if above is "Yes", this shows up (3-line textbox):
-    #   Please make reference to past correspondence, or attach justification
-    #   below, that the value of the third country processing will not exceed
-    #   50% of the value of your Community production in the previous year.
-    #
-    #   also allows to upload files. either textbox must be filled in or file(s) uploaded  ("You must enter this item, or attach justification.")
+    fq_past_beneficiary = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name=(
+            "Are you applying as a past beneficiary with regard to the category and"
+            " country concerned? (Article 3(4) of Regulation (EC) No. 3036/94)"
+        ),
+    )
 
-    # Are you applying for a further authorisation with regard to the category
-    # and country concerned? (Article 3(5) (4) of Regulation (EC) No. 3036/94)
-    # CHOICES: Yes,No
-    #
-    #   ^ if above is "Yes", this shows up (3-line textbox):
-    #   If so please attach evidence below, or make reference to past
-    #   correspondence, that 50% of your previous authorisation has been
-    #   re-imported or that 80% has been exported.
-    #
-    #   also allows to upload files. either textbox must be filled in or file(s) uploaded  ("You must enter this item, or attach evidence.")
+    # if above is "Yes" this must be filled
+    fq_past_beneficiary_reasons = models.CharField(
+        max_length=4000,
+        blank=True,
+        null=True,
+        verbose_name="If so, please attach justification below, or make reference to past correspondence.",
+    )
 
-    # Does the value of your Community production in the previous year include
-    # subcontract production? (If so and you have not yet given this
-    # information, please attach declarations from subcontractors that they will
-    # not apply for the same quantities) (Article 2(2)(a) of Regulation (EC) No.
-    # 3036/94)
-    # CHOICES: Yes,No,N/A
-    # TOOLTIP: This question only needs to be completed once per year. If you
-    # have already completed this question on a previous application this year,
-    # you may select 'N/A'.
-    #
-    #   ^ if above is "Yes", file upload shows up which is mandatory ("Please ensure you have uploaded a declaration from the subcontractor.")
+    fq_new_application = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name=(
+            "Is this a new application with regard to the category and country"
+            " concerned? (Article 3(5) (2) and (3) of Regulation (EC) No. 3036/94)"
+        ),
+    )
 
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    # if above is "Yes" this must be filled
+    fq_new_application_reasons = models.CharField(
+        max_length=4000,
+        blank=True,
+        null=True,
+        verbose_name=(
+            "If so, please make reference to past correspondence, or attach justification"
+            " below, that the value of the third country processing will not exceed"
+            " 50% of the value of your Community production in the previous year."
+        ),
+    )
+
+    fq_further_authorisation = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name=(
+            "Are you applying for a further authorisation with regard to the category"
+            " and country concerned? (Article 3(5) (4) of Regulation (EC) No. 3036/94)"
+        ),
+    )
+
+    # if above is "Yes" this must be filled
+    fq_further_authorisation_reasons = models.CharField(
+        max_length=4000,
+        blank=True,
+        null=True,
+        verbose_name=(
+            "If so, please attach evidence below, or make reference to past"
+            " correspondence, that 50% of your previous authorisation has been"
+            " re-imported or that 80% has been exported."
+        ),
+    )
+
+    fq_subcontract_production = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name=(
+            "Does the value of your Community production in the previous year include"
+            " subcontract production? (If so and you have not yet given this"
+            " information, please attach declarations from subcontractors that they will"
+            " not apply for the same quantities) (Article 2(2)(a) of Regulation (EC) No."
+            " 3036/94)"
+        ),
+        help_text=_ONCE_PER_YEAR,
+    )
+
+    documents = models.ManyToManyField(OutwardProcessingTradeFile, related_name="+")

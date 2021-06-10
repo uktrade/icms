@@ -13,6 +13,38 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name="OutwardProcessingTradeFile",
+            fields=[
+                (
+                    "file_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.file",
+                    ),
+                ),
+                (
+                    "file_type",
+                    models.CharField(
+                        choices=[
+                            ("supporting_document", "Supporting Documents"),
+                            ("fq_employment_decreased", "Statistics"),
+                            ("fq_prior_authorisation", "Copy of Prior Authorisation"),
+                            ("fq_past_beneficiary", "Justification"),
+                            ("fq_new_application", "Justification"),
+                            ("fq_further_authorisation", "Evidence/Past Correspondence"),
+                            ("fq_subcontract_production", "Declaration from Subcontractor"),
+                        ],
+                        max_length=32,
+                    ),
+                ),
+            ],
+            bases=("web.file",),
+        ),
+        migrations.CreateModel(
             name="OutwardProcessingTradeApplication",
             fields=[
                 (
@@ -199,6 +231,107 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "fq_employment_decreased",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        help_text="This question only needs to be completed once per year. If you have already completed this question on a previous application this year, you may select 'N/A'.",
+                        max_length=3,
+                        null=True,
+                        verbose_name="Has your level of employment decreased? (Article 5 (4) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_employment_decreased_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If so, please indicate reasons and attach statistics below if necessary, or make reference to past correspondence.",
+                    ),
+                ),
+                (
+                    "fq_prior_authorisation",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No")],
+                        max_length=3,
+                        null=True,
+                        verbose_name="Have you applied for a prior authorisation in another Member State for the same quota period? (Article 3(4) or (5) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_prior_authorisation_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If so, please attach a copy of your authorisation below, or make reference to past correspondence.",
+                    ),
+                ),
+                (
+                    "fq_past_beneficiary",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No")],
+                        max_length=3,
+                        null=True,
+                        verbose_name="Are you applying as a past beneficiary with regard to the category and country concerned? (Article 3(4) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_past_beneficiary_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If so, please attach justification below, or make reference to past correspondence.",
+                    ),
+                ),
+                (
+                    "fq_new_application",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No")],
+                        max_length=3,
+                        null=True,
+                        verbose_name="Is this a new application with regard to the category and country concerned? (Article 3(5) (2) and (3) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_new_application_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If so, please make reference to past correspondence, or attach justification below, that the value of the third country processing will not exceed 50% of the value of your Community production in the previous year.",
+                    ),
+                ),
+                (
+                    "fq_further_authorisation",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No")],
+                        max_length=3,
+                        null=True,
+                        verbose_name="Are you applying for a further authorisation with regard to the category and country concerned? (Article 3(5) (4) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
+                    "fq_further_authorisation_reasons",
+                    models.CharField(
+                        blank=True,
+                        max_length=4000,
+                        null=True,
+                        verbose_name="If so, please attach evidence below, or make reference to past correspondence, that 50% of your previous authorisation has been re-imported or that 80% has been exported.",
+                    ),
+                ),
+                (
+                    "fq_subcontract_production",
+                    models.CharField(
+                        choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
+                        help_text="This question only needs to be completed once per year. If you have already completed this question on a previous application this year, you may select 'N/A'.",
+                        max_length=3,
+                        null=True,
+                        verbose_name="Does the value of your Community production in the previous year include subcontract production? (If so and you have not yet given this information, please attach declarations from subcontractors that they will not apply for the same quantities) (Article 2(2)(a) of Regulation (EC) No. 3036/94)",
+                    ),
+                ),
+                (
                     "cp_origin_country",
                     models.ForeignKey(
                         help_text="Select the country that the compensating products originate from.",
@@ -221,10 +354,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "supporting_documents",
+                    "documents",
                     models.ManyToManyField(
-                        related_name="_outwardprocessingtradeapplication_supporting_documents_+",
-                        to="web.File",
+                        related_name="_outwardprocessingtradeapplication_documents_+",
+                        to="web.OutwardProcessingTradeFile",
                     ),
                 ),
                 (
