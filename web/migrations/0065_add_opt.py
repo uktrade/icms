@@ -136,6 +136,30 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "teg_total_quantity",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=9,
+                        null=True,
+                        validators=[django.core.validators.MinValueValidator(limit_value=0.0)],
+                        verbose_name="Total Quantity",
+                    ),
+                ),
+                (
+                    "teg_total_value",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=9,
+                        null=True,
+                        validators=[django.core.validators.MinValueValidator(limit_value=0.0)],
+                        verbose_name="Total Value (Euro)",
+                    ),
+                ),
+                (
+                    "teg_goods_description",
+                    models.CharField(max_length=4096, null=True, verbose_name="Goods Description"),
+                ),
+                (
                     "fq_similar_to_own_factory",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
@@ -201,6 +225,17 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         related_name="_outwardprocessingtradeapplication_supporting_documents_+",
                         to="web.File",
+                    ),
+                ),
+                (
+                    "teg_origin_country",
+                    models.ForeignKey(
+                        help_text="Select the country, or group of countries (e.g. Any EU Country) that the temporary exported goods originate from.",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="web.country",
+                        verbose_name="Country Of Origin",
                     ),
                 ),
             ],

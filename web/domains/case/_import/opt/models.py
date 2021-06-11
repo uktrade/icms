@@ -103,7 +103,38 @@ class OutwardProcessingTradeApplication(ImportApplication):
         help_text="Value of processing of the fabric/yarn",
     )
 
-    # TODO: ICMLST-596 add Temporary Exported Goods
+    # Temporary Exported Goods fields (teg_ prefix)
+    teg_origin_country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Country Of Origin",
+        help_text=(
+            "Select the country, or group of countries (e.g. Any EU Country)"
+            " that the temporary exported goods originate from."
+        ),
+    )
+
+    teg_total_quantity = models.DecimalField(
+        null=True,
+        max_digits=9,
+        decimal_places=2,
+        verbose_name="Total Quantity",
+        validators=[at_least_0],
+    )
+
+    teg_total_value = models.DecimalField(
+        null=True,
+        max_digits=9,
+        decimal_places=2,
+        verbose_name="Total Value (Euro)",
+        validators=[at_least_0],
+    )
+
+    teg_goods_description = models.CharField(
+        null=True, max_length=4096, verbose_name="Goods Description"
+    )
 
     fq_similar_to_own_factory = models.CharField(
         max_length=3,

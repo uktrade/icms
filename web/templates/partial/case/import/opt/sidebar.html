@@ -8,7 +8,9 @@
     </a>
   </li>
   <li>
-    <a href="#">Temporary Exported Goods TODO: ICMLST-596</a>
+    <a href="{{ icms_url('import:opt:edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}">
+      Temporary Exported Goods
+    </a>
   </li>
   <li>
     <a href="{{ icms_url('import:opt:edit-further-questions', kwargs={'application_pk': process.pk}) }}">Further

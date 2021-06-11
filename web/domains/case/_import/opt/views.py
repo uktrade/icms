@@ -21,6 +21,7 @@ from .forms import (
     EditOPTForm,
     FurtherQuestionsOPTForm,
     SubmitOPTForm,
+    TempExportedGoodsOPTForm,
 )
 from .models import OutwardProcessingTradeApplication
 
@@ -103,6 +104,46 @@ def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> 
 
         return render(
             request, "web/domains/case/import/opt/edit-compensating-products.html", context
+        )
+
+
+@login_required
+def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = TempExportedGoodsOPTForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:opt:edit-temporary-exported-goods",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+
+        else:
+            form = TempExportedGoodsOPTForm(instance=application)
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",
+        }
+
+        return render(
+            request, "web/domains/case/import/opt/edit-temporary-exported-goods.html", context
         )
 
 

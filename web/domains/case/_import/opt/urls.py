@@ -16,6 +16,11 @@ urlpatterns = [
                     name="edit-compensating-products",
                 ),
                 path(
+                    "edit-temporary-exported-goods/",
+                    views.edit_temporary_exported_goods,
+                    name="edit-temporary-exported-goods",
+                ),
+                path(
                     "edit-further-questions/",
                     views.edit_further_questions,
                     name="edit-further-questions",

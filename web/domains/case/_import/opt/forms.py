@@ -77,6 +77,28 @@ class CompensatingProductsOPTForm(forms.ModelForm):
         )
 
 
+class TempExportedGoodsOPTForm(forms.ModelForm):
+    teg_origin_country = forms.ModelChoiceField(
+        label="Country Of Origin",
+        queryset=Country.objects.filter(country_groups__name="OPT Temp Export COOs"),
+        required=True,
+        help_text=(
+            "Select the country, or group of countries (e.g. Any EU Country)"
+            " that the temporary exported goods originate from."
+        ),
+    )
+
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = (
+            "teg_origin_country",
+            "teg_total_quantity",
+            "teg_total_value",
+            "teg_goods_description",
+        )
+
+
 class FurtherQuestionsOPTForm(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
