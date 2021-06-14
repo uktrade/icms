@@ -16,7 +16,7 @@ class FurtherInformationRequestFactory(factory.django.DjangoModelFactory):
 
     requested_by = factory.SubFactory(UserFactory)
     is_active = True
-    status = factory.fuzzy.FuzzyChoice(FurtherInformationRequest.STATUSES, getter=lambda s: s[0])
+    status = FurtherInformationRequest.OPEN
     request_subject = factory.Faker("sentence", nb_words=3)
     request_detail = factory.Faker("sentence", nb_words=8)
     email_cc_address_list = None

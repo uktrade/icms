@@ -12,16 +12,12 @@ from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
 
-def is_importer_request(access_request):
-    return access_request.request_type in [AccessRequest.IMPORTER, AccessRequest.IMPORTER_AGENT]
-
-
 class AccessRequestFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AccessRequest
 
     reference = "test"
-    status = factory.fuzzy.FuzzyChoice(AccessRequest.STATUSES, getter=lambda s: s[0])
+    status = AccessRequest.SUBMITTED
     organisation_name = factory.Faker("company")
     organisation_address = factory.Faker("address")
     request_reason = factory.Sequence(lambda n: f"reason {n}")
