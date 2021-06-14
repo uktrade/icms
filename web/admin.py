@@ -3,7 +3,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
 
-from web.domains.case._import.fa_oil.models import VerifiedCertificate
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.domains.case.export.models import (
@@ -55,7 +54,6 @@ admin.site.register(ExportApplicationType)
 admin.site.register(CountryGroup, CountryGroupAdmin)
 admin.site.register(Country)
 admin.site.register(ImportApplication)
-admin.site.register(VerifiedCertificate)
 admin.site.register(ExportApplication)
 admin.site.register(Exporter)
 admin.site.register(SanctionsAndAdhocApplication)

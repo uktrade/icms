@@ -49,7 +49,12 @@ class SILApplication(ImportApplication):
     verified_section5 = models.ManyToManyField(Section5Authority, related_name="+")
 
     # certificates
-    user_imported_certificates = models.ManyToManyField("UserImportCertificate", related_name="+")
+    user_imported_certificates = models.ManyToManyField(
+        "UserImportCertificate", related_name="sil_application"
+    )
+    verified_certificates = models.ManyToManyField(
+        "FirearmsAuthority", related_name="sil_application"
+    )
 
 
 class SILGoodsSection1(models.Model):

@@ -104,6 +104,40 @@ urlpatterns = [
                                     ]
                                 ),
                             ),
+                        ]
+                    ),
+                ),
+                path(
+                    "verified-certificates/<int:authority_pk>/",
+                    include(
+                        [
+                            path(
+                                "add/",
+                                views.add_authority,
+                                name="add-authority",
+                            ),
+                            path(
+                                "delete/",
+                                views.delete_authority,
+                                name="delete-authority",
+                            ),
+                            path(
+                                "view/",
+                                views.view_authority,
+                                name="view-authority",
+                            ),
+                            path(
+                                "document/<int:document_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "view/",
+                                            views.view_authority_document,
+                                            name="view-authority-document",
+                                        )
+                                    ]
+                                ),
+                            ),
                         ],
                     ),
                 ),

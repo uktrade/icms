@@ -33,17 +33,21 @@
       <tr>
         {% if not read_only %}
           <td>
-            <form action="{{ icms_url(
-                             'import:fa-oil:toggle-verified-firearms',
-                             kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
-              {{ csrf_input }}
-              {# TODO fix in ICMSLST-554 #}
-              {% if process.verified_certificates.filter(firearms_authority=certificate).exists() %}
-                <input type="submit" class="button small-button" value="Remove"/>
-              {% else %}
-                <input type="submit" class="button small-button" value="Select"/>
-              {% endif %}
-            </form>
+            {% if certificate.selected %}
+              <form action="{{ icms_url(
+                               'import:fa:delete-authority',
+                               kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
+                  {{ csrf_input }}
+                  <input type="submit" class="button small-button" value="Remove"/>
+                </form>
+            {% else %}
+              <form action="{{ icms_url(
+                               'import:fa:add-authority',
+                               kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}" method="post">
+                  {{ csrf_input }}
+                  <input type="submit" class="button small-button" value="Select"/>
+                </form>
+            {% endif %}
           </td>
         {% endif %}
         <td>{{ certificate.reference }}</td>
@@ -57,7 +61,7 @@
           <td>
             <a
               href="{{ icms_url(
-                         'import:fa-oil:view-verified-firearms',
+                         'import:fa:view-authority',
                          kwargs={'application_pk': process.pk, 'authority_pk': certificate.pk}) }}">
               View Details
             </a>

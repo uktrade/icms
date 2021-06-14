@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0019_verifiedcertificate"),
+        ("web", "0018_unique_template_paras"),
     ]
 
     operations = [

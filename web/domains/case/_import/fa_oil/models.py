@@ -14,23 +14,14 @@ class OpenIndividualLicenceApplication(ImportApplication):
 
     know_bought_from = models.BooleanField(null=True)
 
-    user_imported_certificates = models.ManyToManyField(UserImportCertificate, related_name="+")
+    user_imported_certificates = models.ManyToManyField(
+        UserImportCertificate, related_name="oil_application"
+    )
+    verified_certificates = models.ManyToManyField(
+        "FirearmsAuthority", related_name="oil_application"
+    )
 
     commodity_code = models.CharField(max_length=40, blank=False, null=True)
-
-
-class VerifiedCertificate(models.Model):
-    import_application = models.ForeignKey(
-        OpenIndividualLicenceApplication,
-        on_delete=models.PROTECT,
-        related_name="verified_certificates",
-    )
-    firearms_authority = models.ForeignKey(
-        "FirearmsAuthority", on_delete=models.PROTECT, related_name="verified_certificates"
-    )
-
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_datetime = models.DateTimeField(auto_now=True)
 
 
 class ChecklistFirearmsOILApplication(ChecklistBase):

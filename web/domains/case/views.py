@@ -26,7 +26,6 @@ from web.models import (
     DFLApplication,
     ExportApplication,
     ExporterAccessRequest,
-    FirearmsAuthority,
     ImportApplication,
     ImporterAccessRequest,
     OpenIndividualLicenceApplication,
@@ -1168,9 +1167,7 @@ def _view_fa_oil(
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": application.application_type.get_type_description(),
-        "verified_certificates": FirearmsAuthority.objects.filter(
-            verified_certificates__in=application.verified_certificates.all()
-        ),
+        "verified_certificates": application.verified_certificates.filter(is_active=True),
         "certificates": application.user_imported_certificates.active(),
         "contacts": application.importcontact_set.all(),
     }

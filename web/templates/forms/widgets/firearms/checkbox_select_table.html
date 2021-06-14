@@ -26,8 +26,8 @@
               <td>
                 <a
                   href="{{ icms_url(
-                             'import:fa-oil:view-verified-certificate-file',
-                             args=[process.pk, verified.pk, file.pk]) }}">
+                             'import:fa:view-authority-document',
+                             kwargs={'application_pk': process.pk, 'authority_pk': verified.pk, 'document_pk': file.pk}) }}">
                   {{ file.filename }}
                 </a>
                 <span class="filesize">{{ file.human_readable_file_size() }}</span>

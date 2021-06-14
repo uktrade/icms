@@ -3,6 +3,7 @@ from typing import Type, Union
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
+from django.db.models import OuterRef
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -59,7 +60,9 @@ def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> 
             context.update(
                 {
                     "show_verified_certificates": True,
-                    "verified_certificates": application.verified_certificates.all(),
+                    "verified_certificates": application.verified_certificates.filter(
+                        is_active=True
+                    ),
                 }
             )
 
@@ -403,12 +406,17 @@ def manage_certificates(request: HttpRequest, *, application_pk: int) -> HttpRes
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
+        selected_verified = application.verified_certificates.filter(pk=OuterRef("pk")).values("pk")
+        verified_certificates = application.importer.firearms_authorities.filter(
+            is_active=True
+        ).annotate(selected=selected_verified)
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "certificates": application.user_imported_certificates.active(),
-            "verified_certificates": application.importer.firearms_authorities.active(),
+            "verified_certificates": verified_certificates,
             "page_title": "Firearms and Ammunition - Certificates",
         }
 
@@ -539,6 +547,101 @@ def archive_certificate(
 
         return redirect(
             reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
+
+
+@require_POST
+@login_required
+def add_authority(request: HttpRequest, *, application_pk: int, authority_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        firearms_authority = get_object_or_404(
+            application.importer.firearms_authorities.active(), pk=authority_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        application.verified_certificates.add(firearms_authority)
+
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
+
+
+@require_POST
+@login_required
+def delete_authority(
+    request: HttpRequest, *, application_pk: int, authority_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        firearms_authority = get_object_or_404(
+            application.importer.firearms_authorities.active(), pk=authority_pk
+        )
+
+        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        application.verified_certificates.remove(firearms_authority)
+
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
+
+
+@require_GET
+@login_required
+def view_authority_document(
+    request: HttpRequest, *, application_pk: int, authority_pk: int, document_pk: int
+) -> HttpResponse:
+    import_application: ImportApplication = get_object_or_404(ImportApplication, pk=application_pk)
+    application: FaImportApplication = _get_fa_application(import_application)
+    firearms_authority = get_object_or_404(
+        application.importer.firearms_authorities.active(), pk=authority_pk
+    )
+
+    return view_application_file(
+        request.user, application, firearms_authority.files, document_pk, "import"
+    )
+
+
+@login_required
+def view_authority(request: HttpRequest, *, application_pk: int, authority_pk: int):
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        firearms_authority = get_object_or_404(
+            application.importer.firearms_authorities.active(), pk=authority_pk
+        )
+
+        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "page_title": "Firearms Authority - Verified Certificate",
+            "firearms_authority": firearms_authority,
+        }
+
+        return render(
+            request, "web/domains/case/import/fa/certificates/view-verified.html", context
         )
 
 

@@ -13,7 +13,7 @@
   <ul class="menu-out flow-across">
     <li>
       <a
-        href="{{ icms_url('import:fa:manage-certificates', kwargs={'pk': process.pk}) }}"
+        href="{{ icms_url('import:fa:manage-certificates', kwargs={'application_pk': process.pk}) }}"
         class="prev-link">
         Certificates
       </a>
@@ -102,8 +102,13 @@
                     <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
                   </td>
                   <td>
-                    {{ document.filename }}<br />
-                    <span class="extra-info">{{ document.file_size|filesizeformat }}</span>
+
+                    <a
+                      href="{{ icms_url(
+                                'import:fa:view-authority-document',
+                                kwargs={'application_pk': process.pk, 'authority_pk': firearms_authority.pk, 'document_pk': document.pk}) }}">
+                      {{ document.filename }}</a><br />
+                    <span class="extra-info">{{ document.human_readable_file_size() }}</span>
                   </td>
                 </tr>
               {% endfor %}

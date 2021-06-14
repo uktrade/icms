@@ -29,29 +29,29 @@
           {% for certificate in verified_certificates %}
             <tr>
               <td>
-                {{ certificate.firearms_authority.reference }}
+                {{ certificate.reference }}
               </td>
               <td>
-                {{ certificate.firearms_authority.get_certificate_type_display() }}
+                {{ certificate.get_certificate_type_display() }}
               </td>
               <td>
-                {{ certificate.firearms_authority.issuing_constabulary }}
+                {{ certificate.issuing_constabulary }}
               </td>
               <td>
-                {{ certificate.firearms_authority.address }}
+                {{ certificate.address }}
               </td>
               <td>
-                {{ certificate.firearms_authority.postcode }}
+                {{ certificate.postcode }}
               </td>
               <td>
-                {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+                {{ certificate.start_date.strftime('%d-%b-%Y') }}
               </td>
               <td>
-                {{ certificate.firearms_authority.start_date.strftime('%d-%b-%Y') }}
+                {{ certificate.start_date.strftime('%d-%b-%Y') }}
               </td>
               <td>
                 <a
-                  href="{{ icms_url('importer-firearms-edit', args=[certificate.firearms_authority.pk]) }}">
+                  href="{{ icms_url('importer-firearms-edit', kwargs={'pk': certificate.pk}) }}">
                   View Details
                 </a>
               </td>
