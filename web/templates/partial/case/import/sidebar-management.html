@@ -56,6 +56,13 @@
         Constabulary Emails
       </a>
     </li>
+  {% elif process.process_type == "SILApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:fa-sil:manage-checklist', kwargs={"application_pk": process.pk}) }}">
+        Checklist
+      </a>
+    </li>
   {% endif %}
 
   {# Common import application links #}

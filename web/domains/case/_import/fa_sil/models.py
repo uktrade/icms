@@ -1,7 +1,9 @@
 from django.db import models
 
+from web.domains.case._import.models import ChecklistBase
 from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
+from web.models.shared import YesNoNAChoices
 
 from ..models import ImportApplication
 
@@ -194,3 +196,44 @@ class SILGoodsSection582Other(models.Model):
     description = models.CharField(max_length=4096)
 
     quantity = models.IntegerField()
+
+
+class SILChecklist(ChecklistBase):
+    import_application = models.OneToOneField(
+        SILApplication, on_delete=models.PROTECT, related_name="checklist"
+    )
+
+    authority_required = models.CharField(
+        max_length=10,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Authority to possess required?",
+    )
+
+    authority_received = models.CharField(
+        max_length=10,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Authority to possess received?",
+    )
+
+    authority_cover_items_listed = models.CharField(
+        max_length=10,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Authority to possess covers items listed?",
+    )
+
+    quantities_within_authority_restrictions = models.CharField(
+        max_length=10,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Quantities listed within authority to possess restrictions?",
+    )
+
+    authority_police = models.CharField(
+        max_length=10,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Authority to possess checked with police?",
+    )

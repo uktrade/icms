@@ -11,6 +11,7 @@ urlpatterns = [
             [
                 path("edit/", views.edit, name="edit"),
                 path("submit/", views.submit, name="submit"),
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
                 # Goods
                 path("sections/choose/", views.choose_goods_section, name="choose-goods-section"),
                 path(

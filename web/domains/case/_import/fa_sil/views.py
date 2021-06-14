@@ -1,6 +1,6 @@
 from typing import NamedTuple, Type, Union
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
@@ -607,3 +607,47 @@ def view_verified_section5_document(
     return case_views.view_application_file(
         request.user, application, section5.files, document_pk, "import"
     )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: HttpRequest, *, application_pk):
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        checklist, created = models.SILChecklist.objects.get_or_create(
+            import_application=application
+        )
+
+        if request.POST:
+            # We allow partial model saving as its a checklist
+            form = forms.SILChecklistOptionalForm(request.POST, instance=checklist)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa-sil:manage-checklist", kwargs={"application_pk": application_pk}
+                    )
+                )
+        else:
+            if not created:
+                form = forms.SILChecklistForm(data=model_to_dict(checklist), instance=checklist)
+            else:
+                form = forms.SILChecklistForm(instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Firearms and Ammunition (Specific Import Licence) - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )

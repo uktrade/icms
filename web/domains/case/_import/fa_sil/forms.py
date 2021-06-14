@@ -3,6 +3,7 @@ from django.utils.html import mark_safe
 from django_select2 import forms as s2forms
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.user.models import User
@@ -512,3 +513,26 @@ class SubmitSILForm(forms.Form):
             raise forms.ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class SILChecklistForm(ChecklistBaseForm):
+    class Meta:
+        model = models.SILChecklist
+
+        fields = (
+            "authority_required",
+            "authority_received",
+            "authority_cover_items_listed",
+            "quantities_within_authority_restrictions",
+            "authority_police",
+        ) + ChecklistBaseForm.Meta.fields
+
+
+class SILChecklistOptionalForm(SILChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False
