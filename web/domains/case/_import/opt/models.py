@@ -1,5 +1,6 @@
 from django.db import models
 
+from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.file.models import File
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
@@ -116,6 +117,20 @@ class OutwardProcessingTradeApplication(ImportApplication):
         help_text="Value of processing of the fabric/yarn",
     )
 
+    cp_commodities = models.ManyToManyField(
+        Commodity,
+        related_name="+",
+        verbose_name="Commodity Code",
+        help_text=(
+            "It is the responsibility of the applicant to ensure that the"
+            " commodity code in this box is correct. If you are unsure of"
+            " the correct commodity code, consult the HM Revenue and Customs"
+            " Integrated Tariff Book, Volume 2, which is available from the"
+            " Stationery Office. If you are still in doubt, contact the"
+            " Classification Advisory Service on (01702) 366077."
+        ),
+    )
+
     # Temporary Exported Goods fields (teg_ prefix)
     teg_origin_country = models.ForeignKey(
         Country,
@@ -147,6 +162,20 @@ class OutwardProcessingTradeApplication(ImportApplication):
 
     teg_goods_description = models.CharField(
         null=True, max_length=4096, verbose_name="Goods Description"
+    )
+
+    teg_commodities = models.ManyToManyField(
+        Commodity,
+        related_name="+",
+        verbose_name="Commodity Code",
+        help_text=(
+            "It is the responsibility of the applicant to ensure that the"
+            " commodity code in this box is correct. If you are unsure of the"
+            " correct commodity code, consult the HM Revenue and Customs"
+            " Integrated Tariff Book, Volume 2, which is available from the"
+            " Stationery Office. If you are still in doubt, contact the"
+            " Classification Advisory Service on (01702) 366077."
+        ),
     )
 
     # further questions (fq_ prefix)

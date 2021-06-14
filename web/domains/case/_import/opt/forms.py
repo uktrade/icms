@@ -3,6 +3,8 @@ from typing import Any
 
 from django import forms
 
+from web.domains.commodity.models import Commodity
+from web.domains.commodity.widgets import CommodityWidget
 from web.domains.country.models import Country
 from web.domains.user.models import User
 from web.forms.widgets import DateInput
@@ -61,7 +63,21 @@ class CompensatingProductsOPTForm(forms.ModelForm):
             "cp_category",
             "cp_total_quantity",
             "cp_total_value",
+            "cp_commodities",
         )
+
+        widgets = {
+            "cp_commodities": CommodityWidget(
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "Please choose a commodity",
+                },
+                queryset=Commodity.objects.filter(
+                    commoditygroup__commodity_type__type_code="TEXTILES",
+                    commoditygroup__group_code="4",
+                ),
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -81,7 +97,18 @@ class TemporaryExportedGoodsOPTForm(forms.ModelForm):
             "teg_total_quantity",
             "teg_total_value",
             "teg_goods_description",
+            "teg_commodities",
         )
+
+        widgets = {
+            "teg_commodities": CommodityWidget(
+                attrs={
+                    "data-minimum-input-length": 1,
+                    "data-placeholder": "Please choose a commodity",
+                },
+                queryset=Commodity.objects.filter(sigl_product_type="TEX"),
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

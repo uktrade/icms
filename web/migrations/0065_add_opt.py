@@ -332,6 +332,15 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "cp_commodities",
+                    models.ManyToManyField(
+                        help_text="It is the responsibility of the applicant to ensure that the commodity code in this box is correct. If you are unsure of the correct commodity code, consult the HM Revenue and Customs Integrated Tariff Book, Volume 2, which is available from the Stationery Office. If you are still in doubt, contact the Classification Advisory Service on (01702) 366077.",
+                        related_name="_outwardprocessingtradeapplication_cp_commodities_+",
+                        to="web.Commodity",
+                        verbose_name="Commodity Code",
+                    ),
+                ),
+                (
                     "cp_origin_country",
                     models.ForeignKey(
                         help_text="Select the country that the compensating products originate from.",
@@ -358,6 +367,15 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         related_name="_outwardprocessingtradeapplication_documents_+",
                         to="web.OutwardProcessingTradeFile",
+                    ),
+                ),
+                (
+                    "teg_commodities",
+                    models.ManyToManyField(
+                        help_text="It is the responsibility of the applicant to ensure that the commodity code in this box is correct. If you are unsure of the correct commodity code, consult the HM Revenue and Customs Integrated Tariff Book, Volume 2, which is available from the Stationery Office. If you are still in doubt, contact the Classification Advisory Service on (01702) 366077.",
+                        related_name="_outwardprocessingtradeapplication_teg_commodities_+",
+                        to="web.Commodity",
+                        verbose_name="Commodity Code",
                     ),
                 ),
                 (
