@@ -29,7 +29,7 @@ from .forms import (
     FurtherQuestionsPriorAuthorisationOPTForm,
     FurtherQuestionsSubcontractProductionOPTForm,
     SubmitOPTForm,
-    TempExportedGoodsOPTForm,
+    TemporaryExportedGoodsOPTForm,
 )
 from .models import OutwardProcessingTradeApplication, OutwardProcessingTradeFile
 
@@ -127,7 +127,7 @@ def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
-            form = TempExportedGoodsOPTForm(data=request.POST, instance=application)
+            form = TemporaryExportedGoodsOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -140,7 +140,7 @@ def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) 
                 )
 
         else:
-            form = TempExportedGoodsOPTForm(instance=application)
+            form = TemporaryExportedGoodsOPTForm(instance=application)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

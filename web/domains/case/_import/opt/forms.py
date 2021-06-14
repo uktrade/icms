@@ -52,20 +52,6 @@ class EditOPTForm(forms.ModelForm):
 
 
 class CompensatingProductsOPTForm(forms.ModelForm):
-    cp_origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        queryset=Country.objects.filter(country_groups__name="OPT COOs"),
-        required=True,
-        help_text="Select the country that the compensating products originate from.",
-    )
-
-    cp_processing_country = forms.ModelChoiceField(
-        label="Country Of Processing",
-        queryset=Country.objects.filter(country_groups__name="OPT COOs"),
-        required=True,
-        help_text="Select the country that the compensating products were processed in.",
-    )
-
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -77,18 +63,16 @@ class CompensatingProductsOPTForm(forms.ModelForm):
             "cp_total_value",
         )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-class TempExportedGoodsOPTForm(forms.ModelForm):
-    teg_origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        queryset=Country.objects.filter(country_groups__name="OPT Temp Export COOs"),
-        required=True,
-        help_text=(
-            "Select the country, or group of countries (e.g. Any EU Country)"
-            " that the temporary exported goods originate from."
-        ),
-    )
+        opt_coo_countries = Country.objects.filter(country_groups__name="OPT COOs")
 
+        self.fields["cp_origin_country"].queryset = opt_coo_countries
+        self.fields["cp_processing_country"].queryset = opt_coo_countries
+
+
+class TemporaryExportedGoodsOPTForm(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -97,6 +81,13 @@ class TempExportedGoodsOPTForm(forms.ModelForm):
             "teg_total_quantity",
             "teg_total_value",
             "teg_goods_description",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["teg_origin_country"].queryset = Country.objects.filter(
+            country_groups__name="OPT Temp Export COOs"
         )
 
 
