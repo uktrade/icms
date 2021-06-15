@@ -23,6 +23,7 @@ from web.utils.validation import (
 from .forms import (
     AddDLFGoodsCertificateForm,
     DFLChecklistForm,
+    DFLChecklistOptionalForm,
     EditDFLGoodsCertificateDescriptionForm,
     EditDLFGoodsCertificateForm,
     PrepareDFLForm,
@@ -346,10 +347,10 @@ def manage_checklist(request: HttpRequest, *, application_pk):
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = DFLChecklist.objects.get_or_create(import_application=application)
+        checklist, created = DFLChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
-            form = DFLChecklistForm(request.POST, instance=checklist)
+            form = DFLChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():
                 form.save()
@@ -360,7 +361,10 @@ def manage_checklist(request: HttpRequest, *, application_pk):
                     )
                 )
         else:
-            form = DFLChecklistForm(instance=checklist)
+            if created:
+                form = DFLChecklistForm(instance=checklist)
+            else:
+                form = DFLChecklistForm(data=model_to_dict(checklist), instance=checklist)
 
         context = {
             "process": application,

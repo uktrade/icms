@@ -22,6 +22,7 @@ from .forms import (
     SubmitWoodQuotaForm,
     SupportingDocumentForm,
     WoodQuotaChecklistForm,
+    WoodQuotaChecklistOptionalForm,
 )
 from .models import WoodQuotaApplication, WoodQuotaChecklist
 
@@ -310,17 +311,22 @@ def manage_checklist(request: HttpRequest, pk: int) -> HttpResponse:
             WoodQuotaApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = WoodQuotaChecklist.objects.get_or_create(import_application=application)
+        checklist, created = WoodQuotaChecklist.objects.get_or_create(
+            import_application=application
+        )
 
         if request.POST:
-            form = WoodQuotaChecklistForm(request.POST, instance=checklist)
+            form = WoodQuotaChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():
                 form.save()
 
                 return redirect(reverse("import:wood:manage-checklist", kwargs={"pk": pk}))
         else:
-            form = WoodQuotaChecklistForm(instance=checklist)
+            if created:
+                form = WoodQuotaChecklistForm(instance=checklist)
+            else:
+                form = WoodQuotaChecklistForm(data=model_to_dict(checklist), instance=checklist)
 
         context = {
             "process": application,

@@ -611,7 +611,7 @@ def view_verified_section5_document(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk):
+def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -622,7 +622,6 @@ def manage_checklist(request: HttpRequest, *, application_pk):
         )
 
         if request.POST:
-            # We allow partial model saving as its a checklist
             form = forms.SILChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():
@@ -634,10 +633,10 @@ def manage_checklist(request: HttpRequest, *, application_pk):
                     )
                 )
         else:
-            if not created:
-                form = forms.SILChecklistForm(data=model_to_dict(checklist), instance=checklist)
-            else:
+            if created:
                 form = forms.SILChecklistForm(instance=checklist)
+            else:
+                form = forms.SILChecklistForm(data=model_to_dict(checklist), instance=checklist)
 
         context = {
             "process": application,

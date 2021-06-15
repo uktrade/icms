@@ -146,6 +146,16 @@ class WoodQuotaChecklistForm(ChecklistBaseForm):
         self.fields["sigl_wood_application_logged"].required = True
 
 
+class WoodQuotaChecklistOptionalForm(WoodQuotaChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False
+
+
 class GoodsWoodQuotaLicenceForm(forms.ModelForm):
     goods_qty = forms.DecimalField(label="Quantity")
 

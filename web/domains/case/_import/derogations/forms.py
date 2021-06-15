@@ -124,6 +124,16 @@ class DerogationsChecklistForm(ChecklistBaseForm):
         fields = ("supporting_document_received",) + ChecklistBaseForm.Meta.fields
 
 
+class DerogationsChecklistOptionalForm(DerogationsChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False
+
+
 class GoodsDerogationsLicenceForm(forms.ModelForm):
     quantity = forms.DecimalField()
     unit = forms.ChoiceField(

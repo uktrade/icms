@@ -17,7 +17,12 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .forms import ChecklistFirearmsOILApplicationForm, PrepareOILForm, SubmitOILForm
+from .forms import (
+    ChecklistFirearmsOILApplicationForm,
+    ChecklistFirearmsOILApplicationOptionalForm,
+    PrepareOILForm,
+    SubmitOILForm,
+)
 from .models import ChecklistFirearmsOILApplication, OpenIndividualLicenceApplication
 
 
@@ -175,17 +180,22 @@ def manage_checklist(request, pk):
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = ChecklistFirearmsOILApplication.objects.get_or_create(
+        checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
             import_application=application
         )
 
         if request.POST:
-            form = ChecklistFirearmsOILApplicationForm(request.POST, instance=checklist)
+            form = ChecklistFirearmsOILApplicationOptionalForm(request.POST, instance=checklist)
             if form.is_valid():
                 form.save()
                 return redirect(reverse("import:fa-oil:manage-checklist", kwargs={"pk": pk}))
         else:
-            form = ChecklistFirearmsOILApplicationForm(instance=checklist)
+            if created:
+                form = ChecklistFirearmsOILApplicationForm(instance=checklist)
+            else:
+                form = ChecklistFirearmsOILApplicationForm(
+                    data=model_to_dict(checklist), instance=checklist
+                )
 
         context = {
             "process": application,

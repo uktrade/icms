@@ -74,7 +74,7 @@ class Migration(migrations.Migration):
                     "authority_required",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Authority to possess required?",
                     ),
@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
                     "authority_received",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Authority to possess received?",
                     ),
@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                     "authority_cover_items_listed",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Authority to possess covers items listed?",
                     ),
@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                     "quantities_within_authority_restrictions",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Quantities listed within authority to possess restrictions?",
                     ),
@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
                     "authority_police",
                     models.CharField(
                         choices=[("yes", "Yes"), ("no", "No"), ("n/a", "N/A")],
-                        max_length=10,
+                        max_length=3,
                         null=True,
                         verbose_name="Authority to possess checked with police?",
                     ),

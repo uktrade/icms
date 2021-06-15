@@ -16,6 +16,7 @@ from web.utils.validation import ApplicationErrors, PageErrors, create_page_erro
 from .. import views as import_views
 from .forms import (
     DerogationsChecklistForm,
+    DerogationsChecklistOptionalForm,
     DerogationsForm,
     GoodsDerogationsLicenceForm,
     SubmitDerogationsForm,
@@ -218,15 +219,20 @@ def manage_checklist(request, pk):
             DerogationsApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
-        checklist, _ = DerogationsChecklist.objects.get_or_create(import_application=application)
+        checklist, created = DerogationsChecklist.objects.get_or_create(
+            import_application=application
+        )
 
         if request.POST:
-            form = DerogationsChecklistForm(request.POST, instance=checklist)
+            form = DerogationsChecklistOptionalForm(request.POST, instance=checklist)
             if form.is_valid():
                 form.save()
                 return redirect(reverse("import:derogations:manage-checklist", kwargs={"pk": pk}))
         else:
-            form = DerogationsChecklistForm(instance=checklist)
+            if created:
+                form = DerogationsChecklistForm(instance=checklist)
+            else:
+                form = DerogationsChecklistForm(data=model_to_dict(checklist), instance=checklist)
 
         context = {
             "process": application,

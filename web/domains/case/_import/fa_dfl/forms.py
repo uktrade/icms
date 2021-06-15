@@ -157,3 +157,13 @@ class DFLChecklistForm(ChecklistBaseForm):
             "deactivation_certificate_attached",
             "deactivation_certificate_issued",
         ) + ChecklistBaseForm.Meta.fields
+
+
+class DFLChecklistOptionalForm(DFLChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False

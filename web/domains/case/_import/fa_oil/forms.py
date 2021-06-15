@@ -93,3 +93,13 @@ class ChecklistFirearmsOILApplicationForm(ChecklistBaseForm):
         labels = {
             "validity_period_correct": "Validity period of licence matches that of the RFD certificate?",
         }
+
+
+class ChecklistFirearmsOILApplicationOptionalForm(ChecklistFirearmsOILApplicationForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False
