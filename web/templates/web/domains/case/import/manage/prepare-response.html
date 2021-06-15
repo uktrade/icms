@@ -56,7 +56,11 @@
       <h4>Cover Letter</h4>
 
       <hr />
-      {{ process.cover_letter|safe }}
+      {% if process.cover_letter %}
+        {{ process.cover_letter|safe }}
+      {% else %}
+        <div class="info-box info-box-info">Cover letter missing</div>
+      {% endif %}
       <hr />
 
       <a
@@ -64,6 +68,7 @@
         class="button small-button">
         Edit Cover Letter
       </a>
+      {% block cover_letter_actions %}{% endblock %}
     {% endif %}
 
     <h4>Licence</h4>

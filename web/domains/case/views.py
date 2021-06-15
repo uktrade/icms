@@ -30,6 +30,7 @@ from web.models import (
     ImporterAccessRequest,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
+    SILApplication,
     WithdrawApplication,
     WoodQuotaApplication,
 )
@@ -1393,6 +1394,9 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
     elif application.process_type == DFLApplication.PROCESS_TYPE:
         return _prepare_fa_dfl_response(request, application.dflapplication, context)
 
+    elif application.process_type == SILApplication.PROCESS_TYPE:
+        return _prepare_fa_sil_response(request, application.silapplication, context)
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _prepare_sanctions_and_adhoc_response(
             request, application.sanctionsandadhocapplication, context
@@ -1434,6 +1438,38 @@ def _prepare_fa_dfl_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-fa-dfl-response.html",
+        context=context,
+    )
+
+
+def _prepare_fa_sil_response(
+    request: HttpRequest, application: SILApplication, context: dict[str, Any]
+):
+    section_1 = application.goods_section1.filter(is_active=True)
+    section_2 = application.goods_section2.filter(is_active=True)
+    section_5 = application.goods_section5.filter(is_active=True)
+    section_58 = application.goods_section582_obsoletes.filter(is_active=True)
+    section_58_other = application.goods_section582_others.filter(is_active=True)
+
+    has_goods = any(
+        (s.exists() for s in (section_1, section_2, section_5, section_58, section_58_other))
+    )
+
+    context.update(
+        {
+            "process": application,
+            "has_goods": has_goods,
+            "goods_section_1": section_1,
+            "goods_section_2": section_2,
+            "goods_section_5": section_5,
+            "goods_section_58": section_58,
+            "goods_section_58_other": section_58_other,
+        }
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-fa-sil-response.html",
         context=context,
     )
 

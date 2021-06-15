@@ -12,6 +12,7 @@ urlpatterns = [
                 path("edit/", views.edit, name="edit"),
                 path("submit/", views.submit, name="submit"),
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path("set-cover-letter/", views.set_cover_letter, name="set-cover-letter"),
                 # Goods
                 path("sections/choose/", views.choose_goods_section, name="choose-goods-section"),
                 path(
@@ -26,6 +27,11 @@ urlpatterns = [
                                         path("edit/", views.edit_section, name="edit-section"),
                                         path(
                                             "delete/", views.delete_section, name="delete-section"
+                                        ),
+                                        path(
+                                            "response-prep-edit-goods/",
+                                            views.response_preparation_edit_goods,
+                                            name="response-prep-edit-goods",
                                         ),
                                     ]
                                 ),

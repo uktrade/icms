@@ -1,0 +1,126 @@
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+{% block cover_letter_actions %}
+  <a
+    href="{{ icms_url('import:fa-sil:set-cover-letter', kwargs={'application_pk': process.pk}) }}"
+    class="button small-button">
+    Set Cover Letter
+  </a>
+{% endblock %}
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <div class="container">
+    <div class="row">
+      <div class="three column">
+        <span class="prompt west">
+          Category
+        </span>
+      </div>
+      <div class="six column">
+        {{ process.commodity_code }}
+      </div>
+      <div class="three column">
+      </div>
+    </div>
+  </div>
+
+  {% if has_goods %}
+    <table class="setoutList" id="tbl-search-results">
+      <thead>
+      <tr>
+        <th>Goods Description</th>
+        <th>Obsolete Calibre</th>
+        <th>Quantity</th>
+        <th>Units</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+
+      {# Section 1 goods #}
+      {% for row in goods_section_1 %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>{{ row.quantity }}</td>
+          <td>units</td>
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section1"}) }}"
+            >Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {# Section 2 goods #}
+      {% for row in goods_section_2 %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>{{ row.quantity }}</td>
+          <td>units</td>
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section2"}) }}"
+            >Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {# Section 5 goods #}
+      {% for row in goods_section_5 %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>
+            {% if row.unlimited_quantity %}
+              Unlimited
+            {% else %}
+              {{ row.quantity }}
+            {% endif %}
+          </td>
+          <td>units</td>
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section5"}) }}"
+            >Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {# Section 58 goods #}
+      {% for row in goods_section_58 %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td>{{ row.obsolete_calibre }}</td>
+          <td>{{ row.quantity }}</td>
+          <td>units</td>
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-obsolete"}) }}"
+            >Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+
+      {# Section 58 other goods #}
+      {% for row in goods_section_58_other %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>{{ row.quantity }}</td>
+          <td>units</td>
+          <td>
+            <a class="link-button button icon-pencil" data-input_action="edit"
+               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-other"}) }}"
+            >Edit</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
+  {% else %}
+    <div class="info-box info-box-info">There are no goods attached</div>
+  {% endif %}
+
+{% endblock %}

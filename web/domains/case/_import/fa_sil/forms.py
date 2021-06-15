@@ -6,6 +6,7 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
+from web.domains.template.models import Template
 from web.domains.user.models import User
 
 from . import models
@@ -536,3 +537,64 @@ class SILChecklistOptionalForm(SILChecklistForm):
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class ResponsePrepBaseForm(forms.ModelForm):
+    """Base class form for editing description and quantity in the response preparation screen"""
+
+    class Meta:
+        fields = ("description", "quantity")
+
+
+class ResponsePrepSILGoodsSection1Form(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSection1
+        fields = ResponsePrepBaseForm.Meta.fields
+
+
+class ResponsePrepSILGoodsSection2Form(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSection2
+        fields = ResponsePrepBaseForm.Meta.fields
+
+
+class ResponsePrepSILGoodsSection5Form(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSection5
+        fields = ResponsePrepBaseForm.Meta.fields + ("unlimited_quantity",)
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        quantity = cleaned_data.get("quantity")
+        unlimited_quantity = cleaned_data.get("unlimited_quantity")
+
+        if not quantity and not unlimited_quantity:
+            self.add_error(
+                "quantity", "You must enter either a quantity or select unlimited quantity"
+            )
+
+        if unlimited_quantity:
+            cleaned_data["quantity"] = None
+
+
+class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSection582Obsolete
+        fields = ResponsePrepBaseForm.Meta.fields
+
+
+class ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm):
+    class Meta:
+        model = models.SILGoodsSection582Other
+        fields = ResponsePrepBaseForm.Meta.fields
+
+
+class SILCoverLetterTemplateForm(forms.Form):
+    template = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["template"].queryset = Template.objects.filter(
+            template_code__startswith="COVER_FIREARMS_SEC5"
+        )

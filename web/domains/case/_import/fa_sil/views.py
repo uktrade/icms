@@ -42,11 +42,26 @@ GoodsForm = Union[
 ]
 GoodsFormT = Type[GoodsForm]
 
+ResponsePrepGoodsForm = Union[
+    forms.ResponsePrepSILGoodsSection1Form,
+    forms.ResponsePrepSILGoodsSection2Form,
+    forms.ResponsePrepSILGoodsSection5Form,
+    forms.ResponsePrepSILGoodsSection582ObsoleteForm,
+    forms.ResponsePrepSILGoodsSection582OtherForm,
+]
+
+ResponsePrepGoodsFormT = Type[ResponsePrepGoodsForm]
+
 
 class CreateSILSectionConfig(NamedTuple):
     model_class: GoodsModelT
     form_class: GoodsFormT
     template: str
+
+
+class ResponsePrepEditSILSectionConfig(NamedTuple):
+    model_class: GoodsModelT
+    form_class: ResponsePrepGoodsFormT
 
 
 def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig:
@@ -84,6 +99,40 @@ def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig
             form_class=forms.SILGoodsSection582OtherForm,
             template="web/domains/case/import/fa-sil/goods/section582-other.html",
         )
+    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
+
+
+def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEditSILSectionConfig:
+    if sil_section_type == "section1":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSection1,
+            form_class=forms.ResponsePrepSILGoodsSection1Form,
+        )
+
+    elif sil_section_type == "section2":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSection2,
+            form_class=forms.ResponsePrepSILGoodsSection2Form,
+        )
+
+    elif sil_section_type == "section5":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSection5,
+            form_class=forms.ResponsePrepSILGoodsSection5Form,
+        )
+
+    elif sil_section_type == "section582-obsolete":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSection582Obsolete,
+            form_class=forms.ResponsePrepSILGoodsSection582ObsoleteForm,
+        )
+
+    elif sil_section_type == "section582-other":
+        return ResponsePrepEditSILSectionConfig(
+            model_class=models.SILGoodsSection582Other,
+            form_class=forms.ResponsePrepSILGoodsSection582OtherForm,
+        )
+
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
 
@@ -372,6 +421,7 @@ def edit_section(
             if form.is_valid():
                 goods = form.save(commit=False)
                 goods.import_application = application
+                goods.save()
         else:
             form = config.form_class(instance=goods)
 
@@ -408,6 +458,58 @@ def delete_section(
 
 
 @login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def response_preparation_edit_goods(
+    request: HttpRequest,
+    *,
+    application_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+) -> HttpResponse:
+    """Admin only view accessed via the response preparation screen to edit linked goods."""
+
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(
+            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+        )
+
+        config = _get_sil_section_resp_prep_config(sil_section_type)
+        goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
+
+        if request.POST:
+            form = config.form_class(request.POST, instance=goods)
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+        else:
+            form = config.form_class(instance=goods)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
+        }
+
+        return render(
+            request,
+            "web/domains/case/import/manage/fa-sil-edit-goods.html",
+            context,
+        )
+
+
+@login_required
 def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -427,6 +529,14 @@ def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 application.submit_datetime = timezone.now()
 
                 application.save()
+
+                # TODO: replace with Endorsement Usage Template (ICMSLST-638)
+                endorsement = Template.objects.get(
+                    is_active=True,
+                    template_type=Template.ENDORSEMENT,
+                    template_name="Firearms Sanctions COO & COC (AC & AY)",
+                )
+                application.endorsements.create(content=endorsement.template_content)
 
                 task.is_active = False
                 task.finished = timezone.now()
@@ -648,5 +758,60 @@ def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpRespon
         return render(
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def set_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+
+        if request.POST:
+            form = forms.SILCoverLetterTemplateForm(request.POST)
+            if form.is_valid():
+                template = form.cleaned_data["template"]
+
+                # TODO: Revisit the content variables when we come back to this.
+                # Having to know what to pass to an editable template feels wrong.
+                # e.g.
+                # application.cover_letter = template.get_content(application)
+                application.cover_letter = template.get_content(
+                    {
+                        "CONTACT_NAME": application.contact,
+                        "LICENCE_NUMBER": None,  # TODO: What should this be?
+                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
+                        "LICENCE_END_DATE": application.licence_end_date,
+                        "COUNTRY_OF_ORIGIN": application.origin_country.name,
+                        "COUNTRY_OF_CONSIGNMENT": application.consignment_country.name,
+                    }
+                )
+                application.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = forms.SILCoverLetterTemplateForm()
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Set Cover Letter",
+            "form": form,
+            "case_type": "import",
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/manage/fa-sil-set-cover-letter.html",
             context=context,
         )
