@@ -1,20 +1,29 @@
 {% extends "layout/sidebar.html" %}
 
 {# VIEW APPLICATION MACROS #}
-{% macro application_section(section_title=None) -%}
+{% macro application_section(section_title=None, section_id=None) -%}
   {% if section_title %}
-    <h4>{{ section_title }}</h4>
+    {% if id %}
+      <h4 id="{{section_id }}">{{ section_title }}</h4>
+    {% else %}
+      <h4>{{ section_title }}</h4>
+    {% endif %}
   {% endif %}
   <div class="container">
-    <dl>
-      {% if caller %}{{ caller() }}{% endif %}
-    </dl>
+    {% if caller %}{{ caller() }}{% endif %}
   </div>
 {%- endmacro %}
 
 {% macro application_field(field, label, default="") -%}
-  <dt class="bold">{{ label }}</dt>
-  <dd>{{ field or default }}</dd>
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">{{ label }}</label>
+    </div>
+    <div class="six columns">
+      <span class="text-widget">{{ field or default }}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
 {%- endmacro %}
 {# END VIEW APPLICATION MACROS #}
 
@@ -38,41 +47,82 @@
 
 {% block main_content %}
   {% block application_contact %}
-    <h4>Contact</h4>
+    <h4 id="view-contact">Contact</h4>
     {% if not process.contact %}
       <div class="info-box info-box-info">
         There is no contact attached.
       </div>
     {% else %}
       <div class="container">
-        <dl>
-          <dt class="bold">Contact Name</dt>
-          <dd>{{ process.contact }}</dd>
-          <dt class="bold">Telephone(s)</dt>
-          <dd>
+        <div class="row">
+          <div class="three columns">
+            <label class="prompt west">Contact Name</label>
+          </div>
+          <div class="six columns">
+            <span>{{ process.contact }}</span>
+          </div>
+          <div class="three columns"></div>
+        </div>
+
+        <div class="row">
+          <div class="three columns">
+            <label class="prompt west">Telephone(s)</label>
+          </div>
+          <div class="six columns">
             {% for phone_number in process.contact.phone_numbers.all() %}
               {{ phone_number.get_type_display() }} - {{ phone_number.phone }}
               {% if not loop.last %}<br />{% endif %}
             {% else %}
               N/A
             {% endfor %}
-          </dd>
-          <dt class="bold">Email</dt>
-          <dd>{{ process.contact.email }}</dd>
-        </dl>
+          </div>
+          <div class="three columns"></div>
+        </div>
+
+        <div class="row">
+          <div class="three columns">
+            <label class="prompt west">Email</label>
+          </div>
+          <div class="six columns">
+            <span>{{ process.contact.email }}</span>
+          </div>
+          <div class="three columns"></div>
+        </div>
       </div>
     {% endif %}
   {% endblock %}
 
   <h4>Application Details</h4>
   <div class="container">
-    <dl>
-      <dt class="bold">Applicant Reference</dt>
-      <dd>{{ process.applicant_reference or 'N/A' }}</dd>
-      <dt class="bold">Country Of Origin</dt>
-      <dd>{{ process.origin_country.name }}</dd>
-      <dt class="bold">Country Of Consignment</dt>
-      <dd>{{ process.consignment_country.name }}</dd>
-    </dl>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Applicant Reference</label>
+      </div>
+      <div class="six columns">
+        <span>{{ process.applicant_reference or 'N/a' }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Country of Origin</label>
+      </div>
+      <div class="six columns">
+        <span>{{ process.origin_country.name }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Country of Consignment</label>
+      </div>
+      <div class="six columns">
+        <span>{{ process.consignment_country.name }}</span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+
   </div>
 {% endblock %}

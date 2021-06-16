@@ -16,7 +16,8 @@
             file = qs[index],
             verified = qs[index].firearmsauthority_set.first(),
             user = qs[index].userimportcertificate,
-            dfl_certificate = qs[index].dflgoodscertificate
+            dfl_certificate = qs[index].dflgoodscertificate,
+            sil_section5 = qs[index].silusersection5
         %}
           <tr>
             <td>
@@ -83,6 +84,25 @@
               </td>
               <td>
                 {{ dfl_certificate.dfl_application.first().constabulary.name }}
+              </td>
+            {% elif sil_section5 %}
+              <td>
+                <a
+                  href="{{ icms_url('import:fa-sil:view-section5-document', kwargs={'application_pk': process.pk, 'section5_pk': file.pk}) }}"
+                >
+                  {{ file.filename }}
+                </a>
+                <span class="filesize">{{ file.human_readable_file_size() }}</span>
+              </td>
+              <td>
+                Section 5 Authority
+              </td>
+              <td>
+              </td>
+              <td>
+                Section 5 Authority
+              </td>
+              <td>
               </td>
             {% endif %}
         </tr>

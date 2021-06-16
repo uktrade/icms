@@ -261,7 +261,7 @@ class SILGoodsSection5Form(forms.ModelForm):
             )
 
         if unlimited_quantity:
-            cleaned_data.pop("quantity", None)
+            cleaned_data["quantity"] = None
 
 
 class SILGoodsSection582ObsoleteForm(forms.ModelForm):

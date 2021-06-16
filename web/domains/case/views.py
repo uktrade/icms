@@ -1138,6 +1138,9 @@ def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> H
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _view_fa_oil(request, application.openindividuallicenceapplication)
 
+    elif application.process_type == SILApplication.PROCESS_TYPE:
+        return _view_fa_sil(request, application.silapplication)
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)
 
@@ -1176,6 +1179,23 @@ def _view_fa_oil(
     }
 
     return render(request, "web/domains/case/import/view_firearms_oil_case.html", context)
+
+
+def _view_fa_sil(
+    request: HttpRequest, application: OpenIndividualLicenceApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "verified_certificates": application.verified_certificates.filter(is_active=True),
+        "certificates": application.user_imported_certificates.active(),
+        "verified_section5": application.importer.section5_authorities.currently_active(),
+        "user_section5": application.user_section5.filter(is_active=True),
+        "contacts": application.importcontact_set.all(),
+    }
+
+    return render(request, "web/domains/case/import/view_firearms_sil_case.html", context)
 
 
 def _view_sanctions_and_adhoc(

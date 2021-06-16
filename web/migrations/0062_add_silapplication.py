@@ -73,7 +73,9 @@ class Migration(migrations.Migration):
                 ("additional_comments", models.CharField(blank=True, max_length=4000, null=True)),
                 (
                     "user_section5",
-                    models.ManyToManyField(related_name="+", to="web.SILUserSection5"),
+                    models.ManyToManyField(
+                        related_name="sil_application", to="web.SILUserSection5"
+                    ),
                 ),
                 (
                     "verified_section5",

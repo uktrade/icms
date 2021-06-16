@@ -435,10 +435,13 @@ def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResp
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
-            form = UserImportCertificateForm(data=request.POST, files=request.FILES)
-            document = request.FILES.get("document")
+            form = UserImportCertificateForm(
+                data=request.POST, application=application, files=request.FILES
+            )
 
             if form.is_valid():
+                document = form.cleaned_data.get("document")
+
                 extra_args = {
                     field: value
                     for (field, value) in form.cleaned_data.items()
@@ -458,7 +461,7 @@ def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResp
                     )
                 )
         else:
-            form = UserImportCertificateForm()
+            form = UserImportCertificateForm(application=application)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -487,7 +490,9 @@ def edit_certificate(
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
         if request.POST:
-            form = UserImportCertificateForm(data=request.POST, instance=certificate)
+            form = UserImportCertificateForm(
+                data=request.POST, application=application, instance=certificate
+            )
 
             if form.is_valid():
                 form.save()
@@ -500,7 +505,7 @@ def edit_certificate(
                 )
 
         else:
-            form = UserImportCertificateForm(instance=certificate)
+            form = UserImportCertificateForm(application=application, instance=certificate)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

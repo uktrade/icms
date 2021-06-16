@@ -6,74 +6,76 @@
     {{ super() }}
   {% endblock %}
 
-  <h4>Firearms and Ammunition</h4>
-  <div class="container">
-    <dl>
-      <dt class="bold">Applicant Reference</dt>
-      <dd>{{ process.applicant_reference or 'N/A' }}</dd>
-      <dt class="bold">Firearms Licence for</dt>
-      <dd>Section 1, Section 2</dd>
-      <dt class="bold">Country Of Origin</dt>
-      <dd>{{ process.origin_country.name }}</dd>
-      <dt class="bold">Country Of Consignment</dt>
-      <dd>{{ process.consignment_country.name }}</dd>
-    </dl>
-  </div>
+  {% call application_section("Firearms and Ammunition") %}
+    {{ application_field(process.applicant_reference, "Applicant Reference", "N/a") }}
 
-  <h4>Goods</h4>
-  <div class="container">
-    <dl>
-      <dt class="bold">Commodity Code</dt>
-      <dd>{{ process.commodity_group }}</dd>
-    </dl>
-  </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Firearms Licence For</label>
+      </div>
+      <div class="six columns">
+        <p>Section 1, Section 2</p>
+      </div>
+      <div class="three columns"></div>
+    </div>
 
-  <table class="setoutList">
-    <thead>
-      <tr>
-        <th style="width: 400px"> Goods Description </th>
-        <th> Quantity </th>
-        <th> Unit </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <div class="individual-input">
-            <span class="text-widget">
-              Firearms, component parts thereof, or ammunition of any applicable commodity code,
-              other than those falling under Section 5 of the Firearms Act 1968 as amended.
-            </span>
-          </div>
-        </td>
-        <td>
-          <div class="individual-input">
-            <span class="text-widget">Unlimited</span>
-          </div>
-        </td>
-        <td>
-          <div class="individual-input">
-            <span class="text-widget">units</span>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    {{ application_field(process.origin_country, "Country Of Origin") }}
+    {{ application_field(process.consignment_country, "Country Of Consignment") }}
 
-  <h4>Certificates/Documents</h4>
-  <h5>Verified Firearms Authorities</h5>
-  {% with read_only=True %}
-    {% include "partial/certificates/list-verified.html" %}
-  {% endwith %}
+  {% endcall %}
 
-  <h5>Other Certificates</h5>
-  {% with read_only = True %}
-    {% include "partial/certificates/list.html" %}
-  {% endwith %}
+  {% call application_section("Goods") %}
+    {{ application_field(process.commodity_code, "Commodity Code") }}
 
-  <h4>Details of who bought from</h4>
-  {% with read_only = True %}
-    {% include "partial/import-contacts/list.html" %}
-  {% endwith %}
+    <table class="setoutList">
+      <thead>
+        <tr>
+          <th style="width: 400px"> Goods Description </th>
+          <th> Quantity </th>
+          <th> Unit </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="individual-input">
+              <span class="text-widget">
+                Firearms, component parts thereof, or ammunition of any applicable commodity code,
+                other than those falling under Section 5 of the Firearms Act 1968 as amended.
+              </span>
+            </div>
+          </td>
+          <td>
+            <div class="individual-input">
+              <span class="text-widget">Unlimited</span>
+            </div>
+          </td>
+          <td>
+            <div class="individual-input">
+              <span class="text-widget">units</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% endcall %}
+
+  {% call application_section("Certificates/Documents") %}
+    <h5>Verified Firearms Authorities</h5>
+    {% with read_only=True %}
+      {% include "partial/certificates/list-verified.html" %}
+    {% endwith %}
+
+    <h5>Other Certificates</h5>
+    {% with read_only = True %}
+      {% include "partial/certificates/list.html" %}
+    {% endwith %}
+  {% endcall %}
+
+  {% call application_section("Details of who bought from") %}
+    {% with read_only = True %}
+      {% include "partial/import-contacts/list.html" %}
+    {% endwith %}
+  {% endcall %}
 
 {% endblock %}

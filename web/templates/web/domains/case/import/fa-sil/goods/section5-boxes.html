@@ -1,22 +1,25 @@
 {% for section in process.goods_section5.filter(is_active=True) %}
   <div class="container setoutForm">
-    <h5>Section 5 - {{ section.description }}</h5>
-    <a
-      href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5', 'section_pk': section.pk}) }}"
-      class="link-button icon-pencil button">
-      Edit
-    </a>
-    <form
-      method="POST"
-      action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5', 'section_pk': section.pk}) }}"
-      class="form-inline">
-      {{ csrf_input }}
-      <button
-        type="submit"
-        class="button link-button icon-bin">
-        Remove
-      </button>
-    </form>
+
+    {% if not read_only %}
+      <h5>Section 5 - {{ section.description }}</h5>
+      <a
+        href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5', 'section_pk': section.pk}) }}"
+        class="link-button icon-pencil button">
+        Edit
+      </a>
+      <form
+        method="POST"
+        action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5', 'section_pk': section.pk}) }}"
+        class="form-inline">
+        {{ csrf_input }}
+        <button
+          type="submit"
+          class="button link-button icon-bin">
+          Remove
+        </button>
+      </form>
+    {% endif %}
 
     <div class="row">
       <div class="three columns">
@@ -51,8 +54,8 @@
       </div>
       <div class="six columns">
         <span class="text-widget ">
-          {% if unlimited_quantity %}
-            Yes
+          {% if section.unlimited_quantity %}
+            Unlimited
           {% else %}
             {{ section.quantity }}
           {% endif %}

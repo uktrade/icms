@@ -47,7 +47,7 @@ class SILApplication(ImportApplication):
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
 
     # section 5
-    user_section5 = models.ManyToManyField(SILUserSection5, related_name="+")
+    user_section5 = models.ManyToManyField(SILUserSection5, related_name="sil_application")
     verified_section5 = models.ManyToManyField(Section5Authority, related_name="+")
 
     # certificates

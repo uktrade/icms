@@ -287,12 +287,6 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
 
         errors.add(certificate_errors)
 
-    # Select existing certificate errors
-    # TODO: implement ICMSLST-476
-
-    # Check know bought from
-    # TODO: implement ICMSLST-676
-
     return errors
 
 
