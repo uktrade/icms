@@ -31,6 +31,18 @@ class ImportApplicationType(models.Model):
         DFL = ("DEACTIVATED", "Deactivated Firearms Import Licence")
         SIL = ("SIL", "Specific Import Licence")
 
+    class ProcessTypes(models.TextChoices):
+        FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
+        FA_OIL = (
+            "OpenIndividualLicenceApplication",
+            "Firearms and Ammunition (Open Individual Import Licence)",
+        )
+        FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
+        WOOD = ("WoodQuotaApplication", "Wood (Quota)")
+        OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
+        SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
+        DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
+
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
     sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SubTypes.choices)
@@ -268,6 +280,32 @@ class ImportApplication(ApplicationBase):
 
     def is_import_application(self) -> bool:
         return True
+
+    def get_edit_view_name(self) -> str:
+        if self.process_type == ImportApplicationType.ProcessTypes.FA_OIL:
+            return "import:fa-oil:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.FA_DFL:
+            return "import:fa-dfl:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.FA_SIL:
+            return "import:fa-sil:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.OPT:
+            return "import:opt:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.DEROGATIONS:
+            return "import:derogations:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.SANCTIONS:
+            return "import:sanctions:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.WOOD:
+            return "import:wood:edit"
+        else:
+            raise NotImplementedError(f"Unknown process_type {self.process_type}")
+
+    def get_workbasket_subject(self) -> str:
+        return "\n".join(
+            [
+                "Import Application",
+                ImportApplicationType.ProcessTypes(self.process_type).label,
+            ]
+        )
 
     @property
     def application_approved(self):

@@ -3,11 +3,11 @@ from django.db import models
 from web.domains.file.models import File
 from web.models.shared import YesNoNAChoices
 
-from ..models import ChecklistBase, ImportApplication
+from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
 
 class DerogationsApplication(ImportApplication):
-    PROCESS_TYPE = "DerogationsApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.DEROGATIONS
 
     contract_sign_date = models.DateField(verbose_name="Contract Sign Date", null=True)
     contract_completion_date = models.DateField(verbose_name="Contract Completion Date", null=True)

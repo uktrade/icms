@@ -5,7 +5,7 @@ from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
 from web.models.shared import YesNoNAChoices
 
-from ..models import ImportApplication
+from ..models import ImportApplication, ImportApplicationType
 
 
 class SILUserSection5(File):
@@ -15,7 +15,7 @@ class SILUserSection5(File):
 class SILApplication(ImportApplication):
     """Firearms Specific Import Licence Application."""
 
-    PROCESS_TYPE = "SILApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_SIL
 
     # Select one or more sections related to the firearms licence
     section1 = models.BooleanField(null=True)

@@ -7,25 +7,11 @@
 
 {% block content_actions %}
 
-{% if process.process_type == "OpenIndividualLicenceApplication" %}
-  {% set url = 'import:fa-oil:edit' %}
-  {% set label = 'Edit Open Individual Licence' %}
-{% elif process.process_type == "DFLApplication" %}
-  {% set url = 'import:fa-dfl:edit' %}
-  {% set label = 'Edit Deactivated Firearms Licence' %}
-{% elif process.process_type == "SILApplication" %}
-  {% set url = 'import:fa-sil:edit' %}
-  {% set label = 'Edit Specific Import Licence' %}
-{% else %}
-  {% set url = 'import:UNKNOWN-EDIT-ACTION' %}
-  {% set label = 'Unknown application type' %}
-{% endif %}
-
 <div class="content-actions">
   <ul class="menu-out flow-across">
     <li>
-      <a href="{{ icms_url(url, kwargs={'application_pk': process.pk}) }}" class="prev-link">
-        {{ label }}
+      <a href="{{ icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}) }}" class="prev-link">
+        Edit application
         {% if process.applicant_reference %}
           '{{ process.applicant_reference }}'
         {% endif %}

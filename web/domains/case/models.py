@@ -211,6 +211,14 @@ class ApplicationBase(WorkbasketBase, Process):
     def is_import_application(self) -> bool:
         raise NotImplementedError
 
+    def get_edit_view_name(self) -> str:
+        """Get the edit view name."""
+        raise NotImplementedError
+
+    def get_workbasket_subject(self) -> str:
+        """Get workbasket subject/topic column content."""
+        raise NotImplementedError
+
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         """Get data to show in the workbasket."""
 
@@ -219,8 +227,7 @@ class ApplicationBase(WorkbasketBase, Process):
         # TODO: use self.reference once that's properly filled in
         r.reference = self.pk
 
-        # TODO: do something better (process.get_summary()?)
-        r.subject = self.process_type
+        r.subject = self.get_workbasket_subject()
 
         r.timestamp = self.created
 
@@ -324,9 +331,12 @@ class ApplicationBase(WorkbasketBase, Process):
                 )
 
             elif self.status == self.IN_PROGRESS:
-                # TODO: implement this
                 applicant_actions.append(
-                    WorkbasketAction(is_post=False, name="Resume", url="#TODO")
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Resume",
+                        url=reverse(self.get_edit_view_name(), kwargs={"application_pk": self.pk}),
+                    )
                 )
 
             if applicant_actions:

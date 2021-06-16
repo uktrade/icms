@@ -18,6 +18,10 @@ class ExportApplicationType(models.Model):
         FREE_SALE = ("CFS", "Certificate of Free Sale")
         MANUFACTURE = ("COM", "Certificate of Manufacture")
 
+    class ProcessTypes(models.TextChoices):
+        COM = ("CertificateOfManufactureApplication", "Certificate of Manufacture")
+        CFS = ("CertificateOfFreeSaleApplication", "Certificate of Free Sale")
+
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type_code = models.CharField(
         max_length=30, blank=False, null=False, unique=True, choices=Types.choices
@@ -147,9 +151,23 @@ class ExportApplication(ApplicationBase):
     def is_import_application(self) -> bool:
         return False
 
+    def get_edit_view_name(self) -> str:
+        if self.process_type == ExportApplicationType.ProcessTypes.COM:
+            return "export:com-edit"
+        else:
+            raise NotImplementedError(f"Unknown process_type {self.process_type}")
+
+    def get_workbasket_subject(self) -> str:
+        return "\n".join(
+            [
+                "Certificate Application",
+                ExportApplicationType.ProcessTypes(self.process_type).label,
+            ]
+        )
+
 
 class CertificateOfManufactureApplication(ExportApplication):
-    PROCESS_TYPE = "CertificateOfManufactureApplication"
+    PROCESS_TYPE = ExportApplicationType.ProcessTypes.COM
 
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)

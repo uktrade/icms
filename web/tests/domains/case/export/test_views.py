@@ -34,11 +34,11 @@ class TestFlow(AuthTestCase):
         self.login_with_permissions(["exporter_access"])
         assign_perm("web.is_contact_of_exporter", self.user, appl.exporter)
 
-        url_edit = reverse("export:com-edit", kwargs={"pk": appl.pk})
+        url_edit = reverse("export:com-edit", kwargs={"application_pk": appl.pk})
         url_submit = reverse("export:com-submit", kwargs={"pk": appl.pk})
 
         response = self.client.post(
-            reverse("export:com-edit", kwargs={"pk": appl.pk}),
+            reverse("export:com-edit", kwargs={"application_pk": appl.pk}),
             data={
                 "contact": self.user.pk,
                 "countries": Country.objects.last().pk,
@@ -82,7 +82,7 @@ class TestEditCom(AuthTestCase):
     def setUp(self):
         super().setUp()
         self.appl = CertificateOfManufactureApplicationFactory.create()
-        self.url = reverse("export:com-edit", kwargs={"pk": self.appl.pk})
+        self.url = reverse("export:com-edit", kwargs={"application_pk": self.appl.pk})
 
     def test_edit_ok(self):
         self.appl.tasks.create(is_active=True, task_type="prepare")
@@ -105,7 +105,7 @@ class TestEditCom(AuthTestCase):
 
         self.assertRedirects(
             response,
-            reverse("export:com-edit", kwargs={"pk": self.appl.pk}),
+            reverse("export:com-edit", kwargs={"application_pk": self.appl.pk}),
             fetch_redirect_response=False,
         )
 

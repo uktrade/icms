@@ -5,7 +5,7 @@ from web.domains.country.models import Country
 from web.domains.file.models import File
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 
-from ..models import ImportApplication
+from ..models import ImportApplication, ImportApplicationType
 
 _ONCE_PER_YEAR = """This question only needs to be completed once per year. If
 you have already completed this question on a previous application this year,
@@ -32,7 +32,7 @@ class OutwardProcessingTradeFile(File):
 
 
 class OutwardProcessingTradeApplication(ImportApplication):
-    PROCESS_TYPE = "OutwardProcessingTradeApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.OPT
 
     customs_office_name = models.CharField(
         max_length=100, null=True, verbose_name="Requested customs supervising office name"

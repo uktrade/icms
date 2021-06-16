@@ -13,19 +13,10 @@
 <div class="content-actions">
   <ul class="menu-out flow-across">
     <li>
-      {% if process.process_type == "OpenIndividualLicenceApplication" %}
-        <a
-          href="{{ icms_url('import:fa-oil:edit', kwargs={'application_pk': process.pk}) }}"
+        <a href="{{ icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}) }}"
           class="prev-link">
           Main Application
         </a>
-      {% elif process.process_type == "SILApplication" %}
-        <a
-          href="{{ icms_url('import:fa-sil:edit', kwargs={'application_pk': process.pk}) }}"
-          class="prev-link">
-          Main Application
-        </a>
-      {% endif %}
     </li>
   </ul>
 </div>

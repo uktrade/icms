@@ -2,7 +2,7 @@ from django.db import models
 
 from web.domains.file.models import File
 
-from ..models import ChecklistBase, ImportApplication
+from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
 
 class WoodContractFile(File):
@@ -11,7 +11,7 @@ class WoodContractFile(File):
 
 
 class WoodQuotaApplication(ImportApplication):
-    PROCESS_TYPE = "WoodQuotaApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.WOOD
 
     shipping_year = models.IntegerField(blank=False, null=True)
 

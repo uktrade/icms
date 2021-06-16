@@ -2,11 +2,11 @@ from django.db import models
 
 from web.domains.file.models import File
 
-from ..models import ImportApplication
+from ..models import ImportApplication, ImportApplicationType
 
 
 class SanctionsAndAdhocApplication(ImportApplication):
-    PROCESS_TYPE = "SanctionsAndAdhocApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.SANCTIONS
 
     exporter_name = models.CharField(max_length=4096, blank=True, null=True)
     exporter_address = models.CharField(max_length=4096, blank=True, null=True)

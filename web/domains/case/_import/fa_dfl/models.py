@@ -1,6 +1,10 @@
 from django.db import models
 
-from web.domains.case._import.models import ChecklistBase, ImportApplication
+from web.domains.case._import.models import (
+    ChecklistBase,
+    ImportApplication,
+    ImportApplicationType,
+)
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -37,7 +41,7 @@ class DFLApplication(ImportApplication):
         EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
         EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
 
-    PROCESS_TYPE = "DFLApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_DFL
 
     deactivated_firearm = models.BooleanField(verbose_name="Deactivated Firearm", default=True)
     proof_checked = models.BooleanField(verbose_name="Proof Checked", default=False)

@@ -56,13 +56,11 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 def create_derogations(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.DEROGATION
     model_class = DerogationsApplication
-    redirect_view = "import:derogations:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -71,13 +69,11 @@ def create_derogations(request: HttpRequest) -> HttpResponse:
 def create_sanctions(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
-    redirect_view = "import:sanctions:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -86,13 +82,11 @@ def create_sanctions(request: HttpRequest) -> HttpResponse:
 def create_firearms_oil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
-    redirect_view = "import:fa-oil:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -101,13 +95,11 @@ def create_firearms_oil(request: HttpRequest) -> HttpResponse:
 def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.DFL
     model_class = DFLApplication
-    redirect_view = "import:fa-dfl:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -116,12 +108,11 @@ def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
 def create_firearms_sil(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.SIL
     model_class = SILApplication
-    redirect_view = "import:fa-sil:edit"
+
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -130,13 +121,11 @@ def create_firearms_sil(request: HttpRequest) -> HttpResponse:
 def create_wood_quota(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.WOOD_QUOTA
     model_class = WoodQuotaApplication
-    redirect_view = "import:wood:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
         form_class=CreateWoodQuotaApplicationForm,
     )
 
@@ -146,13 +135,11 @@ def create_wood_quota(request: HttpRequest) -> HttpResponse:
 def create_opt(request: HttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.OPT
     model_class = OutwardProcessingTradeApplication
-    redirect_view = "import:opt:edit"
 
     return _create_application(
         request,
         import_application_type,  # type: ignore[arg-type]
         model_class,
-        redirect_view,
     )
 
 
@@ -160,7 +147,6 @@ def _create_application(
     request: HttpRequest,
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
     model_class: Type[ImportApplication],
-    redirect_view: str,
     form_class: Type[CreateImportApplicationForm] = None,
 ) -> HttpResponse:
     """Helper function to create one of several types of importer application.
@@ -168,7 +154,6 @@ def _create_application(
     :param request: Django request
     :param import_application_type: ImportApplicationType type or sub_type
     :param model_class: ImportApplication class
-    :param redirect_view: View to redirect to
     :param form_class: Optional form class that defines extra logic
     :return:
     """
@@ -203,7 +188,9 @@ def _create_application(
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
 
-            return redirect(reverse(redirect_view, kwargs={"application_pk": application.pk}))
+            return redirect(
+                reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
+            )
     else:
         form = form_class(user=request.user)
 

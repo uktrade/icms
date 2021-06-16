@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from django.test import Client
 from guardian.shortcuts import assign_perm
@@ -43,7 +45,5 @@ def test_resume_oil_application():
 
     assert response.status_code == 200
 
-    # NOTE: The workbasket action links need refactoring.
-    # See the TODO in this file: web/domains/case/models.py
-    link = '<a href="#TODO">Resume</a>'
-    assert link in response.content.decode()
+    link = r'<a href="/import/firearms/oil/\d+/edit/">\s*Resume\s*</a>'
+    assert re.search(link, response.content.decode()) is not None

@@ -3,11 +3,11 @@ from django.db import models
 from web.models import UserImportCertificate
 from web.models.shared import YesNoNAChoices
 
-from ..models import ChecklistBase, ImportApplication
+from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
 
 class OpenIndividualLicenceApplication(ImportApplication):
-    PROCESS_TYPE = "OpenIndividualLicenceApplication"
+    PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_OIL
 
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
     section2 = models.BooleanField(verbose_name="Section 2", default=True)

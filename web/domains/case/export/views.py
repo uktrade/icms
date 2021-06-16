@@ -37,7 +37,6 @@ class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 class CreateExportApplicationConfig(NamedTuple):
     model_class: Type[ExportApplication]
     form_class: Type[CreateExportApplicationForm]
-    redirect_view: str
     certificate_message: str
 
 
@@ -65,7 +64,9 @@ def create_export_application(request: HttpRequest, *, type_code: str) -> HttpRe
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
 
-            return redirect(reverse(config.redirect_view, kwargs={"pk": application.pk}))
+            return redirect(
+                reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
+            )
     else:
         form = config.form_class(user=request.user)
 
@@ -83,7 +84,6 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
         return CreateExportApplicationConfig(
             model_class=CertificateOfManufactureApplication,
             form_class=CreateExportApplicationForm,
-            redirect_view="export:com-edit",
             certificate_message=(
                 "Certificates of Manufacture are applicable only to pesticides that are for export"
                 " only and not on free sale on the domestic market."
@@ -102,10 +102,10 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
 
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
-def edit_com(request, pk):
+def edit_com(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl = get_object_or_404(
-            CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
+        appl: CertificateOfManufactureApplication = get_object_or_404(
+            CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
 
         task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
@@ -119,7 +119,9 @@ def edit_com(request, pk):
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
+                return redirect(
+                    reverse("export:com-edit", kwargs={"application_pk": application_pk})
+                )
 
         else:
             form = PrepareCertManufactureForm(instance=appl, initial={"contact": request.user})
@@ -149,7 +151,8 @@ def submit_com(request, pk):
 
         errors = ApplicationErrors()
         page_errors = PageErrors(
-            page_name="Application details", url=reverse("export:com-edit", kwargs={"pk": pk})
+            page_name="Application details",
+            url=reverse("export:com-edit", kwargs={"application_pk": pk}),
         )
         create_page_errors(
             PrepareCertManufactureForm(data=model_to_dict(appl), instance=appl), page_errors
@@ -161,7 +164,7 @@ def submit_com(request, pk):
             go_back_to_edit = "_edit_application" in request.POST
 
             if go_back_to_edit:
-                return redirect(reverse("export:com-edit", kwargs={"pk": pk}))
+                return redirect(reverse("export:com-edit", kwargs={"application_pk": pk}))
 
             if form.is_valid() and not errors.has_errors():
                 appl.status = ExportApplication.SUBMITTED
