@@ -12,7 +12,7 @@
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
     <li>
       <a
-        href="{{ icms_url('import:fa-oil:manage-checklist', args=[process.pk]) }}">
+        href="{{ icms_url('import:fa-oil:manage-checklist', kwargs={'application_pk': process.pk}) }}">
         Checklist
       </a>
     </li>

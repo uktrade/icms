@@ -174,10 +174,10 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request, pk):
+def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OpenIndividualLicenceApplication = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
         checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
@@ -188,7 +188,12 @@ def manage_checklist(request, pk):
             form = ChecklistFirearmsOILApplicationOptionalForm(request.POST, instance=checklist)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:fa-oil:manage-checklist", kwargs={"pk": pk}))
+
+                return redirect(
+                    reverse(
+                        "import:fa-oil:manage-checklist", kwargs={"application_pk": application_pk}
+                    )
+                )
         else:
             if created:
                 form = ChecklistFirearmsOILApplicationForm(instance=checklist)
