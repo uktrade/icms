@@ -1612,6 +1612,10 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
         application_errors.add(_get_derogations_errors(application))
 
+    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
+        # There are no extra checks for Sanctions and Adhoc
+        pass
+
     else:
         raise NotImplementedError(
             f"process_type {application.process_type!r} hasn't been implemented yet."
@@ -1625,6 +1629,13 @@ def _get_import_errors(application, application_errors, prepare_errors):
     if not application.licence_end_date:
         prepare_errors.add(
             FieldError(field_name="Licence end date", messages=["Licence end date missing."])
+        )
+
+    if application.licence_end_date <= application.licence_start_date:
+        prepare_errors.add(
+            FieldError(
+                field_name="Licence end date", messages=["End date must be after the start date."]
+            )
         )
 
     app_t: ImportApplicationType = application.application_type
