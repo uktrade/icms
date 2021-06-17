@@ -232,7 +232,7 @@ def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespo
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         if request.POST:
@@ -275,7 +275,7 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         application_type: ImportApplicationType = application.application_type
 
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         # If both true then allow editing of the paper licence field
@@ -334,7 +334,7 @@ def _add_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         if request.POST:
@@ -380,7 +380,7 @@ def edit_endorsement(
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         if request.POST:
@@ -424,7 +424,9 @@ def delete_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
-        application.get_task([ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process")
+        application.get_task(
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
+        )
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -448,7 +450,7 @@ def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRe
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         context = {
@@ -483,7 +485,7 @@ def preview_licence(request: HttpRequest, *, application_pk: int) -> HttpRespons
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         context = {

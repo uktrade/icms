@@ -3,7 +3,7 @@
     <label class="prompt west">Case Reference</label>
   </div>
   <div class="two columns">
-    <span>{{ process.reference or "Not Yet Assigned" }}</span>
+    <span>{{ process.get_reference() }}</span>
   </div>
   <div class="two columns">
     <label class="prompt west" class="prompt west">Case Owner</label>

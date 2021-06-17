@@ -44,7 +44,7 @@ def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         )
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = PrepareDFLForm(data=request.POST, instance=application)
@@ -81,7 +81,7 @@ def add_goods_certificate(request: HttpRequest, *, application_pk: int) -> HttpR
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "import")
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
@@ -128,7 +128,7 @@ def edit_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -170,7 +170,7 @@ def edit_goods_certificate_description(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         document = application.goods_certificates.get(pk=document_pk)
@@ -229,7 +229,7 @@ def delete_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.goods_certificates.get(pk=document_pk)
         document.is_active = False
@@ -246,7 +246,7 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         )
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = _get_dfl_errors(application)
 
@@ -254,7 +254,8 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitDFLForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
@@ -346,7 +347,7 @@ def manage_checklist(request: HttpRequest, *, application_pk):
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         checklist, created = DFLChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:

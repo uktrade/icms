@@ -18,14 +18,17 @@ class AccessRequest(WorkbasketBase, Process):
     REFUSED = "REFUSED"
     RESPONSES = ((APPROVED, "Approved"), (REFUSED, "Refused"))
 
-    SUBMITTED = "SUBMITTED"
-    CLOSED = "CLOSED"
-    STATUSES = ((SUBMITTED, "Submitted"), (CLOSED, "Closed"))
+    # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
+    class Statuses(models.TextChoices):
+        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
+        CLOSED: str = ("CLOSED", "Closed")  # type:ignore[assignment]
 
-    reference = models.CharField(max_length=100, blank=False, null=False)
+    reference = models.CharField(max_length=100, blank=False, null=False, unique=True)
+
     status = models.CharField(
-        max_length=30, choices=STATUSES, blank=False, null=False, default=SUBMITTED
+        max_length=30, choices=Statuses.choices, blank=False, null=False, default=Statuses.SUBMITTED
     )
+
     organisation_name = models.CharField(max_length=100, blank=False, null=False)
     organisation_address = models.TextField()
     organisation_registered_number = models.CharField(
@@ -71,8 +74,7 @@ class AccessRequest(WorkbasketBase, Process):
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         r = WorkbasketRow()
 
-        # TODO: use self.reference once that's properly filled in
-        r.reference = self.pk
+        r.reference = self.reference
 
         r.subject = self.process_type
 

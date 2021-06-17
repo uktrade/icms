@@ -45,7 +45,7 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = EditOPTForm(data=request.POST, instance=application)
@@ -86,7 +86,7 @@ def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> 
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = CompensatingProductsOPTForm(data=request.POST, instance=application)
@@ -127,7 +127,7 @@ def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = TemporaryExportedGoodsOPTForm(data=request.POST, instance=application)
@@ -167,7 +167,7 @@ def edit_further_questions(request: HttpRequest, *, application_pk: int) -> Http
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
@@ -207,7 +207,7 @@ def edit_further_questions_shared(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         form_class = get_fq_form(fq_type)
 
@@ -257,7 +257,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
 
@@ -307,7 +307,8 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitOPTForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
                 application.save()
 
@@ -371,7 +372,7 @@ def add_document(request: HttpRequest, *, application_pk: int, file_type: str) -
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -423,7 +424,7 @@ def delete_document(request: HttpRequest, *, application_pk: int, document_pk: i
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.documents.get(pk=document_pk)
         document.is_active = False

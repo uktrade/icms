@@ -52,47 +52,22 @@ class ExportApplicationType(models.Model):
 
 
 class ExportApplication(ApplicationBase):
-    IN_PROGRESS = "IN_PROGRESS"
-    SUBMITTED = "SUBMITTED"
-    PROCESSING = "PROCESSING"
-    COMPLETED = "COMPLETED"
-    WITHDRAWN = "WITHDRAWN"
-    STOPPED = "STOPPED"
-    VARIATION_REQUESTED = "VARIATION"
-    REVOKED = "REVOKED"
-    DELETED = "DELETED"
-    UPDATE_REQUESTED = "UPDATE_REQUESTED"
-
-    STATUSES = (
-        (IN_PROGRESS, "In Progress"),
-        (SUBMITTED, "Submitted"),
-        (PROCESSING, "Processing"),
-        (COMPLETED, "Completed"),
-        (WITHDRAWN, "Withdrawn"),
-        (STOPPED, "Stopped"),
-        (REVOKED, "Revoked"),
-        (VARIATION_REQUESTED, "Case Variation"),
-        (DELETED, "Deleted"),
-        (UPDATE_REQUESTED, "Update Requested"),
-    )
-
-    status = models.CharField(
-        max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
-    )
-    reference = models.CharField(max_length=100, blank=True, null=True)
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
     )
+
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
+
     last_updated_by = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_export_cases"
     )
+
     variation_requests = models.ManyToManyField(VariationRequest)
     variation_no = models.IntegerField(blank=False, null=False, default=0)
     case_notes = models.ManyToManyField(CaseNote)
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
-    submit_datetime = models.DateTimeField(blank=True, null=True)
+
     submitted_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -100,6 +75,7 @@ class ExportApplication(ApplicationBase):
         null=True,
         related_name="submitted_export_application",
     )
+
     created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -107,6 +83,7 @@ class ExportApplication(ApplicationBase):
         null=False,
         related_name="created_export_applications",
     )
+
     exporter = models.ForeignKey(
         Exporter,
         on_delete=models.PROTECT,
@@ -114,6 +91,7 @@ class ExportApplication(ApplicationBase):
         null=False,
         related_name="export_applications",
     )
+
     exporter_office = models.ForeignKey(
         Office,
         on_delete=models.PROTECT,
@@ -121,6 +99,7 @@ class ExportApplication(ApplicationBase):
         null=True,
         related_name="office_export_applications",
     )
+
     contact = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -128,6 +107,7 @@ class ExportApplication(ApplicationBase):
         null=True,
         related_name="contact_export_applications",
     )
+
     countries = models.ManyToManyField(Country)
 
     agent = models.ForeignKey(

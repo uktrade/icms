@@ -47,7 +47,7 @@ def edit_application(request: HttpRequest, *, application_pk: int) -> HttpRespon
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -90,7 +90,7 @@ def add_goods(request, pk):
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
         )
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -128,7 +128,7 @@ def edit_goods(request: HttpRequest, application_pk: int, goods_pk: int) -> Http
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -150,7 +150,7 @@ def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int)
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         form_class = GoodsSanctionsLicenceForm
@@ -224,7 +224,7 @@ def add_supporting_document(request, pk):
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
         )
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -272,7 +272,7 @@ def delete_supporting_document(request, application_pk, document_pk):
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -292,7 +292,7 @@ def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -313,7 +313,8 @@ def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitSanctionsForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
                 application.save()
 
@@ -353,7 +354,7 @@ def manage_sanction_emails(request: HttpRequest, pk: int) -> HttpResponse:
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=pk)
 
     with transaction.atomic():
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
     context = {
         "process": application,
@@ -377,7 +378,7 @@ def create_sanction_email(request: HttpRequest, pk: int) -> HttpResponse:
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
         )
-        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
         # TODO: template missing from db export
         # search IMA_SANCTION_EMAIL to see data migration
@@ -424,7 +425,7 @@ def edit_sanction_email(
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         sanction_email = get_object_or_404(
             application.sanction_emails.filter(is_active=True), pk=sanction_email_pk
         )
@@ -497,7 +498,7 @@ def delete_sanction_email(
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         sanction_email = get_object_or_404(
             application.sanction_emails.filter(is_active=True), pk=sanction_email_pk
         )
@@ -522,7 +523,7 @@ def add_response_sanction_email(
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         sanction_email = get_object_or_404(application.sanction_emails, pk=sanction_email_pk)
 
         if request.POST:

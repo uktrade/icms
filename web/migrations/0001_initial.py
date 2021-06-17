@@ -594,15 +594,16 @@ class Migration(migrations.Migration):
                             ("COMPLETED", "Completed"),
                             ("WITHDRAWN", "Withdrawn"),
                             ("STOPPED", "Stopped"),
+                            ("VARIATION_REQUESTED", "Variation Requested"),
                             ("REVOKED", "Revoked"),
-                            ("VARIATION", "Case Variation"),
                             ("DELETED", "Deleted"),
+                            ("UPDATE_REQUESTED", "Update Requested"),
                         ],
                         default="IN_PROGRESS",
                         max_length=30,
                     ),
                 ),
-                ("reference", models.CharField(blank=True, max_length=50, null=True)),
+                ("reference", models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 (
                     "decision",
                     models.CharField(
@@ -1227,14 +1228,16 @@ class Migration(migrations.Migration):
                             ("COMPLETED", "Completed"),
                             ("WITHDRAWN", "Withdrawn"),
                             ("STOPPED", "Stopped"),
-                            ("REVOKED", "Revoked"),
                             ("VARIATION_REQUESTED", "Variation Requested"),
+                            ("REVOKED", "Revoked"),
                             ("DELETED", "Deleted"),
+                            ("UPDATE_REQUESTED", "Update Requested"),
                         ],
+                        default="IN_PROGRESS",
                         max_length=30,
                     ),
                 ),
-                ("reference", models.CharField(blank=True, max_length=50, null=True)),
+                ("reference", models.CharField(blank=True, max_length=100, null=True, unique=True)),
                 (
                     "applicant_reference",
                     models.CharField(
@@ -1819,7 +1822,7 @@ class Migration(migrations.Migration):
                         to="web.process",
                     ),
                 ),
-                ("reference", models.CharField(max_length=50)),
+                ("reference", models.CharField(max_length=100, unique=True)),
                 (
                     "status",
                     models.CharField(

@@ -44,7 +44,7 @@ def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> 
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
         context = {
             "process": application,
@@ -83,7 +83,7 @@ def create_constabulary_email(request: HttpRequest, *, application_pk: int) -> H
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
         template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
         # TODO: replace with case reference
@@ -131,7 +131,7 @@ def edit_constabulary_email(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         constabulary_email: ConstabularyEmail = get_object_or_404(
             application.constabulary_emails.filter(is_active=True), pk=constabulary_email_pk
         )
@@ -209,7 +209,7 @@ def archive_constabulary_email(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        application.get_task(ImportApplication.SUBMITTED, "process")
+        application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         constabulary_email = get_object_or_404(ConstabularyEmail, pk=constabulary_email_pk)
 
         constabulary_email.is_active = False
@@ -236,7 +236,7 @@ def add_response_constabulary_email(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         constabulary_email = get_object_or_404(ConstabularyEmail, pk=constabulary_email_pk)
 
         if request.POST:
@@ -282,7 +282,7 @@ def list_import_contacts(request: HttpRequest, *, application_pk: int) -> HttpRe
         )
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -309,7 +309,7 @@ def create_import_contact(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = form_class(data=request.POST)
@@ -362,7 +362,7 @@ def edit_import_contact(
         check_application_permission(application, request.user, "import")
         person = get_object_or_404(ImportContact, pk=contact_pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = form_class(data=request.POST, instance=person)
@@ -404,7 +404,7 @@ def manage_certificates(request: HttpRequest, *, application_pk: int) -> HttpRes
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         selected_verified = application.verified_certificates.filter(pk=OuterRef("pk")).values("pk")
         verified_certificates = application.importer.firearms_authorities.filter(
@@ -432,7 +432,7 @@ def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResp
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = UserImportCertificateForm(
@@ -487,7 +487,7 @@ def edit_certificate(
 
         certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = UserImportCertificateForm(
@@ -544,7 +544,7 @@ def archive_certificate(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.user_imported_certificates.get(pk=certificate_pk)
         document.is_active = False
@@ -570,7 +570,7 @@ def add_authority(request: HttpRequest, *, application_pk: int, authority_pk: in
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         application.verified_certificates.add(firearms_authority)
 
@@ -596,7 +596,7 @@ def delete_authority(
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         application.verified_certificates.remove(firearms_authority)
 
@@ -635,7 +635,7 @@ def view_authority(request: HttpRequest, *, application_pk: int, authority_pk: i
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

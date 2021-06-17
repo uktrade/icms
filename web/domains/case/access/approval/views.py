@@ -38,7 +38,7 @@ def management_access_approval(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
             Form = ExporterApprovalRequestForm
-        task = application.get_task(AccessRequest.SUBMITTED, "process")
+        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
 
         try:
             approval_request = application.approval_requests.get(is_active=True)
@@ -121,7 +121,7 @@ def management_access_approval_withdraw(request, application_pk, entity, approva
             pk=approval_request_pk,
         )
 
-        application.get_task(AccessRequest.SUBMITTED, "process")
+        application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
 
         approval_request.is_active = False
         approval_request.status = ApprovalRequest.CANCELLED
@@ -260,7 +260,7 @@ def case_approval_respond(request, application_pk, entity, approval_request_pk):
         if not request.user.has_perm(permission, application.link):
             raise PermissionDenied
 
-        application.get_task(AccessRequest.SUBMITTED, "process")
+        application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
         task = approval.get_task(ApprovalRequest.OPEN, "respond")
 
         if request.POST:

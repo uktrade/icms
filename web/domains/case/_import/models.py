@@ -127,30 +127,6 @@ class ImportApplicationType(models.Model):
 
 
 class ImportApplication(ApplicationBase):
-    IN_PROGRESS = "IN_PROGRESS"
-    SUBMITTED = "SUBMITTED"
-    PROCESSING = "PROCESSING"
-    COMPLETED = "COMPLETED"
-    WITHDRAWN = "WITHDRAWN"
-    STOPPED = "STOPPED"
-    VARIATION_REQUESTED = "VARIATION_REQUESTED"
-    REVOKED = "REVOKED"
-    DELETED = "DELETED"
-    UPDATE_REQUESTED = "UPDATE_REQUESTED"
-
-    STATUSES = (
-        (IN_PROGRESS, "In Progress"),
-        (SUBMITTED, "Submitted"),
-        (PROCESSING, "Processing"),
-        (COMPLETED, "Completed"),
-        (WITHDRAWN, "Withdrawn"),
-        (STOPPED, "Stopped"),
-        (REVOKED, "Revoked"),
-        (VARIATION_REQUESTED, "Variation Requested"),
-        (DELETED, "Deleted"),
-        (UPDATE_REQUESTED, "Update Requested"),
-    )
-
     # Chief usage status
     CANCELLED = "C"
     EXHAUSTED = "E"
@@ -163,11 +139,6 @@ class ImportApplication(ApplicationBase):
         (SURRENDERED, "S"),
     )
 
-    status = models.CharField(
-        max_length=30, choices=STATUSES, blank=False, null=False, default=IN_PROGRESS
-    )
-    reference = models.CharField(max_length=100, blank=True, null=True)
-
     applicant_reference = models.CharField(
         max_length=500,
         blank=True,
@@ -176,7 +147,6 @@ class ImportApplication(ApplicationBase):
         help_text="Enter your own reference for this application.",
     )
 
-    submit_datetime = models.DateTimeField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     variation_no = models.IntegerField(blank=False, null=False, default=0)
     legacy_case_flag = models.BooleanField(blank=False, null=False, default=False)

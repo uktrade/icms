@@ -32,7 +32,7 @@ def edit_derogations(request: HttpRequest, *, application_pk: int) -> HttpRespon
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -70,7 +70,7 @@ def add_supporting_document(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(DerogationsApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -122,7 +122,7 @@ def delete_supporting_document(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -140,8 +140,10 @@ def delete_supporting_document(
 @permission_required("web.importer_access", raise_exception=True)
 def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(DerogationsApplication.objects.select_for_update(), pk=pk)
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application: DerogationsApplication = get_object_or_404(
+            DerogationsApplication.objects.select_for_update(), pk=pk
+        )
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -161,7 +163,8 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitDerogationsForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
                 application.save()
 
@@ -218,7 +221,7 @@ def manage_checklist(request: HttpRequest, *, application_pk):
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         checklist, created = DerogationsChecklist.objects.get_or_create(
             import_application=application
         )
@@ -261,7 +264,7 @@ def edit_goods_licence(request: HttpRequest, pk: int) -> HttpResponse:
             DerogationsApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         if request.POST:

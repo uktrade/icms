@@ -35,7 +35,7 @@ def edit_wood_quota(request: HttpRequest, *, application_pk: int) -> HttpRespons
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -75,7 +75,7 @@ def add_supporting_document(request, pk):
     with transaction.atomic():
         application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -121,7 +121,7 @@ def delete_supporting_document(request, application_pk, document_pk):
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -139,7 +139,7 @@ def add_contract_document(request, pk):
     with transaction.atomic():
         application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -191,7 +191,7 @@ def delete_contract_document(request, application_pk, document_pk):
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -211,7 +211,7 @@ def edit_contract_document(request, application_pk, document_pk):
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -248,7 +248,7 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -268,7 +268,8 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
             form = SubmitWoodQuotaForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
                 application.save()
 
@@ -310,7 +311,7 @@ def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpRespon
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
             import_application=application
         )
@@ -354,7 +355,7 @@ def edit_goods(request: HttpRequest, pk: int) -> HttpResponse:
             WoodQuotaApplication.objects.select_for_update(), pk=pk
         )
         task = application.get_task(
-            [ImportApplication.SUBMITTED, ImportApplication.WITHDRAWN], "process"
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
         if request.POST:

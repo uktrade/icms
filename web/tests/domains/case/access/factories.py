@@ -16,8 +16,7 @@ class AccessRequestFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AccessRequest
 
-    reference = "test"
-    status = AccessRequest.SUBMITTED
+    status = AccessRequest.Statuses.SUBMITTED
     organisation_name = factory.Faker("company")
     organisation_address = factory.Faker("address")
     request_reason = factory.Sequence(lambda n: f"reason {n}")

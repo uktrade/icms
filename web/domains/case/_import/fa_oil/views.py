@@ -34,7 +34,7 @@ def edit_oil(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -71,7 +71,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
 
-        task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -122,8 +122,10 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitOILForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.status = ImportApplication.SUBMITTED
+                # FIXME: assign reference
+                application.status = ImportApplication.Statuses.SUBMITTED
                 application.submit_datetime = timezone.now()
+
                 template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
                 application.cover_letter = template.get_content(
                     {
@@ -179,7 +181,7 @@ def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpRespon
         application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
             import_application=application
         )

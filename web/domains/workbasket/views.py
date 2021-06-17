@@ -46,11 +46,11 @@ def _get_queryset_admin(user: User) -> QuerySet:
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
     exporter_access_requests = ExporterAccessRequest.objects.filter(
-        is_active=True, status=AccessRequest.SUBMITTED
+        is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
     importer_access_requests = ImporterAccessRequest.objects.filter(
-        is_active=True, status=AccessRequest.SUBMITTED
+        is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
     import_application = (
@@ -97,7 +97,7 @@ def _get_queryset_user(user: User) -> QuerySet:
 
     # user/admin access requests and firs
     access_requests = (
-        user.submitted_access_requests.filter(status=AccessRequest.SUBMITTED)
+        user.submitted_access_requests.filter(status=AccessRequest.Statuses.SUBMITTED)
         .prefetch_related("further_information_requests")
         .prefetch_related(
             Prefetch(
@@ -115,10 +115,10 @@ def _get_queryset_user(user: User) -> QuerySet:
         .filter(is_active=True)
         .filter(
             status__in=[
-                ImportApplication.SUBMITTED,
-                ImportApplication.IN_PROGRESS,
-                ImportApplication.WITHDRAWN,
-                ImportApplication.UPDATE_REQUESTED,
+                ImportApplication.Statuses.SUBMITTED,
+                ImportApplication.Statuses.IN_PROGRESS,
+                ImportApplication.Statuses.WITHDRAWN,
+                ImportApplication.Statuses.UPDATE_REQUESTED,
             ]
         )
         .filter(importer__in=importers)

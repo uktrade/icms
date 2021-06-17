@@ -89,6 +89,7 @@ def importer_access_request(request):
         if request.POST:
             form = forms.ImporterAccessRequestForm(data=request.POST)
             if form.is_valid():
+                # FIXME: assign reference
                 application = form.save(commit=False)
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
@@ -127,6 +128,7 @@ def exporter_access_request(request):
         if request.POST:
             form = forms.ExporterAccessRequestForm(data=request.POST)
             if form.is_valid():
+                # FIXME: assign reference
                 application = form.save(commit=False)
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
@@ -172,7 +174,7 @@ def management(request, pk, entity):
             Form = forms.LinkExporterAccessRequestForm
             permission_codename = "exporter_access"
 
-        task = application.get_task(AccessRequest.SUBMITTED, "process")
+        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
 
         if request.POST:
             form = Form(instance=application, data=request.POST)
@@ -215,13 +217,13 @@ def management_response(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
 
-        task = application.get_task(AccessRequest.SUBMITTED, "process")
+        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
 
         if request.POST:
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)
             if form.is_valid():
                 form.save()
-                application.status = AccessRequest.CLOSED
+                application.status = AccessRequest.Statuses.CLOSED
                 application.save()
 
                 task.is_active = False

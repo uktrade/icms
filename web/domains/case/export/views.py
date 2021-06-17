@@ -108,7 +108,7 @@ def edit_com(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
             raise PermissionDenied
@@ -144,7 +144,7 @@ def submit_com(request, pk):
             CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
         )
 
-        task = appl.get_task(ExportApplication.IN_PROGRESS, "prepare")
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
             raise PermissionDenied
@@ -167,7 +167,9 @@ def submit_com(request, pk):
                 return redirect(reverse("export:com-edit", kwargs={"application_pk": pk}))
 
             if form.is_valid() and not errors.has_errors():
-                appl.status = ExportApplication.SUBMITTED
+                # FIXME: assign reference
+                appl.status = ExportApplication.Statuses.SUBMITTED
+                appl.submit_datetime = timezone.now()
                 appl.save()
 
                 task.is_active = False

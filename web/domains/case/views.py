@@ -146,7 +146,7 @@ def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> 
         application: ImpOrExp = get_object_or_404(
             klass=model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         context = {
             "process": application,
             "notes": application.case_notes,
@@ -170,7 +170,7 @@ def add_note(request: HttpRequest, *, application_pk: int, case_type: str) -> Ht
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
 
     return redirect(
@@ -192,7 +192,7 @@ def archive_note(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         application.case_notes.filter(pk=note_pk).update(is_active=False)
 
     return redirect(
@@ -214,7 +214,7 @@ def unarchive_note(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         application.case_notes.filter(pk=note_pk).update(is_active=True)
 
     return redirect(
@@ -235,7 +235,7 @@ def edit_note(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
 
         if request.POST:
@@ -286,7 +286,7 @@ def add_note_document(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
 
         if request.POST:
@@ -364,7 +364,7 @@ def delete_note_document(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         document = application.case_notes.get(pk=note_pk).files.get(pk=file_pk)
         document.is_active = False
         document.save()
@@ -389,7 +389,9 @@ def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) 
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         is_contact = _is_importer_exporter_contact(request.user, application, case_type)
         if not is_contact:
@@ -409,7 +411,7 @@ def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) 
                 withdrawal.request_by = request.user
                 withdrawal.save()
 
-                application.status = model_class.WITHDRAWN
+                application.status = model_class.Statuses.WITHDRAWN
                 application.save()
 
                 task.is_active = False
@@ -450,13 +452,13 @@ def archive_withdrawal(
         )
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
-        task = application.get_task(model_class.WITHDRAWN, "process")
+        task = application.get_task(model_class.Statuses.WITHDRAWN, "process")
 
         is_contact = _is_importer_exporter_contact(request.user, application, case_type)
         if not is_contact:
             raise PermissionDenied
 
-        application.status = model_class.SUBMITTED
+        application.status = model_class.Statuses.SUBMITTED
         application.save()
 
         withdrawal.is_active = False
@@ -482,7 +484,9 @@ def manage_update_requests(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         update_requests = application.update_requests.filter(is_active=True)
         current_update_request = update_requests.filter(
@@ -522,7 +526,7 @@ def manage_update_requests(
                 update_request.status = models.UpdateRequest.OPEN
                 update_request.save()
 
-                application.status = model_class.UPDATE_REQUESTED
+                application.status = model_class.Statuses.UPDATE_REQUESTED
                 application.save()
                 application.update_requests.add(update_request)
 
@@ -586,7 +590,7 @@ def close_update_request(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
         update_request.status = models.UpdateRequest.CLOSED
@@ -611,7 +615,7 @@ def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) ->
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(model_class.SUBMITTED, "process")
+        task = application.get_task(model_class.Statuses.SUBMITTED, "process")
 
         if case_type in ["import", "export"]:
             show_firs = True
@@ -662,7 +666,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
         # TODO: use case reference
         title_mapping = {"REQUEST_REFERENCE": application.pk}
@@ -711,7 +715,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
-        task = application.get_task(model_class.SUBMITTED, "process")
+        task = application.get_task(model_class.Statuses.SUBMITTED, "process")
         fir_task = fir.get_task(FurtherInformationRequest.DRAFT, "check_draft")
 
         if request.POST:
@@ -763,7 +767,7 @@ def delete_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         fir_tasks = fir.get_active_tasks()
 
         fir.is_active = False
@@ -788,7 +792,7 @@ def withdraw_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
 
         fir.status = FurtherInformationRequest.DRAFT
@@ -818,7 +822,7 @@ def close_fir(
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
         fir_task = fir.get_task(
             [FurtherInformationRequest.OPEN, FurtherInformationRequest.RESPONDED], "responded"
@@ -972,7 +976,7 @@ def _delete_fir_file(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, user, case_type)
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
 
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -995,7 +999,7 @@ def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> H
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, case_type)
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
 
     context = {
         "process": application,
@@ -1024,7 +1028,7 @@ def respond_fir(
         check_application_permission(application, request.user, case_type)
 
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
-        application.get_task(model_class.SUBMITTED, "process")
+        application.get_task(model_class.Statuses.SUBMITTED, "process")
         fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
 
         if request.POST:
@@ -1072,7 +1076,9 @@ def manage_withdrawals(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         withdrawals = application.withdrawals.filter(is_active=True)
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
@@ -1095,7 +1101,7 @@ def manage_withdrawals(
 
                     return redirect(reverse("workbasket"))
                 else:
-                    application.status = model_class.SUBMITTED
+                    application.status = model_class.Statuses.SUBMITTED
                     application.save()
 
                     task.is_active = False
@@ -1342,7 +1348,9 @@ def take_ownership(request: HttpRequest, *, application_pk: int, case_type: str)
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         application.case_owner = request.user
 
         if case_type == "import":
@@ -1368,7 +1376,9 @@ def release_ownership(request: HttpRequest, *, application_pk: int, case_type: s
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         application.case_owner = None
         application.save()
 
@@ -1384,13 +1394,15 @@ def manage_case(request: HttpRequest, *, application_pk: int, case_type: str) ->
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         if request.POST:
             form = forms.CloseCaseForm(request.POST)
 
             if form.is_valid():
-                application.status = model_class.STOPPED
+                application.status = model_class.Statuses.STOPPED
                 application.save()
 
                 task.is_active = False
@@ -1442,7 +1454,9 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         if request.POST:
             form = forms.ResponsePreparationForm(request.POST, instance=application)
@@ -1612,7 +1626,9 @@ def start_authorisation(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task([model_class.SUBMITTED, model_class.WITHDRAWN], "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         application_errors = ApplicationErrors()
 
@@ -1639,7 +1655,7 @@ def start_authorisation(
         application_errors.add(prepare_errors)
 
         if request.POST and not application_errors.has_errors():
-            application.status = model_class.PROCESSING
+            application.status = model_class.Statuses.PROCESSING
             application.save()
 
             return redirect(reverse("workbasket"))
@@ -1813,9 +1829,9 @@ def cancel_authorisation(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.PROCESSING, "process")
+        application.get_task(model_class.Statuses.PROCESSING, "process")
 
-        application.status = model_class.SUBMITTED
+        application.status = model_class.Statuses.SUBMITTED
         application.save()
 
         return redirect(reverse("workbasket"))

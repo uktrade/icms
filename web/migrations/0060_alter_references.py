@@ -11,24 +11,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="accessrequest",
-            name="reference",
-            field=models.CharField(max_length=100),
-        ),
-        migrations.AlterField(
-            model_name="exportapplication",
-            name="reference",
-            field=models.CharField(blank=True, max_length=100, null=True),
-        ),
-        migrations.AlterField(
             model_name="firearmsauthority",
             name="reference",
             field=models.CharField(max_length=100, null=True),
-        ),
-        migrations.AlterField(
-            model_name="importapplication",
-            name="reference",
-            field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AlterField(
             model_name="section5authority",

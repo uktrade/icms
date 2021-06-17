@@ -205,6 +205,32 @@ class ApplicationBase(WorkbasketBase, Process):
     APPROVE = "APPROVE"
     DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
 
+    # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
+    class Statuses(models.TextChoices):
+        IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
+        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
+        PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
+        COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
+        WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
+        STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
+        VARIATION_REQUESTED: str = (
+            "VARIATION_REQUESTED",
+            "Variation Requested",
+        )  # type:ignore[assignment]
+        REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
+        DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
+        UPDATE_REQUESTED: str = ("UPDATE_REQUESTED", "Update Requested")  # type:ignore[assignment]
+
+    status = models.CharField(
+        max_length=30,
+        choices=Statuses.choices,
+        default=Statuses.IN_PROGRESS,
+    )
+
+    submit_datetime = models.DateTimeField(blank=True, null=True)
+
+    reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
+
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
     refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
 
@@ -219,13 +245,15 @@ class ApplicationBase(WorkbasketBase, Process):
         """Get workbasket subject/topic column content."""
         raise NotImplementedError
 
+    def get_reference(self) -> str:
+        return self.reference or "Not Assigned"
+
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         """Get data to show in the workbasket."""
 
         r = WorkbasketRow()
 
-        # TODO: use self.reference once that's properly filled in
-        r.reference = self.pk
+        r.reference = self.get_reference()
 
         r.subject = self.get_workbasket_subject()
 
@@ -255,7 +283,7 @@ class ApplicationBase(WorkbasketBase, Process):
         if user.has_perm("web.reference_data_access"):
             admin_actions: list[WorkbasketAction] = []
 
-            if self.status in [self.SUBMITTED, self.WITHDRAWN]:
+            if self.status in [self.Statuses.SUBMITTED, self.Statuses.WITHDRAWN]:
                 if not self.case_owner:
                     admin_actions.append(
                         WorkbasketAction(
@@ -276,7 +304,7 @@ class ApplicationBase(WorkbasketBase, Process):
                 else:
                     admin_actions.append(view_action)
 
-            elif self.status == self.PROCESSING:
+            elif self.status == self.Statuses.PROCESSING:
                 # TODO: implement this
                 admin_actions.append(
                     WorkbasketAction(is_post=False, name="Authorise Documents", url="#TODO")
@@ -299,7 +327,7 @@ class ApplicationBase(WorkbasketBase, Process):
         if True:
             applicant_actions: list[WorkbasketAction] = []
 
-            if self.status == self.SUBMITTED:
+            if self.status == self.Statuses.SUBMITTED:
                 applicant_actions.append(view_action)
 
                 applicant_actions.append(
@@ -319,7 +347,7 @@ class ApplicationBase(WorkbasketBase, Process):
                         )
                     )
 
-            elif self.status == self.WITHDRAWN:
+            elif self.status == self.Statuses.WITHDRAWN:
                 applicant_actions.append(view_action)
 
                 applicant_actions.append(
@@ -330,7 +358,7 @@ class ApplicationBase(WorkbasketBase, Process):
                     ),
                 )
 
-            elif self.status == self.IN_PROGRESS:
+            elif self.status == self.Statuses.IN_PROGRESS:
                 applicant_actions.append(
                     WorkbasketAction(
                         is_post=False,

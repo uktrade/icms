@@ -25,7 +25,7 @@ def test_resume_oil_application():
         created_by=user,
         last_updated_by=user,
         importer=importer,
-        status=ImportApplication.IN_PROGRESS,
+        status=ImportApplication.Statuses.IN_PROGRESS,
     )
     Task.objects.create(process=in_progress, task_type="prepare", owner=user)
 
@@ -35,7 +35,7 @@ def test_resume_oil_application():
         created_by=user,
         last_updated_by=user,
         importer=importer,
-        status=ImportApplication.SUBMITTED,
+        status=ImportApplication.Statuses.SUBMITTED,
     )
     Task.objects.create(process=submitted, task_type="prepare", owner=user)
 

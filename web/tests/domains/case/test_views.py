@@ -68,7 +68,10 @@ def import_access_request_application(access_application_user):
     user = access_application_user
 
     return ImporterAccessRequestFactory.create(
-        status="SUBMITTED", submitted_by=user, last_updated_by=user
+        status="SUBMITTED",
+        submitted_by=user,
+        last_updated_by=user,
+        reference="iar/1",
     )
 
 
@@ -77,7 +80,10 @@ def export_access_request_application(access_application_user):
     user = access_application_user
 
     return ExporterAccessRequestFactory.create(
-        status="SUBMITTED", submitted_by=user, last_updated_by=user
+        status="SUBMITTED",
+        submitted_by=user,
+        last_updated_by=user,
+        reference="ear/1",
     )
 
 

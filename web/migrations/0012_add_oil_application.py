@@ -66,25 +66,6 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name="importapplication",
-            name="status",
-            field=models.CharField(
-                choices=[
-                    ("IN_PROGRESS", "In Progress"),
-                    ("SUBMITTED", "Submitted"),
-                    ("PROCESSING", "Processing"),
-                    ("COMPLETED", "Completed"),
-                    ("WITHDRAWN", "Withdrawn"),
-                    ("STOPPED", "Stopped"),
-                    ("REVOKED", "Revoked"),
-                    ("VARIATION_REQUESTED", "Variation Requested"),
-                    ("DELETED", "Deleted"),
-                ],
-                default="IN_PROGRESS",
-                max_length=30,
-            ),
-        ),
-        migrations.AlterField(
             model_name="importapplicationtype",
             name="sub_type",
             field=models.CharField(
