@@ -39,7 +39,7 @@
   {% elif process.process_type == "DerogationsApplication" %}
     <li>
       <a
-        href="{{ icms_url('import:derogations:manage-checklist', args=[process.pk]) }}">
+        href="{{ icms_url('import:derogations:manage-checklist', kwargs={"application_pk": process.pk}) }}">
         Checklist
       </a>
     </li>

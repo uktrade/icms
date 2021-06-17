@@ -213,10 +213,10 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request, pk):
+def manage_checklist(request: HttpRequest, *, application_pk):
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
-            DerogationsApplication.objects.select_for_update(), pk=pk
+            DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
         checklist, created = DerogationsChecklist.objects.get_or_create(
@@ -227,7 +227,12 @@ def manage_checklist(request, pk):
             form = DerogationsChecklistOptionalForm(request.POST, instance=checklist)
             if form.is_valid():
                 form.save()
-                return redirect(reverse("import:derogations:manage-checklist", kwargs={"pk": pk}))
+                return redirect(
+                    reverse(
+                        "import:derogations:manage-checklist",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
         else:
             if created:
                 form = DerogationsChecklistForm(instance=checklist)

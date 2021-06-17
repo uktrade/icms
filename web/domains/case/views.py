@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.derogations.forms import DerogationsChecklistForm
 from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
@@ -1608,6 +1609,9 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
         application_errors.add(_get_wood_errors(application))
 
+    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
+        application_errors.add(_get_derogations_errors(application))
+
     else:
         raise NotImplementedError(
             f"process_type {application.process_type!r} hasn't been implemented yet."
@@ -1663,6 +1667,14 @@ def _get_fa_sil_errors(application: ImportApplication) -> PageErrors:
 def _get_wood_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
         application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm
+    )
+
+
+def _get_derogations_errors(application: ImportApplication) -> PageErrors:
+    return _get_checklist_errors(
+        application.derogationsapplication,
+        "import:derogations:manage-checklist",
+        DerogationsChecklistForm,
     )
 
 
