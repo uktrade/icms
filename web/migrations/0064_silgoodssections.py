@@ -69,7 +69,16 @@ class Migration(migrations.Migration):
                     "ignition_details",
                     models.CharField(
                         blank=True,
-                        max_length=10,
+                        choices=[
+                            ("Pin-fire", "Pin-fire"),
+                            ("Needle-fire", "Needle-fire"),
+                            ("Lip-fire", "Lip-fire"),
+                            ("Cup primed", "Cup primed"),
+                            ("Teat-fire", "Teat-fire"),
+                            ("Base-fire", "Base-fire"),
+                            ("Other", "Other"),
+                        ],
+                        max_length=12,
                         verbose_name="If Yes, please specify ignition system",
                     ),
                 ),
@@ -82,6 +91,7 @@ class Migration(migrations.Migration):
                 (
                     "chamber",
                     models.BooleanField(
+                        help_text="32 bore, 24 bore, 14 bore, 10 bore (2 5/8 and 2 7/8 inch only), 8 bore, 4 bore, 3 bore, 2 bore, 1 1/8 bore, 1 1/2 bore, 1 1/4 bore",
                         null=True,
                         verbose_name="Is the firearm a shotgun, punt gun or rifle chambered for one of the following cartridges (expressed in imperial measurements)?",
                     ),
@@ -101,8 +111,17 @@ class Migration(migrations.Migration):
                         verbose_name="If Yes, please specify",
                     ),
                 ),
-                ("description", models.CharField(max_length=4096)),
-                ("quantity", models.IntegerField()),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="You no longer need to type the part of the Firearms Act that applies to the item listed in this box. You must select it from the 'Licence for' section.",
+                        max_length=4096,
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.PositiveIntegerField(help_text="Enter a whole number"),
+                ),
                 (
                     "import_application",
                     models.ForeignKey(
@@ -159,8 +178,17 @@ class Migration(migrations.Migration):
                     "obsolete_calibre",
                     models.CharField(max_length=50, verbose_name="Obsolete Calibre"),
                 ),
-                ("description", models.CharField(max_length=4096)),
-                ("quantity", models.IntegerField()),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="You no longer need to type the part of the Firearms Act that applies to the item listed in this box. You must select it from the 'Licence for' section.",
+                        max_length=4096,
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.PositiveIntegerField(help_text="Enter a whole number"),
+                ),
                 (
                     "import_application",
                     models.ForeignKey(
@@ -191,8 +219,19 @@ class Migration(migrations.Migration):
                         null=True, verbose_name="Was the firearm manufactured before 1900?"
                     ),
                 ),
-                ("description", models.CharField(max_length=4096)),
-                ("quantity", models.IntegerField(blank=True, null=True)),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="You no longer need to type the part of the Firearms Act that applies to the item listed in this box. You must select it from the 'Licence for' section.",
+                        max_length=4096,
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.PositiveIntegerField(
+                        blank=True, help_text="Enter a whole number", null=True
+                    ),
+                ),
                 (
                     "unlimited_quantity",
                     models.BooleanField(default=False, verbose_name="Unlimited Quantity"),
@@ -223,8 +262,17 @@ class Migration(migrations.Migration):
                         null=True, verbose_name="Was the firearm manufactured before 1900?"
                     ),
                 ),
-                ("description", models.CharField(max_length=4096)),
-                ("quantity", models.IntegerField()),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="You no longer need to type the part of the Firearms Act that applies to the item listed in this box. You must select it from the 'Licence for' section.",
+                        max_length=4096,
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.PositiveIntegerField(help_text="Enter a whole number"),
+                ),
                 (
                     "import_application",
                     models.ForeignKey(
@@ -251,8 +299,17 @@ class Migration(migrations.Migration):
                         null=True, verbose_name="Was the firearm manufactured before 1900?"
                     ),
                 ),
-                ("description", models.CharField(max_length=4096)),
-                ("quantity", models.IntegerField()),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="You no longer need to type the part of the Firearms Act that applies to the item listed in this box. You must select it from the 'Licence for' section.",
+                        max_length=4096,
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.PositiveIntegerField(help_text="Enter a whole number"),
+                ),
                 (
                     "import_application",
                     models.ForeignKey(

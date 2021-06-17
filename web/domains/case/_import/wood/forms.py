@@ -20,18 +20,6 @@ def _get_year_selection():
 
 
 class PrepareWoodQuotaForm(forms.ModelForm):
-    applicant_reference = forms.CharField(
-        label="Applicant's Reference",
-        help_text="Enter your own reference for this application.",
-        required=False,
-    )
-
-    # TODO: filter users here correctly (users with access to the importer)
-    contact = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
-    )
-
     shipping_year = forms.IntegerField(
         help_text="""Year of shipment should normally be that shown on any
         export licence or other export authorisation from the exporting country
@@ -81,6 +69,12 @@ class PrepareWoodQuotaForm(forms.ModelForm):
             "goods_unit",
             "additional_comments",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
+        self.fields["contact"].queryset = User.objects.all()
 
 
 class SupportingDocumentForm(forms.Form):

@@ -9,15 +9,6 @@ from . import models
 
 
 class PrepareOILForm(forms.ModelForm):
-    applicant_reference = forms.CharField(
-        label="Applicant's Reference",
-        help_text="Enter your own reference for this application.",
-        required=False,
-    )
-    contact = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
-    )
     commodity_code = forms.ChoiceField(
         label="Commodity Code",
         help_text="""
@@ -57,6 +48,9 @@ class PrepareOILForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["know_bought_from"].required = True
+
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
+        self.fields["contacts"].queryset = User.objects.all()
 
         # The default label for unknown is "Unknown"
         self.fields["know_bought_from"].widget.choices = [

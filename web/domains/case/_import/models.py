@@ -169,7 +169,11 @@ class ImportApplication(ApplicationBase):
     reference = models.CharField(max_length=100, blank=True, null=True)
 
     applicant_reference = models.CharField(
-        max_length=500, blank=True, null=True, verbose_name="Applicant's Reference"
+        max_length=500,
+        blank=True,
+        null=True,
+        verbose_name="Applicant's Reference",
+        help_text="Enter your own reference for this application.",
     )
 
     submit_datetime = models.DateTimeField(blank=True, null=True)
@@ -240,9 +244,12 @@ class ImportApplication(ApplicationBase):
     contact = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="contact_import_applications",
+        help_text=(
+            "Select the main point of contact for the case. This will usually be the person"
+            " who created the application."
+        ),
     )
     origin_country = models.ForeignKey(
         Country,

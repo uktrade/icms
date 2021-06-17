@@ -42,12 +42,29 @@ class Migration(migrations.Migration):
                         to="web.importapplication",
                     ),
                 ),
-                ("section1", models.BooleanField(null=True)),
-                ("section2", models.BooleanField(null=True)),
-                ("section5", models.BooleanField(null=True)),
-                ("section58_obsolete", models.BooleanField(null=True)),
-                ("section58_other", models.BooleanField(null=True)),
-                ("other_description", models.CharField(blank=True, max_length=4000, null=True)),
+                ("section1", models.BooleanField(default=False, verbose_name="Section 1")),
+                ("section2", models.BooleanField(default=False, verbose_name="Section 2")),
+                ("section5", models.BooleanField(default=False, verbose_name="Section 5")),
+                (
+                    "section58_obsolete",
+                    models.BooleanField(
+                        default=False, verbose_name="Section 58(2) - Obsolete Calibre"
+                    ),
+                ),
+                (
+                    "section58_other",
+                    models.BooleanField(default=False, verbose_name="Section 58(2) - Other"),
+                ),
+                (
+                    "other_description",
+                    models.CharField(
+                        blank=True,
+                        help_text="If you have selected Other in Firearms Act Sections. Please explain why you are making this request under this 'Other' section.",
+                        max_length=4000,
+                        null=True,
+                        verbose_name="Other Section Description",
+                    ),
+                ),
                 (
                     "military_police",
                     models.BooleanField(
@@ -68,7 +85,19 @@ class Migration(migrations.Migration):
                         verbose_name="Were any of your items manufactured before 1 September 1939?",
                     ),
                 ),
-                ("commodity_code", models.CharField(max_length=40, null=True)),
+                (
+                    "commodity_code",
+                    models.CharField(
+                        choices=[
+                            ("ex Chapter 93", "ex Chapter 93"),
+                            ("ex Chapter 97", "ex Chapter 97"),
+                        ],
+                        help_text='You must pick the commodity code group that applies to the items that you wish to import. Please note that "ex Chapter 97" is only relevant to collectors pieces and items over 100 years old. Please contact HMRC classification advisory service, 01702 366077, if you are unsure of the correct code.',
+                        max_length=40,
+                        null=True,
+                        verbose_name="Commodity Code",
+                    ),
+                ),
                 ("know_bought_from", models.BooleanField(null=True)),
                 ("additional_comments", models.CharField(blank=True, max_length=4000, null=True)),
                 (

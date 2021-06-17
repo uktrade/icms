@@ -7,7 +7,6 @@ from web.domains.country.models import Country
 from web.domains.file.models import File
 from web.domains.file.utils import ICMSFileField
 from web.domains.sanction_email.models import SanctionEmail
-from web.domains.user.models import User
 
 from . import widgets
 from .models import (
@@ -18,16 +17,6 @@ from .models import (
 
 
 class SanctionsAndAdhocLicenseForm(forms.ModelForm):
-    contact = forms.ModelChoiceField(
-        queryset=User.objects.none(),
-        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
-    )
-
-    applicant_reference = forms.CharField(
-        label="Applicant's Reference",
-        help_text="Enter your own reference for this application.",
-        required=False,
-    )
     origin_country = forms.ModelChoiceField(
         label="Country Of Origin",
         queryset=Country.objects.filter(country_groups__name="Sanctions and Adhoc License"),
@@ -59,6 +48,8 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
         users = get_users_with_perms(
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )

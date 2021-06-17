@@ -7,7 +7,6 @@ from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
-from web.domains.user.models import User
 
 from . import models
 
@@ -19,54 +18,6 @@ TRUE_FALSE_CHOICES = (
 
 
 class PrepareSILForm(forms.ModelForm):
-    applicant_reference = forms.CharField(
-        label="Applicant's Reference",
-        help_text="Enter your own reference for this application.",
-        required=False,
-    )
-
-    contact = forms.ModelChoiceField(
-        queryset=User.objects.none(),
-        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
-    )
-
-    section1 = forms.BooleanField(required=False, label="Section 1")
-    section2 = forms.BooleanField(required=False, label="Section 2")
-    section5 = forms.BooleanField(required=False, label="Section 5")
-    section58_obsolete = forms.BooleanField(
-        required=False, label="Section 58(2) - Obsolete Calibre"
-    )
-    section58_other = forms.BooleanField(required=False, label="Section 58(2) - Other")
-    other_description = forms.CharField(
-        required=False,
-        label="Other Section Description",
-        help_text=(
-            "If you have selected Other in Firearms Act Sections. Please explain why you are making"
-            " this request under this 'Other' section."
-        ),
-    )
-
-    commodity_code = forms.ChoiceField(
-        label="Commodity Code",
-        help_text=(
-            "You must pick the commodity code group that applies to the items that you wish to"
-            ' import. Please note that "ex Chapter 97" is only relevant to collectors pieces and'
-            " items over 100 years old. Please contact HMRC classification advisory service,"
-            " 01702 366077, if you are unsure of the correct code."
-        ),
-        choices=[(x, x) for x in [None, "ex Chapter 93", "ex Chapter 97"]],
-    )
-
-    origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        queryset=Country.objects.filter(country_groups__name="Firearms and Ammunition (SIL) COOs"),
-    )
-
-    consignment_country = forms.ModelChoiceField(
-        label="Country Of Consignment",
-        queryset=Country.objects.filter(country_groups__name="Firearms and Ammunition (SIL) COCs"),
-    )
-
     additional_comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 4}))
 
     class Meta:
@@ -92,10 +43,18 @@ class PrepareSILForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
         users = get_users_with_perms(
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+        self.fields["origin_country"].queryset = Country.objects.filter(
+            country_groups__name="Firearms and Ammunition (SIL) COOs"
+        )
+        self.fields["consignment_country"].queryset = Country.objects.filter(
+            country_groups__name="Firearms and Ammunition (SIL) COCs"
+        )
 
         self.fields["know_bought_from"].required = True
         self.fields["military_police"].required = True
@@ -132,13 +91,6 @@ class SILGoodsSection1Form(forms.ModelForm):
     class Meta:
         model = models.SILGoodsSection1
         fields = ("manufacture", "description", "quantity")
-        help_texts = {
-            "description": (
-                "You no longer need to type the part of the Firearms Act that applies to the"
-                " item listed in this box. You must select it from the 'Licence for' section."
-            ),
-            "quantity": "Enter a whole number",
-        }
         widgets = {
             "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
             "description": forms.Textarea({"rows": 3}),
@@ -162,13 +114,6 @@ class SILGoodsSection2Form(forms.ModelForm):
     class Meta:
         model = models.SILGoodsSection2
         fields = ("manufacture", "description", "quantity")
-        help_texts = {
-            "description": (
-                "You no longer need to type the part of the Firearms Act that applies to the"
-                " item listed in this box. You must select it from the 'Licence for' section."
-            ),
-            "quantity": "Enter a whole number",
-        }
         widgets = {
             "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
             "description": forms.Textarea({"rows": 3}),
@@ -220,13 +165,6 @@ class SILGoodsSection5Form(forms.ModelForm):
     class Meta:
         model = models.SILGoodsSection5
         fields = ("subsection", "manufacture", "description", "quantity", "unlimited_quantity")
-        help_texts = {
-            "description": (
-                "You no longer need to type the part of the Firearms Act that applies to the"
-                " item listed in this box. You must select it from the 'Licence for' section."
-            ),
-            "quantity": "Enter a whole number",
-        }
         widgets = {
             "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
             "description": forms.Textarea({"rows": 3}),
@@ -288,13 +226,6 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):
             "original_chambering": forms.Select(choices=TRUE_FALSE_CHOICES),
             "description": forms.Textarea({"rows": 3}),
             "obsolete_calibre": s2forms.Select2Widget,
-        }
-        help_texts = {
-            "description": (
-                "You no longer need to type the part of the Firearms Act that applies to the"
-                " item listed in this box. You must select it from the 'Licence for' section."
-            ),
-            "quantity": "Enter a whole number",
         }
 
     def __init__(self, *args, **kwargs):
@@ -363,21 +294,6 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):
 
 
 class SILGoodsSection582OtherForm(forms.ModelForm):
-    IGNITION_OTHER = "Other"
-    IGNITION_DETAILS_CHOICES = (
-        "Pin-fire",
-        "Needle-fire",
-        "Lip-fire",
-        "Cup primed",
-        "Teat-fire",
-        "Base-fire",
-        IGNITION_OTHER,
-    )
-
-    ignition_details = forms.ChoiceField(
-        required=False, label="If Yes, please specify ignition system", choices=()
-    )
-
     class Meta:
         model = models.SILGoodsSection582Other
         fields = (
@@ -398,22 +314,13 @@ class SILGoodsSection582OtherForm(forms.ModelForm):
         )
         widgets = {
             "curiosity_ornament": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
             "muzzle_loading": forms.Select(choices=TRUE_FALSE_CHOICES),
             "rimfire": forms.Select(choices=TRUE_FALSE_CHOICES),
             "ignition": forms.Select(choices=TRUE_FALSE_CHOICES),
             "chamber": forms.Select(choices=TRUE_FALSE_CHOICES),
             "bore": forms.Select(choices=TRUE_FALSE_CHOICES),
             "description": forms.Textarea({"rows": 3}),
-        }
-        help_texts = {
-            "description": (
-                "You no longer need to type the part of the Firearms Act that applies to the"
-                " item listed in this box. You must select it from the 'Licence for' section."
-            ),
-            "chamber": (
-                "32 bore, 24 bore, 14 bore, 10 bore (2 5/8 and 2 7/8 inch only), 8 bore, 4 bore,"
-                " 3 bore, 2 bore, 1 1/8 bore, 1 1/2 bore, 1 1/4 bore"
-            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -425,10 +332,6 @@ class SILGoodsSection582OtherForm(forms.ModelForm):
         self.fields["ignition"].required = True
         self.fields["chamber"].required = True
         self.fields["bore"].required = True
-
-        self.fields["ignition_details"].choices = [("", "---------")] + [
-            (x, x) for x in self.IGNITION_DETAILS_CHOICES
-        ]
 
     def clean_curiosity_ornament(self):
         curiosity_ornament = self.cleaned_data["curiosity_ornament"]
@@ -493,7 +396,7 @@ class SILGoodsSection582OtherForm(forms.ModelForm):
 
         if (
             ignition
-            and ignition_details == self.IGNITION_OTHER
+            and ignition_details == models.SILGoodsSection582Other.IgnitionDetail.OTHER
             and not cleaned_data.get("ignition_other")
         ):
             self.add_error("ignition_other", "You must enter this item")

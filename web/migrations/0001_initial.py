@@ -1238,7 +1238,11 @@ class Migration(migrations.Migration):
                 (
                     "applicant_reference",
                     models.CharField(
-                        blank=True, max_length=500, null=True, verbose_name="Applicant's Reference"
+                        blank=True,
+                        help_text="Enter your own reference for this application.",
+                        max_length=500,
+                        null=True,
+                        verbose_name="Applicant's Reference",
                     ),
                 ),
                 ("submit_datetime", models.DateTimeField(blank=True, null=True)),
@@ -1329,7 +1333,7 @@ class Migration(migrations.Migration):
                 (
                     "contact",
                     models.ForeignKey(
-                        blank=True,
+                        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
                         null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="contact_import_applications",

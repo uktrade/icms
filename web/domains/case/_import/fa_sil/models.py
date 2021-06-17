@@ -17,13 +17,28 @@ class SILApplication(ImportApplication):
 
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_SIL
 
+    class Commodity(models.TextChoices):
+        EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
+        EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
+
     # Select one or more sections related to the firearms licence
-    section1 = models.BooleanField(null=True)
-    section2 = models.BooleanField(null=True)
-    section5 = models.BooleanField(null=True)
-    section58_obsolete = models.BooleanField(null=True)
-    section58_other = models.BooleanField(null=True)
-    other_description = models.CharField(max_length=4000, null=True, blank=True)
+    section1 = models.BooleanField(verbose_name="Section 1", default=False)
+    section2 = models.BooleanField(verbose_name="Section 2", default=False)
+    section5 = models.BooleanField(verbose_name="Section 5", default=False)
+    section58_obsolete = models.BooleanField(
+        verbose_name="Section 58(2) - Obsolete Calibre", default=False
+    )
+    section58_other = models.BooleanField(verbose_name="Section 58(2) - Other", default=False)
+    other_description = models.CharField(
+        max_length=4000,
+        null=True,
+        blank=True,
+        verbose_name="Other Section Description",
+        help_text=(
+            "If you have selected Other in Firearms Act Sections. Please explain why you are making"
+            " this request under this 'Other' section."
+        ),
+    )
 
     # Question related to the firearms
     military_police = models.BooleanField(
@@ -38,7 +53,18 @@ class SILApplication(ImportApplication):
     )
 
     # Goods
-    commodity_code = models.CharField(max_length=40, blank=False, null=True)
+    commodity_code = models.CharField(
+        max_length=40,
+        null=True,
+        choices=Commodity.choices,
+        verbose_name="Commodity Code",
+        help_text=(
+            "You must pick the commodity code group that applies to the items that you wish to"
+            ' import. Please note that "ex Chapter 97" is only relevant to collectors pieces and'
+            " items over 100 years old. Please contact HMRC classification advisory service,"
+            " 01702 366077, if you are unsure of the correct code."
+        ),
+    )
 
     # Details of who bought from
     know_bought_from = models.BooleanField(null=True)
@@ -69,9 +95,15 @@ class SILGoodsSection1(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(max_length=4096)
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
 
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection2(models.Model):
@@ -84,9 +116,15 @@ class SILGoodsSection2(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(max_length=4096)
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
 
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection5(models.Model):
@@ -101,9 +139,15 @@ class SILGoodsSection5(models.Model):
         verbose_name="Was the firearm manufactured before 1900?", null=True
     )
 
-    description = models.CharField(max_length=4096)
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
 
-    quantity = models.IntegerField(blank=True, null=True)
+    quantity = models.PositiveIntegerField(blank=True, null=True, help_text="Enter a whole number")
     unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
@@ -134,12 +178,27 @@ class SILGoodsSection582Obsolete(models.Model):
 
     obsolete_calibre = models.CharField(max_length=50, verbose_name="Obsolete Calibre")
 
-    description = models.CharField(max_length=4096)
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
 
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection582Other(models.Model):
+    class IgnitionDetail(models.TextChoices):
+        PIN_FIRE = ("Pin-fire", "Pin-fire")
+        NEEDDLE_FIRE = ("Needle-fire", "Needle-fire")
+        LIP_FIRE = ("Lip-fire", "Lip-fire")
+        CUP_PRIMED = ("Cup primed", "Cup primed")
+        TEAT_FIRE = ("Teat-fire", "Teat-fire")
+        BASE_FIRE = ("Base-fire", "Base-fire")
+        OTHER = ("Other", "Other")
+
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section582_others"
     )
@@ -172,7 +231,10 @@ class SILGoodsSection582Other(models.Model):
         null=True,
     )
     ignition_details = models.CharField(
-        max_length=10, verbose_name="If Yes, please specify ignition system", blank=True
+        choices=IgnitionDetail.choices,
+        max_length=12,
+        verbose_name="If Yes, please specify ignition system",
+        blank=True,
     )
     ignition_other = models.CharField(
         max_length=20, verbose_name="If Other, please specify", blank=True
@@ -181,6 +243,10 @@ class SILGoodsSection582Other(models.Model):
     chamber = models.BooleanField(
         verbose_name="Is the firearm a shotgun, punt gun or rifle chambered for one of the following cartridges (expressed in imperial measurements)?",
         null=True,
+        help_text=(
+            "32 bore, 24 bore, 14 bore, 10 bore (2 5/8 and 2 7/8 inch only), 8 bore, 4 bore,"
+            " 3 bore, 2 bore, 1 1/8 bore, 1 1/2 bore, 1 1/4 bore"
+        ),
     )
 
     bore = models.BooleanField(
@@ -193,9 +259,15 @@ class SILGoodsSection582Other(models.Model):
         blank=True,
     )
 
-    description = models.CharField(max_length=4096)
+    description = models.CharField(
+        max_length=4096,
+        help_text=(
+            "You no longer need to type the part of the Firearms Act that applies to the"
+            " item listed in this box. You must select it from the 'Licence for' section."
+        ),
+    )
 
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
 
 
 class SILChecklist(ChecklistBase):

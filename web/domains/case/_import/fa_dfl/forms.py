@@ -28,7 +28,6 @@ class PrepareDFLForm(forms.ModelForm):
         )
 
         help_texts = {
-            "applicant_reference": "Enter your own reference for this application.",
             "proof_checked": (
                 "The firearm must have been proof marked as deactivated in line with current UK requirements"
             ),
@@ -47,10 +46,6 @@ class PrepareDFLForm(forms.ModelForm):
                 " if you are unsure of the correct code."
             ),
             "constabulary": "Select the constabulary in which you reside.",
-            "contact": (
-                "Select the main point of contact for the case."
-                " This will usually be the person who created the application."
-            ),
         }
 
     def __init__(self, *args, **kwargs):
@@ -65,6 +60,7 @@ class PrepareDFLForm(forms.ModelForm):
             ("false", "No"),
         ]
 
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
         users = get_users_with_perms(
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         ).filter(is_active=True)

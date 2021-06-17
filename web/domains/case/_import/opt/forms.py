@@ -14,12 +14,6 @@ from . import models
 
 
 class EditOPTForm(forms.ModelForm):
-    # TODO: filter users here correctly (users with access to the importer)
-    contact = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        help_text="Select the main point of contact for the case. This will usually be the person who created the application.",
-    )
-
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -43,6 +37,12 @@ class EditOPTForm(forms.ModelForm):
             "nature_process_ops": forms.Textarea({"rows": 2}),
             "suggested_id": forms.Textarea({"rows": 2}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
+        self.fields["contacts"].queryset = User.objects.all()
 
     def clean_last_export_day(self):
         day = self.cleaned_data["last_export_day"]
