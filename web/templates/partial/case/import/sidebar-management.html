@@ -32,7 +32,7 @@
   {% elif process.process_type == "WoodQuotaApplication" %}
     <li>
       <a
-        href="{{ icms_url('import:wood:manage-checklist', args=[process.pk]) }}">
+        href="{{ icms_url('import:wood:manage-checklist', kwargs={'application_pk': process.pk}) }}">
         Checklist
       </a>
     </li>

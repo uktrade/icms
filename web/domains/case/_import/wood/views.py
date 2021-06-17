@@ -305,10 +305,10 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, pk: int) -> HttpResponse:
+def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
-            WoodQuotaApplication.objects.select_for_update(), pk=pk
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(ImportApplication.SUBMITTED, "process")
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
@@ -321,7 +321,11 @@ def manage_checklist(request: HttpRequest, pk: int) -> HttpResponse:
             if form.is_valid():
                 form.save()
 
-                return redirect(reverse("import:wood:manage-checklist", kwargs={"pk": pk}))
+                return redirect(
+                    reverse(
+                        "import:wood:manage-checklist", kwargs={"application_pk": application_pk}
+                    )
+                )
         else:
             if created:
                 form = WoodQuotaChecklistForm(instance=checklist)

@@ -17,6 +17,7 @@ from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicatio
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -1604,6 +1605,9 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == SILApplication.PROCESS_TYPE:
         application_errors.add(_get_fa_sil_errors(application))
 
+    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
+        application_errors.add(_get_wood_errors(application))
+
     else:
         raise NotImplementedError(
             f"process_type {application.process_type!r} hasn't been implemented yet."
@@ -1653,6 +1657,12 @@ def _get_fa_dfl_errors(application: ImportApplication) -> PageErrors:
 def _get_fa_sil_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
         application.silapplication, "import:fa-sil:manage-checklist", SILChecklistForm
+    )
+
+
+def _get_wood_errors(application: ImportApplication) -> PageErrors:
+    return _get_checklist_errors(
+        application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm
     )
 
 
