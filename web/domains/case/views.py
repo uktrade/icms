@@ -1621,17 +1621,20 @@ def _get_import_errors(application, application_errors, prepare_errors):
             f"process_type {application.process_type!r} hasn't been implemented yet."
         )
 
-    if not application.licence_start_date:
+    start_date = application.licence_start_date
+    end_date = application.licence_end_date
+
+    if not start_date:
         prepare_errors.add(
             FieldError(field_name="Licence start date", messages=["Licence start date missing."])
         )
 
-    if not application.licence_end_date:
+    if not end_date:
         prepare_errors.add(
             FieldError(field_name="Licence end date", messages=["Licence end date missing."])
         )
 
-    if application.licence_end_date <= application.licence_start_date:
+    if start_date and end_date and end_date <= start_date:
         prepare_errors.add(
             FieldError(
                 field_name="Licence end date", messages=["End date must be after the start date."]
