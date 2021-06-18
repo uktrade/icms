@@ -11,6 +11,7 @@ from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices, YesNoNAChoices
 
 from . import models
+from .widgets import OptCompensatingProductsCommodityWidget
 
 
 class EditOPTForm(forms.ModelForm):
@@ -42,7 +43,7 @@ class EditOPTForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contacts"].queryset = User.objects.all()
+        self.fields["contact"].queryset = User.objects.all()
 
     def clean_last_export_day(self):
         day = self.cleaned_data["last_export_day"]
@@ -67,17 +68,38 @@ class CompensatingProductsOPTForm(forms.ModelForm):
         )
 
         widgets = {
-            "cp_commodities": CommodityWidget(
+            "cp_commodities": OptCompensatingProductsCommodityWidget(
                 attrs={
                     "data-minimum-input-length": 0,
                     "data-placeholder": "Please choose a commodity",
                 },
-                queryset=Commodity.objects.filter(
-                    commoditygroup__commodity_type__type_code="TEXTILES",
-                    commoditygroup__group_code="4",
-                ),
             )
         }
+
+    def clean(self):
+        """Validate commodities and category to ensure they match."""
+
+        cleaned_data = super().clean()
+        commodities = cleaned_data.get("cp_commodities")
+        category = cleaned_data.get("cp_category")
+
+        if not commodities or not category:
+            return cleaned_data
+
+        user_commodities = commodities.values_list("commodity_code", flat=True)
+
+        valid_commodities = OptCompensatingProductsCommodityWidget.queryset.filter(
+            commoditygroup__group_code=category
+        ).values_list("commodity_code", flat=True)
+
+        for commodity in user_commodities:
+            if commodity not in valid_commodities:
+                self.add_error(
+                    "cp_commodities", f"Invalid commodity code selected for category {category}"
+                )
+                break
+
+        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

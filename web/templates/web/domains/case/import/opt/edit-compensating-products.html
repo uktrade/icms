@@ -35,3 +35,8 @@
   {% endcall %}
 
 {% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/opt-compensating-products.js') }}" type="text/javascript"></script>
+{% endblock %}
