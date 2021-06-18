@@ -92,12 +92,10 @@ class CompensatingProductsOPTForm(forms.ModelForm):
             commoditygroup__group_code=category
         ).values_list("commodity_code", flat=True)
 
-        for commodity in user_commodities:
-            if commodity not in valid_commodities:
-                self.add_error(
-                    "cp_commodities", f"Invalid commodity code selected for category {category}"
-                )
-                break
+        if any(commodity not in valid_commodities for commodity in user_commodities):
+            self.add_error(
+                "cp_commodities", f"Invalid commodity code selected for category {category}"
+            )
 
         return cleaned_data
 
