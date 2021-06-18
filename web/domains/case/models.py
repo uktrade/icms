@@ -1,11 +1,12 @@
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
-from web.flow.models import Process
+from web.flow.models import Process, Task
 
 CASE_NOTE_DRAFT = "DRAFT"
 CASE_NOTE_COMPLETED = "COMPLETED"
@@ -371,3 +372,15 @@ class ApplicationBase(WorkbasketBase, Process):
                 r.actions.append(applicant_actions)
 
         return r
+
+    def submit_application(self, task: Task) -> None:
+        # FIXME: assign reference
+        self.status = self.Statuses.SUBMITTED
+        self.submit_datetime = timezone.now()
+        self.save()
+
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(process=self, task_type="process", previous=task)

@@ -9,7 +9,6 @@ from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import TemplateView
 
 from web.flow.models import Task
@@ -167,17 +166,7 @@ def submit_com(request, pk):
                 return redirect(reverse("export:com-edit", kwargs={"application_pk": pk}))
 
             if form.is_valid() and not errors.has_errors():
-                # FIXME: assign reference
-                appl.status = ExportApplication.Statuses.SUBMITTED
-                appl.submit_datetime = timezone.now()
-                appl.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                # TODO: set owner when case processing workflow is done
-                Task.objects.create(process=appl, task_type="process", previous=task)
+                appl.submit_application(task)
 
                 return redirect(reverse("home"))
 

@@ -4,7 +4,6 @@ from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
@@ -12,7 +11,6 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
-from web.flow.models import Task
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -254,9 +252,7 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitDFLForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                # FIXME: assign reference
-                application.status = ImportApplication.Statuses.SUBMITTED
-                application.submit_datetime = timezone.now()
+                application.submit_application(task)
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
                 application.cover_letter = template.get_content(
@@ -269,12 +265,6 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
                 )
 
                 application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(process=application, task_type="process", previous=task)
 
                 return redirect(reverse("home"))
 

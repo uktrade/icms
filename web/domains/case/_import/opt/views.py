@@ -6,7 +6,6 @@ from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
@@ -15,7 +14,6 @@ from web.domains.case.views import check_application_permission, view_applicatio
 from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
-from web.flow.models import Task
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import (
@@ -307,16 +305,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitOPTForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                # FIXME: assign reference
-                application.status = ImportApplication.Statuses.SUBMITTED
-                application.submit_datetime = timezone.now()
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(process=application, task_type="process", previous=task)
+                application.submit_application(task)
 
                 return redirect(reverse("home"))
 

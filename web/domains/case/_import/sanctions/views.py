@@ -313,16 +313,7 @@ def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitSanctionsForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                # FIXME: assign reference
-                application.status = ImportApplication.Statuses.SUBMITTED
-                application.submit_datetime = timezone.now()
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(process=application, task_type="process", previous=task)
+                application.submit_application(task)
 
                 return redirect(reverse("home"))
 

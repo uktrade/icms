@@ -5,11 +5,9 @@ from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.template.models import Template
-from web.flow.models import Task
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -122,9 +120,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitOILForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                # FIXME: assign reference
-                application.status = ImportApplication.Statuses.SUBMITTED
-                application.submit_datetime = timezone.now()
+                application.submit_application(task)
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
                 application.cover_letter = template.get_content(
@@ -142,12 +138,6 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
                     template_name="Open Individual Licence endorsement",
                 )
                 application.endorsements.create(content=endorsement.template_content)
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(process=application, task_type="process", previous=task)
 
                 return redirect(reverse("home"))
 
