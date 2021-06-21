@@ -2,6 +2,7 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
 from django.db import transaction
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -11,6 +12,7 @@ from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
+from web.domains.case.utils import allocate_case_reference
 from web.flow.models import Task
 from web.notify import notify
 from web.views import ModelFilterView
@@ -84,13 +86,21 @@ class ListExporterAccessRequest(ModelFilterView):
 
 
 @login_required
-def importer_access_request(request):
+def importer_access_request(request: HttpRequest) -> HttpResponse:
     with transaction.atomic():
         if request.POST:
             form = forms.ImporterAccessRequestForm(data=request.POST)
+
             if form.is_valid():
-                # FIXME: assign reference
-                application = form.save(commit=False)
+                application: ImporterAccessRequest = form.save(commit=False)
+
+                application.reference = allocate_case_reference(
+                    lock_manager=request.icms.lock_manager,
+                    prefix="IAR",
+                    use_year=False,
+                    min_digits=0,
+                )
+
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
                 application.process_type = ImporterAccessRequest.PROCESS_TYPE
@@ -122,14 +132,23 @@ def importer_access_request(request):
 
 
 @login_required
-def exporter_access_request(request):
+def exporter_access_request(request: HttpRequest) -> HttpResponse:
     with transaction.atomic():
         form = forms.ExporterAccessRequestForm()
+
         if request.POST:
             form = forms.ExporterAccessRequestForm(data=request.POST)
+
             if form.is_valid():
-                # FIXME: assign reference
-                application = form.save(commit=False)
+                application: ExporterAccessRequest = form.save(commit=False)
+
+                application.reference = allocate_case_reference(
+                    lock_manager=request.icms.lock_manager,
+                    prefix="EAR",
+                    use_year=False,
+                    min_digits=0,
+                )
+
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
                 application.process_type = ExporterAccessRequest.PROCESS_TYPE

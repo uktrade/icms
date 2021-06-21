@@ -162,7 +162,7 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitDerogationsForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(task)
+                application.submit_application(request, task)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 # endorsements are active on ICMS1 but inactive in our db

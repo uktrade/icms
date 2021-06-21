@@ -70,9 +70,7 @@ class ApprovalRequest(WorkbasketBase, Process):
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         r = WorkbasketRow()
 
-        # FIXME: use self.reference once that's properly filled in (but this
-        # doesn't have self.reference...?)
-        r.reference = self.pk
+        r.reference = self.access_request.reference
 
         r.subject = self.process_type
 

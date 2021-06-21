@@ -166,7 +166,7 @@ def submit_com(request, pk):
                 return redirect(reverse("export:com-edit", kwargs={"application_pk": pk}))
 
             if form.is_valid() and not errors.has_errors():
-                appl.submit_application(task)
+                appl.submit_application(request, task)
 
                 return redirect(reverse("home"))
 

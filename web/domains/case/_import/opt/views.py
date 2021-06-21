@@ -305,7 +305,7 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitOPTForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(task)
+                application.submit_application(request, task)
 
                 return redirect(reverse("home"))
 

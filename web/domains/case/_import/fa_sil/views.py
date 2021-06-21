@@ -517,7 +517,7 @@ def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = forms.SubmitSILForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(task)
+                application.submit_application(request, task)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(

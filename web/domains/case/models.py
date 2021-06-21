@@ -1,8 +1,10 @@
 from django.db import models
 from django.db.models import Q
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 
+from web.domains.case.utils import allocate_case_reference
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
@@ -373,8 +375,18 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return r
 
-    def submit_application(self, task: Task) -> None:
-        # FIXME: assign reference
+    def submit_application(self, request: HttpRequest, task: Task) -> None:
+        if self.is_import_application():
+            prefix = "IMA"
+        else:
+            # TODO: Export application (Good Manufacturing Practice) apparently
+            # uses a "GA" prefix for some reason. put that in when/if we
+            # implement GMP application type.
+            prefix = "CA"
+
+        self.reference = allocate_case_reference(
+            lock_manager=request.icms.lock_manager, prefix=prefix, use_year=True, min_digits=5
+        )
         self.status = self.Statuses.SUBMITTED
         self.submit_datetime = timezone.now()
         self.save()

@@ -252,7 +252,7 @@ def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitDFLForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(task)
+                application.submit_application(request, task)
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
                 application.cover_letter = template.get_content(

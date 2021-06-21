@@ -120,7 +120,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
             form = SubmitOILForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(task)
+                application.submit_application(request, task)
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
                 application.cover_letter = template.get_content(

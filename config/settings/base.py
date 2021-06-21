@@ -56,6 +56,7 @@ MIDDLEWARE = [
     "django_structlog.middlewares.RequestMiddleware",
     "htmlmin.middleware.HtmlMinifyMiddleware",
     "htmlmin.middleware.MarkRequestMiddleware",
+    "web.middleware.common.ICMSMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
