@@ -56,6 +56,10 @@ add_dummy_data: ## add dummy data
 	unset UID && \
 	docker-compose run --rm web python ./manage.py add_dummy_data
 
+add_dummy_application: ## add dummy application
+	unset UID && \
+	docker-compose run --rm web python ./manage.py add_dummy_application
+
 ##@ Docker
 setup: ## sets up system for first use
 	# doing this here gives it the right permissions, e.g. the local user.
