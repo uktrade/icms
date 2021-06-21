@@ -69,6 +69,13 @@
         Constabulary Emails
       </a>
     </li>
+  {% elif process.process_type == "OutwardProcessingTradeApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:opt:manage-checklist', kwargs={"application_pk": process.pk}) }}">
+        Checklist
+      </a>
+    </li>
   {% endif %}
 
   {# Common import application links #}

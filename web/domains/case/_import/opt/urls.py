@@ -50,6 +50,7 @@ urlpatterns = [
                         ]
                     ),
                 ),
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
             ],
         ),
     )

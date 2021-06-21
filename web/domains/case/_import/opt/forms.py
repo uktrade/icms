@@ -3,6 +3,7 @@ from typing import Any
 
 from django import forms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.commodity.models import Commodity
 from web.domains.commodity.widgets import CommodityWidget
 from web.domains.country.models import Country
@@ -348,3 +349,23 @@ class SubmitOPTForm(forms.Form):
             raise forms.ValidationError("Please agree to the declaration of truth.")
 
         return confirmation
+
+
+class OPTChecklistForm(ChecklistBaseForm):
+    class Meta:
+        model = models.OPTChecklist
+
+        fields = (
+            "operator_requests_submitted",
+            "authority_to_issue",
+        ) + tuple(f for f in ChecklistBaseForm.Meta.fields if f != "endorsements_listed")
+
+
+class OPTChecklistOptionalForm(OPTChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False

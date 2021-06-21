@@ -1,6 +1,6 @@
 from typing import Any, Type
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse
@@ -29,11 +29,14 @@ from .forms import (
     FurtherQuestionsPastBeneficiaryOPTForm,
     FurtherQuestionsPriorAuthorisationOPTForm,
     FurtherQuestionsSubcontractProductionOPTForm,
+    OPTChecklistForm,
+    OPTChecklistOptionalForm,
     SubmitOPTForm,
     TemporaryExportedGoodsOPTForm,
 )
 from .models import (
     CP_CATEGORIES,
+    OPTChecklist,
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
 )
@@ -473,3 +476,44 @@ def _get_compensating_products_category_descriptions() -> dict[str, str]:
     )
 
     return {cg.group_code: cg.group_description for cg in groups}
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: HttpRequest, *, application_pk):
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
+
+        if request.POST:
+            form = OPTChecklistOptionalForm(request.POST, instance=checklist)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:opt:manage-checklist", kwargs={"application_pk": application_pk}
+                    )
+                )
+        else:
+            if created:
+                form = OPTChecklistForm(instance=checklist)
+            else:
+                form = OPTChecklistForm(data=model_to_dict(checklist), instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Outward Processing Trade Licence - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )

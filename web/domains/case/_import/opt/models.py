@@ -1,5 +1,6 @@
 from django.db import models
 
+from web.domains.case._import.models import ChecklistBase
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -334,3 +335,26 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     documents = models.ManyToManyField(OutwardProcessingTradeFile, related_name="+")
+
+
+class OPTChecklist(ChecklistBase):
+    import_application = models.OneToOneField(
+        OutwardProcessingTradeApplication, on_delete=models.PROTECT, related_name="checklist"
+    )
+
+    # This base class field is not needed.
+    endorsements_listed = None
+
+    operator_requests_submitted = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Operator requests submitted to commission by set deadline?",
+    )
+
+    authority_to_issue = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Authority to issue confirmed by European Commission?",
+    )
