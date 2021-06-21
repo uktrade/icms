@@ -12,6 +12,7 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm
 from web.domains.case.views import check_application_permission, view_application_file
+from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -31,7 +32,11 @@ from .forms import (
     SubmitOPTForm,
     TemporaryExportedGoodsOPTForm,
 )
-from .models import OutwardProcessingTradeApplication, OutwardProcessingTradeFile
+from .models import (
+    CP_CATEGORIES,
+    OutwardProcessingTradeApplication,
+    OutwardProcessingTradeFile,
+)
 
 
 @login_required
@@ -108,6 +113,7 @@ def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> 
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
+            "category_descriptions": _get_compensating_products_category_descriptions(),
         }
 
         return render(
@@ -459,3 +465,11 @@ def delete_document(request: HttpRequest, *, application_pk: int, document_pk: i
         edit_link = _get_edit_url(application_pk, document.file_type)
 
         return redirect(edit_link)
+
+
+def _get_compensating_products_category_descriptions() -> dict[str, str]:
+    groups = CommodityGroup.objects.filter(
+        commodity_type__type_code="TEXTILES", group_code__in=CP_CATEGORIES
+    )
+
+    return {cg.group_code: cg.group_description for cg in groups}

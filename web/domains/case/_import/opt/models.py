@@ -13,9 +13,8 @@ you may select 'N/A'.""".replace(
     "\n", " "
 )
 
-_CP_CATEGORIES = [
-    (x, x) for x in ["4", "5", "6", "7", "8", "15", "21", "24", "26", "27", "29", "73"]
-]
+CP_CATEGORIES = ["4", "5", "6", "7", "8", "15", "21", "24", "26", "27", "29", "73"]
+_CP_CATEGORY_CHOICES = [(x, x) for x in CP_CATEGORIES]
 
 
 class OutwardProcessingTradeFile(File):
@@ -91,7 +90,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     cp_category = models.CharField(
         null=True,
         max_length=2,
-        choices=_CP_CATEGORIES,
+        choices=_CP_CATEGORY_CHOICES,
         verbose_name="Category",
         help_text="The category defines what commodities you are applying to import.",
     )
