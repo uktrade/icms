@@ -1,4 +1,4 @@
-from typing import Any, Type, Union
+from typing import TYPE_CHECKING, Any, NamedTuple, Type, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -18,6 +18,8 @@ from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicatio
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
+from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -26,6 +28,7 @@ from web.flow.models import Task
 from web.models import (
     AccessRequest,
     CertificateOfManufactureApplication,
+    CommodityGroup,
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
@@ -33,6 +36,8 @@ from web.models import (
     ImportApplication,
     ImporterAccessRequest,
     OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    OutwardProcessingTradeFile,
     SanctionsAndAdhocApplication,
     SILApplication,
     WithdrawApplication,
@@ -51,6 +56,10 @@ from web.utils.validation import (
 from . import forms, models
 from .fir import forms as fir_forms
 from .fir.models import FurtherInformationRequest
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
 
 ImpOrExp = Union[ImportApplication, ExportApplication]
 ImpOrExpT = Type[ImpOrExp]
@@ -117,6 +126,12 @@ def check_application_permission(application: ImpOrExpOrAccess, user: User, case
     else:
         # Should never get here.
         raise PermissionDenied
+
+
+class OPTFurtherQuestionsSharedSection(NamedTuple):
+    form: FurtherQuestionsBaseOPTForm
+    section_title: str
+    supporting_documents: "QuerySet[OutwardProcessingTradeFile]"
 
 
 @login_required
@@ -1164,6 +1179,9 @@ def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> H
     elif application.process_type == DFLApplication.PROCESS_TYPE:
         return _view_dfl(request, application.dflapplication)
 
+    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
+        return _view_opt(request, application.outwardprocessingtradeapplication)
+
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
@@ -1252,6 +1270,50 @@ def _view_dfl(request: HttpRequest, application: DFLApplication) -> HttpResponse
     }
 
     return render(request, "web/domains/case/import/fa-dfl/view.html", context)
+
+
+def _view_opt(request: HttpRequest, application: OutwardProcessingTradeApplication) -> HttpResponse:
+    group = CommodityGroup.objects.get(
+        commodity_type__type_code="TEXTILES", group_code=application.cp_category
+    )
+    category_group_description = group.group_description
+
+    # Reuse the model verbose_name for the labels
+    opt_fields = OutwardProcessingTradeApplication._meta.get_fields()
+    labels = {f.name: getattr(f, "verbose_name", "") for f in opt_fields}
+
+    # Reuse the forms to render the different further questions sections
+    # key=section name, value=template context
+    fq_sections: dict[str, OPTFurtherQuestionsSharedSection] = {}
+
+    for file_type in OutwardProcessingTradeFile.Type:  # type: ignore[attr-defined]
+        if file_type != OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT:
+            form_class = get_fq_form(file_type)
+            section_title = get_fq_page_name(file_type)
+
+            form = form_class(instance=application, has_files=False)
+            supporting_documents = application.documents.filter(is_active=True, file_type=file_type)
+
+            fq_sections[file_type] = OPTFurtherQuestionsSharedSection(
+                form=form, section_title=section_title, supporting_documents=supporting_documents
+            )
+
+    # Supporting docs for the main form:
+    supporting_documents = application.documents.filter(
+        is_active=True, file_type=OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT
+    )
+
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "category_group_description": category_group_description,
+        "labels": labels,
+        "fq_sections": fq_sections,
+        "supporting_documents": supporting_documents,
+    }
+
+    return render(request, "web/domains/case/import/opt/view.html", context)
 
 
 def _view_accessrequest(request: HttpRequest, application: AccessRequest) -> HttpResponse:

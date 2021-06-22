@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
@@ -21,14 +21,7 @@ from web.utils.validation import ApplicationErrors, PageErrors, create_page_erro
 from .forms import (
     CompensatingProductsOPTForm,
     EditOPTForm,
-    FurtherQuestionsBaseOPTForm,
-    FurtherQuestionsEmploymentDecreasedOPTForm,
-    FurtherQuestionsFurtherAuthorisationOPTForm,
-    FurtherQuestionsNewApplicationOPTForm,
     FurtherQuestionsOPTForm,
-    FurtherQuestionsPastBeneficiaryOPTForm,
-    FurtherQuestionsPriorAuthorisationOPTForm,
-    FurtherQuestionsSubcontractProductionOPTForm,
     OPTChecklistForm,
     OPTChecklistOptionalForm,
     SubmitOPTForm,
@@ -40,6 +33,7 @@ from .models import (
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
 )
+from .utils import get_fq_form, get_fq_page_name
 
 
 @login_required
@@ -215,7 +209,7 @@ def edit_further_questions_shared(
 
         task = application.get_task(ImportApplication.IN_PROGRESS, "prepare")
 
-        form_class = _get_fq_form(fq_type)
+        form_class = get_fq_form(fq_type)
 
         if request.POST:
             has_files = application.documents.filter(is_active=True, file_type=fq_type).exists()
@@ -246,7 +240,7 @@ def edit_further_questions_shared(
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
             "supporting_documents": supporting_documents,
             "file_type": fq_type,
-            "fq_page_name": _get_fq_page_name(fq_type),
+            "fq_page_name": get_fq_page_name(fq_type),
         }
 
         return render(
@@ -292,8 +286,8 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             if not file_type.startswith("fq_"):
                 continue
 
-            form_class = _get_fq_form(file_type)
-            page_name = "Further Questions - " + _get_fq_page_name(file_type)
+            form_class = get_fq_form(file_type)
+            page_name = "Further Questions - " + get_fq_page_name(file_type)
             has_files = application.documents.filter(is_active=True, file_type=file_type).exists()
 
             fq_shared_errors = PageErrors(
@@ -364,36 +358,6 @@ def _get_edit_url(application_pk: int, file_type: str) -> str:
         return reverse(
             "import:opt:edit-further-questions-shared", kwargs=kwargs | {"fq_type": file_type}
         )
-
-
-def _get_fq_form(file_type: str) -> Type[FurtherQuestionsBaseOPTForm]:
-    """Get the edit form for a specific Further Questions type."""
-
-    form_class_map = {
-        OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED: FurtherQuestionsEmploymentDecreasedOPTForm,
-        OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION: FurtherQuestionsPriorAuthorisationOPTForm,
-        OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY: FurtherQuestionsPastBeneficiaryOPTForm,
-        OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION: FurtherQuestionsNewApplicationOPTForm,
-        OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION: FurtherQuestionsFurtherAuthorisationOPTForm,
-        OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION: FurtherQuestionsSubcontractProductionOPTForm,
-    }
-
-    return form_class_map[file_type]  # type: ignore[index]
-
-
-def _get_fq_page_name(file_type: str) -> str:
-    """Get a human-readable page name for a specific Further Questions type."""
-
-    form_class_map = {
-        OutwardProcessingTradeFile.Type.FQ_EMPLOYMENT_DECREASED: "Level of employment",
-        OutwardProcessingTradeFile.Type.FQ_PRIOR_AUTHORISATION: "Prior Authorisation",
-        OutwardProcessingTradeFile.Type.FQ_PAST_BENEFICIARY: "Past Beneficiary",
-        OutwardProcessingTradeFile.Type.FQ_NEW_APPLICATION: "New Application",
-        OutwardProcessingTradeFile.Type.FQ_FURTHER_AUTHORISATION: "Further Authorisation",
-        OutwardProcessingTradeFile.Type.FQ_SUBCONTRACT_PRODUCTION: "Subcontract production",
-    }
-
-    return form_class_map[file_type]  # type: ignore[index]
 
 
 @login_required

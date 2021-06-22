@@ -3,8 +3,8 @@
 {# VIEW APPLICATION MACROS #}
 {% macro application_section(section_title=None, section_id=None) -%}
   {% if section_title %}
-    {% if id %}
-      <h4 id="{{section_id }}">{{ section_title }}</h4>
+    {% if section_id %}
+      <h4 id="{{ section_id }}">{{ section_title }}</h4>
     {% else %}
       <h4>{{ section_title }}</h4>
     {% endif %}

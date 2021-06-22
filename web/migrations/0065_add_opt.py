@@ -95,7 +95,9 @@ class Migration(migrations.Migration):
                 (
                     "last_export_day",
                     models.DateField(
-                        help_text="Requested last day of authorised exportation.", null=True
+                        help_text="Requested last day of authorised exportation.",
+                        null=True,
+                        verbose_name="Last Export Day",
                     ),
                 ),
                 (

@@ -1,0 +1,112 @@
+{% extends "web/domains/case/import/view_case.html" %}
+
+{% block css %}
+  {{ super() }}
+  <style>
+      p.commodity-row  {
+          border-top: 1px solid #ccc;
+          padding: 0.5em;
+      }
+  </style>
+{% endblock %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+    <li><a href="#view-application-details">Application Details</a></li>
+    <li><a href="#view-compensating-products">Compensating Products</a></li>
+    <li><a href="#view-temporary-exported-goods">Temporary Exported Goods</a></li>
+    <li><a href="#view-further-questions">Further Questions</a></li>
+    <li><a href="#view-fq_employment_decreaseds">Level of employment</a></li>
+    <li><a href="#view-fq_prior_authorisation">Prior Authorisation</a></li>
+    <li><a href="#view-fq_past_beneficiary">Past Beneficiary</a></li>
+    <li><a href="#view-fq_new_application">New Application</a></li>
+    <li><a href="#view-fq_further_authorisation">Further Authorisation</a></li>
+    <li><a href="#view-fq_subcontract_production">Subcontract production</a></li>
+  </ul>
+{% endblock %}
+
+
+{% block main_content %}
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call application_section("Outward Processing Trade", "view-application-details") %}
+    {{ application_field(process.applicant_reference, labels["applicant_reference"], "N/a") }}
+    {{ application_field(process.customs_office_name, labels["customs_office_name"]) }}
+    {{ application_field(process.customs_office_address, labels["customs_office_address"]) }}
+    {{ application_field(process.rate_of_yield, labels["rate_of_yield"]) }}
+    {{ application_field(process.rate_of_yield_calc_method, labels["rate_of_yield_calc_method"]) }}
+    {{ application_field(process.last_export_day, labels["last_export_day"]) }}
+    {{ application_field(process.reimport_period, labels["reimport_period"]) }}
+    {{ application_field(process.nature_process_ops, labels["nature_process_ops"]) }}
+    {{ application_field(process.suggested_id, labels["suggested_id"]) }}
+
+    {% with read_only = True %}
+      {% include "web/domains/case/import/partials/opt/documents_list.html" %}
+    {% endwith %}
+  {% endcall %}
+  <hr>
+
+  {% call application_section("Compensating Products", "view-compensating-products") %}
+    {{ application_field(process.cp_origin_country, labels["cp_origin_country"]) }}
+    {{ application_field(process.cp_processing_country, labels["cp_processing_country"]) }}
+    {{ application_field(process.cp_category, labels["cp_category"]) }}
+    {{ application_field(category_group_description, "") }}
+    {{ application_field(process.cp_total_quantity, labels["cp_total_quantity"]) }}
+    <div class="row">
+      <div class="three columns bold">
+        <div class="float-right">Unit</div>
+      </div>
+      <div class="six columns"><p>Pieces</p></div>
+      <div class="three columns"></div>
+    </div>
+    {{ application_field(process.cp_total_value, labels["cp_total_value"]) }}
+    <h4>Commodity Code</h4>
+    {% for commodity in process.cp_commodities.all() %}
+      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+    {% endfor %}
+  {% endcall %}
+  <hr>
+
+  {% call application_section("Temporary Exported Goods", "view-temporary-exported-goods") %}
+    {{ application_field(process.teg_origin_country, labels["teg_origin_country"]) }}
+    {{ application_field(process.teg_total_quantity, labels["teg_total_quantity"]) }}
+    <div class="row">
+      <div class="three columns bold">
+        <div class="float-right">Unit</div>
+      </div>
+      <div class="six columns"><p>kilos</p></div>
+      <div class="three columns"></div>
+    </div>
+    {{ application_field(process.teg_total_value, labels["teg_total_value"]) }}
+    {{ application_field(process.teg_goods_description, labels["teg_goods_description"]) }}
+    <h4>Commodity Code</h4>
+    {% for commodity in process.teg_commodities.all() %}
+      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+    {% endfor %}
+  {% endcall %}
+  <hr>
+
+  {% call application_section("Further Questions", "view-further-questions") %}
+    {{ application_field(process.fq_similar_to_own_factory, labels["fq_similar_to_own_factory"]) }}
+    {{ application_field(process.fq_manufacturing_within_eu, labels["fq_manufacturing_within_eu"]) }}
+    {{ application_field(process.fq_maintained_in_eu, labels["fq_maintained_in_eu"]) }}
+    {{ application_field(process.fq_maintained_in_eu_reasons, labels["fq_maintained_in_eu_reasons"]) }}
+  {% endcall %}
+  <hr>
+
+  {% for section, data in fq_sections.items() %}
+    {% call application_section(data.section_title, "view-" + section) %}
+      {% for field in data.form %}
+        {{ application_field(field.value(), field.label) }}
+      {% endfor %}
+
+      {% with read_only = True, supporting_documents = data.supporting_documents %}
+        {% include "web/domains/case/import/partials/opt/documents_list.html" %}
+      {% endwith %}
+    {% endcall %}
+     <hr>
+  {% endfor %}
+
+{% endblock %}

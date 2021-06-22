@@ -51,7 +51,9 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     last_export_day = models.DateField(
-        null=True, help_text="Requested last day of authorised exportation."
+        null=True,
+        verbose_name="Last Export Day",
+        help_text="Requested last day of authorised exportation.",
     )
 
     reimport_period = models.DecimalField(
