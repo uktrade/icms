@@ -91,7 +91,7 @@ def importer_access_request(request):
             if form.is_valid():
                 application = form.save(commit=False)
                 application.submitted_by = request.user
-                application.last_update_by = request.user
+                application.last_updated_by = request.user
                 application.process_type = ImporterAccessRequest.PROCESS_TYPE
                 application.save()
 
@@ -129,7 +129,7 @@ def exporter_access_request(request):
             if form.is_valid():
                 application = form.save(commit=False)
                 application.submitted_by = request.user
-                application.last_update_by = request.user
+                application.last_updated_by = request.user
                 application.process_type = ExporterAccessRequest.PROCESS_TYPE
                 application.save()
 
