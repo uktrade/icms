@@ -18,7 +18,10 @@ from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicatio
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.models import ImportApplicationType
-from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
+from web.domains.case._import.opt.forms import (
+    FurtherQuestionsBaseOPTForm,
+    OPTChecklistForm,
+)
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.file.utils import create_file_model
@@ -1674,6 +1677,9 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
         application_errors.add(_get_derogations_errors(application))
 
+    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
+        application_errors.add(_get_opt_errors(application))
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         # There are no extra checks for Sanctions and Adhoc
         pass
@@ -1751,6 +1757,14 @@ def _get_derogations_errors(application: ImportApplication) -> PageErrors:
         application.derogationsapplication,
         "import:derogations:manage-checklist",
         DerogationsChecklistForm,
+    )
+
+
+def _get_opt_errors(application: ImportApplication) -> PageErrors:
+    return _get_checklist_errors(
+        application.outwardprocessingtradeapplication,
+        "import:opt:manage-checklist",
+        OPTChecklistForm,
     )
 
 
