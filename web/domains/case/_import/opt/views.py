@@ -270,6 +270,31 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
         )
         errors.add(edit_errors)
 
+        cp_errors = PageErrors(
+            page_name="Compensating Products",
+            url=reverse(
+                "import:opt:edit-compensating-products", kwargs={"application_pk": application_pk}
+            ),
+        )
+        create_page_errors(
+            CompensatingProductsOPTForm(data=model_to_dict(application), instance=application),
+            cp_errors,
+        )
+        errors.add(cp_errors)
+
+        teg_errors = PageErrors(
+            page_name="Temporary Exported Goods",
+            url=reverse(
+                "import:opt:edit-temporary-exported-goods",
+                kwargs={"application_pk": application_pk},
+            ),
+        )
+        create_page_errors(
+            TemporaryExportedGoodsOPTForm(data=model_to_dict(application), instance=application),
+            teg_errors,
+        )
+        errors.add(teg_errors)
+
         fq_errors = PageErrors(
             page_name="Further Questions",
             url=reverse(
