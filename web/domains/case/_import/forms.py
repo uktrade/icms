@@ -5,6 +5,7 @@ from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -128,6 +129,12 @@ class LicenceDateAndPaperLicenceForm(LicenceDateForm):
             ("true", "Yes"),
             ("false", "No"),
         ]
+
+
+class OPTLicenceForm(LicenceDateForm):
+    class Meta:
+        model = OutwardProcessingTradeApplication
+        fields = LicenceDateForm.Meta.fields + ("reimport_period",)
 
 
 class EndorsementChoiceImportApplicationForm(forms.ModelForm):

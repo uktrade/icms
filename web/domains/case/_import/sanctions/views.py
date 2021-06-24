@@ -158,7 +158,7 @@ def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int)
             "case:prepare-response",
             kwargs={"application_pk": application.pk, "case_type": "import"},
         )
-        template_name = "web/domains/case/import/manage/edit-goods-licence.html"
+        template_name = "web/domains/case/import/manage/response-prep-edit-form.html"
 
         return _edit_goods(
             request, application, task, form_class, goods_pk, success_url, template_name

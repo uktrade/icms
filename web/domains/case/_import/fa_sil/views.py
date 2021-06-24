@@ -496,7 +496,7 @@ def response_preparation_edit_goods(
 
         return render(
             request,
-            "web/domains/case/import/manage/fa-sil-edit-goods.html",
+            "web/domains/case/import/manage/response-prep-edit-form.html",
             context,
         )
 
@@ -795,6 +795,6 @@ def set_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespon
 
         return render(
             request=request,
-            template_name="web/domains/case/import/manage/fa-sil-set-cover-letter.html",
+            template_name="web/domains/case/import/manage/response-prep-edit-form.html",
             context=context,
         )

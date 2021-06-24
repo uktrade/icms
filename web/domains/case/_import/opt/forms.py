@@ -369,3 +369,16 @@ class OPTChecklistOptionalForm(OPTChecklistForm):
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class ResponsePrepCompensatingProductsOPTForm(forms.ModelForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+
+        fields = ("cp_total_quantity", "cp_total_value", "cp_category_licence_description")
+
+
+class ResponsePrepTemporaryExportedGoodsOPTForm(forms.ModelForm):
+    class Meta:
+        model = models.OutwardProcessingTradeApplication
+        fields = ("teg_total_quantity", "teg_total_value", "teg_goods_description")

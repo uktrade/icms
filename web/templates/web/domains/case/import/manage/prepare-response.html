@@ -71,17 +71,18 @@
       {% block cover_letter_actions %}{% endblock %}
     {% endif %}
 
-    <h4>Licence</h4>
-    <table class="setoutList">
-      <thead>
+    {% block licence_section %}
+      <h4>Licence</h4>
+      <table class="setoutList">
+        <thead>
         <tr>
           <th>Start Date</th>
           <th>End Date</th>
           <th>Issue paper licence only?</th>
           <th>Action</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr>
           <td>
             {% if process.licence_start_date %}
@@ -109,18 +110,22 @@
                href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
             >Edit</a>
         </tr>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    {% endblock %}
 
-    <h4>Endorsement</h4>
-    <table class="setoutList">
-      <thead>
+    {# This should probably be used when the ImportApplicationType data has been checked #}
+    {# {% if endorsements_flag %} #}
+    {% block endorsements_section %}
+      <h4>Endorsement</h4>
+      <table class="setoutList">
+        <thead>
         <tr>
           <th>Endorsement</th>
           <th>Actions</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         {% for endorsement in process.endorsements.all() %}
           <tr>
             <td>
@@ -146,22 +151,23 @@
             </td>
           </tr>
         {% endfor %}
-      </tbody>
-    </table>
-    <div class="list-actions">
-      <a
-        href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
-        class="button small-button icon-plus">
-        Add Endorsement
-      </a>
-      <a
-        href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
-        class="button small-button icon-plus">
-        Add Custom Endorsement
-      </a>
-    </div>
-  {% endif %}
+        </tbody>
+      </table>
+      <div class="list-actions">
+        <a
+          href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
+          class="button small-button icon-plus">
+          Add Endorsement
+        </a>
+        <a
+          href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
+          class="button small-button icon-plus">
+          Add Custom Endorsement
+        </a>
+      </div>
+    {% endblock %}
 
+  {% endif %}
 {% endblock %}
 
 {% block page_js %}

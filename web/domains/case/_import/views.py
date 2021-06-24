@@ -30,6 +30,7 @@ from .forms import (
     EndorsementImportApplicationForm,
     LicenceDateAndPaperLicenceForm,
     LicenceDateForm,
+    OPTLicenceForm,
 )
 from .models import ImportApplication, ImportApplicationType
 from .opt.models import OutwardProcessingTradeApplication
@@ -278,9 +279,13 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
         )
 
-        # If both true then allow editing of the paper licence field
-        if application_type.paper_licence_flag and application_type.electronic_licence_flag:
+        if application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
+            form_class = OPTLicenceForm
+            application = application.outwardprocessingtradeapplication
+
+        elif application_type.paper_licence_flag and application_type.electronic_licence_flag:
             form_class = LicenceDateAndPaperLicenceForm
+
         else:
             form_class = LicenceDateForm
 

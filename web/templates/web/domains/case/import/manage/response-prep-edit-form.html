@@ -2,6 +2,7 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+{# Template that can be used for any response prep edit view #}
 {% block content_actions_link %}
   <a
     href="{{ icms_url('case:prepare-response', kwargs={'case_type': case_type, 'application_pk': process.pk}) }}"
@@ -11,7 +12,7 @@
 {% endblock %}
 
 {% block main_content %}
-  <h3>Edit goods certificate</h3>
+  <h3>Edit</h3>
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
       {{ fields.field(field) }}

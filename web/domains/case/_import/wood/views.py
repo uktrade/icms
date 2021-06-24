@@ -372,6 +372,6 @@ def edit_goods(request: HttpRequest, pk: int) -> HttpResponse:
 
         return render(
             request=request,
-            template_name="web/domains/case/import/manage/edit-goods-licence.html",
+            template_name="web/domains/case/import/manage/response-prep-edit-form.html",
             context=context,
         )

@@ -1,0 +1,135 @@
+{% extends "web/domains/case/import/manage/prepare-response.html" %}
+
+{% block css %}
+  {{ super() }}
+  <style>
+      p.commodity-row {
+          border-top: 1px solid #ccc;
+          padding: 0.5em;
+      }
+  </style>
+{% endblock %}
+
+{% block goods_content %}
+  <h4>Goods</h4>
+
+  <h5>Compensating Products</h5>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Quantity</th>
+      <th>Unit</th>
+      <th>Value (Euro)</th>
+      <th>Category</th>
+      <th>Category Description</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tr class="result-row">
+      <td>{{ process.cp_total_quantity }}</td>
+      <td>pieces</td>
+      <td>{{ process.cp_total_value }}</td>
+      <td>{{ process.cp_category }}</td>
+      <td>{{ process.cp_category_licence_description }}</td>
+      <td>
+        <a class="link-button button icon-pencil" data-input_action="edit"
+           href="{{ icms_url('import:opt:response-prep-edit-compensating-products', kwargs={'application_pk': process.pk}) }}"
+        >Edit</a>
+      </td>
+    </tr>
+  </table>
+
+  <h6>Commodity Code</h6>
+  {% if compensating_product_commodities %}
+    {% for commodity in compensating_product_commodities %}
+      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+    {% endfor %}
+  {% else %}
+    <div class="info-box info-box-info">There are no compensating products commodities</div>
+  {% endif %}
+
+  <h5>Temporary Exported Goods</h5>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Quantity</th>
+      <th>Unit</th>
+      <th>Value (Euro)</th>
+      <th>Goods Description</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tr class="result-row">
+      <td>{{ process.teg_total_quantity }}</td>
+      <td>kilos</td>
+      <td>{{ process.teg_total_value }}</td>
+      <td>{{ process.teg_goods_description }}</td>
+      <td>
+        <a class="link-button button icon-pencil" data-input_action="edit"
+           href="{{ icms_url('import:opt:response-prep-edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}"
+        >Edit</a>
+      </td>
+    </tr>
+  </table>
+
+  <h6>Commodity Code</h6>
+  {% if temporary_exported_goods_commodities %}
+    {% for commodity in temporary_exported_goods_commodities %}
+      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+    {% endfor %}
+  {% else %}
+    <div class="info-box info-box-info">There are no temporary exported goods commodities</div>
+  {% endif %}
+
+{% endblock %}
+
+{# Licence section is different for OPT #}
+{% block licence_section %}
+  <h4>Licence</h4>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Period for Re-importation (Months)</th>
+      <th>Issue paper licence only?</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        {% if process.licence_start_date %}
+          {{ process.licence_start_date.strftime('%d-%b-%Y') }}
+        {% endif %}
+      </td>
+      <td>
+        {% if process.licence_end_date %}
+          {{ process.licence_end_date.strftime('%d-%b-%Y') }}
+        {% endif %}
+      </td>
+      <td>{{ process.reimport_period|int }}</td>
+      <td>
+        <p>
+          {% if process.issue_paper_licence_only == True %}
+            Yes
+          {% elif process.issue_paper_licence_only == False %}
+            No
+          {% else %}
+            Please select a value
+          {% endif %}
+        </p>
+      </td>
+      <td>
+        <a class="link-button button icon-pencil" data-input_action="edit"
+           href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
+        >Edit</a>
+    </tr>
+    </tbody>
+  </table>
+{% endblock %}
+
+{# Block is disabled for OPT #}
+{% block endorsements_section %}{% endblock %}

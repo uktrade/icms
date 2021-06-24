@@ -1476,9 +1476,11 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
         if case_type == "import":
             cover_letter_flag = application.application_type.cover_letter_flag
             electronic_licence_flag = application.application_type.electronic_licence_flag
+            endorsements_flag = application.application_type.endorsements_flag
         else:
             cover_letter_flag = False
             electronic_licence_flag = False
+            endorsements_flag = False
 
         context = {
             "case_type": case_type,
@@ -1487,6 +1489,9 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
             "form": form,
             "cover_letter_flag": cover_letter_flag,
             "electronic_licence_flag": electronic_licence_flag,
+            # Not used currently but the template probably should.
+            # Once the data is confirmed to be correct
+            "endorsements_flag": endorsements_flag,
         }
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
@@ -1511,7 +1516,12 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
         return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
 
-    # TODO: implement other types (export-COM, import-FA-SIL)
+    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
+        return _prepare_opt_response(
+            request, application.outwardprocessingtradeapplication, context
+        )
+
+    # TODO: implement other types (export-COM)
     else:
         raise NotImplementedError
 
@@ -1611,6 +1621,27 @@ def _prepare_wood_quota_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-wood-quota-response.html",
+        context=context,
+    )
+
+
+def _prepare_opt_response(
+    request: HttpRequest, application: OutwardProcessingTradeApplication, context: dict[str, Any]
+) -> HttpResponse:
+    compensating_product_commodities = application.cp_commodities.all()
+    temporary_exported_goods_commodities = application.teg_commodities.all()
+
+    context.update(
+        {
+            "process": application,
+            "compensating_product_commodities": compensating_product_commodities,
+            "temporary_exported_goods_commodities": temporary_exported_goods_commodities,
+        }
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-opt-response.html",
         context=context,
     )
 

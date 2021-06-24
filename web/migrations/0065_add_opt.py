@@ -148,6 +148,15 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "cp_category_licence_description",
+                    models.CharField(
+                        help_text="By default, this is the category description. You may need to alter the description to a shorter form in order for it to display correctly on the licence.",
+                        max_length=4000,
+                        null=True,
+                        verbose_name="Category Description",
+                    ),
+                ),
+                (
                     "cp_total_quantity",
                     models.DecimalField(
                         decimal_places=2,

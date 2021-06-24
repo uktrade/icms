@@ -51,6 +51,16 @@ urlpatterns = [
                     ),
                 ),
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path(
+                    "response-prep-edit-compensating-products/",
+                    views.response_preparation_edit_compensating_products,
+                    name="response-prep-edit-compensating-products",
+                ),
+                path(
+                    "response-prep-edit-temporary-exported-goods/",
+                    views.response_preparation_edit_temporary_exported_goods,
+                    name="response-prep-edit-temporary-exported-goods",
+                ),
             ],
         ),
     )

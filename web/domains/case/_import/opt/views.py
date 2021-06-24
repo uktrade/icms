@@ -22,6 +22,8 @@ from .forms import (
     FurtherQuestionsOPTForm,
     OPTChecklistForm,
     OPTChecklistOptionalForm,
+    ResponsePrepCompensatingProductsOPTForm,
+    ResponsePrepTemporaryExportedGoodsOPTForm,
     SubmitOPTForm,
     TemporaryExportedGoodsOPTForm,
 )
@@ -305,6 +307,10 @@ def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
             form = SubmitOPTForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
+                group = CommodityGroup.objects.get(
+                    commodity_type__type_code="TEXTILES", group_code=application.cp_category
+                )
+                application.cp_category_licence_description = group.group_description
                 application.submit_application(request, task)
 
                 return redirect(reverse("home"))
@@ -439,7 +445,7 @@ def manage_checklist(request: HttpRequest, *, application_pk):
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.SUBMITTED, "process")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
@@ -470,4 +476,88 @@ def manage_checklist(request: HttpRequest, *, application_pk):
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
             context=context,
+        )
+
+
+@login_required
+def response_preparation_edit_compensating_products(
+    request: HttpRequest, *, application_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+        if request.POST:
+            form = ResponsePrepCompensatingProductsOPTForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = ResponsePrepCompensatingProductsOPTForm(instance=application)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
+        }
+
+        return render(
+            request, "web/domains/case/import/manage/response-prep-edit-form.html", context
+        )
+
+
+@login_required
+def response_preparation_edit_temporary_exported_goods(
+    request: HttpRequest, *, application_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OutwardProcessingTradeApplication = get_object_or_404(
+            OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+        if request.POST:
+            form = ResponsePrepTemporaryExportedGoodsOPTForm(
+                data=request.POST, instance=application
+            )
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = ResponsePrepTemporaryExportedGoodsOPTForm(instance=application)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",
+        }
+
+        return render(
+            request, "web/domains/case/import/manage/response-prep-edit-form.html", context
         )

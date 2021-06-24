@@ -199,7 +199,7 @@ def edit_goods_certificate_description(
 
         return render(
             request,
-            "web/domains/case/import/manage/fa-dfl-edit-goods-certificate-description.html",
+            "web/domains/case/import/manage/response-prep-edit-form.html",
             context,
         )
 
