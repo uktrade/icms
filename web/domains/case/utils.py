@@ -4,7 +4,6 @@ from web.models.models import CaseReference
 from web.utils.lock_manager import LockManager
 
 
-# TODO: ICMSLST-752 write tests for this
 def allocate_case_reference(
     *, lock_manager: LockManager, prefix: str, use_year: bool, min_digits: int
 ) -> str:

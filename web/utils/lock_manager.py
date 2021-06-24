@@ -3,7 +3,6 @@ from typing import Type
 from django.db import connection, models, transaction
 
 
-# TODO: ICMSLST-752 write tests for this
 class LockManager:
     """Manages locking database tables in a deadlock-free way."""
 

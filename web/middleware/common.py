@@ -1,7 +1,6 @@
 from web.utils.lock_manager import LockManager
 
 
-# TODO: ICMSLST-752 write tests for this
 class ICMSMiddleware:
     """Adds request.icms which is ICMSMiddlewareContext."""
 
@@ -16,7 +15,6 @@ class ICMSMiddleware:
         return response
 
 
-# TODO: ICMSLST-752 write tests for this
 class ICMSMiddlewareContext:
     """Request-scope ICMS stuff, currently just LockManager."""
 
