@@ -47,6 +47,8 @@ services:
             - CLAM_AV_USERNAME
             - CLAM_AV_PASSWORD
             - CLAM_AV_URL
+            - APP_ENV
+            - ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
         # stdin_open: true
         # tty: true
         ports:

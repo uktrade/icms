@@ -90,6 +90,10 @@ docker_mypy: ## run mypy
 	ICMS_DEBUG=False \
 	docker-compose run --rm web mypy web config
 
+docker_drop_all_tables: ## drop all tables
+	unset UID && \
+	docker-compose run --rm web python ./manage.py drop_all_tables --confirm-drop-all-tables
+
 pip-check:
 	docker-compose run --rm web pip-check
 
