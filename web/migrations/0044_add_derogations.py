@@ -25,12 +25,65 @@ class Migration(migrations.Migration):
                         to="web.importapplication",
                     ),
                 ),
-                ("contract_sign_date", models.DateField(null=True, verbose_name="Expiry Date")),
+                (
+                    "contract_sign_date",
+                    models.DateField(null=True, verbose_name="Contract Sign Date"),
+                ),
                 (
                     "contract_completion_date",
-                    models.DateField(null=True, verbose_name="Expiry Date"),
+                    models.DateField(null=True, verbose_name="Contract Completion Date"),
                 ),
-                ("explanation", models.CharField(max_length=4096, null=True)),
+                (
+                    "commodity_code",
+                    models.CharField(
+                        help_text="It is the responsibility of the applicant to ensure that the commodity code in this box is correct. If you are unsure of the correct commodity code, consult the HM Revenue and Customs Integrated Tariff Book, Volume 2, which is available from the Stationery Office. If you are still in doubt, contact the Classification Advisory Service on (01702) 366077.",
+                        max_length=40,
+                        null=True,
+                        verbose_name="Commodity Code",
+                    ),
+                ),
+                (
+                    "goods_description",
+                    models.CharField(
+                        help_text="Details of the goods that are subject to the contract notification",
+                        max_length=4096,
+                        null=True,
+                        verbose_name="Goods Description",
+                    ),
+                ),
+                (
+                    "quantity",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=9,
+                        null=True,
+                        validators=[django.core.validators.MinValueValidator(limit_value=0.0)],
+                    ),
+                ),
+                (
+                    "unit",
+                    models.CharField(
+                        choices=[("kilos", "kilos")], max_length=40, null=True, verbose_name="Unit"
+                    ),
+                ),
+                (
+                    "value",
+                    models.DecimalField(
+                        decimal_places=2,
+                        max_digits=9,
+                        null=True,
+                        validators=[django.core.validators.MinValueValidator(limit_value=0.0)],
+                        verbose_name="Value (euro CIF)",
+                    ),
+                ),
+                (
+                    "explanation",
+                    models.CharField(
+                        max_length=4096,
+                        null=True,
+                        verbose_name="Provide details of why this is a pre-existing contract",
+                    ),
+                ),
             ],
             bases=("web.importapplication",),
         ),

@@ -10,28 +10,6 @@ from .models import DerogationsApplication, DerogationsChecklist
 
 
 class DerogationsForm(forms.ModelForm):
-    origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        queryset=Country.objects.filter(country_groups__name="Derogation from Sanctions COOs"),
-        required=True,
-    )
-    consignment_country = forms.ModelChoiceField(
-        label="Country Of Consignment",
-        queryset=Country.objects.filter(country_groups__name="Derogation from Sanctions COOs"),
-        required=True,
-    )
-    contract_sign_date = forms.DateField(
-        label="Contract Sign Date", required=True, widget=DateInput
-    )
-    contract_completion_date = forms.DateField(
-        label="Contract Completion Date", required=True, widget=DateInput
-    )
-    explanation = forms.CharField(
-        label="Provide details of why this is a pre-existing contract",
-        required=True,
-        widget=forms.Textarea(attrs={"cols": 50, "rows": 3}),
-    )
-
     commodity_code = forms.ChoiceField(
         label="Commodity Code",
         help_text="""
@@ -42,25 +20,6 @@ class DerogationsForm(forms.ModelForm):
             contact the Classification Advisory Service on (01702) 366077.
         """,
         choices=[(x, x) for x in [None, "4403201110", "4403201910", "4403203110", "4403203910"]],
-        required=True,
-    )
-
-    goods_description = forms.CharField(
-        label="Goods Description",
-        help_text="Details of the goods that are subject to the contract notification",
-        required=True,
-    )
-    quantity = forms.CharField(
-        required=True,
-    )
-
-    unit = forms.ChoiceField(
-        label="Unit",
-        choices=[(x, x) for x in ["kilos"]],
-    )
-
-    value = forms.CharField(
-        label="Value (euro CIF)",
         required=True,
     )
 
@@ -80,6 +39,11 @@ class DerogationsForm(forms.ModelForm):
             "unit",
             "value",
         )
+        widgets = {
+            "contract_sign_date": DateInput,
+            "contract_completion_date": DateInput,
+            "explanation": forms.Textarea(attrs={"cols": 50, "rows": 3}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,6 +53,10 @@ class DerogationsForm(forms.ModelForm):
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+
+        countries = Country.objects.filter(country_groups__name="Derogation from Sanctions COOs")
+        self.fields["origin_country"].queryset = countries
+        self.fields["consignment_country"].queryset = countries
 
 
 class SupportingDocumentForm(forms.Form):

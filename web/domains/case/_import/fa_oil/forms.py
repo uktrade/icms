@@ -19,16 +19,6 @@ class PrepareOILForm(forms.ModelForm):
         """,
         choices=[(x, x) for x in [None, "ex Chapter 93", "ex Chapter 95"]],
     )
-    origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        empty_label=None,
-        queryset=Country.objects.filter(name="Any Country"),
-    )
-    consignment_country = forms.ModelChoiceField(
-        label="Country Of Consignment",
-        empty_label=None,
-        queryset=Country.objects.filter(name="Any Country"),
-    )
     section1 = forms.BooleanField(disabled=True, label="Firearms Licence for")
     section2 = forms.BooleanField(disabled=True, label="")
 
@@ -50,7 +40,7 @@ class PrepareOILForm(forms.ModelForm):
         self.fields["know_bought_from"].required = True
 
         # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contacts"].queryset = User.objects.all()
+        self.fields["contact"].queryset = User.objects.all()
 
         # The default label for unknown is "Unknown"
         self.fields["know_bought_from"].widget.choices = [
@@ -58,6 +48,13 @@ class PrepareOILForm(forms.ModelForm):
             ("true", "Yes"),
             ("false", "No"),
         ]
+
+        self.fields["origin_country"].empty_label = None
+        self.fields["consignment_country"].empty_label = None
+
+        countries = Country.objects.filter(name="Any Country")
+        self.fields["origin_country"].queryset = countries
+        self.fields["consignment_country"].queryset = countries
 
 
 class SubmitOILForm(forms.Form):

@@ -150,22 +150,28 @@ class ImportApplication(ApplicationBase):
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     variation_no = models.IntegerField(blank=False, null=False, default=0)
     legacy_case_flag = models.BooleanField(blank=False, null=False, default=False)
+
     chief_usage_status = models.CharField(
         max_length=1, choices=CHIEF_STATUSES, blank=True, null=True
     )
+
     under_appeal_flag = models.BooleanField(blank=False, null=False, default=False)
+
     variation_decision = models.CharField(
         max_length=10, choices=ApplicationBase.DECISIONS, blank=True, null=True
     )
+
     variation_refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
     issue_date = models.DateField(blank=True, null=True)
     licence_start_date = models.DateField(blank=True, null=True)
     licence_end_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
+
     application_type = models.ForeignKey(
         ImportApplicationType, on_delete=models.PROTECT, blank=False, null=False
     )
+
     submitted_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -173,6 +179,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="submitted_import_applications",
     )
+
     created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -180,9 +187,11 @@ class ImportApplication(ApplicationBase):
         null=False,
         related_name="created_import_applications",
     )
+
     last_updated_by = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_import_cases"
     )
+
     importer = models.ForeignKey(
         Importer,
         on_delete=models.PROTECT,
@@ -190,6 +199,7 @@ class ImportApplication(ApplicationBase):
         null=False,
         related_name="import_applications",
     )
+
     agent = models.ForeignKey(
         Importer,
         on_delete=models.PROTECT,
@@ -197,6 +207,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="agent_import_applications",
     )
+
     importer_office = models.ForeignKey(
         Office,
         on_delete=models.PROTECT,
@@ -204,6 +215,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="office_import_applications",
     )
+
     agent_office = models.ForeignKey(
         Office,
         on_delete=models.PROTECT,
@@ -211,6 +223,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="agent_office_import_applications",
     )
+
     contact = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -221,30 +234,33 @@ class ImportApplication(ApplicationBase):
             " who created the application."
         ),
     )
+
     origin_country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="import_applications_from",
         verbose_name="Country Of Origin",
     )
+
     consignment_country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="import_applications_to",
         verbose_name="Country Of Consignment",
     )
+
     variation_requests = models.ManyToManyField(VariationRequest)
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
+
     case_owner = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
+
     cover_letter = models.TextField(blank=True, null=True)
 
     # A nullable boolean field that is either hardcoded or left to the user to

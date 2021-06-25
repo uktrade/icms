@@ -70,9 +70,7 @@ class PrepareDFLForm(forms.ModelForm):
             country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
         )
         self.fields["origin_country"].queryset = countries
-        self.fields["origin_country"].required = True
         self.fields["consignment_country"].queryset = countries
-        self.fields["consignment_country"].required = True
 
 
 class AddDLFGoodsCertificateForm(forms.ModelForm):

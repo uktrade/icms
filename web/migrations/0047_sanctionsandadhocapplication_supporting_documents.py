@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0046_add_derogations_fields"),
+        ("web", "0044_add_derogations"),
     ]
 
     operations = [

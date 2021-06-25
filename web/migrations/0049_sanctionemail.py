@@ -8,7 +8,7 @@ import web.models.mixins
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0048_alter_derogations"),
+        ("web", "0047_sanctionsandadhocapplication_supporting_documents"),
     ]
 
     operations = [

@@ -17,15 +17,6 @@ from .models import (
 
 
 class SanctionsAndAdhocLicenseForm(forms.ModelForm):
-    origin_country = forms.ModelChoiceField(
-        label="Country Of Origin",
-        queryset=Country.objects.filter(country_groups__name="Sanctions and Adhoc License"),
-    )
-
-    consignment_country = forms.ModelChoiceField(
-        label="Country Of Consignment",
-        queryset=Country.objects.filter(country_groups__name="Sanctions and Adhoc License"),
-    )
     exporter_name = forms.CharField(
         label="Exporter Name",
         required=False,
@@ -54,6 +45,10 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
             self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
         )
         self.fields["contact"].queryset = users.filter(is_active=True)
+
+        countries = Country.objects.filter(country_groups__name="Sanctions and Adhoc License")
+        self.fields["origin_country"].queryset = countries
+        self.fields["consignment_country"].queryset = countries
 
 
 class GoodsForm(forms.ModelForm):
