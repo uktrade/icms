@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
@@ -11,6 +11,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -35,7 +36,7 @@ def _get_page_title(page: str) -> str:
 
 
 @login_required
-def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
@@ -73,7 +74,9 @@ def edit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-def add_goods_certificate(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def add_goods_certificate(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
@@ -118,7 +121,7 @@ def add_goods_certificate(request: HttpRequest, *, application_pk: int) -> HttpR
 
 @login_required
 def edit_goods_certificate(
-    request: HttpRequest, *, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
@@ -159,7 +162,7 @@ def edit_goods_certificate(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_goods_certificate_description(
-    request: HttpRequest, *, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     """Admin only view accessed via the response preparation screen"""
 
@@ -207,7 +210,7 @@ def edit_goods_certificate_description(
 @require_GET
 @login_required
 def view_goods_certificate(
-    request: HttpRequest, *, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application: DFLApplication = get_object_or_404(DFLApplication, pk=application_pk)
 
@@ -219,7 +222,7 @@ def view_goods_certificate(
 @require_POST
 @login_required
 def delete_goods_certificate(
-    request: HttpRequest, *, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
@@ -237,7 +240,7 @@ def delete_goods_certificate(
 
 
 @login_required
-def submit_dfl(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
@@ -332,7 +335,7 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk):
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk

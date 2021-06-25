@@ -2,13 +2,14 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render, reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .. import views as import_views
@@ -27,7 +28,7 @@ from .models import WoodQuotaApplication, WoodQuotaChecklist
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_wood_quota(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
@@ -295,7 +296,7 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
@@ -338,7 +339,7 @@ def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpRespon
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_goods(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=pk

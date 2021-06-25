@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -18,6 +18,7 @@ from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import email
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
@@ -42,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_application(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
@@ -123,7 +124,9 @@ def add_goods(request, pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_goods(request: HttpRequest, application_pk: int, goods_pk: int) -> HttpResponse:
+def edit_goods(
+    request: AuthenticatedHttpRequest, application_pk: int, goods_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
@@ -144,7 +147,9 @@ def edit_goods(request: HttpRequest, application_pk: int, goods_pk: int) -> Http
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int) -> HttpResponse:
+def edit_goods_licence(
+    request: AuthenticatedHttpRequest, application_pk: int, goods_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
@@ -166,7 +171,7 @@ def edit_goods_licence(request: HttpRequest, application_pk: int, goods_pk: int)
 
 
 def _edit_goods(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     application: SanctionsAndAdhocApplication,
     task: Task,
     form_class: Type[forms.ModelForm],
@@ -286,7 +291,7 @@ def delete_supporting_document(request, application_pk, document_pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
+def submit_sanctions(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
@@ -341,7 +346,7 @@ def submit_sanctions(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_sanction_emails(request: HttpRequest, pk: int) -> HttpResponse:
+def manage_sanction_emails(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=pk)
 
     with transaction.atomic():
@@ -364,7 +369,7 @@ def manage_sanction_emails(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def create_sanction_email(request: HttpRequest, pk: int) -> HttpResponse:
+def create_sanction_email(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
@@ -410,7 +415,7 @@ def create_sanction_email(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_sanction_email(
-    request: HttpRequest, application_pk: int, sanction_email_pk: int
+    request: AuthenticatedHttpRequest, application_pk: int, sanction_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -483,7 +488,7 @@ def edit_sanction_email(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_sanction_email(
-    request: HttpRequest, application_pk: int, sanction_email_pk: int
+    request: AuthenticatedHttpRequest, application_pk: int, sanction_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -508,7 +513,7 @@ def delete_sanction_email(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_response_sanction_email(
-    request: HttpRequest, application_pk: int, sanction_email_pk: int
+    request: AuthenticatedHttpRequest, application_pk: int, sanction_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(

@@ -3,7 +3,7 @@ from typing import Any
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
@@ -14,6 +14,7 @@ from web.domains.case.views import check_application_permission, view_applicatio
 from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import (
@@ -37,7 +38,7 @@ from .utils import get_fq_form, get_fq_page_name
 
 
 @login_required
-def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -78,7 +79,9 @@ def edit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_compensating_products(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -119,7 +122,9 @@ def edit_compensating_products(request: HttpRequest, *, application_pk: int) -> 
 
 
 @login_required
-def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_temporary_exported_goods(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -159,7 +164,9 @@ def edit_temporary_exported_goods(request: HttpRequest, *, application_pk: int) 
 
 
 @login_required
-def edit_further_questions(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_further_questions(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -198,7 +205,7 @@ def edit_further_questions(request: HttpRequest, *, application_pk: int) -> Http
 
 @login_required
 def edit_further_questions_shared(
-    request: HttpRequest, *, application_pk: int, fq_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fq_type: str
 ) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
@@ -249,7 +256,7 @@ def edit_further_questions_shared(
 
 
 @login_required
-def submit_opt(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -382,7 +389,9 @@ def _get_edit_url(application_pk: int, file_type: str) -> str:
 
 
 @login_required
-def add_document(request: HttpRequest, *, application_pk: int, file_type: str) -> HttpResponse:
+def add_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, file_type: str
+) -> HttpResponse:
     prev_link = _get_edit_url(application_pk, file_type)
 
     with transaction.atomic():
@@ -424,7 +433,9 @@ def add_document(request: HttpRequest, *, application_pk: int, file_type: str) -
 
 @require_GET
 @login_required
-def view_document(request: HttpRequest, *, application_pk: int, document_pk: int) -> HttpResponse:
+def view_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     application: OutwardProcessingTradeApplication = get_object_or_404(
         OutwardProcessingTradeApplication, pk=application_pk
     )
@@ -436,7 +447,9 @@ def view_document(request: HttpRequest, *, application_pk: int, document_pk: int
 
 @require_POST
 @login_required
-def delete_document(request: HttpRequest, *, application_pk: int, document_pk: int) -> HttpResponse:
+def delete_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -465,7 +478,7 @@ def _get_compensating_products_category_descriptions() -> dict[str, str]:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk):
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
@@ -506,7 +519,7 @@ def manage_checklist(request: HttpRequest, *, application_pk):
 
 @login_required
 def response_preparation_edit_compensating_products(
-    request: HttpRequest, *, application_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
@@ -547,7 +560,7 @@ def response_preparation_edit_compensating_products(
 
 @login_required
 def response_preparation_edit_temporary_exported_goods(
-    request: HttpRequest, *, application_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(

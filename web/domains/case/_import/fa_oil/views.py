@@ -2,12 +2,13 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -26,7 +27,7 @@ from .models import ChecklistFirearmsOILApplication, OpenIndividualLicenceApplic
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_oil(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
@@ -63,7 +64,7 @@ def edit_oil(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
+def submit_oil(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
@@ -166,7 +167,7 @@ def submit_oil(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk

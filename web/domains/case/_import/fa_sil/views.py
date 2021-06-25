@@ -3,7 +3,7 @@ from typing import NamedTuple, Type, Union
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
@@ -12,6 +12,7 @@ from web.domains.case import forms as case_forms
 from web.domains.case import views as case_views
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -289,7 +290,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
 
 
 @login_required
-def edit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -332,7 +333,7 @@ def edit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-def choose_goods_section(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -353,7 +354,7 @@ def choose_goods_section(request: HttpRequest, *, application_pk: int) -> HttpRe
 
 @login_required
 def add_section(
-    request: HttpRequest, *, application_pk: int, sil_section_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, sil_section_type: str
 ) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -392,7 +393,7 @@ def add_section(
 
 @login_required
 def edit_section(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     sil_section_type: str,
@@ -431,7 +432,11 @@ def edit_section(
 @login_required
 @require_POST
 def delete_section(
-    request: HttpRequest, *, application_pk: int, sil_section_type: str, section_pk: int
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    sil_section_type: str,
+    section_pk: int,
 ) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -452,7 +457,7 @@ def delete_section(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def response_preparation_edit_goods(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     sil_section_type: str,
@@ -502,7 +507,7 @@ def response_preparation_edit_goods(
 
 
 @login_required
-def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -553,7 +558,9 @@ def submit(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 
 @login_required
-def add_section5_document(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def add_section5_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -590,7 +597,7 @@ def add_section5_document(request: HttpRequest, *, application_pk: int) -> HttpR
 @require_POST
 @login_required
 def archive_section5_document(
-    request: HttpRequest, *, application_pk: int, section5_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, section5_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -609,7 +616,7 @@ def archive_section5_document(
 @require_GET
 @login_required
 def view_section5_document(
-    request: HttpRequest, *, application_pk: int, section5_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, section5_pk: int
 ) -> HttpResponse:
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
     get_object_or_404(application.user_section5, pk=section5_pk)
@@ -622,7 +629,7 @@ def view_section5_document(
 @login_required
 @require_POST
 def add_verified_section5(
-    request: HttpRequest, *, application_pk: int, section5_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, section5_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -643,7 +650,7 @@ def add_verified_section5(
 @login_required
 @require_POST
 def delete_verified_section5(
-    request: HttpRequest, *, application_pk: int, section5_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, section5_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -661,7 +668,7 @@ def delete_verified_section5(
 
 @login_required
 def view_verified_section5(
-    request: HttpRequest, *, application_pk: int, section5_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, section5_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -690,7 +697,7 @@ def view_verified_section5(
 @require_GET
 @login_required
 def view_verified_section5_document(
-    request: HttpRequest, *, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application = get_object_or_404(models.SILApplication, pk=application_pk)
     section5 = get_object_or_404(
@@ -704,7 +711,7 @@ def view_verified_section5_document(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
@@ -747,7 +754,7 @@ def manage_checklist(request: HttpRequest, *, application_pk: int) -> HttpRespon
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def set_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk

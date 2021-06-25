@@ -2,7 +2,7 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
 from django.db import transaction
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -15,6 +15,7 @@ from web.domains.case.access.filters import (
 from web.domains.case.utils import allocate_case_reference
 from web.flow.models import Task
 from web.notify import notify
+from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
 from . import forms
@@ -86,7 +87,7 @@ class ListExporterAccessRequest(ModelFilterView):
 
 
 @login_required
-def importer_access_request(request: HttpRequest) -> HttpResponse:
+def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
         if request.POST:
             form = forms.ImporterAccessRequestForm(data=request.POST)
@@ -132,7 +133,7 @@ def importer_access_request(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
-def exporter_access_request(request: HttpRequest) -> HttpResponse:
+def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
         form = forms.ExporterAccessRequestForm()
 

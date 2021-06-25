@@ -2,7 +2,6 @@ from itertools import chain
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, QuerySet
-from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
@@ -23,10 +22,11 @@ from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.flow.models import Task
+from web.types import AuthenticatedHttpRequest
 
 
 @login_required
-def show_workbasket(request: HttpRequest) -> HttpResponse:
+def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.user.has_perm("web.reference_data_access"):
         qs = _get_queryset_admin(request.user)
     else:

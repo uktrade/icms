@@ -5,7 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import ManyToManyField, ObjectDoesNotExist, Q
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -48,6 +48,7 @@ from web.models import (
 )
 from web.notify import notify
 from web.notify.email import send_email
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.utils.validation import (
     ApplicationErrors,
@@ -139,7 +140,9 @@ class OPTFurtherQuestionsSharedSection(NamedTuple):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def list_notes(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -163,7 +166,9 @@ def list_notes(request: HttpRequest, *, application_pk: int, case_type: str) -> 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def add_note(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def add_note(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -184,7 +189,7 @@ def add_note(request: HttpRequest, *, application_pk: int, case_type: str) -> Ht
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def archive_note(
-    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -206,7 +211,7 @@ def archive_note(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def unarchive_note(
-    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -227,7 +232,7 @@ def unarchive_note(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_note(
-    request: HttpRequest, *, application_pk: int, note_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -274,7 +279,7 @@ def edit_note(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_note_document(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     note_pk: int,
@@ -327,7 +332,7 @@ def add_note_document(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_GET
 def view_note_document(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     note_pk: int,
@@ -351,7 +356,7 @@ def view_note_document(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_note_document(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     *,
     application_pk: int,
     note_pk: int,
@@ -379,7 +384,9 @@ def delete_note_document(
 
 # "Applicant Case Management" Views
 @login_required
-def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def withdraw_case(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     has_access = _has_importer_exporter_access(request.user, case_type)
     if not has_access:
         raise PermissionDenied
@@ -439,7 +446,7 @@ def withdraw_case(request: HttpRequest, *, application_pk: int, case_type: str) 
 @login_required
 @require_POST
 def archive_withdrawal(
-    request: HttpRequest, *, application_pk: int, withdrawal_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, withdrawal_pk: int, case_type: str
 ) -> HttpResponse:
     has_access = _has_importer_exporter_access(request.user, case_type)
     if not has_access:
@@ -476,7 +483,7 @@ def archive_withdrawal(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_update_requests(
-    request: HttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -582,7 +589,11 @@ def manage_update_requests(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def close_update_request(
-    request: HttpRequest, *, application_pk: int, update_request_pk: int, case_type: str
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    update_request_pk: int,
+    case_type: str,
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -608,7 +619,9 @@ def close_update_request(
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def manage_firs(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
@@ -758,7 +771,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_fir(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
@@ -783,7 +796,7 @@ def delete_fir(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def withdraw_fir(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
@@ -815,7 +828,7 @@ def withdraw_fir(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def close_fir(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp_or_access(case_type)
@@ -845,7 +858,7 @@ def close_fir(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_fir_file(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
     redirect_url = "case:edit-fir"
     template_name = "web/domains/case/fir/add-fir-file.html"
@@ -855,7 +868,7 @@ def add_fir_file(
 
 @login_required
 def add_fir_response_file(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
     redirect_url = "case:respond-fir"
     template_name = "web/domains/case/fir/add-fir-response-file.html"
@@ -864,7 +877,7 @@ def add_fir_response_file(
 
 
 def _add_fir_file(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     application_pk: int,
     fir_pk: int,
     case_type: str,
@@ -917,7 +930,12 @@ def _add_fir_file(
 @login_required
 @require_GET
 def view_fir_file(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    fir_pk: int,
+    file_pk: int,
+    case_type: str,
 ) -> HttpResponse:
 
     model_class = _get_class_imp_or_exp_or_access(case_type)
@@ -950,7 +968,11 @@ def view_application_file(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_fir_file(
-    request: HttpRequest, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+    request: AuthenticatedHttpRequest,
+    application_pk: int,
+    fir_pk: int,
+    file_pk: int,
+    case_type: str,
 ) -> HttpResponse:
     redirect_url = "case:edit-fir"
 
@@ -960,7 +982,11 @@ def delete_fir_file(
 @login_required
 @require_POST
 def delete_fir_response_file(
-    request: HttpRequest, application_pk: int, fir_pk: int, file_pk: int, case_type: str
+    request: AuthenticatedHttpRequest,
+    application_pk: int,
+    fir_pk: int,
+    file_pk: int,
+    case_type: str,
 ):
     redirect_url = "case:respond-fir"
 
@@ -991,7 +1017,9 @@ def _delete_fir_file(
 
 
 @login_required
-def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def list_firs(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
@@ -1017,7 +1045,7 @@ def list_firs(request: HttpRequest, *, application_pk: int, case_type: str) -> H
 
 @login_required
 def respond_fir(
-    request: HttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
 
     with transaction.atomic():
@@ -1068,7 +1096,7 @@ def respond_fir(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def manage_withdrawals(
-    request: HttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -1138,7 +1166,9 @@ def manage_withdrawals(
 
 
 @login_required
-def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def view_case(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp_or_access(case_type)
     application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
 
@@ -1196,7 +1226,7 @@ def view_case(request: HttpRequest, *, application_pk: int, case_type: str) -> H
 
 
 def _view_fa_oil(
-    request: HttpRequest, application: OpenIndividualLicenceApplication
+    request: AuthenticatedHttpRequest, application: OpenIndividualLicenceApplication
 ) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
@@ -1211,7 +1241,7 @@ def _view_fa_oil(
 
 
 def _view_fa_sil(
-    request: HttpRequest, application: OpenIndividualLicenceApplication
+    request: AuthenticatedHttpRequest, application: OpenIndividualLicenceApplication
 ) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
@@ -1228,7 +1258,7 @@ def _view_fa_sil(
 
 
 def _view_sanctions_and_adhoc(
-    request: HttpRequest, application: SanctionsAndAdhocApplication
+    request: AuthenticatedHttpRequest, application: SanctionsAndAdhocApplication
 ) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
@@ -1241,7 +1271,9 @@ def _view_sanctions_and_adhoc(
     return render(request, "web/domains/case/import/view_sanctions_and_adhoc_case.html", context)
 
 
-def _view_wood_quota(request: HttpRequest, application: WoodQuotaApplication) -> HttpResponse:
+def _view_wood_quota(
+    request: AuthenticatedHttpRequest, application: WoodQuotaApplication
+) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -1253,7 +1285,9 @@ def _view_wood_quota(request: HttpRequest, application: WoodQuotaApplication) ->
     return render(request, "web/domains/case/import/wood/view.html", context)
 
 
-def _view_derogations(request: HttpRequest, application: DerogationsApplication) -> HttpResponse:
+def _view_derogations(
+    request: AuthenticatedHttpRequest, application: DerogationsApplication
+) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
@@ -1264,7 +1298,7 @@ def _view_derogations(request: HttpRequest, application: DerogationsApplication)
     return render(request, "web/domains/case/import/view_derogations.html", context)
 
 
-def _view_dfl(request: HttpRequest, application: DFLApplication) -> HttpResponse:
+def _view_dfl(request: AuthenticatedHttpRequest, application: DFLApplication) -> HttpResponse:
     goods_list = application.goods_certificates.filter(is_active=True).select_related(
         "issuing_country"
     )
@@ -1281,7 +1315,9 @@ def _view_dfl(request: HttpRequest, application: DFLApplication) -> HttpResponse
     return render(request, "web/domains/case/import/fa-dfl/view.html", context)
 
 
-def _view_opt(request: HttpRequest, application: OutwardProcessingTradeApplication) -> HttpResponse:
+def _view_opt(
+    request: AuthenticatedHttpRequest, application: OutwardProcessingTradeApplication
+) -> HttpResponse:
     group = CommodityGroup.objects.get(
         commodity_type__type_code="TEXTILES", group_code=application.cp_category
     )
@@ -1325,14 +1361,16 @@ def _view_opt(request: HttpRequest, application: OutwardProcessingTradeApplicati
     return render(request, "web/domains/case/import/opt/view.html", context)
 
 
-def _view_accessrequest(request: HttpRequest, application: AccessRequest) -> HttpResponse:
+def _view_accessrequest(
+    request: AuthenticatedHttpRequest, application: AccessRequest
+) -> HttpResponse:
     context = {"process": application}
 
     return render(request, "web/domains/case/access/case-view.html", context)
 
 
 def _view_com(
-    request: HttpRequest, application: CertificateOfManufactureApplication
+    request: AuthenticatedHttpRequest, application: CertificateOfManufactureApplication
 ) -> HttpResponse:
     # TODO: implement (ICMSLST-678)
     raise NotImplementedError
@@ -1341,7 +1379,9 @@ def _view_com(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def take_ownership(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def take_ownership(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -1369,7 +1409,9 @@ def take_ownership(request: HttpRequest, *, application_pk: int, case_type: str)
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def release_ownership(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def release_ownership(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -1387,7 +1429,9 @@ def release_ownership(request: HttpRequest, *, application_pk: int, case_type: s
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_case(request: HttpRequest, *, application_pk: int, case_type: str) -> HttpResponse:
+def manage_case(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -1447,7 +1491,9 @@ def manage_case(request: HttpRequest, *, application_pk: int, case_type: str) ->
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def prepare_response(request: HttpRequest, application_pk: int, case_type: str) -> HttpResponse:
+def prepare_response(
+    request: AuthenticatedHttpRequest, application_pk: int, case_type: str
+) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -1527,7 +1573,9 @@ def prepare_response(request: HttpRequest, application_pk: int, case_type: str) 
 
 
 def _prepare_fa_oil_response(
-    request: HttpRequest, application: OpenIndividualLicenceApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest,
+    application: OpenIndividualLicenceApplication,
+    context: dict[str, Any],
 ) -> HttpResponse:
     context.update({"process": application})
 
@@ -1539,7 +1587,7 @@ def _prepare_fa_oil_response(
 
 
 def _prepare_fa_dfl_response(
-    request: HttpRequest, application: DFLApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest, application: DFLApplication, context: dict[str, Any]
 ):
     context.update(
         {
@@ -1556,7 +1604,7 @@ def _prepare_fa_dfl_response(
 
 
 def _prepare_fa_sil_response(
-    request: HttpRequest, application: SILApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest, application: SILApplication, context: dict[str, Any]
 ):
     section_1 = application.goods_section1.filter(is_active=True)
     section_2 = application.goods_section2.filter(is_active=True)
@@ -1588,7 +1636,9 @@ def _prepare_fa_sil_response(
 
 
 def _prepare_sanctions_and_adhoc_response(
-    request: HttpRequest, application: SanctionsAndAdhocApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest,
+    application: SanctionsAndAdhocApplication,
+    context: dict[str, Any],
 ) -> HttpResponse:
     context.update(
         {"process": application, "goods": application.sanctionsandadhocapplicationgoods_set.all()}
@@ -1602,7 +1652,7 @@ def _prepare_sanctions_and_adhoc_response(
 
 
 def _prepare_derogations_response(
-    request: HttpRequest, application: DerogationsApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest, application: DerogationsApplication, context: dict[str, Any]
 ) -> HttpResponse:
     context.update({"process": application})
 
@@ -1614,7 +1664,7 @@ def _prepare_derogations_response(
 
 
 def _prepare_wood_quota_response(
-    request: HttpRequest, application: WoodQuotaApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest, application: WoodQuotaApplication, context: dict[str, Any]
 ) -> HttpResponse:
     context.update({"process": application})
 
@@ -1626,7 +1676,9 @@ def _prepare_wood_quota_response(
 
 
 def _prepare_opt_response(
-    request: HttpRequest, application: OutwardProcessingTradeApplication, context: dict[str, Any]
+    request: AuthenticatedHttpRequest,
+    application: OutwardProcessingTradeApplication,
+    context: dict[str, Any],
 ) -> HttpResponse:
     compensating_product_commodities = application.cp_commodities.all()
     temporary_exported_goods_commodities = application.teg_commodities.all()
@@ -1649,7 +1701,7 @@ def _prepare_opt_response(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def start_authorisation(
-    request: HttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
@@ -1852,7 +1904,7 @@ def _get_export_errors(application, application_errors, prepare_errors):
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def cancel_authorisation(
-    request: HttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 

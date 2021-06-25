@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -16,6 +16,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 
 from web.flow.models import Task
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
 from .derogations.models import DerogationsApplication
@@ -54,7 +55,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_derogations(request: HttpRequest) -> HttpResponse:
+def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.DEROGATION
     model_class = DerogationsApplication
 
@@ -67,7 +68,7 @@ def create_derogations(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_sanctions(request: HttpRequest) -> HttpResponse:
+def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.SANCTION_ADHOC
     model_class = SanctionsAndAdhocApplication
 
@@ -80,7 +81,7 @@ def create_sanctions(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_firearms_oil(request: HttpRequest) -> HttpResponse:
+def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.OIL
     model_class = OpenIndividualLicenceApplication
 
@@ -93,7 +94,7 @@ def create_firearms_oil(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
+def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.DFL
     model_class = DFLApplication
 
@@ -106,7 +107,7 @@ def create_firearms_dfl(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_firearms_sil(request: HttpRequest) -> HttpResponse:
+def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.SubTypes.SIL
     model_class = SILApplication
 
@@ -119,7 +120,7 @@ def create_firearms_sil(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_wood_quota(request: HttpRequest) -> HttpResponse:
+def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.WOOD_QUOTA
     model_class = WoodQuotaApplication
 
@@ -133,7 +134,7 @@ def create_wood_quota(request: HttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def create_opt(request: HttpRequest) -> HttpResponse:
+def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
     import_application_type = ImportApplicationType.Types.OPT
     model_class = OutwardProcessingTradeApplication
 
@@ -145,7 +146,7 @@ def create_opt(request: HttpRequest) -> HttpResponse:
 
 
 def _create_application(
-    request: HttpRequest,
+    request: AuthenticatedHttpRequest,
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
     model_class: Type[ImportApplication],
     form_class: Type[CreateImportApplicationForm] = None,
@@ -227,7 +228,7 @@ def _get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -268,7 +269,7 @@ def edit_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRespo
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -321,18 +322,20 @@ def edit_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def add_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def add_endorsement(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     return _add_endorsement(request, application_pk, EndorsementChoiceImportApplicationForm)
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def add_custom_endorsement(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def add_custom_endorsement(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     return _add_endorsement(request, application_pk, EndorsementImportApplicationForm)
 
 
 def _add_endorsement(
-    request: HttpRequest, application_pk: int, Form: Type[django_forms.ModelForm]
+    request: AuthenticatedHttpRequest, application_pk: int, Form: Type[django_forms.ModelForm]
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -377,7 +380,7 @@ def _add_endorsement(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_endorsement(
-    request: HttpRequest, *, application_pk: int, endorsement_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, endorsement_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -422,7 +425,7 @@ def edit_endorsement(
 @permission_required("web.importer_access", raise_exception=True)
 @require_POST
 def delete_endorsement(
-    request: HttpRequest, *, application_pk: int, endorsement_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, endorsement_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -449,7 +452,7 @@ def delete_endorsement(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_GET
-def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -484,7 +487,7 @@ def preview_cover_letter(request: HttpRequest, *, application_pk: int) -> HttpRe
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_GET
-def preview_licence(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk

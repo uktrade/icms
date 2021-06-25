@@ -2,7 +2,7 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 from django.forms.models import inlineformset_factory
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -32,6 +32,7 @@ from web.domains.section5.models import (
 )
 from web.domains.user.forms import ContactForm
 from web.domains.user.models import User
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
 from web.views.actions import (
@@ -153,7 +154,7 @@ def add_contact(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def create_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.POST:
@@ -197,7 +198,7 @@ def create_section5(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
     if request.POST:
@@ -234,7 +235,7 @@ def edit_section5(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def view_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5 = get_object_or_404(Section5Authority, pk=pk)
 
     context = {
@@ -248,7 +249,7 @@ def view_section5(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(
         Section5Authority.objects.filter(is_active=True), pk=pk
     )
@@ -262,7 +263,7 @@ def archive_section5(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def unarchive_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(
         Section5Authority.objects.filter(is_active=False), pk=pk
     )
@@ -275,7 +276,7 @@ def unarchive_section5(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def add_document_section5(request: HttpRequest, pk: int) -> HttpResponse:
+def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
     if request.POST:
@@ -301,7 +302,7 @@ def add_document_section5(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def view_document_section5(
-    request: HttpRequest, section5_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
 
@@ -318,7 +319,7 @@ def view_document_section5(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_document_section5(
-    request: HttpRequest, section5_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
 

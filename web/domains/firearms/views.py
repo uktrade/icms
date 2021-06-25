@@ -3,13 +3,14 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import F
 from django.forms.models import inlineformset_factory
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from web.domains.file.utils import create_file_model
 from web.domains.importer.models import Importer
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
@@ -241,7 +242,7 @@ def view_obsolete_calibre_group(request, pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def create_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.POST:
@@ -285,7 +286,7 @@ def create_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     if request.POST:
@@ -322,7 +323,7 @@ def edit_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def view_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     context = {
@@ -336,7 +337,7 @@ def view_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def archive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(
         FirearmsAuthority.objects.filter(is_active=True), pk=pk
     )
@@ -349,7 +350,7 @@ def archive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def unarchive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(
         FirearmsAuthority.objects.filter(is_active=False), pk=pk
     )
@@ -361,7 +362,7 @@ def unarchive_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def add_document_firearms(request: HttpRequest, pk: int) -> HttpResponse:
+def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     if request.POST:
@@ -387,7 +388,7 @@ def add_document_firearms(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def view_document_firearms(
-    request: HttpRequest, firearms_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
 
@@ -404,7 +405,7 @@ def view_document_firearms(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def delete_document_firearms(
-    request: HttpRequest, firearms_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
 

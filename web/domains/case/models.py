@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Q
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils import timezone
 
@@ -9,6 +8,7 @@ from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
 from web.flow.models import Process, Task
+from web.types import AuthenticatedHttpRequest
 
 CASE_NOTE_DRAFT = "DRAFT"
 CASE_NOTE_COMPLETED = "COMPLETED"
@@ -375,7 +375,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return r
 
-    def submit_application(self, request: HttpRequest, task: Task) -> None:
+    def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
         if self.is_import_application():
             prefix = "IMA"
         else:

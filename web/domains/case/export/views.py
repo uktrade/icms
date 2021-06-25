@@ -6,12 +6,13 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
 
 from web.flow.models import Task
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import (
@@ -41,7 +42,7 @@ class CreateExportApplicationConfig(NamedTuple):
 
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
-def create_export_application(request: HttpRequest, *, type_code: str) -> HttpResponse:
+def create_export_application(request: AuthenticatedHttpRequest, *, type_code: str) -> HttpResponse:
     application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
 
     config = _get_export_app_config(type_code)
@@ -101,7 +102,7 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
 
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
-def edit_com(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         appl: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk

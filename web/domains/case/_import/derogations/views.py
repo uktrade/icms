@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
@@ -10,6 +10,7 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .. import views as import_views
@@ -26,7 +27,7 @@ from .models import DerogationsApplication, DerogationsChecklist
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def edit_derogations(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
@@ -64,7 +65,7 @@ def edit_derogations(request: HttpRequest, *, application_pk: int) -> HttpRespon
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def add_supporting_document(request: HttpRequest, pk: int) -> HttpResponse:
+def add_supporting_document(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
     with transaction.atomic():
         application = get_object_or_404(DerogationsApplication.objects.select_for_update(), pk=pk)
@@ -101,7 +102,7 @@ def add_supporting_document(request: HttpRequest, pk: int) -> HttpResponse:
 @require_GET
 @login_required
 def view_supporting_document(
-    request: HttpRequest, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application = get_object_or_404(DerogationsApplication, pk=application_pk)
 
@@ -114,7 +115,7 @@ def view_supporting_document(
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def delete_supporting_document(
-    request: HttpRequest, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
@@ -137,7 +138,7 @@ def delete_supporting_document(
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
+def submit_derogations(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=pk
@@ -206,7 +207,7 @@ def submit_derogations(request: HttpRequest, pk: int) -> HttpResponse:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: HttpRequest, *, application_pk):
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
@@ -248,7 +249,7 @@ def manage_checklist(request: HttpRequest, *, application_pk):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods_licence(request: HttpRequest, pk: int) -> HttpResponse:
+def edit_goods_licence(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=pk

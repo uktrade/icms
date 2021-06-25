@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import OuterRef
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -29,6 +29,7 @@ from web.models import (
     SILApplication,
 )
 from web.notify import email
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 FaImportApplication = Union[OpenIndividualLicenceApplication, DFLApplication, SILApplication]
@@ -37,7 +38,9 @@ FaImportApplicationT = Type[FaImportApplication]
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_constabulary_emails(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -76,7 +79,9 @@ def manage_constabulary_emails(request: HttpRequest, *, application_pk: int) -> 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def create_constabulary_email(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def create_constabulary_email(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -123,7 +128,7 @@ commodity code, other than those falling under Section 5 of the Firearms Act 196
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def edit_constabulary_email(
-    request: HttpRequest, *, application_pk: int, constabulary_email_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, constabulary_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -201,7 +206,7 @@ def edit_constabulary_email(
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def archive_constabulary_email(
-    request: HttpRequest, *, application_pk: int, constabulary_email_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, constabulary_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -228,7 +233,7 @@ def archive_constabulary_email(
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def add_response_constabulary_email(
-    request: HttpRequest, *, application_pk: int, constabulary_email_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, constabulary_email_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -275,7 +280,7 @@ def add_response_constabulary_email(
 
 
 @login_required
-def list_import_contacts(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -297,7 +302,7 @@ def list_import_contacts(request: HttpRequest, *, application_pk: int) -> HttpRe
 
 @login_required
 def create_import_contact(
-    request: HttpRequest, *, application_pk: int, entity: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, entity: str
 ) -> HttpResponse:
     form_class = _get_entity_form(entity)
 
@@ -350,7 +355,7 @@ def create_import_contact(
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def edit_import_contact(
-    request: HttpRequest, *, application_pk: int, entity: str, contact_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, contact_pk: int
 ) -> HttpResponse:
 
     form_class = _get_entity_form(entity)
@@ -396,7 +401,7 @@ def edit_import_contact(
 
 
 @login_required
-def manage_certificates(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -424,7 +429,7 @@ def manage_certificates(request: HttpRequest, *, application_pk: int) -> HttpRes
 
 
 @login_required
-def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResponse:
+def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -476,7 +481,7 @@ def create_certificate(request: HttpRequest, *, application_pk: int) -> HttpResp
 
 @login_required
 def edit_certificate(
-    request: HttpRequest, *, application_pk: int, certificate_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, certificate_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -522,7 +527,7 @@ def edit_certificate(
 @require_GET
 @login_required
 def view_certificate_document(
-    request: HttpRequest, *, application_pk: int, certificate_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, certificate_pk: int
 ) -> HttpResponse:
     import_application: ImportApplication = get_object_or_404(ImportApplication, pk=application_pk)
     application: FaImportApplication = _get_fa_application(import_application)
@@ -535,7 +540,7 @@ def view_certificate_document(
 @require_POST
 @login_required
 def archive_certificate(
-    request: HttpRequest, *, application_pk: int, certificate_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, certificate_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -557,7 +562,9 @@ def archive_certificate(
 
 @require_POST
 @login_required
-def add_authority(request: HttpRequest, *, application_pk: int, authority_pk: int) -> HttpResponse:
+def add_authority(
+    request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -582,7 +589,7 @@ def add_authority(request: HttpRequest, *, application_pk: int, authority_pk: in
 @require_POST
 @login_required
 def delete_authority(
-    request: HttpRequest, *, application_pk: int, authority_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
@@ -608,7 +615,7 @@ def delete_authority(
 @require_GET
 @login_required
 def view_authority_document(
-    request: HttpRequest, *, application_pk: int, authority_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int, document_pk: int
 ) -> HttpResponse:
     import_application: ImportApplication = get_object_or_404(ImportApplication, pk=application_pk)
     application: FaImportApplication = _get_fa_application(import_application)
@@ -622,7 +629,7 @@ def view_authority_document(
 
 
 @login_required
-def view_authority(request: HttpRequest, *, application_pk: int, authority_pk: int):
+def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int):
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
