@@ -49,11 +49,8 @@ developing, only within Docker.
     localstack UI can be found on http://localhost:8081 and used to verify that
     the S3 bucket is created.
 
-- `make createsuperuser`
-  - Create user to login with
-
 - `make add_dummy_data`
-  - Add needed permissions to user, create dummy importer and exporter, etc
+  - Create test user(s), add needed permissions to user(s), create dummy importer and exporter, etc
 
 ## Running the application
 
@@ -117,7 +114,6 @@ A complete reset of the application database can be performed using:
 make down
 docker volume rm icms_pgdata
 make migrate
-make createsuperuser
 make add_dummy_data
 ```
 

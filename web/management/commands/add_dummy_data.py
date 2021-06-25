@@ -1,3 +1,5 @@
+import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.core.management.base import BaseCommand, CommandError
@@ -13,9 +15,17 @@ from web.models import ImportApplicationType
 class Command(BaseCommand):
     help = """Add dummy data. For development use only."""
 
-    def handle(self, *args, **kwargs):
-        if not settings.DEBUG:
-            raise CommandError("DEBUG flag is not set, refusing to run!")
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--password",
+            action="store",
+            help="You must specify this to enable the command to run",
+            required=True,
+        )
+
+    def handle(self, *args, **options):
+        if settings.APP_ENV not in ("local", "dev"):
+            raise CommandError("Can only add dummy data in 'dev' / 'local' environments!")
 
         # enable disabled application types so we can test/develop them
         ImportApplicationType.objects.filter(
@@ -24,7 +34,18 @@ class Command(BaseCommand):
             ]
         ).update(is_active=True)
 
-        user = User.objects.get(username="admin")
+        user = User.objects.create_superuser(
+            username="admin",
+            email="admin@blaa.com",
+            password=options["password"],
+            first_name="admin",
+            last_name="admin",
+            date_of_birth=datetime.date(2000, 1, 1),
+            security_question="admin",
+            security_answer="admin",
+        )
+
+        self.stdout.write("Created following users: admin")
 
         # permissions
         for perm in [
