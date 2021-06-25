@@ -137,6 +137,9 @@ class ExportApplication(ApplicationBase):
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
+    def user_is_contact_of_org(self, user: User) -> bool:
+        return user.has_perm("web.is_contact_of_exporter", self.exporter)
+
     def get_workbasket_subject(self) -> str:
         return "\n".join(
             [

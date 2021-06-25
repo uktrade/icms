@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from web.views import ModelFilterView, actions
 

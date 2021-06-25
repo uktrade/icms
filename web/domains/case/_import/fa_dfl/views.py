@@ -344,7 +344,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
         checklist, created = DFLChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
-            form = DFLChecklistOptionalForm(request.POST, instance=checklist)
+            form: DFLChecklistForm = DFLChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():
                 form.save()

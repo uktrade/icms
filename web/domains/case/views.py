@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Type, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
-from django.db.models import ManyToManyField, ObjectDoesNotExist, Q
+from django.db.models import ManyToManyField, Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -72,6 +72,16 @@ ImpOrExpOrAccess = Union[ImportApplication, ExportApplication, AccessRequest]
 ImpOrExpOrAccessT = Type[ImpOrExpOrAccess]
 
 
+ApplicationsWithChecklist = Union[
+    OpenIndividualLicenceApplication,
+    DFLApplication,
+    SILApplication,
+    WoodQuotaApplication,
+    DerogationsApplication,
+    OutwardProcessingTradeApplication,
+]
+
+
 def _get_class_imp_or_exp(case_type: str) -> ImpOrExpT:
     if case_type == "import":
         return ImportApplication
@@ -101,16 +111,6 @@ def _has_importer_exporter_access(user: User, case_type: str) -> bool:
     raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
-def _is_importer_exporter_contact(user: User, application: ImpOrExp, case_type: str) -> bool:
-    if case_type == "import":
-        return user.has_perm("web.is_contact_of_importer", application.importer)
-
-    elif case_type == "export":
-        return user.has_perm("web.is_contact_of_exporter", application.exporter)
-
-    raise NotImplementedError(f"Unknown case_type {case_type}")
-
-
 def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
     """Check the given user has permission to access the given application."""
 
@@ -122,9 +122,11 @@ def check_application_permission(application: ImpOrExpOrAccess, user: User, case
             raise PermissionDenied
 
     elif case_type in ["import", "export"]:
-        if not _has_importer_exporter_access(user, case_type) or not _is_importer_exporter_contact(
-            user, application, case_type
-        ):
+        assert isinstance(application, (ImportApplication, ExportApplication))
+
+        is_contact = application.user_is_contact_of_org(user)
+
+        if not _has_importer_exporter_access(user, case_type) or not is_contact:
             raise PermissionDenied
 
     else:
@@ -146,8 +148,8 @@ def list_notes(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
-            klass=model_class.objects.select_for_update(), pk=application_pk
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+            model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
         context = {
@@ -172,7 +174,7 @@ def add_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -194,7 +196,7 @@ def archive_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -216,7 +218,7 @@ def unarchive_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -237,7 +239,7 @@ def edit_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -288,7 +290,7 @@ def add_note_document(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -341,7 +343,7 @@ def view_note_document(
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
-    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
+    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)  # type: ignore[assignment]
     note = application.case_notes.get(pk=note_pk)
     document = note.files.get(pk=file_pk)
     file_content = get_file_from_s3(document.path)
@@ -366,7 +368,7 @@ def delete_note_document(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -393,15 +395,14 @@ def withdraw_case(
 
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
             [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
         )
 
-        is_contact = _is_importer_exporter_contact(request.user, application, case_type)
-        if not is_contact:
+        if not application.user_is_contact_of_org(request.user):
             raise PermissionDenied
 
         if request.POST:
@@ -454,15 +455,14 @@ def archive_withdrawal(
 
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
         task = application.get_task(model_class.Statuses.WITHDRAWN, "process")
 
-        is_contact = _is_importer_exporter_contact(request.user, application, case_type)
-        if not is_contact:
+        if not application.user_is_contact_of_org(request.user):
             raise PermissionDenied
 
         application.status = model_class.Statuses.SUBMITTED
@@ -488,7 +488,7 @@ def manage_update_requests(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -598,7 +598,7 @@ def close_update_request(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
@@ -635,9 +635,9 @@ def manage_firs(
 
         elif case_type == "access":
             if application.process_type == "ImporterAccessRequest":
-                show_firs = application.importeraccessrequest.link_id
+                show_firs = application.importeraccessrequest.link_id  # type: ignore[union-attr]
             else:
-                show_firs = application.exporteraccessrequest.link_id
+                show_firs = application.exporteraccessrequest.link_id  # type: ignore[union-attr]
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 
@@ -1101,7 +1101,7 @@ def manage_withdrawals(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -1185,41 +1185,41 @@ def view_case(
 
         # first check is for case managers (who are not marked as contacts of
         # importers), second is for people submitting applications
-        if not has_perm_reference_data and not _is_importer_exporter_contact(
-            request.user, application, case_type
-        ):
+        assert isinstance(application, (ImportApplication, ExportApplication))
 
+        is_contact = application.user_is_contact_of_org(request.user)
+        if not has_perm_reference_data and not is_contact:
             raise PermissionDenied
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _view_fa_oil(request, application.openindividuallicenceapplication)
+        return _view_fa_oil(request, application.openindividuallicenceapplication)  # type: ignore[union-attr]
 
     elif application.process_type == SILApplication.PROCESS_TYPE:
-        return _view_fa_sil(request, application.silapplication)
+        return _view_fa_sil(request, application.silapplication)  # type: ignore[union-attr]
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)
+        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)  # type: ignore[union-attr]
 
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _view_wood_quota(request, application.woodquotaapplication)
+        return _view_wood_quota(request, application.woodquotaapplication)  # type: ignore[union-attr]
 
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _view_derogations(request, application.derogationsapplication)
+        return _view_derogations(request, application.derogationsapplication)  # type: ignore[union-attr]
 
     elif application.process_type == ImporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.importeraccessrequest)
+        return _view_accessrequest(request, application.importeraccessrequest)  # type: ignore[union-attr]
 
     elif application.process_type == ExporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.exporteraccessrequest)
+        return _view_accessrequest(request, application.exporteraccessrequest)  # type: ignore[union-attr]
 
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
-        return _view_com(request, application.certificateofmanufactureapplication)
+        return _view_com(request, application.certificateofmanufactureapplication)  # type: ignore[union-attr]
 
     elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return _view_dfl(request, application.dflapplication)
+        return _view_dfl(request, application.dflapplication)  # type: ignore[union-attr]
 
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
-        return _view_opt(request, application.outwardprocessingtradeapplication)
+        return _view_opt(request, application.outwardprocessingtradeapplication)  # type: ignore[union-attr]
 
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
@@ -1385,7 +1385,7 @@ def take_ownership(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(
@@ -1415,7 +1415,7 @@ def release_ownership(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(
@@ -1435,7 +1435,7 @@ def manage_case(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -1497,7 +1497,7 @@ def prepare_response(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -1542,29 +1542,29 @@ def prepare_response(
 
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _prepare_fa_oil_response(
-            request, application.openindividuallicenceapplication, context
+            request, application.openindividuallicenceapplication, context  # type: ignore[union-attr]
         )
 
     elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return _prepare_fa_dfl_response(request, application.dflapplication, context)
+        return _prepare_fa_dfl_response(request, application.dflapplication, context)  # type: ignore[union-attr]
 
     elif application.process_type == SILApplication.PROCESS_TYPE:
-        return _prepare_fa_sil_response(request, application.silapplication, context)
+        return _prepare_fa_sil_response(request, application.silapplication, context)  # type: ignore[union-attr]
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _prepare_sanctions_and_adhoc_response(
-            request, application.sanctionsandadhocapplication, context
+            request, application.sanctionsandadhocapplication, context  # type: ignore[union-attr]
         )
 
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _prepare_derogations_response(request, application.derogationsapplication, context)
+        return _prepare_derogations_response(request, application.derogationsapplication, context)  # type: ignore[union-attr]
 
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
+        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)  # type: ignore[union-attr]
 
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
         return _prepare_opt_response(
-            request, application.outwardprocessingtradeapplication, context
+            request, application.outwardprocessingtradeapplication, context  # type: ignore[union-attr]
         )
 
     # TODO: implement other types (export-COM)
@@ -1706,7 +1706,7 @@ def start_authorisation(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
@@ -1827,7 +1827,7 @@ def _get_import_errors(application, application_errors, prepare_errors):
 
 def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.openindividuallicenceapplication,
+        application.openindividuallicenceapplication,  # type: ignore[union-attr]
         "import:fa-oil:manage-checklist",
         ChecklistFirearmsOILApplicationForm,
     )
@@ -1835,25 +1835,25 @@ def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
 
 def _get_fa_dfl_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.dflapplication, "import:fa-dfl:manage-checklist", DFLChecklistForm
+        application.dflapplication, "import:fa-dfl:manage-checklist", DFLChecklistForm  # type: ignore[union-attr]
     )
 
 
 def _get_fa_sil_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.silapplication, "import:fa-sil:manage-checklist", SILChecklistForm
+        application.silapplication, "import:fa-sil:manage-checklist", SILChecklistForm  # type: ignore[union-attr]
     )
 
 
 def _get_wood_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm
+        application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm  # type: ignore[union-attr]
     )
 
 
 def _get_derogations_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.derogationsapplication,
+        application.derogationsapplication,  # type: ignore[union-attr]
         "import:derogations:manage-checklist",
         DerogationsChecklistForm,
     )
@@ -1861,14 +1861,14 @@ def _get_derogations_errors(application: ImportApplication) -> PageErrors:
 
 def _get_opt_errors(application: ImportApplication) -> PageErrors:
     return _get_checklist_errors(
-        application.outwardprocessingtradeapplication,
+        application.outwardprocessingtradeapplication,  # type: ignore[union-attr]
         "import:opt:manage-checklist",
         OPTChecklistForm,
     )
 
 
 def _get_checklist_errors(
-    application: ImportApplication,
+    application: ApplicationsWithChecklist,
     manage_checklist_url: str,
     checklist_form: Type[ChecklistBaseForm],
 ):
@@ -1909,7 +1909,7 @@ def cancel_authorisation(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
+        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
         application.get_task(model_class.Statuses.PROCESSING, "process")

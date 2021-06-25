@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render, reverse
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 
 from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import Archive, EditTemplate, Unarchive

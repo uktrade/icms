@@ -395,16 +395,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("is_active", models.BooleanField(default=True)),
-                ("filename", models.CharField(max_length=300, null=True)),
-                ("content_type", models.CharField(max_length=100, null=True)),
-                ("file_size", models.IntegerField(null=True)),
-                ("path", models.CharField(blank=True, max_length=4000, null=True)),
-                ("created_datetime", models.DateTimeField(auto_now_add=True, null=True)),
+                ("filename", models.CharField(max_length=300)),
+                ("content_type", models.CharField(max_length=100)),
+                ("file_size", models.IntegerField()),
+                ("path", models.CharField(max_length=4000)),
+                ("created_datetime", models.DateTimeField(auto_now_add=True)),
                 (
                     "created_by",
-                    models.ForeignKey(
-                        null=True, on_delete=django.db.models.deletion.PROTECT, to="web.user"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="web.user"),
                 ),
             ],
             options={

@@ -34,12 +34,15 @@ class Process(models.Model):
         if not self.is_active:
             raise errors.ProcessInactiveError("Process is not active")
 
+        # status is set as a model field on all derived classes
+        status: str = self.status  # type: ignore[attr-defined]
+
         if isinstance(expected_state, list):
-            if self.status not in expected_state:
-                raise errors.ProcessStateError(f"Process is in the wrong state: {self.status}")
+            if status not in expected_state:
+                raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
         else:
-            if self.status != expected_state:
-                raise errors.ProcessStateError(f"Process is in the wrong state: {self.status}")
+            if status != expected_state:
+                raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
         tasks = (
             self.tasks.filter(is_active=True, task_type=task_type)

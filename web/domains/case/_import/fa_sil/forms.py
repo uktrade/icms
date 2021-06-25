@@ -1,5 +1,5 @@
 from django import forms
-from django.utils.html import mark_safe
+from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
 from guardian.shortcuts import get_users_with_perms
 

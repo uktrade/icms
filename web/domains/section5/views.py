@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import get_object_or_404, redirect, render, reverse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from web.domains.section5.filters import Section5Filter
 from web.domains.section5.forms import Section5ClauseForm

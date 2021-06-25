@@ -171,12 +171,15 @@ class MailshotDetailView(ModelDetailView):
 
         user: User = self.request.user
         has_permission = super().has_permission()
+
         if has_permission:
             return True
 
-        mailshot = self.get_object()
+        mailshot: Mailshot = self.get_object()  # type:ignore[assignment]
+
         if mailshot.is_to_importers and user.is_importer():
             return True
+
         if mailshot.is_to_exporters and user.is_exporter():
             return True
 
@@ -203,8 +206,10 @@ class MailshotRetractView(ModelUpdateView):
         """
         Add mailshot form into the context for displaying mailshot details
         """
+
         form = super().get_form(*args, **kwargs)
-        self.view_form = MailshotReadonlyForm(instance=self.object)
+        self.view_form = MailshotReadonlyForm(instance=self.object)  # type:ignore[attr-defined]
+
         return form
 
     def handle_notification(self, mailshot):
@@ -220,12 +225,14 @@ class MailshotRetractView(ModelUpdateView):
         mailshot.retracted_datetime = timezone.now()
         mailshot.retracted_by = self.request.user
         response = super().form_valid(form)
+
         if response.status_code == 302 and response.url == self.success_url:
             self.handle_notification(mailshot)
+
         return response
 
     def get_success_message(self, cleaned_data):
-        return f"{self.object} retracted successfully"
+        return f"{self.object} retracted successfully"  # type:ignore[attr-defined]
 
     def get_queryset(self):
         """
@@ -235,4 +242,4 @@ class MailshotRetractView(ModelUpdateView):
         return Mailshot.objects.filter(status=Mailshot.PUBLISHED)
 
     def get_page_title(self):
-        return f"Retract {self.object}"
+        return f"Retract {self.object}"  # type:ignore[attr-defined]

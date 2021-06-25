@@ -6,13 +6,16 @@ behave-django==1.4.0
 black==20.8b1
 django-debug-toolbar==3.2.1
 django-extensions==3.1.0
+# django-stubs==1.8.0
 factory-boy==3.0.1
 faker==4.1.2
 flake8==3.8.3
 ipdb==0.13.3
 isort==5.6.4
-mypy==0.812
+mypy==0.910
 pip-check==2.6
+Pygments==2.8.1
+pygraphviz==1.7
 pyparsing==2.4.7
 pytest-cov==2.10.1
 pytest-django==4.1.0
@@ -22,6 +25,6 @@ pytest-xdist==1.32.0
 pytest==6.0.1
 PyYAML==5.4.1
 selenium==3.141.0
-Pygments==2.8.1
-pygraphviz==1.7
 sqlparse==0.4.1
+types-pytz==2021.1.0
+types-requests==2.25.0

@@ -17,13 +17,13 @@ class ActiveManager(models.Manager):
 class File(Archivable, models.Model):
     objects = ActiveManager()
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    filename = models.CharField(max_length=300, blank=False, null=True)
-    content_type = models.CharField(max_length=100, blank=False, null=True)
-    file_size = models.IntegerField(blank=False, null=True)
-    path = models.CharField(max_length=4000, blank=True, null=True)
-    created_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=False, null=True)
+    is_active = models.BooleanField(default=True)
+    filename = models.CharField(max_length=300)
+    content_type = models.CharField(max_length=100)
+    file_size = models.IntegerField()
+    path = models.CharField(max_length=4000)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
     class Meta:
         ordering = ["-created_datetime"]

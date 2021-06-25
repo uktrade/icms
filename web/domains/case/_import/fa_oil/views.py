@@ -178,7 +178,10 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         )
 
         if request.POST:
-            form = ChecklistFirearmsOILApplicationOptionalForm(request.POST, instance=checklist)
+            form: ChecklistFirearmsOILApplicationForm = ChecklistFirearmsOILApplicationOptionalForm(
+                request.POST, instance=checklist
+            )
+
             if form.is_valid():
                 form.save()
 

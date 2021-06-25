@@ -722,7 +722,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         )
 
         if request.POST:
-            form = forms.SILChecklistOptionalForm(request.POST, instance=checklist)
+            form: forms.SILChecklistForm = forms.SILChecklistOptionalForm(
+                request.POST, instance=checklist
+            )
 
             if form.is_valid():
                 form.save()

@@ -487,7 +487,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
-            form = OPTChecklistOptionalForm(request.POST, instance=checklist)
+            form: OPTChecklistForm = OPTChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():
                 form.save()

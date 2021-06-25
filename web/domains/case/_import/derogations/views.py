@@ -219,9 +219,13 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk) -> Ht
         )
 
         if request.POST:
-            form = DerogationsChecklistOptionalForm(request.POST, instance=checklist)
+            form: DerogationsChecklistForm = DerogationsChecklistOptionalForm(
+                request.POST, instance=checklist
+            )
+
             if form.is_valid():
                 form.save()
+
                 return redirect(
                     reverse(
                         "import:derogations:manage-checklist",

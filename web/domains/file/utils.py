@@ -1,5 +1,5 @@
 import os.path
-from typing import Any, Dict, Type
+from typing import Any, Dict
 
 from django import forms
 from django.db import models
@@ -54,10 +54,13 @@ def validate_file_extension(file: S3Boto3StorageFile) -> None:
         )
 
 
+# TODO: related_file_manager is something like
+# models.manager.RelatedManager[File], but that's a class Django dynamically
+# creates at runtime, you can't even import it
 def create_file_model(
     f: S3Boto3StorageFile,
     created_by: User,
-    related_file_model: Type[models.ManyToManyField],
+    related_file_manager: Any,
     extra_args: Dict[str, Any] = None,
 ) -> models.Model:
     """Create File (or sub-class) model, add it to the related set. Note that
@@ -68,7 +71,7 @@ def create_file_model(
     if extra_args is None:
         extra_args = {}
 
-    return related_file_model.create(
+    return related_file_manager.create(
         filename=f.original_name,
         file_size=f.file_size,
         content_type=f.content_type,

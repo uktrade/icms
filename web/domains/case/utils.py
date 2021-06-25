@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.utils import timezone
 
 from web.models.models import CaseReference
@@ -13,6 +15,8 @@ def allocate_case_reference(
     layer."""
 
     lock_manager.ensure_tables_are_locked([CaseReference])
+
+    year: Optional[int]
 
     if use_year:
         year = timezone.now().year

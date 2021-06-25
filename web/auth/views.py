@@ -64,7 +64,7 @@ def update_password(request):
     )
 
     if form.is_valid():
-        user = form.save(commit=False)
+        user: User = form.save(commit=False)  # type:ignore[assignment]
         user.password_disposition = User.FULL
         user.save()
         update_session_auth_hash(request, user)  # keep user logged in
@@ -80,10 +80,12 @@ def reset_password(request):
     if action == "reset_password":
         user = User.objects.get(username=login_id)
         form = ResetPasswordSecondForm(user, request.POST or None)
+
         if form.is_valid():
             temp_pass = user.set_temp_password()
             user.save()
             notify.register(user, temp_pass)
+
             return render(request, "auth/reset-password/reset-password-success.html")
 
         return render(
@@ -93,10 +95,12 @@ def reset_password(request):
         )
 
     form = ResetPasswordForm(request.POST or None)
+
     if form.is_valid():
         try:
             user = User.objects.get(username=form.cleaned_data.get("login_id", ""))
             form = ResetPasswordSecondForm(user)
+
             return render(
                 request,
                 "auth/reset-password/reset-password-2.html",
