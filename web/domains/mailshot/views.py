@@ -9,6 +9,7 @@ from django.views import View
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.template.models import Template
+from web.domains.user.models import User
 from web.notify import notify
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
@@ -32,7 +33,11 @@ class ReceivedMailshotsView(ModelFilterView):
     page_title = "Received Mailshots"
 
     def has_permission(self):
-        user = self.request.user
+        if not self.request.user.is_authenticated:
+            return False
+
+        user: User = self.request.user
+
         return user.is_superuser or user.is_importer() or user.is_exporter()
 
     def get_filterset(self):
@@ -161,7 +166,10 @@ class MailshotDetailView(ModelDetailView):
     permission_required = "web.mailshot_access"
 
     def has_permission(self):
-        user = self.request.user
+        if not self.request.user.is_authenticated:
+            return False
+
+        user: User = self.request.user
         has_permission = super().has_permission()
         if has_permission:
             return True
