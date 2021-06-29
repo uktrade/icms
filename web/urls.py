@@ -1,5 +1,7 @@
 from django.urls import include, path, register_converter
 
+from web.views.views_healthcheck import health_check
+
 from . import converters
 from .views import home
 
@@ -10,6 +12,7 @@ register_converter(converters.SILSectionTypeConverter, "silsectiontype")
 
 urlpatterns = [
     path("", include("web.auth.urls")),
+    path("health-check/", health_check, name="health-check"),
     path("home/", home, name="home"),
     path("workbasket/", include("web.domains.workbasket.urls")),
     path("user/", include("web.domains.user.urls")),
