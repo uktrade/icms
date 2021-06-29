@@ -58,12 +58,24 @@ Start everything using docker-compose: `make debug`
 
 Go to http://localhost:8080, login with the superuser account you created earlier.
 
-Above script will start a PostgreSQL database and ICMS app in debug mode. In
-order to run with no debug and Gunicorn server for a production-like environment
-use: `make run`
+Above script will start a PostgreSQL database and ICMS app in debug mode.
 
 Make sure to rebuild the Docker images if new dependencies are added to the
 requirements files: `make build`.
+
+## Testing
+
+To run the unit tests:
+
+`./run-tests.sh`
+
+To run tests for a single file in a non-distributed manner (faster):
+
+`./run-tests.sh --dist=no web/tests/foo/bar.by`
+
+To run tests with a fresh test database:
+
+`./run-tests.sh --create-db`
 
 ## Code style
 

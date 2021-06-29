@@ -151,28 +151,11 @@ debug: ## runs system in debug mode
 	ICMS_MIGRATE=False \
 	docker-compose up
 
-run: ## Run with Gunicorn and Whitenoise serving static files
-	unset UID && \
-	ICMS_SECRET_KEY='prod' \
-	DATABASE_URL='postgres://postgres:password@db:5432/postgres' \
-	ICMS_ALLOWED_HOSTS='localhost' \
-	ICMS_RECAPTCHA_PUBLIC_KEY='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' \
-	ICMS_RECAPTCHA_PRIVATE_KEY='6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe' \
-	ICMS_EMAIL_FROM='prod@example.com' \
-	ICMS_ADDRESS_API_KEY='prod' \
-	ICMS_SILENCED_SYSTEM_CHECKS='captcha.recaptcha_test_key_error' \
-	AWS_SES_ACCESS_KEY_ID='prod' \
-	AWS_SES_SECRET_ACCESS_KEY='prod' \
-	ELASTIC_APM_ENVIRONMENT='prod-test' \
-	ELASTIC_APM_URL='https://apm.ci.uktrade.io' \
-	DJANGO_SETTINGS_MODULE=config.settings.production \
-	docker-compose up
-
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
 
-test: ## run tests
-	./run-tests.sh
+test: ## run tests (circleci; don't use locally)
+	./run-tests.sh --numprocesses 2
 
 accessibility: ## Generate accessibility reports
 	unset UID && \

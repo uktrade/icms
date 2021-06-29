@@ -42,6 +42,13 @@ class ApplicationErrors:
     def add(self, page_errors: PageErrors) -> None:
         self.page_errors.append(page_errors)
 
+    def get_page_errors(self, page_name: str) -> Optional[PageErrors]:
+        for p in self.page_errors:
+            if p.page_name == page_name:
+                return p
+
+        return None
+
 
 def create_page_errors(form: BaseForm, page_errors: PageErrors) -> None:
     """Convert Django form validation errors to FieldError and add them to the

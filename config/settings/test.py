@@ -26,3 +26,7 @@ CELERY_TASK_ALWAYS_EAGER = True
 SELENIUM_BROWSER = "chrome"
 SELENIUM_HUB_HOST = "selenium-hub"
 SELENIUM_HOST = "web"
+
+
+FILE_UPLOAD_HANDLERS = ("web.tests.file_upload_handler.DummyFileUploadHandler",)  # type: ignore[assignment]
+APP_ENV = "test"
