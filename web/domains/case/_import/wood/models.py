@@ -6,25 +6,31 @@ from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
 
 class WoodContractFile(File):
-    reference = models.CharField(max_length=100, blank=False, null=False)
-    contract_date = models.DateField(blank=False, null=False)
+    reference = models.CharField(
+        max_length=100,
+        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
+    )
+
+    contract_date = models.DateField(
+        help_text="Enter the date of the contract/pre-contract between the importer and exporter."
+    )
 
 
 class WoodQuotaApplication(ImportApplication):
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.WOOD
 
-    shipping_year = models.IntegerField(blank=False, null=True)
+    shipping_year = models.IntegerField(null=True)
 
     # exporter
-    exporter_name = models.CharField(max_length=100, blank=False, null=True)
-    exporter_address = models.CharField(max_length=4000, blank=False, null=True)
-    exporter_vat_nr = models.CharField(max_length=100, blank=False, null=True)
+    exporter_name = models.CharField(max_length=100, null=True)
+    exporter_address = models.CharField(max_length=4000, null=True)
+    exporter_vat_nr = models.CharField(max_length=100, null=True)
 
     #  goods
-    commodity_code = models.CharField(max_length=40, blank=False, null=True)
-    goods_description = models.CharField(max_length=100, blank=False, null=True)
-    goods_qty = models.DecimalField(blank=False, null=True, max_digits=9, decimal_places=2)
-    goods_unit = models.CharField(max_length=40, blank=False, null=True)
+    commodity_code = models.CharField(max_length=40, null=True)
+    goods_description = models.CharField(max_length=100, null=True)
+    goods_qty = models.DecimalField(null=True, max_digits=9, decimal_places=2)
+    goods_unit = models.CharField(max_length=40, null=True)
 
     # misc
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)

@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
+from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.utils import create_file_model
@@ -135,9 +136,11 @@ def delete_supporting_document(request, application_pk, document_pk):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
-def add_contract_document(request, pk):
+def add_contract_document(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        application: WoodQuotaApplication = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=pk
+        )
 
         task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
@@ -146,17 +149,21 @@ def add_contract_document(request, pk):
 
         if request.POST:
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
-            document = request.FILES.get("document")
 
             if form.is_valid():
+                document: S3Boto3StorageFile = form.cleaned_data.get("document")
+
+                extra_args = {
+                    field: value
+                    for (field, value) in form.cleaned_data.items()
+                    if field not in ["document"]
+                }
+
                 create_file_model(
                     document,
                     request.user,
                     application.contract_documents,
-                    extra_args={
-                        "reference": form.cleaned_data["reference"],
-                        "contract_date": form.cleaned_data["contract_date"],
-                    },
+                    extra_args=extra_args,
                 )
 
                 return redirect(reverse("import:wood:edit", kwargs={"application_pk": pk}))

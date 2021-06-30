@@ -81,39 +81,23 @@ class SupportingDocumentForm(forms.Form):
     document = ICMSFileField(required=True)
 
 
-class AddContractDocumentForm(forms.Form):
+class AddContractDocumentForm(forms.ModelForm):
     document = ICMSFileField(required=True)
-
-    reference = forms.CharField(
-        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
-        required=True,
-    )
-
-    contract_date = forms.DateField(
-        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
-        required=True,
-        widget=DateInput(),
-    )
-
-
-class EditContractDocumentForm(forms.ModelForm):
-    reference = forms.CharField(
-        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
-        required=True,
-    )
-
-    contract_date = forms.DateField(
-        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
-        required=True,
-        widget=DateInput(),
-    )
 
     class Meta:
         model = models.WoodContractFile
-        fields = (
-            "reference",
-            "contract_date",
-        )
+        fields = ("reference", "contract_date")
+
+        widgets = {"contract_date": DateInput()}
+
+
+class EditContractDocumentForm(forms.ModelForm):
+    class Meta:
+        model = models.WoodContractFile
+
+        fields = ("reference", "contract_date")
+
+        widgets = {"contract_date": DateInput()}
 
 
 class SubmitWoodQuotaForm(forms.Form):

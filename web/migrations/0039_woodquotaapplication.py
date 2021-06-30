@@ -25,8 +25,19 @@ class Migration(migrations.Migration):
                         to="web.file",
                     ),
                 ),
-                ("reference", models.CharField(max_length=50)),
-                ("contract_date", models.DateField()),
+                (
+                    "reference",
+                    models.CharField(
+                        help_text="Enter the reference number of the contract/pre-contract between the importer and exporter.",
+                        max_length=100,
+                    ),
+                ),
+                (
+                    "contract_date",
+                    models.DateField(
+                        help_text="Enter the date of the contract/pre-contract between the importer and exporter."
+                    ),
+                ),
             ],
             bases=("web.file",),
         ),

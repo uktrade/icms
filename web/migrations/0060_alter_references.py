@@ -24,9 +24,4 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AlterField(
-            model_name="woodcontractfile",
-            name="reference",
-            field=models.CharField(max_length=100),
-        ),
     ]
