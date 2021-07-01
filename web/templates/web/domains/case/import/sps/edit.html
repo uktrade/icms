@@ -1,0 +1,34 @@
+{% extends "flow/task-base.html" %}
+ {% import "forms/forms.html" as forms %}
+ {% import "forms/fields.html" as fields %}
+
+ {% block sidebar %}
+     {% include "partial/case/import/sps/sidebar.html" %}
+ {% endblock %}
+
+ {% block main_content %}
+   {% block task_details %}
+     {{ super() }}
+   {% endblock %}
+
+   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+     <h4>Contact</h4>
+     {{ fields.field(form.contact) }}
+
+     <h4>Prior Surveillance</h4>
+     {{ fields.field(form.applicant_reference) }}
+
+     <input type="submit" name="action" class="primary-button button" value="Save" />
+  {% endcall %}
+
+  <h4>TODO: add other fields</h4>
+
+  <h4>Supporting documents</h4>
+  <p class="bold">Please provide any further supporting documents regarding this application.</p>
+  <p>This may include invoices, evidence of past trade, or contracts.</p>
+
+  {% with read_only = false, file_type = "supporting_document" %}
+    {% include "web/domains/case/import/partials/sps/documents_list.html" %}
+  {% endwith %}
+
+{% endblock %}

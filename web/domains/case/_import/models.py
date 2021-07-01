@@ -26,6 +26,7 @@ class ImportApplicationType(models.Model):
         WOOD_QUOTA = ("WD", "Wood (Quota)")
         OPT = ("OPT", "Outward Processing Trade")
         TEXTILES = ("TEX", "Textiles (Quota)")
+        SPS = ("SPS", "Prior Surveillance")
 
     class SubTypes(models.TextChoices):
         OIL = ("OIL", "Open Individual Import Licence")
@@ -44,6 +45,7 @@ class ImportApplicationType(models.Model):
         SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
         DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
         TEXTILES = ("TextilesApplication", "Textiles (Quota)")
+        SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
 
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
@@ -293,6 +295,8 @@ class ImportApplication(ApplicationBase):
             return "import:wood:edit"
         elif self.process_type == ImportApplicationType.ProcessTypes.TEXTILES:
             return "import:textiles:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.SPS:
+            return "import:sps:edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 

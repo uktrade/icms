@@ -36,6 +36,7 @@ urlpatterns = [
     path("create/wood/quota/", views.create_wood_quota, name="create-wood-quota"),
     path("create/opt/", views.create_opt, name="create-opt"),
     path("create/textiles/", views.create_textiles, name="create-textiles"),
+    path("create/sps/", views.create_sps, name="create-sps"),
     # Application urls
     path("derogations/", include("web.domains.case._import.derogations.urls")),
     path("sanctions/", include("web.domains.case._import.sanctions.urls")),
@@ -43,6 +44,7 @@ urlpatterns = [
     path("wood/", include("web.domains.case._import.wood.urls")),
     path("opt/", include("web.domains.case._import.opt.urls")),
     path("textiles/", include("web.domains.case._import.textiles.urls")),
+    path("sps/", include("web.domains.case._import.sps.urls")),
     # ILB Admin Case management
     path(
         "case/<int:application_pk>/",

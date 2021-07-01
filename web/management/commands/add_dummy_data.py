@@ -32,6 +32,7 @@ class Command(BaseCommand):
             type__in=[
                 ImportApplicationType.Types.OPT,
                 ImportApplicationType.Types.TEXTILES,
+                ImportApplicationType.Types.SPS,
             ]
         ).update(is_active=True)
 
