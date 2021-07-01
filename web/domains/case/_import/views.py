@@ -36,6 +36,7 @@ from .forms import (
 from .models import ImportApplication, ImportApplicationType
 from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
+from .textiles.models import TextilesApplication
 from .wood.models import WoodQuotaApplication
 
 
@@ -47,8 +48,11 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
         context = super().get_context_data()
 
         show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
+        show_textiles = ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.TEXTILES
+        ).is_active
 
-        context.update({"show_opt": show_opt})
+        context.update({"show_opt": show_opt, "show_textiles": show_textiles})
 
         return context
 
@@ -145,6 +149,19 @@ def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
     )
 
 
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
+    import_application_type = ImportApplicationType.Types.TEXTILES
+    model_class = TextilesApplication
+
+    return _create_application(
+        request,
+        import_application_type,  # type: ignore[arg-type]
+        model_class,
+    )
+
+
 def _create_application(
     request: AuthenticatedHttpRequest,
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
@@ -197,11 +214,15 @@ def _create_application(
         form = form_class(user=request.user)
 
     show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
+    show_textiles = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.TEXTILES
+    ).is_active
 
     context = {
         "form": form,
         "import_application_type": application_type,
         "show_opt": show_opt,
+        "show_textiles": show_textiles,
     }
 
     return render(request, "web/domains/case/import/create.html", context)

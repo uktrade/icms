@@ -31,6 +31,7 @@ class Command(BaseCommand):
         ImportApplicationType.objects.filter(
             type__in=[
                 ImportApplicationType.Types.OPT,
+                ImportApplicationType.Types.TEXTILES,
             ]
         ).update(is_active=True)
 
