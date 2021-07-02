@@ -77,10 +77,6 @@ class PrepareWoodQuotaForm(forms.ModelForm):
         self.fields["contact"].queryset = User.objects.all()
 
 
-class SupportingDocumentForm(forms.Form):
-    document = ICMSFileField(required=True)
-
-
 class AddContractDocumentForm(forms.ModelForm):
     document = ICMSFileField(required=True)
 
@@ -98,20 +94,6 @@ class EditContractDocumentForm(forms.ModelForm):
         fields = ("reference", "contract_date")
 
         widgets = {"contract_date": DateInput()}
-
-
-class SubmitWoodQuotaForm(forms.Form):
-    confirmation = forms.CharField(
-        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if confirmation != "I AGREE":
-            raise forms.ValidationError("Please agree to the declaration of truth.")
-
-        return confirmation
 
 
 class WoodQuotaChecklistForm(ChecklistBaseForm):

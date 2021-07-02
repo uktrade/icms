@@ -1,5 +1,4 @@
 from django import forms
-from django.core.exceptions import ValidationError
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
@@ -55,20 +54,6 @@ class PrepareOILForm(forms.ModelForm):
         countries = Country.objects.filter(name="Any Country")
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
-
-
-class SubmitOILForm(forms.Form):
-    confirmation = forms.CharField(
-        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if confirmation != "I AGREE":
-            raise ValidationError("Please agree to the declaration of truth.")
-
-        return confirmation
 
 
 class ChecklistFirearmsOILApplicationForm(ChecklistBaseForm):

@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -29,8 +30,6 @@ from .forms import (
     SanctionEmailMessageForm,
     SanctionEmailMessageResponseForm,
     SanctionsAndAdhocLicenseForm,
-    SubmitSanctionsForm,
-    SupportingDocumentForm,
 )
 from .models import (
     SanctionEmailMessage,
@@ -235,7 +234,7 @@ def add_supporting_document(request, pk):
             raise PermissionDenied
 
         if request.method == "POST":
-            form = SupportingDocumentForm(request.POST, request.FILES)
+            form = DocumentForm(request.POST, request.FILES)
 
             if form.is_valid():
                 document = form.cleaned_data.get("document")
@@ -243,7 +242,7 @@ def add_supporting_document(request, pk):
 
                 return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
         else:
-            form = SupportingDocumentForm()
+            form = DocumentForm()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -311,7 +310,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
         errors.add(page_errors)
 
         if request.POST:
-            form = SubmitSanctionsForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
@@ -319,7 +318,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitSanctionsForm()
+            form = SubmitForm()
 
     declaration = Template.objects.filter(
         is_active=True,

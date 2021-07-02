@@ -3,7 +3,6 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
-from web.domains.file.utils import ICMSFileField
 from web.forms.widgets import DateInput
 
 from .models import DerogationsApplication, DerogationsChecklist
@@ -57,24 +56,6 @@ class DerogationsForm(forms.ModelForm):
         countries = Country.objects.filter(country_groups__name="Derogation from Sanctions COOs")
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
-
-
-class SupportingDocumentForm(forms.Form):
-    document = ICMSFileField(required=True)
-
-
-class SubmitDerogationsForm(forms.Form):
-    confirmation = forms.CharField(
-        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if confirmation != "I AGREE":
-            raise forms.ValidationError("Please agree to the declaration of truth.")
-
-        return confirmation
 
 
 class DerogationsChecklistForm(ChecklistBaseForm):

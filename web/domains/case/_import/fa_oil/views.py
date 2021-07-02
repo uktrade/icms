@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.forms import SubmitForm
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -20,7 +21,6 @@ from .forms import (
     ChecklistFirearmsOILApplicationForm,
     ChecklistFirearmsOILApplicationOptionalForm,
     PrepareOILForm,
-    SubmitOILForm,
 )
 from .models import ChecklistFirearmsOILApplication, OpenIndividualLicenceApplication
 
@@ -118,7 +118,7 @@ def submit_oil(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
             errors.add(page_errors)
 
         if request.POST:
-            form = SubmitOILForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
@@ -143,7 +143,7 @@ def submit_oil(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitOILForm()
+            form = SubmitForm()
 
         declaration = Template.objects.filter(
             is_active=True,

@@ -405,20 +405,6 @@ class SILGoodsSection582OtherForm(forms.ModelForm):
             self.add_error("bore_details", "You must enter this item")
 
 
-class SubmitSILForm(forms.Form):
-    confirmation = forms.CharField(
-        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if confirmation != "I AGREE":
-            raise forms.ValidationError("Please agree to the declaration of truth.")
-
-        return confirmation
-
-
 class SILChecklistForm(ChecklistBaseForm):
     class Meta:
         model = models.SILChecklist

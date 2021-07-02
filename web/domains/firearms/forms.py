@@ -1,7 +1,6 @@
 from django.forms import (
     CharField,
     DateField,
-    Form,
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
@@ -12,7 +11,6 @@ from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
 
-from web.domains.file.utils import ICMSFileField
 from web.domains.office.models import Office
 from web.forms.widgets import DateInput
 
@@ -69,10 +67,6 @@ class ObsoleteCalibreForm(ModelForm):
         model = ObsoleteCalibre
         fields = ["name"]
         labels = {"name": "Calibre Name"}
-
-
-class DocumentForm(Form):
-    document = ICMSFileField(required=True)
 
 
 class FirearmsAuthorityForm(ModelForm):

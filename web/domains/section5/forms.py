@@ -1,7 +1,6 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
-from web.domains.file.utils import ICMSFileField
 from web.domains.office.models import Office
 from web.domains.section5.models import (
     ClauseQuantity,
@@ -9,10 +8,6 @@ from web.domains.section5.models import (
     Section5Clause,
 )
 from web.forms.widgets import DateInput
-
-
-class DocumentForm(forms.Form):
-    document = ICMSFileField(required=True)
 
 
 class Section5AuthorityForm(forms.ModelForm):

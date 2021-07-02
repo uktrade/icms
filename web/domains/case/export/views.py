@@ -11,15 +11,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
 
+from web.domains.case.forms import SubmitForm
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import (
-    CreateExportApplicationForm,
-    PrepareCertManufactureForm,
-    SubmitCertManufactureForm,
-)
+from .forms import CreateExportApplicationForm, PrepareCertManufactureForm
 from .models import (
     CertificateOfManufactureApplication,
     ExportApplication,
@@ -160,7 +157,7 @@ def submit_com(request, pk):
         errors.add(page_errors)
 
         if request.POST:
-            form = SubmitCertManufactureForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
             go_back_to_edit = "_edit_application" in request.POST
 
             if go_back_to_edit:
@@ -172,7 +169,7 @@ def submit_com(request, pk):
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitCertManufactureForm()
+            form = SubmitForm()
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",

@@ -8,6 +8,7 @@ from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.forms import SubmitForm
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -26,7 +27,6 @@ from .forms import (
     EditDFLGoodsCertificateDescriptionForm,
     EditDLFGoodsCertificateForm,
     PrepareDFLForm,
-    SubmitDFLForm,
 )
 from .models import DFLApplication, DFLChecklist
 
@@ -252,7 +252,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         errors = _get_dfl_errors(application)
 
         if request.POST:
-            form = SubmitDFLForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
@@ -272,7 +272,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitDFLForm()
+            form = SubmitForm()
 
         declaration = Template.objects.filter(
             is_active=True,

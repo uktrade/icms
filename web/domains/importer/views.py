@@ -10,6 +10,7 @@ from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
 from web.address.address import find as postcode_lookup
 from web.company.companieshouse import api_get_companies
+from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
 from web.domains.importer.forms import (
     AgentIndividualForm,
@@ -20,11 +21,7 @@ from web.domains.importer.forms import (
 )
 from web.domains.importer.models import Importer
 from web.domains.office.forms import OfficeEORIForm, OfficeForm
-from web.domains.section5.forms import (
-    ClauseQuantityForm,
-    DocumentForm,
-    Section5AuthorityForm,
-)
+from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
 from web.domains.section5.models import (
     ClauseQuantity,
     Section5Authority,

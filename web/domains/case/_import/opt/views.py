@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
-from web.domains.case.forms import DocumentForm
+from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
@@ -25,7 +25,6 @@ from .forms import (
     OPTChecklistOptionalForm,
     ResponsePrepCompensatingProductsOPTForm,
     ResponsePrepTemporaryExportedGoodsOPTForm,
-    SubmitOPTForm,
     TemporaryExportedGoodsOPTForm,
 )
 from .models import (
@@ -336,7 +335,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             errors.add(fq_shared_errors)
 
         if request.POST:
-            form = SubmitOPTForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 group = CommodityGroup.objects.get(
@@ -348,7 +347,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitOPTForm()
+            form = SubmitForm()
 
         declaration = Template.objects.filter(
             is_active=True,

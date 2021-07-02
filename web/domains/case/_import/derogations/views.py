@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
+from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -24,8 +25,6 @@ from .forms import (
     DerogationsChecklistOptionalForm,
     DerogationsForm,
     GoodsDerogationsLicenceForm,
-    SubmitDerogationsForm,
-    SupportingDocumentForm,
 )
 from .models import DerogationsApplication, DerogationsChecklist
 
@@ -82,7 +81,7 @@ def add_supporting_document(request: AuthenticatedHttpRequest, application_pk: i
             raise PermissionDenied
 
         if request.POST:
-            form = SupportingDocumentForm(data=request.POST, files=request.FILES)
+            form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
                 document = form.cleaned_data.get("document")
@@ -92,7 +91,7 @@ def add_supporting_document(request: AuthenticatedHttpRequest, application_pk: i
                     reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
                 )
         else:
-            form = SupportingDocumentForm()
+            form = DocumentForm()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -161,7 +160,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, application_pk: int) -
         errors = _get_derogations_errors(application)
 
         if request.POST:
-            form = SubmitDerogationsForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
@@ -184,7 +183,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, application_pk: int) -
                 return redirect(reverse("home"))
 
         else:
-            form = SubmitDerogationsForm()
+            form = SubmitForm()
 
         declaration = Template.objects.filter(
             is_active=True,

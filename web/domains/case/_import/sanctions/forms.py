@@ -1,11 +1,9 @@
 from django import forms
-from django.core.exceptions import ValidationError
 from django_select2 import forms as s2forms
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.country.models import Country
 from web.domains.file.models import File
-from web.domains.file.utils import ICMSFileField
 from web.domains.sanction_email.models import SanctionEmail
 
 from . import widgets
@@ -84,24 +82,6 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["commodity_code"].widget.attrs["readonly"] = True
-
-
-class SupportingDocumentForm(forms.Form):
-    document = ICMSFileField(required=True)
-
-
-class SubmitSanctionsForm(forms.Form):
-    confirmation = forms.CharField(
-        label='Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if confirmation != "I AGREE":
-            raise ValidationError("Please agree to the declaration of truth.")
-
-        return confirmation
 
 
 class SanctionEmailMessageForm(forms.ModelForm):

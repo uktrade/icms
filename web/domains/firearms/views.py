@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
 from web.domains.importer.models import Importer
 from web.types import AuthenticatedHttpRequest
@@ -17,7 +18,6 @@ from web.views.actions import Archive, Edit, Unarchive
 from web.views.mixins import PostActionMixin
 
 from .forms import (
-    DocumentForm,
     FirearmsAuthorityForm,
     FirearmsQuantityForm,
     ObsoleteCalibreForm,

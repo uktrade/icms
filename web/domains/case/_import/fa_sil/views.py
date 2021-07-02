@@ -10,6 +10,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case import forms as case_forms
 from web.domains.case import views as case_views
+from web.domains.case.forms import SubmitForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -519,7 +520,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         errors = _get_sil_errors(application)
 
         if request.POST:
-            form = forms.SubmitSILForm(data=request.POST)
+            form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
@@ -535,7 +536,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
                 return redirect(reverse("home"))
 
         else:
-            form = forms.SubmitSILForm()
+            form = SubmitForm()
 
         declaration = Template.objects.filter(
             is_active=True,
