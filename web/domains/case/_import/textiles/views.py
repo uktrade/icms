@@ -1,15 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
-from web.domains.case.forms import DocumentForm
+from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
+from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
+from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import EditTextilesForm
 from .models import TextilesApplication
@@ -51,6 +54,59 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         }
 
         return render(request, "web/domains/case/import/textiles/edit.html", context)
+
+
+@login_required
+def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: TextilesApplication = get_object_or_404(
+            TextilesApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        errors = ApplicationErrors()
+
+        edit_errors = PageErrors(
+            page_name="Application details",
+            url=reverse("import:textiles:edit", kwargs={"application_pk": application_pk}),
+        )
+        create_page_errors(
+            EditTextilesForm(data=model_to_dict(application), instance=application), edit_errors
+        )
+        errors.add(edit_errors)
+
+        if request.POST:
+            form = SubmitForm(data=request.POST)
+
+            if form.is_valid() and not errors.has_errors():
+                application.submit_application(request, task)
+
+                return redirect(reverse("workbasket"))
+
+        else:
+            form = SubmitForm()
+
+        declaration = Template.objects.filter(
+            is_active=True,
+            template_type=Template.DECLARATION,
+            application_domain=Template.IMPORT_APPLICATION,
+            template_code="IMA_GEN_DECLARATION",
+        ).first()
+
+        context = {
+            "process_template": "web/domains/case/import/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Textiles (Quota) Import Licence - Submit",
+            "declaration": declaration,
+            "errors": errors if errors.has_errors() else None,
+        }
+
+        return render(request, "web/domains/case/import/textiles/submit.html", context)
 
 
 @login_required

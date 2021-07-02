@@ -10,8 +10,7 @@ urlpatterns = [
         include(
             [
                 path("edit/", views.edit_textiles, name="edit"),
-                # TODO: leaving these in since we'll need them
-                # path("submit/", views.submit_textiles, name="submit"),
+                path("submit/", views.submit_textiles, name="submit"),
                 path(
                     "document/",
                     include(
