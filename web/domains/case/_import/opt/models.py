@@ -43,7 +43,11 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     rate_of_yield = models.DecimalField(
-        max_digits=9, decimal_places=2, null=True, verbose_name="Rate of yield (kg per garment)"
+        max_digits=9,
+        decimal_places=2,
+        null=True,
+        verbose_name="Rate of yield (kg per garment)",
+        validators=[at_least_0],
     )
 
     rate_of_yield_calc_method = models.TextField(
@@ -57,7 +61,11 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     reimport_period = models.DecimalField(
-        max_digits=9, decimal_places=2, null=True, verbose_name="Period for re-importation (months)"
+        max_digits=9,
+        decimal_places=2,
+        null=True,
+        verbose_name="Period for re-importation (months)",
+        validators=[at_least_0],
     )
 
     nature_process_ops = models.TextField(
