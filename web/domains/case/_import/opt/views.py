@@ -106,13 +106,17 @@ def edit_compensating_products(
         else:
             form = CompensatingProductsOPTForm(instance=application)
 
+        category_descriptions = _get_compensating_products_category_descriptions()
+        category_label = category_descriptions.get(application.cp_category, "")
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
-            "category_descriptions": _get_compensating_products_category_descriptions(),
+            "category_descriptions": category_descriptions,
+            "category_label": category_label,
         }
 
         return render(

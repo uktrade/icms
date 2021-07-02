@@ -9,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import check_application_permission, view_application_file
+from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -43,6 +44,14 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             form = EditTextilesForm(instance=application, initial={"contact": request.user})
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
+        category_commodity_groups = _get_category_commodity_group_data()
+
+        if application.category_commodity_group:
+            selected_group = category_commodity_groups.get(
+                application.category_commodity_group.pk, {}
+            )
+        else:
+            selected_group = {}
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -51,9 +60,24 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             "form": form,
             "page_title": "Textiles (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
+            "category_commodity_groups": category_commodity_groups,
+            "commodity_group_label": selected_group.get("label", ""),
+            "commodity_group_unit": selected_group.get("unit", ""),
         }
 
         return render(request, "web/domains/case/import/textiles/edit.html", context)
+
+
+def _get_category_commodity_group_data() -> dict[str, dict[str, str]]:
+    groups = CommodityGroup.objects.filter(
+        commodity_type__type_code="TEXTILES",
+    ).select_related("unit")
+
+    group_data = {
+        cg.pk: {"label": cg.group_description, "unit": cg.unit.description} for cg in groups
+    }
+
+    return group_data
 
 
 @login_required
