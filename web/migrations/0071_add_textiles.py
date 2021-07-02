@@ -40,6 +40,12 @@ class Migration(migrations.Migration):
                         to="web.importapplication",
                     ),
                 ),
+                (
+                    "supporting_documents",
+                    models.ManyToManyField(
+                        related_name="_textilesapplication_supporting_documents_+", to="web.File"
+                    ),
+                ),
             ],
             options={
                 "abstract": False,

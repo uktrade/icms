@@ -83,9 +83,9 @@ def add_supporting_document(request: AuthenticatedHttpRequest, application_pk: i
 
         if request.POST:
             form = SupportingDocumentForm(data=request.POST, files=request.FILES)
-            document = request.FILES.get("document")
 
             if form.is_valid():
+                document = form.cleaned_data.get("document")
                 create_file_model(document, request.user, application.supporting_documents)
 
                 return redirect(

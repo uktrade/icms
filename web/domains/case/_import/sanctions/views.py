@@ -235,28 +235,24 @@ def add_supporting_document(request, pk):
             raise PermissionDenied
 
         if request.method == "POST":
-            documents_form = SupportingDocumentForm(request.POST, request.FILES)
-            document = request.FILES.get("document")
+            form = SupportingDocumentForm(request.POST, request.FILES)
 
-            if documents_form.is_valid():
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
                 create_file_model(document, request.user, application.supporting_documents)
 
                 return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
         else:
-            documents_form = SupportingDocumentForm()
+            form = SupportingDocumentForm()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
-            "form": documents_form,
+            "form": form,
             "page_title": "Sanctions and Adhoc License Application",
         }
-        return render(
-            request,
-            "web/domains/case/import/sanctions/add_document.html",
-            context,
-        )
+        return render(request, "web/domains/case/import/sanctions/add_document.html", context)
 
 
 @require_GET

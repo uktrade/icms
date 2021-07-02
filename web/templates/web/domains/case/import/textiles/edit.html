@@ -23,4 +23,12 @@
 
   <h4>TODO: add other fields</h4>
 
+  <h4>Supporting documents</h4>
+  <p class="bold">Please provide any further supporting documents regarding this application.</p>
+  <p>This may include invoices, evidence of past trade, or contracts.</p>
+
+  {% with read_only = false, file_type = "supporting_document" %}
+    {% include "web/domains/case/import/partials/textiles/documents_list.html" %}
+  {% endwith %}
+
 {% endblock %}

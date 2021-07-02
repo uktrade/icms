@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, NamedTuple, Type, Union
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
-from django.db.models import ManyToManyField, Q
+from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -298,9 +298,9 @@ def add_note_document(
 
         if request.POST:
             form = forms.DocumentForm(data=request.POST, files=request.FILES)
-            document = request.FILES.get("document")
 
             if form.is_valid():
+                document = form.cleaned_data.get("document")
                 create_file_model(document, request.user, note.files)
 
                 return redirect(
@@ -948,7 +948,7 @@ def view_fir_file(
 def view_application_file(
     user: User,
     application: ImpOrExpOrAccess,
-    related_file_model: ManyToManyField,
+    related_file_model: Any,
     file_pk: int,
     case_type: str,
 ) -> HttpResponse:

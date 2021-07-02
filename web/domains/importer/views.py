@@ -281,9 +281,9 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
     if request.POST:
         form = DocumentForm(data=request.POST, files=request.FILES)
-        document = request.FILES.get("document")
 
         if form.is_valid():
+            document = form.cleaned_data.get("document")
             create_file_model(document, request.user, section5.files)
 
             return redirect(reverse("importer-section5-edit", kwargs={"pk": pk}))
