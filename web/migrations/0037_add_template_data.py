@@ -103,15 +103,25 @@ def add_declaration_templates(apps, schema_editor):
         application_domain="IMA",
         template_title="Declaration of Truth",
         template_content="""I hereby declare that the particulars contained in this application are accurate and the documents attached are authentic and I submit the following documents:
+
 1.  contracts,
+
 2.  proof of origin of the goods temporarily exported, and
+
 3.  other documents to support this application (numbered).
+
 I also undertake:
+
 I.  to present at the request of the competent authorities any supplementary documentation or information they consider necessary to issue the prior authorisation and to accept, if need be, the control by the competent authorities of the stock records relating to the authorisation;
+
 II.  to retain such stock records for a period of three years from the end of the calendar year to the issue of the authorisation(s);
+
 III.  to make clearly identifiable the goods temporarily exported and re-imported;
+
 IV.  to make available all other evidence or samples the competent authorities deem necessary to control the use of this authorisation; and
+
 V.  to return the prior authorisation at the latest within 15 days of the expiry period.
+
 I request the issue of a prior authorisation for the goods detailed in the application""",
     )
     Template.objects.get_or_create(

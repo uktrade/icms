@@ -350,12 +350,11 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         else:
             form = SubmitOPTForm()
 
-        # TODO: ICMSLST-599 what template to use?
         declaration = Template.objects.filter(
             is_active=True,
             template_type=Template.DECLARATION,
             application_domain=Template.IMPORT_APPLICATION,
-            template_code="IMA_GEN_DECLARATION",
+            template_code="IMA_OPT_DECLARATION",
         ).first()
 
         context = {

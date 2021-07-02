@@ -28,13 +28,10 @@
     giving false information.
   </div>
 
-  <p class="bold">
-    By filling in the field below and clicking Submit, you agree to the following:
-  </p>
-
-  <p>
+  <div>
+    <p class="bold">By filling in the field below and clicking Submit, you agree to the following:</p>
     {{ declaration.template_content|nl2br }}
-  </p>
+  </div>
 
   <form method="post" action="" class="form-inline" novalidate>
     {{ csrf_input }}
