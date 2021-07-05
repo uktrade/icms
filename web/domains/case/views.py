@@ -23,6 +23,7 @@ from web.domains.case._import.opt.forms import (
     OPTChecklistForm,
 )
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
+from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -1221,6 +1222,8 @@ def view_case(
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
         return _view_opt(request, application.outwardprocessingtradeapplication)  # type: ignore[union-attr]
 
+    elif application.process_type == TextilesApplication.PROCESS_TYPE:
+        return _view_textiles_quota(request, application.textilesapplication)  # type: ignore[union-attr]
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
@@ -1359,6 +1362,19 @@ def _view_opt(
     }
 
     return render(request, "web/domains/case/import/opt/view.html", context)
+
+
+def _view_textiles_quota(
+    request: AuthenticatedHttpRequest, application: TextilesApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/textiles/view.html", context)
 
 
 def _view_accessrequest(

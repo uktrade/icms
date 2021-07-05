@@ -1,0 +1,26 @@
+{% extends "web/domains/case/import/view_case.html" %}
+
+{% block main_content %}
+  {% call application_section("Textiles (Quota)") %}
+    {{ application_field(process.applicant_reference, "Applicant's Reference", "N/a") }}
+    {{ application_field("Yes" if process.goods_cleared else "No", "Will the goods be cleared in another Member State of the European Union?") }}
+    {{ application_field(process.shipping_year, "Shipping Year") }}
+    {{ application_field(process.origin_country, "Country Of Origin") }}
+    {{ application_field(process.consignment_country, "Country Of Consignment") }}
+  {% endcall %}
+
+  {% call application_section("Goods") %}
+    {{ application_field(process.category_commodity_group.pk, "Category") }}
+    {{ application_field(process.category_commodity_group.group_description, "") }}
+    {{ application_field(process.commodity.commodity_code, "Commodity Code") }}
+    {{ application_field(process.goods_description, "Goods Description") }}
+    {{ application_field(process.quantity, "Quantity") }}
+    {{ application_field(process.category_commodity_group.unit.description, "Unit") }}
+  {% endcall %}
+
+  <h4>Supporting Documents</h4>
+  {% with read_only = true %}
+    {% include "web/domains/case/import/partials/textiles/documents_list.html" %}
+  {% endwith %}
+
+{% endblock %}
