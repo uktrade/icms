@@ -1,0 +1,42 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+    {% include "partial/case/import/sps/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ icms_url('import:sps:edit', kwargs={'application_pk': process.pk }) }}"
+        class="prev-link">
+        Edit application
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% endblock %}
+
+{% block main_content %}
+  <h4>Edit contract/invoice document</h4>
+
+  <div class="row" >
+    <div class="three columns">
+      <label class="prompt west">Filename</label>
+    </div>
+    <div class="six columns">
+      <p>{{ form.instance.filename }}</p>
+    </div>
+      <div class="three columns"></div>
+  </div>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ fields.field(form.file_type) }}
+    <input type="submit" name="action" class="primary-button button" value="Save" />
+  {% endcall %}
+
+{% endblock %}

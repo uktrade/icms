@@ -21,7 +21,12 @@
      <input type="submit" name="action" class="primary-button button" value="Save" />
   {% endcall %}
 
-  <h4>TODO: add other fields</h4>
+  <h4>Certificates/Documents</h4>
+  <p>Please upload either a supply contract or a pro-forma invoice below.</p>
+
+  {% with read_only = false %}
+    {% include "web/domains/case/import/partials/sps/contract_list.html" %}
+  {% endwith %}
 
   <h4>Supporting documents</h4>
   <p class="bold">Please provide any further supporting documents regarding this application.</p>

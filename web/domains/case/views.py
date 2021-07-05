@@ -25,6 +25,7 @@ from web.domains.case._import.opt.forms import (
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
+from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -957,6 +958,23 @@ def view_application_file(
     check_application_permission(application, user, case_type)
 
     document = related_file_model.get(pk=file_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
+
+
+def view_application_file_direct(
+    user: User,
+    application: ImpOrExpOrAccess,
+    document: File,
+    case_type: str,
+) -> HttpResponse:
+
+    check_application_permission(application, user, case_type)
+
     file_content = get_file_from_s3(document.path)
 
     response = HttpResponse(content=file_content, content_type=document.content_type)

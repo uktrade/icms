@@ -54,19 +54,21 @@ def validate_file_extension(file: S3Boto3StorageFile) -> None:
         )
 
 
-# TODO: related_file_manager is something like
-# models.manager.RelatedManager[File], but that's a class Django dynamically
-# creates at runtime, you can't even import it
 def create_file_model(
     f: S3Boto3StorageFile,
     created_by: User,
     related_file_manager: Any,
     extra_args: Dict[str, Any] = None,
 ) -> models.Model:
-    """Create File (or sub-class) model, add it to the related set. Note that
-    the create call here is
-    https://docs.djangoproject.com/en/3.2/ref/models/relations/#django.db.models.fields.related.RelatedManager.create,
-    not the standard Django model create."""
+    """Create File (or sub-class) model.
+
+    related_file_manager is either this:
+      https://docs.djangoproject.com/en/3.2/ref/models/relations/#django.db.models.fields.related.RelatedManager.create
+      for ManyToMany fields (in which case this adds it to the related set as well)
+
+    or this: https://docs.djangoproject.com/en/3.2/ref/models/querysets/#create
+             for OneToOne fields
+    """
 
     if extra_args is None:
         extra_args = {}

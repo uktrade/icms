@@ -28,6 +28,33 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.CreateModel(
+            name="PriorSurveillanceContractFile",
+            fields=[
+                (
+                    "file_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="web.file",
+                    ),
+                ),
+                (
+                    "file_type",
+                    models.CharField(
+                        choices=[
+                            ("pro_forma_invoice", "Pro-forma Invoice"),
+                            ("supply_contract", "Supply Contract"),
+                        ],
+                        max_length=32,
+                    ),
+                ),
+            ],
+            bases=("web.file",),
+        ),
+        migrations.CreateModel(
             name="PriorSurveillanceApplication",
             fields=[
                 (
@@ -46,6 +73,15 @@ class Migration(migrations.Migration):
                     models.ManyToManyField(
                         related_name="_priorsurveillanceapplication_supporting_documents_+",
                         to="web.File",
+                    ),
+                ),
+                (
+                    "contract_file",
+                    models.OneToOneField(
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="web.priorsurveillancecontractfile",
                     ),
                 ),
             ],

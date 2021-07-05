@@ -19,7 +19,7 @@
                     {{ file.created_datetime.strftime('%d-%b-%Y %H:%M') }}
                 </td>
                 <td>
-                    <a href="{{ icms_url('import:sps:view-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+                    <a href="{{ icms_url('import:sps:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
                         {{ file.filename }}
                     </a>
                     {{ file.human_readable_file_size() }}
@@ -27,7 +27,7 @@
                 {% if not read_only %}
                     <td>
                         <form method="post"
-                            action="{{ icms_url('import:sps:delete-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+                            action="{{ icms_url('import:sps:delete-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
                         {{ csrf_input }}
                         <button type="submit" class="link-button icon-bin button">Delete</button>
                         </form>
@@ -45,5 +45,5 @@
 
 {% if not read_only %}
     <a class="button small-button"
-        href="{{ icms_url('import:sps:add-document', kwargs={'application_pk': process.pk}) }}">Add supporting document</a>
+        href="{{ icms_url('import:sps:add-supporting-document', kwargs={'application_pk': process.pk}) }}">Add supporting document</a>
 {% endif %}
