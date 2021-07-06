@@ -6,9 +6,8 @@ from django.db import migrations
 
 def add_countries_to_group(group, countries, apps):
     Country = apps.get_model("web", "Country")
-    for country_name in countries:
-        country = Country.objects.get(name=country_name)
-        group.countries.add(country)
+    countries = Country.objects.filter(name__in=countries)
+    group.countries.add(*countries)
 
 
 def load_country_group_data_iron_and_steel(apps, schema_editor):

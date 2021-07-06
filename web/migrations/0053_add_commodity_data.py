@@ -58,11 +58,34 @@ def add_commodity_types(apps, schema_editor):
     )
 
 
+class DataLoader:
+    def __init__(self, commodity_type_class, unit_class):
+        self.commodity_type_class = commodity_type_class
+        self.unit_class = unit_class
+        self.commodity_type_map = {}
+        self.unit_map = {}
+
+    def get_commodity_type(self, type_code):
+        if type_code not in self.commodity_type_map:
+            self.commodity_type_map[type_code] = self.commodity_type_class.objects.get(
+                type_code=type_code
+            )
+
+        return self.commodity_type_map[type_code]
+
+    def get_unit(self, unit_type):
+        if unit_type not in self.unit_map:
+            self.unit_map[unit_type] = self.unit_class.objects.get(unit_type=unit_type)
+
+        return self.unit_map[unit_type]
+
+
 def add_commodity_groups(apps, schema_editor):
     CommodityGroup = apps.get_model("web", "CommodityGroup")
     CommodityType = apps.get_model("web", "CommodityType")
     Unit = apps.get_model("web", "Unit")
 
+    data = DataLoader(CommodityType, Unit)
     CommodityGroup.objects.bulk_create(
         [
             CommodityGroup(
@@ -73,7 +96,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7201",
                 group_description="Pig iron and spiegeleisen in pigs, blocks or other primary forms.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -83,7 +106,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7202",
                 group_description="Ferro-alloys.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -93,7 +116,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7203",
                 group_description="Ferrous products obtained by direct reduction of iron ore and other spongy ferrous products, in lumps, pellets or similar forms; iron having a minimum purity by weight of 99,94 %, in lumps, pellets or similar forms.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -103,7 +126,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7204",
                 group_description="Ferrous waste and scrap; remelting scrap ingots of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -113,7 +136,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7205",
                 group_description="Granules and powders, of pig iron, spiegeleisen, iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -123,7 +146,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7206",
                 group_description="Iron and non-alloy steel in ingots or other primary forms (excluding iron of heading 7203).",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -133,7 +156,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7207",
                 group_description="Semi-finished products of iron or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -143,7 +166,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7208",
                 group_description="Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, hot-rolled, not clad, plated or coated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -153,7 +176,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7209",
                 group_description="Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, cold-rolled (cold-reduced), not clad, plated or coated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -163,7 +186,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7210",
                 group_description="Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, clad, plated or coated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -173,7 +196,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7211",
                 group_description="Flat-rolled products of iron or non-alloy steel, of a width of less than 600 mm, not clad, plated or coated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -183,7 +206,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7212",
                 group_description="Flat-rolled products of iron or non-alloy steel, of a width of less than 600 mm, clad, plated or coated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -193,7 +216,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7213",
                 group_description="Bars and rods, hot-rolled, in irregularly wound coils, of iron or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -203,7 +226,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7214",
                 group_description="Other bars and rods of iron or non-alloy steel, not further worked than forged, hot-rolled, hot-drawn or hot-extruded, but including those twisted after rolling.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -213,7 +236,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7215",
                 group_description="Other bars and rods of iron or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -223,7 +246,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7216",
                 group_description="Angles, shapes and sections of iron or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -233,7 +256,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7217",
                 group_description="Wire of iron or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -243,7 +266,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7218",
                 group_description="Stainless steel in ingots or other primary forms; semi-finished products of stainless steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -253,7 +276,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7219",
                 group_description="Flat-rolled products of stainless steel, of a width of 600 mm or more.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -263,7 +286,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7220",
                 group_description="Flat-rolled products of stainless steel, of a width of less than 600 mm.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -273,7 +296,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7221",
                 group_description="Bars and rods, hot-rolled, in irregularly wound coils, of stainless steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -283,7 +306,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7222",
                 group_description="Other bars and rods of stainless steel; angles, shapes and sections of stainless steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -293,7 +316,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7223",
                 group_description="Wire of stainless steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -303,7 +326,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7224",
                 group_description="Other alloy steel in ingots or other primary forms; semi-finished products of other alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -313,7 +336,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7226",
                 group_description="Flat-rolled products of other alloy steel, of a width of less than 600 mm.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -323,7 +346,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7227",
                 group_description="Bars and rods, hot-rolled, in irregularly wound coils, of other alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -333,7 +356,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7228",
                 group_description="Other bars and rods of other alloy steel; angles, shapes and sections, of other alloy steel; hollow drill bars and rods, of alloy or non-alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -343,7 +366,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7229",
                 group_description="Wire of other alloy steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -353,7 +376,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7301",
                 group_description="Sheet piling of iron or steel, whether or not drilled, punched or made from assembled elements; welded angles, shapes and sections, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -363,7 +386,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7302",
                 group_description="Railway or tramway track construction material of iron or steel, the following: rails, check-rails and rack rails, switch blades, crossing frogs, point rods and other crossing pieces, sleepers (cross-ties), fish-plates, chairs, chair wedges, sole plates (base plates), rail clips, bedplates, ties and other material specialised for jointing or fixing rails.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -373,7 +396,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7303",
                 group_description="Tubes, pipes and hollow profiles, of cast iron.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -383,7 +406,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7305",
                 group_description="Other tubes and pipes (for example, welded, riveted or similarly closed), having circular cross-sections, the external diameter of which exceeds 406,4 mm, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -393,7 +416,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7306",
                 group_description="Other tubes, pipes and hollow profiles (for example, open seam or welded, riveted or similarly closed), of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -403,7 +426,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7307",
                 group_description="Tube or pipe fittings (for example, couplings, elbows, sleeves), of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -413,7 +436,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7308",
                 group_description="Structures (excluding prefabricated buildings of heading 9406) and parts of structures (for example, bridges and bridge-sections, lock-gates, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -423,7 +446,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7309",
                 group_description="Reservoirs, tanks, vats and similar containers for any material (other than compressed or liquefied gas), of iron or steel, of a capacity exceeding 300 l, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -433,7 +456,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7310",
                 group_description="Tanks, casks, drums, cans, boxes and similar containers, for any material (other than compressed or liquefied gas), of iron or steel, of a capacity not exceeding 300 l, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -443,7 +466,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7311",
                 group_description="Containers for compressed or liquefied gas, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -453,7 +476,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7312",
                 group_description="Stranded wire, ropes, cables, plaited bands, slings and the like, of iron or steel, not electrically insulated.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -463,7 +486,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7313",
                 group_description="Barbed wire of iron or steel; twisted hoop or single flat wire, barbed or not, and loosely twisted double wire, of a kind used for fencing, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -473,7 +496,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7314",
                 group_description="Cloth (including endless bands), grill, netting and fencing, of iron or steel wire; expanded metal of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -483,7 +506,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7315",
                 group_description="Chain and parts thereof, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -493,7 +516,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7316",
                 group_description="Anchors, grapnels and parts thereof, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -503,7 +526,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7317",
                 group_description="Nails, tacks, drawing pins, corrugated nails, staples (other than those of heading 8305) and similar articles, of iron or steel, whether or not with heads of other material, but excluding such articles with heads of copper.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -513,7 +536,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7319",
                 group_description="Sewing needles, knitting needles, bodkins, crochet hooks, embroidery stilettos and similar articles, for use in the hand, of iron or steel; safety pins and other pins of iron or steel, not elsewhere specified or included.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -523,7 +546,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7320",
                 group_description="Springs and leaves for springs, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -533,7 +556,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7321",
                 group_description="Stoves, ranges, grates, cookers (including those with subsidiary boilers for central heating), barbecues, braziers, gas rings, plate warmers and similar non-electric domestic appliances, and parts thereof, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -543,7 +566,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7322",
                 group_description="Radiators for central heating, not electrically heated, and parts thereof, of iron or steel; air heaters and hot-air distributors (including distributors which can also distribute fresh or conditioned air), not electrically heated, incorporating a motor-driven fan or blower, and parts thereof, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -553,7 +576,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7323",
                 group_description="Table, kitchen or other household articles and parts thereof, of iron or steel; iron or steel wool; pot scourers and scouring or polishing pads, gloves and the like, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -563,7 +586,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7324",
                 group_description="Sanitary ware and parts thereof, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -573,7 +596,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7325",
                 group_description="Other cast articles of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -583,7 +606,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7326",
                 group_description="Other articles of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -593,8 +616,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="M1",
                 group_name="ex Chapter 93",
-                commodity_type=CommodityType.objects.get(type_code="FIREARMS_AMMO"),
-                unit=Unit.objects.get(unit_type="UNITS"),
+                commodity_type=data.get_commodity_type(type_code="FIREARMS_AMMO"),
+                unit=data.get_unit(unit_type="UNITS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -604,8 +627,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="35",
                 group_description="Woven fabrics of synthetic fibres (continuous), other than those for tyres of category 114.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -615,8 +638,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="36",
                 group_description="Woven fabrics of continuous artificial fibres , other than those for tyres of category 114.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -626,8 +649,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="37",
                 group_description="Woven fabrics of artificial staple fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -637,8 +660,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="38A",
                 group_description="Knitted or crocheted synthetic curtain fabric including net curtain fabric.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -648,8 +671,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="38B",
                 group_description="Net curtains, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -659,8 +682,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="39",
                 group_description="Table linen, toilet linen and kitchen linen, other than knitted or crocheted, other than of terry towelling or a similar terry fabrics of cotton.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -670,8 +693,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="40",
                 group_description="Woven curtains ( including drapes, interior blinds, curtain and bed valances and other furnishing articles), other than knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -681,8 +704,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="41",
                 group_description="Yarn of synthetic filament (continuous), not put up for retail sale, other than non textured single yarn untwisted or with a twist of not more than 50 turns/m.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -692,8 +715,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="42",
                 group_description="Yarn of continuous man-made fibres, not put up for retail sale. Yarn of artificial fibres; yarn of artificial filaments, not put up for retail sale, other than single yarn of viscose rayon untwisted or with a twist of not more than 250 turns/m and single non textured yarn of cellulose acetate.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -703,8 +726,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="43",
                 group_description="Yarn of man-made filament, yarn of artificial staple fibres, cotton yarn, put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -714,8 +737,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="46",
                 group_description="Carded or combed sheep's or lambs wool or other fine animal hair.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -725,8 +748,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="47",
                 group_description="Yarn of carded sheep's or lambs wool (woollen yarn) or of carded fine animal hair, not put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -736,8 +759,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="48",
                 group_description="Yarn of combed sheep's or lambs wool (worsted yarn) or of combed fine animal hair, not put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -747,8 +770,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="49",
                 group_description="Yarn of sheep's or lambs wool or of combed fine animal hair, put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -758,8 +781,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="50",
                 group_description="Woven fabrics of sheep's or lambs wool or of fine animal hair.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -769,8 +792,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="51",
                 group_description="Cotton, carded or combed.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -780,8 +803,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="53",
                 group_description="Cotton gauze.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -791,8 +814,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="54",
                 group_description="Artificial staple fibres, including waste, carded, combed or otherwise processed for spinning.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -802,8 +825,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="55",
                 group_description="Synthetic staple fibres, including waste, carded, combed or otherwise processed for spinning.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -813,8 +836,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="56",
                 group_description="Yarn of synthetic staple fibres (including waste), put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -824,8 +847,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="58",
                 group_description="Carpets, carpentines and rugs, knotted (made up or not).",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -835,8 +858,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="59",
                 group_description="Carpets and other textile floor coverings, other than the carpets of category 58.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -846,8 +869,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="60",
                 group_description="Tapestries, hand-made, of the type Gobelins, Flanders, Aubusson, Beauvais and the like, and needlework tapestries (e.g. petit point and cross stitch) made in panels and the like by hand.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -857,8 +880,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="61",
                 group_description="Narrow woven fabrics, and narrow fabrics (bolduc) consisting of warp without weft, assembled by means of an adhesive, other than labels and similar articles of category 62. Elastic fabrics and trimmings (not knitted or crocheted), made from textile materials assembled from rubber thread.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -868,8 +891,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="62",
                 group_description="Chenille yarn (incl. Flock chenille yarn), gimped yarn (other than metallized yarn and gimped horsehair yarn). Tulle and other net fabrics but not including woven, knitted or crocheted fabrics, hand or mechanically-made lace, in the piece, in strips or in motifs. Labels, badges and the like of textile materials, not embroidered, in the piece, in strips or cut to shape or size, woven. Braids and ornamental trimmings in the piece; tassels, pompons and the like. Embroidery, in the piece, in strips or in motifs.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -879,8 +902,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="63",
                 group_description="Knitted or crocheted fabric of synthetic fibres containing by weight 5% or more elastomeric yarn and knitted or crocheted fabrics containing by weight 5% or more of rubber thread. Raschel lace and long-pile fabric of synthetic fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -890,8 +913,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="65",
                 group_description="Knitted or crocheted fabric, other than those of categories 38 A and 63, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -901,8 +924,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="66",
                 group_description="Travelling rugs and blankets, other than knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -912,8 +935,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="67",
                 group_description="Knitted or crocheted clothing accessories other than for babies; household linen of all kinds, knitted or crocheted; curtains (incl. drapes) and interior blinds, curtain or bed valances and other furnishing articles knitted or crocheted; knitted or crocheted blankets and travelling rugs, other knitted or crocheted articles including parts of garments or of clothing accessories.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -923,8 +946,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="68",
                 group_description="Babies' garments and clothing accessories, excluding babies' gloves, mittens and mitts of categories 10 and 87, and babies' stockings, socks and sockettes, other than knitted or crocheted, of category 88.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -934,8 +957,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="69",
                 group_description="Women's or girls' petticoats or slips, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -945,8 +968,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="72",
                 group_description="Swimwear, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -956,8 +979,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="73",
                 group_description="Track suits of knitted or crocheted fabric, of wool, of cotton or of man-made textile fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -967,8 +990,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="74",
                 group_description="Women's or girls knitted or crocheted suits and ensembles, of wool, of cotton or of man-made fibres, excluding ski suit.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -978,8 +1001,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="75",
                 group_description="Men's or boys knitted or crocheted suits and ensembles, of wool, of cotton or of man-made fibres, excluding ski suit.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -989,8 +1012,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="76",
                 group_description="Men's or boys industrial or occupational clothing, other than knitted or crocheted. Women's or girls aprons, smock overalls and other industrial or occupational clothing, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1000,8 +1023,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="77",
                 group_description="Ski suits, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1011,8 +1034,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="78",
                 group_description="Garments, other than knitted or crocheted, excluding garments of categories 6, 7, 8, 14, 15, 16, 17, 18, 21, 26, 27, 29, 68, 72, 76 and 77.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1022,8 +1045,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="83",
                 group_description="Overcoats, jackets, blazers and other garments, including ski suits, knitted or crocheted, excluding garments of categories 4, 5, 7, 13, 24, 26, 27, 28, 68, 69, 72, 73, 74, 75.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1033,8 +1056,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="84",
                 group_description="Shawls, scarves, mufflers, mantillas, veils and the like other than knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1044,8 +1067,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="85",
                 group_description="Ties, bow ties and cravats other than knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1055,8 +1078,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="86",
                 group_description="Corsets, corset-belts, suspender belts, braces, suspenders, garters and the like, and parts thereof, whether or not knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1066,8 +1089,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="87",
                 group_description="Gloves, mittens and mitts, not knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1077,8 +1100,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="88",
                 group_description="Stockings, socks and sockettes, not knitted or crocheted; other clothing accessories, parts of garments or of clothing accessories other than for babies, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1088,8 +1111,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="12",
                 group_description="Panty-hose and tights, stockings, understockings, socks, ankle-socks, sockettes and the like, knitted or crocheted, other than for babies, including stockings for varicose veins, other than products of category 70.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PRS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PRS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1099,7 +1122,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7604",
                 group_description="Aluminium bars, rods and profiles",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1109,7 +1132,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7616",
                 group_description="Other articles of aluminium",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1119,7 +1142,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7605",
                 group_description="Aluminium wire",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1129,7 +1152,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7606",
                 group_description="Aluminium plates, sheets and strip of a thickness exceeding 0.2mm",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1139,7 +1162,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7607",
                 group_description="Aluminium foil of a thickness not exceeding 0.2mm",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1149,7 +1172,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7609",
                 group_description="Aluminium tube or pipe fittings",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1159,8 +1182,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="90",
                 group_description="Twine, cordage, ropes and cables of synthetic fibres, plaited or not.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1170,8 +1193,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="91",
                 group_description="Tents.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1181,8 +1204,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="93",
                 group_description="Sacks and bags, of a kind used for the packing of goods of woven fabrics, other than made from polyethylene or polypropylene strip.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1192,8 +1215,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="94",
                 group_description="Wadding of textile materials and articles thereof; textile fibres, not exceeding 5 mm in length (flock), textile dust and mill neps.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1203,8 +1226,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="95",
                 group_description="Felt and articles thereof, whether or not impregnated or coated, other than floor coverings.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1214,8 +1237,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="96",
                 group_description="Non-woven fabrics and articles of such fabrics, whether or not impregnated, coated, covered or laminated.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1225,8 +1248,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="97",
                 group_description="Nets and netting made of twine, cordage or rope and made up fishing nets of yarn, twine, cordage or rope.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1236,8 +1259,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="98",
                 group_description="Other articles made from yarn, twine, cordage, cables or rope , other than textile fabrics, articles made from such fabrics and articles of category 97.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1247,8 +1270,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="99",
                 group_description="Textile fabrics coated with gum or amylaceous substances, of a kind used for the outer covers of books and the like; tracing cloth; prepared painting canvas; buckram and similar stiffened textile fabrics of a kind used for hat foundations. Linoleum, whether or not cut to shape; floor coverings consisting of a coating or covering applied on a textile backing, whether or not cut to shape. Rubberised textile fabric, not knitted or crocheted, excluding those for tyres. Textile fabrics otherwise impregnated or coated; painted canvas being theatrical scenery, studio back-cloths, other than of category 100.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1258,8 +1281,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="100",
                 group_description="Textile fabrics impregnated, coated, covered or laminated with preparations of cellulose derivatives or of other artificial plastic materials.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1269,8 +1292,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="101",
                 group_description="Twine, cordage, ropes and cables, plaited or not, other than of synthetic fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1280,8 +1303,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="109",
                 group_description="Tarpaulins, sails, awnings and sunblinds.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1291,8 +1314,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="110",
                 group_description="Woven pneumatic mattresses.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1302,8 +1325,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="111",
                 group_description="Camping goods, woven, other than pneumatic mattresses and tents.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1313,8 +1336,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="112",
                 group_description="Other made up textile articles, woven, excluding those of categories 113 and 114.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1324,8 +1347,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="113",
                 group_description="Floor cloth, dish cloth and dusters, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1335,8 +1358,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="114",
                 group_description="Woven fabrics and articles for technical uses.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1346,8 +1369,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="115",
                 group_description="Flax or ramie yarn.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1357,8 +1380,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="117",
                 group_description="Woven fabrics of flax or of ramie.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1368,8 +1391,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="118",
                 group_description="Table linen, toilet linen and kitchen linen of flax or ramie, other knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1379,8 +1402,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="120",
                 group_description="Curtains ( incl. drapes), interior blinds, curtain and bed valances and other furnishing articles, not knitted or crocheted, of flax or ramie.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1390,8 +1413,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="121",
                 group_description="Twine, cordage, ropes and cables, plaited or not, of flax or ramie.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1401,8 +1424,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="122",
                 group_description="Sacks and bags, of a kind used for the packing of goods, used, of flax, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1412,8 +1435,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="123",
                 group_description="Woven pile fabrics and chenille fabrics of flax or ramie, other than narrow woven fabrics. Shawls, scarves, mufflers, mantillas, veils and the like, of flax or ramie, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1423,8 +1446,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="124",
                 group_description="Synthetic staple fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1434,8 +1457,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="125A",
                 group_description="Synthetic filament yarn (continuous) not put up for retail sale, other than yarn of category 41.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1445,8 +1468,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="125B",
                 group_description="Monofilament, strip (artificial straw and the like) and imitation catgut of synthetic materials.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1456,8 +1479,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="126",
                 group_description="Artificial staple fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1467,8 +1490,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="127A",
                 group_description="Yarn of artificial filaments (continuous) not put up for retail sale, other than yarn of category 42.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1478,8 +1501,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="127B",
                 group_description="Monofilament, strip (artificial straw and the like) and imitation catgut of artificial textile materials.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1489,8 +1512,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="128",
                 group_description="Coarse animal hair, carded or combed.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1500,8 +1523,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="129",
                 group_description="Yarn of coarse animal hair or of horsehair.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1511,8 +1534,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SA1",
                 group_description="Hot-rolled coils, excluding coils for re-rolling.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1522,8 +1545,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SA3",
                 group_description="Other flat-rolled products.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1533,8 +1556,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="1",
                 group_description="Cotton yarn, not put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1544,8 +1567,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="2",
                 group_description="Woven fabrics of cotton, other than gauze, terry fabrics, pile fabrics, chenille fabrics, tulle and other net fabrics.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1555,8 +1578,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="3",
                 group_description="Woven fabrics of synthetic fibres (discontinuous or waste) other than narrow woven fabrics, pile fabrics (incl. terry fabrics) and chenille fabrics.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1566,8 +1589,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="5",
                 group_description="Jerseys, pullovers, slip-overs, waistcoats, twinsets, cardigans, bed-jackets and jumpers (others than jackets and blazers), anoraks, wind-cheaters, waister jackets and the like, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1577,8 +1600,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="6",
                 group_description="Men's or boys' woven breeches, shorts other than swimwear and trousers (incl. slacks); women's or girls woven trousers and slacks, of wool, of cotton or of man made fibres; lower parts of track suits with lining, others than category 16 or 29, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1588,8 +1611,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="7",
                 group_description="Women's or girls blouses, shirts and shirt-blouses, whether or not knitted or crocheted, of wool, of cotton or man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1599,8 +1622,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="8",
                 group_description="Men's or boys' shirts, other than knitted or crocheted, of wool, cotton or man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1610,8 +1633,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="9",
                 group_description="Terry towelling and similar woven terry fabrics of cotton; toilet linen and kitchen linen, other than knitted or crocheted, of terry towelling and woven terry fabrics, of cotton.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1621,8 +1644,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="10",
                 group_description="Gloves, mittens and mitts, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PRS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PRS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1632,8 +1655,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="13",
                 group_description="Men's or boys underpants and briefs, women's or girls knickers and briefs, knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1643,8 +1666,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="14",
                 group_description="Men's or boys woven overcoats, raincoats and other coats, cloaks and capes, of wool, of cotton or of man-made textile fibres (other than parkas) (of category 21).",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1654,8 +1677,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="15",
                 group_description="Women's or girls woven overcoats, raincoats and other coats, cloaks and capes; jackets and blazers, of wool, of cotton or of man-made textile fibres (other than parkas) (of category 21).",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1665,8 +1688,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="16",
                 group_description="Men's or boys suits and ensembles, other than knitted or crocheted, of wool, of cotton or of man-made fibres, excluding ski suits; men's or boys track suits with lining, with an outer shell of a single identical fabric, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1676,8 +1699,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="17",
                 group_description="Men's or boys jackets or blazers, other than knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1687,8 +1710,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="18",
                 group_description="Men's or boys singlets and other vests, underpants, briefs, nightshirts, pyjamas, bathrobes, dressing gowns and similar articles, other than knitted or crocheted. Women's or girls singlets and other vests, slips, petticoats, briefs, panties, night-dresses, pyjamas, ngliges, bathrobes, dressing gowns and similar articles, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1698,8 +1721,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="19",
                 group_description="Handkerchiefs, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1709,8 +1732,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="20",
                 group_description="Bed linen, other than knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1720,8 +1743,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="21",
                 group_description="Parkas; anoraks, windcheaters, waister jackets and the like, other than knitted or crocheted, of wool, of cotton or of man-made fibres; upper parts of tracksuits with lining, other than category 16 or 29, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1731,8 +1754,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="22",
                 group_description="Yarn of staple or waste synthetic fibres, not put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1742,8 +1765,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="23",
                 group_description="Yarn of staple or waste artificial fibres, not put up for retail sale.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1753,8 +1776,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="24",
                 group_description="Men's or boys nightshirts, pyjamas, bathrobes, dressing gowns and similar articles, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1764,8 +1787,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="26",
                 group_description="Women's or girls dresses, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1775,8 +1798,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="27",
                 group_description="Women's or girls skirts, including divided skirts.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1786,8 +1809,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="28",
                 group_description="Trousers, bib and brace overalls, breeches and shorts (other than swimwear), knitted or crocheted, of wool, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1797,8 +1820,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="29",
                 group_description="Women's or girls suits and ensembles, other than knitted or crocheted, of wool, of cotton or of man-made fibres, excluding ski suits; women's or girls track suits with lining, with an outer shell of an identical fabric, of cotton or of man-made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1808,8 +1831,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="31",
                 group_description="Brassires, woven, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1819,8 +1842,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="32",
                 group_description="Woven pile fabrics and chenille fabrics (other than terry towelling or terry fabrics of cotton and narrow woven fabrics) and tufted textile surfaces, of wool, of cotton or of man-made textile fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1830,8 +1853,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="33",
                 group_description="Woven fabrics of synthetic filament yarn obtained from strip or the like of polyethylene or polypropylene, less than 3 m wide. Sacks and bags, of a kind used for the packing of goods, not knitted or crocheted, obtained from strip or the like.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1841,8 +1864,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="34",
                 group_description="Woven fabrics of synthetic filament yarn obtained from strip or the like of polyethylene or polypropylene, 3 m or more wide.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1852,8 +1875,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="130A",
                 group_description="Silk yarn other than yarn spun from silk waste.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1863,8 +1886,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="130B",
                 group_description="Silk yarn other than of category 130 A; silk-worm gut.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1874,8 +1897,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="131",
                 group_description="Yarn of other vegetable textile fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1885,8 +1908,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="132",
                 group_description="Paper yarn.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1896,8 +1919,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="133",
                 group_description="Yarn of true hemp.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1907,8 +1930,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="134",
                 group_description="Metallized yarn.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1918,8 +1941,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="135",
                 group_description="Woven fabrics of coarse animal hair or of horse hair.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1929,8 +1952,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="136",
                 group_description="Woven fabrics of silk or of silk waste.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1940,8 +1963,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="137",
                 group_description="Woven pile fabric and chenille fabrics and narrow woven fabrics of silk, or of silk waste.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1951,8 +1974,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="138",
                 group_description="Woven fabrics of paper yarn and other textile fibres other than of ramie.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1962,8 +1985,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="139",
                 group_description="Woven fabrics of metal threads or of metallized yarn.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1973,8 +1996,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="140",
                 group_description="Knitted or crocheted fabric of textile material other than wool or fine animal hair, cotton or man made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1984,8 +2007,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="141",
                 group_description="Travelling rugs and blankets of textile material other than wool or fine animal hair, cotton or man made fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -1995,8 +2018,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="142",
                 group_description="Carpets and other textile floor coverings of sisal, of other fibres of the agave family or the Manila hemp.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2006,8 +2029,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="144",
                 group_description="Felt of coarse animal hair.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2017,8 +2040,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="145",
                 group_description="Twine, cordage, ropes and cables plaited or not abaca (Manila hemp) or of true hemp.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2028,8 +2051,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="146A",
                 group_description="Binder or baler twine for agricultural machines, of sisal or other fibres of the agave family.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2039,8 +2062,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="146B",
                 group_description="Twine, cordage, ropes and cables of sisal or other fibres of the agave family, other than the products of category 146 A.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2050,8 +2073,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="146C",
                 group_description="Twine, cordage, ropes and cables, whether or not plaited or braided, of jute or of other textile bast fibres of heading N 5303.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2061,8 +2084,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="147",
                 group_description="Silk waste( incl. cocoons unsuitable for reeling), yarn waste and garnetted stock, other than not carded or combed.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2072,8 +2095,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="148A",
                 group_description="Yarn of jute or of other textile bast fibres of heading N 5303.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2083,8 +2106,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="148B",
                 group_description="Coir yarn.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2094,8 +2117,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="149",
                 group_description="Woven fabrics of jute or of other textile bast fibres of a width of more than 150 cm.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2105,8 +2128,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="150",
                 group_description="Woven fabrics of jute or of other textile bast fibres of a width of not more than 150 cm; Sacks and bags, of a kind used for the packing of goods, of jute or of other textile bast fibres, other than used.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2116,8 +2139,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="151A",
                 group_description="Floor coverings of coconut fibres (coir).",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2127,8 +2150,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="151B",
                 group_description="Carpets and other textile floor coverings, of jute or of other textile bast fibres, other than tufted or flocked.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2138,8 +2161,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="152",
                 group_description="Needle loom felt of jute or of other textile bast fibres not impregnated or coated, other than floor coverings.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2149,8 +2172,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="153",
                 group_description="Used sacks and bags, of a kind used for the packing of goods, of jute or of other textile bast fibres of heading N 5303.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2160,8 +2183,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="154",
                 group_description="Silkworm cocoons suitable for reeling. Raw silk (not thrown). Silk waste( incl. cocoons unsuitable for reeling), yarn waste and garnetted stock, not carded or combed. Wool not carded or combed. Fine or coarse animal hair, not carded or combed. Waste of wool or of fine or coarse animal hair, including yarn waste but excluding garnetted stock. Garnetted stock of wool or of fine or coarse animal hair. Flax, raw or processed but not spun: flax tow and waste (including yarn waste and garnetted stock). Ramie and other vegetable textile fibres, raw or processed but not spun: tow, noils and waste, other than coir and abaca of heading N 5304. Cotton, not carded nor combed. Cotton waste (incl. yarn waste and garnetted stock). True hemp (cannabis sativa), raw or processed but not spun: tow and waste of true hemp (including yarn waste and garnetted stock). Abaca (Manila hemp or Musa Textilis Nee),raw or processed but not spun: tow and waste of abaca (including yarn waste and garnetted stock). Jute or other textile bast fibres ( excl. flax, true hemp and ramie), raw or processed but not spun: tow and waste of jute or other textile bast fibres (including yarn waste and garnetted stock). Other vegetable textile fibres, raw or processed but not spun: tow and waste of such fibres (including yarn waste and garnetted stock).",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2171,8 +2194,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="156",
                 group_description="Blouses and pullovers knitted or crocheted of silk or silk waste for women and girls.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2182,8 +2205,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="157",
                 group_description="Garments, knitted or crocheted, other than those of categories 1 to 123 and 156.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2193,8 +2216,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="159",
                 group_description="Dresses, blouses and shirt-blouses, not knitted or crocheted, of silk or silk waste. Shawls, scarves, mufflers, mantillas, veils and the like, not knitted or crocheted, of silk or silk waste. Ties, bow ties and cravats of silk or silk waste.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2204,8 +2227,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="160",
                 group_description="Handkerchiefs of silk or silk waste.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2215,8 +2238,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="161",
                 group_description="Garments, not knitted or crocheted, other than those of categories 1 to 123 and category 159.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2226,8 +2249,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SAN1",
                 group_description="Wood Charcoal (Somalia - Derogation of Sanctions).",
-                commodity_type=CommodityType.objects.get(type_code="WOOD_CHARCOAL"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="WOOD_CHARCOAL"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2237,8 +2260,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SAN2",
                 group_description="Precious Metals and Stones (Iran and Syria - Derogation of Sanctions).",
-                commodity_type=CommodityType.objects.get(type_code="PRECIOUS_METAL_STONE"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="PRECIOUS_METAL_STONE"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2248,8 +2271,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SAN3",
                 group_description="Oil and Petrochemicals (Iran - Derogation of Sanctions).",
-                commodity_type=CommodityType.objects.get(type_code="OIL_PETROCHEMICALS"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="OIL_PETROCHEMICALS"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2259,8 +2282,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="SAN4",
                 group_description="Oil and Petrochemicals (Syria - Derogation of Sanctions).",
-                commodity_type=CommodityType.objects.get(type_code="OIL_PETROCHEMICALS"),
-                unit=Unit.objects.get(unit_type="KGS"),
+                commodity_type=data.get_commodity_type(type_code="OIL_PETROCHEMICALS"),
+                unit=data.get_unit(unit_type="KGS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2270,8 +2293,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="70",
                 group_description="Panty-hose and tights of synthetic fibres, measuring per single yarn less than 67 decitex (6,7 tex). Women's full length hosiery of synthetic fibres.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2281,8 +2304,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="M2",
                 group_name="ex Chapter 97",
-                commodity_type=CommodityType.objects.get(type_code="FIREARMS_AMMO"),
-                unit=Unit.objects.get(unit_type="UNITS"),
+                commodity_type=data.get_commodity_type(type_code="FIREARMS_AMMO"),
+                unit=data.get_unit(unit_type="UNITS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2292,8 +2315,8 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="CATEGORY",
                 group_code="4",
                 group_description="Shirts, T-shirts, lightweight fine knit roll, polo or turtle necked jumpers and pullovers (other than of wool or fine animal hair), undervests and the like, knitted or crocheted.",
-                commodity_type=CommodityType.objects.get(type_code="TEXTILES"),
-                unit=Unit.objects.get(unit_type="PCS"),
+                commodity_type=data.get_commodity_type(type_code="TEXTILES"),
+                unit=data.get_unit(unit_type="PCS"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2303,7 +2326,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7225",
                 group_description="Flat-rolled products of other alloy steel, of a width of 600 mm or more.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2313,7 +2336,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7304",
                 group_description="Tubes, pipes and hollow profiles, seamless, of iron (other than cast iron) or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2323,7 +2346,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7601",
                 group_description="Unwrought aluminium",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2333,7 +2356,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7608",
                 group_description="Aluminium tubes and pipes",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
             CommodityGroup(
                 is_active=True,
@@ -2343,7 +2366,7 @@ def add_commodity_groups(apps, schema_editor):
                 group_type="AUTO",
                 group_code="7318",
                 group_description="Screws, bolts, nuts, coach screws, screw hooks, rivets, cotters, cotter pins, washers (including spring washers) and similar articles, of iron or steel.",
-                commodity_type=CommodityType.objects.get(type_code="IRON_STEEL"),
+                commodity_type=data.get_commodity_type(type_code="IRON_STEEL"),
             ),
         ]
     )
