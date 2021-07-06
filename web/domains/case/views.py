@@ -23,6 +23,7 @@ from web.domains.case._import.opt.forms import (
     OPTChecklistForm,
 )
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
+from web.domains.case._import.textiles.forms import TextilesChecklistForm
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.file.models import File
@@ -1813,6 +1814,9 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
         application_errors.add(_get_opt_errors(application))
 
+    elif application.process_type == TextilesApplication.PROCESS_TYPE:
+        application_errors.add(_get_textiles_errors(application))
+
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         # There are no extra checks for Sanctions and Adhoc
         pass
@@ -1898,6 +1902,14 @@ def _get_opt_errors(application: ImportApplication) -> PageErrors:
         application.outwardprocessingtradeapplication,  # type: ignore[union-attr]
         "import:opt:manage-checklist",
         OPTChecklistForm,
+    )
+
+
+def _get_textiles_errors(application: ImportApplication) -> PageErrors:
+    return _get_checklist_errors(
+        application.textilesapplication,  # type: ignore[union-attr]
+        "import:textiles:manage-checklist",
+        TextilesChecklistForm,
     )
 
 
