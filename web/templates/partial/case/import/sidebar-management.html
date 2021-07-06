@@ -76,6 +76,13 @@
         Checklist
       </a>
     </li>
+  {% elif process.process_type == "TextilesApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:textiles:manage-checklist', kwargs={"application_pk": process.pk}) }}">
+        Checklist
+      </a>
+    </li>
   {% endif %}
 
   {# Common import application links #}

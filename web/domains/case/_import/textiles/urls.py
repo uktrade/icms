@@ -30,7 +30,7 @@ urlpatterns = [
                         ]
                     ),
                 ),
-                # path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
             ],
         ),
     )

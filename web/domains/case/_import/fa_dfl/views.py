@@ -335,7 +335,7 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk

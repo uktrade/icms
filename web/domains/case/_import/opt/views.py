@@ -481,7 +481,7 @@ def _get_compensating_products_category_descriptions() -> dict[str, str]:
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk):
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk

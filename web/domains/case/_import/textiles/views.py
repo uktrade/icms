@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -15,8 +15,12 @@ from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import EditTextilesForm
-from .models import TextilesApplication
+from .forms import (
+    EditTextilesForm,
+    TextilesChecklistForm,
+    TextilesChecklistOptionalForm,
+)
+from .models import TextilesApplication, TextilesChecklist
 
 
 @login_required
@@ -201,3 +205,47 @@ def delete_document(
         document.save()
 
         return redirect(reverse("import:textiles:edit", kwargs={"application_pk": application_pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: TextilesApplication = get_object_or_404(
+            TextilesApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        checklist, created = TextilesChecklist.objects.get_or_create(import_application=application)
+
+        if request.POST:
+            form: TextilesChecklistForm = TextilesChecklistOptionalForm(
+                request.POST, instance=checklist
+            )
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:textiles:manage-checklist",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+        else:
+            if created:
+                form = TextilesChecklistForm(instance=checklist)
+            else:
+                form = TextilesChecklistForm(data=model_to_dict(checklist), instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Textiles (Quota) Import Licence - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )

@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.country.models import Country
 from web.domains.user.models import User
 
@@ -68,3 +69,24 @@ class EditTextilesForm(forms.ModelForm):
         self.fields["consignment_country"].queryset = Country.objects.filter(
             country_groups__name="Textile COCs"
         )
+
+
+class TextilesChecklistForm(ChecklistBaseForm):
+    class Meta:
+        model = models.TextilesChecklist
+        fields = ("within_maximum_amount_limit",) + ChecklistBaseForm.Meta.fields
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["within_maximum_amount_limit"].required = True
+
+
+class TextilesChecklistOptionalForm(TextilesChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False

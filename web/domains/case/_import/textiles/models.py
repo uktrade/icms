@@ -1,6 +1,10 @@
 from django.db import models
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import (
+    ChecklistBase,
+    ImportApplication,
+    ImportApplicationType,
+)
 from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
 from web.models.shared import at_least_0
@@ -74,3 +78,17 @@ class TextilesApplication(ImportApplication):
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")
+
+
+class TextilesChecklist(ChecklistBase):
+    import_application = models.OneToOneField(
+        TextilesApplication, on_delete=models.PROTECT, related_name="checklist"
+    )
+
+    within_maximum_amount_limit = models.BooleanField(
+        default=False,
+        verbose_name=(
+            "Check amount to be imported is within the maximum amount limits"
+            " for the category and country requested."
+        ),
+    )

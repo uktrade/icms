@@ -207,7 +207,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, application_pk: int) -
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
