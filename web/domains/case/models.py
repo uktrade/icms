@@ -1,3 +1,6 @@
+from typing import Any, Optional
+
+from django.conf import settings
 from django.contrib import messages
 from django.db import models
 from django.db.models import Q
@@ -290,99 +293,119 @@ class ApplicationBase(WorkbasketBase, Process):
 
         task = self.get_active_task()
 
-        if user.has_perm("web.reference_data_access"):
-            admin_actions: list[WorkbasketAction] = []
+        is_ilb_admin = user.has_perm("web.reference_data_access")
+        include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
-            if self.status in [self.Statuses.SUBMITTED, self.Statuses.WITHDRAWN]:
-                case_owner = self.case_owner  # type: ignore[attr-defined]
-
-                if not case_owner:
-                    admin_actions.append(
-                        WorkbasketAction(
-                            is_post=True,
-                            name="Take Ownership",
-                            url=reverse("case:take-ownership", kwargs=kwargs),
-                        ),
-                    )
-
-                    admin_actions.append(view_action)
-
-                elif (case_owner == user) and task and task.task_type == "process":
-                    admin_actions.append(
-                        WorkbasketAction(
-                            is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
-                        )
-                    )
-                else:
-                    admin_actions.append(view_action)
-
-            elif self.status == self.Statuses.PROCESSING:
-                # TODO: implement this
-                admin_actions.append(
-                    WorkbasketAction(is_post=False, name="Authorise Documents", url="#TODO")
-                )
-
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="Cancel Authorisation",
-                        url=reverse("case:cancel-authorisation", kwargs=kwargs),
-                    )
-                )
-
-                admin_actions.append(view_action)
+        if is_ilb_admin:
+            admin_actions = self._get_admin_actions(user, view_action, task, kwargs)
 
             if admin_actions:
                 r.actions.append(admin_actions)
 
-        # TODO: we shouldn't always show the applicant actions, but we need to be able to test the system.
-        if True:
-            applicant_actions: list[WorkbasketAction] = []
-
-            if self.status == self.Statuses.SUBMITTED:
-                applicant_actions.append(view_action)
-
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Withdraw",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-
-                for fir in self.further_information_requests.open():  # type: ignore[attr-defined]
-                    applicant_actions.append(
-                        WorkbasketAction(
-                            is_post=False,
-                            name="Respond FIR",
-                            url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
-                        )
-                    )
-
-            elif self.status == self.Statuses.WITHDRAWN:
-                applicant_actions.append(view_action)
-
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Pending Withdrawal",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-
-            elif self.status == self.Statuses.IN_PROGRESS:
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Resume",
-                        url=reverse(self.get_edit_view_name(), kwargs={"application_pk": self.pk}),
-                    )
-                )
+        if include_applicant_rows:
+            applicant_actions = self._get_applicant_actions(view_action, kwargs)
 
             if applicant_actions:
                 r.actions.append(applicant_actions)
 
         return r
+
+    def _get_admin_actions(
+        self,
+        user: User,
+        view_action: WorkbasketAction,
+        task: Optional[Task],
+        kwargs: dict[str, Any],
+    ) -> list[WorkbasketAction]:
+        admin_actions: list[WorkbasketAction] = []
+
+        if self.status in [self.Statuses.SUBMITTED, self.Statuses.WITHDRAWN]:
+            case_owner = self.case_owner  # type: ignore[attr-defined]
+
+            if not case_owner:
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="Take Ownership",
+                        url=reverse("case:take-ownership", kwargs=kwargs),
+                    ),
+                )
+
+                admin_actions.append(view_action)
+
+            elif (case_owner == user) and task and task.task_type == "process":
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
+                    )
+                )
+            else:
+                admin_actions.append(view_action)
+
+        elif self.status == self.Statuses.PROCESSING:
+            # TODO: implement this
+            admin_actions.append(
+                WorkbasketAction(is_post=False, name="Authorise Documents", url="#TODO")
+            )
+
+            admin_actions.append(
+                WorkbasketAction(
+                    is_post=True,
+                    name="Cancel Authorisation",
+                    url=reverse("case:cancel-authorisation", kwargs=kwargs),
+                )
+            )
+
+            admin_actions.append(view_action)
+
+        return admin_actions
+
+    def _get_applicant_actions(
+        self, view_action: WorkbasketAction, kwargs: dict[str, Any]
+    ) -> list[WorkbasketAction]:
+        applicant_actions: list[WorkbasketAction] = []
+
+        if self.status == self.Statuses.SUBMITTED:
+            applicant_actions.append(view_action)
+
+            applicant_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name="Withdraw",
+                    url=reverse("case:withdraw-case", kwargs=kwargs),
+                ),
+            )
+
+            for fir in self.further_information_requests.open():  # type: ignore[attr-defined]
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Respond FIR",
+                        url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
+                    )
+                )
+
+        elif self.status == self.Statuses.WITHDRAWN:
+            applicant_actions.append(view_action)
+
+            applicant_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name="Pending Withdrawal",
+                    url=reverse("case:withdraw-case", kwargs=kwargs),
+                ),
+            )
+
+        elif self.status == self.Statuses.IN_PROGRESS:
+            applicant_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name="Resume",
+                    url=reverse(self.get_edit_view_name(), kwargs={"application_pk": self.pk}),
+                )
+            )
+
+        return applicant_actions
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
         if self.is_import_application():
