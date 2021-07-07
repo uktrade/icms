@@ -348,7 +348,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 application.cp_category_licence_description = group.group_description
                 application.submit_application(request, task)
 
-                return redirect(reverse("home"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

@@ -1,5 +1,8 @@
+from django.contrib import messages
 from django.db import models
 from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
@@ -402,3 +405,12 @@ class ApplicationBase(WorkbasketBase, Process):
         task.save()
 
         Task.objects.create(process=self, task_type="process", previous=task)
+
+    def redirect_after_submit(self, request: AuthenticatedHttpRequest) -> HttpResponse:
+        msg = (
+            f"Your application has been submitted. The reference number"
+            f" assigned to this case is {self.get_reference()}."
+        )
+        messages.success(request, msg)
+
+        return redirect(reverse("workbasket"))

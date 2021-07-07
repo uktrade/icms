@@ -276,7 +276,7 @@ def submit_wood_quota(request, pk: int) -> HttpResponse:
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
-                return redirect(reverse("home"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

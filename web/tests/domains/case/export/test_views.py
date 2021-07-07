@@ -63,7 +63,7 @@ class TestFlow(AuthTestCase):
 
         # declaration of truth
         response = self.client.post(url_submit, data={"confirmation": "I AGREE"})
-        self.assertRedirects(response, "/home/")
+        self.assertRedirects(response, "/workbasket/")
 
         appl.refresh_from_db()
         self.assertEqual(appl.status, "SUBMITTED")
@@ -145,7 +145,7 @@ class TestSubmitCom(AuthTestCase):
         assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
 
         response = self.client.post(self.url, data={"confirmation": "I AGREE"})
-        self.assertRedirects(response, "/home/", fetch_redirect_response=False)
+        self.assertRedirects(response, "/workbasket/", fetch_redirect_response=False)
 
     def test_submit_no_auth(self):
         self.appl.tasks.create(is_active=True, task_type="prepare")

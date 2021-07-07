@@ -180,7 +180,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, application_pk: int) -
                 # )
                 # application.endorsements.create(content=second_endorsement.template_content)
 
-                return redirect(reverse("home"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

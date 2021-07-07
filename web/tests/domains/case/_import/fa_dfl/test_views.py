@@ -409,7 +409,7 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     form_data = {"confirmation": "I AGREE"}
     response = client.post(submit_url, form_data)
 
-    assertRedirects(response, reverse("home"), 302)
+    assertRedirects(response, reverse("workbasket"), 302)
 
     # check the application is in the correct state
     application = DFLApplication.objects.get(pk=dfl_app_pk)

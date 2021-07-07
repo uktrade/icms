@@ -109,7 +109,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
-                return redirect(reverse("workbasket"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

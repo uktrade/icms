@@ -166,7 +166,7 @@ def submit_com(request, pk):
             if form.is_valid() and not errors.has_errors():
                 appl.submit_application(request, task)
 
-                return redirect(reverse("home"))
+                return appl.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

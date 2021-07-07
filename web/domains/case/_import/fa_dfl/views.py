@@ -269,7 +269,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
                 application.save()
 
-                return redirect(reverse("home"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()

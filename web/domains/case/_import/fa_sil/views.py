@@ -533,7 +533,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
                 )
                 application.endorsements.create(content=endorsement.template_content)
 
-                return redirect(reverse("home"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()
