@@ -87,12 +87,12 @@
             <td>
               {% if sanction_email.is_draft %}
                 <a
-                  href="{{ icms_url('import:sanctions:edit-sanction-email', args=[process.pk, sanction_email.pk]) }}">
+                  href="{{ icms_url('import:sanctions:edit-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': sanction_email.pk}) }}">
                   Edit/Send
                 </a>
                 <form
                   method="post"
-                  action="{{ icms_url('import:sanctions:delete-sanction-email', args=[process.pk, sanction_email.pk]) }}">
+                  action="{{ icms_url('import:sanctions:delete-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': sanction_email.pk}) }}">
                   {{ csrf_input }}
                   <button
                     type="submit"
@@ -102,7 +102,7 @@
                 </form>
               {% else %}
                 <a
-                  href="{{ icms_url('import:sanctions:add-response-sanction-email', args=[process.pk, sanction_email.pk]) }}">
+                  href="{{ icms_url('import:sanctions:add-response-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': sanction_email.pk}) }}">
                   Record Response
                 </a>
               {% endif %}
@@ -115,7 +115,7 @@
 
   <form
     method="post"
-    action="{{ icms_url('import:sanctions:create-sanction-email', args=[process.pk]) }}">
+    action="{{ icms_url('import:sanctions:create-sanction-email', kwargs={'application_pk': process.pk}) }}">
     {{ csrf_input }}
     <input type="submit" class="button small-button icon-plus" value="New Email" />
 

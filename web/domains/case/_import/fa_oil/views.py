@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -8,6 +7,7 @@ from django.urls import reverse
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import SubmitForm
+from web.domains.case.views import check_application_permission
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -26,17 +26,15 @@ from .models import ChecklistFirearmsOILApplication, OpenIndividualLicenceApplic
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = PrepareOILForm(data=request.POST, instance=application)
@@ -63,17 +61,15 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit_oil(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+def submit_oil(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
 

@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -9,6 +8,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.views import check_application_permission
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -30,16 +30,15 @@ from .models import DerogationsApplication, DerogationsChecklist
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.method == "POST":
             form = DerogationsForm(data=request.POST, instance=application)
@@ -68,17 +67,17 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_supporting_document(request: AuthenticatedHttpRequest, application_pk: int) -> HttpResponse:
+def add_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -109,7 +108,7 @@ def add_supporting_document(request: AuthenticatedHttpRequest, application_pk: i
 @require_GET
 @login_required
 def view_supporting_document(
-    request: AuthenticatedHttpRequest, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application: DerogationsApplication = get_object_or_404(
         DerogationsApplication, pk=application_pk
@@ -122,19 +121,17 @@ def view_supporting_document(
 
 @require_POST
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def delete_supporting_document(
-    request: AuthenticatedHttpRequest, application_pk: int, document_pk: int
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -146,16 +143,15 @@ def delete_supporting_document(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit_derogations(request: AuthenticatedHttpRequest, application_pk: int) -> HttpResponse:
+def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        check_application_permission(application, request.user, "import")
+
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = _get_derogations_errors(application)
 
@@ -253,7 +249,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods_licence(request: AuthenticatedHttpRequest, application_pk: int) -> HttpResponse:
+def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk

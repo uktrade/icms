@@ -119,6 +119,7 @@ class TestEditCom(AuthTestCase):
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
         self.login_with_permissions(["exporter_access"])
+        assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
 
         with self.assertRaises(Exception, msg="Expected one active task, got 0"):
             self.client.get(self.url)
@@ -169,6 +170,7 @@ class TestSubmitCom(AuthTestCase):
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
         self.login_with_permissions(["exporter_access"])
+        assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
 
         with self.assertRaises(Exception, msg="Expected one active task, got 0"):
             self.client.get(self.url)

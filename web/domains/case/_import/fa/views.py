@@ -353,7 +353,6 @@ def create_import_contact(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_import_contact(
     request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, contact_pk: int
 ) -> HttpResponse:
@@ -364,7 +363,9 @@ def edit_import_contact(
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
+
         check_application_permission(application, request.user, "import")
+
         person = get_object_or_404(ImportContact, pk=contact_pk)
 
         task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")

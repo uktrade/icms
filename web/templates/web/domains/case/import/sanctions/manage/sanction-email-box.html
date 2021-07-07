@@ -4,12 +4,12 @@
   {% if object.is_draft %}
     <a
       class="button small-button"
-      href="{{ icms_url('import:sanctions:edit-sanction-email', args=[process.pk, object.pk]) }}">
+      href="{{ icms_url('import:sanctions:edit-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
       Edit/Send
     </a>
     <form
       method="post"
-      action="{{ icms_url('import:sanctions:delete-sanction-email', args=[process.pk, object.pk]) }}">
+      action="{{ icms_url('import:sanctions:delete-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
       {{ csrf_input }}
       <button
         type="submit"
@@ -20,7 +20,7 @@
   {% else %}
     <a
       class="button small-button"
-      href="{{ icms_url('import:sanctions:add-response-sanction-email', args=[process.pk, object.pk]) }}">
+      href="{{ icms_url('import:sanctions:add-response-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
       Record Response
     </a>
   {% endif %}

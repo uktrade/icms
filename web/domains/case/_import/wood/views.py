@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -10,6 +9,7 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.views import check_application_permission
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -28,17 +28,15 @@ from .models import WoodQuotaApplication, WoodQuotaChecklist
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
 def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = PrepareWoodQuotaForm(data=request.POST, instance=application)
@@ -70,15 +68,13 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_supporting_document(request, pk):
+def add_supporting_document(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -104,7 +100,9 @@ def add_supporting_document(request, pk):
 
 @require_GET
 @login_required
-def view_supporting_document(request, application_pk, document_pk):
+def view_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     application = get_object_or_404(WoodQuotaApplication, pk=application_pk)
 
     return import_views.view_file(
@@ -114,17 +112,17 @@ def view_supporting_document(request, application_pk, document_pk):
 
 @require_POST
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def delete_supporting_document(request, application_pk, document_pk):
+def delete_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -134,17 +132,15 @@ def delete_supporting_document(request, application_pk, document_pk):
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def add_contract_document(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+def add_contract_document(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -182,7 +178,9 @@ def add_contract_document(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 @require_GET
 @login_required
-def view_contract_document(request, application_pk, document_pk):
+def view_contract_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     application = get_object_or_404(WoodQuotaApplication, pk=application_pk)
 
     return import_views.view_file(request, application, application.contract_documents, document_pk)
@@ -190,17 +188,17 @@ def view_contract_document(request, application_pk, document_pk):
 
 @require_POST
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def delete_contract_document(request, application_pk, document_pk):
+def delete_contract_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.contract_documents.get(pk=document_pk)
         document.is_active = False
@@ -210,17 +208,17 @@ def delete_contract_document(request, application_pk, document_pk):
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def edit_contract_document(request, application_pk, document_pk):
+def edit_contract_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         document = application.contract_documents.get(pk=document_pk)
 
@@ -249,15 +247,13 @@ def edit_contract_document(request, application_pk, document_pk):
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
-def submit_wood_quota(request, pk: int) -> HttpResponse:
+def submit_wood_quota(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
 
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
+        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
 
@@ -348,7 +344,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+def edit_goods(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=pk

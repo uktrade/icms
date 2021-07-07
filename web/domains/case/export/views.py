@@ -3,7 +3,6 @@ from typing import NamedTuple, Type
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -12,6 +11,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 
 from web.domains.case.forms import SubmitForm
+from web.domains.case.views import check_application_permission
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
@@ -98,17 +98,15 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
 
 
 @login_required
-@permission_required("web.exporter_access", raise_exception=True)
 def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         appl: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(appl, request.user, "export")
 
-        if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
-            raise PermissionDenied
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
             form = PrepareCertManufactureForm(data=request.POST, instance=appl)
@@ -134,17 +132,15 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
 
 @login_required
-@permission_required("web.exporter_access", raise_exception=True)
 def submit_com(request, pk):
     with transaction.atomic():
         appl = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
         )
 
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(appl, request.user, "export")
 
-        if not request.user.has_perm("web.is_contact_of_exporter", appl.exporter):
-            raise PermissionDenied
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
         page_errors = PageErrors(
