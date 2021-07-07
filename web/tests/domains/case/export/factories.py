@@ -12,6 +12,8 @@ class CertificateOfManufactureApplicationFactory(factory.django.DjangoModelFacto
     class Meta:
         model = CertificateOfManufactureApplication
 
+    process_type = CertificateOfManufactureApplication.PROCESS_TYPE
+
     application_type = factory.Iterator(ExportApplicationType.objects.filter(type_code="COM"))
     created_by = factory.SubFactory(UserFactory)
     exporter = factory.SubFactory(ExporterFactory)

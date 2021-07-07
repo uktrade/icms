@@ -6,22 +6,20 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case._import.models import ImportApplication
-from web.domains.case.access.approval.models import (
-    ExporterApprovalRequest,
-    ImporterApprovalRequest,
-)
-from web.domains.case.access.models import (
+from web.models import (
     AccessRequest,
+    ExportApplication,
+    Exporter,
     ExporterAccessRequest,
+    ExporterApprovalRequest,
+    ImportApplication,
+    Importer,
     ImporterAccessRequest,
+    ImporterApprovalRequest,
+    Task,
+    UpdateRequest,
+    User,
 )
-from web.domains.case.export.models import CertificateOfManufactureApplication
-from web.domains.case.models import UpdateRequest
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.user.models import User
-from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 
 
@@ -40,11 +38,6 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 def _get_queryset_admin(user: User) -> QuerySet:
-    # TODO: why is this not getting all ExportApplication objects...?
-    certificates = CertificateOfManufactureApplication.objects.filter(
-        is_active=True
-    ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
-
     exporter_access_requests = ExporterAccessRequest.objects.filter(
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
@@ -53,14 +46,23 @@ def _get_queryset_admin(user: User) -> QuerySet:
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
-    import_application = (
+    export_applications = (
+        ExportApplication.objects.filter(is_active=True)
+        .exclude(update_requests__status__in=[UpdateRequest.OPEN, UpdateRequest.UPDATE_IN_PROGRESS])
+        .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+    )
+
+    import_applications = (
         ImportApplication.objects.filter(is_active=True)
         .exclude(update_requests__status__in=[UpdateRequest.OPEN, UpdateRequest.UPDATE_IN_PROGRESS])
         .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
     )
 
     return chain(
-        certificates, exporter_access_requests, importer_access_requests, import_application
+        exporter_access_requests,
+        importer_access_requests,
+        export_applications,
+        import_applications,
     )
 
 
@@ -107,8 +109,8 @@ def _get_queryset_user(user: User) -> QuerySet:
         )
     )
 
-    # Import Application
-    import_application = (
+    # Import Applications
+    import_applications = (
         ImportApplication.objects.prefetch_related(
             Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
         )
@@ -124,11 +126,27 @@ def _get_queryset_user(user: User) -> QuerySet:
         .filter(importer__in=importers)
     )
 
-    # TODO: this is missing exportapplications
+    # Export Applications
+    export_applications = (
+        ExportApplication.objects.prefetch_related(
+            Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
+        )
+        .filter(is_active=True)
+        .filter(
+            status__in=[
+                ExportApplication.Statuses.SUBMITTED,
+                ExportApplication.Statuses.IN_PROGRESS,
+                ExportApplication.Statuses.WITHDRAWN,
+                ExportApplication.Statuses.UPDATE_REQUESTED,
+            ]
+        )
+        .filter(exporter__in=exporters)
+    )
 
     return chain(
         exporter_approval_requests,
         importer_approval_requests,
         access_requests,
-        import_application,
+        import_applications,
+        export_applications,
     )
