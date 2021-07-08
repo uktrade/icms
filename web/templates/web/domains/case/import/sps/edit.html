@@ -1,24 +1,38 @@
 {% extends "flow/task-base.html" %}
- {% import "forms/forms.html" as forms %}
- {% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
- {% block sidebar %}
-     {% include "partial/case/import/sps/sidebar.html" %}
- {% endblock %}
+{% block sidebar %}
+  {% include "partial/case/import/sps/sidebar.html" %}
+{% endblock %}
 
- {% block main_content %}
-   {% block task_details %}
-     {{ super() }}
-   {% endblock %}
+{% block main_content %}
+  {% block task_details %}
+    {{ super() }}
+  {% endblock %}
 
-   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-     <h4>Contact</h4>
-     {{ fields.field(form.contact) }}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    <h4>Contact</h4>
+    {{ fields.field(form.contact) }}
 
-     <h4>Prior Surveillance</h4>
-     {{ fields.field(form.applicant_reference) }}
+    <h4>Prior Surveillance</h4>
+    {{ fields.field(form.applicant_reference) }}
 
-     <input type="submit" name="action" class="primary-button button" value="Save" />
+    <h4>Goods</h4>
+    {{ fields.field(form.commodity) }}
+    {{ fields.field(form.quantity) }}
+
+    <div class="row">
+      <div class="three columns bold">
+        <div class="float-right">Units</div>
+      </div>
+      <div class="six columns"><p>Kilos</p></div>
+      <div class="three columns"></div>
+    </div>
+    {{ fields.field(form.value_gbp) }}
+    {{ fields.field(form.value_euro) }}
+
+    <input type="submit" name="action" class="primary-button button" value="Save"/>
   {% endcall %}
 
   <h4>Certificates/Documents</h4>

@@ -69,10 +69,34 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "supporting_documents",
-                    models.ManyToManyField(
-                        related_name="_priorsurveillanceapplication_supporting_documents_+",
-                        to="web.File",
+                    "quantity",
+                    models.PositiveIntegerField(
+                        help_text="Please note that maximum allocations apply. Please check the guidance to ensure that you do not apply for more than is allowable.",
+                        null=True,
+                        verbose_name="Quantity",
+                    ),
+                ),
+                (
+                    "value_gbp",
+                    models.PositiveIntegerField(
+                        help_text="Round up to the nearest GBP. Do not enter decimal points, commas or any other punctuation in this box. The entered value will be automatically converted to EUR.",
+                        null=True,
+                        verbose_name="Value (GBP/£)",
+                    ),
+                ),
+                (
+                    "value_euro",
+                    models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)"),
+                ),
+                (
+                    "commodity",
+                    models.ForeignKey(
+                        help_text="It is the responsibility of the applicant to ensure that the commodity code in this box is correct. If you are unsure of the correct commodity code, consult the HM Revenue & Customs at classification.enquiries@hmrc.gsi.gov.uk or use the online trade tariff https://www.gov.uk/trade-tariff/sections.",
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="+",
+                        to="web.commodity",
+                        verbose_name="Commodity Code",
                     ),
                 ),
                 (
@@ -82,6 +106,13 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="+",
                         to="web.priorsurveillancecontractfile",
+                    ),
+                ),
+                (
+                    "supporting_documents",
+                    models.ManyToManyField(
+                        related_name="_priorsurveillanceapplication_supporting_documents_+",
+                        to="web.File",
                     ),
                 ),
             ],

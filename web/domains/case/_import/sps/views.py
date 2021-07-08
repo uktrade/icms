@@ -26,6 +26,7 @@ from web.utils.validation import (
 
 from .forms import AddContractDocumentForm, EditContractDocumentForm, EditSPSForm
 from .models import PriorSurveillanceApplication, PriorSurveillanceContractFile
+from .utils import convert_gbp_to_euro
 
 
 @login_required
@@ -43,7 +44,10 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             form = EditSPSForm(data=request.POST, instance=application)
 
             if form.is_valid():
-                form.save()
+                instance: PriorSurveillanceApplication = form.save()
+
+                instance.value_euro = convert_gbp_to_euro(instance.value_gbp)
+                instance.save()
 
                 return redirect(
                     reverse("import:sps:edit", kwargs={"application_pk": application_pk})

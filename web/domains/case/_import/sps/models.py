@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 
 
@@ -15,7 +16,41 @@ class PriorSurveillanceContractFile(File):
 class PriorSurveillanceApplication(ImportApplication):
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.SPS
 
-    # TODO: add other fields
+    commodity = models.ForeignKey(
+        Commodity,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Commodity Code",
+        help_text=(
+            "It is the responsibility of the applicant to ensure that the"
+            " commodity code in this box is correct. If you are unsure of the"
+            " correct commodity code, consult the HM Revenue & Customs at"
+            " classification.enquiries@hmrc.gsi.gov.uk or use the online trade"
+            " tariff https://www.gov.uk/trade-tariff/sections."
+        ),
+    )
+
+    quantity = models.PositiveIntegerField(
+        null=True,
+        verbose_name="Quantity",
+        help_text=(
+            "Please note that maximum allocations apply. Please check the"
+            " guidance to ensure that you do not apply for more than is allowable."
+        ),
+    )
+
+    value_gbp = models.PositiveIntegerField(
+        null=True,
+        verbose_name="Value (GBP/£)",
+        help_text=(
+            "Round up to the nearest GBP. Do not enter decimal points, commas"
+            " or any other punctuation in this box. The entered value will be"
+            " automatically converted to EUR."
+        ),
+    )
+
+    value_euro = models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)")
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")
