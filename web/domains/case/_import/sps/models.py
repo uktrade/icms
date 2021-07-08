@@ -16,6 +16,12 @@ class PriorSurveillanceContractFile(File):
 class PriorSurveillanceApplication(ImportApplication):
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.SPS
 
+    customs_cleared_to_uk = models.BooleanField(
+        null=True,
+        verbose_name="Will the goods be customs cleared into the UK?",
+        help_text="If no, a paper licence will be issued for clearance in another EU Member State.",
+    )
+
     commodity = models.ForeignKey(
         Commodity,
         on_delete=models.PROTECT,

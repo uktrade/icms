@@ -69,6 +69,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "customs_cleared_to_uk",
+                    models.BooleanField(
+                        null=True,
+                        help_text="If no, a paper licence will be issued for clearance in another EU Member State.",
+                        verbose_name="Will the goods be customs cleared into the UK?",
+                    ),
+                ),
+                (
                     "quantity",
                     models.PositiveIntegerField(
                         help_text="Please note that maximum allocations apply. Please check the guidance to ensure that you do not apply for more than is allowable.",

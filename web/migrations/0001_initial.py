@@ -1328,6 +1328,7 @@ class Migration(migrations.Migration):
                         related_name="import_applications_to",
                         to="web.country",
                         verbose_name="Country Of Consignment",
+                        help_text="Select the country where the goods were shipped from.",
                     ),
                 ),
                 (
@@ -1381,6 +1382,7 @@ class Migration(migrations.Migration):
                         related_name="import_applications_from",
                         to="web.country",
                         verbose_name="Country Of Origin",
+                        help_text="Select the country where the goods were made.",
                     ),
                 ),
                 (

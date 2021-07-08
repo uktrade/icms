@@ -245,6 +245,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="import_applications_from",
         verbose_name="Country Of Origin",
+        help_text="Select the country where the goods were made.",
     )
 
     consignment_country = models.ForeignKey(
@@ -253,6 +254,7 @@ class ImportApplication(ApplicationBase):
         null=True,
         related_name="import_applications_to",
         verbose_name="Country Of Consignment",
+        help_text="Select the country where the goods were shipped from.",
     )
 
     variation_requests = models.ManyToManyField(VariationRequest)

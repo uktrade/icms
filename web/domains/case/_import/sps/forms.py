@@ -1,5 +1,6 @@
 from django import forms
 
+from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
 from web.utils.currency import get_euro_exchange_rate
@@ -13,6 +14,9 @@ class EditSPSForm(forms.ModelForm):
         fields = (
             "contact",
             "applicant_reference",
+            "customs_cleared_to_uk",
+            "origin_country",
+            "consignment_country",
             # TODO: Revisit this when fleshing out ICMSLST-749 (Commodity spike)
             # We are currently just showing all commodities
             "commodity",
@@ -26,6 +30,12 @@ class EditSPSForm(forms.ModelForm):
 
         # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
         self.fields["contact"].queryset = User.objects.all()
+
+        self.fields["customs_cleared_to_uk"].required = True
+
+        countries = Country.objects.filter(country_groups__name="Non EU Single Countries")
+        self.fields["origin_country"].queryset = countries
+        self.fields["consignment_country"].queryset = countries
 
         exchange_rate = get_euro_exchange_rate()
         self.fields["value_euro"].disabled = True
