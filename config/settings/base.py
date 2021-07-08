@@ -161,6 +161,9 @@ Field.default_error_messages = {
 # Root directory for s3 bucket
 S3_ROOT_DIRECTORY = "documents"
 
+# Used to set the S3 endpoint in development environments only
+AWS_S3_ENDPOINT_URL = None
+
 # Order is important
 FILE_UPLOAD_HANDLERS = (
     "django_chunk_upload_handlers.clam_av.ClamAVFileUploadHandler",
