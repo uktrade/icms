@@ -158,12 +158,7 @@ Field.default_error_messages = {
     "required": "You must enter this item",
 }
 
-# for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
-AWS_REGION = "eu-west-2"
-AWS_ACCESS_KEY_ID = "dev"
-AWS_SECRET_ACCESS_KEY = "bar"
-AWS_STORAGE_BUCKET_NAME = "icms.local"
-AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
+# Root directory for s3 bucket
 S3_ROOT_DIRECTORY = "documents"
 
 # Order is important

@@ -9,6 +9,8 @@ from .base import *  # NOQA
 
 env = environ.Env()
 
+VCAP_SERVICES = env.json("VCAP_SERVICES")
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("ICMS_SECRET_KEY")
 DEBUG = env.bool("ICMS_DEBUG", False)
@@ -33,6 +35,13 @@ EMAIL_FROM = env.str("ICMS_EMAIL_FROM")
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL")
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE")
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str("ICMS_FIREARMS_HOMEOFFICE_EMAIL")
+
+# for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
+app_bucket_creds = VCAP_SERVICES["aws-s3-bucket"][0]["credentials"]
+AWS_REGION = app_bucket_creds["aws_region"]
+AWS_ACCESS_KEY_ID = app_bucket_creds["aws_access_key_id"]
+AWS_SECRET_ACCESS_KEY = app_bucket_creds["aws_secret_access_key"]
+AWS_STORAGE_BUCKET_NAME = app_bucket_creds["bucket_name"]
 
 # getAddress.io api key
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY")
