@@ -1,4 +1,4 @@
-{% extends "web/domains/case/import/view_case.html" %}
+{% extends "web/domains/case/view_case.html" %}
 
 
 {% block main_content %}
@@ -6,13 +6,14 @@
     {{ super() }}
   {% endblock %}
 
-  {% call application_section("Derogation from Sanctions Import Ban") %}
+  {% call application_section("Sanctions and Adhoc Licence Application") %}
     {{ application_field(process.applicant_reference, "Applicant Reference", "N/a") }}
     {{ application_field(process.origin_country, "Country Of Origin") }}
     {{ application_field(process.consignment_country, "Country Of Consignment") }}
 
-    {{ application_field(process.contract_sign_date.strftime('%d-%b-%Y'), "Contract Sign Date") }}
-    {{ application_field(process.explanation, "Provide details of why this is a pre-existing contract", "N/a") }}
+    {{ application_field(process.exporter_name, "Exporter Name", "N/a") }}
+    {{ application_field(process.exporter_address, "Exporter Address", "N/a") }}
+
   {% endcall %}
 
   {% call application_section("Goods") %}
@@ -62,7 +63,7 @@
               {{ file.created_by.full_name }}<br>
               {{ file.created_datetime.strftime('%d-%b-%Y %H:%M')}}
             </td>
-            <td><a href="{{ icms_url('import:derogations:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+            <td><a href="{{ icms_url('import:sanctions:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
             {{ file.filename }}</a> {{ file.human_readable_file_size() }}</td>
           </tr>
           {% endfor %}

@@ -1,0 +1,33 @@
+{% extends "web/domains/case/view_case.html" %}
+
+{% block main_content %}
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call application_section("Certificate of Manufacture") %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Countries</label>
+      </div>
+      <div class="six columns">
+        {% for country in process.countries.all() %}
+          {{ country }}
+          {% if not loop.last %}<br />{% endif %}
+        {% endfor %}
+      </div>
+      <div class="three columns"></div>
+    </div>
+
+    {{ application_field(
+      "Yes" if process.is_pesticide_on_free_sale_uk else "No",
+      "Is the pesticide on free sale in the UK?") }}
+    {{ application_field(
+      "Yes" if process.is_manufacturer else "No",
+      "Is the applicant company the manufacturer of the pesticide?") }}
+    {{ application_field(process.product_name, "Product Name") }}
+    {{ application_field(process.chemical_name, "Chemical Name") }}
+    {{ application_field(process.manufacturing_process|nl2br, "Manufacturing Process") }}
+  {% endcall %}
+
+{% endblock %}

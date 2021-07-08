@@ -91,38 +91,4 @@
       </div>
     {% endif %}
   {% endblock %}
-
-  <h4>Application Details</h4>
-  <div class="container">
-    <div class="row">
-      <div class="three columns">
-        <label class="prompt west">Applicant Reference</label>
-      </div>
-      <div class="six columns">
-        <span>{{ process.applicant_reference or 'N/a' }}</span>
-      </div>
-      <div class="three columns"></div>
-    </div>
-
-    <div class="row">
-      <div class="three columns">
-        <label class="prompt west">Country of Origin</label>
-      </div>
-      <div class="six columns">
-        <span>{{ process.origin_country.name }}</span>
-      </div>
-      <div class="three columns"></div>
-    </div>
-
-    <div class="row">
-      <div class="three columns">
-        <label class="prompt west">Country of Consignment</label>
-      </div>
-      <div class="six columns">
-        <span>{{ process.consignment_country.name }}</span>
-      </div>
-      <div class="three columns"></div>
-    </div>
-
-  </div>
 {% endblock %}
