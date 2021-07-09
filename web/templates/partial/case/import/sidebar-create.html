@@ -1,16 +1,4 @@
 <ul class="menu-out">
-    <h5>Derogation from Sanctions Import Ban</h5>
-
-    <li>
-        <a href="{{ icms_url('import:create-derogations') }}">Derogation from Sanctions Import Ban</a>
-    </li>
-
-    <h5>Sanctions and Adhoc</h5>
-
-    <li>
-        <a href="{{ icms_url('import:create-sanctions') }}">Sanctions and Adhoc License Application</a>
-    </li>
-
     <h5>Firearms and Ammunition</h5>
 
     <li>
@@ -18,41 +6,43 @@
     </li>
 
     <li>
-        <a href="{{ icms_url('import:create-fa-oil') }}">Open Individual Licence (OIL)</a>
+        <a href="{{ icms_url('import:create-fa-oil') }}">Open Individual Licence</a>
     </li>
 
     <li>
-        <a href="{{ icms_url('import:create-fa-sil') }}">Specific Individual Licence (SIL)</a>
+        <a href="{{ icms_url('import:create-fa-sil') }}">Specific Individual Licence</a>
     </li>
 
-    <h5>Wood (Quota)</h5>
+    <h5>Other</h5>
 
     <li>
-        <a href="{{ icms_url('import:create-wood-quota') }}">Wood (Quota)</a>
+        <a href="{{ icms_url('import:create-derogations') }}">Derogation from Sanctions Import Ban</a>
     </li>
 
     {% if show_opt %}
-    <h5>Outward processing trade</h5>
-
     <li>
       <a href="{{ icms_url('import:create-opt') }}">Outward Processing Trade</a>
     </li>
     {% endif %}
 
-    {% if show_textiles %}
-    <h5>Textiles (Quota)</h5>
+    {% if show_sps %}
+    <li>
+      <a href="{{ icms_url('import:create-sps') }}">Prior Surveillance</a>
+    </li>
+    {% endif %}
 
+    <li>
+        <a href="{{ icms_url('import:create-sanctions') }}">Sanctions and Adhoc License</a>
+    </li>
+
+    {% if show_textiles %}
     <li>
       <a href="{{ icms_url('import:create-textiles') }}">Textiles (Quota)</a>
     </li>
     {% endif %}
 
-    {% if show_sps %}
-    <h5>Prior Surveillance</h5>
-
     <li>
-      <a href="{{ icms_url('import:create-sps') }}">Prior Surveillance</a>
+        <a href="{{ icms_url('import:create-wood-quota') }}">Wood (Quota)</a>
     </li>
-    {% endif %}
 
 </ul>
