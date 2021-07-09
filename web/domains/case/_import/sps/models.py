@@ -22,6 +22,7 @@ class PriorSurveillanceApplication(ImportApplication):
         help_text="If no, a paper licence will be issued for clearance in another EU Member State.",
     )
 
+    # goods
     commodity = models.ForeignKey(
         Commodity,
         on_delete=models.PROTECT,
@@ -56,7 +57,7 @@ class PriorSurveillanceApplication(ImportApplication):
         ),
     )
 
-    value_euro = models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)")
+    value_eur = models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)")
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")

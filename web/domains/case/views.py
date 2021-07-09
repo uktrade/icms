@@ -44,6 +44,7 @@ from web.models import (
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
+    PriorSurveillanceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
     WithdrawApplication,
@@ -1243,6 +1244,9 @@ def view_case(
     elif application.process_type == TextilesApplication.PROCESS_TYPE:
         return _view_textiles_quota(request, application.textilesapplication)  # type: ignore[union-attr]
 
+    elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
+        return _view_sps(request, application.priorsurveillanceapplication)  # type: ignore[union-attr]
+
     # Export applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
         return _view_com(request, application.certificateofmanufactureapplication)  # type: ignore[union-attr]
@@ -1398,6 +1402,19 @@ def _view_textiles_quota(
     }
 
     return render(request, "web/domains/case/import/textiles/view.html", context)
+
+
+def _view_sps(
+    request: AuthenticatedHttpRequest, application: PriorSurveillanceApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": application.application_type.get_type_description(),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/sps/view.html", context)
 
 
 def _view_accessrequest(

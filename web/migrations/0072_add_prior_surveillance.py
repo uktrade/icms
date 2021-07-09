@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "value_euro",
+                    "value_eur",
                     models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)"),
                 ),
                 (

@@ -45,7 +45,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
             if form.is_valid():
                 instance: PriorSurveillanceApplication = form.save(commit=False)
-                instance.value_euro = convert_gbp_to_euro(instance.value_gbp)
+                instance.value_eur = convert_gbp_to_euro(instance.value_gbp)
                 instance.save()
 
                 return redirect(

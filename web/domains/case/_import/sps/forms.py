@@ -22,7 +22,7 @@ class EditSPSForm(forms.ModelForm):
             "commodity",
             "quantity",
             "value_gbp",
-            "value_euro",
+            "value_eur",
         )
 
     def __init__(self, *args, **kwargs):
@@ -38,9 +38,9 @@ class EditSPSForm(forms.ModelForm):
         self.fields["consignment_country"].queryset = countries
 
         exchange_rate = get_euro_exchange_rate()
-        self.fields["value_euro"].disabled = True
-        self.fields["value_euro"].required = False
-        self.fields["value_euro"].help_text = (
+        self.fields["value_eur"].disabled = True
+        self.fields["value_eur"].required = False
+        self.fields["value_eur"].help_text = (
             f"Converted at a rate of 1 GBP to {exchange_rate} EUR, rounded up"
             f" to the nearest EUR."
         )
