@@ -17,6 +17,7 @@ from web.domains.case.views import (
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
+from web.utils.currency import convert_gbp_to_euro
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -26,7 +27,6 @@ from web.utils.validation import (
 
 from .forms import AddContractDocumentForm, EditContractDocumentForm, EditSPSForm
 from .models import PriorSurveillanceApplication, PriorSurveillanceContractFile
-from .utils import convert_gbp_to_euro
 
 
 @login_required
@@ -44,8 +44,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             form = EditSPSForm(data=request.POST, instance=application)
 
             if form.is_valid():
-                instance: PriorSurveillanceApplication = form.save()
-
+                instance: PriorSurveillanceApplication = form.save(commit=False)
                 instance.value_euro = convert_gbp_to_euro(instance.value_gbp)
                 instance.save()
 

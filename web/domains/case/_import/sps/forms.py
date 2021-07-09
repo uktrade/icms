@@ -2,9 +2,9 @@ from django import forms
 
 from web.domains.file.utils import ICMSFileField
 from web.domains.user.models import User
+from web.utils.currency import get_euro_exchange_rate
 
 from . import models
-from .utils import get_euro_exchange_rate
 
 
 class EditSPSForm(forms.ModelForm):
