@@ -14,7 +14,7 @@ def _get_shipping_year_selection():
     """Get year selection for Textiles (Quota) applications."""
     current_year = datetime.date.today().year
 
-    return range(current_year, current_year + 10)
+    return range(current_year, current_year + 11)
 
 
 class EditTextilesForm(forms.ModelForm):

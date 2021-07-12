@@ -11,12 +11,10 @@ from . import models
 
 
 def _get_year_selection():
-    """Get year selection for wood quota applications. These show last year and
-    11 future years."""
+    """Get year selection for Wood (quota) applications."""
+    current_year = datetime.date.today().year
 
-    last_year = datetime.date.today().year - 1
-
-    return range(last_year, last_year + 12)
+    return range(current_year, current_year + 11)
 
 
 class PrepareWoodQuotaForm(forms.ModelForm):
