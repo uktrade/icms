@@ -83,6 +83,7 @@ ApplicationsWithChecklist = Union[
     WoodQuotaApplication,
     DerogationsApplication,
     OutwardProcessingTradeApplication,
+    TextilesApplication,
 ]
 
 
@@ -1800,9 +1801,13 @@ def start_authorisation(
         )
 
         if case_type == "import":
+            assert isinstance(application, ImportApplication)
+
             _get_import_errors(application, application_errors, prepare_errors)
 
         elif case_type == "export":
+            assert isinstance(application, ExportApplication)
+
             _get_export_errors(application, application_errors, prepare_errors)
 
         # Import & export checks
@@ -1835,7 +1840,11 @@ def start_authorisation(
             )
 
 
-def _get_import_errors(application, application_errors, prepare_errors):
+def _get_import_errors(
+    application: ImportApplication,
+    application_errors: ApplicationErrors,
+    prepare_errors: PageErrors,
+) -> None:
     # Application specific checks
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         application_errors.add(_get_fa_oil_errors(application))
@@ -1858,8 +1867,11 @@ def _get_import_errors(application, application_errors, prepare_errors):
     elif application.process_type == TextilesApplication.PROCESS_TYPE:
         application_errors.add(_get_textiles_errors(application))
 
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        # There are no extra checks for Sanctions and Adhoc
+    elif application.process_type in (
+        SanctionsAndAdhocApplication.PROCESS_TYPE,
+        PriorSurveillanceApplication.PROCESS_TYPE,
+    ):
+        # There are no extra checks for these
         pass
 
     else:
@@ -1981,7 +1993,11 @@ def _get_checklist_errors(
     return checklist_errors
 
 
-def _get_export_errors(application, application_errors, prepare_errors):
+def _get_export_errors(
+    application: ExportApplication,
+    application_errors: ApplicationErrors,
+    prepare_errors: PageErrors,
+) -> None:
     raise NotImplementedError(
         f"process_type {application.process_type!r} hasn't been implemented yet."
     )
