@@ -19,8 +19,8 @@
       <tr>
         <td>
           {{ contact.get_entity_display() }}<br />
-          {{ contact.first_name}}<br />
-          {{ contact.last_name or contact.registration_number }}
+          {{ contact.first_name }}<br />
+          {{ contact.last_name or contact.registration_number or "" }}
         </td>
         <td>
           {{ contact.street }}<br />
