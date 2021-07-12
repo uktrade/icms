@@ -184,8 +184,14 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             import_application=self.process,
         )
 
-        self.add_url = f"/import/sanctions/{self.process.pk}/add-goods/"
-        self.edit_url = f"/import/sanctions/{self.process.pk}/goods/{self.goods.pk}/edit/"
+        # f"/import/sanctions/{self.process.pk}/add-goods/"
+        self.add_url = reverse(
+            "import:sanctions:add-goods", kwargs={"application_pk": self.process.pk}
+        )
+        self.edit_url = reverse(
+            "import:sanctions:edit-goods",
+            kwargs={"application_pk": self.process.pk, "goods_pk": self.goods.pk},
+        )
         self.add_redirect_url = f"{LOGIN_URL}?next={self.add_url}"
         self.edit_redirect_url = f"{LOGIN_URL}?next={self.edit_url}"
 

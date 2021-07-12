@@ -1,59 +1,89 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
 app_name = "sanctions"
 
-urlpatterns = [
-    path("<int:application_pk>/edit/", views.edit_application, name="edit"),
-    path("<int:application_pk>/add-goods/", views.add_goods, name="add-goods"),
-    path("<int:application_pk>/goods/<int:goods_pk>/edit/", views.edit_goods, name="edit-goods"),
+
+goods_urls = [
+    path("add/", views.add_goods, name="add-goods"),
     path(
-        "<int:application_pk>/goods/<int:goods_pk>/delete/", views.delete_goods, name="delete-goods"
+        "<int:goods_pk>/",
+        include(
+            [
+                path("edit/", views.edit_goods, name="edit-goods"),
+                path("delete/", views.delete_goods, name="delete-goods"),
+                # Management url
+                path(
+                    "edit-goods-licence/",
+                    views.edit_goods_licence,
+                    name="edit-goods-licence",
+                ),
+            ]
+        ),
     ),
-    path("<int:application_pk>/add-document/", views.add_supporting_document, name="add-document"),
+]
+
+
+supporting_document_urls = [
+    path("add/", views.add_supporting_document, name="add-document"),
     path(
-        "<int:application_pk>/view-supporting-document/<int:document_pk>/",
-        views.view_supporting_document,
-        name="view-supporting-document",
+        "<int:document_pk>/",
+        include(
+            [
+                path("view/", views.view_supporting_document, name="view-supporting-document"),
+                path("delete/", views.delete_supporting_document, name="delete-document"),
+            ]
+        ),
     ),
+]
+
+
+sanction_urls = [
+    path("manage/", views.manage_sanction_emails, name="manage-sanction-emails"),
     path(
-        "<int:application_pk>/documents/<int:document_pk>/delete/",
-        views.delete_supporting_document,
-        name="delete-document",
-    ),
-    path(
-        "application-submit/<int:application_pk>/", views.submit_sanctions, name="submit-sanctions"
-    ),
-    # Management by ILB Admin
-    path(
-        "case/<int:application_pk>/sanction-emails/",
-        views.manage_sanction_emails,
-        name="manage-sanction-emails",
-    ),
-    path(
-        "case/<int:application_pk>/sanction-emails/create/",
+        "create/",
         views.create_sanction_email,
         name="create-sanction-email",
     ),
     path(
-        "case/<int:application_pk>/sanction-emails/edit/<int:sanction_email_pk>/",
-        views.edit_sanction_email,
-        name="edit-sanction-email",
+        "<int:sanction_email_pk>/",
+        include(
+            [
+                path(
+                    "edit/",
+                    views.edit_sanction_email,
+                    name="edit-sanction-email",
+                ),
+                path(
+                    "delete/",
+                    views.delete_sanction_email,
+                    name="delete-sanction-email",
+                ),
+                path(
+                    "add-response/",
+                    views.add_response_sanction_email,
+                    name="add-response-sanction-email",
+                ),
+            ]
+        ),
     ),
+]
+
+
+urlpatterns = [
     path(
-        "case/<int:application_pk>/sanction-emails/delete/<int:sanction_email_pk>/",
-        views.delete_sanction_email,
-        name="delete-sanction-email",
-    ),
-    path(
-        "case/<int:application_pk>/sanction-emails/edit/<int:sanction_email_pk>/response/",
-        views.add_response_sanction_email,
-        name="add-response-sanction-email",
-    ),
-    path(
-        "case/<int:application_pk>/goods/<int:goods_pk>/edit/",
-        views.edit_goods_licence,
-        name="edit-goods-licence",
+        "<int:application_pk>/",
+        include(
+            [
+                # Applicant urls
+                path("edit/", views.edit_application, name="edit"),
+                path("submit/", views.submit_sanctions, name="submit-sanctions"),
+                path("goods/", include(goods_urls)),
+                path("support-document/", include(supporting_document_urls)),
+                # Management urls
+                path("sanction-email/", include(sanction_urls)),
+            ]
+        ),
     ),
 ]

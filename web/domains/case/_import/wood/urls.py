@@ -1,53 +1,53 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
 app_name = "wood"
 
+supporting_document_urls = [
+    path("add/", views.add_supporting_document, name="add-supporting-document"),
+    path(
+        "<int:document_pk>/",
+        include(
+            [
+                path("view/", views.view_supporting_document, name="view-supporting-document"),
+                path(
+                    "delete/", views.delete_supporting_document, name="delete-supporting-document"
+                ),
+            ]
+        ),
+    ),
+]
+
+
+contract_document_urls = [
+    path("add/", views.add_contract_document, name="add-contract-document"),
+    path(
+        "<int:document_pk>/",
+        include(
+            [
+                path("view/", views.view_contract_document, name="view-contract-document"),
+                path("delete/", views.delete_contract_document, name="delete-contract-document"),
+                path("edit/", views.edit_contract_document, name="edit-contract-document"),
+            ]
+        ),
+    ),
+]
+
 urlpatterns = [
-    path("quota/<int:application_pk>/edit/", views.edit_wood_quota, name="edit"),
-    path("quota/<int:application_pk>/submit/", views.submit_wood_quota, name="submit-quota"),
-    path("<int:application_pk>/checklist/", views.manage_checklist, name="manage-checklist"),
-    # supporting documents
     path(
-        "quota/<int:application_pk>/add-supporting-document/",
-        views.add_supporting_document,
-        name="add-supporting-document",
-    ),
-    path(
-        "quota/<int:application_pk>/view-supporting-document/<int:document_pk>/",
-        views.view_supporting_document,
-        name="view-supporting-document",
-    ),
-    path(
-        "quota/<int:application_pk>/delete-supporting-document/<int:document_pk>/",
-        views.delete_supporting_document,
-        name="delete-supporting-document",
-    ),
-    # contract documents
-    path(
-        "quota/<int:application_pk>/add-contract-document/",
-        views.add_contract_document,
-        name="add-contract-document",
-    ),
-    path(
-        "quota/<int:application_pk>/view-contract-document/<int:document_pk>/",
-        views.view_contract_document,
-        name="view-contract-document",
-    ),
-    path(
-        "quota/<int:application_pk>/delete-contract-document/<int:document_pk>/",
-        views.delete_contract_document,
-        name="delete-contract-document",
-    ),
-    path(
-        "quota/<int:application_pk>/edit-contract-document/<int:document_pk>/",
-        views.edit_contract_document,
-        name="edit-contract-document",
-    ),
-    path(
-        "quota/<int:application_pk>/edit-goods-licence/",
-        views.edit_goods,
-        name="edit-goods-licence",
+        "<int:application_pk>/",
+        include(
+            [
+                # Applicant urls
+                path("edit/", views.edit_wood_quota, name="edit"),
+                path("submit/", views.submit_wood_quota, name="submit-quota"),
+                path("contract-document/", include(contract_document_urls)),
+                path("support-document/", include(supporting_document_urls)),
+                # Management urls
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path("edit-goods-licence/", views.edit_goods, name="edit-goods-licence"),
+            ],
+        ),
     ),
 ]
