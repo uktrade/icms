@@ -1,0 +1,30 @@
+{% extends "web/domains/case/import/manage/response-prep-edit-form.html" %}
+{% from "display/fields.html" import application_field %}
+
+{% block main_content %}
+  <h3>Edit</h3>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ application_field(process.category_commodity_group_id, "Category") }}
+    {{ fields.field(form.category_licence_description) }}
+    {{ application_field(process.commodity.commodity_code, "Commodity Code") }}
+    {{ fields.field(form.goods_description) }}
+    {{ application_field(process.category_commodity_group.unit.description, "Unit") }}
+    {{ fields.field(form.quantity) }}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                class="primary-button button"
+                value="Save" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}

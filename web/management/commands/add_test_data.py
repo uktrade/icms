@@ -8,6 +8,7 @@ from guardian.shortcuts import assign_perm
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.models import ImportApplicationType
 
 
 class Command(BaseCommand):
@@ -27,7 +28,16 @@ class Command(BaseCommand):
         importer = self.create_importer()
         self.create_importer_user(importer, "test_import_user")
         self.create_importer_user(importer, "importer_contact")
-        self.create_icms_admin_user("test_admin_user")
+        self.create_icms_admin_user("test_icms_admin_user")
+
+        # enable disabled application types
+        ImportApplicationType.objects.filter(
+            type__in=[
+                ImportApplicationType.Types.OPT,
+                ImportApplicationType.Types.TEXTILES,
+                ImportApplicationType.Types.SPS,
+            ]
+        ).update(is_active=True)
 
     def create_importer_user(self, importer, username):
         try:

@@ -17,6 +17,7 @@ from web.utils.validation import ApplicationErrors, PageErrors, create_page_erro
 
 from .forms import (
     EditTextilesForm,
+    GoodsTextilesLicenceForm,
     TextilesChecklistForm,
     TextilesChecklistOptionalForm,
 )
@@ -110,6 +111,15 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
+                endorsement = Template.objects.get(
+                    template_name="Endorsement 1 (must be updated each year)",
+                    template_type=Template.ENDORSEMENT,
+                    application_domain="IMA",
+                )
+                application.endorsements.create(content=endorsement.template_content)
+                application.category_licence_description = (
+                    application.category_commodity_group.group_description
+                )
                 application.submit_application(request, task)
 
                 return redirect(reverse("workbasket"))
@@ -247,5 +257,46 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         return render(
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: TextilesApplication = get_object_or_404(
+            TextilesApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(
+            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
+        )
+
+        if request.POST:
+            form = GoodsTextilesLicenceForm(request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application.pk, "case_type": "import"},
+                    )
+                )
+        else:
+            form = GoodsTextilesLicenceForm(instance=application)
+
+        context = {
+            "case_type": "import",
+            "process": application,
+            "task": task,
+            "page_title": "Edit Goods",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/manage/response-prep-textiles-edit-form.html",
             context=context,
         )

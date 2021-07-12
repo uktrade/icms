@@ -31,6 +31,7 @@ urlpatterns = [
                     ),
                 ),
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path("edit-goods-licence/", views.edit_goods_licence, name="edit-goods-licence"),
             ],
         ),
     )

@@ -90,3 +90,13 @@ class TextilesChecklistOptionalForm(TextilesChecklistForm):
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class GoodsTextilesLicenceForm(forms.ModelForm):
+    class Meta:
+        model = models.TextilesApplication
+        fields = (
+            "category_licence_description",
+            "goods_description",
+            "quantity",
+        )

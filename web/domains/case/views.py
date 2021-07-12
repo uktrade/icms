@@ -1628,6 +1628,9 @@ def prepare_response(
             request, application.outwardprocessingtradeapplication, context  # type: ignore[union-attr]
         )
 
+    elif application.process_type == TextilesApplication.PROCESS_TYPE:
+        return _prepare_textiles_quota_response(request, application.textilesapplication, context)  # type: ignore[union-attr]
+
     # TODO: implement other types (export-COM)
     else:
         raise NotImplementedError
@@ -1755,6 +1758,18 @@ def _prepare_opt_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-opt-response.html",
+        context=context,
+    )
+
+
+def _prepare_textiles_quota_response(
+    request: AuthenticatedHttpRequest, application: TextilesApplication, context: dict[str, Any]
+) -> HttpResponse:
+    context.update({"process": application})
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-textiles-quota-response.html",
         context=context,
     )
 

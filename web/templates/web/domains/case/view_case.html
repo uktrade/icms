@@ -1,39 +1,6 @@
 {% extends "layout/sidebar.html" %}
+{% from "display/fields.html" import application_section, application_field %}
 
-{# VIEW APPLICATION MACROS #}
-{% macro application_section(section_title=None, section_id=None) -%}
-  {% if section_title %}
-    {% if section_id %}
-      <h4 id="{{ section_id }}">{{ section_title }}</h4>
-    {% else %}
-      <h4>{{ section_title }}</h4>
-    {% endif %}
-  {% endif %}
-  <div class="container">
-    {% if caller %}{{ caller() }}{% endif %}
-  </div>
-{%- endmacro %}
-
-{# TODO: maybe we should use this technique
-(https://stackoverflow.com/questions/7432142/django-template-display-model-verbose-names-objects)
-to get verbose_name from the model field, and have a special macro that just
-takes a model field like this:
-
-  {{ xxx_field(process.whatever) }}
-#}
-
-{% macro application_field(field, label, default="") -%}
-  <div class="row">
-    <div class="three columns">
-      <label class="prompt west">{{ label }}</label>
-    </div>
-    <div class="six columns">
-      <span class="text-widget">{{ field or default }}</span>
-    </div>
-    <div class="three columns"></div>
-  </div>
-{%- endmacro %}
-{# END VIEW APPLICATION MACROS #}
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">

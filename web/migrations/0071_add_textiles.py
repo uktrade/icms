@@ -100,6 +100,15 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "category_licence_description",
+                    models.CharField(
+                        null=True,
+                        max_length=4000,
+                        verbose_name="Category Description",
+                        help_text="By default, this is the category description. You may need to alter the description to a shorter form in order for it to display correctly on the licence.",
+                    ),
+                ),
+                (
                     "supporting_documents",
                     models.ManyToManyField(
                         related_name="_textilesapplication_supporting_documents_+", to="web.File"
