@@ -13,7 +13,12 @@ from web.domains.case.views import check_application_permission
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
-from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
+from web.utils.validation import (
+    ApplicationErrors,
+    FieldError,
+    PageErrors,
+    create_page_errors,
+)
 
 from .. import views as import_views
 from .forms import (
@@ -277,6 +282,23 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
             PrepareWoodQuotaForm(data=model_to_dict(application), instance=application), page_errors
         )
         errors.add(page_errors)
+
+        if not application.contract_documents.filter(is_active=True).exists():
+            contract_document_errors = PageErrors(
+                page_name="Add contract document",
+                url=reverse(
+                    "import:wood:add-contract-document", kwargs={"application_pk": application_pk}
+                ),
+            )
+
+            contract_document_errors.add(
+                FieldError(
+                    field_name="Contract Document",
+                    messages=["At least one contract document must be added"],
+                )
+            )
+
+            errors.add(contract_document_errors)
 
         if request.POST:
             form = SubmitForm(data=request.POST)
