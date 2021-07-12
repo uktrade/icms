@@ -67,3 +67,9 @@ class EditContractDocumentForm(forms.ModelForm):
         model = models.PriorSurveillanceContractFile
 
         fields = ("file_type",)
+
+
+class ResponsePrepGoodsForm(forms.ModelForm):
+    class Meta:
+        model = models.PriorSurveillanceApplication
+        fields = ("quantity",)

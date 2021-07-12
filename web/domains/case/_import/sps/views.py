@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -25,7 +25,12 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .forms import AddContractDocumentForm, EditContractDocumentForm, EditSPSForm
+from .forms import (
+    AddContractDocumentForm,
+    EditContractDocumentForm,
+    EditSPSForm,
+    ResponsePrepGoodsForm,
+)
 from .models import PriorSurveillanceApplication, PriorSurveillanceContractFile
 
 
@@ -350,3 +355,44 @@ def edit_contract_document(
         }
 
         return render(request, "web/domains/case/import/sps/edit_contract_document.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def response_preparation_edit_goods(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: PriorSurveillanceApplication = get_object_or_404(
+            PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+        if request.POST:
+            form = ResponsePrepGoodsForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = ResponsePrepGoodsForm(instance=application)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Prior Surveillance Import Licence - Edit Goods",
+        }
+
+        return render(
+            request, "web/domains/case/import/manage/response-prep-edit-form.html", context
+        )

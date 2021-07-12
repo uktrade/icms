@@ -35,7 +35,11 @@ urlpatterns = [
                 path("submit/", views.submit_sps, name="submit"),
                 path("contract-document/", include(contract_document)),
                 path("support-document/", include(support_documents)),
-                # path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path(
+                    "response-prep-edit-goods/",
+                    views.response_preparation_edit_goods,
+                    name="response-prep-edit-goods",
+                ),
             ],
         ),
     )
