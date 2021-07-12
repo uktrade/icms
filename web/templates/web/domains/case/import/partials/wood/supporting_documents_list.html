@@ -44,6 +44,6 @@
 
 {% if not read_only %}
   <a class="button small-button"
-     href="{{ icms_url('import:wood:add-supporting-document', kwargs={'pk': process.pk}) }}">Add
+     href="{{ icms_url('import:wood:add-supporting-document', kwargs={'application_pk': process.pk}) }}">Add
     supporting document</a>
 {% endif %}

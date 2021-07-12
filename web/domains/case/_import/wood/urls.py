@@ -6,11 +6,11 @@ app_name = "wood"
 
 urlpatterns = [
     path("quota/<int:application_pk>/edit/", views.edit_wood_quota, name="edit"),
-    path("quota/<int:pk>/submit/", views.submit_wood_quota, name="submit-quota"),
+    path("quota/<int:application_pk>/submit/", views.submit_wood_quota, name="submit-quota"),
     path("<int:application_pk>/checklist/", views.manage_checklist, name="manage-checklist"),
     # supporting documents
     path(
-        "quota/<int:pk>/add-supporting-document/",
+        "quota/<int:application_pk>/add-supporting-document/",
         views.add_supporting_document,
         name="add-supporting-document",
     ),
@@ -26,7 +26,7 @@ urlpatterns = [
     ),
     # contract documents
     path(
-        "quota/<int:pk>/add-contract-document/",
+        "quota/<int:application_pk>/add-contract-document/",
         views.add_contract_document,
         name="add-contract-document",
     ),
@@ -45,5 +45,9 @@ urlpatterns = [
         views.edit_contract_document,
         name="edit-contract-document",
     ),
-    path("quota/<int:pk>/edit-goods-licence/", views.edit_goods, name="edit-goods-licence"),
+    path(
+        "quota/<int:application_pk>/edit-goods-licence/",
+        views.edit_goods,
+        name="edit-goods-licence",
+    ),
 ]

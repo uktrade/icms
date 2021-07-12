@@ -80,7 +80,7 @@
             </div>
         {% endif %}
 
-        <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'pk': process.pk}) }}">Add Goods</a>
+        <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'application_pk': process.pk}) }}">Add Goods</a>
 
 
         <h4>Supporting Documents</h4>
@@ -127,6 +127,6 @@
      </div>
    {% endif %}
 
-        <a class="button small-button" href="{{ icms_url('import:sanctions:add-document', kwargs={'pk': process.pk}) }}">Add Document</a>
+        <a class="button small-button" href="{{ icms_url('import:sanctions:add-document', kwargs={'application_pk': process.pk}) }}">Add Document</a>
 
 {% endblock subtasks %}

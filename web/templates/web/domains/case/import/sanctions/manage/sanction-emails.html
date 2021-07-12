@@ -120,6 +120,7 @@
     <input type="submit" class="button small-button icon-plus" value="New Email" />
 
     {% for object in sanction_email_messages %}
-    {% include 'web/domains/case/import/sanctions/manage/sanction-email-box.html' %}
-  {% endfor %}
+      {% include 'web/domains/case/import/sanctions/manage/sanction-email-box.html' %}
+    {% endfor %}
+  </form>
 {% endblock %}

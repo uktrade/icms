@@ -25,7 +25,7 @@
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     <li>
       <a
-        href="{{ icms_url('import:sanctions:manage-sanction-emails', args=[process.pk]) }}">
+        href="{{ icms_url('import:sanctions:manage-sanction-emails', kwargs={'application_pk': process.pk}) }}">
         Sanction Emails
       </a>
     </li>

@@ -132,10 +132,10 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
 
 @login_required
-def submit_com(request, pk):
+def submit_com(request: AuthenticatedHttpRequest, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         appl = get_object_or_404(
-            CertificateOfManufactureApplication.objects.select_for_update(), pk=pk
+            CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(appl, request.user, "export")
@@ -145,7 +145,7 @@ def submit_com(request, pk):
         errors = ApplicationErrors()
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("export:com-edit", kwargs={"application_pk": pk}),
+            url=reverse("export:com-edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
             PrepareCertManufactureForm(data=model_to_dict(appl), instance=appl), page_errors
@@ -157,7 +157,9 @@ def submit_com(request, pk):
             go_back_to_edit = "_edit_application" in request.POST
 
             if go_back_to_edit:
-                return redirect(reverse("export:com-edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("export:com-edit", kwargs={"application_pk": application_pk})
+                )
 
             if form.is_valid() and not errors.has_errors():
                 appl.submit_application(request, task)

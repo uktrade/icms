@@ -61,10 +61,10 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
 
 @login_required
-def submit_oil(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            OpenIndividualLicenceApplication.objects.select_for_update(), pk=pk
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(application, request.user, "import")
@@ -75,7 +75,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:fa-oil:edit", kwargs={"application_pk": pk}),
+            url=reverse("import:fa-oil:edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
             PrepareOILForm(data=model_to_dict(application), instance=application), page_errors
@@ -90,7 +90,9 @@ def submit_oil(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         if not has_certificates:
             page_errors = PageErrors(
                 page_name="Certificates",
-                url=reverse("import:fa:manage-certificates", kwargs={"application_pk": pk}),
+                url=reverse(
+                    "import:fa:manage-certificates", kwargs={"application_pk": application_pk}
+                ),
             )
 
             page_errors.add(
@@ -104,7 +106,9 @@ def submit_oil(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         if application.know_bought_from and not application.importcontact_set.exists():
             page_errors = PageErrors(
                 page_name="Details of who bought from",
-                url=reverse("import:fa:list-import-contacts", kwargs={"application_pk": pk}),
+                url=reverse(
+                    "import:fa:list-import-contacts", kwargs={"application_pk": application_pk}
+                ),
             )
 
             page_errors.add(

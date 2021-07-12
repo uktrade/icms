@@ -68,9 +68,13 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
 
 @login_required
-def add_supporting_document(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def add_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
+        )
 
         check_application_permission(application, request.user, "import")
 
@@ -83,7 +87,9 @@ def add_supporting_document(request: AuthenticatedHttpRequest, *, pk: int) -> Ht
                 document = form.cleaned_data.get("document")
                 create_file_model(document, request.user, application.supporting_documents)
 
-                return redirect(reverse("import:wood:edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("import:wood:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = DocumentForm()
 
@@ -132,10 +138,12 @@ def delete_supporting_document(
 
 
 @login_required
-def add_contract_document(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def add_contract_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
-            WoodQuotaApplication.objects.select_for_update(), pk=pk
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(application, request.user, "import")
@@ -161,7 +169,9 @@ def add_contract_document(request: AuthenticatedHttpRequest, *, pk: int) -> Http
                     extra_args=extra_args,
                 )
 
-                return redirect(reverse("import:wood:edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("import:wood:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = AddContractDocumentForm()
 
@@ -247,9 +257,11 @@ def edit_contract_document(
 
 
 @login_required
-def submit_wood_quota(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application = get_object_or_404(WoodQuotaApplication.objects.select_for_update(), pk=pk)
+        application = get_object_or_404(
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
+        )
 
         check_application_permission(application, request.user, "import")
 
@@ -259,7 +271,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResp
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:wood:edit", kwargs={"application_pk": pk}),
+            url=reverse("import:wood:edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
             PrepareWoodQuotaForm(data=model_to_dict(application), instance=application), page_errors
@@ -344,10 +356,10 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def edit_goods(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
-            WoodQuotaApplication.objects.select_for_update(), pk=pk
+            WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
         task = application.get_task(
             [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"

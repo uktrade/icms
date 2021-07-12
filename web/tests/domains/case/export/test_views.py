@@ -35,7 +35,7 @@ class TestFlow(AuthTestCase):
         assign_perm("web.is_contact_of_exporter", self.user, appl.exporter)
 
         url_edit = reverse("export:com-edit", kwargs={"application_pk": appl.pk})
-        url_submit = reverse("export:com-submit", kwargs={"pk": appl.pk})
+        url_submit = reverse("export:com-submit", kwargs={"application_pk": appl.pk})
 
         response = self.client.post(
             reverse("export:com-edit", kwargs={"application_pk": appl.pk}),
@@ -138,7 +138,7 @@ class TestSubmitCom(AuthTestCase):
         self.appl.chemical_name = "some chemical name"
         self.appl.manufacturing_process = "squeeze a few drops"
         self.appl.save()
-        self.url = reverse("export:com-submit", kwargs={"pk": self.appl.pk})
+        self.url = reverse("export:com-submit", kwargs={"application_pk": self.appl.pk})
 
     def test_submit_ok(self):
         self.appl.tasks.create(is_active=True, task_type="prepare")

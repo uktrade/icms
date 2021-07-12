@@ -51,6 +51,6 @@
 {% endif %}
 
 {% if not read_only %}
-  <a class="button small-button" href="{{ icms_url('import:wood:add-contract-document', kwargs={'pk': process.pk}) }}">Add
+  <a class="button small-button" href="{{ icms_url('import:wood:add-contract-document', kwargs={'application_pk': process.pk}) }}">Add
     contract</a>
 {% endif %}

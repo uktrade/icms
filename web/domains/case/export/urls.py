@@ -15,6 +15,6 @@ urlpatterns = [
     ),
     # Certificate of manufacture application urls
     path("com/<int:application_pk>/edit/", views.edit_com, name="com-edit"),
-    path("com/<int:pk>/submit/", views.submit_com, name="com-submit"),
+    path("com/<int:application_pk>/submit/", views.submit_com, name="com-submit"),
     # TODO: add certificate of free sale URLs
 ]

@@ -84,10 +84,10 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-def add_goods(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(application, request.user, "import")
@@ -102,7 +102,9 @@ def add_goods(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
                 obj.import_application = application
                 obj.save()
 
-                return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             goods_form = GoodsForm()
 
@@ -234,10 +236,12 @@ def delete_goods(
 
 
 @login_required
-def add_supporting_document(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def add_supporting_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(application, request.user, "import")
@@ -251,7 +255,9 @@ def add_supporting_document(request: AuthenticatedHttpRequest, *, pk: int) -> Ht
                 document = form.cleaned_data.get("document")
                 create_file_model(document, request.user, application.supporting_documents)
 
-                return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": pk}))
+                return redirect(
+                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                )
         else:
             form = DocumentForm()
 
@@ -298,10 +304,10 @@ def delete_supporting_document(
 
 
 @login_required
-def submit_sanctions(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
         check_application_permission(application, request.user, "import")
@@ -315,7 +321,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespo
 
         page_errors = PageErrors(
             page_name="Application details",
-            url=reverse("import:sanctions:edit", kwargs={"application_pk": pk}),
+            url=reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
             SanctionsAndAdhocLicenseForm(data=model_to_dict(application), instance=application),
@@ -355,8 +361,10 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespo
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def manage_sanction_emails(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
-    application = get_object_or_404(SanctionsAndAdhocApplication, pk=pk)
+def manage_sanction_emails(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
+    application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
 
     with transaction.atomic():
         task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
@@ -378,10 +386,12 @@ def manage_sanction_emails(request: AuthenticatedHttpRequest, *, pk: int) -> Htt
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
-def create_sanction_email(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+def create_sanction_email(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(
-            SanctionsAndAdhocApplication.objects.select_for_update(), pk=pk
+            SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
         application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
@@ -463,7 +473,7 @@ def edit_sanction_email(
                     return redirect(
                         reverse(
                             "import:sanctions:manage-sanction-emails",
-                            kwargs={"pk": application_pk},
+                            kwargs={"application_pk": application_pk},
                         )
                     )
 
@@ -514,7 +524,7 @@ def delete_sanction_email(
         return redirect(
             reverse(
                 "import:sanctions:manage-sanction-emails",
-                kwargs={"pk": application_pk},
+                kwargs={"application_pk": application_pk},
             )
         )
 
@@ -542,7 +552,7 @@ def add_response_sanction_email(
                 return redirect(
                     reverse(
                         "import:sanctions:manage-sanction-emails",
-                        kwargs={"pk": application_pk},
+                        kwargs={"application_pk": application_pk},
                     )
                 )
         else:

@@ -233,7 +233,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "value": 5,
         }
         response = self.client.post(
-            reverse("import:sanctions:add-goods", kwargs={"pk": self.process.pk}),
+            reverse("import:sanctions:add-goods", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
         assert response.status_code == 302
