@@ -521,6 +521,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
+@permission_required("web.reference_data_access", raise_exception=True)
 def response_preparation_edit_compensating_products(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -529,7 +530,6 @@ def response_preparation_edit_compensating_products(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
         task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
         if request.POST:
@@ -562,6 +562,7 @@ def response_preparation_edit_compensating_products(
 
 
 @login_required
+@permission_required("web.reference_data_access", raise_exception=True)
 def response_preparation_edit_temporary_exported_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -570,7 +571,6 @@ def response_preparation_edit_temporary_exported_goods(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
         task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
 
         if request.POST:
