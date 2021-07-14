@@ -60,17 +60,4 @@ class Migration(migrations.Migration):
             ],
             bases=("web.importapplication",),
         ),
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="sub_type",
-            field=models.CharField(
-                blank=True,
-                choices=[
-                    ("OIL", "Open Individual Import Licence"),
-                    ("DEACTIVATED", "Deactivated Firearms Import Licence"),
-                ],
-                max_length=70,
-                null=True,
-            ),
-        ),
     ]

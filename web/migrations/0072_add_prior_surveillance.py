@@ -11,22 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="type",
-            field=models.CharField(
-                choices=[
-                    ("FA", "Firearms and Ammunition"),
-                    ("SAN", "Derogation from Sanctions Import Ban"),
-                    ("SAN_ADHOC_TEMP", "Sanctions and Adhoc"),
-                    ("WD", "Wood (Quota)"),
-                    ("OPT", "Outward Processing Trade"),
-                    ("TEX", "Textiles (Quota)"),
-                    ("SPS", "Prior Surveillance"),
-                ],
-                max_length=70,
-            ),
-        ),
         migrations.CreateModel(
             name="PriorSurveillanceContractFile",
             fields=[

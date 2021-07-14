@@ -81,7 +81,7 @@ def add_import_data(apps, schema_editor):
     )
 
     ImportApplicationType.objects.create(
-        is_active=True,
+        is_active=False,
         type="SAN",
         sub_type="SAN1",
         licence_type_code="SANCTIONS",
@@ -130,6 +130,7 @@ def add_import_data(apps, schema_editor):
         importer_printable=False,
     )
 
+    # Application was never live
     ImportApplicationType.objects.create(
         is_active=False,
         type="GS",
@@ -287,11 +288,36 @@ def add_import_data(apps, schema_editor):
         importer_printable=True,
     )
 
+    ImportApplicationType.objects.create(
+        is_active=True,
+        type="ADHOC",
+        sub_type="ADHOC1",
+        licence_type_code="ADHOC",
+        sigl_flag=False,
+        chief_flag=True,
+        chief_licence_prefix="GBSAN",
+        paper_licence_flag=False,
+        electronic_licence_flag=True,
+        cover_letter_flag=False,
+        cover_letter_schedule_flag=False,
+        category_flag=True,
+        endorsements_flag=False,
+        quantity_unlimited_flag=False,
+        unit_list_csv="KGS,BARRELS",
+        exp_cert_upload_flag=False,
+        supporting_docs_upload_flag=True,
+        multiple_commodities_flag=True,
+        guidance_file_url="/docs/ApplyingForSanctionsLicence.pdf",
+        usage_auto_category_desc_flag=False,
+        case_checklist_flag=True,
+        importer_printable=False,
+    )
+
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0034_alter_importapplicationtype"),
+        ("web", "0033_alter_sanctions_application"),
     ]
 
     operations = [

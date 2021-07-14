@@ -13,7 +13,7 @@
 
 {% block main_content %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
-    <h3>{{ export_application_type.get_type_description() }}</h3>
+    <h3>{{ application_title }}</h3>
     <p>Please choose the exporter (and agent if applicable) you are acting as.</p>
     {% if certificate_message %}
       <div class="info-box info-box-info">

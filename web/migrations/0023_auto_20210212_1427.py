@@ -28,12 +28,4 @@ class Migration(migrations.Migration):
             ],
             bases=("web.importapplication",),
         ),
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="type",
-            field=models.CharField(
-                choices=[("FA", "Firearms and Ammunition"), ("SA", "Sanctions and Adhoc")],
-                max_length=70,
-            ),
-        ),
     ]

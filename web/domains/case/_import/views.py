@@ -241,6 +241,7 @@ def _create_application(
     context = {
         "form": form,
         "import_application_type": application_type,
+        "application_title": ImportApplicationType.ProcessTypes(model_class.PROCESS_TYPE).label,
         "show_opt": show_opt,
         "show_textiles": show_textiles,
         "show_sps": show_sps,

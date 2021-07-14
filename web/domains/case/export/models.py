@@ -17,10 +17,15 @@ class ExportApplicationType(models.Model):
     class Types(models.TextChoices):
         FREE_SALE = ("CFS", "Certificate of Free Sale")
         MANUFACTURE = ("COM", "Certificate of Manufacture")
+        GMP = ("GMP", "Certificate of Good Manufacturing Practice")
 
     class ProcessTypes(models.TextChoices):
         COM = ("CertificateOfManufactureApplication", "Certificate of Manufacture")
         CFS = ("CertificateOfFreeSaleApplication", "Certificate of Free Sale")
+        GMP = (
+            "CertificateofGoodManufacturingPractice",
+            "Certificate of Good Manufacturing Practice",
+        )
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type_code = models.CharField(
@@ -40,9 +45,6 @@ class ExportApplicationType(models.Model):
         null=True,
         related_name="manufacture_export_application_types",
     )
-
-    def get_type_description(self):
-        return self.get_type_code_display()
 
     def __str__(self):
         return f"{self.type}"

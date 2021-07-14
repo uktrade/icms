@@ -15,7 +15,7 @@ def add_sanctions_and_adhoc_license_country_group(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0031_alter_exportapplicationtype"),
+        ("web", "0030_add_exportapplicationtype_data"),
     ]
 
     operations = [

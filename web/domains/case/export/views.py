@@ -71,6 +71,9 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
         "form": form,
         "export_application_type": application_type,
         "certificate_message": config.certificate_message,
+        "application_title": ExportApplicationType.ProcessTypes(
+            config.model_class.PROCESS_TYPE
+        ).label,
     }
 
     return render(request, "web/domains/case/export/create.html", context)

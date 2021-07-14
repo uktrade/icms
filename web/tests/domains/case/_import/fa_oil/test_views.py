@@ -98,7 +98,7 @@ def test_take_ownership():
 
     assert response.status_code == 200
     view_application_response = response.content.decode()
-    assert "Firearms and Ammunition Open Individual Import Licence" in view_application_response
+    assert "Firearms and Ammunition (Open Individual Import Licence)" in view_application_response
 
 
 @pytest.mark.django_db

@@ -13,6 +13,8 @@ def add_export_data(apps, schema_editor):
 
     com_cg = CountryGroup.objects.get(name="Certificate of Manufacture Countries")
 
+    gmp_cg = CountryGroup.objects.get(name="Goods Manufacturing Practice Countries")
+
     ExportApplicationType.objects.create(
         type_code="CFS",
         type="Certificate of Free Sale",
@@ -30,6 +32,15 @@ def add_export_data(apps, schema_editor):
         generate_cover_letter=False,
         allow_hse_authorization=False,
         country_group=com_cg,
+    )
+
+    ExportApplicationType.objects.create(
+        type_code="GMP",
+        type="Certificate of Good Manufacturing Practice",
+        allow_multiple_products=False,
+        generate_cover_letter=False,
+        allow_hse_authorization=False,
+        country_group=gmp_cg,
     )
 
 

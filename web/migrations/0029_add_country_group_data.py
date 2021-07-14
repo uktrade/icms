@@ -73,7 +73,7 @@ def load_country_group_data_fireams_ammunition_issuing_countries(apps, schema_ed
     group.save()
 
 
-def load_country_group_data_ceriticate_of_manufacture_countries(apps, schema_editor):
+def load_country_group_data_certificate_of_manufacture_countries(apps, schema_editor):
     CountryGroup = apps.get_model("web", "CountryGroup")
     group = CountryGroup.objects.create(name="Certificate of Manufacture Countries")
     countries = [
@@ -212,6 +212,16 @@ def load_country_group_data_ceriticate_of_manufacture_countries(apps, schema_edi
         "Yemen",
         "Zimbabwe",
     ]
+    add_countries_to_group(group, countries, apps)
+    group.save()
+
+
+def load_country_group_data_certificate_of_goods_manufacturing_practice_countries(
+    apps, schema_editor
+):
+    CountryGroup = apps.get_model("web", "CountryGroup")
+    group = CountryGroup.objects.create(name="Goods Manufacturing Practice Countries")
+    countries = ["China"]
     add_countries_to_group(group, countries, apps)
     group.save()
 
@@ -1230,7 +1240,10 @@ class Migration(migrations.Migration):
         migrations.RunPython(load_country_group_data_opt_coos),
         migrations.RunPython(load_country_group_data_opt_temp_export_coo),
         migrations.RunPython(load_country_group_data_fireams_ammunition_issuing_countries),
-        migrations.RunPython(load_country_group_data_ceriticate_of_manufacture_countries),
+        migrations.RunPython(load_country_group_data_certificate_of_manufacture_countries),
+        migrations.RunPython(
+            load_country_group_data_certificate_of_goods_manufacturing_practice_countries
+        ),
         migrations.RunPython(load_country_group_data_textile_coos),
         migrations.RunPython(load_country_group_data_textile_cocs),
         migrations.RunPython(load_country_group_data_certificate_of_free_sale_countries),

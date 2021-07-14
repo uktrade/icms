@@ -1108,10 +1108,35 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("is_active", models.BooleanField()),
-                ("type_code", models.CharField(max_length=30)),
-                ("type", models.CharField(max_length=70)),
-                ("sub_type_code", models.CharField(max_length=30)),
-                ("sub_type", models.CharField(blank=True, max_length=70, null=True)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("SAN", "Derogation from Sanctions Import Ban"),
+                            ("FA", "Firearms and Ammunition"),
+                            ("IS", "Iron and Steel (Quota)"),
+                            ("OPT", "Outward Processing Trade"),
+                            ("ADHOC", "Sanctions and Adhoc Licence Application"),
+                            ("SPS", "Prior Surveillance"),
+                            ("TEX", "Textiles (Quota)"),
+                            ("WD", "Wood (Quota)"),
+                        ],
+                        max_length=70,
+                    ),
+                ),
+                (
+                    "sub_type",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("OIL", "Open Individual Import Licence"),
+                            ("DEACTIVATED", "Deactivated Firearms Import Licence"),
+                            ("SIL", "Specific Individual Import Licence"),
+                        ],
+                        max_length=70,
+                        null=True,
+                    ),
+                ),
                 ("licence_type_code", models.CharField(max_length=20)),
                 ("sigl_flag", models.BooleanField()),
                 ("chief_flag", models.BooleanField()),
@@ -1161,6 +1186,7 @@ class Migration(migrations.Migration):
                 (
                     "declaration_template",
                     models.ForeignKey(
+                        null=True,
                         on_delete=django.db.models.deletion.PROTECT,
                         related_name="declaration_application_types",
                         to="web.template",
@@ -1503,7 +1529,18 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("is_active", models.BooleanField(default=True)),
-                ("type_code", models.CharField(max_length=30)),
+                (
+                    "type_code",
+                    models.CharField(
+                        choices=[
+                            ("CFS", "Certificate of Free Sale"),
+                            ("COM", "Certificate of Manufacture"),
+                            ("GMP", "Certificate of Good Manufacturing Practice"),
+                        ],
+                        max_length=30,
+                        unique=True,
+                    ),
+                ),
                 ("type", models.CharField(max_length=70)),
                 ("allow_multiple_products", models.BooleanField()),
                 ("generate_cover_letter", models.BooleanField()),

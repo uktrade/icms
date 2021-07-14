@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0043_add_tmp_adhoc_sanction_license_data"),
+        ("web", "0042_endorsementimportapplication"),
     ]
 
     operations = [
@@ -86,18 +86,5 @@ class Migration(migrations.Migration):
                 ),
             ],
             bases=("web.importapplication",),
-        ),
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="type",
-            field=models.CharField(
-                choices=[
-                    ("FA", "Firearms and Ammunition"),
-                    ("SAN", "Derogation from Sanctions Import Ban"),
-                    ("SAN_ADHOC_TEMP", "Sanctions and Adhoc"),
-                    ("WD", "Wood (Quota)"),
-                ],
-                max_length=70,
-            ),
         ),
     ]

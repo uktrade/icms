@@ -223,7 +223,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         page_contents = response.content.decode()
 
         # Header
-        assert "Sanctions and Adhoc - SAN_TEMP" in page_contents
+        assert "Sanctions and Adhoc Licence Application" in page_contents
         assert "In Progress" in page_contents
         assert self.importer_name in page_contents
         assert self.importer_eori in page_contents
@@ -274,7 +274,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         page_contents = response.content.decode()
 
         # Header
-        assert "Sanctions and Adhoc - SAN_TEMP" in page_contents
+        assert "Sanctions and Adhoc Licence Application" in page_contents
         assert "In Progress" in page_contents
         assert self.importer_name in page_contents
         assert self.importer_eori in page_contents

@@ -39,6 +39,7 @@ from web.models import (
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
+    ExportApplicationType,
     ExporterAccessRequest,
     ImportApplication,
     ImporterAccessRequest,
@@ -162,6 +163,7 @@ def list_notes(
             "process": application,
             "notes": application.case_notes,
             "case_type": case_type,
+            "page_title": get_page_title(case_type, application, "Notes"),
         }
 
     return render(
@@ -285,6 +287,7 @@ def edit_note(
             "note_form": note_form,
             "note": note,
             "case_type": case_type,
+            "page_title": get_page_title(case_type, application, "Edit Note"),
         }
 
     return render(
@@ -337,6 +340,7 @@ def add_note_document(
             "form": form,
             "note": note,
             "case_type": case_type,
+            "page_title": get_page_title(case_type, application, "Add Note"),
         }
 
     return render(
@@ -452,7 +456,7 @@ def withdraw_case(
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
             "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Management",
+            "page_title": get_page_title(case_type, application, "Withdrawals"),
             "form": form,
             "withdrawals": application.withdrawals.filter(is_active=True),
             "case_type": case_type,
@@ -587,7 +591,7 @@ def manage_update_requests(
         context = {
             "process": application,
             "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Update Requests",
+            "page_title": get_page_title(case_type, application, "Update Requests"),
             "form": form,
             "update_requests": update_requests,
             "current_update_request": current_update_request,
@@ -666,7 +670,7 @@ def manage_firs(
                 status=FurtherInformationRequest.DELETED
             ),
             "case_type": case_type,
-            "page_title": "Further Information Requests",
+            "page_title": get_page_title(case_type, application, "Further Information Requests"),
             **extra_context,
         }
     return render(
@@ -1184,7 +1188,7 @@ def manage_withdrawals(
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
             "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Withdrawals",
+            "page_title": get_page_title(case_type, application, "Withdrawals"),
             "form": form,
             "withdrawals": withdrawals,
             "current_withdrawal": current_withdrawal,
@@ -1273,7 +1277,7 @@ def _view_fa_oil(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "verified_certificates": application.verified_certificates.filter(is_active=True),
         "certificates": application.user_imported_certificates.active(),
         "contacts": application.importcontact_set.all(),
@@ -1288,7 +1292,7 @@ def _view_fa_sil(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "verified_certificates": application.verified_certificates.filter(is_active=True),
         "certificates": application.user_imported_certificates.active(),
         "verified_section5": application.importer.section5_authorities.currently_active(),
@@ -1305,7 +1309,7 @@ def _view_sanctions_and_adhoc(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "goods": application.sanctionsandadhocapplicationgoods_set.all(),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
@@ -1319,7 +1323,7 @@ def _view_wood_quota(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "contract_documents": application.contract_documents.filter(is_active=True),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
@@ -1333,7 +1337,7 @@ def _view_derogations(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
@@ -1349,7 +1353,7 @@ def _view_dfl(request: AuthenticatedHttpRequest, application: DFLApplication) ->
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "goods_list": goods_list,
         "contacts": contact_list,
     }
@@ -1393,7 +1397,7 @@ def _view_opt(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "category_group_description": category_group_description,
         "labels": labels,
         "fq_sections": fq_sections,
@@ -1409,7 +1413,7 @@ def _view_textiles_quota(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
@@ -1422,7 +1426,7 @@ def _view_sps(
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
@@ -1432,7 +1436,7 @@ def _view_sps(
 def _view_accessrequest(
     request: AuthenticatedHttpRequest, application: AccessRequest
 ) -> HttpResponse:
-    context = {"process": application}
+    context = {"process": application, "page_title": get_page_title("access", application, "View")}
 
     return render(request, "web/domains/case/access/case-view.html", context)
 
@@ -1443,7 +1447,7 @@ def _view_com(
     context = {
         "process_template": "web/domains/case/export/partials/process.html",
         "process": application,
-        "page_title": application.application_type.get_type_description(),
+        "page_title": get_page_title("export", application, "View"),
     }
 
     return render(request, "web/domains/case/export/com/view.html", context)
@@ -1553,7 +1557,7 @@ def manage_case(
             "case_type": case_type,
             "process": application,
             "task": task,
-            "page_title": f"{application.application_type.get_type_description()} - Manage",
+            "page_title": get_page_title(case_type, application, "Manage"),
             "form": form,
         }
 
@@ -1604,7 +1608,7 @@ def prepare_response(
         context = {
             "case_type": case_type,
             "task": task,
-            "page_title": "Response Preparation",
+            "page_title": get_page_title(case_type, application, "Response Preparation"),
             "form": form,
             "cover_letter_flag": cover_letter_flag,
             "electronic_licence_flag": electronic_licence_flag,
@@ -1857,7 +1861,7 @@ def start_authorisation(
                 "case_type": case_type,
                 "process": application,
                 "task": task,
-                "page_title": "Authorisation",
+                "page_title": get_page_title(case_type, application, "Authorisation"),
                 "errors": application_errors if application_errors.has_errors() else None,
             }
 
@@ -2049,3 +2053,14 @@ def cancel_authorisation(
         application.save()
 
         return redirect(reverse("workbasket"))
+
+
+def get_page_title(case_type: str, application: ImpOrExpOrAccess, page: str) -> str:
+    if case_type == "import":
+        return f"{ImportApplicationType.ProcessTypes(application.process_type).label} - {page}"
+    elif case_type == "export":
+        return f"{ExportApplicationType.ProcessTypes(application.process_type).label} - {page}"
+    elif case_type == "access":
+        return "Access Request - {page}"
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")

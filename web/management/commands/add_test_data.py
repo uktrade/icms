@@ -33,9 +33,10 @@ class Command(BaseCommand):
         # enable disabled application types
         ImportApplicationType.objects.filter(
             type__in=[
+                ImportApplicationType.Types.DEROGATION,
                 ImportApplicationType.Types.OPT,
-                ImportApplicationType.Types.TEXTILES,
                 ImportApplicationType.Types.SPS,
+                ImportApplicationType.Types.TEXTILES,
             ]
         ).update(is_active=True)
 

@@ -43,14 +43,6 @@ class Migration(migrations.Migration):
             model_name="importapplication",
             name="is_active",
         ),
-        migrations.RemoveField(
-            model_name="importapplicationtype",
-            name="sub_type_code",
-        ),
-        migrations.RemoveField(
-            model_name="importapplicationtype",
-            name="type_code",
-        ),
         migrations.AddField(
             model_name="importapplication",
             name="process_ptr",
@@ -64,20 +56,5 @@ class Migration(migrations.Migration):
                 to="web.process",
             ),
             preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="sub_type",
-            field=models.CharField(
-                blank=True,
-                choices=[("OIL", "Open Individual Import Licence")],
-                max_length=70,
-                null=True,
-            ),
-        ),
-        migrations.AlterField(
-            model_name="importapplicationtype",
-            name="type",
-            field=models.CharField(choices=[("FA", "Firearms and Ammunition")], max_length=70),
         ),
     ]

@@ -19,33 +19,34 @@ from web.models.shared import YesNoNAChoices
 
 class ImportApplicationType(models.Model):
     class Types(models.TextChoices):
-        FIREARMS = ("FA", "Firearms and Ammunition")
         DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
-        # TODO: missing from legacy data extract, hence TEMP
-        SANCTION_ADHOC = ("SAN_ADHOC_TEMP", "Sanctions and Adhoc")
-        WOOD_QUOTA = ("WD", "Wood (Quota)")
+        FIREARMS = ("FA", "Firearms and Ammunition")  # has subtypes
+        IS = ("IS", "Iron and Steel (Quota)")
         OPT = ("OPT", "Outward Processing Trade")
-        TEXTILES = ("TEX", "Textiles (Quota)")
+        SANCTION_ADHOC = ("ADHOC", "Sanctions and Adhoc Licence Application")
         SPS = ("SPS", "Prior Surveillance")
+        TEXTILES = ("TEX", "Textiles (Quota)")
+        WOOD_QUOTA = ("WD", "Wood (Quota)")
 
     class SubTypes(models.TextChoices):
         OIL = ("OIL", "Open Individual Import Licence")
         DFL = ("DEACTIVATED", "Deactivated Firearms Import Licence")
-        SIL = ("SIL", "Specific Import Licence")
+        SIL = ("SIL", "Specific Individual Import Licence")
 
     class ProcessTypes(models.TextChoices):
-        FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
+        DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
+        FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
         FA_OIL = (
             "OpenIndividualLicenceApplication",
             "Firearms and Ammunition (Open Individual Import Licence)",
         )
-        FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
-        WOOD = ("WoodQuotaApplication", "Wood (Quota)")
+        FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
+        IS = ("ISQuotaApplication", "Iron and Steel (Quota)")
         OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
         SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
-        DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
-        TEXTILES = ("TextilesApplication", "Textiles (Quota)")
         SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
+        TEXTILES = ("TextilesApplication", "Textiles (Quota)")
+        WOOD = ("WoodQuotaApplication", "Wood (Quota)")
 
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
@@ -110,15 +111,6 @@ class ImportApplicationType(models.Model):
     default_commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.PROTECT, blank=True, null=True
     )
-
-    def get_type_description(self):
-        type_name = self.get_type_display()
-        sub_type_name = self.get_sub_type_display()
-        if sub_type_name:
-            title = f"{type_name} {sub_type_name}"
-        else:
-            title = type_name
-        return title
 
     def __str__(self):
         if self.sub_type:
