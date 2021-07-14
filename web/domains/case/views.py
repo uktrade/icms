@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Type, Union
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
@@ -249,6 +250,16 @@ def edit_note(
         )
         application.get_task(model_class.Statuses.SUBMITTED, "process")
         note = application.case_notes.get(pk=note_pk)
+
+        if not note.is_active:
+            messages.error(request, "Editing of deleted notes is not allowed.")
+
+            return redirect(
+                reverse(
+                    "case:list-notes",
+                    kwargs={"application_pk": application_pk, "case_type": case_type},
+                )
+            )
 
         if request.POST:
             note_form = forms.CaseNoteForm(request.POST, instance=note)

@@ -15,18 +15,6 @@
         Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
       </legend>
 
-      {% if note.is_active %}
-        <form method="post" action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}" class="form-inline">
-          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-          <button type="submit" class="small-button icon-bin">Delete</button>
-        </form>
-      {% else %}
-        <form method="post" action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}" class="form-inline">
-          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-          <button type="submit" class="small-button icon-bin">Restore</button>
-        </form>
-      {% endif %}
-
       <div class="row">
         <div class="three columns"></div>
         <div class="six columns">
