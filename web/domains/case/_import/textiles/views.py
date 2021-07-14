@@ -122,7 +122,7 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
                 )
                 application.submit_application(request, task)
 
-                return redirect(reverse("workbasket"))
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()
