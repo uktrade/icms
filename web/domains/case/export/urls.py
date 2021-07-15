@@ -18,5 +18,5 @@ urlpatterns = [
     path("com/<int:application_pk>/submit/", views.submit_com, name="com-submit"),
     # Certificate of free sale
     path("cfs/<int:application_pk>/edit/", views.edit_cfs, name="cfs-edit"),
-    # path("cfs/<int:application_pk>/submit/", views.submit_cfs, name="cfs-submit"),
+    path("cfs/<int:application_pk>/submit/", views.submit_cfs, name="cfs-submit"),
 ]

@@ -141,9 +141,9 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
 
 @login_required
-def submit_com(request: AuthenticatedHttpRequest, application_pk: int) -> HttpResponse:
+def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl = get_object_or_404(
+        appl: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
 
@@ -163,12 +163,6 @@ def submit_com(request: AuthenticatedHttpRequest, application_pk: int) -> HttpRe
 
         if request.POST:
             form = SubmitForm(data=request.POST)
-            go_back_to_edit = "_edit_application" in request.POST
-
-            if go_back_to_edit:
-                return redirect(
-                    reverse("export:com-edit", kwargs={"application_pk": application_pk})
-                )
 
             if form.is_valid() and not errors.has_errors():
                 appl.submit_application(request, task)
@@ -222,3 +216,45 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         }
 
         return render(request, "web/domains/case/export/edit-cfs.html", context)
+
+
+@login_required
+def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        appl: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(appl, request.user, "export")
+
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        errors = ApplicationErrors()
+        page_errors = PageErrors(
+            page_name="Application details",
+            url=reverse("export:cfs-edit", kwargs={"application_pk": application_pk}),
+        )
+        create_page_errors(EditCFSForm(data=model_to_dict(appl), instance=appl), page_errors)
+        errors.add(page_errors)
+
+        if request.POST:
+            form = SubmitForm(data=request.POST)
+
+            if form.is_valid() and not errors.has_errors():
+                appl.submit_application(request, task)
+
+                return appl.redirect_after_submit(request)
+
+        else:
+            form = SubmitForm()
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": appl,
+            "task": task,
+            "exporter_name": appl.exporter.name,
+            "form": form,
+            "errors": errors if errors.has_errors() else None,
+        }
+
+        return render(request, "web/domains/case/export/submit-cfs.html", context)
