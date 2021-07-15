@@ -216,6 +216,19 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name="CommodityType",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("type_code", models.CharField(max_length=20)),
+                ("type", models.CharField(max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
             name="Commodity",
             fields=[
                 (
@@ -232,6 +245,12 @@ class Migration(migrations.Migration):
                 ("validity_end_date", models.DateField(blank=True, null=True)),
                 ("quantity_threshold", models.IntegerField(blank=True, null=True)),
                 ("sigl_product_type", models.CharField(blank=True, max_length=3, null=True)),
+                (
+                    "commodity_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="web.commoditytype"
+                    ),
+                ),
             ],
             options={
                 "ordering": ("-is_active", "commodity_code"),
@@ -267,19 +286,6 @@ class Migration(migrations.Migration):
                 "ordering": ("-is_active", "group_code"),
             },
             bases=(web.models.mixins.Archivable, models.Model),
-        ),
-        migrations.CreateModel(
-            name="CommodityType",
-            fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
-                    ),
-                ),
-                ("type_code", models.CharField(max_length=20)),
-                ("type", models.CharField(max_length=50)),
-            ],
         ),
         migrations.CreateModel(
             name="Constabulary",

@@ -64,6 +64,7 @@ class CommodityForm(ModelForm):
     class Meta:
         model = Commodity
         fields = [
+            "commodity_type",
             "commodity_code",
             "validity_start_date",
             "validity_end_date",

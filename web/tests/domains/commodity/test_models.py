@@ -3,7 +3,7 @@ from datetime import date
 
 from django.test import TestCase
 
-from web.domains.commodity.models import Commodity, CommodityGroup
+from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.tests.domains.commodity.factory import CommodityFactory, CommodityGroupFactory
 
 
@@ -24,6 +24,7 @@ class CommodityTest(TestCase):
             validity_end_date=validity_end_date,
             quantity_threshold=quantity_threshold,
             sigl_product_type=sigl_product_type,
+            commodity_type=CommodityType.objects.first(),
         )
 
     def test_create_commodity(self):

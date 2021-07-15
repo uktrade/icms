@@ -1,3 +1,4 @@
+from web.domains.commodity.models import CommodityType
 from web.tests.auth import AuthTestCase
 
 from .factory import CommodityFactory, CommodityGroupFactory
@@ -71,7 +72,9 @@ class CommodityCreateViewTest(AuthTestCase):
 class CommodityUpdateViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.commodity = CommodityFactory()  # Create a commodity
+        self.commodity = CommodityFactory(
+            commodity_type=CommodityType.objects.first()
+        )  # Create a commodity
         self.url = f"/commodity/{self.commodity.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -99,7 +102,7 @@ class CommodityUpdateViewTest(AuthTestCase):
 class CommodityDetailViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.commodity = CommodityFactory.create()
+        self.commodity = CommodityFactory.create(commodity_type=CommodityType.objects.first())
         self.url = f"/commodity/{self.commodity.pk}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 

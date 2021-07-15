@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
                         auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
                     ),
                 ),
-                ("application_subtype", models.CharField(max_length=50)),
                 ("start_datetime", models.DateTimeField()),
                 ("end_datetime", models.DateTimeField(blank=True, null=True)),
                 ("maximum_allocation", models.IntegerField(blank=True, null=True)),

@@ -5,12 +5,16 @@ from datetime import datetime
 import pytz
 from django.db import migrations
 
+from .utils.commodity import CommodityDataLoader
+
 DATETIME_FORMAT = "%d-%b-%Y %H:%M:%S"
 DATE_FORMAT = "%d-%b-%Y"
 
 
 def add_commodities(apps, schema_editor):
     Commodity = apps.get_model("web", "Commodity")
+    commodity_type_class = apps.get_model("web", "CommodityType")
+    data = CommodityDataLoader(commodity_type_class=commodity_type_class)
 
     Commodity.objects.bulk_create(
         [
@@ -20,6 +24,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5811000091",
+                commodity_type=data.get_commodity_type("5811000091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -31,6 +36,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5811000092",
+                commodity_type=data.get_commodity_type("5811000092"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -42,6 +48,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5811000095",
+                commodity_type=data.get_commodity_type("5811000095"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -53,6 +60,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5811000096",
+                commodity_type=data.get_commodity_type("5811000096"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -64,6 +72,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5811000099",
+                commodity_type=data.get_commodity_type("5811000099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -75,6 +84,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5901100000",
+                commodity_type=data.get_commodity_type("5901100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -86,6 +96,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5901900000",
+                commodity_type=data.get_commodity_type("5901900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -97,6 +108,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902101000",
+                commodity_type=data.get_commodity_type("5902101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -108,6 +120,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902109000",
+                commodity_type=data.get_commodity_type("5902109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -119,6 +132,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902201000",
+                commodity_type=data.get_commodity_type("5902201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -130,6 +144,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902209000",
+                commodity_type=data.get_commodity_type("5902209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -141,6 +156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902901000",
+                commodity_type=data.get_commodity_type("5902901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -152,6 +168,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5902909000",
+                commodity_type=data.get_commodity_type("5902909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -163,6 +180,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903101000",
+                commodity_type=data.get_commodity_type("5903101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -174,6 +192,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903109010",
+                commodity_type=data.get_commodity_type("5903109010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -185,6 +204,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903109090",
+                commodity_type=data.get_commodity_type("5903109090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -196,6 +216,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903201000",
+                commodity_type=data.get_commodity_type("5903201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -207,6 +228,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903209010",
+                commodity_type=data.get_commodity_type("5903209010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -218,6 +240,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903209090",
+                commodity_type=data.get_commodity_type("5903209090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -229,6 +252,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903901000",
+                commodity_type=data.get_commodity_type("5903901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -240,6 +264,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903909100",
+                commodity_type=data.get_commodity_type("5903909100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -251,6 +276,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903909910",
+                commodity_type=data.get_commodity_type("5903909910"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -262,6 +288,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903909920",
+                commodity_type=data.get_commodity_type("5903909920"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -273,6 +300,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5903909990",
+                commodity_type=data.get_commodity_type("5903909990"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -284,6 +312,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5904100000",
+                commodity_type=data.get_commodity_type("5904100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -295,6 +324,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5904900000",
+                commodity_type=data.get_commodity_type("5904900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -306,6 +336,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905001000",
+                commodity_type=data.get_commodity_type("5905001000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -317,6 +348,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905003000",
+                commodity_type=data.get_commodity_type("5905003000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -328,6 +360,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007010",
+                commodity_type=data.get_commodity_type("5905007010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -339,6 +372,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007020",
+                commodity_type=data.get_commodity_type("5905007020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -350,6 +384,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007030",
+                commodity_type=data.get_commodity_type("5905007030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -361,6 +396,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007040",
+                commodity_type=data.get_commodity_type("5905007040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -372,6 +408,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007050",
+                commodity_type=data.get_commodity_type("5905007050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -383,6 +420,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905007090",
+                commodity_type=data.get_commodity_type("5905007090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -394,6 +432,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905009000",
+                commodity_type=data.get_commodity_type("5905009000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -405,6 +444,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905009020",
+                commodity_type=data.get_commodity_type("5905009020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -416,6 +456,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905070040",
+                commodity_type=data.get_commodity_type("5905070040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -427,6 +468,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5905090010",
+                commodity_type=data.get_commodity_type("5905090010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -438,6 +480,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5906100000",
+                commodity_type=data.get_commodity_type("5906100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -449,6 +492,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5906910000",
+                commodity_type=data.get_commodity_type("5906910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -460,6 +504,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5906991000",
+                commodity_type=data.get_commodity_type("5906991000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -471,6 +516,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5906999000",
+                commodity_type=data.get_commodity_type("5906999000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -482,6 +528,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5907009010",
+                commodity_type=data.get_commodity_type("5907009010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -493,6 +540,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5907009090",
+                commodity_type=data.get_commodity_type("5907009090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -504,6 +552,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5908000000",
+                commodity_type=data.get_commodity_type("5908000000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -515,6 +564,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5909001000",
+                commodity_type=data.get_commodity_type("5909001000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -526,6 +576,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5909009000",
+                commodity_type=data.get_commodity_type("5909009000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -537,6 +588,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5910000000",
+                commodity_type=data.get_commodity_type("5910000000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -548,6 +600,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911100010",
+                commodity_type=data.get_commodity_type("5911100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -559,6 +612,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911100090",
+                commodity_type=data.get_commodity_type("5911100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -570,6 +624,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911200020",
+                commodity_type=data.get_commodity_type("5911200020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -581,6 +636,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911200090",
+                commodity_type=data.get_commodity_type("5911200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -592,6 +648,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911311100",
+                commodity_type=data.get_commodity_type("5911311100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -603,6 +660,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911311900",
+                commodity_type=data.get_commodity_type("5911311900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -614,6 +672,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911319000",
+                commodity_type=data.get_commodity_type("5911319000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -625,6 +684,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911321000",
+                commodity_type=data.get_commodity_type("5911321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -636,6 +696,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911329000",
+                commodity_type=data.get_commodity_type("5911329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -647,6 +708,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911400000",
+                commodity_type=data.get_commodity_type("5911400000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -658,6 +720,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911901000",
+                commodity_type=data.get_commodity_type("5911901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -669,6 +732,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911909010",
+                commodity_type=data.get_commodity_type("5911909010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -680,6 +744,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911909030",
+                commodity_type=data.get_commodity_type("5911909030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -691,6 +756,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5911909090",
+                commodity_type=data.get_commodity_type("5911909090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -702,6 +768,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001100000",
+                commodity_type=data.get_commodity_type("6001100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -713,6 +780,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001100010",
+                commodity_type=data.get_commodity_type("6001100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -724,6 +792,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001100020",
+                commodity_type=data.get_commodity_type("6001100020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -735,6 +804,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001100090",
+                commodity_type=data.get_commodity_type("6001100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -746,6 +816,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001210000",
+                commodity_type=data.get_commodity_type("6001210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -757,6 +828,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001220000",
+                commodity_type=data.get_commodity_type("6001220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -768,6 +840,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001290010",
+                commodity_type=data.get_commodity_type("6001290010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -779,6 +852,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001290090",
+                commodity_type=data.get_commodity_type("6001290090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -790,6 +864,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001910000",
+                commodity_type=data.get_commodity_type("6001910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -801,6 +876,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001920000",
+                commodity_type=data.get_commodity_type("6001920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -812,6 +888,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001990010",
+                commodity_type=data.get_commodity_type("6001990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -823,6 +900,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6001990090",
+                commodity_type=data.get_commodity_type("6001990090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -834,6 +912,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002301010",
+                commodity_type=data.get_commodity_type("6002301010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -845,6 +924,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002301090",
+                commodity_type=data.get_commodity_type("6002301090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -856,6 +936,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002309000",
+                commodity_type=data.get_commodity_type("6002309000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -867,6 +948,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002400010",
+                commodity_type=data.get_commodity_type("6002400010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -878,6 +960,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002400091",
+                commodity_type=data.get_commodity_type("6002400091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -889,6 +972,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002900000",
+                commodity_type=data.get_commodity_type("6002900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -900,6 +984,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6002990000",
+                commodity_type=data.get_commodity_type("6002990000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -911,6 +996,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003100000",
+                commodity_type=data.get_commodity_type("6003100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -922,6 +1008,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003200000",
+                commodity_type=data.get_commodity_type("6003200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -933,6 +1020,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003301000",
+                commodity_type=data.get_commodity_type("6003301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -944,6 +1032,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003309000",
+                commodity_type=data.get_commodity_type("6003309000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -955,6 +1044,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003400000",
+                commodity_type=data.get_commodity_type("6003400000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -966,6 +1056,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6003900000",
+                commodity_type=data.get_commodity_type("6003900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -977,6 +1068,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6004100010",
+                commodity_type=data.get_commodity_type("6004100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -988,6 +1080,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6004100091",
+                commodity_type=data.get_commodity_type("6004100091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -999,6 +1092,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6004100099",
+                commodity_type=data.get_commodity_type("6004100099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1010,6 +1104,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6004900000",
+                commodity_type=data.get_commodity_type("6004900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1021,6 +1116,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005100000",
+                commodity_type=data.get_commodity_type("6005100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1032,6 +1128,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005210000",
+                commodity_type=data.get_commodity_type("6005210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1043,6 +1140,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005220000",
+                commodity_type=data.get_commodity_type("6005220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1054,6 +1152,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005230000",
+                commodity_type=data.get_commodity_type("6005230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1065,6 +1164,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005240000",
+                commodity_type=data.get_commodity_type("6005240000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1076,6 +1176,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005311000",
+                commodity_type=data.get_commodity_type("6005311000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1087,6 +1188,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005315000",
+                commodity_type=data.get_commodity_type("6005315000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1098,6 +1200,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005319000",
+                commodity_type=data.get_commodity_type("6005319000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1109,6 +1212,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005321000",
+                commodity_type=data.get_commodity_type("6005321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1120,6 +1224,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005325000",
+                commodity_type=data.get_commodity_type("6005325000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1131,6 +1236,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005329000",
+                commodity_type=data.get_commodity_type("6005329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1142,6 +1248,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005331000",
+                commodity_type=data.get_commodity_type("6005331000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1153,6 +1260,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005335000",
+                commodity_type=data.get_commodity_type("6005335000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1164,6 +1272,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005339000",
+                commodity_type=data.get_commodity_type("6005339000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1175,6 +1284,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005341000",
+                commodity_type=data.get_commodity_type("6005341000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1186,6 +1296,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005345000",
+                commodity_type=data.get_commodity_type("6005345000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1197,6 +1308,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005349000",
+                commodity_type=data.get_commodity_type("6005349000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1208,6 +1320,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005410000",
+                commodity_type=data.get_commodity_type("6005410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1219,6 +1332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005420000",
+                commodity_type=data.get_commodity_type("6005420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1230,6 +1344,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005430000",
+                commodity_type=data.get_commodity_type("6005430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1241,6 +1356,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005440000",
+                commodity_type=data.get_commodity_type("6005440000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1252,6 +1368,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6005900000",
+                commodity_type=data.get_commodity_type("6005900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1263,6 +1380,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006100000",
+                commodity_type=data.get_commodity_type("6006100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1274,6 +1392,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006210000",
+                commodity_type=data.get_commodity_type("6006210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1285,6 +1404,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006220000",
+                commodity_type=data.get_commodity_type("6006220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1296,6 +1416,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006230000",
+                commodity_type=data.get_commodity_type("6006230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1307,6 +1428,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006240000",
+                commodity_type=data.get_commodity_type("6006240000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1318,6 +1440,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006311000",
+                commodity_type=data.get_commodity_type("6006311000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1329,6 +1452,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006319000",
+                commodity_type=data.get_commodity_type("6006319000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1340,6 +1464,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006321000",
+                commodity_type=data.get_commodity_type("6006321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1351,6 +1476,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006329000",
+                commodity_type=data.get_commodity_type("6006329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1362,6 +1488,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006331000",
+                commodity_type=data.get_commodity_type("6006331000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1373,6 +1500,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006339000",
+                commodity_type=data.get_commodity_type("6006339000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1384,6 +1512,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006341000",
+                commodity_type=data.get_commodity_type("6006341000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1395,6 +1524,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006349000",
+                commodity_type=data.get_commodity_type("6006349000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1406,6 +1536,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006410000",
+                commodity_type=data.get_commodity_type("6006410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1417,6 +1548,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006420000",
+                commodity_type=data.get_commodity_type("6006420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1428,6 +1560,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006430000",
+                commodity_type=data.get_commodity_type("6006430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1439,6 +1572,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006440000",
+                commodity_type=data.get_commodity_type("6006440000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1450,6 +1584,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6006900000",
+                commodity_type=data.get_commodity_type("6006900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1461,6 +1596,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101101010",
+                commodity_type=data.get_commodity_type("6101101010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1472,6 +1608,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101101090",
+                commodity_type=data.get_commodity_type("6101101090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1483,6 +1620,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101201000",
+                commodity_type=data.get_commodity_type("6101201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1494,6 +1632,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101209000",
+                commodity_type=data.get_commodity_type("6101209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1505,6 +1644,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101301000",
+                commodity_type=data.get_commodity_type("6101301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1516,6 +1656,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101309000",
+                commodity_type=data.get_commodity_type("6101309000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1527,6 +1668,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101901000",
+                commodity_type=data.get_commodity_type("6101901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1538,6 +1680,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101908010",
+                commodity_type=data.get_commodity_type("6101908010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1549,6 +1692,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6101909000",
+                commodity_type=data.get_commodity_type("6101909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1560,6 +1704,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102101010",
+                commodity_type=data.get_commodity_type("6102101010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1571,6 +1716,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102101090",
+                commodity_type=data.get_commodity_type("6102101090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1582,6 +1728,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102109000",
+                commodity_type=data.get_commodity_type("6102109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1593,6 +1740,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102201000",
+                commodity_type=data.get_commodity_type("6102201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1604,6 +1752,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102209000",
+                commodity_type=data.get_commodity_type("6102209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1615,6 +1764,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102301000",
+                commodity_type=data.get_commodity_type("6102301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1626,6 +1776,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102309000",
+                commodity_type=data.get_commodity_type("6102309000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1637,6 +1788,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102901000",
+                commodity_type=data.get_commodity_type("6102901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1648,6 +1800,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6102909000",
+                commodity_type=data.get_commodity_type("6102909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1659,6 +1812,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103101000",
+                commodity_type=data.get_commodity_type("6103101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1670,6 +1824,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103109000",
+                commodity_type=data.get_commodity_type("6103109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1681,6 +1836,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103110000",
+                commodity_type=data.get_commodity_type("6103110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1692,6 +1848,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103120000",
+                commodity_type=data.get_commodity_type("6103120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1703,6 +1860,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103190000",
+                commodity_type=data.get_commodity_type("6103190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1714,6 +1872,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103210000",
+                commodity_type=data.get_commodity_type("6103210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1725,6 +1884,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103220000",
+                commodity_type=data.get_commodity_type("6103220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1736,6 +1896,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103230000",
+                commodity_type=data.get_commodity_type("6103230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1747,6 +1908,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103290000",
+                commodity_type=data.get_commodity_type("6103290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1758,6 +1920,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103310000",
+                commodity_type=data.get_commodity_type("6103310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1769,6 +1932,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103320000",
+                commodity_type=data.get_commodity_type("6103320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1780,6 +1944,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103330000",
+                commodity_type=data.get_commodity_type("6103330000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1791,6 +1956,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103390010",
+                commodity_type=data.get_commodity_type("6103390010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1802,6 +1968,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103390090",
+                commodity_type=data.get_commodity_type("6103390090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1813,6 +1980,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103410000",
+                commodity_type=data.get_commodity_type("6103410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1824,6 +1992,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103420000",
+                commodity_type=data.get_commodity_type("6103420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1835,6 +2004,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103430000",
+                commodity_type=data.get_commodity_type("6103430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1846,6 +2016,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103490010",
+                commodity_type=data.get_commodity_type("6103490010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1857,6 +2028,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103490091",
+                commodity_type=data.get_commodity_type("6103490091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1868,6 +2040,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6103490099",
+                commodity_type=data.get_commodity_type("6103490099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1879,6 +2052,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104110000",
+                commodity_type=data.get_commodity_type("6104110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1890,6 +2064,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104120000",
+                commodity_type=data.get_commodity_type("6104120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1901,6 +2076,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104130000",
+                commodity_type=data.get_commodity_type("6104130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1912,6 +2088,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104192000",
+                commodity_type=data.get_commodity_type("6104192000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1923,6 +2100,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104199010",
+                commodity_type=data.get_commodity_type("6104199010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1934,6 +2112,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104199020",
+                commodity_type=data.get_commodity_type("6104199020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1945,6 +2124,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104199090",
+                commodity_type=data.get_commodity_type("6104199090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1956,6 +2136,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104210000",
+                commodity_type=data.get_commodity_type("6104210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1967,6 +2148,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104220000",
+                commodity_type=data.get_commodity_type("6104220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1978,6 +2160,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104230000",
+                commodity_type=data.get_commodity_type("6104230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -1989,6 +2172,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104291000",
+                commodity_type=data.get_commodity_type("6104291000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2000,6 +2184,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104299010",
+                commodity_type=data.get_commodity_type("6104299010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2011,6 +2196,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104299090",
+                commodity_type=data.get_commodity_type("6104299090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2022,6 +2208,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104310000",
+                commodity_type=data.get_commodity_type("6104310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2033,6 +2220,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104320000",
+                commodity_type=data.get_commodity_type("6104320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2044,6 +2232,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104330000",
+                commodity_type=data.get_commodity_type("6104330000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2055,6 +2244,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104390010",
+                commodity_type=data.get_commodity_type("6104390010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2066,6 +2256,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104390090",
+                commodity_type=data.get_commodity_type("6104390090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2077,6 +2268,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104410000",
+                commodity_type=data.get_commodity_type("6104410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2088,6 +2280,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104420000",
+                commodity_type=data.get_commodity_type("6104420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2099,6 +2292,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104430000",
+                commodity_type=data.get_commodity_type("6104430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2110,6 +2304,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104440000",
+                commodity_type=data.get_commodity_type("6104440000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2121,6 +2316,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104490000",
+                commodity_type=data.get_commodity_type("6104490000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2132,6 +2328,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104510000",
+                commodity_type=data.get_commodity_type("6104510000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2143,6 +2340,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104520000",
+                commodity_type=data.get_commodity_type("6104520000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2154,6 +2352,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104530000",
+                commodity_type=data.get_commodity_type("6104530000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2165,6 +2364,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104590000",
+                commodity_type=data.get_commodity_type("6104590000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2176,6 +2376,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104610000",
+                commodity_type=data.get_commodity_type("6104610000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2187,6 +2388,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104620000",
+                commodity_type=data.get_commodity_type("6104620000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2198,6 +2400,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104630000",
+                commodity_type=data.get_commodity_type("6104630000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2209,6 +2412,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104690010",
+                commodity_type=data.get_commodity_type("6104690010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2220,6 +2424,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104690091",
+                commodity_type=data.get_commodity_type("6104690091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2231,6 +2436,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6104690099",
+                commodity_type=data.get_commodity_type("6104690099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2242,6 +2448,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6105100000",
+                commodity_type=data.get_commodity_type("6105100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2253,6 +2460,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6105201000",
+                commodity_type=data.get_commodity_type("6105201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2264,6 +2472,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6105209000",
+                commodity_type=data.get_commodity_type("6105209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2275,6 +2484,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6105901000",
+                commodity_type=data.get_commodity_type("6105901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2286,6 +2496,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6105909000",
+                commodity_type=data.get_commodity_type("6105909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2297,6 +2508,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106100000",
+                commodity_type=data.get_commodity_type("6106100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2308,6 +2520,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106200000",
+                commodity_type=data.get_commodity_type("6106200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2319,6 +2532,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106201000",
+                commodity_type=data.get_commodity_type("6106201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2330,6 +2544,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106300090",
+                commodity_type=data.get_commodity_type("6106300090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2341,6 +2556,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106690090",
+                commodity_type=data.get_commodity_type("6106690090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2352,6 +2568,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106901000",
+                commodity_type=data.get_commodity_type("6106901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2363,6 +2580,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106903000",
+                commodity_type=data.get_commodity_type("6106903000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2374,6 +2592,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106905000",
+                commodity_type=data.get_commodity_type("6106905000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2385,6 +2604,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6106909000",
+                commodity_type=data.get_commodity_type("6106909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2396,6 +2616,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107110000",
+                commodity_type=data.get_commodity_type("6107110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2407,6 +2628,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107120000",
+                commodity_type=data.get_commodity_type("6107120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2418,6 +2640,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107190000",
+                commodity_type=data.get_commodity_type("6107190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2429,6 +2652,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107210000",
+                commodity_type=data.get_commodity_type("6107210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2440,6 +2664,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107220000",
+                commodity_type=data.get_commodity_type("6107220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2451,6 +2676,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107290000",
+                commodity_type=data.get_commodity_type("6107290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2462,6 +2688,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107910000",
+                commodity_type=data.get_commodity_type("6107910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2473,6 +2700,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107920000",
+                commodity_type=data.get_commodity_type("6107920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2484,6 +2712,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107990010",
+                commodity_type=data.get_commodity_type("6107990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2495,6 +2724,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6107990090",
+                commodity_type=data.get_commodity_type("6107990090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2506,6 +2736,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108110000",
+                commodity_type=data.get_commodity_type("6108110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2517,6 +2748,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108190000",
+                commodity_type=data.get_commodity_type("6108190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2528,6 +2760,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108210000",
+                commodity_type=data.get_commodity_type("6108210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2539,6 +2772,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108220000",
+                commodity_type=data.get_commodity_type("6108220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2550,6 +2784,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108290000",
+                commodity_type=data.get_commodity_type("6108290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2561,6 +2796,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108310000",
+                commodity_type=data.get_commodity_type("6108310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2572,6 +2808,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108320000",
+                commodity_type=data.get_commodity_type("6108320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2583,6 +2820,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108390000",
+                commodity_type=data.get_commodity_type("6108390000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2594,6 +2832,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108910000",
+                commodity_type=data.get_commodity_type("6108910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2605,6 +2844,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108920000",
+                commodity_type=data.get_commodity_type("6108920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2616,6 +2856,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108990010",
+                commodity_type=data.get_commodity_type("6108990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2627,6 +2868,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6108990090",
+                commodity_type=data.get_commodity_type("6108990090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2638,6 +2880,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6109902000",
+                commodity_type=data.get_commodity_type("6109902000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2649,6 +2892,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6109909000",
+                commodity_type=data.get_commodity_type("6109909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2660,6 +2904,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110103900",
+                commodity_type=data.get_commodity_type("6110103900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2671,6 +2916,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110109900",
+                commodity_type=data.get_commodity_type("6110109900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2682,6 +2928,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110111000",
+                commodity_type=data.get_commodity_type("6110111000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2693,6 +2940,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110113000",
+                commodity_type=data.get_commodity_type("6110113000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2704,6 +2952,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110119000",
+                commodity_type=data.get_commodity_type("6110119000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2715,6 +2964,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110121010",
+                commodity_type=data.get_commodity_type("6110121010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2726,6 +2976,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110121090",
+                commodity_type=data.get_commodity_type("6110121090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2737,6 +2988,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110129010",
+                commodity_type=data.get_commodity_type("6110129010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2748,6 +3000,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110129090",
+                commodity_type=data.get_commodity_type("6110129090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2759,6 +3012,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110191010",
+                commodity_type=data.get_commodity_type("6110191010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2770,6 +3024,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110191090",
+                commodity_type=data.get_commodity_type("6110191090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2781,6 +3036,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110199010",
+                commodity_type=data.get_commodity_type("6110199010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2792,6 +3048,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110199090",
+                commodity_type=data.get_commodity_type("6110199090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2803,6 +3060,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110201000",
+                commodity_type=data.get_commodity_type("6110201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2814,6 +3072,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110209100",
+                commodity_type=data.get_commodity_type("6110209100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2825,6 +3084,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110209900",
+                commodity_type=data.get_commodity_type("6110209900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2836,6 +3096,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110301000",
+                commodity_type=data.get_commodity_type("6110301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2847,6 +3108,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110309100",
+                commodity_type=data.get_commodity_type("6110309100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2858,6 +3120,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110309900",
+                commodity_type=data.get_commodity_type("6110309900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2869,6 +3132,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110901000",
+                commodity_type=data.get_commodity_type("6110901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2880,6 +3144,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110909030",
+                commodity_type=data.get_commodity_type("6110909030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2891,6 +3156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6110909090",
+                commodity_type=data.get_commodity_type("6110909090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2902,6 +3168,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111101000",
+                commodity_type=data.get_commodity_type("6111101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2913,6 +3180,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111109000",
+                commodity_type=data.get_commodity_type("6111109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2924,6 +3192,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111201000",
+                commodity_type=data.get_commodity_type("6111201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2935,6 +3204,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111209000",
+                commodity_type=data.get_commodity_type("6111209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2946,6 +3216,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111301000",
+                commodity_type=data.get_commodity_type("6111301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2957,6 +3228,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111309000",
+                commodity_type=data.get_commodity_type("6111309000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2968,6 +3240,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111900010",
+                commodity_type=data.get_commodity_type("6111900010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2979,6 +3252,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111900011",
+                commodity_type=data.get_commodity_type("6111900011"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -2990,6 +3264,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111900019",
+                commodity_type=data.get_commodity_type("6111900019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3001,6 +3276,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6111900090",
+                commodity_type=data.get_commodity_type("6111900090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3012,6 +3288,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112110000",
+                commodity_type=data.get_commodity_type("6112110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3023,6 +3300,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112120000",
+                commodity_type=data.get_commodity_type("6112120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3034,6 +3312,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112190000",
+                commodity_type=data.get_commodity_type("6112190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3045,6 +3324,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112200000",
+                commodity_type=data.get_commodity_type("6112200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3056,6 +3336,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112311000",
+                commodity_type=data.get_commodity_type("6112311000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3067,6 +3348,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112319000",
+                commodity_type=data.get_commodity_type("6112319000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3078,6 +3360,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112391000",
+                commodity_type=data.get_commodity_type("6112391000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3089,6 +3372,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112399000",
+                commodity_type=data.get_commodity_type("6112399000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3100,6 +3384,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112411000",
+                commodity_type=data.get_commodity_type("6112411000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3111,6 +3396,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112419000",
+                commodity_type=data.get_commodity_type("6112419000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3122,6 +3408,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112491000",
+                commodity_type=data.get_commodity_type("6112491000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3133,6 +3420,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6112499000",
+                commodity_type=data.get_commodity_type("6112499000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3144,6 +3432,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6113001000",
+                commodity_type=data.get_commodity_type("6113001000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3155,6 +3444,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6113009000",
+                commodity_type=data.get_commodity_type("6113009000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3166,6 +3456,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6114100000",
+                commodity_type=data.get_commodity_type("6114100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3177,6 +3468,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6114200000",
+                commodity_type=data.get_commodity_type("6114200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3188,6 +3480,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6114300000",
+                commodity_type=data.get_commodity_type("6114300000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3199,6 +3492,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6114900000",
+                commodity_type=data.get_commodity_type("6114900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3210,6 +3504,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115110000",
+                commodity_type=data.get_commodity_type("6115110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3221,6 +3516,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115120000",
+                commodity_type=data.get_commodity_type("6115120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3232,6 +3528,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115190000",
+                commodity_type=data.get_commodity_type("6115190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3243,6 +3540,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115201100",
+                commodity_type=data.get_commodity_type("6115201100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3254,6 +3552,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115201900",
+                commodity_type=data.get_commodity_type("6115201900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3265,6 +3564,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115209000",
+                commodity_type=data.get_commodity_type("6115209000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3276,6 +3576,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115900019",
+                commodity_type=data.get_commodity_type("6115900019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3287,6 +3588,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115910000",
+                commodity_type=data.get_commodity_type("6115910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3298,6 +3600,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115920000",
+                commodity_type=data.get_commodity_type("6115920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3309,6 +3612,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115931000",
+                commodity_type=data.get_commodity_type("6115931000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3320,6 +3624,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115933000",
+                commodity_type=data.get_commodity_type("6115933000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3331,6 +3636,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115939100",
+                commodity_type=data.get_commodity_type("6115939100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3342,6 +3648,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115939900",
+                commodity_type=data.get_commodity_type("6115939900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3353,6 +3660,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115990000",
+                commodity_type=data.get_commodity_type("6115990000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3364,6 +3672,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116102000",
+                commodity_type=data.get_commodity_type("6116102000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3375,6 +3684,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116108000",
+                commodity_type=data.get_commodity_type("6116108000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3386,6 +3696,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116910000",
+                commodity_type=data.get_commodity_type("6116910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3397,6 +3708,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116920000",
+                commodity_type=data.get_commodity_type("6116920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3408,6 +3720,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116930000",
+                commodity_type=data.get_commodity_type("6116930000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3419,6 +3732,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6116990000",
+                commodity_type=data.get_commodity_type("6116990000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3430,6 +3744,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6117100000",
+                commodity_type=data.get_commodity_type("6117100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3441,6 +3756,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6117200000",
+                commodity_type=data.get_commodity_type("6117200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3452,6 +3768,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6117801000",
+                commodity_type=data.get_commodity_type("6117801000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3463,6 +3780,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6117809000",
+                commodity_type=data.get_commodity_type("6117809000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3474,6 +3792,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6117900000",
+                commodity_type=data.get_commodity_type("6117900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3485,6 +3804,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201110010",
+                commodity_type=data.get_commodity_type("6201110010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3496,6 +3816,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201110090",
+                commodity_type=data.get_commodity_type("6201110090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3507,6 +3828,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201121010",
+                commodity_type=data.get_commodity_type("6201121010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3518,6 +3840,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201121090",
+                commodity_type=data.get_commodity_type("6201121090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3529,6 +3852,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201129010",
+                commodity_type=data.get_commodity_type("6201129010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3540,6 +3864,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201129090",
+                commodity_type=data.get_commodity_type("6201129090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3551,6 +3876,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201131010",
+                commodity_type=data.get_commodity_type("6201131010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3562,6 +3888,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201131090",
+                commodity_type=data.get_commodity_type("6201131090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3573,6 +3900,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201139010",
+                commodity_type=data.get_commodity_type("6201139010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3584,6 +3912,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201139090",
+                commodity_type=data.get_commodity_type("6201139090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3595,6 +3924,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201190000",
+                commodity_type=data.get_commodity_type("6201190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3606,6 +3936,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201910000",
+                commodity_type=data.get_commodity_type("6201910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3617,6 +3948,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201920010",
+                commodity_type=data.get_commodity_type("6201920010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3628,6 +3960,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201920090",
+                commodity_type=data.get_commodity_type("6201920090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3639,6 +3972,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201930000",
+                commodity_type=data.get_commodity_type("6201930000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3650,6 +3984,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201990010",
+                commodity_type=data.get_commodity_type("6201990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3661,6 +3996,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6201990090",
+                commodity_type=data.get_commodity_type("6201990090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3672,6 +4008,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6202110010",
+                commodity_type=data.get_commodity_type("6202110010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3683,6 +4020,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6202110020",
+                commodity_type=data.get_commodity_type("6202110020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3694,6 +4032,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5511100000",
+                commodity_type=data.get_commodity_type("5511100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3705,6 +4044,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5511200000",
+                commodity_type=data.get_commodity_type("5511200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3716,6 +4056,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5511300000",
+                commodity_type=data.get_commodity_type("5511300000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3727,6 +4068,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512110000",
+                commodity_type=data.get_commodity_type("5512110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3738,6 +4080,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512191000",
+                commodity_type=data.get_commodity_type("5512191000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3749,6 +4092,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512199000",
+                commodity_type=data.get_commodity_type("5512199000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3760,6 +4104,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512210000",
+                commodity_type=data.get_commodity_type("5512210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3771,6 +4116,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512291000",
+                commodity_type=data.get_commodity_type("5512291000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3782,6 +4128,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512299000",
+                commodity_type=data.get_commodity_type("5512299000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3793,6 +4140,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512910000",
+                commodity_type=data.get_commodity_type("5512910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3804,6 +4152,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512991000",
+                commodity_type=data.get_commodity_type("5512991000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3815,6 +4164,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5512999000",
+                commodity_type=data.get_commodity_type("5512999000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3826,6 +4176,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513112000",
+                commodity_type=data.get_commodity_type("5513112000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3837,6 +4188,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513119000",
+                commodity_type=data.get_commodity_type("5513119000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3848,6 +4200,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513120000",
+                commodity_type=data.get_commodity_type("5513120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3859,6 +4212,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513130000",
+                commodity_type=data.get_commodity_type("5513130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3870,6 +4224,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513190000",
+                commodity_type=data.get_commodity_type("5513190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3881,6 +4236,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513211000",
+                commodity_type=data.get_commodity_type("5513211000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3892,6 +4248,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513213000",
+                commodity_type=data.get_commodity_type("5513213000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3903,6 +4260,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513219000",
+                commodity_type=data.get_commodity_type("5513219000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3914,6 +4272,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513220000",
+                commodity_type=data.get_commodity_type("5513220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3925,6 +4284,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513230000",
+                commodity_type=data.get_commodity_type("5513230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3936,6 +4296,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513290000",
+                commodity_type=data.get_commodity_type("5513290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3947,6 +4308,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513310000",
+                commodity_type=data.get_commodity_type("5513310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3958,6 +4320,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513320000",
+                commodity_type=data.get_commodity_type("5513320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3969,6 +4332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513330000",
+                commodity_type=data.get_commodity_type("5513330000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3980,6 +4344,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513390000",
+                commodity_type=data.get_commodity_type("5513390000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -3991,6 +4356,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513410000",
+                commodity_type=data.get_commodity_type("5513410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4002,6 +4368,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513420000",
+                commodity_type=data.get_commodity_type("5513420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4013,6 +4380,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513430000",
+                commodity_type=data.get_commodity_type("5513430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4024,6 +4392,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5513490000",
+                commodity_type=data.get_commodity_type("5513490000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4035,6 +4404,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514110000",
+                commodity_type=data.get_commodity_type("5514110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4046,6 +4416,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514120000",
+                commodity_type=data.get_commodity_type("5514120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4057,6 +4428,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514130000",
+                commodity_type=data.get_commodity_type("5514130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4068,6 +4440,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514190000",
+                commodity_type=data.get_commodity_type("5514190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4079,6 +4452,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514210000",
+                commodity_type=data.get_commodity_type("5514210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4090,6 +4464,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514220000",
+                commodity_type=data.get_commodity_type("5514220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4101,6 +4476,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514230000",
+                commodity_type=data.get_commodity_type("5514230000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4112,6 +4488,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514290000",
+                commodity_type=data.get_commodity_type("5514290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4123,6 +4500,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514310000",
+                commodity_type=data.get_commodity_type("5514310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4134,6 +4512,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514320000",
+                commodity_type=data.get_commodity_type("5514320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4145,6 +4524,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514330000",
+                commodity_type=data.get_commodity_type("5514330000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4156,6 +4536,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514390000",
+                commodity_type=data.get_commodity_type("5514390000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4167,6 +4548,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514410000",
+                commodity_type=data.get_commodity_type("5514410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4178,6 +4560,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514420000",
+                commodity_type=data.get_commodity_type("5514420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4189,6 +4572,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514430000",
+                commodity_type=data.get_commodity_type("5514430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4200,6 +4584,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5514490000",
+                commodity_type=data.get_commodity_type("5514490000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4211,6 +4596,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515111000",
+                commodity_type=data.get_commodity_type("5515111000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4222,6 +4608,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515113000",
+                commodity_type=data.get_commodity_type("5515113000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4233,6 +4620,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515119000",
+                commodity_type=data.get_commodity_type("5515119000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4244,6 +4632,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515121000",
+                commodity_type=data.get_commodity_type("5515121000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4255,6 +4644,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515123000",
+                commodity_type=data.get_commodity_type("5515123000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4266,6 +4656,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515129000",
+                commodity_type=data.get_commodity_type("5515129000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4277,6 +4668,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515131100",
+                commodity_type=data.get_commodity_type("5515131100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4288,6 +4680,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515131900",
+                commodity_type=data.get_commodity_type("5515131900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4299,6 +4692,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515139100",
+                commodity_type=data.get_commodity_type("5515139100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4310,6 +4704,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515139900",
+                commodity_type=data.get_commodity_type("5515139900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4321,6 +4716,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515191000",
+                commodity_type=data.get_commodity_type("5515191000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4332,6 +4728,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515193000",
+                commodity_type=data.get_commodity_type("5515193000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4343,6 +4740,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515199000",
+                commodity_type=data.get_commodity_type("5515199000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4354,6 +4752,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515211000",
+                commodity_type=data.get_commodity_type("5515211000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4365,6 +4764,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515213000",
+                commodity_type=data.get_commodity_type("5515213000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4376,6 +4776,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515219000",
+                commodity_type=data.get_commodity_type("5515219000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4387,6 +4788,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515221100",
+                commodity_type=data.get_commodity_type("5515221100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4398,6 +4800,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515221900",
+                commodity_type=data.get_commodity_type("5515221900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4409,6 +4812,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515229100",
+                commodity_type=data.get_commodity_type("5515229100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4420,6 +4824,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515229900",
+                commodity_type=data.get_commodity_type("5515229900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4431,6 +4836,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515290000",
+                commodity_type=data.get_commodity_type("5515290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4442,6 +4848,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515911000",
+                commodity_type=data.get_commodity_type("5515911000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4453,6 +4860,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515913000",
+                commodity_type=data.get_commodity_type("5515913000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4464,6 +4872,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515919000",
+                commodity_type=data.get_commodity_type("5515919000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4475,6 +4884,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515921000",
+                commodity_type=data.get_commodity_type("5515921000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4486,6 +4896,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515929000",
+                commodity_type=data.get_commodity_type("5515929000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4497,6 +4908,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515991000",
+                commodity_type=data.get_commodity_type("5515991000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4508,6 +4920,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515993000",
+                commodity_type=data.get_commodity_type("5515993000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4519,6 +4932,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5515999000",
+                commodity_type=data.get_commodity_type("5515999000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4530,6 +4944,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516110000",
+                commodity_type=data.get_commodity_type("5516110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4541,6 +4956,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516120000",
+                commodity_type=data.get_commodity_type("5516120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4552,6 +4968,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516130000",
+                commodity_type=data.get_commodity_type("5516130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4563,6 +4980,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516140000",
+                commodity_type=data.get_commodity_type("5516140000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4574,6 +4992,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516210000",
+                commodity_type=data.get_commodity_type("5516210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4585,6 +5004,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516220000",
+                commodity_type=data.get_commodity_type("5516220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4596,6 +5016,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516231000",
+                commodity_type=data.get_commodity_type("5516231000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4607,6 +5028,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516239000",
+                commodity_type=data.get_commodity_type("5516239000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4618,6 +5040,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516240000",
+                commodity_type=data.get_commodity_type("5516240000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4629,6 +5052,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516310000",
+                commodity_type=data.get_commodity_type("5516310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4640,6 +5064,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516320000",
+                commodity_type=data.get_commodity_type("5516320000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4651,6 +5076,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516330000",
+                commodity_type=data.get_commodity_type("5516330000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4662,6 +5088,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516340000",
+                commodity_type=data.get_commodity_type("5516340000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4673,6 +5100,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516410000",
+                commodity_type=data.get_commodity_type("5516410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4684,6 +5112,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516420000",
+                commodity_type=data.get_commodity_type("5516420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4695,6 +5124,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516430000",
+                commodity_type=data.get_commodity_type("5516430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4706,6 +5136,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516440000",
+                commodity_type=data.get_commodity_type("5516440000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4717,6 +5148,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516910000",
+                commodity_type=data.get_commodity_type("5516910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4728,6 +5160,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516920000",
+                commodity_type=data.get_commodity_type("5516920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4739,6 +5172,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516930000",
+                commodity_type=data.get_commodity_type("5516930000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4750,6 +5184,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5516940000",
+                commodity_type=data.get_commodity_type("5516940000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4761,6 +5196,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601101000",
+                commodity_type=data.get_commodity_type("5601101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4772,6 +5208,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601109000",
+                commodity_type=data.get_commodity_type("5601109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4783,6 +5220,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601211000",
+                commodity_type=data.get_commodity_type("5601211000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4794,6 +5232,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601219000",
+                commodity_type=data.get_commodity_type("5601219000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4805,6 +5244,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601221000",
+                commodity_type=data.get_commodity_type("5601221000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4816,6 +5256,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601229100",
+                commodity_type=data.get_commodity_type("5601229100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4827,6 +5268,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601229900",
+                commodity_type=data.get_commodity_type("5601229900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4838,6 +5280,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601290000",
+                commodity_type=data.get_commodity_type("5601290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4849,6 +5292,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601300010",
+                commodity_type=data.get_commodity_type("5601300010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4860,6 +5304,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601300020",
+                commodity_type=data.get_commodity_type("5601300020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4871,6 +5316,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601300030",
+                commodity_type=data.get_commodity_type("5601300030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4882,6 +5328,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5601300090",
+                commodity_type=data.get_commodity_type("5601300090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4893,6 +5340,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602101900",
+                commodity_type=data.get_commodity_type("5602101900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4904,6 +5352,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602103100",
+                commodity_type=data.get_commodity_type("5602103100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4915,6 +5364,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602103900",
+                commodity_type=data.get_commodity_type("5602103900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4926,6 +5376,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602109000",
+                commodity_type=data.get_commodity_type("5602109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4937,6 +5388,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602210000",
+                commodity_type=data.get_commodity_type("5602210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4948,6 +5400,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602299000",
+                commodity_type=data.get_commodity_type("5602299000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4959,6 +5412,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5602900000",
+                commodity_type=data.get_commodity_type("5602900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4970,6 +5424,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603111010",
+                commodity_type=data.get_commodity_type("5603111010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4981,6 +5436,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603111020",
+                commodity_type=data.get_commodity_type("5603111020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -4992,6 +5448,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603111090",
+                commodity_type=data.get_commodity_type("5603111090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5003,6 +5460,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603119010",
+                commodity_type=data.get_commodity_type("5603119010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5014,6 +5472,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603119020",
+                commodity_type=data.get_commodity_type("5603119020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5025,6 +5484,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603119090",
+                commodity_type=data.get_commodity_type("5603119090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5036,6 +5496,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603121010",
+                commodity_type=data.get_commodity_type("5603121010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5047,6 +5508,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603121020",
+                commodity_type=data.get_commodity_type("5603121020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5058,6 +5520,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603121090",
+                commodity_type=data.get_commodity_type("5603121090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5069,6 +5532,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603129010",
+                commodity_type=data.get_commodity_type("5603129010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5080,6 +5544,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603129030",
+                commodity_type=data.get_commodity_type("5603129030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5091,6 +5556,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603129050",
+                commodity_type=data.get_commodity_type("5603129050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5102,6 +5568,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603129090",
+                commodity_type=data.get_commodity_type("5603129090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5113,6 +5580,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603131000",
+                commodity_type=data.get_commodity_type("5603131000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5124,6 +5592,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603139030",
+                commodity_type=data.get_commodity_type("5603139030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5135,6 +5604,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603139040",
+                commodity_type=data.get_commodity_type("5603139040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5146,6 +5616,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603139060",
+                commodity_type=data.get_commodity_type("5603139060"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5157,6 +5628,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603139080",
+                commodity_type=data.get_commodity_type("5603139080"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5168,6 +5640,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603139090",
+                commodity_type=data.get_commodity_type("5603139090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5179,6 +5652,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603141000",
+                commodity_type=data.get_commodity_type("5603141000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5190,6 +5664,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603149010",
+                commodity_type=data.get_commodity_type("5603149010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5201,6 +5676,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603149020",
+                commodity_type=data.get_commodity_type("5603149020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5212,6 +5688,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603149090",
+                commodity_type=data.get_commodity_type("5603149090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5223,6 +5700,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603911010",
+                commodity_type=data.get_commodity_type("5603911010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5234,6 +5712,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603911090",
+                commodity_type=data.get_commodity_type("5603911090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5245,6 +5724,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603919010",
+                commodity_type=data.get_commodity_type("5603919010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5256,6 +5736,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603919090",
+                commodity_type=data.get_commodity_type("5603919090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5267,6 +5748,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603921010",
+                commodity_type=data.get_commodity_type("5603921010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5278,6 +5760,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603921090",
+                commodity_type=data.get_commodity_type("5603921090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5289,6 +5772,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603929010",
+                commodity_type=data.get_commodity_type("5603929010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5300,6 +5784,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603929020",
+                commodity_type=data.get_commodity_type("5603929020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5311,6 +5796,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603929040",
+                commodity_type=data.get_commodity_type("5603929040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5322,6 +5808,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603929050",
+                commodity_type=data.get_commodity_type("5603929050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5333,6 +5820,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603929090",
+                commodity_type=data.get_commodity_type("5603929090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5344,6 +5832,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603931000",
+                commodity_type=data.get_commodity_type("5603931000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5355,6 +5844,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603939010",
+                commodity_type=data.get_commodity_type("5603939010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5366,6 +5856,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603939020",
+                commodity_type=data.get_commodity_type("5603939020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5377,6 +5868,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603939030",
+                commodity_type=data.get_commodity_type("5603939030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5388,6 +5880,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603939090",
+                commodity_type=data.get_commodity_type("5603939090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5399,6 +5892,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603941000",
+                commodity_type=data.get_commodity_type("5603941000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5410,6 +5904,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603949020",
+                commodity_type=data.get_commodity_type("5603949020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5421,6 +5916,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5603949090",
+                commodity_type=data.get_commodity_type("5603949090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5432,6 +5928,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604200010",
+                commodity_type=data.get_commodity_type("5604200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5443,6 +5940,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604200020",
+                commodity_type=data.get_commodity_type("5604200020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5454,6 +5952,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604200090",
+                commodity_type=data.get_commodity_type("5604200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5465,6 +5964,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900010",
+                commodity_type=data.get_commodity_type("5604900010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5476,6 +5976,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900020",
+                commodity_type=data.get_commodity_type("5604900020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5487,6 +5988,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900030",
+                commodity_type=data.get_commodity_type("5604900030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5498,6 +6000,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900040",
+                commodity_type=data.get_commodity_type("5604900040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5509,6 +6012,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900050",
+                commodity_type=data.get_commodity_type("5604900050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5520,6 +6024,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5604900090",
+                commodity_type=data.get_commodity_type("5604900090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5531,6 +6036,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5606001000",
+                commodity_type=data.get_commodity_type("5606001000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5542,6 +6048,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5606009100",
+                commodity_type=data.get_commodity_type("5606009100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5553,6 +6060,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5606009900",
+                commodity_type=data.get_commodity_type("5606009900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5564,6 +6072,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607100000",
+                commodity_type=data.get_commodity_type("5607100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5575,6 +6084,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607210010",
+                commodity_type=data.get_commodity_type("5607210010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5586,6 +6096,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607210090",
+                commodity_type=data.get_commodity_type("5607210090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5597,6 +6108,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607291000",
+                commodity_type=data.get_commodity_type("5607291000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5608,6 +6120,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607299000",
+                commodity_type=data.get_commodity_type("5607299000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5619,6 +6132,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607300090",
+                commodity_type=data.get_commodity_type("5607300090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5630,6 +6144,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607410000",
+                commodity_type=data.get_commodity_type("5607410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5641,6 +6156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607410090",
+                commodity_type=data.get_commodity_type("5607410090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5652,6 +6168,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607491100",
+                commodity_type=data.get_commodity_type("5607491100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5663,6 +6180,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607491900",
+                commodity_type=data.get_commodity_type("5607491900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5674,6 +6192,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607499000",
+                commodity_type=data.get_commodity_type("5607499000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5685,6 +6204,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607501100",
+                commodity_type=data.get_commodity_type("5607501100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5696,6 +6216,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607501900",
+                commodity_type=data.get_commodity_type("5607501900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5707,6 +6228,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607503000",
+                commodity_type=data.get_commodity_type("5607503000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5718,6 +6240,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607509010",
+                commodity_type=data.get_commodity_type("5607509010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5729,6 +6252,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607509020",
+                commodity_type=data.get_commodity_type("5607509020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5740,6 +6264,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607509090",
+                commodity_type=data.get_commodity_type("5607509090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5751,6 +6276,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607900020",
+                commodity_type=data.get_commodity_type("5607900020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5762,6 +6288,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607901000",
+                commodity_type=data.get_commodity_type("5607901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5773,6 +6300,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607909010",
+                commodity_type=data.get_commodity_type("5607909010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5784,6 +6312,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607909020",
+                commodity_type=data.get_commodity_type("5607909020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5795,6 +6324,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5607909090",
+                commodity_type=data.get_commodity_type("5607909090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5806,6 +6336,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608111100",
+                commodity_type=data.get_commodity_type("5608111100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5817,6 +6348,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608111900",
+                commodity_type=data.get_commodity_type("5608111900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5828,6 +6360,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608119100",
+                commodity_type=data.get_commodity_type("5608119100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5839,6 +6372,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608119900",
+                commodity_type=data.get_commodity_type("5608119900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5850,6 +6384,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608191100",
+                commodity_type=data.get_commodity_type("5608191100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5861,6 +6396,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608191900",
+                commodity_type=data.get_commodity_type("5608191900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5872,6 +6408,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608193000",
+                commodity_type=data.get_commodity_type("5608193000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5883,6 +6420,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608199000",
+                commodity_type=data.get_commodity_type("5608199000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5894,6 +6432,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608900010",
+                commodity_type=data.get_commodity_type("5608900010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5905,6 +6444,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5608900090",
+                commodity_type=data.get_commodity_type("5608900090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5916,6 +6456,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5609000000",
+                commodity_type=data.get_commodity_type("5609000000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5927,6 +6468,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701101010",
+                commodity_type=data.get_commodity_type("5701101010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5938,6 +6480,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701101090",
+                commodity_type=data.get_commodity_type("5701101090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5949,6 +6492,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701109000",
+                commodity_type=data.get_commodity_type("5701109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5960,6 +6504,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701901010",
+                commodity_type=data.get_commodity_type("5701901010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5971,6 +6516,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701901090",
+                commodity_type=data.get_commodity_type("5701901090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5982,6 +6528,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701909010",
+                commodity_type=data.get_commodity_type("5701909010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -5993,6 +6540,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5701909090",
+                commodity_type=data.get_commodity_type("5701909090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6004,6 +6552,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702100000",
+                commodity_type=data.get_commodity_type("5702100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6015,6 +6564,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702200000",
+                commodity_type=data.get_commodity_type("5702200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6026,6 +6576,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702311000",
+                commodity_type=data.get_commodity_type("5702311000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6037,6 +6588,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702318000",
+                commodity_type=data.get_commodity_type("5702318000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6048,6 +6600,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702321000",
+                commodity_type=data.get_commodity_type("5702321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6059,6 +6612,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702329000",
+                commodity_type=data.get_commodity_type("5702329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6070,6 +6624,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702390020",
+                commodity_type=data.get_commodity_type("5702390020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6081,6 +6636,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702390030",
+                commodity_type=data.get_commodity_type("5702390030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6092,6 +6648,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702390090",
+                commodity_type=data.get_commodity_type("5702390090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6103,6 +6660,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702410000",
+                commodity_type=data.get_commodity_type("5702410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6114,6 +6672,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702420000",
+                commodity_type=data.get_commodity_type("5702420000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6125,6 +6684,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702490010",
+                commodity_type=data.get_commodity_type("5702490010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6136,6 +6696,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702490020",
+                commodity_type=data.get_commodity_type("5702490020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6147,6 +6708,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702499030",
+                commodity_type=data.get_commodity_type("5702499030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6158,6 +6720,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702510000",
+                commodity_type=data.get_commodity_type("5702510000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6169,6 +6732,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:45", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="5702521000",
+                commodity_type=data.get_commodity_type("5702521000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6180,6 +6744,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7223001100",
+                commodity_type=data.get_commodity_type("7223001100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6192,6 +6757,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7223001900",
+                commodity_type=data.get_commodity_type("7223001900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6204,6 +6770,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7223009100",
+                commodity_type=data.get_commodity_type("7223009100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6216,6 +6783,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7223009900",
+                commodity_type=data.get_commodity_type("7223009900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6228,6 +6796,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211424100",
+                commodity_type=data.get_commodity_type("6211424100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6239,6 +6808,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211424200",
+                commodity_type=data.get_commodity_type("6211424200"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6250,6 +6820,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211429000",
+                commodity_type=data.get_commodity_type("6211429000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6261,6 +6832,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211431000",
+                commodity_type=data.get_commodity_type("6211431000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6272,6 +6844,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211433100",
+                commodity_type=data.get_commodity_type("6211433100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6283,6 +6856,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211434100",
+                commodity_type=data.get_commodity_type("6211434100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6294,6 +6868,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211434200",
+                commodity_type=data.get_commodity_type("6211434200"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6305,6 +6880,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211439000",
+                commodity_type=data.get_commodity_type("6211439000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6316,6 +6892,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211490000",
+                commodity_type=data.get_commodity_type("6211490000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6327,6 +6904,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211490010",
+                commodity_type=data.get_commodity_type("6211490010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6338,6 +6916,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6211490090",
+                commodity_type=data.get_commodity_type("6211490090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6349,6 +6928,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6212101010",
+                commodity_type=data.get_commodity_type("6212101010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6360,6 +6940,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6212109010",
+                commodity_type=data.get_commodity_type("6212109010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6371,6 +6952,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6212200000",
+                commodity_type=data.get_commodity_type("6212200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6382,6 +6964,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6212300000",
+                commodity_type=data.get_commodity_type("6212300000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6393,6 +6976,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6212900000",
+                commodity_type=data.get_commodity_type("6212900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6404,6 +6988,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6213100000",
+                commodity_type=data.get_commodity_type("6213100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6415,6 +7000,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6213200010",
+                commodity_type=data.get_commodity_type("6213200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6426,6 +7012,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6213200090",
+                commodity_type=data.get_commodity_type("6213200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6437,6 +7024,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6213900000",
+                commodity_type=data.get_commodity_type("6213900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6448,6 +7036,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214100010",
+                commodity_type=data.get_commodity_type("6214100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6459,6 +7048,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214100090",
+                commodity_type=data.get_commodity_type("6214100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6470,6 +7060,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214200010",
+                commodity_type=data.get_commodity_type("6214200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6481,6 +7072,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214200090",
+                commodity_type=data.get_commodity_type("6214200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6492,6 +7084,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214300010",
+                commodity_type=data.get_commodity_type("6214300010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6503,6 +7096,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214300090",
+                commodity_type=data.get_commodity_type("6214300090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6514,6 +7108,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214400010",
+                commodity_type=data.get_commodity_type("6214400010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6525,6 +7120,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214400090",
+                commodity_type=data.get_commodity_type("6214400090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6536,6 +7132,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214900011",
+                commodity_type=data.get_commodity_type("6214900011"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6547,6 +7144,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214900019",
+                commodity_type=data.get_commodity_type("6214900019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6558,6 +7156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214900091",
+                commodity_type=data.get_commodity_type("6214900091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6569,6 +7168,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214900099",
+                commodity_type=data.get_commodity_type("6214900099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6580,6 +7180,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214901010",
+                commodity_type=data.get_commodity_type("6214901010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6591,6 +7192,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214901090",
+                commodity_type=data.get_commodity_type("6214901090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6602,6 +7204,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214909020",
+                commodity_type=data.get_commodity_type("6214909020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6613,6 +7216,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6214909080",
+                commodity_type=data.get_commodity_type("6214909080"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6624,6 +7228,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215100010",
+                commodity_type=data.get_commodity_type("6215100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6635,6 +7240,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215100090",
+                commodity_type=data.get_commodity_type("6215100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6646,6 +7252,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215200010",
+                commodity_type=data.get_commodity_type("6215200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6657,6 +7264,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215200090",
+                commodity_type=data.get_commodity_type("6215200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6668,6 +7276,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215900010",
+                commodity_type=data.get_commodity_type("6215900010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6679,6 +7288,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6215900090",
+                commodity_type=data.get_commodity_type("6215900090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6690,6 +7300,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6216000000",
+                commodity_type=data.get_commodity_type("6216000000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6701,6 +7312,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6217100010",
+                commodity_type=data.get_commodity_type("6217100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6712,6 +7324,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6217100090",
+                commodity_type=data.get_commodity_type("6217100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6723,6 +7336,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6217900000",
+                commodity_type=data.get_commodity_type("6217900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6734,6 +7348,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301100000",
+                commodity_type=data.get_commodity_type("6301100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6745,6 +7360,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301201000",
+                commodity_type=data.get_commodity_type("6301201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6756,6 +7372,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301209010",
+                commodity_type=data.get_commodity_type("6301209010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6767,6 +7384,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301209090",
+                commodity_type=data.get_commodity_type("6301209090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6778,6 +7396,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301301000",
+                commodity_type=data.get_commodity_type("6301301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6789,6 +7408,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301309010",
+                commodity_type=data.get_commodity_type("6301309010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6800,6 +7420,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301309090",
+                commodity_type=data.get_commodity_type("6301309090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6811,6 +7432,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301401000",
+                commodity_type=data.get_commodity_type("6301401000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6822,6 +7444,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301409010",
+                commodity_type=data.get_commodity_type("6301409010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6833,6 +7456,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301409091",
+                commodity_type=data.get_commodity_type("6301409091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6844,6 +7468,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301409099",
+                commodity_type=data.get_commodity_type("6301409099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6855,6 +7480,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301901000",
+                commodity_type=data.get_commodity_type("6301901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6866,6 +7492,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301909010",
+                commodity_type=data.get_commodity_type("6301909010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6877,6 +7504,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301909021",
+                commodity_type=data.get_commodity_type("6301909021"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6888,6 +7516,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301909029",
+                commodity_type=data.get_commodity_type("6301909029"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6899,6 +7528,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301909091",
+                commodity_type=data.get_commodity_type("6301909091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6910,6 +7540,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6301909099",
+                commodity_type=data.get_commodity_type("6301909099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6921,6 +7552,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302100000",
+                commodity_type=data.get_commodity_type("6302100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6932,6 +7564,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302210010",
+                commodity_type=data.get_commodity_type("6302210010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6943,6 +7576,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302210021",
+                commodity_type=data.get_commodity_type("6302210021"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6954,6 +7588,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302210029",
+                commodity_type=data.get_commodity_type("6302210029"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6965,6 +7600,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302210081",
+                commodity_type=data.get_commodity_type("6302210081"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6976,6 +7612,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302210089",
+                commodity_type=data.get_commodity_type("6302210089"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6987,6 +7624,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302221000",
+                commodity_type=data.get_commodity_type("6302221000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -6998,6 +7636,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302229000",
+                commodity_type=data.get_commodity_type("6302229000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7009,6 +7648,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302229010",
+                commodity_type=data.get_commodity_type("6302229010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7020,6 +7660,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302229011",
+                commodity_type=data.get_commodity_type("6302229011"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7031,6 +7672,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302229019",
+                commodity_type=data.get_commodity_type("6302229019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7042,6 +7684,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302229090",
+                commodity_type=data.get_commodity_type("6302229090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7053,6 +7696,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302291000",
+                commodity_type=data.get_commodity_type("6302291000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7064,6 +7708,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302299010",
+                commodity_type=data.get_commodity_type("6302299010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7075,6 +7720,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302299090",
+                commodity_type=data.get_commodity_type("6302299090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7086,6 +7732,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302310010",
+                commodity_type=data.get_commodity_type("6302310010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7097,6 +7744,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302310090",
+                commodity_type=data.get_commodity_type("6302310090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7108,6 +7756,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302319000",
+                commodity_type=data.get_commodity_type("6302319000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7119,6 +7768,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302321000",
+                commodity_type=data.get_commodity_type("6302321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7130,6 +7780,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302329000",
+                commodity_type=data.get_commodity_type("6302329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7141,6 +7792,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302329011",
+                commodity_type=data.get_commodity_type("6302329011"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7152,6 +7804,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302329019",
+                commodity_type=data.get_commodity_type("6302329019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7163,6 +7816,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302329090",
+                commodity_type=data.get_commodity_type("6302329090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7174,6 +7828,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302392000",
+                commodity_type=data.get_commodity_type("6302392000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7185,6 +7840,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302399010",
+                commodity_type=data.get_commodity_type("6302399010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7196,6 +7852,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302399090",
+                commodity_type=data.get_commodity_type("6302399090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7207,6 +7864,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302400000",
+                commodity_type=data.get_commodity_type("6302400000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7218,6 +7876,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302510010",
+                commodity_type=data.get_commodity_type("6302510010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7229,6 +7888,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302510090",
+                commodity_type=data.get_commodity_type("6302510090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7240,6 +7900,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302520000",
+                commodity_type=data.get_commodity_type("6302520000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7251,6 +7912,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302531000",
+                commodity_type=data.get_commodity_type("6302531000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7262,6 +7924,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302539000",
+                commodity_type=data.get_commodity_type("6302539000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7273,6 +7936,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302590010",
+                commodity_type=data.get_commodity_type("6302590010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7284,6 +7948,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302590090",
+                commodity_type=data.get_commodity_type("6302590090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7295,6 +7960,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302599020",
+                commodity_type=data.get_commodity_type("6302599020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7306,6 +7972,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302600010",
+                commodity_type=data.get_commodity_type("6302600010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7317,6 +7984,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302600090",
+                commodity_type=data.get_commodity_type("6302600090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7328,6 +7996,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302910010",
+                commodity_type=data.get_commodity_type("6302910010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7339,6 +8008,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302910090",
+                commodity_type=data.get_commodity_type("6302910090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7350,6 +8020,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302920000",
+                commodity_type=data.get_commodity_type("6302920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7361,6 +8032,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302931000",
+                commodity_type=data.get_commodity_type("6302931000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7372,6 +8044,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302939000",
+                commodity_type=data.get_commodity_type("6302939000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7383,6 +8056,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302990010",
+                commodity_type=data.get_commodity_type("6302990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7394,6 +8068,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302990090",
+                commodity_type=data.get_commodity_type("6302990090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7405,6 +8080,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6302999020",
+                commodity_type=data.get_commodity_type("6302999020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7416,6 +8092,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303110000",
+                commodity_type=data.get_commodity_type("6303110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7427,6 +8104,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303120000",
+                commodity_type=data.get_commodity_type("6303120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7438,6 +8116,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303190000",
+                commodity_type=data.get_commodity_type("6303190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7449,6 +8128,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303910010",
+                commodity_type=data.get_commodity_type("6303910010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7460,6 +8140,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303910091",
+                commodity_type=data.get_commodity_type("6303910091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7471,6 +8152,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303910099",
+                commodity_type=data.get_commodity_type("6303910099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7482,6 +8164,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303921000",
+                commodity_type=data.get_commodity_type("6303921000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7493,6 +8176,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303929010",
+                commodity_type=data.get_commodity_type("6303929010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7504,6 +8188,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303929090",
+                commodity_type=data.get_commodity_type("6303929090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7515,6 +8200,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303991000",
+                commodity_type=data.get_commodity_type("6303991000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7526,6 +8212,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303999010",
+                commodity_type=data.get_commodity_type("6303999010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7537,6 +8224,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303999020",
+                commodity_type=data.get_commodity_type("6303999020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7548,6 +8236,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303999031",
+                commodity_type=data.get_commodity_type("6303999031"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7559,6 +8248,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303999039",
+                commodity_type=data.get_commodity_type("6303999039"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7570,6 +8260,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6303999090",
+                commodity_type=data.get_commodity_type("6303999090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7581,6 +8272,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304110000",
+                commodity_type=data.get_commodity_type("6304110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7592,6 +8284,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304191010",
+                commodity_type=data.get_commodity_type("6304191010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7603,6 +8296,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304191090",
+                commodity_type=data.get_commodity_type("6304191090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7614,6 +8308,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304193000",
+                commodity_type=data.get_commodity_type("6304193000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7625,6 +8320,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304199010",
+                commodity_type=data.get_commodity_type("6304199010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7636,6 +8332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304199090",
+                commodity_type=data.get_commodity_type("6304199090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7647,6 +8344,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304199091",
+                commodity_type=data.get_commodity_type("6304199091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7658,6 +8356,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304910000",
+                commodity_type=data.get_commodity_type("6304910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7669,6 +8368,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304920010",
+                commodity_type=data.get_commodity_type("6304920010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7680,6 +8380,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304920090",
+                commodity_type=data.get_commodity_type("6304920090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7691,6 +8392,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304930010",
+                commodity_type=data.get_commodity_type("6304930010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7702,6 +8404,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304930090",
+                commodity_type=data.get_commodity_type("6304930090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7713,6 +8416,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304990010",
+                commodity_type=data.get_commodity_type("6304990010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7724,6 +8428,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304990091",
+                commodity_type=data.get_commodity_type("6304990091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7735,6 +8440,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304990092",
+                commodity_type=data.get_commodity_type("6304990092"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7746,6 +8452,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6304990099",
+                commodity_type=data.get_commodity_type("6304990099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7757,6 +8464,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305200000",
+                commodity_type=data.get_commodity_type("6305200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7768,6 +8476,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305200010",
+                commodity_type=data.get_commodity_type("6305200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7779,6 +8488,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305200090",
+                commodity_type=data.get_commodity_type("6305200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7790,6 +8500,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305321000",
+                commodity_type=data.get_commodity_type("6305321000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7801,6 +8512,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305321100",
+                commodity_type=data.get_commodity_type("6305321100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7812,6 +8524,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305328100",
+                commodity_type=data.get_commodity_type("6305328100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7823,6 +8536,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305328900",
+                commodity_type=data.get_commodity_type("6305328900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7834,6 +8548,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305329000",
+                commodity_type=data.get_commodity_type("6305329000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7845,6 +8560,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305329010",
+                commodity_type=data.get_commodity_type("6305329010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7856,6 +8572,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305329091",
+                commodity_type=data.get_commodity_type("6305329091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7867,6 +8584,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305329099",
+                commodity_type=data.get_commodity_type("6305329099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7878,6 +8596,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305331000",
+                commodity_type=data.get_commodity_type("6305331000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7889,6 +8608,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305339100",
+                commodity_type=data.get_commodity_type("6305339100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7900,6 +8620,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305339900",
+                commodity_type=data.get_commodity_type("6305339900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7911,6 +8632,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305390000",
+                commodity_type=data.get_commodity_type("6305390000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7922,6 +8644,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305390010",
+                commodity_type=data.get_commodity_type("6305390010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7933,6 +8656,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305390090",
+                commodity_type=data.get_commodity_type("6305390090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7944,6 +8668,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305390091",
+                commodity_type=data.get_commodity_type("6305390091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7955,6 +8680,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305390099",
+                commodity_type=data.get_commodity_type("6305390099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7966,6 +8692,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305900019",
+                commodity_type=data.get_commodity_type("6305900019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7977,6 +8704,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305900020",
+                commodity_type=data.get_commodity_type("6305900020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7988,6 +8716,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305900093",
+                commodity_type=data.get_commodity_type("6305900093"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -7999,6 +8728,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6305900099",
+                commodity_type=data.get_commodity_type("6305900099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8010,6 +8740,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306110000",
+                commodity_type=data.get_commodity_type("6306110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8021,6 +8752,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306120000",
+                commodity_type=data.get_commodity_type("6306120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8032,6 +8764,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306190000",
+                commodity_type=data.get_commodity_type("6306190000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8043,6 +8776,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306210000",
+                commodity_type=data.get_commodity_type("6306210000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8054,6 +8788,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306220000",
+                commodity_type=data.get_commodity_type("6306220000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8065,6 +8800,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306290000",
+                commodity_type=data.get_commodity_type("6306290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8076,6 +8812,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306310000",
+                commodity_type=data.get_commodity_type("6306310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8087,6 +8824,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306390000",
+                commodity_type=data.get_commodity_type("6306390000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8098,6 +8836,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306410000",
+                commodity_type=data.get_commodity_type("6306410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8109,6 +8848,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306490000",
+                commodity_type=data.get_commodity_type("6306490000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8120,6 +8860,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306910010",
+                commodity_type=data.get_commodity_type("6306910010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8131,6 +8872,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306910090",
+                commodity_type=data.get_commodity_type("6306910090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8142,6 +8884,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6306990000",
+                commodity_type=data.get_commodity_type("6306990000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8153,6 +8896,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307101000",
+                commodity_type=data.get_commodity_type("6307101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8164,6 +8908,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307103000",
+                commodity_type=data.get_commodity_type("6307103000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8175,6 +8920,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307103010",
+                commodity_type=data.get_commodity_type("6307103010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8186,6 +8932,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307109010",
+                commodity_type=data.get_commodity_type("6307109010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8197,6 +8944,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307109090",
+                commodity_type=data.get_commodity_type("6307109090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8208,6 +8956,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307200000",
+                commodity_type=data.get_commodity_type("6307200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8219,6 +8968,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307200010",
+                commodity_type=data.get_commodity_type("6307200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8230,6 +8980,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307200090",
+                commodity_type=data.get_commodity_type("6307200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8241,6 +8992,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307901000",
+                commodity_type=data.get_commodity_type("6307901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8252,6 +9004,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307909100",
+                commodity_type=data.get_commodity_type("6307909100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8263,6 +9016,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307909910",
+                commodity_type=data.get_commodity_type("6307909910"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8274,6 +9028,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307909991",
+                commodity_type=data.get_commodity_type("6307909991"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8285,6 +9040,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6307909999",
+                commodity_type=data.get_commodity_type("6307909999"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8296,6 +9052,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6308000011",
+                commodity_type=data.get_commodity_type("6308000011"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8307,6 +9064,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6308000019",
+                commodity_type=data.get_commodity_type("6308000019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8318,6 +9076,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6308000020",
+                commodity_type=data.get_commodity_type("6308000020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8329,6 +9088,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:58:46", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7207111400",
+                commodity_type=data.get_commodity_type("7207111400"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8341,6 +9101,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903110000",
+                commodity_type=data.get_commodity_type("2903110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8351,6 +9112,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903290000",
+                commodity_type=data.get_commodity_type("2903290000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8361,6 +9123,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903810000",
+                commodity_type=data.get_commodity_type("2903810000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8371,6 +9134,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903820000",
+                commodity_type=data.get_commodity_type("2903820000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8381,6 +9145,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903899010",
+                commodity_type=data.get_commodity_type("2903899010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8391,6 +9156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903899030",
+                commodity_type=data.get_commodity_type("2903899030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8401,6 +9167,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903899040",
+                commodity_type=data.get_commodity_type("2903899040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8411,6 +9178,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903899090",
+                commodity_type=data.get_commodity_type("2903899090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8421,6 +9189,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903910000",
+                commodity_type=data.get_commodity_type("2903910000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8431,6 +9200,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903920000",
+                commodity_type=data.get_commodity_type("2903920000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8441,6 +9211,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999010",
+                commodity_type=data.get_commodity_type("2903999010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8451,6 +9222,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999020",
+                commodity_type=data.get_commodity_type("2903999020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8461,6 +9233,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999030",
+                commodity_type=data.get_commodity_type("2903999030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8471,6 +9244,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999040",
+                commodity_type=data.get_commodity_type("2903999040"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8481,6 +9255,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999050",
+                commodity_type=data.get_commodity_type("2903999050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8491,6 +9266,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999060",
+                commodity_type=data.get_commodity_type("2903999060"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8501,6 +9277,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999070",
+                commodity_type=data.get_commodity_type("2903999070"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8511,6 +9288,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2903999090",
+                commodity_type=data.get_commodity_type("2903999090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8521,6 +9299,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2905110000",
+                commodity_type=data.get_commodity_type("2905110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8531,6 +9310,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2905120000",
+                commodity_type=data.get_commodity_type("2905120000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8541,6 +9321,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2905130000",
+                commodity_type=data.get_commodity_type("2905130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8551,6 +9332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2905310000",
+                commodity_type=data.get_commodity_type("2905310000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8561,6 +9343,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907110000",
+                commodity_type=data.get_commodity_type("2907110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8571,6 +9354,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907120010",
+                commodity_type=data.get_commodity_type("2907120010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8581,6 +9365,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907120090",
+                commodity_type=data.get_commodity_type("2907120090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8591,6 +9376,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907130000",
+                commodity_type=data.get_commodity_type("2907130000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8601,6 +9387,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907151000",
+                commodity_type=data.get_commodity_type("2907151000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8611,6 +9398,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907159010",
+                commodity_type=data.get_commodity_type("2907159010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8621,6 +9409,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907159090",
+                commodity_type=data.get_commodity_type("2907159090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8631,6 +9420,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907191000",
+                commodity_type=data.get_commodity_type("2907191000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8641,6 +9431,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907199010",
+                commodity_type=data.get_commodity_type("2907199010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8651,6 +9442,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907199020",
+                commodity_type=data.get_commodity_type("2907199020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8661,6 +9453,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2907199090",
+                commodity_type=data.get_commodity_type("2907199090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8671,6 +9464,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909110000",
+                commodity_type=data.get_commodity_type("2909110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8681,6 +9475,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909191000",
+                commodity_type=data.get_commodity_type("2909191000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8691,6 +9486,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909199020",
+                commodity_type=data.get_commodity_type("2909199020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8701,6 +9497,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909199030",
+                commodity_type=data.get_commodity_type("2909199030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8711,6 +9508,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909199050",
+                commodity_type=data.get_commodity_type("2909199050"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8721,6 +9519,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909199060",
+                commodity_type=data.get_commodity_type("2909199060"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8731,6 +9530,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909199090",
+                commodity_type=data.get_commodity_type("2909199090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8741,6 +9541,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909200010",
+                commodity_type=data.get_commodity_type("2909200010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8751,6 +9552,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909200090",
+                commodity_type=data.get_commodity_type("2909200090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8761,6 +9563,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909301000",
+                commodity_type=data.get_commodity_type("2909301000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8771,6 +9574,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909303100",
+                commodity_type=data.get_commodity_type("2909303100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8781,6 +9585,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909303500",
+                commodity_type=data.get_commodity_type("2909303500"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8791,6 +9596,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909303810",
+                commodity_type=data.get_commodity_type("2909303810"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8801,6 +9607,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909303820",
+                commodity_type=data.get_commodity_type("2909303820"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8811,6 +9618,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909303890",
+                commodity_type=data.get_commodity_type("2909303890"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8821,6 +9629,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909309010",
+                commodity_type=data.get_commodity_type("2909309010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8831,6 +9640,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909309020",
+                commodity_type=data.get_commodity_type("2909309020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8841,6 +9651,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909309030",
+                commodity_type=data.get_commodity_type("2909309030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8851,6 +9662,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909309090",
+                commodity_type=data.get_commodity_type("2909309090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8861,6 +9673,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909410000",
+                commodity_type=data.get_commodity_type("2909410000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8871,6 +9684,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909430000",
+                commodity_type=data.get_commodity_type("2909430000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8881,6 +9695,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909440000",
+                commodity_type=data.get_commodity_type("2909440000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8891,6 +9706,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909491100",
+                commodity_type=data.get_commodity_type("2909491100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8901,6 +9717,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909498000",
+                commodity_type=data.get_commodity_type("2909498000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8911,6 +9728,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909500010",
+                commodity_type=data.get_commodity_type("2909500010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8921,6 +9739,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909500020",
+                commodity_type=data.get_commodity_type("2909500020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8931,6 +9750,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909500090",
+                commodity_type=data.get_commodity_type("2909500090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8941,6 +9761,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909600010",
+                commodity_type=data.get_commodity_type("2909600010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8951,6 +9772,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909600020",
+                commodity_type=data.get_commodity_type("2909600020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8961,6 +9783,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2909600090",
+                commodity_type=data.get_commodity_type("2909600090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8971,6 +9794,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2910100000",
+                commodity_type=data.get_commodity_type("2910100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8981,6 +9805,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2910200000",
+                commodity_type=data.get_commodity_type("2910200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -8991,6 +9816,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2914110000",
+                commodity_type=data.get_commodity_type("2914110000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9001,6 +9827,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2917140000",
+                commodity_type=data.get_commodity_type("2917140000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9011,6 +9838,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2917350000",
+                commodity_type=data.get_commodity_type("2917350000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9021,6 +9849,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2917360000",
+                commodity_type=data.get_commodity_type("2917360000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9031,6 +9860,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2917370000",
+                commodity_type=data.get_commodity_type("2917370000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9041,6 +9871,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2926100000",
+                commodity_type=data.get_commodity_type("2926100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9051,6 +9882,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="2929100090",
+                commodity_type=data.get_commodity_type("2929100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9061,6 +9893,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901101000",
+                commodity_type=data.get_commodity_type("3901101000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9071,6 +9904,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901109020",
+                commodity_type=data.get_commodity_type("3901109020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9081,6 +9915,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901109030",
+                commodity_type=data.get_commodity_type("3901109030"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9091,6 +9926,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901109090",
+                commodity_type=data.get_commodity_type("3901109090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9101,6 +9937,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901201000",
+                commodity_type=data.get_commodity_type("3901201000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9111,6 +9948,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901209010",
+                commodity_type=data.get_commodity_type("3901209010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9121,6 +9959,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901209020",
+                commodity_type=data.get_commodity_type("3901209020"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9131,6 +9970,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901209090",
+                commodity_type=data.get_commodity_type("3901209090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9141,6 +9981,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901300010",
+                commodity_type=data.get_commodity_type("3901300010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9151,6 +9992,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901300080",
+                commodity_type=data.get_commodity_type("3901300080"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9161,6 +10003,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901300082",
+                commodity_type=data.get_commodity_type("3901300082"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9171,6 +10014,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901300099",
+                commodity_type=data.get_commodity_type("3901300099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9181,6 +10025,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901903000",
+                commodity_type=data.get_commodity_type("3901903000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9191,6 +10036,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909010",
+                commodity_type=data.get_commodity_type("3901909010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9201,6 +10047,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909080",
+                commodity_type=data.get_commodity_type("3901909080"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9211,6 +10058,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909082",
+                commodity_type=data.get_commodity_type("3901909082"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9221,6 +10069,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909091",
+                commodity_type=data.get_commodity_type("3901909091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9231,6 +10080,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909092",
+                commodity_type=data.get_commodity_type("3901909092"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9241,6 +10091,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909093",
+                commodity_type=data.get_commodity_type("3901909093"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9251,6 +10102,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909094",
+                commodity_type=data.get_commodity_type("3901909094"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9261,6 +10113,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909097",
+                commodity_type=data.get_commodity_type("3901909097"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9271,6 +10124,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="3901909099",
+                commodity_type=data.get_commodity_type("3901909099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9281,6 +10135,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="4402100010",
+                commodity_type=data.get_commodity_type("4402100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9291,6 +10146,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="4402100090",
+                commodity_type=data.get_commodity_type("4402100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9301,6 +10157,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="4402900010",
+                commodity_type=data.get_commodity_type("4402900010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9311,6 +10168,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("26-APR-2013 15:59:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="4402900090",
+                commodity_type=data.get_commodity_type("4402900090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9321,6 +10179,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("05-MAR-2014 13:05:48", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115109000",
+                commodity_type=data.get_commodity_type("6115109000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-FEB-2014", DATE_FORMAT), is_dst=None
                 ),
@@ -9332,6 +10191,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("05-MAR-2014 13:06:22", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115109010",
+                commodity_type=data.get_commodity_type("6115109010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9342,6 +10202,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("05-MAR-2014 13:06:26", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6115109090",
+                commodity_type=data.get_commodity_type("6115109090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9352,6 +10213,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2015 15:21:07", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6109100010",
+                commodity_type=data.get_commodity_type("6109100010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("20-APR-2015", DATE_FORMAT), is_dst=None
                 ),
@@ -9363,6 +10225,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2015 15:21:25", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6109100090",
+                commodity_type=data.get_commodity_type("6109100090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("20-APR-2015", DATE_FORMAT), is_dst=None
                 ),
@@ -9374,6 +10237,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2015 15:23:36", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="6109100000",
+                commodity_type=data.get_commodity_type("6109100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9384,6 +10248,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-SEP-2015 14:54:33", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7303001000",
+                commodity_type=data.get_commodity_type("7303001000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9395,6 +10260,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015 14:56:20", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7225110010",
+                commodity_type=data.get_commodity_type("7225110010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9406,6 +10272,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015 14:59:12", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7226110091",
+                commodity_type=data.get_commodity_type("7226110091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9417,6 +10284,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015 15:18:21", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209150000",
+                commodity_type=data.get_commodity_type("7209150000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9428,6 +10296,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015 15:19:33", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209189900",
+                commodity_type=data.get_commodity_type("7209189900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9439,6 +10308,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015 15:21:05", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211238091",
+                commodity_type=data.get_commodity_type("7211238091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9450,6 +10320,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015 15:23:08", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211290010",
+                commodity_type=data.get_commodity_type("7211290010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9461,6 +10332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015 15:23:14", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211290090",
+                commodity_type=data.get_commodity_type("7211290090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9472,6 +10344,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:27:51", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7214200000",
+                commodity_type=data.get_commodity_type("7214200000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9483,6 +10356,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:29:14", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228302000",
+                commodity_type=data.get_commodity_type("7228302000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9494,6 +10368,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:30:24", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228304100",
+                commodity_type=data.get_commodity_type("7228304100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9505,6 +10380,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:31:59", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228304900",
+                commodity_type=data.get_commodity_type("7228304900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9516,6 +10392,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:33:05", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228306100",
+                commodity_type=data.get_commodity_type("7228306100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9527,6 +10404,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:34:14", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228306900",
+                commodity_type=data.get_commodity_type("7228306900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9538,6 +10416,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:35:32", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228307000",
+                commodity_type=data.get_commodity_type("7228307000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9549,6 +10428,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015 12:36:35", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7228308900",
+                commodity_type=data.get_commodity_type("7228308900"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9560,6 +10440,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:20:50", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7202112000",
+                commodity_type=data.get_commodity_type("7202112000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9571,6 +10452,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:20:54", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7202118000",
+                commodity_type=data.get_commodity_type("7202118000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9582,6 +10464,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:20:59", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7202991010",
+                commodity_type=data.get_commodity_type("7202991010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9593,6 +10476,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:03", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7202991100",
+                commodity_type=data.get_commodity_type("7202991100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9604,6 +10488,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:08", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7203900000",
+                commodity_type=data.get_commodity_type("7203900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9615,6 +10500,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:12", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7205540010",
+                commodity_type=data.get_commodity_type("7205540010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9626,6 +10512,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:18", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7205540090",
+                commodity_type=data.get_commodity_type("7205540090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9637,6 +10524,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:23", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7206100000",
+                commodity_type=data.get_commodity_type("7206100000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9648,6 +10536,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:28", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7206900000",
+                commodity_type=data.get_commodity_type("7206900000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9659,6 +10548,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7207191200",
+                commodity_type=data.get_commodity_type("7207191200"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9670,6 +10560,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:21:56", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7207205200",
+                commodity_type=data.get_commodity_type("7207205200"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9681,6 +10572,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:24:05", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208511010",
+                commodity_type=data.get_commodity_type("7208511010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9692,6 +10584,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:24:15", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208511090",
+                commodity_type=data.get_commodity_type("7208511090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9703,6 +10596,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:24:41", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208512099",
+                commodity_type=data.get_commodity_type("7208512099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9714,6 +10608,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:24:47", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208515010",
+                commodity_type=data.get_commodity_type("7208515010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9725,6 +10620,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:26:07", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208519191",
+                commodity_type=data.get_commodity_type("7208519191"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9736,6 +10632,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:26:11", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208519199",
+                commodity_type=data.get_commodity_type("7208519199"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9747,6 +10644,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:26:48", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7208521010",
+                commodity_type=data.get_commodity_type("7208521010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9758,6 +10656,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:31:40", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209169010",
+                commodity_type=data.get_commodity_type("7209169010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9769,6 +10668,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:31:44", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209169090",
+                commodity_type=data.get_commodity_type("7209169090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9780,6 +10680,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:32:02", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209179010",
+                commodity_type=data.get_commodity_type("7209179010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9791,6 +10692,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:32:06", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209179090",
+                commodity_type=data.get_commodity_type("7209179090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9802,6 +10704,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:33:31", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209522000",
+                commodity_type=data.get_commodity_type("7209522000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9813,6 +10716,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:33:49", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209901000",
+                commodity_type=data.get_commodity_type("7209901000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9824,6 +10728,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:34:10", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209908000",
+                commodity_type=data.get_commodity_type("7209908000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9835,6 +10740,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:34:33", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7209909000",
+                commodity_type=data.get_commodity_type("7209909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9846,6 +10752,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:35:36", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210121100",
+                commodity_type=data.get_commodity_type("7210121100"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9857,6 +10764,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:37:15", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210708010",
+                commodity_type=data.get_commodity_type("7210708010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9868,6 +10776,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:37:30", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210708090",
+                commodity_type=data.get_commodity_type("7210708090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9879,6 +10788,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:39:31", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210908000",
+                commodity_type=data.get_commodity_type("7210908000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9890,6 +10800,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:39:59", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210908090",
+                commodity_type=data.get_commodity_type("7210908090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9901,6 +10812,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:40:33", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7210909000",
+                commodity_type=data.get_commodity_type("7210909000"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9912,6 +10824,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:41:33", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211130010",
+                commodity_type=data.get_commodity_type("7211130010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9923,6 +10836,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:41:37", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211130090",
+                commodity_type=data.get_commodity_type("7211130090"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9934,6 +10848,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:12", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211141012",
+                commodity_type=data.get_commodity_type("7211141012"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9945,6 +10860,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:16", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211141018",
+                commodity_type=data.get_commodity_type("7211141018"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9956,6 +10872,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:22", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211141019",
+                commodity_type=data.get_commodity_type("7211141019"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9967,6 +10884,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:32", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211141091",
+                commodity_type=data.get_commodity_type("7211141091"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9978,6 +10896,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:36", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211141099",
+                commodity_type=data.get_commodity_type("7211141099"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -9989,6 +10908,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:44:39", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211149010",
+                commodity_type=data.get_commodity_type("7211149010"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -10000,6 +10920,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:45:21", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211192014",
+                commodity_type=data.get_commodity_type("7211192014"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
@@ -10011,6 +10932,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016 16:45:25", DATETIME_FORMAT), is_dst=None
                 ),
                 commodity_code="7211192015",
+                commodity_type=data.get_commodity_type("7211192015"),
                 validity_start_date=pytz.timezone("UTC").localize(
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
