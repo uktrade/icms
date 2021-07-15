@@ -11,7 +11,10 @@ from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
 
-from .models import CertificateOfManufactureApplication
+from .models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfManufactureApplication,
+)
 
 logger = logging.get_logger(__name__)
 
@@ -156,3 +159,20 @@ class PrepareCertManufactureForm(forms.ModelForm):
             )
 
         return val
+
+
+class EditCFSForm(forms.ModelForm):
+    class Meta:
+        model = CertificateOfFreeSaleApplication
+
+        fields = [
+            "contact",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["contact"].required = True
+
+        # TODO: ICMSLST-425 change contact.queryset to be just users who should be listed
+        self.fields["contact"].queryset = User.objects.filter(is_active=True)

@@ -7,14 +7,16 @@ app_name = "export"
 urlpatterns = [
     # List export applications
     path("", views.ExportApplicationChoiceView.as_view(), name="choose"),
-    # Create all export applications
+    # common create
     path(
         "create/<exportapplicationtype:type_code>/",
         views.create_export_application,
         name="create-application",
     ),
-    # Certificate of manufacture application urls
+    # Certificate of manufacture
     path("com/<int:application_pk>/edit/", views.edit_com, name="com-edit"),
     path("com/<int:application_pk>/submit/", views.submit_com, name="com-submit"),
-    # TODO: add certificate of free sale URLs
+    # Certificate of free sale
+    path("cfs/<int:application_pk>/edit/", views.edit_cfs, name="cfs-edit"),
+    # path("cfs/<int:application_pk>/submit/", views.submit_cfs, name="cfs-submit"),
 ]

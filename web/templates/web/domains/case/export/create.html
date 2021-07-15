@@ -17,12 +17,9 @@
     <p>Please choose the exporter (and agent if applicable) you are acting as.</p>
     {% if certificate_message %}
       <div class="info-box info-box-info">
-        {{ certificate_message }}
+        {{ certificate_message|nl2br }}
       </div>
     {% endif %}
-
-    <p>DIT does not issue Certificates of Free Sale for food, foodsupplements, pesticides and CE marked medical devices.</p>
-    <p>Certificates of Manufacture are applicable only to pesticides that are for export only and not on free sale on the domestic market.</p>
 
     {% for field in form %}
       {{ fields.field(field) }}

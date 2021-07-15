@@ -136,6 +136,8 @@ class ExportApplication(ApplicationBase):
     def get_edit_view_name(self) -> str:
         if self.process_type == ExportApplicationType.ProcessTypes.COM:
             return "export:com-edit"
+        if self.process_type == ExportApplicationType.ProcessTypes.CFS:
+            return "export:cfs-edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
@@ -162,4 +164,7 @@ class CertificateOfManufactureApplication(ExportApplication):
     manufacturing_process = models.TextField(max_length=4000, blank=False)
 
 
-# TODO: add certificate of free sale model
+class CertificateOfFreeSaleApplication(ExportApplication):
+    PROCESS_TYPE = ExportApplicationType.ProcessTypes.CFS
+
+    # TODO: add other fields

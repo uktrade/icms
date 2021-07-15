@@ -1,0 +1,40 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+  {% include "partial/case/export/cfs/sidebar.html" %}
+{% endblock %}
+
+{% block css %}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+{% endblock %}
+
+{% block form_content %}
+  <div class="info-box info-box-info">
+    This form is in respect of the Exporting Company. Please provide all the
+    information requested. The information will be used to create a Certificate
+    of Free Sale and a legal declaration in the form of a Schedule.
+  </div>
+
+  {{ super() }}
+
+  <h4>Contact</h4>
+  {{ fields.field(form.contact) }}
+  {# TODO: show contact telephone/email; do we need to reload the form on contact change...? #}
+
+  <h4>Application details</h4>
+  <p>TODO</p>
+{% endblock %}
+
+
+{% block task_actions %}
+  <li>
+    <button type="submit" role="action-button" name="close_request"class="primary-button button">
+      Save
+    </button>
+  </li>
+{% endblock %}

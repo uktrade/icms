@@ -16,8 +16,9 @@ from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import CreateExportApplicationForm, PrepareCertManufactureForm
+from .forms import CreateExportApplicationForm, EditCFSForm, PrepareCertManufactureForm
 from .models import (
+    CertificateOfFreeSaleApplication,
     CertificateOfManufactureApplication,
     ExportApplication,
     ExportApplicationType,
@@ -90,12 +91,17 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
             ),
         )
 
-    # cfs message to add when supporting Certificate of Free Sale application type
-    # cfs_cert_message = (
-    #     "If you are supplying the product to a client in the UK/EU then you do not require a certificate."
-    #     " Your client will need to apply for a certificate if they subsequently export it to one of their"
-    #     " clients outside of the EU."
-    # )
+    elif type_code == ExportApplicationType.Types.FREE_SALE:
+        return CreateExportApplicationConfig(
+            model_class=CertificateOfFreeSaleApplication,
+            form_class=CreateExportApplicationForm,
+            certificate_message=(
+                "If you are supplying the product to a client in the UK/EU then you do not require a certificate."
+                " Your client will need to apply for a certificate if they subsequently export it to one of their"
+                " clients outside of the EU.\n\n"
+                "DIT does not issue Certificates of Free Sale for food, foodsupplements, pesticides and CE marked medical devices."
+            ),
+        )
 
     raise NotImplementedError(f"type_code not supported: {type_code}")
 
@@ -182,3 +188,37 @@ def submit_com(request: AuthenticatedHttpRequest, application_pk: int) -> HttpRe
         }
 
         return render(request, "web/domains/case/export/submit-com.html", context)
+
+
+@login_required
+def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        appl: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(appl, request.user, "export")
+
+        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = EditCFSForm(data=request.POST, instance=appl)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse("export:cfs-edit", kwargs={"application_pk": application_pk})
+                )
+
+        else:
+            form = EditCFSForm(instance=appl, initial={"contact": request.user})
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": appl,
+            "task": task,
+            "form": form,
+        }
+
+        return render(request, "web/domains/case/export/edit-cfs.html", context)
