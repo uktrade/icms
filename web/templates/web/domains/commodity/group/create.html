@@ -25,7 +25,7 @@
 {% endblock %}
 
 {% block main_content %}
-
+  {% include "web/domains/commodity/commodity-help-text.html" %}
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
       {% for field in form %}

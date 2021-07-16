@@ -1,15 +1,22 @@
 window.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
     "use strict";
 
-    var dropdown = document.getElementById('id_group_type');
+    const dropdownSelect = document.getElementById('id_group_type');
+    const commodityTypeSelect = document.querySelector("#id_commodity_type");
+    const commoditySelect = $('#id_commodities').djangoSelect2();
+    const commodities = document.getElementsByClassName('row_id_commodities')[0];
+    const unit = document.getElementsByClassName('row_id_unit')[0];
 
-    var commodities = document.getElementsByClassName('row_id_commodities')[0];
-    var unit = document.getElementsByClassName('row_id_unit')[0];
-    showOrHide(dropdown, commodities, unit);
+    showOrHide(dropdownSelect, commodities, unit);
 
-    dropdown.onchange = function () {
-        showOrHide(dropdown, commodities, unit);
+    dropdownSelect.onchange = function () {
+        showOrHide(dropdownSelect, commodities, unit);
     };
+
+    // When the type changes the commodities must be cleared.
+    commodityTypeSelect.addEventListener("change", (e) => {
+        commoditySelect.empty();
+    });
 
 });
 

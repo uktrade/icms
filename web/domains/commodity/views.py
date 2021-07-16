@@ -18,13 +18,17 @@ from .forms import (
 from .models import Commodity, CommodityGroup, Usage
 
 
-# TODO: select related commodity_type records
 class CommodityListView(ModelFilterView):
     template_name = "web/domains/commodity/list.html"
     filterset_class = CommodityFilter
     model = Commodity
     permission_required = "web.reference_data_access"
     page_title = "Maintain Commodities"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        return qs.select_related("commodity_type")
 
     class Display:
         fields = ["commodity_code", "commodity_type", ("validity_start_date", "validity_end_date")]
@@ -68,6 +72,11 @@ class CommodityGroupListView(ModelFilterView):
     filterset_class = CommodityGroupFilter
     model = CommodityGroup
     permission_required = "web.reference_data_access"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+
+        return qs.select_related("commodity_type").prefetch_related("commodities")
 
     class Display:
         fields = [

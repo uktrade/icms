@@ -18,7 +18,7 @@ from django_filters import (
     ModelChoiceFilter,
 )
 
-from web.domains.commodity.widgets import CommodityWidget
+from web.domains.commodity.widgets import CommodityGroupCommodityWidget
 from web.forms.widgets import DateInput
 
 from .models import Commodity, CommodityGroup, CommodityType, Unit, Usage
@@ -64,8 +64,8 @@ class CommodityForm(ModelForm):
     class Meta:
         model = Commodity
         fields = [
-            "commodity_type",
             "commodity_code",
+            "commodity_type",
             "validity_start_date",
             "validity_end_date",
             "quantity_threshold",
@@ -138,13 +138,13 @@ class CommodityGroupForm(ModelForm):
     )
     commodity_type = ModelChoiceField(
         label="Commodity Types",
-        queryset=CommodityType.objects.distinct("type").all(),
+        queryset=CommodityType.objects.all(),
         help_text="Please choose what type of commodities this group should contain.",
     )
     commodities = ModelMultipleChoiceField(
         label="Commodity Code",
         queryset=Commodity.objects.all(),
-        widget=CommodityWidget,
+        widget=CommodityGroupCommodityWidget,
         required=False,
     )
     group_code = CharField(
