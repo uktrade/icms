@@ -39,7 +39,7 @@
 
       $.ajax({
         method: 'POST',
-        url: '{{ icms_url }}"importer-company-lookup") }}',
+        url: '{{ icms_url("importer-company-lookup") }}',
         data: data,
         success: function(data, status, xhr) {
           $('.body-company').empty();
