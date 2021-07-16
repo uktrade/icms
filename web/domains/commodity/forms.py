@@ -234,3 +234,7 @@ class UsageForm(ModelForm):
             self.fields["commodity_group"].queryset = CommodityGroup.objects.filter(
                 pk=self.initial["commodity_group"]
             )
+
+        self.fields["application_type"].queryset = ImportApplicationType.objects.filter(
+            is_active=True
+        )
