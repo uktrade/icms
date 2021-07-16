@@ -113,10 +113,34 @@ class ImportApplicationType(models.Model):
     )
 
     def __str__(self):
-        if self.sub_type:
-            return f"{self.type} ({self.sub_type})"
+        mapped_types = {
+            self.Types.DEROGATION: self.ProcessTypes.DEROGATIONS,
+            self.Types.IS: self.ProcessTypes.IS,
+            self.Types.OPT: self.ProcessTypes.OPT,
+            self.Types.SANCTION_ADHOC: self.ProcessTypes.SANCTIONS,
+            self.Types.SPS: self.ProcessTypes.SPS,
+            self.Types.TEXTILES: self.ProcessTypes.TEXTILES,
+            self.Types.WOOD_QUOTA: self.ProcessTypes.WOOD,
+        }
+
+        mapped_types_with_subtypes = {
+            self.Types.FIREARMS: {
+                self.SubTypes.OIL: self.ProcessTypes.FA_OIL,
+                self.SubTypes.DFL: self.ProcessTypes.FA_DFL,
+                self.SubTypes.SIL: self.ProcessTypes.FA_SIL,
+            }
+        }
+
+        if self.type in mapped_types.keys():
+            process_type = mapped_types[self.type]
+
+        elif self.type in mapped_types_with_subtypes.keys():
+            process_type = mapped_types_with_subtypes[self.type][self.sub_type]
+
         else:
-            return f"{self.type}"
+            raise NotImplementedError(f"Can't get label for {self.type}, {self.sub_type}")
+
+        return self.ProcessTypes(process_type).label
 
     class Meta:
         ordering = ("type", "sub_type")

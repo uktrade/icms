@@ -7,6 +7,7 @@ from django_select2 import forms as s2forms
 from web.domains.commodity.models import Commodity, CommodityGroup, Country
 
 
+# TODO: Revisit both widgets when doing ICMSLST-853
 class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
     queryset = CommodityGroup.objects.filter(commodity_type__type_code="TEXTILES")
 

@@ -18,6 +18,7 @@ from django_filters import (
     ModelChoiceFilter,
 )
 
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.widgets import CommodityGroupCommodityWidget
 from web.forms.widgets import DateInput
 
@@ -99,6 +100,12 @@ class CommodityGroupFilter(FilterSet):
     )
     commodity_type = ModelChoiceFilter(
         queryset=CommodityType.objects.all(), label="Commodity Types"
+    )
+
+    application_type = ModelChoiceFilter(
+        queryset=ImportApplicationType.objects.filter(is_active=True),
+        field_name="usages__application_type",
+        label="Application Type",
     )
 
     group_code = CharFilter(field_name="group_code", lookup_expr="icontains", label="Group Code")

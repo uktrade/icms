@@ -38,12 +38,6 @@ class ImportApplicationTypeTest(TestCase):
         self.assertEqual(application_type.type, "TEST")
         self.assertEqual(application_type.sub_type, "TEST")
 
-    def test_string_representation(self):
-        application_type = self.create_application_type()
-        self.assertEqual(
-            application_type.__str__(), f"{application_type.type} ({application_type.sub_type})"
-        )
-
 
 class ImportApplicationTest(TestCase):
     def create_import_application(self):

@@ -17,7 +17,7 @@ class EditSPSForm(forms.ModelForm):
             "customs_cleared_to_uk",
             "origin_country",
             "consignment_country",
-            # TODO: Revisit this when fleshing out ICMSLST-749 (Commodity spike)
+            # TODO: Revisit when doing ICMSLST-853
             # We are currently just showing all commodities
             "commodity",
             "quantity",

@@ -3,6 +3,7 @@ from django_select2 import forms as s2forms
 from web.domains.commodity.models import Commodity
 
 
+# TODO: Revisit widget when doing ICMSLST-853
 class OptCompensatingProductsCommodityWidget(s2forms.ModelSelect2MultipleWidget):
     queryset = Commodity.objects.filter(commoditygroup__commodity_type__type_code="TEXTILES")
 
