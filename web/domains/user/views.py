@@ -2,15 +2,20 @@ from django.contrib import messages
 from django.contrib.auth.decorators import permission_required as require_permission
 from django.shortcuts import render
 
-from web.address import address
-from web.address.forms import ManualAddressEntryForm, PostCodeSearchForm
 from web.auth.decorators import require_registered
 from web.errors import ICMSException, UnknownError
 from web.forms import utils
+from web.utils.postcode import api_postcode_lookup
 from web.views import ModelFilterView
 
 from . import actions
-from .forms import PeopleFilter, UserDetailsUpdateForm, UserListFilter
+from .forms import (
+    ManualAddressEntryForm,
+    PeopleFilter,
+    PostCodeSearchForm,
+    UserDetailsUpdateForm,
+    UserListFilter,
+)
 from .formset import (
     new_alternative_emails_formset,
     new_personal_emails_formset,
@@ -63,7 +68,7 @@ def address_search(request, action):
     addresses = []
     if postcode_form.is_valid():
         try:
-            addresses = address.find(postcode_form.cleaned_data.get("post_code"))
+            addresses = api_postcode_lookup(postcode_form.cleaned_data.get("post_code"))
         except UnknownError:
             messages.warning(
                 request,

@@ -30,7 +30,7 @@
           $ui.hide();
           return false;
       });
-      message = 'No companies were found returned matching your search, please try again.';
+      message = 'No companies were found matching your search, please try again.';
       htmlNoResult = [
           '<tr>' +
           '<td colspan="3">' + message + '</td>' +
@@ -39,7 +39,7 @@
 
       $.ajax({
         method: 'POST',
-        url: '{{ icms_url("importer-company-lookup") }}',
+        url: '{{ icms_url("misc:company-lookup") }}',
         data: data,
         success: function(data, status, xhr) {
           $('.body-company').empty();
@@ -67,7 +67,8 @@
           }
         },
         error: function() {
-            $('.body-company').append(htmlNoResult.join(''));
+            $('.body-company').empty();
+            $('.body-company').append('There was an error looking up the company.');
         }
       })
   });

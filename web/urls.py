@@ -34,5 +34,6 @@ urlpatterns = [
     path("import/", include("web.domains.case._import.urls")),
     path("export/", include("web.domains.case.export.urls", namespace="export")),
     path("mailshot/", include("web.domains.mailshot.urls")),
+    path("misc/", include("web.misc.urls")),
     path("select2/", include("django_select2.urls")),
 ]

@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 import structlog as logging
 from django.conf import settings
@@ -8,7 +10,7 @@ from web.errors import ICMSException, UnknownError
 logger = logging.getLogger(__name__)
 
 
-def find(post_code):
+def api_postcode_lookup(post_code: str) -> list[dict[str, Any]]:
     post_code = post_code.replace(" ", "")
     URL = "https://api.getaddress.io/find/{}?expand=true".format(post_code)
     logger.debug("Searching for postcode: %s", post_code)

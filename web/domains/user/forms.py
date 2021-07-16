@@ -1,4 +1,4 @@
-from django.forms import CharField, ModelForm
+from django import forms
 from django.forms.widgets import (
     CheckboxInput,
     CheckboxSelectMultiple,
@@ -10,6 +10,7 @@ from django.forms.widgets import (
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, FilterSet, MultipleChoiceFilter
 
+import web.views.utils.countries
 from web.forms import validators
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
@@ -17,8 +18,8 @@ from web.forms.widgets import DateInput
 from .models import AlternativeEmail, Email, PersonalEmail, PhoneNumber, User
 
 
-class UserDetailsUpdateForm(ModelForm):
-    security_answer_repeat = CharField(
+class UserDetailsUpdateForm(forms.ModelForm):
+    security_answer_repeat = forms.CharField(
         required=True, label="Re-enter Security Answer", widget=PasswordInput(render_value=True)
     )
 
@@ -94,8 +95,8 @@ class UserDetailsUpdateForm(ModelForm):
         }
 
 
-class PhoneNumberForm(ModelForm):
-    telephone_number = CharField(validators=PhoneNumberField().validators)
+class PhoneNumberForm(forms.ModelForm):
+    telephone_number = forms.CharField(validators=PhoneNumberField().validators)
 
     def __init__(self, *args, **kwargs):
         super(PhoneNumberForm, self).__init__(*args, **kwargs)
@@ -112,8 +113,10 @@ class PhoneNumberForm(ModelForm):
         widgets = {"type": Select(choices=PhoneNumber.TYPES)}
 
 
-class AlternativeEmailsForm(ModelForm):
-    notifications = CharField(required=False, widget=Select(choices=((True, "Yes"), (False, "No"))))
+class AlternativeEmailsForm(forms.ModelForm):
+    notifications = forms.CharField(
+        required=False, widget=Select(choices=((True, "Yes"), (False, "No")))
+    )
 
     def __init__(self, *args, **kwargs):
         super(AlternativeEmailsForm, self).__init__(*args, **kwargs)
@@ -134,9 +137,9 @@ class AlternativeEmailsForm(ModelForm):
         }
 
 
-class PersonalEmailForm(ModelForm):
+class PersonalEmailForm(forms.ModelForm):
     PRIMARY = "PRIMARY"
-    notifications = CharField(
+    notifications = forms.CharField(
         required=False, widget=Select(choices=((PRIMARY, "Primary"), (True, "Yes"), (False, "No")))
     )
 
@@ -224,3 +227,26 @@ class UserListFilter(FilterSet):
     class Meta:
         model = User
         fields = []
+
+
+class PostCodeSearchForm(forms.Form):
+    post_code = forms.CharField(required=True, label="Postcode")
+    country = forms.CharField(
+        required=False,
+        widget=forms.Select(choices=web.views.utils.countries.get()),
+        help_text="Choose a country to begin manually entering the address",
+    )
+
+
+class ManualAddressEntryForm(forms.Form):
+    country = forms.CharField(widget=forms.TextInput({"readonly": "readonly"}))
+    address = forms.CharField(max_length=4000, widget=forms.Textarea({"rows": 6, "cols": 50}))
+
+    def clean_address(self):
+        address = self.cleaned_data.get("address", "").upper()
+        country = self.cleaned_data.get("country", "").upper()
+
+        if country not in address:
+            raise forms.ValidationError("Country name must be included in the address.")
+
+        return address

@@ -2,13 +2,11 @@ import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db.models import F
 from django.forms.models import inlineformset_factory
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from web.address.address import find as postcode_lookup
-from web.company.companieshouse import api_get_companies
 from web.domains.case.forms import DocumentForm
 from web.domains.contacts.forms import ContactForm
 from web.domains.contacts.views import assign_contact_perm, current_contacts
@@ -482,16 +480,3 @@ def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpR
     context = {"object": importer, "contacts": contacts, "org_type": "importer"}
 
     return render(request, "web/domains/importer/view.html", context)
-
-
-def list_postcode_addresses(request):
-    postcode = request.POST.get("postcode")
-
-    return JsonResponse(postcode_lookup(postcode), safe=False)
-
-
-def list_companies(request):
-    query = request.POST.get("query")
-    companies = api_get_companies(query)
-
-    return JsonResponse(companies, safe=False)

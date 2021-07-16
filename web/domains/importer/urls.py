@@ -90,6 +90,4 @@ urlpatterns = [
         views.create_agent,
         name="importer-agent-create",
     ),
-    path("lookup/postcode", views.list_postcode_addresses, name="importer-postcode-lookup"),
-    path("lookup/company", views.list_companies, name="importer-company-lookup"),
 ]
