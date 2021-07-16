@@ -47,6 +47,10 @@ migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
 
+check: ## run Django check
+	unset UID && \
+	docker-compose run --rm web python ./manage.py check
+
 COMMAND="help"
 manage: ## execute manage.py
 	unset UID && \

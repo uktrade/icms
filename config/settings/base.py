@@ -61,6 +61,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.jinja2.Jinja2",
