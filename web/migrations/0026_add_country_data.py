@@ -1259,7 +1259,7 @@ def load_country_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0025_checklistfirearmsoilapplication"),
+        ("web", "0022_add_case_reference_template"),
     ]
 
     operations = [

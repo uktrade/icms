@@ -13298,7 +13298,7 @@ def add_commodities(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0051_sanctionemailmessage"),
+        ("web", "0037_add_template_data"),
     ]
 
     operations = [

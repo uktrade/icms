@@ -29,7 +29,7 @@ def delete_case_reference_template(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0021_importapplication_case_owner"),
+        ("web", "0011_add_cfs_schedule_data"),
     ]
 
     operations = [
