@@ -1,89 +1,71 @@
 import pytest
 from django.core.exceptions import PermissionDenied
-from guardian.shortcuts import assign_perm, remove_perm
+from guardian.shortcuts import remove_perm
 
+from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case.export.models import CertificateOfManufactureApplication
 from web.domains.case.views import check_application_permission
-from web.tests.domains.case._import.factory import OILApplicationFactory
-from web.tests.domains.case.access.factories import (
-    ExporterAccessRequestFactory,
-    ImporterAccessRequestFactory,
-)
-from web.tests.domains.case.export.factories import (
-    CertificateOfManufactureApplicationFactory,
-)
-from web.tests.domains.exporter.factory import ExporterFactory
-from web.tests.domains.importer.factory import ImporterFactory
+from web.models import ExportApplicationType, ImportApplicationType
 from web.tests.domains.user.factory import ActiveUserFactory
 
 pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def ilb_admin_user():
-    return ActiveUserFactory.create(permission_codenames=["reference_data_access"])
-
-
-@pytest.fixture
-def imp_application_user():
-    return ActiveUserFactory.create(permission_codenames=["importer_access"])
-
-
-@pytest.fixture
-def exp_application_user():
-    return ActiveUserFactory.create(permission_codenames=["exporter_access"])
-
-
-@pytest.fixture
-def access_application_user():
-    return ActiveUserFactory.create()
-
-
-@pytest.fixture
-def import_application(imp_application_user):
-    user = imp_application_user
-
-    importer = ImporterFactory.create(user=user)
-
-    assign_perm("web.is_contact_of_importer", user, importer)
-
-    return OILApplicationFactory.create(
-        status="SUBMITTED", importer=importer, created_by=user, last_updated_by=user
-    )
-
-
-@pytest.fixture
-def export_application(exp_application_user):
-    user = exp_application_user
-    exporter = ExporterFactory.create()
-
-    assign_perm("web.is_contact_of_exporter", user, exporter)
-
-    return CertificateOfManufactureApplicationFactory.create(
-        status="SUBMITTED", exporter=exporter, created_by=user, last_updated_by=user
-    )
-
-
-@pytest.fixture
-def import_access_request_application(access_application_user):
-    user = access_application_user
-
-    return ImporterAccessRequestFactory.create(
+def import_application(importer, test_import_user):
+    return OpenIndividualLicenceApplication.objects.create(
+        process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(
+            sub_type=ImportApplicationType.SubTypes.OIL
+        ),
         status="SUBMITTED",
-        submitted_by=user,
-        last_updated_by=user,
-        reference="iar/1",
+        importer=importer,
+        created_by=test_import_user,
+        last_updated_by=test_import_user,
     )
 
 
 @pytest.fixture
-def export_access_request_application(access_application_user):
-    user = access_application_user
-
-    return ExporterAccessRequestFactory.create(
+def agent_import_application(importer, agent_importer, test_agent_import_user):
+    return OpenIndividualLicenceApplication.objects.create(
+        process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(
+            sub_type=ImportApplicationType.SubTypes.OIL
+        ),
         status="SUBMITTED",
-        submitted_by=user,
-        last_updated_by=user,
-        reference="ear/1",
+        importer=importer,
+        created_by=test_agent_import_user,
+        last_updated_by=test_agent_import_user,
+        agent=agent_importer,
+    )
+
+
+@pytest.fixture
+def export_application(exporter, test_export_user):
+    return CertificateOfManufactureApplication.objects.create(
+        process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
+        application_type=ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.MANUFACTURE
+        ),
+        status="SUBMITTED",
+        exporter=exporter,
+        created_by=test_export_user,
+        last_updated_by=test_export_user,
+    )
+
+
+@pytest.fixture
+def agent_export_application(exporter, agent_exporter, test_agent_export_user):
+    return CertificateOfManufactureApplication.objects.create(
+        process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
+        application_type=ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.MANUFACTURE
+        ),
+        status="SUBMITTED",
+        exporter=exporter,
+        created_by=test_agent_export_user,
+        last_updated_by=test_agent_export_user,
+        agent=agent_exporter,
     )
 
 
@@ -93,64 +75,110 @@ def test_admin_valid_all_types(
     export_application,
     import_access_request_application,
     export_access_request_application,
-    ilb_admin_user,
+    test_icms_admin_user,
 ):
-    check_application_permission(import_application, ilb_admin_user, "import")
-    check_application_permission(export_application, ilb_admin_user, "export")
-    check_application_permission(import_access_request_application, ilb_admin_user, "access")
-    check_application_permission(export_access_request_application, ilb_admin_user, "access")
+    check_application_permission(import_application, test_icms_admin_user, "import")
+    check_application_permission(export_application, test_icms_admin_user, "export")
+    check_application_permission(import_access_request_application, test_icms_admin_user, "access")
+    check_application_permission(export_access_request_application, test_icms_admin_user, "access")
 
 
 # Import tests
-def test_import_application_valid(import_application, imp_application_user):
-    check_application_permission(import_application, imp_application_user, "import")
+def test_import_application_valid(import_application, test_import_user):
+    check_application_permission(import_application, test_import_user, "import")
 
 
 def test_import_application_missing_importer_access_permission(
-    import_application, imp_application_user
+    import_application, test_import_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.importer_access", imp_application_user)
-        check_application_permission(import_application, imp_application_user, "import")
+        remove_perm("web.importer_access", test_import_user)
+        check_application_permission(import_application, test_import_user, "import")
 
 
 def test_import_application_missing_is_contact_of_importer_permission(
-    import_application, imp_application_user
+    import_application, test_import_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.is_contact_of_importer", imp_application_user, import_application.importer)
-        check_application_permission(import_application, imp_application_user, "import")
+        remove_perm("web.is_contact_of_importer", test_import_user, import_application.importer)
+        check_application_permission(import_application, test_import_user, "import")
+
+
+# Agent for importer tests
+def test_import_agent_application_valid(agent_import_application, test_agent_import_user):
+    check_application_permission(agent_import_application, test_agent_import_user, "import")
+
+
+def test_import_agent_application_missing_importer_access_permission(
+    agent_import_application, test_agent_import_user
+):
+    with pytest.raises(PermissionDenied):
+        remove_perm("web.importer_access", test_agent_import_user)
+        check_application_permission(agent_import_application, test_agent_import_user, "import")
+
+
+def test_import_agent_application_missing_is_contact_of_importer_permission(
+    agent_import_application, test_agent_import_user
+):
+    with pytest.raises(PermissionDenied):
+        remove_perm(
+            "web.is_agent_of_importer",
+            test_agent_import_user,
+            agent_import_application.importer,
+        )
+        check_application_permission(agent_import_application, test_agent_import_user, "import")
 
 
 # Export Tests
-def test_export_application_valid(export_application, exp_application_user):
-    check_application_permission(export_application, exp_application_user, "export")
+def test_export_application_valid(export_application, test_export_user):
+    check_application_permission(export_application, test_export_user, "export")
 
 
-def test_application_missing_exporter_access_permission(export_application, exp_application_user):
+def test_application_missing_exporter_access_permission(export_application, test_export_user):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.exporter_access", exp_application_user)
-        check_application_permission(export_application, exp_application_user, "export")
+        remove_perm("web.exporter_access", test_export_user)
+        check_application_permission(export_application, test_export_user, "export")
 
 
 def test_export_application_missing_is_contact_of_exporter_permission(
-    export_application, exp_application_user
+    export_application, test_export_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.is_contact_of_exporter", exp_application_user, export_application.exporter)
-        check_application_permission(export_application, exp_application_user, "export")
+        remove_perm("web.is_contact_of_exporter", test_export_user, export_application.exporter)
+        check_application_permission(export_application, test_export_user, "export")
+
+
+# Agent for exporter tests
+def test_export_agent_application_valid(agent_export_application, test_agent_export_user):
+    check_application_permission(agent_export_application, test_agent_export_user, "export")
+
+
+def test_export_agent_application_missing_exporter_access_permission(
+    agent_export_application, test_agent_export_user
+):
+    with pytest.raises(PermissionDenied):
+        remove_perm("web.exporter_access", test_agent_export_user)
+        check_application_permission(agent_export_application, test_agent_export_user, "export")
+
+
+def test_export_agent_application_missing_is_contact_of_exporter_permission(
+    agent_export_application, test_agent_export_user
+):
+    with pytest.raises(PermissionDenied):
+        remove_perm(
+            "web.is_agent_of_exporter",
+            test_agent_export_user,
+            agent_export_application.exporter,
+        )
+        check_application_permission(agent_export_application, test_agent_export_user, "export")
 
 
 # Access Tests
 def test_access_application_valid(
-    import_access_request_application, export_access_request_application, access_application_user
+    import_access_request_application, export_access_request_application, test_access_user
 ):
-    check_application_permission(
-        import_access_request_application, access_application_user, "access"
-    )
-    check_application_permission(
-        export_access_request_application, access_application_user, "access"
-    )
+    check_application_permission(import_access_request_application, test_access_user, "access")
+    check_application_permission(export_access_request_application, test_access_user, "access")
 
 
 def test_access_application_denied_for_different_user(
@@ -166,6 +194,6 @@ def test_access_application_denied_for_different_user(
 
 
 # Invalid case_type test
-def test_invalid_case_type(import_application, imp_application_user):
+def test_invalid_case_type(import_application, test_import_user):
     with pytest.raises(PermissionDenied):
-        check_application_permission(import_application, imp_application_user, "something-invalid")
+        check_application_permission(import_application, test_import_user, "something-invalid")

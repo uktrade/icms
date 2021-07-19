@@ -10,8 +10,8 @@ class ImporterFactory(factory.django.DjangoModelFactory):
         model = Importer
 
     is_active = True
-    type = factory.fuzzy.FuzzyChoice(Importer.TYPES, getter=lambda t: t[0])
-    region_origin = factory.fuzzy.FuzzyChoice(Importer.REGIONS, getter=lambda r: r[0])
+    type = Importer.ORGANISATION
+    region_origin = Importer.UK
     name = factory.Faker("sentence", nb_words=4)
     main_importer = None
     user = None

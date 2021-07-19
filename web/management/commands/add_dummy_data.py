@@ -73,6 +73,35 @@ class Command(BaseCommand):
 
         self.stdout.write("Created dummy importer/exporter")
 
+        # agent for importer
+        agent_importer = Importer.objects.create(
+            is_active=True,
+            name="Dummy agent for importer",
+            registered_number="842",
+            type=Importer.ORGANISATION,
+            main_importer=importer,
+        )
+
+        office = Office.objects.create(
+            is_active=True, postcode="TW6 2LA", address="Nettleton Rd, London"
+        )
+        agent_importer.offices.add(office)
+
+        # agent for exporter
+        agent_exporter = Exporter.objects.create(
+            is_active=True,
+            name="Dummy agent exporter",
+            registered_number="422",
+            main_exporter=exporter,
+        )
+
+        office = Office.objects.create(
+            is_active=True, postcode="EN1 3SS", address="14 Mafeking Rd, Enfield"
+        )
+        agent_exporter.offices.add(office)
+
+        self.stdout.write("Created dummy agent for importer/exporter")
+
         self.create_user(
             username="ilb_admin",
             password=options["password"],
@@ -110,9 +139,24 @@ class Command(BaseCommand):
             linked_exporters=[exporter],
         )
 
+        self.create_user(
+            username="agent",
+            password=options["password"],
+            firstname="Cameron",
+            last_name="Hasra (agent)",
+            permissions=[
+                "importer_access",
+                "exporter_access",
+            ],
+            linked_importer_agents=[agent_importer],
+            linked_exporter_agents=[agent_exporter],
+        )
+
         self.create_superuser("admin", options["password"])
 
-        self.stdout.write("Created following users: 'ilb_admin', 'importer_user', 'exporter_user'")
+        self.stdout.write(
+            "Created following users: 'ilb_admin', 'importer_user', 'exporter_user', 'agent'"
+        )
         self.stdout.write("Created following superusers: 'admin'")
 
     def create_user(
@@ -124,6 +168,8 @@ class Command(BaseCommand):
         permissions: list[str],
         linked_importers: Collection[Importer] = (),
         linked_exporters: Collection[Exporter] = (),
+        linked_importer_agents: Collection[Importer] = (),
+        linked_exporter_agents: Collection[Exporter] = (),
     ) -> User:
         """Create normal system users"""
 
@@ -150,6 +196,14 @@ class Command(BaseCommand):
 
         for exporter in linked_exporters:
             assign_perm("web.is_contact_of_exporter", user, exporter)
+
+        for agent in linked_importer_agents:
+            assign_perm("web.is_contact_of_importer", user, agent)
+            assign_perm("web.is_agent_of_importer", user, agent.main_importer)
+
+        for agent in linked_exporter_agents:
+            assign_perm("web.is_contact_of_exporter", user, agent)
+            assign_perm("web.is_agent_of_exporter", user, agent.main_exporter)
 
         user.save()
 

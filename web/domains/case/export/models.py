@@ -144,6 +144,9 @@ class ExportApplication(ApplicationBase):
     def user_is_contact_of_org(self, user: User) -> bool:
         return user.has_perm("web.is_contact_of_exporter", self.exporter)
 
+    def user_is_agent_of_org(self, user: User) -> bool:
+        return user.has_perm("web.is_agent_of_exporter", self.exporter)
+
     def get_workbasket_subject(self) -> str:
         return "\n".join(
             [

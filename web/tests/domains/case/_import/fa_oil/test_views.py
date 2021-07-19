@@ -42,7 +42,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
             reverse("import:create-fa-oil"),
             data={"importer": importer.pk, "importer_office": office.pk},
         )
-        application = OpenIndividualLicenceApplication.objects.get()
+        application = OpenIndividualLicenceApplication.objects.get(importer=importer)
         self.assertEqual(application.process_type, OpenIndividualLicenceApplication.PROCESS_TYPE)
 
         application_type = application.application_type

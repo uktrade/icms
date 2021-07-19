@@ -131,9 +131,13 @@ def check_application_permission(application: ImpOrExpOrAccess, user: User, case
     elif case_type in ["import", "export"]:
         assert isinstance(application, (ImportApplication, ExportApplication))
 
-        is_contact = application.user_is_contact_of_org(user)
+        if not _has_importer_exporter_access(user, case_type):
+            raise PermissionDenied
 
-        if not _has_importer_exporter_access(user, case_type) or not is_contact:
+        is_contact = application.user_is_contact_of_org(user)
+        is_agent = application.user_is_agent_of_org(user)
+
+        if not is_contact and not is_agent:
             raise PermissionDenied
 
     else:
