@@ -23,7 +23,7 @@ def add_usage_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0057_add_constabulary_data"),
+        ("web", "0012_add_constabulary_data"),
     ]
 
     operations = [

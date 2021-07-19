@@ -317,7 +317,7 @@ def add_import_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0032_add_sanctions_country_group"),
+        ("web", "0006_add_exportapplicationtype_data"),
     ]
 
     operations = [

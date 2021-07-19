@@ -12875,7 +12875,7 @@ def add_commodities_to_commity_groups(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0055_add_commodity_data"),
+        ("web", "0010_add_commodity_data"),
     ]
 
     operations = [

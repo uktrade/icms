@@ -240,7 +240,7 @@ def load_country_data(apps, schema_editor):
                 hmrc_code="CG",
             ),
             Country(
-                name="Congo (Dem. Republic),",
+                name="Congo (Dem. Republic)",
                 is_active=True,
                 type="SOVEREIGN_TERRITORY",
                 commission_code="322",
@@ -555,14 +555,14 @@ def load_country_data(apps, schema_editor):
                 hmrc_code="KE",
             ),
             Country(
-                name="Korea (North),",
+                name="Korea (North)",
                 is_active=True,
                 type="SOVEREIGN_TERRITORY",
                 commission_code="724",
                 hmrc_code="KP",
             ),
             Country(
-                name="Korea (South),",
+                name="Korea (South)",
                 is_active=True,
                 type="SOVEREIGN_TERRITORY",
                 commission_code="728",
@@ -1259,7 +1259,7 @@ def load_country_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0022_add_case_reference_template"),
+        ("web", "0001_initial"),
     ]
 
     operations = [

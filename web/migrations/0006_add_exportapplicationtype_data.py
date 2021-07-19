@@ -47,7 +47,7 @@ def add_export_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0029_add_country_group_data"),
+        ("web", "0005_add_template_data"),
     ]
 
     operations = [

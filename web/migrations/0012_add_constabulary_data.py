@@ -106,7 +106,7 @@ def add_constabulary_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0056_add_commodity_data"),
+        ("web", "0011_add_commodity_data"),
     ]
 
     operations = [

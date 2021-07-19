@@ -1230,9 +1230,20 @@ def load_country_group_data_non_EU_single_countries(apps, schema_editor):
     group.save()
 
 
+def add_sanctions_and_adhoc_license_country_group(apps, schema_editor):
+    Country = apps.get_model("web", "Country")
+    CountryGroup = apps.get_model("web", "CountryGroup")
+    group = CountryGroup.objects.create(name="Sanctions and Adhoc License")
+    countries = ["Iran", "Korea (North)", "Russian Federation"]
+    for country_name in countries:
+        country = Country.objects.get(name=country_name)
+        group.countries.add(country)
+    group.save()
+
+
 class Migration(migrations.Migration):
     dependencies = [
-        ("web", "0027_fix_country_data"),
+        ("web", "0002_add_country_data"),
     ]
 
     operations = [
@@ -1257,4 +1268,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(load_country_group_data_firearms_and_ammunition_oil_COOs),
         migrations.RunPython(load_country_group_data_derogation_from_sanctions_COOs),
         migrations.RunPython(load_country_group_data_non_EU_single_countries),
+        migrations.RunPython(add_sanctions_and_adhoc_license_country_group),
     ]

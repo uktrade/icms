@@ -4402,7 +4402,7 @@ def add_country_translation(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("web", "0035_add_importapplicationtype_data"),
+        ("web", "0003_add_country_group_data"),
     ]
 
     operations = [
