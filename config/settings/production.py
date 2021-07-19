@@ -50,7 +50,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Elastic APM config
 INSTALLED_APPS += [  # NOQA
-    "elasticapm.contrib.django",
+    "elasticapm",
     "django_audit_log_middleware",
 ]
 
