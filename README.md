@@ -129,6 +129,18 @@ make migrate
 make add_dummy_data
 ```
 
+# Recreating the migration files:
+
+The following commands can be run to regenerate `web/migrations/0001_initial.py` and then checkout the data migrations.
+
+```
+rm web/migrations/*.py
+make migrations
+git checkout -- web/migrations/*_data.py
+make black_format
+make isort_format
+```
+
 ## Deployments
 
 - Dev deployment Jenkins job: https://jenkins.ci.uktrade.digital/job/icms/
