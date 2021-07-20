@@ -24,15 +24,18 @@ class CommodityType(models.Model):
 
 class Commodity(Archivable, models.Model):
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
-    end_datetime = models.DateTimeField(blank=True, null=True)
     commodity_code = models.CharField(max_length=10, blank=False, null=False)
-    validity_start_date = models.DateField(blank=False, null=True)
+    validity_start_date = models.DateField(blank=False, null=False)
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
     sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
 
     commodity_type = models.ForeignKey(CommodityType, on_delete=models.PROTECT)
+
+    # These are to be ignored, the start_datetime is simply a timestamp.
+    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    # When the record is archived.
+    end_datetime = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return self.commodity_code
@@ -51,8 +54,6 @@ class CommodityGroup(Archivable, models.Model):
     TYPES = [(AUTO, "Auto"), (CATEGORY, ("Category"))]
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
-    start_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
-    end_datetime = models.DateTimeField(blank=True, null=True)
     group_type = models.CharField(
         max_length=20, choices=TYPES, blank=False, null=False, default=AUTO
     )
@@ -64,6 +65,11 @@ class CommodityGroup(Archivable, models.Model):
     )
     unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, blank=True, null=True)
     commodities = models.ManyToManyField(Commodity, blank=True)
+
+    # A timestamp when the record was created
+    start_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
+    # When the record is archived.
+    end_datetime = models.DateTimeField(blank=True, null=True)
 
     @property
     def group_type_verbose(self):
@@ -92,9 +98,17 @@ class Usage(models.Model):
     commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.PROTECT, related_name="usages"
     )
-    start_datetime = models.DateTimeField()
-    end_datetime = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
     maximum_allocation = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ("-start_datetime",)
+        ordering = ("-start_date",)
+
+    def __str__(self):
+        return (
+            f"Usage(application_type={self.application_type}, "
+            f"country={self.country}, "
+            f"commodity_group={self.commodity_group}"
+            f")"
+        )

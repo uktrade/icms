@@ -32,10 +32,10 @@
             <tr>
               <td>{{ usage.application_type }}</td>
               <td>{{ usage.country }}</td>
-              <td>{{ usage.start_datetime.strftime('%d-%b-%Y') }}</td>
+              <td>{{ usage.start_date.strftime('%d-%b-%Y') }}</td>
               <td>
-                {% if usage.end_datetime %}
-                  {{ usage.end_datetime.strftime('%d-%b-%Y') }}
+                {% if usage.end_date %}
+                  {{ usage.end_date.strftime('%d-%b-%Y') }}
                 {% endif %}
               </td>
               <td>{{ usage.maximum_allocation|default("", True) }}</td>

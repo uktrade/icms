@@ -1,14 +1,12 @@
 from django.forms import (
     CharField,
     ChoiceField,
-    DateField,
     Field,
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
 )
 from django.forms.widgets import CheckboxInput, Textarea
-from django.utils import timezone
 from django_filters import (
     BooleanFilter,
     CharFilter,
@@ -52,16 +50,6 @@ class CommodityFilter(FilterSet):
 
 
 class CommodityForm(ModelForm):
-    commodity_code = CharField(label="Commodity Code", min_length=10)
-    validity_start_date = DateField(
-        label="First day of validity",
-        initial=timezone.now(),
-        help_text="""
-            The commodity code will be available for applications to choose
-            on applications forms, starting on this date.
-        """,
-    )
-
     class Meta:
         model = Commodity
         fields = [
@@ -73,15 +61,21 @@ class CommodityForm(ModelForm):
             "sigl_product_type",
         ]
         labels = {
+            "commodity_code": "Commodity Code",
+            "validity_start_date": "First day of validity",
             "validity_end_date": "Last day of validity",
             "sigl_product_type": "SIGL Product Type",
         }
         help_texts = {
-            "validity_end_date": """
-                After this date, the commodity will no
-                longer be available for applications to choose on application
-                forms. Leave blank for indefinitely continuing validity.
-            """,
+            "validity_start_date": (
+                "The commodity code will be available for applications to"
+                " choose on applications forms, starting on this date."
+            ),
+            "validity_end_date": (
+                "After this date, the commodity will no longer be available for"
+                " applications to choose on application forms. Leave blank for"
+                " indefinitely continuing validity."
+            ),
             "quantity_threshold": "Quantity threshold is only necessary for Iron, Steel and Aluminium commodities.",
             "sigl_product_type": "Mandatory for Iron, Steel, Aluminium and Textile commodities.",
         }
@@ -211,8 +205,8 @@ class UsageForm(ModelForm):
             "commodity_group",
             "application_type",
             "country",
-            "start_datetime",
-            "end_datetime",
+            "start_date",
+            "end_date",
             "maximum_allocation",
         ]
         help_texts = {
@@ -223,10 +217,7 @@ class UsageForm(ModelForm):
                 blank to apply no maximum.
             """,
         }
-        widgets = {
-            "start_datetime": DateInput(),
-            "end_datetime": DateInput(),
-        }
+        widgets = {"start_date": DateInput, "end_date": DateInput}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

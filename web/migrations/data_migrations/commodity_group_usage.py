@@ -192,7 +192,7 @@ class CommodityUsageDataLoader:
                     application_type_id=textiles_pk,
                     country_id=country.pk,
                     commodity_group_id=group_pk,
-                    start_datetime=now,
+                    start_date=now.date(),
                 )
 
     def load_opt_usage(self) -> "Iterable[Usage]":
@@ -212,7 +212,7 @@ class CommodityUsageDataLoader:
                 application_type_id=opt_pk,
                 country_id=country_pk,
                 commodity_group_id=group_pk,
-                start_datetime=now,
+                start_date=now.date(),
             )
 
     def load_derogation_from_sanctions_import_ban(self) -> "Iterable[Usage]":
