@@ -1,5 +1,7 @@
 from django import forms
 
+from web.domains.case._import.models import ImportApplication
+from web.domains.case.export.models import ExportApplication
 from web.domains.file.utils import ICMSFileField
 
 from .models import (
@@ -82,9 +84,8 @@ class WithdrawResponseForm(forms.ModelForm):
             self.add_error("response", "This field is required when Withdrawal is refused")
 
 
-class ResponsePreparationForm(forms.ModelForm):
+class ResponsePreparationBaseForm(forms.ModelForm):
     class Meta:
-        model = ApplicationBase
         fields = ("decision", "refuse_reason")
         widgets = {"refuse_reason": forms.Textarea}
 
@@ -100,3 +101,15 @@ class ResponsePreparationForm(forms.ModelForm):
             and cleaned_data.get("refuse_reason") == ""
         ):
             self.add_error("response", "This field is required when the Application is refused")
+
+
+class ResponsePreparationImportForm(ResponsePreparationBaseForm):
+    class Meta:
+        model = ImportApplication
+        fields = ResponsePreparationBaseForm.Meta.fields
+
+
+class ResponsePreparationExportForm(ResponsePreparationBaseForm):
+    class Meta:
+        model = ExportApplication
+        fields = ResponsePreparationBaseForm.Meta.fields

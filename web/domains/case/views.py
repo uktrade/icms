@@ -1577,6 +1577,13 @@ def prepare_response(
 ) -> HttpResponse:
     model_class = _get_class_imp_or_exp(case_type)
 
+    if case_type == "import":
+        form_class = forms.ResponsePreparationImportForm
+    elif case_type == "export":
+        form_class = forms.ResponsePreparationExportForm
+    else:
+        raise NotImplementedError(f"Unknown case_type {case_type}")
+
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
@@ -1586,7 +1593,7 @@ def prepare_response(
         )
 
         if request.POST:
-            form = forms.ResponsePreparationForm(request.POST, instance=application)
+            form = form_class(request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -1598,7 +1605,7 @@ def prepare_response(
                     )
                 )
         else:
-            form = forms.ResponsePreparationForm()
+            form = form_class()
 
         if case_type == "import":
             cover_letter_flag = application.application_type.cover_letter_flag
@@ -1656,7 +1663,7 @@ def prepare_response(
 
     # TODO: implement other types (export-COM)
     else:
-        raise NotImplementedError
+        raise NotImplementedError("Export applications haven't been configured yet")
 
 
 def _prepare_fa_oil_response(
