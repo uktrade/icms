@@ -21,6 +21,7 @@ from web.domains.commodity.widgets import CommodityGroupCommodityWidget
 from web.forms.widgets import DateInput
 
 from .models import Commodity, CommodityGroup, CommodityType, Unit, Usage
+from .widgets import UsageCountryWidget
 
 
 class CommodityFilter(FilterSet):
@@ -217,7 +218,16 @@ class UsageForm(ModelForm):
                 blank to apply no maximum.
             """,
         }
-        widgets = {"start_date": DateInput, "end_date": DateInput}
+        widgets = {
+            "country": UsageCountryWidget(
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "Pick an Application Type to see available countries",
+                },
+            ),
+            "start_date": DateInput,
+            "end_date": DateInput,
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
