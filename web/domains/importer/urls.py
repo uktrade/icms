@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from web.domains.firearms import views as firearms_views
 from web.domains.importer import views
@@ -6,19 +6,8 @@ from web.domains.importer import views
 urlpatterns = [
     path("", views.ImporterListView.as_view(), name="importer-list"),
     path("<int:pk>/edit/", views.edit_importer, name="importer-edit"),
-    re_path(
-        "^(?P<entity>individual|organisation)/create/$",
-        views.create_importer,
-        name="importer-create",
-    ),
+    path("<entitytype:entity_type>/create/", views.create_importer, name="importer-create"),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),
-    # contacts
-    path("<int:pk>/contacts/add/", views.add_contact, name="importer-contact-add"),
-    path(
-        "<int:importer_pk>/contacts/<int:contact_pk>/delete/",
-        views.delete_contact,
-        name="importer-contact-delete",
-    ),
     # firearms authority
     path(
         "<int:pk>/firearms/create/", firearms_views.create_firearms, name="importer-firearms-create"
@@ -96,8 +85,8 @@ urlpatterns = [
     path("agent/<int:pk>/edit/", views.edit_agent, name="importer-agent-edit"),
     path("agent/<int:pk>/archive/", views.archive_agent, name="importer-agent-archive"),
     path("agent/<int:pk>/unarchive/", views.unarchive_agent, name="importer-agent-unarchive"),
-    re_path(
-        "^(?P<importer_pk>[0-9]+)/agent/(?P<entity>individual|organisation)/create/$",
+    path(
+        "<int:importer_pk>/agent/<entitytype:entity_type>/create/",
         views.create_agent,
         name="importer-agent-create",
     ),

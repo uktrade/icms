@@ -69,11 +69,7 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with
-    object = form.instance,
-    contact_add_url_name = 'exporter-contact-add',
-    contact_delete_url_name = 'exporter-contact-delete' %}
-
+  {% with object = form.instance, read_only = False %}
     {% include "partial/contacts/contacts.html" %}
   {% endwith %}
 {% endblock %}

@@ -52,10 +52,13 @@ class Importer(Archivable, models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
-        blank=True,
         null=True,
         related_name="own_importers",
         verbose_name="Person",
+        help_text=(
+            "Search a user to link. Users returned are matched against first/last name,"
+            " email and title."
+        ),
     )
 
     # set for both

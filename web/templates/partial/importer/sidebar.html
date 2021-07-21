@@ -13,12 +13,12 @@
     <h5>Create Agent</h5>
     <ul class="menu-out">
       <li>
-        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'individual'}) }}">
+        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity_type: 'individual'}) }}">
           Individual Agent
         </a>
       </li>
       <li>
-        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity: 'organisation'}) }}">
+        <a href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': view.kwargs.importer_id, entity_type: 'organisation'}) }}">
           Organisation Agent
         </a>
       </li>
@@ -27,12 +27,12 @@
   <h5>Create Importer</h5>
   <ul class="menu-out">
     <li>
-      <a href="{{ icms_url('importer-create', kwargs={'entity': 'individual'}) }}">
+      <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'individual'}) }}">
         Main Individual Importer
       </a>
     </li>
     <li>
-      <a href="{{ icms_url('importer-create', kwargs={'entity': 'organisation'}) }}">
+      <a href="{{ icms_url('importer-create', kwargs={'entity_type': 'organisation'}) }}">
         Main Organisation Importer
       </a>
     </li>

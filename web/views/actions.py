@@ -150,7 +150,7 @@ class CreateIndividualAgent(LinkAction):
 
     def href(self, object):
         return reverse(
-            "importer-agent-create", kwargs={"importer_pk": object.pk, "entity": "individual"}
+            "importer-agent-create", kwargs={"importer_pk": object.pk, "entity_type": "individual"}
         )
 
 
@@ -160,7 +160,8 @@ class CreateOrganisationAgent(LinkAction):
 
     def href(self, object):
         return reverse(
-            "importer-agent-create", kwargs={"importer_pk": object.pk, "entity": "organisation"}
+            "importer-agent-create",
+            kwargs={"importer_pk": object.pk, "entity_type": "organisation"},
         )
 
 

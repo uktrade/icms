@@ -45,6 +45,9 @@ class CreateImportApplicationForm(forms.Form):
 
     def __init__(self, *args: Any, user: models.User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+
+        # TODO: ICMSLST-862 display active agents
+
         self.user = user
         active_importers = Importer.objects.filter(is_active=True, main_importer__isnull=True)
         importers = get_objects_for_user(

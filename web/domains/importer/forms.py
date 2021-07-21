@@ -6,25 +6,18 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 from web.company.companieshouse import api_get_company
 from web.domains.importer.fields import PersonWidget
 from web.domains.importer.models import Importer
-from web.domains.user.models import User
 
 
 class ImporterIndividualForm(ModelForm):
-    user = ModelChoiceField(
-        queryset=User.objects.importer_access(),
-        widget=PersonWidget,
-        help_text="""
-            Search a user to link. Users returned are matched against first/last name,
-            email and title.
-        """,
-    )
-
     class Meta:
         model = Importer
         fields = ["user", "eori_number", "eori_number_ni", "region_origin", "comments"]
+        widgets = {"user": PersonWidget}
+        help_texts = {"eori_number": "EORI number should include the GBPR prefix"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.fields["eori_number"].required = True
 
     def clean(self):

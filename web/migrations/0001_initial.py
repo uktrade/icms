@@ -2600,7 +2600,7 @@ class Migration(migrations.Migration):
             model_name="importer",
             name="user",
             field=models.ForeignKey(
-                blank=True,
+                help_text="Search a user to link. Users returned are matched against first/last name, email and title.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="own_importers",

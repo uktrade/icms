@@ -7,12 +7,12 @@
         {% if is_importer %}
           <li>
             <a
-              href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': object.pk, 'entity': 'individual'}) }}"
+              href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': object.pk, 'entity_type': 'individual'}) }}"
               class="small-button icon-user-plus button">
               Create Individual Agent
             </a>
             <a
-              href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': object.pk, 'entity': 'organisation'}) }}"
+              href="{{ icms_url('importer-agent-create', kwargs={'importer_pk': object.pk, 'entity_type': 'organisation'}) }}"
               class="small-button icon-user-plus button">
               Create Organisation Agent
             </a>

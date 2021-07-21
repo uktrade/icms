@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="twelve columns">
                           <form method="post"
-                                action="{{ icms_url(contact_delete_url_name, args=[object.pk, user.pk]) }}">
+                                action="{{ icms_url('contacts:delete', kwargs={'org_type': org_type, 'org_pk': object.pk, 'contact_pk': user.pk}) }}">
                             {{ csrf_input }}
                             <button type="submit" class="button small-button icon-bin">Delete</button>
                           </form>
@@ -63,7 +63,7 @@
     {% if not read_only %}
       <form
         method="post"
-        action="{{ icms_url(contact_add_url_name, kwargs={'pk': object.pk}) }}">
+        action="{{ icms_url('contacts:add', kwargs={'org_type': org_type, 'org_pk': object.pk}) }}">
         {{ csrf_input }}
         <div class="container setoutForm">
           <div class="row">
