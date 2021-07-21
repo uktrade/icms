@@ -144,7 +144,7 @@ class CommodityGroupForm(ModelForm):
     )
     commodities = ModelMultipleChoiceField(
         label="Commodity Code",
-        queryset=Commodity.objects.all(),
+        queryset=Commodity.objects.all().select_related("commodity_type"),
         widget=CommodityGroupCommodityWidget,
         required=False,
     )

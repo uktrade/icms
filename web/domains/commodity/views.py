@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -16,6 +18,9 @@ from .forms import (
     UsageForm,
 )
 from .models import Commodity, CommodityGroup, Usage
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class CommodityListView(ModelFilterView):
@@ -104,6 +109,11 @@ class CommodityGroupEditView(ModelUpdateView):
     success_url = reverse_lazy("commodity-group-list")
     cancel_url = success_url
     permission_required = "web.reference_data_access"
+
+    def get_queryset(self) -> "QuerySet[CommodityGroup]":
+        qs: "QuerySet[CommodityGroup]" = super().get_queryset()
+
+        return qs.prefetch_related("usages__country", "usages__application_type")
 
 
 class CommodityGroupCreateView(ModelCreateView):
