@@ -1,17 +1,18 @@
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from django.db.models import F
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplicationType
-from web.domains.commodity.models import Usage
+from web.domains.commodity.models import Commodity, CommodityGroup, Usage
+from web.domains.country.models import Country
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
 
-def get_usage_records(app_type: str, app_sub_type: str = None):
+def get_usage_records(app_type: str, app_sub_type: str = None) -> "QuerySet[Usage]":
     """Gets all Usage records for the supplied application type / subtype"""
 
     filter_kwargs = app_sub_type and {"subtype": app_sub_type} or {}
@@ -41,15 +42,14 @@ def get_usage_records(app_type: str, app_sub_type: str = None):
     return application_usage
 
 
-def get_country_of_origin_choices(
-    application_usage: "QuerySet[Usage]",
-) -> Iterable[tuple[int, str]]:
-    """Get country of origin choices for forms."""
+def get_usage_countries(application_usage: "QuerySet[Usage]") -> "QuerySet[Country]":
+    """Return countries linked to the usage records."""
+    return Country.objects.filter(usage__in=application_usage, is_active=True).distinct()
 
-    application_usage = (
-        application_usage.select_related("country")
-        .values_list("country__pk", "country__name")
-        .order_by("country__name")
-    )
 
-    return (r for r in application_usage)
+def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Commodity]":
+    """Return commodities linked to the usage records."""
+    return Commodity.objects.filter(
+        commoditygroup__in=CommodityGroup.objects.filter(usages__in=application_usage),
+        is_active=True,
+    ).distinct()

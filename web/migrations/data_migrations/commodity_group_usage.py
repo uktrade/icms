@@ -22,6 +22,7 @@ class CommodityUsageDataLoader:
     def create_usage_records(self) -> None:
         self.bulk_create(self.load_textiles_quota_usage())
         self.bulk_create(self.load_opt_usage())
+        self.bulk_create(self.load_derogation_from_sanctions_import_ban())
 
     def bulk_create(self, objs: "Iterable[Usage]") -> None:
         batch_size = 1000
@@ -216,17 +217,31 @@ class CommodityUsageDataLoader:
             )
 
     def load_derogation_from_sanctions_import_ban(self) -> "Iterable[Usage]":
-        """Load usage records for the Derogation From Sanctions Import Ban application
+        """Load usage records for the Derogation From Sanctions Import Ban application"""
 
-        # Records to add
-        Country of Origin restricted to the following:
-            - Iran (242 commodities)
-            - Russian Federation (2 commodities)
-            - Somalia (6 commodities)
-            - Syria (141 commodities)
-        """
-        # TODO: Implement when doing ICMSLST-850
-        ...
+        group_categories = {
+            self.country.objects.get(name="Iran"): ["SAN2", "SAN3"],
+            self.country.objects.get(name="Russian Federation"): ["SAN5"],
+            self.country.objects.get(name="Somalia"): ["SAN1"],
+            self.country.objects.get(name="Syria"): ["SAN2", "SAN4"],
+        }
+
+        derogation_pk = self.import_application_type.objects.get(type="SAN").pk
+        groups = self.commodity_group.objects.all()
+        now = timezone.now()
+
+        for country, group_code_list in group_categories.items():
+            country_group_pks = groups.filter(group_code__in=group_code_list).values_list(
+                "pk", flat=True
+            )
+
+            for group_pk in country_group_pks:
+                yield self.usage(
+                    application_type_id=derogation_pk,
+                    country_id=country.pk,
+                    commodity_group_id=group_pk,
+                    start_date=now.date(),
+                )
 
     def load_sanctions_and_adhoc_licence_application(self) -> "Iterable[Usage]":
         """Load usage records for the Sanctions and Adhoc Licence application

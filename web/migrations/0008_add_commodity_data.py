@@ -2289,6 +2289,18 @@ def add_commodity_groups(apps, schema_editor):
                 commodity_type=data.get_commodity_type(type_code="OIL_PETROCHEMICALS"),
                 unit=data.get_unit(unit_type="KGS"),
             ),
+            # Test commodity group added for Russia
+            CommodityGroup(
+                is_active=True,
+                start_datetime=pytz.timezone("UTC").localize(
+                    datetime.strptime("26-APR-2013 16:00:06", DATETIME_FORMAT), is_dst=None
+                ),
+                group_type="CATEGORY",
+                group_code="SAN5",
+                group_description="Iron, Steel and Aluminium (Russia - Derogation of Sanctions).",
+                commodity_type=data.get_commodity_type(type_code="OIL_PETROCHEMICALS"),
+                unit=data.get_unit(unit_type="KGS"),
+            ),
             CommodityGroup(
                 is_active=True,
                 start_datetime=pytz.timezone("UTC").localize(

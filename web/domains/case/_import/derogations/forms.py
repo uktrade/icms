@@ -1,27 +1,24 @@
+from typing import TYPE_CHECKING
+
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.forms.widgets import DateInput
+from web.utils.commodity import get_usage_records
 
 from .models import DerogationsApplication, DerogationsChecklist
+from .widgets import DerogationCommoditySelect, DerogationCountryOfOriginSelect
+
+if TYPE_CHECKING:
+    from decimal import Decimal
+
+    from web.domains.commodity.models import Commodity
 
 
 class DerogationsForm(forms.ModelForm):
-    commodity_code = forms.ChoiceField(
-        label="Commodity Code",
-        help_text="""
-            It is the responsibility of the applicant to ensure that the commodity code in
-            this box is correct. If you are unsure of the correct commodity code,
-            consult the HM Revenue and Customs Integrated Tariff Book, Volume 2,
-            which is available from the Stationery Office. If you are still in doubt,
-            contact the Classification Advisory Service on (01702) 366077.
-        """,
-        choices=[(x, x) for x in [None, "4403201110", "4403201910", "4403203110", "4403203910"]],
-        required=True,
-    )
-
     class Meta:
         model = DerogationsApplication
         fields = (
@@ -32,7 +29,7 @@ class DerogationsForm(forms.ModelForm):
             "contract_sign_date",
             "contract_completion_date",
             "explanation",
-            "commodity_code",
+            "commodity",
             "goods_description",
             "quantity",
             "unit",
@@ -42,6 +39,8 @@ class DerogationsForm(forms.ModelForm):
             "contract_sign_date": DateInput,
             "contract_completion_date": DateInput,
             "explanation": forms.Textarea(attrs={"cols": 50, "rows": 3}),
+            "origin_country": DerogationCountryOfOriginSelect,
+            "commodity": DerogationCommoditySelect,
         }
 
     def __init__(self, *args, **kwargs):
@@ -49,9 +48,36 @@ class DerogationsForm(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        countries = Country.objects.filter(country_groups__name="Derogation from Sanctions COOs")
-        self.fields["origin_country"].queryset = countries
-        self.fields["consignment_country"].queryset = countries
+        non_eu_countries = Country.objects.filter(country_groups__name="Non EU Single Countries")
+        self.fields["consignment_country"].queryset = non_eu_countries
+
+    def clean(self):
+        """Check if the quantity exceeds the maximum_allocation if set."""
+        cleaned_data = super().clean()
+
+        if not self.is_valid():
+            return cleaned_data
+
+        origin_country: Country = cleaned_data["origin_country"]
+        commodity: "Commodity" = cleaned_data["commodity"]
+        quantity: "Decimal" = cleaned_data["quantity"]
+
+        usage = get_usage_records(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
+        usage = usage.filter(
+            country=origin_country,
+            commodity_group__commodities__in=[commodity],
+            maximum_allocation__isnull=False,
+        ).distinct()
+
+        for record in usage:
+            if quantity > record.maximum_allocation:
+                self.add_error(
+                    "quantity",
+                    f"Quantity exceeds maximum allocation (max: {record.maximum_allocation})",
+                )
+                break
+
+        return cleaned_data
 
 
 class DerogationsChecklistForm(ChecklistBaseForm):
@@ -85,8 +111,8 @@ class GoodsDerogationsLicenceForm(forms.ModelForm):
 
     class Meta:
         model = DerogationsApplication
-        fields = ("commodity_code", "goods_description", "quantity", "unit", "value")
+        fields = ("commodity", "goods_description", "quantity", "unit", "value")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["commodity_code"].widget.attrs["readonly"] = True
+        self.fields["commodity"].widget.attrs["readonly"] = True

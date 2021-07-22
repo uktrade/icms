@@ -2,6 +2,11 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
 {% block sidebar %}
   {% include "partial/case/import/derogations/sidebar.html" %}
 {% endblock %}
@@ -30,7 +35,7 @@
     </div>
 
     <h4>Goods</h4>
-    {{ fields.field(form.commodity_code) }}
+    {{ fields.field(form.commodity) }}
     {{ fields.field(form.goods_description) }}
     {{ fields.field(form.quantity) }}
     {{ fields.field(form.unit) }}
@@ -89,3 +94,7 @@
 
 {% endblock %}
 
+{% block page_js %}
+  {{ form.media.js }}
+  {{ super() }}
+{% endblock %}

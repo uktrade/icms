@@ -32,7 +32,7 @@ class CommodityGroupCommodityWidget(CommodityWidget):
 class UsageCountryWidget(s2forms.ModelSelect2Widget):
     """Used when creating usage records"""
 
-    queryset = Country.objects.all()
+    queryset = Country.objects.all().filter(is_active=True)
 
     # The value entered by the user is used to search the commodity code
     search_fields = ["name__contains"]

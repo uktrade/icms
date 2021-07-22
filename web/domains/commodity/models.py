@@ -5,10 +5,10 @@ from web.models.mixins import Archivable
 
 
 class Unit(models.Model):
-    unit_type = models.CharField(max_length=20, blank=False, null=False)
-    description = models.CharField(max_length=100, blank=False, null=False)
-    short_description = models.CharField(max_length=30, blank=False, null=False)
-    hmrc_code = models.IntegerField(blank=False, null=False)
+    unit_type = models.CharField(max_length=20)
+    description = models.CharField(max_length=100)
+    short_description = models.CharField(max_length=30)
+    hmrc_code = models.IntegerField()
 
     def __str__(self):
         return self.description
@@ -23,9 +23,9 @@ class CommodityType(models.Model):
 
 
 class Commodity(Archivable, models.Model):
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    commodity_code = models.CharField(max_length=10, blank=False, null=False)
-    validity_start_date = models.DateField(blank=False, null=False)
+    is_active = models.BooleanField(default=True)
+    commodity_code = models.CharField(max_length=10)
+    validity_start_date = models.DateField()
     validity_end_date = models.DateField(blank=True, null=True)
     quantity_threshold = models.IntegerField(blank=True, null=True)
     sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
@@ -33,7 +33,7 @@ class Commodity(Archivable, models.Model):
     commodity_type = models.ForeignKey(CommodityType, on_delete=models.PROTECT)
 
     # These are to be ignored, the start_datetime is simply a timestamp.
-    start_datetime = models.DateTimeField(auto_now_add=True, blank=False, null=False)
+    start_datetime = models.DateTimeField(auto_now_add=True)
     # When the record is archived.
     end_datetime = models.DateTimeField(blank=True, null=True)
 
@@ -53,11 +53,9 @@ class CommodityGroup(Archivable, models.Model):
 
     TYPES = [(AUTO, "Auto"), (CATEGORY, ("Category"))]
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    group_type = models.CharField(
-        max_length=20, choices=TYPES, blank=False, null=False, default=AUTO
-    )
-    group_code = models.CharField(max_length=25, blank=False, null=False)
+    is_active = models.BooleanField(default=True)
+    group_type = models.CharField(max_length=20, choices=TYPES, default=AUTO)
+    group_code = models.CharField(max_length=25)
     group_name = models.CharField(max_length=100, blank=True, null=True)
     group_description = models.CharField(max_length=4000, blank=True, null=True)
     commodity_type = models.ForeignKey(
@@ -67,7 +65,7 @@ class CommodityGroup(Archivable, models.Model):
     commodities = models.ManyToManyField(Commodity, blank=True)
 
     # A timestamp when the record was created
-    start_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
+    start_datetime = models.DateTimeField(auto_now_add=True)
     # When the record is archived.
     end_datetime = models.DateTimeField(blank=True, null=True)
 
@@ -94,7 +92,7 @@ class CommodityGroup(Archivable, models.Model):
 
 class Usage(models.Model):
     application_type = models.ForeignKey("web.ImportApplicationType", on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, on_delete=models.PROTECT, blank=False, null=False)
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
     commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.PROTECT, related_name="usages"
     )
@@ -107,8 +105,8 @@ class Usage(models.Model):
 
     def __str__(self):
         return (
-            f"Usage(application_type={self.application_type}, "
-            f"country={self.country}, "
-            f"commodity_group={self.commodity_group}"
+            f"Usage(application_type={self.application_type}"
+            f", country={self.country}"
+            f", commodity_group={self.commodity_group}"
             f")"
         )

@@ -5,7 +5,7 @@ import pytest
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Usage
 from web.domains.country.models import Country
-from web.utils.commodity import get_country_of_origin_choices, get_usage_records
+from web.utils.commodity import get_usage_countries, get_usage_records
 
 
 @pytest.fixture
@@ -38,7 +38,9 @@ def test_get_usage_records_gets_correct_records(wood_test_data):
     usage_records = get_usage_records(app_type=ImportApplicationType.Types.WOOD_QUOTA)
 
     assert usage_records.count() == 3
-    country_choices = get_country_of_origin_choices(usage_records)
+    country_qs = get_usage_countries(usage_records)
+
+    actual = [(c.pk, c.name) for c in country_qs]
 
     expected = [
         (Country.objects.get(name="Afghanistan").pk, "Afghanistan"),
@@ -46,7 +48,7 @@ def test_get_usage_records_gets_correct_records(wood_test_data):
         (Country.objects.get(name="Algeria").pk, "Algeria"),
     ]
 
-    assert expected == list(country_choices)
+    assert expected == actual
 
 
 def test_get_usage_records_correctly_filter_invalid_records(wood_test_data, next_jan):

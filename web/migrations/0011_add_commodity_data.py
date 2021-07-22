@@ -12843,6 +12843,10 @@ def add_commodities_to_commity_groups(apps, schema_editor):
             ]
         )
     )
+
+    commodity_group = CommodityGroup.objects.get(group_code="SAN5")
+    commodity_group.commodities.add(*Commodity.objects.filter(commodity_code__in=["7318190090"]))
+
     commodity_group = CommodityGroup.objects.get(group_code="70")
     commodity_group.commodities.add(
         *Commodity.objects.filter(

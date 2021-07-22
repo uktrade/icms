@@ -2,6 +2,7 @@ from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.derogations.forms import DerogationsForm
+from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
@@ -50,7 +51,7 @@ class DerogationsFormTest(AuthTestCase):
             "contract_sign_date": timezone.now(),
             "contract_completion_date": timezone.now(),
             "explanation": "Test explanation",
-            "commodity_code": "4403201110",
+            "commodity": Commodity.objects.get(commodity_code="4402100010").pk,
             "goods_description": "Test description",
             "quantity": "1.00",
             "unit": "kilos",

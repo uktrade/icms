@@ -1,5 +1,6 @@
 from django.db import models
 
+from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 from web.models.shared import YesNoNAChoices, at_least_0
 
@@ -22,9 +23,11 @@ class DerogationsApplication(ImportApplication):
     )
 
     # Goods
-    commodity_code = models.CharField(
-        max_length=40,
+    commodity = models.ForeignKey(
+        Commodity,
+        on_delete=models.PROTECT,
         null=True,
+        related_name="+",
         verbose_name="Commodity Code",
         help_text=(
             "It is the responsibility of the applicant to ensure that the commodity code in"
