@@ -1,9 +1,9 @@
 from typing import Any
 
 from django import forms
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
 from web.models import Country
 
@@ -60,11 +60,7 @@ class PrepareDFLForm(forms.ModelForm):
             ("false", "No"),
         ]
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        users = get_users_with_perms(
-            self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
-        ).filter(is_active=True)
-        self.fields["contact"].queryset = users
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
         countries = Country.objects.filter(
             country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"

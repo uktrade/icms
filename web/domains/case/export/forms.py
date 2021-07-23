@@ -7,6 +7,7 @@ from django_select2 import forms as s2forms
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.forms import application_contacts
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -45,33 +46,63 @@ class CreateExportApplicationForm(forms.Form):
         help_text="The office that this certificate will be issued to.",
     )
 
+    agent = forms.ModelChoiceField(
+        required=False,
+        queryset=Exporter.objects.none(),
+        label="Agent of Exporter",
+        widget=ModelSelect2Widget(
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": "-- Select Agent",
+            },
+            search_fields=("main_exporter__in", "exporter"),
+            # Key is a name of a field in a form.
+            # Value is a name of a field in a model (used in `queryset`).
+            dependent_fields={"exporter": "main_exporter"},
+        ),
+    )
+    agent_office = forms.ModelChoiceField(
+        required=False,
+        queryset=Office.objects.none(),
+        label="Agent Office",
+        widget=ModelSelect2Widget(
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": "-- Select Office",
+            },
+            search_fields=("postcode__icontains", "address__icontains"),
+            # Key is a name of a field in a form.
+            # Value is a name of a field in a model (used in `queryset`).
+            dependent_fields={"agent": "exporter"},
+        ),
+    )
+
     def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-862 display active agents
-
         self.user = user
 
-        # Copied from original form
-        main_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
-        main_exporters = get_objects_for_user(
-            user, "web.is_contact_of_exporter", main_exporters, with_superuser=False
-        )
-        main_exporter_ids = set([exporter.pk for exporter in main_exporters])
-
-        # Copied from original form
-        active_exporters = Exporter.objects.filter(is_active=True)
+        active_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
         exporters = get_objects_for_user(
-            user, "web.is_agent_of_exporter", active_exporters, with_superuser=False
+            user,
+            ["web.is_contact_of_exporter", "web.is_agent_of_exporter"],
+            active_exporters,
+            any_perm=True,
         )
-        agent_exporter_ids = set([exporter.pk for exporter in exporters])
-
-        exporters = Exporter.objects.filter(pk__in=(main_exporter_ids | agent_exporter_ids))
-
         self.fields["exporter"].queryset = exporters
-
         self.fields["exporter_office"].queryset = Office.objects.filter(
             is_active=True, exporter__in=exporters
+        )
+
+        active_agents = Exporter.objects.filter(is_active=True, main_exporter__in=exporters)
+        agents = get_objects_for_user(
+            user,
+            ["web.is_contact_of_exporter"],
+            active_agents,
+        )
+        self.fields["agent"].queryset = agents
+        self.fields["agent_office"].queryset = Office.objects.filter(
+            is_active=True, exporter__in=agents
         )
 
 
@@ -113,8 +144,7 @@ class PrepareCertManufactureForm(forms.ModelForm):
         self.fields["is_pesticide_on_free_sale_uk"].required = True
         self.fields["is_manufacturer"].required = True
 
-        # TODO: ICMSLST-425 change contact.queryset to be just users who should be listed
-        self.fields["contact"].queryset = User.objects.filter(is_active=True)
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields[
             "countries"
@@ -177,5 +207,4 @@ class EditCFSForm(forms.ModelForm):
 
         self.fields["contact"].required = True
 
-        # TODO: ICMSLST-425 change contact.queryset to be just users who should be listed
-        self.fields["contact"].queryset = User.objects.filter(is_active=True)
+        self.fields["contact"].queryset = application_contacts(self.instance)

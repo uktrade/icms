@@ -41,11 +41,11 @@ def textiles_app_pk(client, office, importer):
     return application_pk
 
 
-def _add_goods_to_app(client, textiles_app_pk):
+def _add_goods_to_app(client, textiles_app_pk, test_import_user):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
 
     form_data = {
-        "contact": 2,
+        "contact": test_import_user.pk,
         "applicant_reference": "New textiles",
         "goods_cleared": True,
         "shipping_year": 2021,
@@ -64,8 +64,8 @@ def _add_goods_to_app(client, textiles_app_pk):
     return response
 
 
-def test_textiles_app_edit(client, textiles_app_pk):
-    _add_goods_to_app(client, textiles_app_pk)
+def test_textiles_app_edit(client, textiles_app_pk, test_import_user):
+    _add_goods_to_app(client, textiles_app_pk, test_import_user)
     textiles_app = TextilesApplication.objects.get(pk=textiles_app_pk)
 
     assert textiles_app.applicant_reference == "New textiles"

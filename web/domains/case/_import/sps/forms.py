@@ -1,8 +1,8 @@
 from django import forms
 
+from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
-from web.domains.user.models import User
 from web.utils.currency import get_euro_exchange_rate
 
 from . import models
@@ -28,8 +28,7 @@ class EditSPSForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contact"].queryset = User.objects.all()
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields["customs_cleared_to_uk"].required = True
 

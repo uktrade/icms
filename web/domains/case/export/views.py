@@ -1,4 +1,4 @@
-from typing import NamedTuple, Type
+from typing import List, NamedTuple, Type
 
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
@@ -9,9 +9,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import TemplateView
+from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import check_application_permission
+from web.domains.exporter.models import Exporter
+from web.domains.user.models import User
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
@@ -38,6 +41,11 @@ class CreateExportApplicationConfig(NamedTuple):
     certificate_message: str
 
 
+def _exporters_with_agents(user: User) -> List[int]:
+    exporters_with_agents = get_objects_for_user(user, ["web.is_agent_of_exporter"], Exporter)
+    return [exporter.pk for exporter in exporters_with_agents]
+
+
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
 def create_export_application(request: AuthenticatedHttpRequest, *, type_code: str) -> HttpResponse:
@@ -52,6 +60,8 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
             application = config.model_class()
             application.exporter = form.cleaned_data["exporter"]
             application.exporter_office = form.cleaned_data["exporter_office"]
+            application.agent = form.cleaned_data["agent"]
+            application.agent_office = form.cleaned_data["agent_office"]
             application.process_type = config.model_class.PROCESS_TYPE
             application.created_by = request.user
             application.last_updated_by = request.user
@@ -75,6 +85,7 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
         "application_title": ExportApplicationType.ProcessTypes(
             config.model_class.PROCESS_TYPE
         ).label,
+        "exporters_with_agents": _exporters_with_agents(request.user),
     }
 
     return render(request, "web/domains/case/export/create.html", context)

@@ -7,6 +7,7 @@ from web.domains.case._import.models import *  # NOQA
 from web.domains.case._import.opt.models import *  # NOQA
 from web.domains.case._import.sanctions.models import *  # NOQA
 from web.domains.case._import.sps.models import *  # NOQA
+from web.domains.case._import.textiles.models import *  # NOQA
 from web.domains.case._import.wood.models import *  # NOQA
 from web.domains.case.access.approval.models import *  # NOQA
 from web.domains.case.access.models import *  # NOQA

@@ -11,11 +11,11 @@ def _get_view_url(view_name, kwargs=None):
     return reverse(f"import:textiles:{view_name}", kwargs=kwargs)
 
 
-def _add_goods_to_app(client, textiles_app_pk):
+def _add_goods_to_app(client, textiles_app_pk, test_import_user):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
 
     form_data = {
-        "contact": 2,
+        "contact": test_import_user.pk,
         "applicant_reference": "New textiles",
         "goods_cleared": True,
         "shipping_year": 2021,
@@ -54,7 +54,7 @@ def textiles_app_pk(client, office, importer, test_import_user, test_icms_admin_
 
     expected_url = _get_view_url("edit", {"application_pk": application_pk})
     assertRedirects(resp, expected_url, 302)
-    _add_goods_to_app(client, application_pk)
+    _add_goods_to_app(client, application_pk, test_import_user)
 
     return application_pk
 

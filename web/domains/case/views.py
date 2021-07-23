@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, NamedTuple, Type, Union
+from typing import TYPE_CHECKING, Any, NamedTuple, Type
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -66,27 +66,16 @@ from web.utils.validation import (
 from . import forms, models
 from .fir import forms as fir_forms
 from .fir.models import FurtherInformationRequest
+from .types import (
+    ApplicationsWithChecklist,
+    ImpOrExp,
+    ImpOrExpOrAccess,
+    ImpOrExpOrAccessT,
+    ImpOrExpT,
+)
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
-
-
-ImpOrExp = Union[ImportApplication, ExportApplication]
-ImpOrExpT = Type[ImpOrExp]
-
-ImpOrExpOrAccess = Union[ImportApplication, ExportApplication, AccessRequest]
-ImpOrExpOrAccessT = Type[ImpOrExpOrAccess]
-
-
-ApplicationsWithChecklist = Union[
-    OpenIndividualLicenceApplication,
-    DFLApplication,
-    SILApplication,
-    WoodQuotaApplication,
-    DerogationsApplication,
-    OutwardProcessingTradeApplication,
-    TextilesApplication,
-]
 
 
 def _get_class_imp_or_exp(case_type: str) -> ImpOrExpT:

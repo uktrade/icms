@@ -4,10 +4,10 @@ from typing import Any
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case.forms import application_contacts
 from web.domains.commodity.models import Commodity
 from web.domains.commodity.widgets import CommodityWidget
 from web.domains.country.models import Country
-from web.domains.user.models import User
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices, YesNoNAChoices
 
@@ -43,8 +43,7 @@ class EditOPTForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contact"].queryset = User.objects.all()
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
     def clean_last_export_day(self):
         day = self.cleaned_data["last_export_day"]

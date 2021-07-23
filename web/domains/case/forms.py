@@ -1,8 +1,12 @@
+from typing import TYPE_CHECKING
+
 from django import forms
+from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
 from web.domains.file.utils import ICMSFileField
+from web.models import User
 
 from .models import (
     CASE_NOTE_STATUSES,
@@ -11,6 +15,10 @@ from .models import (
     UpdateRequest,
     WithdrawApplication,
 )
+from .types import ImpOrExpT
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class DocumentForm(forms.Form):
@@ -113,3 +121,28 @@ class ResponsePreparationExportForm(ResponsePreparationBaseForm):
     class Meta:
         model = ExportApplication
         fields = ResponsePreparationBaseForm.Meta.fields
+
+
+def application_contacts(application: ImpOrExpT) -> "QuerySet[User]":
+    if isinstance(application, ImportApplication):
+        if application.agent:
+            users = get_users_with_perms(
+                application.agent, only_with_perms_in=["is_contact_of_importer"]
+            )
+        else:
+            users = get_users_with_perms(
+                application.importer, only_with_perms_in=["is_contact_of_importer"]
+            )
+    elif isinstance(application, ExportApplication):
+        if application.agent:
+            users = get_users_with_perms(
+                application.agent, only_with_perms_in=["is_contact_of_exporter"]
+            )
+        else:
+            users = get_users_with_perms(
+                application.exporter, only_with_perms_in=["is_contact_of_exporter"]
+            )
+    else:
+        raise Exception("Application not supported: {}".format(application))
+
+    return users.filter(is_active=True)

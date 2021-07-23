@@ -1,4 +1,4 @@
-from typing import Optional, Type, Union
+from typing import List, Optional, Type, Union
 
 import django.forms as django_forms
 import weasyprint
@@ -14,7 +14,10 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
+from guardian.shortcuts import get_objects_for_user
 
+from web.domains.importer.models import Importer
+from web.domains.user.models import User
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -179,6 +182,11 @@ def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
     )
 
 
+def _importers_with_agents(user: User) -> List[int]:
+    importers_with_agents = get_objects_for_user(user, ["web.is_agent_of_importer"], Importer)
+    return [importer.pk for importer in importers_with_agents]
+
+
 def _create_application(
     request: AuthenticatedHttpRequest,
     import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
@@ -213,6 +221,8 @@ def _create_application(
             application = model_class()
             application.importer = form.cleaned_data["importer"]
             application.importer_office = form.cleaned_data["importer_office"]
+            application.agent = form.cleaned_data["agent"]
+            application.agent_office = form.cleaned_data["agent_office"]
             application.process_type = model_class.PROCESS_TYPE
             application.created_by = request.user
             application.last_updated_by = request.user
@@ -245,6 +255,7 @@ def _create_application(
         "show_opt": show_opt,
         "show_textiles": show_textiles,
         "show_sps": show_sps,
+        "importers_with_agents": _importers_with_agents(request.user),
     }
 
     return render(request, "web/domains/case/import/create.html", context)

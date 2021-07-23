@@ -43,23 +43,63 @@ class CreateImportApplicationForm(forms.Form):
         ),
     )
 
+    agent = forms.ModelChoiceField(
+        required=False,
+        queryset=Importer.objects.none(),
+        label="Agent of Main Importer",
+        widget=ModelSelect2Widget(
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": "-- Select Agent",
+            },
+            search_fields=("main_importer__in", "importer"),
+            # Key is a name of a field in a form.
+            # Value is a name of a field in a model (used in `queryset`).
+            dependent_fields={"importer": "main_importer"},
+        ),
+    )
+    agent_office = forms.ModelChoiceField(
+        required=False,
+        queryset=Office.objects.none(),
+        label="Agent Office",
+        widget=ModelSelect2Widget(
+            attrs={
+                "data-minimum-input-length": 0,
+                "data-placeholder": "-- Select Office",
+            },
+            search_fields=("postcode__icontains", "address__icontains"),
+            # Key is a name of a field in a form.
+            # Value is a name of a field in a model (used in `queryset`).
+            dependent_fields={"agent": "importer"},
+        ),
+    )
+
     def __init__(self, *args: Any, user: models.User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-862 display active agents
-
         self.user = user
+
         active_importers = Importer.objects.filter(is_active=True, main_importer__isnull=True)
         importers = get_objects_for_user(
             user,
             ["web.is_contact_of_importer", "web.is_agent_of_importer"],
             active_importers,
             any_perm=True,
-            with_superuser=True,
         )
         self.fields["importer"].queryset = importers
         self.fields["importer_office"].queryset = Office.objects.filter(
             is_active=True, importer__in=importers
+        )
+
+        active_agents = Importer.objects.filter(is_active=True, main_importer__in=importers)
+        agents = get_objects_for_user(
+            user,
+            ["web.is_contact_of_importer"],
+            active_agents,
+        )
+        self.fields["agent"].queryset = agents
+        self.fields["agent_office"].queryset = Office.objects.filter(
+            is_active=True, importer__in=agents
         )
 
 

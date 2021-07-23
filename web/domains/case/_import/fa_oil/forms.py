@@ -1,8 +1,8 @@
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
-from web.domains.user.models import User
 
 from . import models
 
@@ -38,8 +38,7 @@ class PrepareOILForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["know_bought_from"].required = True
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contact"].queryset = User.objects.all()
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
         # The default label for unknown is "Unknown"
         self.fields["know_bought_from"].widget.choices = [

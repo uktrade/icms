@@ -3,8 +3,8 @@ import datetime
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
-from web.domains.user.models import User
 
 from . import models
 from .widgets import TextilesCategoryCommodityGroupWidget, TextilesCommodityWidget
@@ -52,8 +52,7 @@ class EditTextilesForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        self.fields["contact"].queryset = User.objects.all()
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields["goods_cleared"].required = True
         self.fields["goods_cleared"].widget.choices = [

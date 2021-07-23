@@ -1,9 +1,9 @@
 from django import forms
 from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
@@ -44,11 +44,8 @@ class PrepareSILForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # TODO: ICMSLST-425 filter users here correctly (users with access to the importer)
-        users = get_users_with_perms(
-            self.instance.importer, only_with_perms_in=["is_contact_of_importer"]
-        )
-        self.fields["contact"].queryset = users.filter(is_active=True)
+        self.fields["contact"].queryset = application_contacts(self.instance)
+
         self.fields["origin_country"].queryset = Country.objects.filter(
             country_groups__name="Firearms and Ammunition (SIL) COOs"
         )
