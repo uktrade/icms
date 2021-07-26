@@ -288,6 +288,8 @@ class ApplicationBase(WorkbasketBase, Process):
             r.company = self.exporter  # type: ignore[attr-defined]
             case_type = "export"
 
+        r.company_agent = self.agent  # type: ignore[attr-defined]
+
         # common kwargs
         kwargs = {"application_pk": self.pk, "case_type": case_type}
 

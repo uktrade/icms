@@ -402,21 +402,17 @@ def delete_note_document(
 def withdraw_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
-    has_access = _has_importer_exporter_access(request.user, case_type)
-    if not has_access:
-        raise PermissionDenied
-
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
+
+        check_application_permission(application, request.user, case_type)
+
         task = application.get_task(
             [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
         )
-
-        if not application.user_is_contact_of_org(request.user):
-            raise PermissionDenied
 
         if request.POST:
             form = forms.WithdrawForm(request.POST)
@@ -462,21 +458,17 @@ def withdraw_case(
 def archive_withdrawal(
     request: AuthenticatedHttpRequest, *, application_pk: int, withdrawal_pk: int, case_type: str
 ) -> HttpResponse:
-    has_access = _has_importer_exporter_access(request.user, case_type)
-    if not has_access:
-        raise PermissionDenied
-
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
+
+        check_application_permission(application, request.user, case_type)
+
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
         task = application.get_task(model_class.Statuses.WITHDRAWN, "process")
-
-        if not application.user_is_contact_of_org(request.user):
-            raise PermissionDenied
 
         application.status = model_class.Statuses.SUBMITTED
         application.save()
@@ -1202,24 +1194,7 @@ def view_case(
     model_class = _get_class_imp_or_exp_or_access(case_type)
     application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
 
-    if case_type == "access":
-        # TODO: existing code in access/views.py did not check for any
-        # permissions...we probably should
-        pass
-    else:
-        has_imp_or_exp_access = _has_importer_exporter_access(request.user, case_type)
-        has_perm_reference_data = request.user.has_perm("web.reference_data_access")
-
-        if not has_imp_or_exp_access and not has_perm_reference_data:
-            raise PermissionDenied
-
-        # first check is for case managers (who are not marked as contacts of
-        # importers), second is for people submitting applications
-        assert isinstance(application, (ImportApplication, ExportApplication))
-
-        is_contact = application.user_is_contact_of_org(request.user)
-        if not has_perm_reference_data and not is_contact:
-            raise PermissionDenied
+    check_application_permission(application, request.user, case_type)
 
     # Access Requests
     if application.process_type == ImporterAccessRequest.PROCESS_TYPE:

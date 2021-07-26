@@ -1,7 +1,7 @@
 from itertools import chain
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Prefetch, QuerySet
+from django.db.models import Prefetch, Q, QuerySet
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
@@ -67,14 +67,23 @@ def _get_queryset_admin(user: User) -> QuerySet:
 
 
 def _get_queryset_user(user: User) -> QuerySet:
-    # current user's exporters
-    # TODO: check if agent's contacts can do Approval Request
-    exporters = get_objects_for_user(user, ["is_contact_of_exporter"], Exporter)
+    active_exporters = Exporter.objects.filter(is_active=True, main_exporter=None)
+    exporters = get_objects_for_user(user, ["is_contact_of_exporter"], active_exporters)
+    exporters_managed_by_agents = get_objects_for_user(
+        user,
+        ["web.is_agent_of_exporter"],
+        active_exporters,
+    )
 
-    # current user's importers
-    # TODO: check if agent's contacts can do Approval Request
-    importers = get_objects_for_user(user, ["is_contact_of_importer"], Importer)
+    active_importers = Importer.objects.filter(is_active=True, main_importer=None)
+    importers = get_objects_for_user(user, ["is_contact_of_importer"], active_importers)
+    importers_managed_by_agents = get_objects_for_user(
+        user,
+        ["web.is_agent_of_importer"],
+        active_importers,
+    )
 
+    # TODO ICMSLST-873: check if agent's contacts can do Approval Request
     exporter_approval_requests = (
         ExporterApprovalRequest.objects.select_related(
             # get the exporter associated with the approval request
@@ -86,6 +95,7 @@ def _get_queryset_user(user: User) -> QuerySet:
         .filter(access_request__exporteraccessrequest__link__in=exporters)
     )
 
+    # TODO ICMSLST-873: check if agent's contacts can do Approval Request
     importer_approval_requests = (
         ImporterApprovalRequest.objects.select_related(
             # get the importer associated with the approval request
@@ -123,7 +133,15 @@ def _get_queryset_user(user: User) -> QuerySet:
                 ImportApplication.Statuses.UPDATE_REQUESTED,
             ]
         )
-        .filter(importer__in=importers)
+        .filter(
+            # Either applications managed by contacts of importer
+            (
+                Q(importer__in=importers.exclude(pk__in=importers_managed_by_agents))
+                & Q(agent__isnull=True)
+            )
+            # or applications managed by agents
+            | (Q(importer__in=importers_managed_by_agents) & Q(agent__isnull=False))
+        )
     )
 
     # Export Applications
@@ -140,7 +158,15 @@ def _get_queryset_user(user: User) -> QuerySet:
                 ExportApplication.Statuses.UPDATE_REQUESTED,
             ]
         )
-        .filter(exporter__in=exporters)
+        .filter(
+            # Either applications managed by contacts of exporter
+            (
+                Q(exporter__in=exporters.exclude(pk__in=exporters_managed_by_agents))
+                & Q(agent__isnull=True)
+            )
+            # or applications managed by agents
+            | (Q(exporter__in=exporters_managed_by_agents) & Q(agent__isnull=False))
+        )
     )
 
     return chain(

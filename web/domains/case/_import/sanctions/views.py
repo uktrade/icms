@@ -4,7 +4,6 @@ import structlog as logging
 from django import forms
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -313,9 +312,6 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
         check_application_permission(application, request.user, "import")
 
         task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
 
         errors = ApplicationErrors()
 

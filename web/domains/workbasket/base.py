@@ -31,6 +31,9 @@ class WorkbasketRow:
     # importer/exporter/etc name
     company: Optional[str] = None
 
+    # agent name
+    company_agent: Optional[str] = None
+
     # status
     status: Optional[str] = None
 
