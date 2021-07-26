@@ -229,7 +229,7 @@ class CFSSchedule(models.Model):
         choices=ProductEligibility.choices,
         help_text=(
             "If your products are currently for export only, you MUST select"
-            f" {ProductEligibility.MEET_UK_PRODUCT_SAFETY.label}"
+            f" {ProductEligibility.MEET_UK_PRODUCT_SAFETY.label}"  # type: ignore[attr-defined]
         ),
     )
 
@@ -272,9 +272,9 @@ class CFSSchedule(models.Model):
         help_text="Select if applicable",
     )
 
-    # TODO: ICMSLST-876 Add "Manufactured at" section fields
+    # TODO: ICMSLST-586 Add "Manufactured at" section fields
 
-    # TODO: "Products" section fields
+    # TODO: ICMSLST-876 Add "Products" section fields
 
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(

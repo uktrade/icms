@@ -18,7 +18,12 @@ from web.domains.exporter.models import Exporter
 from web.domains.user.models import User
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
-from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
+from web.utils.validation import (
+    ApplicationErrors,
+    FieldError,
+    PageErrors,
+    create_page_errors,
+)
 
 from .forms import (
     CreateExportApplicationForm,
@@ -316,40 +321,73 @@ def cfs_delete_schedule(
 @login_required
 def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl: CertificateOfFreeSaleApplication = get_object_or_404(
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(appl, request.user, "export")
+        check_application_permission(application, request.user, "export")
 
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
-        errors = ApplicationErrors()
-        page_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("export:cfs-edit", kwargs={"application_pk": application_pk}),
-        )
-        create_page_errors(EditCFSForm(data=model_to_dict(appl), instance=appl), page_errors)
-        errors.add(page_errors)
+        errors = _get_cfs_errors(application)
 
         if request.POST:
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                appl.submit_application(request, task)
+                application.submit_application(request, task)
 
-                return appl.redirect_after_submit(request)
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
-            "process": appl,
+            "process": application,
             "task": task,
-            "exporter_name": appl.exporter.name,
+            "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
         }
 
         return render(request, "web/domains/case/export/submit-cfs.html", context)
+
+
+def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> ApplicationErrors:
+    """Get all Certificate of free sale errors before submitting the application."""
+    errors = ApplicationErrors()
+    page_errors = PageErrors(
+        page_name="Application details",
+        url=reverse("export:cfs-edit", kwargs={"application_pk": application.pk}),
+    )
+    create_page_errors(
+        EditCFSForm(data=model_to_dict(application), instance=application), page_errors
+    )
+
+    # Error checks related to schedules.
+    active_schedules = application.schedules.filter(is_active=True).order_by("created_at")
+    if not active_schedules.exists():
+        page_errors.add(
+            FieldError(field_name="Schedule", messages=["At least one schedule must be added"])
+        )
+
+    else:
+        total = active_schedules.count()
+
+        for idx, schedule in enumerate(active_schedules, start=1):
+            schedule_page_errors = PageErrors(
+                page_name=f"Schedule ({idx}/{total})",
+                url=reverse(
+                    "export:cfs-schedule-edit",
+                    kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+                ),
+            )
+            create_page_errors(
+                EditCFScheduleForm(data=model_to_dict(schedule), instance=schedule),
+                schedule_page_errors,
+            )
+            errors.add(schedule_page_errors)
+    errors.add(page_errors)
+
+    return errors
