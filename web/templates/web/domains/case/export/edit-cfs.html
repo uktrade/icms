@@ -23,11 +23,11 @@
   {{ super() }}
 
   <h4>Contact</h4>
-  {{ fields.field(form.contact) }}
   {# TODO: show contact telephone/email; do we need to reload the form on contact change...? #}
+  {{ fields.field(form.contact) }}
 
-  <h4>Application details</h4>
-  <p>TODO</p>
+  <h4>Countries</h4>
+  {{ fields.field(form.countries) }}
 {% endblock %}
 
 {% block task_actions %}
@@ -41,40 +41,43 @@
 {% block subtasks %}
 
   <h4>Schedules</h4>
-  <table class="setoutList">
-    <thead>
-    <tr>
-      <th>Schedules</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for schedule in schedules %}
+  {% if schedules.exists() %}
+    <table class="setoutList">
+      <thead>
       <tr>
-        {# TODO: Replace with a count e.g. Schedule (2/4) #}
-        <td>Schedule ({{ schedule.pk }})</td>
-        <td>
-          <a
-            class="link-button button icon-pencil" data-input_action="edit"
-            href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
-          >Edit</a>
-          <form
-            method="post"
-            action="{{ icms_url('export:cfs-schedule-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
-            class="form-inline">
-            {{ csrf_input }}
-            <button
-              type="submit"
-              class="link-button icon-bin button tooltipstered"
-              aria-label="Delete"
-              data-confirm="Are you sure you want to delete this record?">Delete
-            </button>
-          </form>
-        </td>
+        <th>Schedule</th>
+        <th>Actions</th>
       </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for schedule in schedules %}
+          <tr>
+            <td>Schedule ({{ loop.index }}/{{ loop.length }})</td>
+            <td>
+              <a
+                class="link-button button icon-pencil" data-input_action="edit"
+                href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+              >Edit</a>
+              <form
+                method="post"
+                action="{{ icms_url('export:cfs-schedule-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+                class="form-inline">
+                {{ csrf_input }}
+                <button
+                  type="submit"
+                  class="link-button icon-bin button tooltipstered"
+                  aria-label="Delete"
+                  data-confirm="Are you sure you want to delete this record?">Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="info-box info-box-info">There are no schedule attached.</div>
+  {% endif %}
   <hr>
   <form
     method="post"

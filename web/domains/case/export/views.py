@@ -288,6 +288,7 @@ def cfs_edit_schedule(
             "process": application,
             "task": task,
             "form": form,
+            "page_title": "Edit Schedule",
         }
 
         return render(request, "web/domains/case/export/edit-cfs-schedule.html", context)

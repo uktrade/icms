@@ -1,16 +1,16 @@
-from typing import Any
+from typing import Any, Optional
 
 import structlog as logging
 from django import forms
 from django.utils.safestring import mark_safe
-from django_select2 import forms as s2forms
-from django_select2.forms import ModelSelect2Widget
+from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import application_contacts
 from web.domains.exporter.models import Exporter
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.models.shared import YesNoChoices
 
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -122,10 +122,6 @@ class PrepareCertManufactureForm(forms.ModelForm):
         ]
 
         help_texts = {
-            "countries": """
-                A certificate will be created for each country selected. You may
-                select up to 40 countries. You cannot select the same country
-                twice, you must submit a new application.""",
             "manufacturing_process": "Please provide an outline of the process.",
         }
 
@@ -135,21 +131,20 @@ class PrepareCertManufactureForm(forms.ModelForm):
         }
 
         widgets = {
-            "countries": s2forms.Select2MultipleWidget,
+            "countries": Select2MultipleWidget,
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.fields["contact"].required = True
         self.fields["is_pesticide_on_free_sale_uk"].required = True
         self.fields["is_manufacturer"].required = True
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        self.fields[
-            "countries"
-        ].queryset = self.instance.application_type.country_group.countries.filter(is_active=True)
+        application_countries = self.instance.application_type.country_group.countries.filter(
+            is_active=True
+        )
+        self.fields["countries"].queryset = application_countries
 
     def clean_is_pesticide_on_free_sale_uk(self):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
@@ -199,19 +194,63 @@ class EditCFSForm(forms.ModelForm):
     class Meta:
         model = CertificateOfFreeSaleApplication
 
-        fields = [
+        fields = (
             "contact",
-        ]
+            "countries",
+        )
+
+        widgets = {
+            "countries": Select2MultipleWidget(
+                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Country"},
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.fields["contact"].required = True
-
         self.fields["contact"].queryset = application_contacts(self.instance)
+
+        application_countries = self.instance.application_type.country_group.countries.filter(
+            is_active=True
+        )
+        self.fields["countries"].queryset = application_countries
 
 
 class EditCFScheduleForm(forms.ModelForm):
     class Meta:
         model = CFSSchedule
-        fields = ()
+        fields = (
+            "exporter_status",
+            "brand_name_holder",
+            "legislations",
+            "product_eligibility",
+            "goods_placed_on_uk_market",
+            "goods_export_only",
+            "any_raw_materials",
+            "final_product_end_use",
+            "country_of_manufacture",
+            "schedule_statements",
+        )
+
+        widgets = {
+            "legislations": Select2MultipleWidget(
+                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
+            )
+        }
+
+    def clean(self):
+        cleaned_data: dict[str, Any] = super().clean()
+
+        if not self.is_valid():
+            return cleaned_data
+
+        any_raw_materials: str = cleaned_data["any_raw_materials"]
+        final_product_end_use: Optional[str] = cleaned_data["final_product_end_use"]
+
+        if any_raw_materials == YesNoChoices.yes and not final_product_end_use:
+            self.add_error("final_product_end_use", "You must enter this item")
+
+        # Clear the final_product_end_use data if not needed.
+        elif any_raw_materials == YesNoChoices.no:
+            cleaned_data["final_product_end_use"] = ""
+
+        return cleaned_data

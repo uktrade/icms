@@ -10,13 +10,23 @@
 {% endblock %}
 
 {% block form_content %}
-  <p>TODO Add main schedule application fields</p>
-  {% for field in form %}
-    {{fields.field(field)}}
-  {% endfor %}
+  {{ fields.field(form.exporter_status) }}
+  {{ fields.field(form.brand_name_holder) }}
+  {{ fields.field(form.legislations) }}
+  {{ fields.field(form.product_eligibility) }}
+  {{ fields.field(form.goods_placed_on_uk_market) }}
+  {{ fields.field(form.goods_export_only) }}
+  {{ fields.field(form.any_raw_materials) }}
+
+  <div id="final-product-end-use-wrapper">
+    {{ fields.field(form.final_product_end_use) }}
+  </div>
+
+  {{ fields.field(form.country_of_manufacture) }}
+  {{ fields.field(form.schedule_statements, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
 
   <h4>Manufactured At</h4>
-  <p>TODO: Add fields</p>
+  <p>TODO: ICMSLST-876 Add fields</p>
 
   <h4>Products</h4>
   <p>TODO: Add fields</p>
@@ -25,7 +35,7 @@
 
 {% block task_actions %}
   <li>
-    <button type="submit" role="action-button" name="close_request" class="primary-button button">
+    <button type="submit" role="action-button" name="edit_schedule" class="primary-button button">
       Save
     </button>
   </li>
@@ -33,4 +43,5 @@
 
 {% block page_js %}
   {{ form.media.js }}
+  <script src="{{ static('web/js/pages/cfs-schedule-edit.js') }}" type="text/javascript"></script>
 {% endblock %}

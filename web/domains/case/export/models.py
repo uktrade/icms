@@ -9,8 +9,10 @@ from web.domains.case.models import (
 )
 from web.domains.country.models import Country, CountryGroup
 from web.domains.exporter.models import Exporter
+from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.models.shared import YesNoChoices
 
 
 class ExportApplicationType(models.Model):
@@ -105,12 +107,22 @@ class ExportApplication(ApplicationBase):
     contact = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="contact_export_applications",
+        help_text=(
+            "Select the main point of contact for the case. This will usually"
+            " be the person who created the application."
+        ),
     )
 
-    countries = models.ManyToManyField(Country)
+    countries = models.ManyToManyField(
+        Country,
+        help_text=(
+            "A certificate will be created for each country selected. You may"
+            " select up to 40 countries. You cannot select the same country"
+            " twice, you must submit a new application."
+        ),
+    )
 
     agent = models.ForeignKey(
         Exporter,
@@ -170,12 +182,99 @@ class CertificateOfManufactureApplication(ExportApplication):
 class CertificateOfFreeSaleApplication(ExportApplication):
     PROCESS_TYPE = ExportApplicationType.ProcessTypes.CFS
 
-    # TODO: add other fields
     schedules = models.ManyToManyField("CFSSchedule")
 
 
 class CFSSchedule(models.Model):
-    # TODO: Add fields
+    class ExporterStatus(models.TextChoices):
+        IS_MANUFACTURER = ("MANUFACTURER", "I am the manufacturer")
+        IS_NOT_MANUFACTURER = ("NOT_MANUFACTURER", "I am not the manufacturer")
+
+    class ProductEligibility(models.TextChoices):
+        SOLD_ON_UK_MARKET = (
+            "SOLD_ON_UK_MARKET",
+            "The products are currently sold on the UK market",
+        )
+        MEET_UK_PRODUCT_SAFETY = (
+            "MEET_UK_PRODUCT_SAFETY",
+            "The products meet the product safety requirements to be sold on the UK market",
+        )
+
+    exporter_status = models.CharField(
+        null=True, verbose_name="Exporter Status", choices=ExporterStatus.choices, max_length=16
+    )
+
+    brand_name_holder = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name="Are you the Brand name holder?",
+    )
+
+    legislations = models.ManyToManyField(
+        ProductLegislation,
+        verbose_name="Legislation",
+        help_text=(
+            "Enter legislation relevant to the products on this schedule. A"
+            " maximum of 3 pieces of legislation may be added per schedule. If"
+            " you cannot find relevant legislation, please contact DIT,"
+            " enquiries.ilb@trade.gsi.gov.uk, to request to have it added."
+        ),
+    )
+
+    product_eligibility = models.CharField(
+        null=True,
+        verbose_name="Exporter Status",
+        max_length=22,
+        choices=ProductEligibility.choices,
+        help_text=(
+            "If your products are currently for export only, you MUST select"
+            f" {ProductEligibility.MEET_UK_PRODUCT_SAFETY.label}"
+        ),
+    )
+
+    goods_placed_on_uk_market = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name="Have you placed the goods on the UK market or intend to place on UK market in future?",
+    )
+
+    goods_export_only = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name="Are these goods for export only and will never be placed by you on the UK market?",
+    )
+
+    any_raw_materials = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        verbose_name="Are any of the products raw materials?",
+        help_text="Only choose 'Yes' if the product is a material used in the manufacture of a finished product.",
+    )
+
+    final_product_end_use = models.CharField(null=True, blank=True, max_length=4000)
+
+    country_of_manufacture = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Country Of Manufacture",
+        help_text="You can only list one country. Add another schedule if product information differs.",
+    )
+
+    schedule_statements = models.BooleanField(
+        default=False,
+        verbose_name="Schedule Statements",
+        help_text="Select if applicable",
+    )
+
+    # TODO: ICMSLST-876 Add "Manufactured at" section fields
+
+    # TODO: "Products" section fields
 
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(
