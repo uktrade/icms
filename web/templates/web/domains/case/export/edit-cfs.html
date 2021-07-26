@@ -30,11 +30,61 @@
   <p>TODO</p>
 {% endblock %}
 
-
 {% block task_actions %}
   <li>
-    <button type="submit" role="action-button" name="close_request"class="primary-button button">
+    <button type="submit" role="action-button" name="close_request" class="primary-button button">
       Save
     </button>
   </li>
+{% endblock %}
+
+{% block subtasks %}
+
+  <h4>Schedules</h4>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Schedules</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for schedule in schedules %}
+      <tr>
+        {# TODO: Replace with a count e.g. Schedule (2/4) #}
+        <td>Schedule ({{ schedule.pk }})</td>
+        <td>
+          <a
+            class="link-button button icon-pencil" data-input_action="edit"
+            href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+          >Edit</a>
+          <form
+            method="post"
+            action="{{ icms_url('export:cfs-schedule-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+            class="form-inline">
+            {{ csrf_input }}
+            <button
+              type="submit"
+              class="link-button icon-bin button tooltipstered"
+              aria-label="Delete"
+              data-confirm="Are you sure you want to delete this record?">Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <hr>
+  <form
+    method="post"
+    action="{{ icms_url('export:cfs-schedule-add', kwargs={'application_pk': process.pk}) }}"
+    class="form-inline">
+    {{ csrf_input }}
+    <button
+      type="submit"
+      class="button small-button icon-plus"
+      >Add Schedule
+    </button>
+  </form>
 {% endblock %}

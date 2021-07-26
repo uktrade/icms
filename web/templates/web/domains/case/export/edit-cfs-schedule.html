@@ -1,0 +1,36 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+  {% include "partial/case/export/cfs/sidebar.html" %}
+{% endblock %}
+
+{% block css %}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block form_content %}
+  <p>TODO Add main schedule application fields</p>
+  {% for field in form %}
+    {{fields.field(field)}}
+  {% endfor %}
+
+  <h4>Manufactured At</h4>
+  <p>TODO: Add fields</p>
+
+  <h4>Products</h4>
+  <p>TODO: Add fields</p>
+{% endblock %}
+
+
+{% block task_actions %}
+  <li>
+    <button type="submit" role="action-button" name="close_request" class="primary-button button">
+      Save
+    </button>
+  </li>
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+{% endblock %}

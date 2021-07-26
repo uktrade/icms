@@ -15,6 +15,7 @@ from web.domains.user.models import User
 from .models import (
     CertificateOfFreeSaleApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
 )
 
 logger = logging.get_logger(__name__)
@@ -208,3 +209,9 @@ class EditCFSForm(forms.ModelForm):
         self.fields["contact"].required = True
 
         self.fields["contact"].queryset = application_contacts(self.instance)
+
+
+class EditCFScheduleForm(forms.ModelForm):
+    class Meta:
+        model = CFSSchedule
+        fields = ()

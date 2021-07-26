@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
@@ -19,10 +20,16 @@ from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
-from .forms import CreateExportApplicationForm, EditCFSForm, PrepareCertManufactureForm
+from .forms import (
+    CreateExportApplicationForm,
+    EditCFScheduleForm,
+    EditCFSForm,
+    PrepareCertManufactureForm,
+)
 from .models import (
     CertificateOfFreeSaleApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
     ExportApplication,
     ExportApplicationType,
 )
@@ -120,16 +127,14 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
 @login_required
 def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl: CertificateOfManufactureApplication = get_object_or_404(
+        application: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(appl, request.user, "export")
-
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
-            form = PrepareCertManufactureForm(data=request.POST, instance=appl)
+            form = PrepareCertManufactureForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -139,11 +144,13 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = PrepareCertManufactureForm(instance=appl, initial={"contact": request.user})
+            form = PrepareCertManufactureForm(
+                instance=application, initial={"contact": request.user}
+            )
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
-            "process": appl,
+            "process": application,
             "task": task,
             "form": form,
         }
@@ -154,13 +161,11 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 @login_required
 def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl: CertificateOfManufactureApplication = get_object_or_404(
+        application: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(appl, request.user, "export")
-
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         errors = ApplicationErrors()
         page_errors = PageErrors(
@@ -168,7 +173,8 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             url=reverse("export:com-edit", kwargs={"application_pk": application_pk}),
         )
         create_page_errors(
-            PrepareCertManufactureForm(data=model_to_dict(appl), instance=appl), page_errors
+            PrepareCertManufactureForm(data=model_to_dict(application), instance=application),
+            page_errors,
         )
         errors.add(page_errors)
 
@@ -176,18 +182,18 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                appl.submit_application(request, task)
+                application.submit_application(request, task)
 
-                return appl.redirect_after_submit(request)
+                return application.redirect_after_submit(request)
 
         else:
             form = SubmitForm()
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
-            "process": appl,
+            "process": application,
             "task": task,
-            "exporter_name": appl.exporter.name,
+            "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
         }
@@ -198,16 +204,14 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 @login_required
 def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        appl: CertificateOfFreeSaleApplication = get_object_or_404(
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(appl, request.user, "export")
-
-        task = appl.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
 
         if request.POST:
-            form = EditCFSForm(data=request.POST, instance=appl)
+            form = EditCFSForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
@@ -217,16 +221,95 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditCFSForm(instance=appl, initial={"contact": request.user})
+            form = EditCFSForm(instance=application, initial={"contact": request.user})
+
+        schedules = application.schedules.filter(is_active=True).order_by("created_at")
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "schedules": schedules,
+        }
+
+        return render(request, "web/domains/case/export/edit-cfs.html", context)
+
+
+@login_required
+@require_POST
+def cfs_add_schedule(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        new_schedule = application.schedules.create(created_by=request.user)
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": application_pk, "schedule_pk": new_schedule.pk},
+            )
+        )
+
+
+@login_required
+def cfs_edit_schedule(
+    request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        if request.POST:
+            form = EditCFScheduleForm(data=request.POST, instance=schedule)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse("export:cfs-edit", kwargs={"application_pk": application_pk})
+                )
+
+        else:
+            form = EditCFScheduleForm(instance=schedule)
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
-            "process": appl,
+            "process": application,
             "task": task,
             "form": form,
         }
 
-        return render(request, "web/domains/case/export/edit-cfs.html", context)
+        return render(request, "web/domains/case/export/edit-cfs-schedule.html", context)
+
+
+@require_POST
+@login_required
+def cfs_delete_schedule(
+    request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule = application.schedules.get(pk=schedule_pk)
+        schedule.is_active = False
+        schedule.save()
+
+        return redirect(reverse("export:cfs-edit", kwargs={"application_pk": application_pk}))
 
 
 @login_required

@@ -171,3 +171,19 @@ class CertificateOfFreeSaleApplication(ExportApplication):
     PROCESS_TYPE = ExportApplicationType.ProcessTypes.CFS
 
     # TODO: add other fields
+    schedules = models.ManyToManyField("CFSSchedule")
+
+
+class CFSSchedule(models.Model):
+    # TODO: Add fields
+
+    is_active = models.BooleanField(default=True)
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name="+",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
