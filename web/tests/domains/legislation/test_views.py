@@ -31,14 +31,10 @@ class ProductLegislationListViewTest(AuthTestCase):
         self.assertEqual(response.context_data["page_title"], "Maintain Product Legislation")
 
     def test_number_of_results(self):
-        # Create 51 product legislation as paging lists 50 items per page
-        for i in range(13):
-            ProductLegislationFactory()
-
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         results = response.context_data["results"]
-        self.assertEqual(results.count(), 13)
+        self.assertEqual(results.count(), 35)
 
 
 class ProductLegislationCreateViewTest(AuthTestCase):

@@ -10,6 +10,8 @@ from .factory import ProductLegislationFactory
 
 class ProductLegislationFilterTest(TestCase):
     def setUp(self):
+        """Supplementary data to data already added in migrations"""
+
         ProductLegislationFactory(
             name="Test Legislation",
             is_biocidal=True,
@@ -48,9 +50,7 @@ class ProductLegislationFilterTest(TestCase):
 
     def test_biocidal_filter(self):
         results = self.run_filter({"is_biocidal": False})
-        self.assertEqual(results.count(), 1)
-        first = results.first()
-        self.assertEqual(first.name, "Comprehensive legislation")
+        self.assertEqual(results.count(), 35)
 
     def test_biocidal_claim_filter(self):
         results = self.run_filter({"is_biocidal_claim": True})
@@ -60,11 +60,11 @@ class ProductLegislationFilterTest(TestCase):
 
     def test_is_cosmetics_regulation_filter(self):
         results = self.run_filter({"is_eu_cosmetics_regulation": True})
-        self.assertEqual(results.count(), 2)
+        self.assertEqual(results.count(), 3)
 
     def test_status_filter(self):
         results = self.run_filter({"status": True})
-        self.assertEqual(results.count(), 1)
+        self.assertEqual(results.count(), 28)
 
     def test_filter_order(self):
         results = self.run_filter({"name": "legislation"})
