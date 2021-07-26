@@ -1,8 +1,19 @@
 <h4>Export Case</h4>
 <ul class="menu-out">
   <li>
-    <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">Case {{ process.pk }}</a>
+    <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+      Case {{ process.get_reference() }}
+    </a>
   </li>
+  {# TODO ICMSLST-797: Manage HSE Emails #}
+  {% if process.process_type == "CertificateOfFreeSaleApplication" %}
+    <li>
+      <a
+        href="#">
+        HSE Emails
+      </a>
+    </li>
+  {% endif %}
   <li>
     {% with total = process.withdrawals.count(),
             processed = process.withdrawals.exclude(status="open").count() %}
@@ -41,5 +52,14 @@
   </li>
   <li>
     <a href="{{ icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">Authorisation</a>
+  </li>
+</ul>
+
+<h4>Application</h4>
+<ul class="menu-out">
+  <li>
+    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+      View Application
+    </a>
   </li>
 </ul>

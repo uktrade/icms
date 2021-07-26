@@ -4,7 +4,7 @@
     <a
       class="current-page"
       href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-      {{ process.reference or process.pk }}
+      {{ process.get_reference() }}
     </a>
   </li>
 

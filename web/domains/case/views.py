@@ -27,6 +27,7 @@ from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.textiles.forms import TextilesChecklistForm
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
+from web.domains.case.export.models import CertificateOfFreeSaleApplication
 from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -1592,6 +1593,7 @@ def prepare_response(
             "endorsements_flag": endorsements_flag,
         }
 
+    # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _prepare_fa_oil_response(
             request, application.openindividuallicenceapplication, context  # type: ignore[union-attr]
@@ -1625,7 +1627,12 @@ def prepare_response(
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
         return _prepare_sps_response(request, application.priorsurveillanceapplication, context)  # type: ignore[union-attr]
 
-    # TODO: implement other types (export-COM)
+    # Certificate applications
+    elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
+        return _prepare_com_response(request, application.certificateofmanufactureapplication, context)  # type: ignore[union-attr]
+
+    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
+        return _prepare_cfs_response(request, application.certificateoffreesaleapplication, context)  # type: ignore[union-attr]
     else:
         raise NotImplementedError("Export applications haven't been configured yet")
 
@@ -1778,6 +1785,38 @@ def _prepare_sps_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-sps-response.html",
+        context=context,
+    )
+
+
+def _prepare_com_response(
+    request: AuthenticatedHttpRequest,
+    application: CertificateOfManufactureApplication,
+    context: dict[str, Any],
+) -> HttpResponse:
+    context.update(
+        {"process": application, "countries": application.countries.filter(is_active=True)}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/export/manage/prepare-com-response.html",
+        context=context,
+    )
+
+
+def _prepare_cfs_response(
+    request: AuthenticatedHttpRequest,
+    application: CertificateOfFreeSaleApplication,
+    context: dict[str, Any],
+) -> HttpResponse:
+    context.update(
+        {"process": application, "countries": application.countries.filter(is_active=True)}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/export/manage/prepare-cfs-response.html",
         context=context,
     )
 
