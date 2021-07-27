@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -13,22 +13,51 @@ urlpatterns = [
         views.create_export_application,
         name="create-application",
     ),
-    # Certificate of manufacture
-    path("com/<int:application_pk>/edit/", views.edit_com, name="com-edit"),
-    path("com/<int:application_pk>/submit/", views.submit_com, name="com-submit"),
-    # Certificate of free sale
-    # TODO: Refactor / group urls
-    path("cfs/<int:application_pk>/edit/", views.edit_cfs, name="cfs-edit"),
-    path("cfs/<int:application_pk>/schedule/add", views.cfs_add_schedule, name="cfs-schedule-add"),
+    # Export application groups
     path(
-        "cfs/<int:application_pk>/schedule/<int:schedule_pk>/edit",
-        views.cfs_edit_schedule,
-        name="cfs-schedule-edit",
+        "com/<int:application_pk>/",
+        include(
+            [
+                path("edit/", views.edit_com, name="com-edit"),
+                path("submit/", views.submit_com, name="com-submit"),
+            ]
+        ),
     ),
     path(
-        "cfs/<int:application_pk>/schedule/<int:schedule_pk>/delete",
-        views.cfs_delete_schedule,
-        name="cfs-schedule-delete",
+        "cfs/<int:application_pk>/",
+        include(
+            [
+                path("edit/", views.edit_cfs, name="cfs-edit"),
+                path("schedule/add", views.cfs_add_schedule, name="cfs-schedule-add"),
+                path(
+                    "schedule/<int:schedule_pk>/",
+                    include(
+                        [
+                            path(
+                                "edit/",
+                                views.cfs_edit_schedule,
+                                name="cfs-schedule-edit",
+                            ),
+                            path(
+                                "delete/",
+                                views.cfs_delete_schedule,
+                                name="cfs-schedule-delete",
+                            ),
+                            path(
+                                "set-manufacturer-address/",
+                                views.cfs_set_manufacturer_address,
+                                name="cfs-schedule-set-manufacturer-address",
+                            ),
+                            path(
+                                "manufacturer-address/delete",
+                                views.cfs_delete_manufacturer_address,
+                                name="cfs-schedule-manufacturer-address-delete",
+                            ),
+                        ]
+                    ),
+                ),
+                path("submit/", views.submit_cfs, name="cfs-submit"),
+            ]
+        ),
     ),
-    path("cfs/<int:application_pk>/submit/", views.submit_cfs, name="cfs-submit"),
 ]

@@ -26,6 +26,7 @@ from web.utils.validation import (
 )
 
 from .forms import (
+    CFSManufacturerAddressForm,
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
@@ -294,6 +295,7 @@ def cfs_edit_schedule(
             "task": task,
             "form": form,
             "page_title": "Edit Schedule",
+            "schedule": schedule,
         }
 
         return render(request, "web/domains/case/export/edit-cfs-schedule.html", context)
@@ -316,6 +318,78 @@ def cfs_delete_schedule(
         schedule.save()
 
         return redirect(reverse("export:cfs-edit", kwargs={"application_pk": application_pk}))
+
+
+@login_required
+def cfs_set_manufacturer_address(
+    request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        if request.POST:
+            form = CFSManufacturerAddressForm(data=request.POST, instance=schedule)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                    )
+                )
+
+        else:
+            form = CFSManufacturerAddressForm(instance=schedule)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Edit Schedule",
+        }
+
+        return render(request, "web/domains/case/export/cfs-manufacturer-address.html", context)
+
+
+@require_POST
+@login_required
+def cfs_delete_manufacturer_address(
+    request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        schedule.manufacturer_name = None
+        schedule.manufacturer_address_entry_type = None
+        schedule.manufacturer_postcode = None
+        schedule.manufacturer_address = None
+        schedule.save()
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+            )
+        )
 
 
 @login_required

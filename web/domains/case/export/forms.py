@@ -243,6 +243,7 @@ class EditCFScheduleForm(forms.ModelForm):
         if not self.is_valid():
             return cleaned_data
 
+        # Check any raw materials field
         any_raw_materials: str = cleaned_data["any_raw_materials"]
         final_product_end_use: Optional[str] = cleaned_data["final_product_end_use"]
 
@@ -253,4 +254,24 @@ class EditCFScheduleForm(forms.ModelForm):
         elif any_raw_materials == YesNoChoices.no:
             cleaned_data["final_product_end_use"] = ""
 
+        # Check goods field
+        goods_placed_on_uk_market: str = cleaned_data["goods_placed_on_uk_market"]
+        goods_export_only: str = cleaned_data["goods_export_only"]
+
+        if goods_placed_on_uk_market == YesNoChoices.yes and goods_export_only == YesNoChoices.yes:
+            self.add_error("goods_placed_on_uk_market", "Both of these fields cannot be yes")
+            self.add_error("goods_export_only", "Both of these fields cannot be yes")
+
         return cleaned_data
+
+
+class CFSManufacturerAddressForm(forms.ModelForm):
+    class Meta:
+        model = CFSSchedule
+        fields = (
+            "manufacturer_name",
+            "manufacturer_address_entry_type",
+            "manufacturer_postcode",
+            "manufacturer_address",
+        )
+        widgets = {"manufacturer_address": forms.Textarea}

@@ -1,5 +1,6 @@
 {% extends "flow/task-base.html" %}
 {% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_section, application_field %}
 
 {% block sidebar %}
   {% include "partial/case/export/cfs/sidebar.html" %}
@@ -24,12 +25,6 @@
 
   {{ fields.field(form.country_of_manufacture) }}
   {{ fields.field(form.schedule_statements, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
-
-  <h4>Manufactured At</h4>
-  <p>TODO: ICMSLST-586 Add fields</p>
-
-  <h4>Products</h4>
-  <p>TODO: ICMSLST-876 Add fields</p>
 {% endblock %}
 
 
@@ -39,6 +34,45 @@
       Save
     </button>
   </li>
+{% endblock %}
+
+{% block subtasks %}
+  <h4>Manufactured At</h4>
+  <div class="info-box info-box-info">
+    If you have chosen the 'Exporter Status' 'I am the manufacturer' then you should not complete this information
+    unless you wish to include details of your contract manufacturer. Applicants who have chosen
+    'I am not the manufacturer' may enter details of the manufacturer in this section.
+  </div>
+
+  {% if not schedule.manufacturer_name %}
+    <p>Optionally include manufacturer information on the issued certificate schedule</p>
+    <a class="button small-button icon-plus"
+       href="{{ icms_url('export:cfs-schedule-set-manufacturer-address', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Add
+      Manufacturer</a>
+  {% else %}
+    {% call application_section("Manufacturer Address") %}
+      {{ application_field(schedule.manufacturer_name, "Name") }}
+      {{ application_field(schedule.manufacturer_postcode, "Postcode") }}
+      {{ application_field(schedule.manufacturer_address or "" |nl2br, "Address") }}
+    {% endcall %}
+    <a class="button small-button icon-pencil"
+       href="{{ icms_url('export:cfs-schedule-set-manufacturer-address', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Edit
+      Manufacturer</a>
+    <form
+      method="post"
+      action="{{ icms_url('export:cfs-schedule-manufacturer-address-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button icon-bin"
+      >Remove Manufacturer
+      </button>
+    </form>
+  {% endif %}
+
+  <h4>Products</h4>
+  <p>TODO: ICMSLST-876 Add fields</p>
 {% endblock %}
 
 {% block page_js %}

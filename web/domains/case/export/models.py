@@ -200,6 +200,10 @@ class CFSSchedule(models.Model):
             "The products meet the product safety requirements to be sold on the UK market",
         )
 
+    class AddressEntryType(models.TextChoices):
+        MANUAL = ("M", "Manual")
+        SEARCH = ("S", "Search")
+
     exporter_status = models.CharField(
         null=True, verbose_name="Exporter Status", choices=ExporterStatus.choices, max_length=16
     )
@@ -272,8 +276,22 @@ class CFSSchedule(models.Model):
         help_text="Select if applicable",
     )
 
-    # TODO: ICMSLST-586 Add "Manufactured at" section fields
+    # "Manufactured at" section fields
+    manufacturer_name = models.CharField(max_length=200, verbose_name="Name", null=True)
 
+    manufacturer_address_entry_type = models.CharField(
+        max_length=10, choices=AddressEntryType.choices, verbose_name="Address Type", null=True
+    )
+
+    manufacturer_postcode = models.CharField(
+        max_length=30, verbose_name="Postcode", null=True, blank=True
+    )
+
+    manufacturer_address = models.CharField(
+        max_length=4000, verbose_name="Address", null=True, blank=True
+    )
+
+    # "Products" section fields
     # TODO: ICMSLST-876 Add "Products" section fields
 
     is_active = models.BooleanField(default=True)
