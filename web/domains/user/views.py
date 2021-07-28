@@ -6,10 +6,10 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from web.auth.decorators import require_registered
-from web.errors import ICMSException, UnknownError
+from web.errors import APIError
 from web.forms import utils
 from web.types import AuthenticatedHttpRequest
-from web.utils.postcode import api_postcode_lookup
+from web.utils.postcode import api_postcode_to_address_lookup
 from web.views import ModelFilterView
 
 from . import actions
@@ -130,15 +130,16 @@ def _address_search(request: AuthenticatedHttpRequest, action: str) -> HttpRespo
     addresses = []
     if postcode_form.is_valid():
         try:
-            addresses = api_postcode_lookup(postcode_form.cleaned_data.get("post_code"))
-        except UnknownError:
-            messages.warning(
-                request,
-                "The postcode search system is currently unavailable,\
-                please enter the address manually.",
-            )
-        except ICMSException:
-            postcode_form.add_error("post_code", "Please enter a valid postcode")
+            addresses = api_postcode_to_address_lookup(postcode_form.cleaned_data.get("post_code"))
+
+        except APIError as e:
+            messages.warning(request, e.error_msg)
+
+        except Exception as e:
+            messages.warning(request, "Unable to lookup postcode")
+            # TODO: ICMSLST-888
+            # If an APIError or an unknown error is thrown we need to message sentry
+            print(e)
 
     return render(
         request,

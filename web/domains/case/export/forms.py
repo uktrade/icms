@@ -265,7 +265,7 @@ class EditCFScheduleForm(forms.ModelForm):
         return cleaned_data
 
 
-class CFSManufacturerAddressForm(forms.ModelForm):
+class CFSManufacturerDetailsForm(forms.ModelForm):
     class Meta:
         model = CFSSchedule
         fields = (
@@ -275,3 +275,10 @@ class CFSManufacturerAddressForm(forms.ModelForm):
             "manufacturer_address",
         )
         widgets = {"manufacturer_address": forms.Textarea}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.pk:
+            if self.instance.manufacturer_address_entry_type == CFSSchedule.AddressEntryType.SEARCH:
+                self.fields["manufacturer_address"].widget.attrs["readonly"] = True

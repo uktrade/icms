@@ -44,14 +44,14 @@ urlpatterns = [
                                 name="cfs-schedule-delete",
                             ),
                             path(
-                                "set-manufacturer-address/",
-                                views.cfs_set_manufacturer_address,
-                                name="cfs-schedule-set-manufacturer-address",
+                                "set-manufacturer/",
+                                views.cfs_set_manufacturer,
+                                name="cfs-schedule-set-manufacturer",
                             ),
                             path(
                                 "manufacturer-address/delete",
-                                views.cfs_delete_manufacturer_address,
-                                name="cfs-schedule-manufacturer-address-delete",
+                                views.cfs_delete_manufacturer,
+                                name="cfs-schedule-delete-manufacturer",
                             ),
                         ]
                     ),

@@ -1,36 +1,43 @@
 from typing import Any
 
 import requests
-import structlog as logging
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 
-from web.errors import ICMSException, UnknownError
-
-logger = logging.getLogger(__name__)
+from web.errors import APIError
 
 
-def api_postcode_lookup(post_code: str) -> list[dict[str, Any]]:
-    post_code = post_code.replace(" ", "")
-    URL = "https://api.getaddress.io/find/{}?expand=true".format(post_code)
-    logger.debug("Searching for postcode: %s", post_code)
-    response = requests.get(URL.format(post_code), auth=("api-key", settings.ADDRESS_API_KEY))
+def api_postcode_to_address_lookup(post_code: str) -> list[dict[str, Any]]:
+    """Return addresses related to the postcode.
+
+    Documentation: https://documentation.getaddress.io/
+    """
+    api_url = f"https://api.getAddress.io/find/{post_code}"
+
+    payload = {"api-key": settings.ADDRESS_API_KEY, "expand": True, "sort": True}
+    response = requests.get(api_url, params=payload)
 
     if response.status_code == 200:
-        address = response.json()["addresses"]
-        return address
+        content = response.json()
 
-    error_message = response.json()["Message"]
+        return content["addresses"]
 
-    logger.debug("Postcode seach error: %s", error_message)
-    logger.debug(response)
+    default_user_error = "Unable to lookup postcode"
 
-    # Errors
-    if response.status_code == 404:
-        return []
-    elif response.status_code == 400:
-        raise ICMSException(error_message)
-    elif response.status_code == 401:
-        raise ImproperlyConfigured("Invalid api key")
+    # The documented error codes from getaddress.io
+    known_error_codes = {
+        400: "The postcode is invalid",  # Your postcode is not valid.
+        401: default_user_error,  # Your api-key is not valid.
+        403: default_user_error,  # Your api-key is valid but you do not have permission to access to the resource.
+        429: default_user_error,  # You have made more requests than your allowed limit.
+        404: "Unable to find addresses for this postcode",  # No addresses could be found for this postcode.
+        500: default_user_error,  # Server error, you should never see this.
+    }
 
-    raise UnknownError(error_message)
+    content = response.json()
+    error_msg = known_error_codes.get(response.status_code, default_user_error)
+    dev_error = content["Message"]
+
+    raise APIError(
+        error_msg=error_msg,
+        dev_error_msg=f"status_code: {response.status_code}: error: {dev_error}",
+    )

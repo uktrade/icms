@@ -280,7 +280,10 @@ class CFSSchedule(models.Model):
     manufacturer_name = models.CharField(max_length=200, verbose_name="Name", null=True)
 
     manufacturer_address_entry_type = models.CharField(
-        max_length=10, choices=AddressEntryType.choices, verbose_name="Address Type", null=True
+        max_length=10,
+        choices=AddressEntryType.choices,
+        verbose_name="Address Type",
+        default=AddressEntryType.MANUAL,
     )
 
     manufacturer_postcode = models.CharField(

@@ -26,7 +26,7 @@ from web.utils.validation import (
 )
 
 from .forms import (
-    CFSManufacturerAddressForm,
+    CFSManufacturerDetailsForm,
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
@@ -321,7 +321,7 @@ def cfs_delete_schedule(
 
 
 @login_required
-def cfs_set_manufacturer_address(
+def cfs_set_manufacturer(
     request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
@@ -336,7 +336,7 @@ def cfs_set_manufacturer_address(
         )
 
         if request.POST:
-            form = CFSManufacturerAddressForm(data=request.POST, instance=schedule)
+            form = CFSManufacturerDetailsForm(data=request.POST, instance=schedule)
 
             if form.is_valid():
                 form.save()
@@ -349,14 +349,14 @@ def cfs_set_manufacturer_address(
                 )
 
         else:
-            form = CFSManufacturerAddressForm(instance=schedule)
+            form = CFSManufacturerDetailsForm(instance=schedule)
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
-            "page_title": "Edit Schedule",
+            "page_title": "Edit Manufacturer",
         }
 
         return render(request, "web/domains/case/export/cfs-manufacturer-address.html", context)
@@ -364,7 +364,7 @@ def cfs_set_manufacturer_address(
 
 @require_POST
 @login_required
-def cfs_delete_manufacturer_address(
+def cfs_delete_manufacturer(
     request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
@@ -379,7 +379,7 @@ def cfs_delete_manufacturer_address(
         )
 
         schedule.manufacturer_name = None
-        schedule.manufacturer_address_entry_type = None
+        schedule.manufacturer_address_entry_type = CFSSchedule.AddressEntryType.MANUAL
         schedule.manufacturer_postcode = None
         schedule.manufacturer_address = None
         schedule.save()

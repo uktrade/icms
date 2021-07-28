@@ -47,20 +47,20 @@
   {% if not schedule.manufacturer_name %}
     <p>Optionally include manufacturer information on the issued certificate schedule</p>
     <a class="button small-button icon-plus"
-       href="{{ icms_url('export:cfs-schedule-set-manufacturer-address', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Add
+       href="{{ icms_url('export:cfs-schedule-set-manufacturer', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Add
       Manufacturer</a>
   {% else %}
     {% call application_section("Manufacturer Address") %}
       {{ application_field(schedule.manufacturer_name, "Name") }}
       {{ application_field(schedule.manufacturer_postcode, "Postcode") }}
-      {{ application_field(schedule.manufacturer_address or "" |nl2br, "Address") }}
+      {{ application_field((schedule.manufacturer_address or "") |nl2br, "Address") }}
     {% endcall %}
     <a class="button small-button icon-pencil"
-       href="{{ icms_url('export:cfs-schedule-set-manufacturer-address', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Edit
+       href="{{ icms_url('export:cfs-schedule-set-manufacturer', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Edit
       Manufacturer</a>
     <form
       method="post"
-      action="{{ icms_url('export:cfs-schedule-manufacturer-address-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+      action="{{ icms_url('export:cfs-schedule-delete-manufacturer', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
       class="form-inline">
       {{ csrf_input }}
       <button
