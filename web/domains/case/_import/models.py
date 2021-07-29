@@ -21,7 +21,7 @@ class ImportApplicationType(models.Model):
     class Types(models.TextChoices):
         DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
         FIREARMS = ("FA", "Firearms and Ammunition")  # has subtypes
-        IS = ("IS", "Iron and Steel (Quota)")
+        IRON_STEEL = ("IS", "Iron and Steel (Quota)")
         OPT = ("OPT", "Outward Processing Trade")
         SANCTION_ADHOC = ("ADHOC", "Sanctions and Adhoc Licence Application")
         SPS = ("SPS", "Prior Surveillance")
@@ -41,7 +41,7 @@ class ImportApplicationType(models.Model):
             "Firearms and Ammunition (Open Individual Import Licence)",
         )
         FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
-        IS = ("ISQuotaApplication", "Iron and Steel (Quota)")
+        IRON_STEEL = ("ISQuotaApplication", "Iron and Steel (Quota)")
         OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
         SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
         SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
@@ -115,7 +115,7 @@ class ImportApplicationType(models.Model):
     def __str__(self):
         mapped_types = {
             self.Types.DEROGATION: self.ProcessTypes.DEROGATIONS,
-            self.Types.IS: self.ProcessTypes.IS,
+            self.Types.IRON_STEEL: self.ProcessTypes.IRON_STEEL,
             self.Types.OPT: self.ProcessTypes.OPT,
             self.Types.SANCTION_ADHOC: self.ProcessTypes.SANCTIONS,
             self.Types.SPS: self.ProcessTypes.SPS,
@@ -315,6 +315,8 @@ class ImportApplication(ApplicationBase):
             return "import:textiles:edit"
         elif self.process_type == ImportApplicationType.ProcessTypes.SPS:
             return "import:sps:edit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.IRON_STEEL:
+            return "import:ironsteel:edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 

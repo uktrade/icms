@@ -19,6 +19,12 @@
         <a href="{{ icms_url('import:create-derogations') }}">Derogation from Sanctions Import Ban</a>
     </li>
 
+    {% if show_ironsteel %}
+    <li>
+      <a href="{{ icms_url('import:create-ironsteel') }}">Iron and Steel (Quota)</a>
+    </li>
+    {% endif %}
+
     {% if show_opt %}
     <li>
       <a href="{{ icms_url('import:create-opt') }}">Outward Processing Trade</a>

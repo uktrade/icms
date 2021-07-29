@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, Union
+from typing import List, Optional, Type
 
 import django.forms as django_forms
 import weasyprint
@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -36,12 +35,30 @@ from .forms import (
     LicenceDateForm,
     OPTLicenceForm,
 )
+from .ironsteel.models import IronSteelApplication
 from .models import ImportApplication, ImportApplicationType
 from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .sps.models import PriorSurveillanceApplication
 from .textiles.models import TextilesApplication
 from .wood.models import WoodQuotaApplication
+
+
+def _get_disabled_application_types() -> dict[str, bool]:
+    return {
+        "show_opt": ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.OPT
+        ).is_active,
+        "show_textiles": ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.TEXTILES
+        ).is_active,
+        "show_sps": ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.SPS
+        ).is_active,
+        "show_ironsteel": ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.IRON_STEEL
+        ).is_active,
+    }
 
 
 class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
@@ -51,15 +68,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     def get_context_data(self):
         context = super().get_context_data()
 
-        show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
-
-        show_textiles = ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.TEXTILES
-        ).is_active
-
-        show_sps = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SPS).is_active
-
-        context.update({"show_opt": show_opt, "show_textiles": show_textiles, "show_sps": show_sps})
+        context.update(**_get_disabled_application_types())
 
         return context
 
@@ -67,78 +76,63 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.DEROGATION
-    model_class = DerogationsApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.DEROGATION,  # type: ignore[arg-type]
+        model_class=DerogationsApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.SANCTION_ADHOC
-    model_class = SanctionsAndAdhocApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.SANCTION_ADHOC,  # type: ignore[arg-type]
+        model_class=SanctionsAndAdhocApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.SubTypes.OIL
-    model_class = OpenIndividualLicenceApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
+        application_subtype=ImportApplicationType.SubTypes.OIL,  # type: ignore[arg-type]
+        model_class=OpenIndividualLicenceApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.SubTypes.DFL
-    model_class = DFLApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
+        application_subtype=ImportApplicationType.SubTypes.DFL,  # type: ignore[arg-type]
+        model_class=DFLApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.SubTypes.SIL
-    model_class = SILApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
+        application_subtype=ImportApplicationType.SubTypes.SIL,  # type: ignore[arg-type]
+        model_class=SILApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.WOOD_QUOTA
-    model_class = WoodQuotaApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
+        model_class=WoodQuotaApplication,
         form_class=CreateWoodQuotaApplicationForm,
     )
 
@@ -146,39 +140,40 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.OPT
-    model_class = OutwardProcessingTradeApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.OPT,  # type: ignore[arg-type]
+        model_class=OutwardProcessingTradeApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.TEXTILES
-    model_class = TextilesApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.TEXTILES,  # type: ignore[arg-type]
+        model_class=TextilesApplication,
     )
 
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
 def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
-    import_application_type = ImportApplicationType.Types.SPS
-    model_class = PriorSurveillanceApplication
-
     return _create_application(
         request,
-        import_application_type,  # type: ignore[arg-type]
-        model_class,
+        application_type=ImportApplicationType.Types.SPS,  # type: ignore[arg-type]
+        model_class=PriorSurveillanceApplication,
+    )
+
+
+@login_required
+@permission_required("web.importer_access", raise_exception=True)
+def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
+    return _create_application(
+        request,
+        application_type=ImportApplicationType.Types.IRON_STEEL,  # type: ignore[arg-type]
+        model_class=IronSteelApplication,
     )
 
 
@@ -189,7 +184,9 @@ def _importers_with_agents(user: User) -> List[int]:
 
 def _create_application(
     request: AuthenticatedHttpRequest,
-    import_application_type: Union[ImportApplicationType.Types, ImportApplicationType.SubTypes],
+    *,
+    application_type: ImportApplicationType.Types,
+    application_subtype: ImportApplicationType.SubTypes = None,
     model_class: Type[ImportApplication],
     form_class: Type[CreateImportApplicationForm] = None,
 ) -> HttpResponse:
@@ -202,14 +199,15 @@ def _create_application(
     :return:
     """
 
-    application_type: ImportApplicationType = ImportApplicationType.objects.get(
-        Q(type=import_application_type) | Q(sub_type=import_application_type)
-    )
+    at: ImportApplicationType
 
-    if not application_type.is_active:
-        raise ValueError(
-            f"Import application of type {application_type.type} ({application_type.sub_type}) is not active"
-        )
+    if application_subtype:
+        at = ImportApplicationType.objects.get(type=application_type, sub_type=application_subtype)
+    else:
+        at = ImportApplicationType.objects.get(type=application_type)
+
+    if not at.is_active:
+        raise ValueError(f"Import application of type {at.type} ({at.sub_type}) is not active")
 
     if form_class is None:
         form_class = CreateImportApplicationForm
@@ -227,8 +225,8 @@ def _create_application(
             application.created_by = request.user
             application.last_updated_by = request.user
             application.submitted_by = request.user
-            application.application_type = application_type
-            application.issue_paper_licence_only = _get_paper_licence_only(application_type)
+            application.application_type = at
+            application.issue_paper_licence_only = _get_paper_licence_only(at)
 
             with transaction.atomic():
                 application.save()
@@ -240,22 +238,12 @@ def _create_application(
     else:
         form = form_class(user=request.user)
 
-    show_opt = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT).is_active
-
-    show_textiles = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.TEXTILES
-    ).is_active
-
-    show_sps = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SPS).is_active
-
     context = {
         "form": form,
-        "import_application_type": application_type,
+        "import_application_type": at,
         "application_title": ImportApplicationType.ProcessTypes(model_class.PROCESS_TYPE).label,
-        "show_opt": show_opt,
-        "show_textiles": show_textiles,
-        "show_sps": show_sps,
         "importers_with_agents": _importers_with_agents(request.user),
+        **_get_disabled_application_types(),
     }
 
     return render(request, "web/domains/case/import/create.html", context)

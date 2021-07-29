@@ -32,6 +32,7 @@ class Command(BaseCommand):
         ImportApplicationType.objects.filter(
             type__in=[
                 ImportApplicationType.Types.DEROGATION,
+                ImportApplicationType.Types.IRON_STEEL,
                 ImportApplicationType.Types.OPT,
                 ImportApplicationType.Types.SPS,
                 ImportApplicationType.Types.TEXTILES,
