@@ -15,7 +15,6 @@ class TextilesApplication(ImportApplication):
 
     goods_cleared = models.BooleanField(
         null=True,
-        blank=False,
         verbose_name="Will the goods be cleared in another Member State of the European Union?",
         help_text="If yes, a paper licence will be issued.",
     )

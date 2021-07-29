@@ -10,7 +10,7 @@ urlpatterns = [
         include(
             [
                 path("edit/", views.edit_ironsteel, name="edit"),
-                # path("submit/", views.submit_ironsteel, name="submit"),
+                path("submit/", views.submit_ironsteel, name="submit"),
             ],
         ),
     )

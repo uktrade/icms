@@ -199,12 +199,12 @@ def _create_application(
     :return:
     """
 
-    at: ImportApplicationType
+    qs = ImportApplicationType.objects.filter(type=application_type)
 
     if application_subtype:
-        at = ImportApplicationType.objects.get(type=application_type, sub_type=application_subtype)
-    else:
-        at = ImportApplicationType.objects.get(type=application_type)
+        qs = qs.filter(sub_type=application_subtype)
+
+    at: ImportApplicationType = qs.get()
 
     if not at.is_active:
         raise ValueError(f"Import application of type {at.type} ({at.sub_type}) is not active")

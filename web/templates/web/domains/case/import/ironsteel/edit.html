@@ -1,0 +1,34 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+
+{% block sidebar %}
+  {% include "partial/case/import/ironsteel/sidebar.html" %}
+{% endblock %}
+
+{% block main_content %}
+  {% block task_details %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    <h4>Contact</h4>
+    {{ fields.field(form.contact) }}
+
+    <h4>Iron and Steel (Quota)</h4>
+    {{ fields.field(form.applicant_reference) }}
+    {{ fields.field(form.goods_cleared) }}
+    {{ fields.field(form.shipping_year) }}
+    {{ fields.field(form.origin_country) }}
+    {{ fields.field(form.consignment_country) }}
+
+    <input type="submit" name="action" class="primary-button button" value="Save"/>
+  {% endcall %}
+
+{% endblock %}
