@@ -71,7 +71,7 @@
 
 
       {% for field in form %}
-        {{ fields.field(field) }}
+        {{ fields.field(field, show_optional_indicator=False) }}
       {% endfor %}
 
       <div class="container">

@@ -1,12 +1,11 @@
-from typing import TYPE_CHECKING, Any, NamedTuple, Type
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
-from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -14,20 +13,10 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case._import.derogations.forms import DerogationsChecklistForm
-from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
-from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
-from web.domains.case._import.fa_sil.forms import SILChecklistForm
-from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.models import ImportApplicationType
-from web.domains.case._import.opt.forms import (
-    FurtherQuestionsBaseOPTForm,
-    OPTChecklistForm,
-)
+from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
-from web.domains.case._import.textiles.forms import TextilesChecklistForm
 from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.case.export.models import CertificateOfFreeSaleApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
@@ -60,19 +49,14 @@ from web.notify import email, notify
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3, get_s3_client
-from web.utils.validation import (
-    ApplicationErrors,
-    FieldError,
-    PageErrors,
-    create_page_errors,
-)
+from web.utils.validation import ApplicationErrors
 
 from . import forms, models
+from .app_checks import get_app_errors
 from .fir import forms as fir_forms
 from .fir.models import FurtherInformationRequest
 from .types import (
     ApplicationsWithCaseEmail,
-    ApplicationsWithChecklist,
     CaseEmailConfig,
     ImpOrExp,
     ImpOrExpOrAccess,
@@ -157,7 +141,10 @@ def list_notes(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         context = {
             "process": application,
             "notes": application.case_notes,
@@ -184,7 +171,10 @@ def add_note(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
 
     return redirect(
@@ -206,7 +196,10 @@ def archive_note(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         application.case_notes.filter(pk=note_pk).update(is_active=False)
 
     return redirect(
@@ -228,7 +221,10 @@ def unarchive_note(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         application.case_notes.filter(pk=note_pk).update(is_active=True)
 
     return redirect(
@@ -249,7 +245,9 @@ def edit_note(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         note = application.case_notes.get(pk=note_pk)
 
         if not note.is_active:
@@ -311,7 +309,10 @@ def add_note_document(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         note = application.case_notes.get(pk=note_pk)
 
         if request.POST:
@@ -390,7 +391,10 @@ def delete_note_document(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         document = application.case_notes.get(pk=note_pk).files.get(pk=file_pk)
         document.is_active = False
         document.save()
@@ -612,7 +616,9 @@ def close_update_request(
         application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
         update_request.status = models.UpdateRequest.CLOSED
@@ -639,7 +645,9 @@ def manage_firs(
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(model_class.Statuses.SUBMITTED, "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         if case_type in ["import", "export"]:
             show_firs = True
@@ -690,7 +698,10 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
         # TODO: use case reference
         title_mapping = {"REQUEST_REFERENCE": application.pk}
@@ -739,7 +750,9 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
-        task = application.get_task(model_class.Statuses.SUBMITTED, "process")
+        task = application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         fir_task = fir.get_task(FurtherInformationRequest.DRAFT, "check_draft")
 
         if request.POST:
@@ -791,7 +804,9 @@ def delete_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         fir_tasks = fir.get_active_tasks()
 
         fir.is_active = False
@@ -816,7 +831,9 @@ def withdraw_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
         fir_task = fir.get_task(FurtherInformationRequest.OPEN, "notify_contacts")
 
         fir.status = FurtherInformationRequest.DRAFT
@@ -846,7 +863,10 @@ def close_fir(
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
+
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
         fir_task = fir.get_task(
             [FurtherInformationRequest.OPEN, FurtherInformationRequest.RESPONDED], "responded"
@@ -1030,7 +1050,9 @@ def _delete_fir_file(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, user, case_type)
-        application.get_task(model_class.Statuses.SUBMITTED, "process")
+        application.get_task(
+            [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
+        )
 
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -1841,33 +1863,7 @@ def start_authorisation(
             [model_class.Statuses.SUBMITTED, model_class.Statuses.WITHDRAWN], "process"
         )
 
-        application_errors = ApplicationErrors()
-
-        prepare_errors = PageErrors(
-            page_name="Response Preparation",
-            url=reverse(
-                "case:prepare-response",
-                kwargs={"application_pk": application.pk, "case_type": case_type},
-            ),
-        )
-
-        if case_type == "import":
-            assert isinstance(application, ImportApplication)
-
-            _get_import_errors(application, application_errors, prepare_errors)
-
-        elif case_type == "export":
-            assert isinstance(application, ExportApplication)
-
-            _get_export_errors(application, application_errors, prepare_errors)
-
-        # Import & export checks
-        if application.decision == model_class.REFUSE:
-            prepare_errors.add(
-                FieldError(field_name="Decision", messages=["Please approve application."])
-            )
-
-        application_errors.add(prepare_errors)
+        application_errors: ApplicationErrors = get_app_errors(model_class, application, case_type)
 
         if request.POST and not application_errors.has_errors():
             application.status = model_class.Statuses.PROCESSING
@@ -1889,169 +1885,6 @@ def start_authorisation(
                 template_name="web/domains/case/authorisation.html",
                 context=context,
             )
-
-
-def _get_import_errors(
-    application: ImportApplication,
-    application_errors: ApplicationErrors,
-    prepare_errors: PageErrors,
-) -> None:
-    # Application specific checks
-    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        application_errors.add(_get_fa_oil_errors(application))
-
-    elif application.process_type == DFLApplication.PROCESS_TYPE:
-        application_errors.add(_get_fa_dfl_errors(application))
-
-    elif application.process_type == SILApplication.PROCESS_TYPE:
-        application_errors.add(_get_fa_sil_errors(application))
-
-    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        application_errors.add(_get_wood_errors(application))
-
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        application_errors.add(_get_derogations_errors(application))
-
-    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
-        application_errors.add(_get_opt_errors(application))
-
-    elif application.process_type == TextilesApplication.PROCESS_TYPE:
-        application_errors.add(_get_textiles_errors(application))
-
-    elif application.process_type in (
-        SanctionsAndAdhocApplication.PROCESS_TYPE,
-        PriorSurveillanceApplication.PROCESS_TYPE,
-    ):
-        # There are no extra checks for these
-        pass
-
-    else:
-        raise NotImplementedError(
-            f"process_type {application.process_type!r} hasn't been implemented yet."
-        )
-
-    start_date = application.licence_start_date
-    end_date = application.licence_end_date
-
-    if not start_date:
-        prepare_errors.add(
-            FieldError(field_name="Licence start date", messages=["Licence start date missing."])
-        )
-
-    if not end_date:
-        prepare_errors.add(
-            FieldError(field_name="Licence end date", messages=["Licence end date missing."])
-        )
-
-    if start_date and end_date and end_date <= start_date:
-        prepare_errors.add(
-            FieldError(
-                field_name="Licence end date", messages=["End date must be after the start date."]
-            )
-        )
-
-    app_t: ImportApplicationType = application.application_type
-
-    if app_t.paper_licence_flag and app_t.electronic_licence_flag:
-        if application.issue_paper_licence_only is None:
-            prepare_errors.add(
-                FieldError(
-                    field_name="Issue paper licence only?", messages=["You must enter this item"]
-                )
-            )
-
-    if app_t.cover_letter_flag:
-        if not application.cover_letter:
-            prepare_errors.add(
-                FieldError(field_name="Cover Letter", messages=["You must enter this item"])
-            )
-
-
-def _get_fa_oil_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.openindividuallicenceapplication,  # type: ignore[union-attr]
-        "import:fa-oil:manage-checklist",
-        ChecklistFirearmsOILApplicationForm,
-    )
-
-
-def _get_fa_dfl_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.dflapplication, "import:fa-dfl:manage-checklist", DFLChecklistForm  # type: ignore[union-attr]
-    )
-
-
-def _get_fa_sil_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.silapplication, "import:fa-sil:manage-checklist", SILChecklistForm  # type: ignore[union-attr]
-    )
-
-
-def _get_wood_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm  # type: ignore[union-attr]
-    )
-
-
-def _get_derogations_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.derogationsapplication,  # type: ignore[union-attr]
-        "import:derogations:manage-checklist",
-        DerogationsChecklistForm,
-    )
-
-
-def _get_opt_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.outwardprocessingtradeapplication,  # type: ignore[union-attr]
-        "import:opt:manage-checklist",
-        OPTChecklistForm,
-    )
-
-
-def _get_textiles_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.textilesapplication,  # type: ignore[union-attr]
-        "import:textiles:manage-checklist",
-        TextilesChecklistForm,
-    )
-
-
-def _get_checklist_errors(
-    application: ApplicationsWithChecklist,
-    manage_checklist_url: str,
-    checklist_form: Type[ChecklistBaseForm],
-):
-
-    checklist_errors = PageErrors(
-        page_name="Checklist",
-        url=reverse(manage_checklist_url, kwargs={"application_pk": application.pk}),
-    )
-
-    try:
-        create_page_errors(
-            checklist_form(
-                data=model_to_dict(application.checklist), instance=application.checklist
-            ),
-            checklist_errors,
-        )
-
-    except ObjectDoesNotExist:
-        checklist_errors.add(
-            FieldError(field_name="Checklist", messages=["Please complete checklist."])
-        )
-
-    return checklist_errors
-
-
-def _get_export_errors(
-    application: ExportApplication,
-    application_errors: ApplicationErrors,
-    prepare_errors: PageErrors,
-) -> None:
-    raise NotImplementedError(
-        f"process_type {application.process_type!r} hasn't been implemented yet."
-    )
 
 
 @login_required

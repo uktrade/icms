@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Optional
 
 from django.forms import BaseForm
 from django.forms.utils import pretty_name
@@ -10,7 +10,7 @@ class FieldError:
     """Errors about a single field in an applicaiton."""
 
     field_name: str
-    messages: List[str]
+    messages: list[str]
 
 
 @dataclass
@@ -18,7 +18,7 @@ class PageErrors:
     """Errors belonging to a single page."""
 
     page_name: str
-    errors: List[FieldError] = field(default_factory=list)
+    errors: list[FieldError] = field(default_factory=list)
 
     # URL of the page
     url: Optional[str] = None
@@ -34,13 +34,16 @@ class PageErrors:
 class ApplicationErrors:
     """All errors of an import/export application."""
 
-    page_errors: List[PageErrors] = field(default_factory=list)
+    page_errors: list[PageErrors] = field(default_factory=list)
 
     def has_errors(self) -> bool:
         return any(page.has_errors() for page in self.page_errors)
 
     def add(self, page_errors: PageErrors) -> None:
         self.page_errors.append(page_errors)
+
+    def add_many(self, page_errors: list[PageErrors]) -> None:
+        self.page_errors.extend(page_errors)
 
     def get_page_errors(self, page_name: str) -> Optional[PageErrors]:
         for p in self.page_errors:
