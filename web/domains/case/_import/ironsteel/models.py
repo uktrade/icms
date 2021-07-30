@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.file.models import File
 
 
 class IronSteelApplication(ImportApplication):
@@ -25,3 +26,5 @@ class IronSteelApplication(ImportApplication):
     )
 
     # TODO: add other fields
+
+    supporting_documents = models.ManyToManyField(File, related_name="+")

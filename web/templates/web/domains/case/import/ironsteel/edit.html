@@ -31,4 +31,12 @@
     <input type="submit" name="action" class="primary-button button" value="Save"/>
   {% endcall %}
 
+  <h4>Supporting documents</h4>
+  <p class="bold">Please provide any further supporting documents regarding this application.</p>
+  <p>This may include invoices, evidence of past trade, or contracts.</p>
+
+  {% with read_only = false %}
+    {% include "web/domains/case/import/partials/ironsteel/documents_list.html" %}
+  {% endwith %}
+
 {% endblock %}
