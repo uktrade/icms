@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from django import forms
 
@@ -8,6 +9,7 @@ from web.domains.case._import.ironsteel.widgets import (
 )
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.domains.file.utils import ICMSFileField
 
 from . import models
 
@@ -72,3 +74,48 @@ class EditIronSteelForm(forms.ModelForm):
         self.fields["consignment_country"].queryset = Country.objects.filter(
             country_groups__name="Iron and Steel (Quota) COCs", is_active=True
         )
+
+
+class CertificateFormBase(forms.ModelForm):
+    class Meta:
+        model = models.IronSteelCertificateFile
+        fields = ("reference", "total_qty", "requested_qty")
+
+    def clean_reference(self):
+        ref = self.cleaned_data["reference"]
+
+        if not ref.startswith("KZ"):
+            raise forms.ValidationError(
+                "Prefix of certificate reference is incorrect. Please ensure"
+                " you have entered a reference for a certificate that applies"
+                " to the selected Country of Origin."
+            )
+
+        # four characters followed by eight digits, e.g. KZGB12345678
+        if not re.match("[A-Z]{4}\\d{8}$", ref):
+            raise forms.ValidationError("Entry is in an incorrect format.")
+
+        return ref
+
+    def clean(self):
+        cleaned = super().clean()
+
+        if not self.is_valid():
+            return cleaned
+
+        total_qty = cleaned["total_qty"]
+        requested_qty = cleaned["requested_qty"]
+
+        if requested_qty > total_qty:
+            self.add_error(
+                "requested_qty",
+                "Requested quantity cannot exceed maximum quantity per certificate.",
+            )
+
+
+class AddCertificateForm(CertificateFormBase):
+    document = ICMSFileField(required=True)
+
+
+class EditCertificateForm(CertificateFormBase):
+    pass

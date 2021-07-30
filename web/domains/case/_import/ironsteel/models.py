@@ -6,6 +6,35 @@ from web.domains.file.models import File
 from web.models.shared import at_least_0
 
 
+class IronSteelCertificateFile(File):
+    reference = models.CharField(
+        max_length=100,
+        verbose_name="Export Certificate Reference",
+        help_text="Enter your reference including prefixes, in the format of four characters followed by eight digits, e.g. KZGB12345678.",
+    )
+
+    total_qty = models.DecimalField(
+        max_digits=9,
+        decimal_places=2,
+        validators=[at_least_0],
+        verbose_name="Total Quantity",
+        help_text="This is the total quantity allowed by the export licence.",
+    )
+
+    # TODO: form validation: "Please ensure that the sum of export certificate
+    # requested quantities equals the total quantity of imported goods."" (this
+    # goes in submit validation)
+
+    requested_qty = models.DecimalField(
+        max_digits=9,
+        decimal_places=2,
+        validators=[at_least_0],
+        verbose_name="Requested Quantity",
+        help_text="This is the quantity that you will be importing against this export licence."
+        " These values must add up to the total import quantity.",
+    )
+
+
 class IronSteelApplication(ImportApplication):
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.IRON_STEEL
 
@@ -26,8 +55,6 @@ class IronSteelApplication(ImportApplication):
             " the goods are loaded onto the exporting aircraft, vehicle or vessel."
         ),
     )
-
-    # TODO: add other fields
 
     # Goods
     category_commodity_group = models.ForeignKey(
@@ -74,3 +101,5 @@ class IronSteelApplication(ImportApplication):
     )
 
     supporting_documents = models.ManyToManyField(File, related_name="+")
+
+    certificates = models.ManyToManyField(IronSteelCertificateFile, related_name="+")

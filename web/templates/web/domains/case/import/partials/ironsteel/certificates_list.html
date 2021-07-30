@@ -1,0 +1,59 @@
+{% if certificates %}
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Export Certificate Reference</th>
+      <th>Total Quantity</th>
+      <th>Requested Quantity</th>
+      <th>Uploaded by</th>
+      <th>File (size)</th>
+      {% if not read_only %}
+        <th>Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for doc in certificates %}
+      <tr>
+        <td>{{ doc.reference }}</td>
+        <td>{{ doc.total_qty }}</td>
+        <td>{{ doc.requested_qty }}</td>
+        <td>
+          {{ doc.created_by.full_name }}<br>
+          {{ doc.created_datetime.strftime('%d-%b-%Y %H:%M') }}
+        </td>
+        <td><a
+          href="{{ icms_url('import:ironsteel:view-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
+          {{ doc.filename }}</a> {{ doc.human_readable_file_size() }}
+        </td>
+        {% if not read_only %}
+          <td>
+            <form method="post"
+                  action="{{ icms_url('import:ironsteel:delete-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
+              {{ csrf_input }}
+              <button type="submit" class="link-button icon-bin button">Delete</button>
+            </form>
+
+            <p>
+              <a
+                href="{{ icms_url('import:ironsteel:edit-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}"
+                class="link-button icon-pencil button">
+                Edit</a>
+            </p>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="info-box info-box-info">
+    There are no certificates attached
+  </div>
+{% endif %}
+
+{% if not read_only %}
+  <a class="button small-button" href="{{ icms_url('import:ironsteel:add-certificate', kwargs={'application_pk': process.pk}) }}">
+    Add certificate
+  </a>
+{% endif %}

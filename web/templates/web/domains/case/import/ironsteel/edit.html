@@ -54,8 +54,20 @@
     <input type="submit" name="action" class="primary-button button" value="Save"/>
   {% endcall %}
 
+  <h4>Certificates/Documents</h4>
+  <p class="bold">Export certificates.</p>
+
+  <div class="info-box info-box-info">
+    Please upload a copy of your certificate. You will be contacted by ILB if the original is required.
+  </div>
+
+  {% with read_only = false %}
+    {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
+  {% endwith %}
+
   <h4>Supporting documents</h4>
   <p class="bold">Please provide any further supporting documents regarding this application.</p>
+
   <p>This may include invoices, evidence of past trade, or contracts.</p>
 
   {% with read_only = false %}
