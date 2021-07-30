@@ -4,7 +4,7 @@ from web.tests.auth import AuthTestCase
 from .factory import UserFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["WEB_USER_ACCOUNT_LHS"]
+PERMISSIONS = ["reference_data_access"]
 
 
 class CurrentUserDetailsViewTest(AuthTestCase):
