@@ -18,14 +18,14 @@
     </li>
     <li>
       <a
-        href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}">
+        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Constabulary Emails
       </a>
     </li>
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     <li>
       <a
-        href="{{ icms_url('import:sanctions:manage-sanction-emails', kwargs={'application_pk': process.pk}) }}">
+        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Sanction Emails
       </a>
     </li>
@@ -52,7 +52,7 @@
     </li>
     <li>
       <a
-        href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={'application_pk': process.pk}) }}">
+        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Constabulary Emails
       </a>
     </li>
@@ -65,7 +65,7 @@
     </li>
     <li>
       <a
-        href="{{ icms_url('import:fa:manage-constabulary-emails', kwargs={"application_pk": process.pk}) }}">
+        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
         Constabulary Emails
       </a>
     </li>

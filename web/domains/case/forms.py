@@ -1,21 +1,24 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django import forms
+from django_select2 import forms as s2forms
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
+from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.models import User
 
 from .models import (
     CASE_NOTE_STATUSES,
     ApplicationBase,
+    CaseEmail,
     CaseNote,
     UpdateRequest,
     WithdrawApplication,
 )
-from .types import ImpOrExpT
+from .types import CaseEmailConfig, ImpOrExpT
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -121,6 +124,47 @@ class ResponsePreparationExportForm(ResponsePreparationBaseForm):
     class Meta:
         model = ExportApplication
         fields = ResponsePreparationBaseForm.Meta.fields
+
+
+class CaseEmailForm(forms.ModelForm):
+    class Meta:
+        model = CaseEmail
+        fields = (
+            "status",
+            "to",
+            "cc_address_list",
+            "subject",
+            "attachments",
+            "body",
+        )
+        widgets = {
+            "body": forms.Textarea,
+            "attachments": CheckboxSelectMultipleTable(attrs={"class": "radio-relative"}),
+        }
+        error_messages = {"cc_address_list": {"item_invalid": "Email number %(nth)s is not valid:"}}
+
+    def __init__(self, *args: Any, case_email_config: CaseEmailConfig, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+
+        self.fields["status"].widget.attrs["readonly"] = True
+
+        if case_email_config.to_choices:
+            self.fields["to"].widget = s2forms.Select2Widget()
+            self.fields["to"].widget.choices = case_email_config.to_choices
+
+        if case_email_config.file_qs:
+            self.fields["attachments"].queryset = case_email_config.file_qs
+            # set files and process on the widget to make them available in the widget's template
+            self.fields["attachments"].widget.qs = case_email_config.file_qs
+            self.fields["attachments"].widget.process = case_email_config.application
+        else:
+            self.fields.pop("attachments")
+
+
+class CaseEmailResponseForm(forms.ModelForm):
+    class Meta:
+        model = CaseEmail
+        fields = ("response",)
 
 
 def application_contacts(application: ImpOrExpT) -> "QuerySet[User]":

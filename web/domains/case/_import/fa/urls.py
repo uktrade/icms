@@ -40,45 +40,6 @@ urlpatterns = [
                     ),
                 ),
                 path(
-                    "constabulary-emails/",
-                    include(
-                        [
-                            path(
-                                "manage/",
-                                views.manage_constabulary_emails,
-                                name="manage-constabulary-emails",
-                            ),
-                            path(
-                                "create/",
-                                views.create_constabulary_email,
-                                name="create-constabulary-email",
-                            ),
-                            path(
-                                "<int:constabulary_email_pk>/",
-                                include(
-                                    [
-                                        path(
-                                            "edit/",
-                                            views.edit_constabulary_email,
-                                            name="edit-constabulary-email",
-                                        ),
-                                        path(
-                                            "archive/",
-                                            views.archive_constabulary_email,
-                                            name="archive-constabulary-email",
-                                        ),
-                                        path(
-                                            "response/",
-                                            views.add_response_constabulary_email,
-                                            name="add-response-constabulary-email",
-                                        ),
-                                    ]
-                                ),
-                            ),
-                        ]
-                    ),
-                ),
-                path(
                     "certificates/",
                     include(
                         [

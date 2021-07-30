@@ -128,6 +128,25 @@ authorisation_urls = [
     path("cancel/", views.cancel_authorisation, name="cancel-authorisation"),
 ]
 
+email_urls = [
+    path("manage/", views.manage_case_emails, name="manage-case-emails"),
+    path("create/", views.create_case_email, name="create-case-email"),
+    path(
+        "<int:case_email_pk>/",
+        include(
+            [
+                path("edit/", views.edit_case_email, name="edit-case-email"),
+                path("archive/", views.archive_case_email, name="archive-case-email"),
+                path(
+                    "response/",
+                    views.add_response_case_email,
+                    name="add-response-case-email",
+                ),
+            ]
+        ),
+    ),
+]
+
 urlpatterns = [
     path(
         "<casetype:case_type>/<int:application_pk>/",
@@ -157,6 +176,9 @@ urlpatterns = [
                 #
                 # Application Authorisation (import/export)
                 path("authorisation/", include(authorisation_urls)),
+                #
+                # Emails (import/export)
+                path("emails/", include(email_urls)),
             ]
         ),
     ),

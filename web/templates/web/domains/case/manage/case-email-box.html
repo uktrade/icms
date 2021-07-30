@@ -1,26 +1,34 @@
 <fieldset>
-  <legend class="bold">Sanction Email</legend>
+  <legend class="bold">Email</legend>
 
   {% if object.is_draft %}
+    <ul class="menu-out flow-across">
+      <li>
+
     <a
-      class="button small-button"
-      href="{{ icms_url('import:sanctions:edit-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
-      Edit/Send
+      class="button small-button icon-pencil"
+      href="{{ icms_url('case:edit-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
+      Edit
     </a>
+      </li>
+      <li>
+
     <form
       method="post"
-      action="{{ icms_url('import:sanctions:delete-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
+      action="{{ icms_url('case:archive-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
       {{ csrf_input }}
       <button
         type="submit"
-        class="button small-button">
+        class="button small-button icon-bin">
         Delete
       </button>
     </form>
+      </li>
+    </ul>
   {% else %}
     <a
-      class="button small-button"
-      href="{{ icms_url('import:sanctions:add-response-sanction-email', kwargs={'application_pk': process.pk, 'sanction_email_pk': object.pk}) }}">
+      class="button small-button icon-pencil"
+      href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
       Record Response
     </a>
   {% endif %}
@@ -32,7 +40,7 @@
       </label>
     </div>
     <div class="six columns">
-      <div class="status {{ object.status }}">
+      <div class="status {{ object.status.lower() }}">
         <div>
           <span class="text-widget">{{ object.status }}</span>
         </div>
@@ -48,7 +56,7 @@
       </label>
     </div>
     <div class="six columns">
-      {{ object.to }}
+      {{ object.to or '' }}
     </div>
     <div class="three columns"></div>
   </div>
@@ -60,7 +68,11 @@
       </label>
     </div>
     <div class="six columns">
-      {{ object.cc_address_list }}
+      {% if object.cc_address_list %}
+        {%- for email in object.cc_address_list %}
+          {{ email }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+      {% endif %}
     </div>
     <div class="three columns"></div>
   </div>

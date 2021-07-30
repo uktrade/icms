@@ -2,6 +2,7 @@ from typing import Any, Optional
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
 from django.http import HttpResponse
@@ -443,3 +444,37 @@ class ApplicationBase(WorkbasketBase, Process):
         messages.success(request, msg)
 
         return redirect(reverse("workbasket"))
+
+
+class CaseEmail(models.Model):
+    class Status(models.TextChoices):
+        OPEN = ("OPEN", "Open")
+        CLOSED = ("CLOSED", "Closed")
+        DRAFT = ("DRAFT", "Draft")
+
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=30, default=Status.DRAFT)
+
+    to = models.EmailField(max_length=254, null=True)
+
+    cc_address_list = ArrayField(
+        models.EmailField(max_length=254),
+        help_text="Enter CC email addresses separated by a comma",
+        verbose_name="Cc",
+        size=15,
+        blank=True,
+        null=True,
+    )
+
+    subject = models.CharField(max_length=100, null=True)
+    body = models.TextField(max_length=4000, null=True)
+    attachments = models.ManyToManyField(File)
+
+    response = models.TextField(max_length=4000, blank=True, null=True)
+
+    sent_datetime = models.DateTimeField(null=True)
+    closed_datetime = models.DateTimeField(null=True)
+
+    @property
+    def is_draft(self):
+        return self.status == self.Status.DRAFT

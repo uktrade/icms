@@ -3,6 +3,7 @@ from django.db import models
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
+    CaseEmail,
     CaseNote,
     UpdateRequest,
     VariationRequest,
@@ -71,6 +72,7 @@ class ExportApplication(ApplicationBase):
     case_notes = models.ManyToManyField(CaseNote)
     further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     update_requests = models.ManyToManyField(UpdateRequest)
+    case_emails = models.ManyToManyField(CaseEmail, related_name="+")
 
     submitted_by = models.ForeignKey(
         User,

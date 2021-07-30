@@ -27,31 +27,3 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
             f"{self.quantity_amount} - "
             f"{self.value}"
         )
-
-
-class SanctionEmailMessage(models.Model):
-    OPEN = "OPEN"
-    CLOSED = "CLOSED"
-    DRAFT = "DRAFT"
-    STATUSES = ((OPEN, "Open"), (CLOSED, "Closed"), (DRAFT, "Draft"))
-
-    is_active = models.BooleanField(default=True)
-    application = models.ForeignKey(
-        SanctionsAndAdhocApplication,
-        on_delete=models.PROTECT,
-        related_name="sanction_emails",
-    )
-    status = models.CharField(max_length=30, default=DRAFT)
-
-    to = models.CharField(max_length=4000, blank=True, null=True)
-    cc_address_list = models.CharField(max_length=4000, blank=True, null=True)
-    subject = models.CharField(max_length=100, blank=False, null=True)
-    body = models.TextField(max_length=4000, blank=False, null=True)
-    response = models.TextField(max_length=4000, blank=True, null=True)
-    sent_datetime = models.DateTimeField(blank=True, null=True)
-    closed_datetime = models.DateTimeField(blank=True, null=True)
-    attachments = models.ManyToManyField(File)
-
-    @property
-    def is_draft(self):
-        return self.status == self.DRAFT

@@ -4,6 +4,7 @@ from django.utils import timezone
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
+    CaseEmail,
     CaseNote,
     UpdateRequest,
     VariationRequest,
@@ -278,6 +279,7 @@ class ImportApplication(ApplicationBase):
     update_requests = models.ManyToManyField(UpdateRequest)
     case_notes = models.ManyToManyField(CaseNote)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
+    case_emails = models.ManyToManyField(CaseEmail, related_name="+")
 
     case_owner = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"

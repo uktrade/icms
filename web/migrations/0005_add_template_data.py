@@ -813,7 +813,7 @@ The application is for the following:
 
 [[GOODS_DESCRIPTION]]
 
-Thanks and best regards 
+Thanks and best regards
 
 [[CASE_OFFICER_NAME]]
 [[CASE_OFFICER_EMAIL]]
@@ -832,19 +832,27 @@ Thanks and best regards
         application_domain="IMA",
         template_title="Import Licence RFD Enquiry",
         template_content="""Dear Colleagues
+
 [[CASE_REFERENCE]]
+
 We have received an import licence application from:
+
 [[IMPORTER_NAME]]
 [[IMPORTER_ADDRESS]]
+
 The application is for:
 [[GOODS_DESCRIPTION]]
+
 Grateful if the Police can advise on the validity of the RFD/Firearms/Shotgun Certificate, and whether there are any objections to the issuing of the import licence.
 Grateful if the Police can validate the RFD / and Section 1 and 2 authority/authorities on the applicants ICMS account. (delete as appropriate).
 Grateful if Home Office can confirm use of obsolete calibre or any other Section 58(2) exemption and if there are any reasons why an import licence should not be issued. (delete if not applicable)
 Grateful if the Home Office can validate the Section 5 authority on the applicants ICMS account. (delete if not Section 5)
 Grateful if you can check the attached deactivation certificate and advise as to whether or not it is valid and matches your records. (DELETE IF NOT DEACTIVATED)
+
 Please note that the import licence will not be issued until we have had your response/responses to this e-mail.
+
 Thanks and best regards
+
 [[CASE_OFFICER_NAME]]
 [[CASE_OFFICER_EMAIL]]
 [[CASE_OFFICER_PHONE]]""",
@@ -925,17 +933,24 @@ Yours sincerely,
         application_domain="CA",
         template_title="Biocidal Product Enquiry",
         template_content="""Dear Colleagues
+
 [[CASE_REFERENCE]]
+
 We have received a [[APPLICATION_TYPE]] application from:
 [[EXPORTER_NAME]]
 [[EXPORTER_ADDRESS]]
 [[CONTACT_EMAIL]]
+
 The application is for the following countries:
 [[CERT_COUNTRIES]]
+
 The application is for the following biocidal products:
 [[SELECTED_PRODUCTS]]
+
 Grateful for your guidance on the items listed.
+
 Thanks and best regards
+
 [[CASE_OFFICER_NAME]]
 [[CASE_OFFICER_EMAIL]]
 [[CASE_OFFICER_PHONE]]""",

@@ -35,6 +35,7 @@ EMAIL_FROM = env.str("ICMS_EMAIL_FROM")
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL")
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE")
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str("ICMS_FIREARMS_HOMEOFFICE_EMAIL")
+ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL")
 
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
 app_bucket_creds = VCAP_SERVICES["aws-s3-bucket"][0]["credentials"]

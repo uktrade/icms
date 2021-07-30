@@ -4845,6 +4845,11 @@ fieldset {
     border-color: #C2C2C2;
 }
 
+.status.closed .text-widget, .status.completed .text-widget {
+    background-color: #08A7A7;
+    border-color: #007B76;
+}
+
 form.form-inline {
   display: inline;
 }

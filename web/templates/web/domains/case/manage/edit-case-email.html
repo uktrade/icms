@@ -1,0 +1,52 @@
+{% extends "web/domains/case/manage/base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions_link %}
+  <a href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="prev-link">
+    Manage Emails
+  </a>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Edit Email</h3>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <input
+                type="submit"
+                value="Save"
+                class="primary-button button" />
+
+              <input
+                type="submit"
+                name="send"
+                value="Send"
+                class="primary-button button" />
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+  {{ super() }}
+{% endblock %}

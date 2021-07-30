@@ -39,38 +39,6 @@ supporting_document_urls = [
 ]
 
 
-sanction_urls = [
-    path("manage/", views.manage_sanction_emails, name="manage-sanction-emails"),
-    path(
-        "create/",
-        views.create_sanction_email,
-        name="create-sanction-email",
-    ),
-    path(
-        "<int:sanction_email_pk>/",
-        include(
-            [
-                path(
-                    "edit/",
-                    views.edit_sanction_email,
-                    name="edit-sanction-email",
-                ),
-                path(
-                    "delete/",
-                    views.delete_sanction_email,
-                    name="delete-sanction-email",
-                ),
-                path(
-                    "add-response/",
-                    views.add_response_sanction_email,
-                    name="add-response-sanction-email",
-                ),
-            ]
-        ),
-    ),
-]
-
-
 urlpatterns = [
     path(
         "<int:application_pk>/",
@@ -81,8 +49,6 @@ urlpatterns = [
                 path("submit/", views.submit_sanctions, name="submit-sanctions"),
                 path("goods/", include(goods_urls)),
                 path("support-document/", include(supporting_document_urls)),
-                # Management urls
-                path("sanction-email/", include(sanction_urls)),
             ]
         ),
     ),

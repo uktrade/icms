@@ -1,3 +1,5 @@
+from typing import Collection, Tuple
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from guardian.shortcuts import get_users_with_perms
@@ -11,11 +13,17 @@ from . import utils
 
 
 @app.task(name="web.notify.email.send_email")
-def send_email(subject, message, recipients, cc=None, attachments=[], html_message=None):
-    message = EmailMultiAlternatives(subject, message, settings.EMAIL_FROM, recipients, cc=cc)
-
-    for attachment in attachments:
-        message.attach(*attachment)
+def send_email(
+    subject: str,
+    body: str,
+    recipients: Collection[str],
+    cc: Collection[str] = (),
+    attachments: Collection[Tuple[str, bytes]] = (),
+    html_message: str = None,
+):
+    message = EmailMultiAlternatives(
+        subject, body, settings.EMAIL_FROM, recipients, cc=cc, attachments=attachments
+    )
 
     if html_message:
         message.attach_alternative(html_message, "text/html")

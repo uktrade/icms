@@ -1,17 +1,9 @@
 from django import forms
-from django_select2 import forms as s2forms
 
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
-from web.domains.file.models import File
-from web.domains.sanction_email.models import SanctionEmail
 
-from . import widgets
-from .models import (
-    SanctionEmailMessage,
-    SanctionsAndAdhocApplication,
-    SanctionsAndAdhocApplicationGoods,
-)
+from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
 
 class SanctionsAndAdhocLicenseForm(forms.ModelForm):
@@ -78,48 +70,3 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["commodity_code"].widget.attrs["readonly"] = True
-
-
-class SanctionEmailMessageForm(forms.ModelForm):
-    status = forms.CharField(widget=forms.TextInput(attrs={"readonly": "readonly"}))
-    to = forms.ChoiceField(label="To", widget=s2forms.Select2Widget, choices=())
-    cc_address_list = forms.CharField(
-        required=False, label="Cc", help_text="Enter CC email addresses separated by a comma"
-    )
-    attachments = forms.ModelMultipleChoiceField(
-        required=False,
-        widget=widgets.CheckboxSelectMultipleTable(attrs={"class": "radio-relative"}),
-        queryset=File.objects.none(),
-    )
-    subject = forms.CharField(label="Subject")
-    body = forms.CharField(label="Body", widget=forms.Textarea)
-
-    class Meta:
-        model = SanctionEmailMessage
-        fields = (
-            "status",
-            "to",
-            "cc_address_list",
-            "attachments",
-            "subject",
-            "body",
-        )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        choices = [
-            (c.email, f"{c.name} ({c.email})") for c in SanctionEmail.objects.filter(is_active=True)
-        ]
-        self.fields["to"].choices = choices
-
-        files = self.instance.application.supporting_documents.filter(is_active=True)
-        self.fields["attachments"].queryset = files
-        # set files and process on the widget to make them available in the widget's template
-        self.fields["attachments"].widget.qs = files
-        self.fields["attachments"].widget.process = self.instance.application
-
-
-class SanctionEmailMessageResponseForm(forms.ModelForm):
-    class Meta:
-        model = SanctionEmailMessage
-        fields = ("response",)
