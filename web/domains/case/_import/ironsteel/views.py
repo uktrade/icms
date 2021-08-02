@@ -10,6 +10,7 @@ from web.domains.case.forms import DocumentForm
 from web.domains.case.views import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.types import AuthenticatedHttpRequest
+from web.utils.commodity import get_category_commodity_group_data
 
 from .forms import EditIronSteelForm
 from .models import IronSteelApplication
@@ -41,6 +42,15 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
+        category_commodity_groups = get_category_commodity_group_data(commodity_type="IRON_STEEL")
+
+        if application.category_commodity_group:
+            selected_group = category_commodity_groups.get(
+                application.category_commodity_group.pk, {}
+            )
+        else:
+            selected_group = {}
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
@@ -48,6 +58,8 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
+            "category_commodity_groups": category_commodity_groups,
+            "commodity_group_label": selected_group.get("label", ""),
         }
 
         return render(request, "web/domains/case/import/ironsteel/edit.html", context)

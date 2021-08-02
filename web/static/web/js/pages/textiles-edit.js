@@ -1,5 +1,6 @@
 window.addEventListener('load', (event) => {
   const countryOfOrigin = document.querySelector("#id_origin_country");
+  const categoryDescription = document.querySelector("#category_commodity_group_description");
 
   // django-selects
   const categorySelect = $('#id_category_commodity_group').djangoSelect2();
@@ -10,6 +11,7 @@ window.addEventListener('load', (event) => {
   countryOfOrigin.addEventListener("change", (e) => {
     categorySelect.empty();
     commoditySelect.empty();
+    categoryDescription.textContent = "";
   })
 
   categorySelect.on("change", (e) => {

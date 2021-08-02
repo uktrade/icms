@@ -1,4 +1,6 @@
+import datetime
 from dataclasses import dataclass
+from datetime import date
 from itertools import islice
 from typing import TYPE_CHECKING, Iterable, Type
 
@@ -24,6 +26,7 @@ class CommodityUsageDataLoader:
         self.bulk_create(self.load_opt_usage())
         self.bulk_create(self.load_derogation_from_sanctions_import_ban())
         self.bulk_create(self.load_sanctions_and_adhoc_licence_application())
+        self.bulk_create(self.load_iron_and_steel_quota())
 
     def bulk_create(self, objs: "Iterable[Usage]") -> None:
         batch_size = 1000
@@ -243,6 +246,27 @@ class CommodityUsageDataLoader:
                     commodity_group_id=group_pk,
                     start_date=now.date(),
                 )
+
+    def load_iron_and_steel_quota(self) -> "Iterable[Usage]":
+        """Load usage records for the Iron and Steel (Quota) application."""
+
+        iron = self.import_application_type.objects.get(type="IS")
+
+        country = self.country.objects.get(name="Kazakhstan")
+
+        country_group_pks = self.commodity_group.objects.filter(
+            group_code__in=["SA1", "SA3"]
+        ).values_list("pk", flat=True)
+
+        start_date = date(2013, 1, 1)
+
+        for group_pk in country_group_pks:
+            yield self.usage(
+                application_type_id=iron.pk,
+                country_id=country.pk,
+                commodity_group_id=group_pk,
+                start_date=start_date,
+            )
 
     def load_sanctions_and_adhoc_licence_application(self) -> "Iterable[Usage]":
         """Load usage records for the Sanctions and Adhoc Licence application

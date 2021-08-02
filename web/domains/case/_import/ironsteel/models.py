@@ -1,7 +1,9 @@
 from django.db import models
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
+from web.models.shared import at_least_0
 
 
 class IronSteelApplication(ImportApplication):
@@ -26,5 +28,49 @@ class IronSteelApplication(ImportApplication):
     )
 
     # TODO: add other fields
+
+    # Goods
+    category_commodity_group = models.ForeignKey(
+        CommodityGroup,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Category",
+        help_text=(
+            "The category defines what commodities you are applying to import. This will be"
+            " SA1 (coils) or SA3 (other flat products). Please see the guidance for further"
+            " information regarding the coverage of the categories."
+        ),
+    )
+
+    commodity = models.ForeignKey(
+        Commodity,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Commodity Code",
+        help_text=(
+            "It is the responsibility of the applicant to ensure that the"
+            " commodity code in this box is correct. If you are unsure of the"
+            " correct commodity code, consult the HM Revenue and Customs"
+            " Integrated Tariff Book, Volume 2, which is available from the"
+            " Stationery Office. If you are still in doubt, contact the"
+            " Classification Advisory Service on (01702) 366077."
+        ),
+    )
+
+    goods_description = models.CharField(
+        max_length=100,
+        null=True,
+        verbose_name="Goods Description",
+        help_text="Please describe the goods in no more than five (5) words.",
+    )
+
+    quantity = models.DecimalField(
+        null=True,
+        max_digits=9,
+        decimal_places=2,
+        validators=[at_least_0],
+    )
 
     supporting_documents = models.ManyToManyField(File, related_name="+")

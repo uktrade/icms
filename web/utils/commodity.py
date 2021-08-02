@@ -53,3 +53,20 @@ def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Com
         commoditygroup__in=CommodityGroup.objects.filter(usages__in=application_usage),
         is_active=True,
     ).distinct()
+
+
+def get_category_commodity_group_data(commodity_type: str) -> dict[str, dict[str, str]]:
+    groups = CommodityGroup.objects.filter(
+        commodity_type__type_code=commodity_type,
+    ).select_related("unit")
+
+    group_data = {}
+    for cg in groups:
+        if cg.unit:
+            unit_desc = cg.unit.description
+        else:
+            unit_desc = None
+
+        group_data.update({cg.pk: {"label": cg.group_description, "unit": unit_desc}})
+
+    return group_data

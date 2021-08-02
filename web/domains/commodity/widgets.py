@@ -66,7 +66,7 @@ class UsageCountryWidget(s2forms.ModelSelect2Widget):
 
         mapped_types = {
             types.DEROGATION: "Derogation from Sanctions COOs",
-            types.IS: "Iron and Steel (Quota) COOs",
+            types.IRON_STEEL: "Iron and Steel (Quota) COOs",
             types.OPT: "OPT COOs",
             types.SANCTION_ADHOC: "Sanctions and Adhoc License",
             types.SPS: "Non EU Single Countries",

@@ -2,6 +2,10 @@ import datetime
 
 from django import forms
 
+from web.domains.case._import.ironsteel.widgets import (
+    IronSteelCommodityGroupSelect,
+    IronSteelCommoditySelect,
+)
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 
@@ -25,10 +29,17 @@ class EditIronSteelForm(forms.ModelForm):
             "shipping_year",
             "origin_country",
             "consignment_country",
+            "category_commodity_group",
+            "commodity",
+            "goods_description",
+            "quantity",
         )
 
         widgets = {
             "shipping_year": forms.Select(choices=[(x, x) for x in _get_shipping_year_selection()]),
+            "category_commodity_group": IronSteelCommodityGroupSelect,
+            "commodity": IronSteelCommoditySelect,
+            "quantity": forms.NumberInput(attrs={"step": 1}),
         }
 
         help_texts = {

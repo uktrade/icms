@@ -17,7 +17,7 @@ from web.utils.commodity import (
 class DerogationCountryOfOriginSelect(ModelSelect2Widget):
     queryset = Country.objects.none()
 
-    search_fields = ["name__contains"]
+    search_fields = ["name__icontains"]
 
     def get_queryset(self) -> "QuerySet[Country]":
         return get_usage_countries(
