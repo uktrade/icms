@@ -6,6 +6,7 @@ from web.domains.case._import.sanctions.models import (
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
 )
+from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
@@ -173,11 +174,13 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             importer=self.importer,
             created_by=self.user,
             last_updated_by=self.user,
+            origin_country=Country.objects.get(name="Iran"),
         )
         TaskFactory.create(process=self.process, task_type="prepare")
 
+        self.valid_commodity = Commodity.objects.get(commodity_code="2709009000")
         self.goods = SanctionsAndAdhocApplicationGoodsFactory.create(
-            commodity_code="2850009000",
+            commodity=self.valid_commodity,
             goods_description="old desc",
             quantity_amount=5,
             value=5,
@@ -233,7 +236,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         self.login_with_permissions(["importer_access"])
 
         data = {
-            "commodity_code": "2850009000",
+            "commodity": self.valid_commodity.pk,
             "goods_description": "test desc",
             "quantity_amount": 5,
             "value": 5,
@@ -284,14 +287,14 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         self.login_with_permissions(["importer_access"])
 
         goods = SanctionsAndAdhocApplicationGoodsFactory.create(
-            commodity_code="2850009000",
+            commodity=self.valid_commodity,
             goods_description="old desc",
             quantity_amount=5,
             value=5,
             import_application=self.process,
         )
         data = {
-            "commodity_code": "2850002070",
+            "commodity": self.valid_commodity.pk,
             "goods_description": "updated desc",
             "quantity_amount": 10,
             "value": 10,
@@ -312,7 +315,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
         good = SanctionsAndAdhocApplicationGoods.objects.latest("pk")
-        assert good.commodity_code == "2850002070"
+        assert good.commodity == self.valid_commodity
         assert good.goods_description == "updated desc"
         assert good.quantity_amount == 10
         assert good.value == 10
@@ -320,7 +323,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
     def test_delete_goods(self):
         self.login_with_permissions(["importer_access"])
         goods = SanctionsAndAdhocApplicationGoods.objects.create(
-            commodity_code="2850002070",
+            commodity=self.valid_commodity,
             goods_description="desc",
             quantity_amount=5,
             value=5,

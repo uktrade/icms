@@ -23,6 +23,7 @@ class CommodityUsageDataLoader:
         self.bulk_create(self.load_textiles_quota_usage())
         self.bulk_create(self.load_opt_usage())
         self.bulk_create(self.load_derogation_from_sanctions_import_ban())
+        self.bulk_create(self.load_sanctions_and_adhoc_licence_application())
 
     def bulk_create(self, objs: "Iterable[Usage]") -> None:
         batch_size = 1000
@@ -246,13 +247,30 @@ class CommodityUsageDataLoader:
     def load_sanctions_and_adhoc_licence_application(self) -> "Iterable[Usage]":
         """Load usage records for the Sanctions and Adhoc Licence application
 
-        # Records to add
-        Country of Origin restricted to the following:
-            - Iran: (7 commodities)
-            - Korea (North): (8 commodities)
-            - Russian Federation: (2 commodities)
-            - Somalia:  (2 commodities)
-            - Syria: (2 commodities)
+        Note these are just test values that we used for Derogation From Sanctions Import Ban
+        The correct records will need loading when we go live.
         """
-        # TODO: Implement when doing ICMSLST-851
-        ...
+        group_categories = {
+            self.country.objects.get(name="Iran"): ["SAN2", "SAN3"],
+            self.country.objects.get(name="Korea (North)"): ["SAN-AND-ADHOC-TEST"],
+            self.country.objects.get(name="Russian Federation"): ["SAN5"],
+            self.country.objects.get(name="Somalia"): ["SAN1"],
+            self.country.objects.get(name="Syria"): ["SAN2", "SAN4"],
+        }
+
+        sanction_and_adhoc_pk = self.import_application_type.objects.get(type="ADHOC").pk
+        groups = self.commodity_group.objects.all()
+        now = timezone.now()
+
+        for country, group_code_list in group_categories.items():
+            country_group_pks = groups.filter(group_code__in=group_code_list).values_list(
+                "pk", flat=True
+            )
+
+            for group_pk in country_group_pks:
+                yield self.usage(
+                    application_type_id=sanction_and_adhoc_pk,
+                    country_id=country.pk,
+                    commodity_group_id=group_pk,
+                    start_date=now.date(),
+                )

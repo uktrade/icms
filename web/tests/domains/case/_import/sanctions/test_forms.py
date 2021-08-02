@@ -4,6 +4,7 @@ from web.domains.case._import.sanctions.forms import (
     GoodsForm,
     SanctionsAndAdhocLicenseForm,
 )
+from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.tests.auth import AuthTestCase
@@ -37,6 +38,7 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
             importer=self.importer,
             created_by=self.user,
             last_updated_by=self.user,
+            origin_country=Country.objects.get(name="Iran"),
         )
         TaskFactory.create(process=self.process, task_type="prepare")
 
@@ -81,16 +83,16 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
 
     def test_goods_form_valid(self):
         data = {
-            "commodity_code": "2801010101",
+            "commodity": Commodity.objects.get(commodity_code="2709009000").pk,
             "goods_description": "test desc",
             "quantity_amount": 5,
             "value": 5,
         }
-        form = GoodsForm(data)
+        form = GoodsForm(data, application=self.process)
         self.assertTrue(form.is_valid())
 
     def test_goods_form_invalid(self):
         data = {}
-        form = GoodsForm(data)
+        form = GoodsForm(data, application=self.process)
         self.assertFalse(form.is_valid())
         self.assertEqual(len(form.errors), 4)

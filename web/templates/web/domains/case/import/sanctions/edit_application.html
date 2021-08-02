@@ -49,7 +49,7 @@
 
                 {% for row in goods_list %}
                     <tr class="result-row">
-                        <td>{{ row.commodity_code }}</td>
+                        <td>{{ row.commodity }}</td>
                         <td>{{ row.goods_description }}</td>
                         <td>{{ row.quantity_amount }}</td>
                         <td>kilos</td>
@@ -80,8 +80,11 @@
             </div>
         {% endif %}
 
-        <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'application_pk': process.pk}) }}">Add Goods</a>
-
+        {% if show_add_goods %}
+          <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'application_pk': process.pk}) }}">Add Goods</a>
+        {% else %}
+          <p>Please complete above section before adding goods.</p>
+        {% endif %}
 
         <h4>Supporting Documents</h4>
 

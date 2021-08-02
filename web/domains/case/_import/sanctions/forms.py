@@ -1,7 +1,9 @@
 from django import forms
 
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.utils.commodity import get_usage_commodities, get_usage_records
 
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
@@ -32,30 +34,37 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        countries = Country.objects.filter(country_groups__name="Sanctions and Adhoc License")
-        self.fields["origin_country"].queryset = countries
-        self.fields["consignment_country"].queryset = countries
+        # Didn't use `get_usage_countries` for speed.
+        self.fields["origin_country"].queryset = Country.objects.filter(
+            country_groups__name="Sanctions and Adhoc License", is_active=True
+        )
+
+        self.fields["consignment_country"].queryset = Country.objects.filter(
+            country_groups__name="Sanctions and Adhoc License Countries of shipping (consignment)",
+            is_active=True,
+        )
 
 
 class GoodsForm(forms.ModelForm):
-    commodity_code = forms.ChoiceField(
-        label="Commodity Code",
-        help_text="""
-            It is the responsibility of the applicant to ensure that the commodity code in this box
-            is correct. If you are unsure of the correct commodity code, consult the HM Revenue and
-            Customs Integrated Tariff Book, Volume 2, which is available from the Stationery Office.
-            If you are still in doubt, contact the Classification Advisory Service on (01702) 366077.
-        """,
-        choices=[(x, x) for x in [None, "2850009000", "2850002070", "2828282828", "2801010101"]],
-    )
     quantity_amount = forms.DecimalField(label="Quantity Amount")
     value = forms.DecimalField(label="Value")
 
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
-        fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
+        fields = ["commodity", "goods_description", "quantity_amount", "value"]
         widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
         labels = {"value": "Value (GBP CIF)"}
+
+    def __init__(self, *args, application: SanctionsAndAdhocApplication, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        country_of_origin = application.origin_country
+
+        usage_records = get_usage_records(
+            ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
+        ).filter(country=country_of_origin)
+
+        self.fields["commodity"].queryset = get_usage_commodities(usage_records)
 
 
 class GoodsSanctionsLicenceForm(forms.ModelForm):
@@ -64,9 +73,9 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
 
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
-        fields = ["commodity_code", "goods_description", "quantity_amount", "value"]
+        fields = ["commodity", "goods_description", "quantity_amount", "value"]
         widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["commodity_code"].widget.attrs["readonly"] = True
+        self.fields["commodity"].disabled = True

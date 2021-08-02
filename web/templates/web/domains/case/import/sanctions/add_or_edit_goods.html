@@ -3,46 +3,32 @@
 {% import "forms/fields.html" as fields %}
 
 {% block sidebar %}
-    {% include "partial/case/import/sanctions/sidebar.html" %}
+  {% include "partial/case/import/sanctions/sidebar.html" %}
 {% endblock %}
 
 {% block content_actions %}
-    <div class="content-actions">
-        <ul class="menu-out flow-across">
-            <li>
-                <a
-                        href="{{ icms_url('import:sanctions:edit', kwargs={'application_pk': process.pk}) }}"
-                        class="prev-link">
-                    Application Details
-                </a>
-            </li>
-        </ul>
-    </div>
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('import:sanctions:edit', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Application Details
+        </a>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
 
 {% block form_content %}
-
-
-
-    <h4>Sanctions and Adhoc License</h4>
-    {{ fields.field(form.commodity_code) }}
-
-    <div id="hint79-content" role="tooltip" class="hint-content" aria-hidden="true">
-        <div class="screen-reader-only">This item has hint text,</div>
-        It is the responsibility of the applicant to ensure that the commodity code in this box is
-        correct. If you are unsure of the correct commodity code, consult the HM Revenue and Customs
-        Integrated Tariff Book, Volume 2, which is available from the Stationery Office. If you are
-        still in doubt, contact the Classification Advisory Service on (01702) 366077.
-    </div>
-    <div id="hint79" aria-describedby="hint79-content" class="hint icon-info tooltipstered"></div>
-
-
-    {{ fields.field(form.goods_description) }}
-    {{ fields.field(form.quantity_amount) }}
-    {{ fields.field(form.value) }}
+  <h4>Sanctions and Adhoc License</h4>
+  {{ fields.field(form.commodity) }}
+  {{ fields.field(form.goods_description) }}
+  {{ fields.field(form.quantity_amount) }}
+  {{ fields.field(form.value) }}
 
 {% endblock form_content %}
 
 {% block task_actions %}
-    <input type="submit" name="save" class="primary-button button" value="Save"/>
+  <input type="submit" name="save" class="primary-button button" value="Save"/>
 {% endblock task_actions %}

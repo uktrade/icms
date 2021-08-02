@@ -2301,6 +2301,18 @@ def add_commodity_groups(apps, schema_editor):
                 commodity_type=data.get_commodity_type(type_code="OIL_PETROCHEMICALS"),
                 unit=data.get_unit(unit_type="KGS"),
             ),
+            # Test commodity group for Korea (north)
+            CommodityGroup(
+                is_active=True,
+                start_datetime=pytz.timezone("UTC").localize(
+                    datetime.strptime("26-APR-2013 16:00:06", DATETIME_FORMAT), is_dst=None
+                ),
+                group_type="CATEGORY",
+                group_code="SAN-AND-ADHOC-TEST",
+                group_description="(Korea (North) - Sanctions and adhoc).",
+                commodity_type=data.get_commodity_type(type_code="CHEMICALS"),
+                unit=data.get_unit(unit_type="KGS"),
+            ),
             CommodityGroup(
                 is_active=True,
                 start_datetime=pytz.timezone("UTC").localize(
