@@ -1,8 +1,11 @@
 from django.db import models
 
+from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 
 from ..models import ChecklistBase, ImportApplication, ImportApplicationType
+
+WOOD_UNIT_CHOICES = [(x, x) for x in ["cubic metres"]]
 
 
 class WoodContractFile(File):
@@ -23,17 +26,39 @@ class WoodQuotaApplication(ImportApplication):
 
     # exporter
     exporter_name = models.CharField(max_length=100, null=True)
-    exporter_address = models.CharField(max_length=4000, null=True)
-    exporter_vat_nr = models.CharField(max_length=100, null=True)
+    exporter_address = models.CharField(max_length=4000, null=True, verbose_name="Exporter address")
+    exporter_vat_nr = models.CharField(
+        max_length=100, null=True, verbose_name="Exporter VAT number"
+    )
 
     #  goods
-    commodity_code = models.CharField(max_length=40, null=True)
+    commodity = models.ForeignKey(
+        Commodity,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="Commodity Code",
+        help_text=(
+            "It is the responsibility of the applicant to ensure that the commodity code in"
+            " this box is correct. If you are unsure of the correct commodity code,"
+            " consult the HM Revenue and Customs Integrated Tariff Book, Volume 2,"
+            " which is available from the Stationery Office. If you are still in doubt,"
+            " contact the Classification Advisory Service on (01702) 366077."
+        ),
+    )
+
     goods_description = models.CharField(max_length=100, null=True)
-    goods_qty = models.DecimalField(null=True, max_digits=9, decimal_places=2)
-    goods_unit = models.CharField(max_length=40, null=True)
+    goods_qty = models.DecimalField(
+        null=True, max_digits=9, decimal_places=2, verbose_name="Quantity"
+    )
+    goods_unit = models.CharField(
+        max_length=40, null=True, verbose_name="Unit", choices=WOOD_UNIT_CHOICES
+    )
 
     # misc
-    additional_comments = models.CharField(max_length=4000, blank=True, null=True)
+    additional_comments = models.CharField(
+        max_length=4000, blank=True, null=True, verbose_name="Additional Comments"
+    )
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")

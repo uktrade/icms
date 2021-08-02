@@ -70,3 +70,17 @@ def get_category_commodity_group_data(commodity_type: str) -> dict[str, dict[str
         group_data.update({cg.pk: {"label": cg.group_description, "unit": unit_desc}})
 
     return group_data
+
+
+def get_active_commodities(commodities: "QuerySet[Commodity]") -> "QuerySet[Commodity]":
+    """Filter commodities by date and active status"""
+    today = timezone.now().date()
+
+    return commodities.annotate(
+        commodity_start_date=F("validity_start_date"),
+        commodity_end_date=Coalesce("validity_end_date", today),
+    ).filter(
+        commodity_start_date__lte=today,
+        commodity_end_date__gte=today,
+        is_active=True,
+    )

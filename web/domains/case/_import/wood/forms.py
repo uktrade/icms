@@ -4,8 +4,10 @@ from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
+from web.domains.commodity.models import Commodity
 from web.domains.file.utils import ICMSFileField
 from web.forms.widgets import DateInput
+from web.utils.commodity import get_active_commodities
 
 from . import models
 
@@ -27,31 +29,6 @@ class PrepareWoodQuotaForm(forms.ModelForm):
         widget=forms.Select(choices=[(x, x) for x in _get_year_selection()]),
     )
 
-    exporter_address = forms.CharField(
-        label="Exporter address", widget=forms.Textarea(attrs={"rows": 4})
-    )
-
-    exporter_vat_nr = forms.CharField(label="Exporter VAT number")
-
-    commodity_code = forms.ChoiceField(
-        help_text=""" It is the responsibility of the applicant to ensure that
-        the commodity code in this box is correct. If you are unsure of the
-        correct commodity code, consult the HM Revenue and Customs Integrated
-        Tariff Book, Volume 2, which is available from the Stationery Office. If
-        you are still in doubt, contact the Classification Advisory Service on
-        (01702) 366077.""",
-        choices=[(x, x) for x in [None, "4403201110", "4403201910", "4403203110", "4403203910"]],
-    )
-
-    goods_qty = forms.DecimalField(label="Quantity")
-
-    goods_unit = forms.ChoiceField(
-        label="Unit",
-        choices=[(x, x) for x in ["cubic metres"]],
-    )
-
-    additional_comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 4}))
-
     class Meta:
         model = models.WoodQuotaApplication
         fields = (
@@ -61,17 +38,28 @@ class PrepareWoodQuotaForm(forms.ModelForm):
             "exporter_name",
             "exporter_address",
             "exporter_vat_nr",
-            "commodity_code",
+            "commodity",
             "goods_description",
             "goods_qty",
             "goods_unit",
             "additional_comments",
         )
 
+        widgets = {
+            "exporter_address": forms.Textarea(attrs={"rows": 4}),
+            "additional_comments": forms.Textarea(attrs={"rows": 4}),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["contact"].queryset = application_contacts(self.instance)
+
+        # Wood applications are simply filtered by commodity type instead of
+        # using the usage records to filter commodities.
+        self.fields["commodity"].queryset = get_active_commodities(
+            Commodity.objects.filter(commodity_type__type="Wood")
+        )
 
 
 class AddContractDocumentForm(forms.ModelForm):
@@ -114,17 +102,10 @@ class WoodQuotaChecklistOptionalForm(WoodQuotaChecklistForm):
 
 
 class GoodsWoodQuotaLicenceForm(forms.ModelForm):
-    goods_qty = forms.DecimalField(label="Quantity")
-
-    goods_unit = forms.ChoiceField(
-        label="Unit",
-        choices=[(x, x) for x in ["cubic metres"]],
-    )
-
     class Meta:
         model = models.WoodQuotaApplication
-        fields = ("commodity_code", "goods_description", "goods_qty", "goods_unit")
+        fields = ("commodity", "goods_description", "goods_qty", "goods_unit")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["commodity_code"].widget.attrs["readonly"] = True
+        self.fields["commodity"].disabled = True

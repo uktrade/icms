@@ -29,6 +29,10 @@ class CommodityFilter(FilterSet):
         field_name="commodity_code", lookup_expr="icontains", label="Commodity Code"
     )
 
+    commodity_type = ModelChoiceFilter(
+        queryset=CommodityType.objects.all(), label="Commodity Types"
+    )
+
     valid_start = DateFilter(
         field_name="validity_start_date", lookup_expr="gte", widget=DateInput, label="Valid between"
     )
