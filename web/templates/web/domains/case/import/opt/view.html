@@ -64,7 +64,7 @@
     {{ application_field(process.cp_total_value, labels["cp_total_value"]) }}
     <h4>Commodity Code</h4>
     {% for commodity in process.cp_commodities.all() %}
-      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+      <p class="commodity-row">{{ commodity_link(commodity) }}</p>
     {% endfor %}
   {% endcall %}
   <hr>
@@ -83,7 +83,7 @@
     {{ application_field(process.teg_goods_description, labels["teg_goods_description"]) }}
     <h4>Commodity Code</h4>
     {% for commodity in process.teg_commodities.all() %}
-      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+      <p class="commodity-row">{{ commodity_link(commodity) }}</p>
     {% endfor %}
   {% endcall %}
   <hr>

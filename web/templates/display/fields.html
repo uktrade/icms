@@ -30,3 +30,7 @@ takes a model field like this:
     <div class="three columns"></div>
   </div>
 {%- endmacro %}
+
+{% macro commodity_link(commodity) -%}
+  <a href="https://www.trade-tariff.service.gov.uk/commodities/{{ commodity.commodity_code }}" target="_blank">{{ commodity.commodity_code }}</a>
+{%- endmacro %}

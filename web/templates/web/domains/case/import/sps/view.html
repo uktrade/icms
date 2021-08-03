@@ -13,7 +13,7 @@
   {% endcall %}
 
   {% call application_section("Goods") %}
-    {{ application_field(process.commodity.commodity_code, "Commodity Code") }}
+    {{ application_field(commodity_link(process.commodity), "Commodity Code") }}
     {{ application_field(process.quantity, "Quantity") }}
     {{ application_field("Kilos", "Units") }}
     {{ application_field(process.value_gbp, "Value (GBP/£)") }}

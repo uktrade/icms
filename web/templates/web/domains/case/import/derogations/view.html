@@ -16,32 +16,11 @@
   {% endcall %}
 
   {% call application_section("Goods") %}
-    {% if goods %}
-      <table responsiveList class="setoutList" id="tbl-search-results">
-        <thead>
-          <tr>
-            <th>Commodity Code</th>
-            <th>Goods Descriptions</th>
-            <th>Quantity</th>
-            <th>Unit</th>
-            <th>Value (GBP CIF)</th>
-          </tr>
-        </thead>
-        {% for row in goods %}
-          <tr class="result-row">
-            <td>{{ row.commodity_code }}</td>
-            <td>{{ row.goods_description }}</td>
-            <td>{{ row.quantity_amount }}</td>
-            <td>kilos</td>
-            <td>{{ row.value }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% else %}
-      <div class="info-box info-box-info">
-        There are no goods attached.
-      </div>
-    {% endif %}
+    {{ application_field(commodity_link(process.commodity), "Commodity Code") }}
+    {{ application_field(process.goods_description, "Goods Descriptions") }}
+    {{ application_field(process.quantity, "Quantity") }}
+    {{ application_field(process.unit, "Unit") }}
+    {{ application_field(process.value, "Value (GBP CIF)") }}
   {% endcall %}
 
   {% call application_section("Supporting Documents") %}

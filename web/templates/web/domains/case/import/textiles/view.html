@@ -16,7 +16,7 @@
   {% call application_section("Goods") %}
     {{ application_field(process.category_commodity_group.pk, "Category") }}
     {{ application_field(process.category_commodity_group.group_description, "") }}
-    {{ application_field(process.commodity.commodity_code, "Commodity Code") }}
+    {{ application_field(commodity_link(process.commodity), "Commodity Code") }}
     {{ application_field(process.goods_description, "Goods Description") }}
     {{ application_field(process.quantity, "Quantity") }}
     {{ application_field(process.category_commodity_group.unit.description, "Unit") }}

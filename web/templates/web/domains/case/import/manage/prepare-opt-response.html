@@ -43,7 +43,7 @@
   <h6>Commodity Code</h6>
   {% if compensating_product_commodities %}
     {% for commodity in compensating_product_commodities %}
-      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+      <p class="commodity-row">{{ commodity_link(commodity) }}</p>
     {% endfor %}
   {% else %}
     <div class="info-box info-box-info">There are no compensating products commodities</div>
@@ -77,7 +77,7 @@
   <h6>Commodity Code</h6>
   {% if temporary_exported_goods_commodities %}
     {% for commodity in temporary_exported_goods_commodities %}
-      <p class="commodity-row">{{ commodity.commodity_code }}</p>
+      <p class="commodity-row">{{ commodity_link(commodity) }}</p>
     {% endfor %}
   {% else %}
     <div class="info-box info-box-info">There are no temporary exported goods commodities</div>
