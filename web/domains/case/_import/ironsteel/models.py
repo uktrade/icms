@@ -21,10 +21,6 @@ class IronSteelCertificateFile(File):
         help_text="This is the total quantity allowed by the export licence.",
     )
 
-    # TODO: form validation: "Please ensure that the sum of export certificate
-    # requested quantities equals the total quantity of imported goods."" (this
-    # goes in submit validation)
-
     requested_qty = models.DecimalField(
         max_digits=9,
         decimal_places=2,
