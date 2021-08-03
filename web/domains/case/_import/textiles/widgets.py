@@ -6,10 +6,9 @@ from django_select2 import forms as s2forms
 
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity, CommodityGroup, Country
-from web.utils.commodity import get_usage_commodities, get_usage_records
+from web.utils.commodity import get_usage_commodity_groups, get_usage_records
 
 
-# TODO: Revisit both widgets when doing ICMSLST-853
 class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
     queryset = CommodityGroup.objects.filter(commodity_type__type_code="TEXTILES")
 
@@ -39,7 +38,7 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
             ImportApplicationType.Types.TEXTILES  # type: ignore[arg-type]
         ).filter(country=country_of_origin)
 
-        return get_usage_commodities(usage_records)
+        return get_usage_commodity_groups(usage_records)
 
 
 class TextilesCommodityWidget(s2forms.ModelSelect2Widget):

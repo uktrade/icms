@@ -17,8 +17,9 @@ class EditSPSForm(forms.ModelForm):
             "customs_cleared_to_uk",
             "origin_country",
             "consignment_country",
-            # TODO: Revisit when doing ICMSLST-853
-            # We are currently just showing all commodities
+            # We are currently just showing all commodities, revisit if this becomes active again
+            # NOTE: commodities seem to have these prefixes:
+            # ["72", "73", "76"] -> "Iron, Steel and Aluminium"
             "commodity",
             "quantity",
             "value_gbp",

@@ -13,4 +13,9 @@ class YesNoNAChoices(models.TextChoices):
     not_applicable = ("n/a", "N/A")
 
 
+class FirearmCommodity(models.TextChoices):
+    EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
+    EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
+
+
 at_least_0 = MinValueValidator(limit_value=0.0)

@@ -10,6 +10,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.user.models import User
+from web.models.shared import FirearmCommodity
 from web.tests.helpers import check_page_errors
 
 
@@ -90,7 +91,7 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
         "contact": importer_contact.pk,
-        "commodity_code": DFLApplication.CommodityCodes.EX_CHAPTER_93.value,
+        "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
         "know_bought_from": False,
     }
@@ -106,7 +107,7 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     assert dfl_app.origin_country.pk == origin_country.pk
     assert dfl_app.consignment_country.pk == consignment_country.pk
     assert dfl_app.contact.pk == importer_contact.pk
-    assert dfl_app.commodity_code == DFLApplication.CommodityCodes.EX_CHAPTER_93.value
+    assert dfl_app.commodity_code == FirearmCommodity.EX_CHAPTER_93.value
     assert dfl_app.constabulary.pk == constabulary.pk
     assert dfl_app.know_bought_from is False
 
@@ -344,7 +345,7 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
         "contact": importer_contact.pk,
-        "commodity_code": DFLApplication.CommodityCodes.EX_CHAPTER_93.value,
+        "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
         "know_bought_from": True,
     }
@@ -383,7 +384,7 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
         "contact": importer_contact.pk,
-        "commodity_code": DFLApplication.CommodityCodes.EX_CHAPTER_93.value,
+        "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
         "know_bought_from": False,
     }

@@ -8,7 +8,7 @@ from web.domains.case._import.models import (
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
-from web.models.shared import YesNoNAChoices
+from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 
 class DFLGoodsCertificate(File):
@@ -37,10 +37,6 @@ class DFLGoodsCertificate(File):
 class DFLApplication(ImportApplication):
     """Firearms & Ammunition Deactivated Firearms Licence application"""
 
-    class CommodityCodes(models.TextChoices):
-        EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
-        EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
-
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_DFL
 
     deactivated_firearm = models.BooleanField(verbose_name="Deactivated Firearm", default=True)
@@ -49,11 +45,17 @@ class DFLApplication(ImportApplication):
     # Goods section fields
     commodity_code = models.CharField(
         max_length=40,
-        blank=False,
         null=True,
-        choices=CommodityCodes.choices,
+        choices=FirearmCommodity.choices,
         verbose_name="Commodity Code",
+        help_text=(
+            "You must pick the commodity code group that applies to the items that you wish to"
+            ' import. Please note that "ex Chapter 97" is only relevant to collectors pieces and'
+            " items over 100 years old. Please contact HMRC classification advisory service,"
+            " 01702 366077, if you are unsure of the correct code."
+        ),
     )
+
     constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
     goods_certificates = models.ManyToManyField(DFLGoodsCertificate, related_name="dfl_application")
 

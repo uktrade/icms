@@ -3,7 +3,7 @@ from django.db import models
 from web.domains.case._import.models import ChecklistBase
 from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
-from web.models.shared import YesNoNAChoices
+from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 from ..models import ImportApplication, ImportApplicationType
 
@@ -16,10 +16,6 @@ class SILApplication(ImportApplication):
     """Firearms Specific Import Licence Application."""
 
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_SIL
-
-    class Commodity(models.TextChoices):
-        EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
-        EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
 
     # Select one or more sections related to the firearms licence
     section1 = models.BooleanField(verbose_name="Section 1", default=False)
@@ -56,7 +52,7 @@ class SILApplication(ImportApplication):
     commodity_code = models.CharField(
         max_length=40,
         null=True,
-        choices=Commodity.choices,
+        choices=FirearmCommodity.choices,
         verbose_name="Commodity Code",
         help_text=(
             "You must pick the commodity code group that applies to the items that you wish to"

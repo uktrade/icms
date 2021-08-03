@@ -39,12 +39,6 @@ class PrepareDFLForm(forms.ModelForm):
                 "If the goods are consigned/dispatched from more than one country,"
                 " select the group (e.g. Any EU Country) that best describes this."
             ),
-            "commodity_code": (
-                "You must pick the commodity code group that applies to the items that you wish to import."
-                ' Please note that "ex Chapter 97" is only relevant to collectors pieces and items over 100 years old.'
-                " Please contact HMRC classification advisory service, 01702 366077,"
-                " if you are unsure of the correct code."
-            ),
             "constabulary": "Select the constabulary in which you reside.",
         }
 

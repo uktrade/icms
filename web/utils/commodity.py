@@ -47,10 +47,17 @@ def get_usage_countries(application_usage: "QuerySet[Usage]") -> "QuerySet[Count
     return Country.objects.filter(usage__in=application_usage, is_active=True).distinct()
 
 
+def get_usage_commodity_groups(application_usage: "QuerySet[Usage]") -> "QuerySet[CommodityGroup]":
+    """Return commodity groups linked to the usage records"""
+    return CommodityGroup.objects.filter(usages__in=application_usage, is_active=True).distinct()
+
+
 def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Commodity]":
     """Return commodities linked to the usage records."""
+    groups = get_usage_commodity_groups(application_usage)
+
     return Commodity.objects.filter(
-        commoditygroup__in=CommodityGroup.objects.filter(usages__in=application_usage),
+        commoditygroup__in=groups,
         is_active=True,
     ).distinct()
 

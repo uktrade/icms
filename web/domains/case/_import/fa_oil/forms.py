@@ -8,16 +8,6 @@ from . import models
 
 
 class PrepareOILForm(forms.ModelForm):
-    commodity_code = forms.ChoiceField(
-        label="Commodity Code",
-        help_text="""
-            You must pick the commodity code group that applies to the items that you wish to
-            import. Please note that "ex Chapter 97" is only relevant to collectors pieces and
-            items over 100 years old. Please contact HMRC classification advisory service,
-            01702 366077, if you are unsure of the correct code.
-        """,
-        choices=[(x, x) for x in [None, "ex Chapter 93", "ex Chapter 95"]],
-    )
     section1 = forms.BooleanField(disabled=True, label="Firearms Licence for")
     section2 = forms.BooleanField(disabled=True, label="")
 

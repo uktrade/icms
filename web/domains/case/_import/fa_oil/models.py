@@ -1,7 +1,7 @@
 from django.db import models
 
 from web.models import UserImportCertificate
-from web.models.shared import YesNoNAChoices
+from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
@@ -21,7 +21,18 @@ class OpenIndividualLicenceApplication(ImportApplication):
         "FirearmsAuthority", related_name="oil_application"
     )
 
-    commodity_code = models.CharField(max_length=40, blank=False, null=True)
+    commodity_code = models.CharField(
+        max_length=40,
+        null=True,
+        choices=FirearmCommodity.choices,
+        verbose_name="Commodity Code",
+        help_text=(
+            "You must pick the commodity code group that applies to the items that you wish to"
+            ' import. Please note that "ex Chapter 97" is only relevant to collectors pieces and'
+            " items over 100 years old. Please contact HMRC classification advisory service,"
+            " 01702 366077, if you are unsure of the correct code."
+        ),
+    )
 
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
