@@ -40,6 +40,8 @@ urlpatterns = [
                 path("submit/", views.submit_ironsteel, name="submit"),
                 path("document/", include(supporting_document_urls)),
                 path("certificate/", include(certificate_urls)),
+                # Case management
+                path("checklist/", views.manage_checklist, name="manage-checklist"),
             ],
         ),
     )

@@ -3,6 +3,7 @@ import re
 
 from django import forms
 
+from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.ironsteel.widgets import (
     IronSteelCommodityGroupSelect,
     IronSteelCommoditySelect,
@@ -119,3 +120,19 @@ class AddCertificateForm(CertificateFormBase):
 
 class EditCertificateForm(CertificateFormBase):
     pass
+
+
+class IronSteelChecklistForm(ChecklistBaseForm):
+    class Meta:
+        model = models.IronSteelChecklist
+        fields = ("licence_category",) + ChecklistBaseForm.Meta.fields
+
+
+class IronSteelChecklistOptionalForm(IronSteelChecklistForm):
+    """Used to enable partial saving of checklist."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False

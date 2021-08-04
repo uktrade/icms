@@ -1,9 +1,13 @@
 from django.db import models
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import (
+    ChecklistBase,
+    ImportApplication,
+    ImportApplicationType,
+)
 from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
-from web.models.shared import at_least_0
+from web.models.shared import YesNoNAChoices, at_least_0
 
 
 class IronSteelCertificateFile(File):
@@ -99,3 +103,18 @@ class IronSteelApplication(ImportApplication):
     supporting_documents = models.ManyToManyField(File, related_name="+")
 
     certificates = models.ManyToManyField(IronSteelCertificateFile, related_name="+")
+
+
+class IronSteelChecklist(ChecklistBase):
+    import_application = models.OneToOneField(
+        IronSteelApplication, on_delete=models.PROTECT, related_name="checklist"
+    )
+
+    licence_category = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name=(
+            "Do the export licence and application categories match, e.g. export licence SA1 and application SA1?"
+        ),
+    )

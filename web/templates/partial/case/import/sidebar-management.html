@@ -83,6 +83,14 @@
         Checklist
       </a>
     </li>
+  {% elif process.process_type == "ISQuotaApplication" %}
+    <li>
+      <a
+        href="{{ icms_url('import:ironsteel:manage-checklist', kwargs={"application_pk": process.pk}) }}">
+        Checklist
+      </a>
+    </li>
+
   {% endif %}
 
   {# Common import application links #}

@@ -1,7 +1,7 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import Sum
-from django.forms import model_to_dict
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -23,8 +23,14 @@ from web.utils.validation import (
 )
 
 from .. import views as import_views
-from .forms import AddCertificateForm, EditCertificateForm, EditIronSteelForm
-from .models import IronSteelApplication
+from .forms import (
+    AddCertificateForm,
+    EditCertificateForm,
+    EditIronSteelForm,
+    IronSteelChecklistForm,
+    IronSteelChecklistOptionalForm,
+)
+from .models import IronSteelApplication, IronSteelChecklist
 
 
 @login_required
@@ -363,3 +369,47 @@ def edit_certificate(
         }
 
         return render(request, "web/domains/case/import/ironsteel/edit_certificate.html", context)
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: IronSteelApplication = get_object_or_404(
+            IronSteelApplication.objects.select_for_update(), pk=application_pk
+        )
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        checklist, created = IronSteelChecklist.objects.get_or_create(
+            import_application=application
+        )
+
+        if request.POST:
+            form = IronSteelChecklistOptionalForm(request.POST, instance=checklist)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:ironsteel:manage-checklist",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+        else:
+            if created:
+                form = IronSteelChecklistForm(instance=checklist)
+            else:
+                form = IronSteelChecklistForm(data=model_to_dict(checklist), instance=checklist)
+
+        context = {
+            "process": application,
+            "task": task,
+            "page_title": "Iron and Steel (Quota) Import Licence - Checklist",
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/management/checklist.html",
+            context=context,
+        )
