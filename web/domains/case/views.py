@@ -36,6 +36,7 @@ from web.models import (
     ExporterAccessRequest,
     ImportApplication,
     ImporterAccessRequest,
+    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     OutwardProcessingTradeFile,
@@ -1259,6 +1260,9 @@ def view_case(
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
         return _view_sps(request, application.priorsurveillanceapplication)  # type: ignore[union-attr]
 
+    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
+        return _view_ironsteel(request, application.ironsteelapplication)  # type: ignore[union-attr]
+
     # Export applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
         return _view_com(request, application.certificateofmanufactureapplication)  # type: ignore[union-attr]
@@ -1427,6 +1431,20 @@ def _view_sps(
     }
 
     return render(request, "web/domains/case/import/sps/view.html", context)
+
+
+def _view_ironsteel(
+    request: AuthenticatedHttpRequest, application: IronSteelApplication
+) -> HttpResponse:
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "page_title": get_page_title("import", application, "View"),
+        "supporting_documents": application.supporting_documents.filter(is_active=True),
+        "certificates": application.certificates.filter(is_active=True),
+    }
+
+    return render(request, "web/domains/case/import/ironsteel/view.html", context)
 
 
 def _view_accessrequest(

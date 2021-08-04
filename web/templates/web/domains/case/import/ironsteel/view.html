@@ -5,9 +5,8 @@
     {{ super() }}
   {% endblock %}
 
-  {% call application_section("Textiles (Quota)") %}
-    {{ application_field(process.applicant_reference, "Applicant's Reference", "N/a") }}
-    {{ application_field("Yes" if process.goods_cleared else "No", "Will the goods be cleared in another Member State of the European Union?") }}
+  {% call application_section("Iron and Steel (Quota)") %}
+    {{ application_field(process.applicant_reference, "Application Reference", "N/a") }}
     {{ application_field(process.shipping_year, "Shipping Year") }}
     {{ application_field(process.origin_country, "Country Of Origin") }}
     {{ application_field(process.consignment_country, "Country Of Consignment") }}
@@ -19,12 +18,23 @@
     {{ application_field(commodity_link(process.commodity), "Commodity Code") }}
     {{ application_field(process.goods_description, "Goods Description") }}
     {{ application_field(process.quantity, "Quantity") }}
-    {{ application_field(process.category_commodity_group.unit.description, "Unit") }}
+    <div class="row">
+        <div class="three columns bold">
+          <div class="float-right">Unit</div>
+        </div>
+        <div class="six columns"><p>kilos</p></div>
+        <div class="three columns"></div>
+      </div>
   {% endcall %}
+
+  <h4>Certificates/Documents</h4>
+  {% with read_only = true %}
+    {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
+  {% endwith %}
 
   <h4>Supporting Documents</h4>
   {% with read_only = true %}
-    {% include "web/domains/case/import/partials/textiles/documents_list.html" %}
+    {% include "web/domains/case/import/partials/ironsteel/documents_list.html" %}
   {% endwith %}
 
 {% endblock %}
