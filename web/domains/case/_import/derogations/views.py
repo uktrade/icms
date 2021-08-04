@@ -9,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import check_application_permission
+from web.domains.country.models import Country
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -40,11 +41,22 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
 
+        syria = Country.objects.get(name="Syria")
+
         if request.method == "POST":
             form = DerogationsForm(data=request.POST, instance=application)
 
             if form.is_valid():
-                form.save()
+                application = form.save(commit=False)
+
+                # Clear the syria section if needed
+                if syria not in (application.origin_country, application.consignment_country):
+                    application.entity_consulted_name = None
+                    application.activity_benefit_anyone = None
+                    application.purpose_of_request = None
+                    application.civilian_purpose_details = None
+
+                application.save()
 
                 return redirect(
                     reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
@@ -54,6 +66,8 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
+        show_fd = syria in (application.origin_country, application.consignment_country)
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
@@ -61,6 +75,7 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "form": form,
             "page_title": get_page_title("Edit"),
             "supporting_documents": supporting_documents,
+            "show_further_details": show_fd,
         }
 
         return render(request, "web/domains/case/import/derogations/edit.html", context)

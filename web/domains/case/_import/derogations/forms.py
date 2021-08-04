@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django import forms
 
@@ -34,6 +34,11 @@ class DerogationsForm(forms.ModelForm):
             "quantity",
             "unit",
             "value",
+            # Further details fields (for Syria)
+            "entity_consulted_name",
+            "activity_benefit_anyone",
+            "purpose_of_request",
+            "civilian_purpose_details",
         )
         widgets = {
             "contract_sign_date": DateInput,
@@ -41,6 +46,7 @@ class DerogationsForm(forms.ModelForm):
             "explanation": forms.Textarea(attrs={"cols": 50, "rows": 3}),
             "origin_country": DerogationCountryOfOriginSelect,
             "commodity": DerogationCommoditySelect,
+            "civilian_purpose_details": forms.Textarea(attrs={"cols": 50, "rows": 3}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -77,7 +83,34 @@ class DerogationsForm(forms.ModelForm):
                 )
                 break
 
+        self._clean_syria_further_details(cleaned_data)
+
         return cleaned_data
+
+    def _clean_syria_further_details(self, cleaned_data: dict[str, Any]) -> None:
+        syria: Country = Country.objects.get(name="Syria")
+        origin_country: Country = cleaned_data["origin_country"]
+        consignment_country: Country = cleaned_data["consignment_country"]
+
+        if syria not in (origin_country, consignment_country):
+            return
+
+        fields = ("entity_consulted_name", "activity_benefit_anyone", "purpose_of_request")
+
+        for f in fields:
+            val = cleaned_data.get(f)
+
+            if not val:
+                self.add_error(f, "You must enter this item")
+
+        purpose_of_request = cleaned_data.get("purpose_of_request")
+        civilian_purpose_details = cleaned_data.get("civilian_purpose_details")
+        is_other_civ_purpose = (
+            purpose_of_request == DerogationsApplication.SyrianRequestPurpose.OTHER_CIV_PURPOSE
+        )
+
+        if is_other_civ_purpose and not civilian_purpose_details:
+            self.add_error("civilian_purpose_details", "You must enter this item")
 
 
 class DerogationsChecklistForm(ChecklistBaseForm):

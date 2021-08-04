@@ -29,6 +29,17 @@
     {{ fields.field(form.contract_completion_date) }}
     {{ fields.field(form.explanation) }}
 
+    <div id="further-details-wrapper" style="display: {{ "block" if show_further_details else "none" }}">
+      <h4>Further Details</h4>
+      {{ fields.field(form.entity_consulted_name, show_optional_indicator=False) }}
+      {{ fields.field(form.activity_benefit_anyone, show_optional_indicator=False) }}
+      {{ fields.field(form.purpose_of_request, show_optional_indicator=False) }}
+
+      <div id="civilian-purpose-details-wrapper">
+        {{ fields.field(form.civilian_purpose_details) }}
+      </div>
+    </div>
+
     <div class="info-box info-box-warning">
       <div class="screen-reader-only">Warning information box,</div>
       Please upload your contract in the Supporting Documents section below.
@@ -97,4 +108,5 @@
 {% block page_js %}
   {{ form.media.js }}
   {{ super() }}
+  <script src="{{ static('web/js/pages/derogations-edit.js') }}" type="text/javascript"></script>
 {% endblock %}

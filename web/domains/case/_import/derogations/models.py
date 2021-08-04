@@ -2,7 +2,7 @@ from django.db import models
 
 from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
-from web.models.shared import YesNoNAChoices, at_least_0
+from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 
 from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
@@ -10,6 +10,12 @@ from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 class DerogationsApplication(ImportApplication):
     class Unit(models.TextChoices):
         KG = ("kilos", "kilos")
+
+    class SyrianRequestPurpose(models.TextChoices):
+        HUMANITARIAN_CONCERNS = ("HC", "Humanitarian concerns")
+        PROVISION_OF_SERVICES = ("POS", "Assisting in the provision of basic services")
+        RESTORE_ECONOMIC_ACTIVITY = ("REA", "Reconstruction or restoring economic activity")
+        OTHER_CIV_PURPOSE = ("OCP", "Other civilian purposes")
 
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.DEROGATIONS
 
@@ -61,6 +67,48 @@ class DerogationsApplication(ImportApplication):
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")
+
+    # Further details section (for Syria)
+    entity_consulted_name = models.CharField(
+        max_length=500,
+        null=True,
+        blank=True,
+        verbose_name=(
+            "Provide the name of the person, entity or body designated by the"
+            " Syrian National Coalition for Opposition and Revolutionary Forces"
+            " that was consulted"
+        ),
+    )
+
+    activity_benefit_anyone = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        blank=True,
+        verbose_name=(
+            "Do the activities concerned benefit anyone listed in Article 2 of"
+            " EU Regulations 2580/2001 and 881/2002 or Article 14 of EU"
+            " Regulation 36/2012?"
+        ),
+    )
+
+    purpose_of_request = models.CharField(
+        max_length=3,
+        choices=SyrianRequestPurpose.choices,
+        null=True,
+        blank=True,
+        verbose_name=(
+            "Purpose of the request and how it provides assistance to the"
+            " Syrian civilian population"
+        ),
+    )
+
+    civilian_purpose_details = models.CharField(
+        max_length=4096,
+        null=True,
+        blank=True,
+        verbose_name="Provide details of the civilian purpose",
+    )
 
 
 class DerogationsChecklist(ChecklistBase):
