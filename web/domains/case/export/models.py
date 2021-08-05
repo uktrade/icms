@@ -296,9 +296,6 @@ class CFSSchedule(models.Model):
         max_length=4000, verbose_name="Address", null=True, blank=True
     )
 
-    # "Products" section fields
-    # TODO: ICMSLST-876 Add "Products" section fields
-
     is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(
         User,
@@ -309,3 +306,23 @@ class CFSSchedule(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class CFSProduct(models.Model):
+    product_name = models.CharField(max_length=1000)
+    schedule = models.ForeignKey(CFSSchedule, related_name="products", on_delete=models.CASCADE)
+
+
+class CFSProductType(models.Model):
+    product_type_number = models.IntegerField(choices=[(i, i) for i in range(1, 23)])
+    product = models.ForeignKey(
+        CFSProduct, related_name="product_type_numbers", on_delete=models.CASCADE
+    )
+
+
+class CFSProductActiveIngredient(models.Model):
+    name = models.CharField(max_length=500)
+    cas_number = models.CharField(max_length=50, verbose_name="CAS Number")
+    product = models.ForeignKey(
+        CFSProduct, related_name="active_ingredients", on_delete=models.CASCADE
+    )

@@ -1,0 +1,164 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+  {% include "partial/case/export/cfs/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk }) }}"
+          class="prev-link">
+          Edit schedule
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+    {% if product and is_biocidal %}
+      <br/>
+      <table class="setoutList">
+        <thead>
+          <tr>
+            <th scope="col">Product Name</th>
+            <th scope="col">Product Type Numbers</th>
+            <th scope="col">Active Ingredients</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data', id='id_cfs-product-form') -%}
+              {{ fields.inline_field(form.product_name) }}
+            {% endcall %}
+            {% if product_type_numbers %}
+              <td>
+                <table class="nestedListWithHeader setoutList nestedList">
+                  <thead>
+                    <tr>
+                      <th scope="col">PT Number</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for product_type in product_type_numbers %}
+                    <tr>
+                      <td>{{ product_type.product_type_number }}</td>
+                      <td>
+                        <ul class="menu-out">
+                          <li>
+                            <a
+                              href="{{ icms_url('export:cfs-schedule-edit-product-type', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk, 'product_type_pk': product_type.pk }) }}"
+                              class="button link-button inline-link-button icon-pencil">
+                              Edit
+                            </a>
+                          </li>
+                          <li>
+                            <form
+                              method="post"
+                              action="{{ icms_url('export:cfs-schedule-delete-product-type', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk, 'product_type_pk': product_type.pk }) }}"
+                              class="form-inline"
+                              id="id_delete-pt-{{ product_type.pk }}">
+                              {{ csrf_input }}
+                              <button type="submit" class="button link-button inline-link-button icon-bin" form="id_delete-pt-{{ product_type.pk }}">
+                                Delete
+                              </button>
+                            </form>
+                          </li>
+                          <li><br/></li>
+                        </ul>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </td>
+            {% else %}
+              <td class="input-error">
+                <div class="error-message">You must add this item</div>
+              </td>
+            {% endif %}
+            {% if ingredients %}
+              <td>
+                <table class="nestedListWithHeader setoutList nestedList">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">CAS Number</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ingredient in ingredients %}
+                    <tr>
+                      <td>{{ ingredient.name }}</td>
+                      <td>{{ ingredient.cas_number }}</td>
+                      <td>
+                        <ul class="menu-out">
+                          <li>
+                            <a
+                              href="{{ icms_url('export:cfs-schedule-edit-ingredient', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk, 'ingredient_pk': ingredient.pk }) }}"
+                              class="button link-button inline-link-button icon-pencil">
+                              Edit
+                            </a>
+                          </li>
+                          <li>
+                            <form
+                              method="post"
+                              action="{{ icms_url('export:cfs-schedule-delete-ingredient', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk, 'ingredient_pk': ingredient.pk }) }}"
+                              class="form-inline"
+                              id="id_delete-ingredient-{{ ingredient.pk }}">
+                              {{ csrf_input }}
+                              <button type="submit" class="button link-button inline-link-button icon-bin" form="id_delete-ingredient-{{ ingredient.pk }}">
+                                Delete
+                              </button>
+                            </form>
+                          </li>
+                          <li><br/></li>
+                        </ul>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+              </td>
+            {% else %}
+              <td class="input-error">
+                <div class="error-message">You must add this item</div>
+              </td>
+            {% endif %}
+            <td>
+              <ul class="menu-out">
+                <li>
+                  <a
+                    href="{{ icms_url('export:cfs-schedule-add-product-type', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk }) }}"
+                    class="button link-button icon-price-tag"
+                  >
+                    Add PT Number
+                </a>
+                </li>
+                <li>
+                  <a
+                    href="{{ icms_url('export:cfs-schedule-add-ingredient', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk }) }}"
+                    class="button link-button icon-lab"
+                  >
+                    Add Active Ingredient
+                  </a>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    {% else %}
+      {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data', id='id_cfs-product-form') -%}
+        {{ fields.field(form.product_name) }}
+      {% endcall %}
+    {% endif %}
+    <input type="submit" name="action" form="id_cfs-product-form" class="primary-button button" value="{{ 'Save' if product else 'Add' }}" />
+{% endblock %}

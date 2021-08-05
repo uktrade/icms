@@ -1,0 +1,32 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% block sidebar %}
+  {% include "partial/case/export/cfs/sidebar.html" %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('export:cfs-schedule-edit-product', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk }) }}"
+          class="prev-link">
+          Edit product
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ application_field(product.product_name, "Product Name")}}
+    {% for field_name in form.fields %}
+      {{ fields.field(form[field_name]) }}
+    {% endfor %}
+    <input type="submit" name="action" class="primary-button button" value="{{ 'Save' if instance else 'Add' }}" />
+  {% endcall %}
+{% endblock %}

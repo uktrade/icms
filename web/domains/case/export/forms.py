@@ -1,13 +1,16 @@
+import re
 from typing import Any, Optional
 
 import structlog as logging
 from django import forms
+from django.db.models.query import QuerySet
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import application_contacts
 from web.domains.exporter.models import Exporter
+from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.models.shared import YesNoChoices
@@ -15,6 +18,9 @@ from web.models.shared import YesNoChoices
 from .models import (
     CertificateOfFreeSaleApplication,
     CertificateOfManufactureApplication,
+    CFSProduct,
+    CFSProductActiveIngredient,
+    CFSProductType,
     CFSSchedule,
 )
 
@@ -262,6 +268,25 @@ class EditCFScheduleForm(forms.ModelForm):
             self.add_error("goods_placed_on_uk_market", "Both of these fields cannot be yes")
             self.add_error("goods_export_only", "Both of these fields cannot be yes")
 
+        # check if legislation is not biocidal but products contain ingredients and product type numbers
+        legislations: QuerySet[ProductLegislation] = self.cleaned_data["legislations"]
+        is_biocidal = legislations.filter(is_biocidal=True).exists()
+
+        if is_biocidal:
+            return cleaned_data
+
+        if self.instance.products.exclude(active_ingredients=None).count() > 0:
+            self.add_error(
+                "legislations",
+                "Only biocidal legislation can contain products with active ingredients. Please edit the products.",
+            )
+
+        if self.instance.products.exclude(product_type_numbers=None).count() > 0:
+            self.add_error(
+                "legislations",
+                "Only biocidal legislation can contain products with product type numbers. Please edit the products.",
+            )
+
         return cleaned_data
 
 
@@ -282,3 +307,99 @@ class CFSManufacturerDetailsForm(forms.ModelForm):
         if self.instance.pk:
             if self.instance.manufacturer_address_entry_type == CFSSchedule.AddressEntryType.SEARCH:
                 self.fields["manufacturer_address"].widget.attrs["readonly"] = True
+
+
+class CFSProductForm(forms.ModelForm):
+    class Meta:
+        model = CFSProduct
+        fields = ("product_name",)
+
+    def __init__(self, *args, schedule: CFSSchedule, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schedule = schedule
+
+    def clean_product_name(self):
+        product_name = self.cleaned_data["product_name"]
+
+        if (
+            self.schedule.products.filter(product_name=product_name)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("Product name must be unique to the schedule.")
+
+        return product_name
+
+    def save(self, commit=True):
+        if not self.instance.pk:
+            self.instance.schedule = self.schedule
+
+        return super().save(commit=commit)
+
+
+class CFSProductTypeForm(forms.ModelForm):
+    class Meta:
+        model = CFSProductType
+        fields = ("product_type_number",)
+
+    def __init__(self, *args, product: CFSProduct, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.product = product
+
+    def clean_product_type_number(self):
+        product_type_number = self.cleaned_data["product_type_number"]
+
+        if (
+            self.product.product_type_numbers.filter(product_type_number=product_type_number)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("Product type number must be unique to the product.")
+
+        return product_type_number
+
+    def save(self, commit=True):
+        if not self.instance.pk:
+            self.instance.product = self.product
+
+        return super().save(commit=commit)
+
+
+class CFSActiveIngredientForm(forms.ModelForm):
+    class Meta:
+        model = CFSProductActiveIngredient
+        fields = ("name", "cas_number")
+
+    def __init__(self, *args, product: CFSProduct, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.product = product
+
+    def clean_cas_number(self):
+        cas_number = self.cleaned_data["cas_number"]
+
+        # TODO: What is the validation for cas number?
+        if not re.match("[1-9]{1}[0-9]{1,5}-[0-9]{2}-[0-9]", cas_number):
+            raise forms.ValidationError("CAS number is in an incorrect format.")
+
+        if (
+            self.product.active_ingredients.filter(cas_number=cas_number)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
+            raise forms.ValidationError("CAS number must be unique to the product.")
+
+        return cas_number
+
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+
+        if self.product.active_ingredients.filter(name=name).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Active ingredient name must be unique to the product.")
+
+        return name
+
+    def save(self, commit=True):
+        if not self.instance.pk:
+            self.instance.product = self.product
+
+        return super().save(commit=commit)

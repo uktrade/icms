@@ -26,7 +26,10 @@ from web.utils.validation import (
 )
 
 from .forms import (
+    CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
+    CFSProductForm,
+    CFSProductTypeForm,
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
@@ -35,6 +38,9 @@ from .forms import (
 from .models import (
     CertificateOfFreeSaleApplication,
     CertificateOfManufactureApplication,
+    CFSProduct,
+    CFSProductActiveIngredient,
+    CFSProductType,
     CFSSchedule,
     ExportApplication,
     ExportApplicationType,
@@ -283,7 +289,10 @@ def cfs_edit_schedule(
                 form.save()
 
                 return redirect(
-                    reverse("export:cfs-edit", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "export:cfs-schedule-edit",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                    )
                 )
 
         else:
@@ -296,6 +305,9 @@ def cfs_edit_schedule(
             "form": form,
             "page_title": "Edit Schedule",
             "schedule": schedule,
+            "products": schedule.products.order_by("pk").all(),
+            "has_legislation": schedule.legislations.exists(),
+            "is_biocidal": schedule.legislations.filter(is_biocidal=True).exists(),
         }
 
         return render(request, "web/domains/case/export/edit-cfs-schedule.html", context)
@@ -393,6 +405,468 @@ def cfs_delete_manufacturer(
 
 
 @login_required
+def cfs_add_product(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        if request.POST:
+            form = CFSProductForm(data=request.POST, schedule=schedule)
+
+            if form.is_valid():
+                product = form.save()
+                is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
+
+                if not is_biocidal:
+                    return redirect(
+                        reverse(
+                            "export:cfs-schedule-edit",
+                            kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                        )
+                    )
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    )
+                )
+
+        else:
+            form = CFSProductForm(schedule=schedule)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "form": form,
+            "page_title": "Add Product",
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product.html", context)
+
+
+@login_required
+def cfs_edit_product(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
+
+        if request.POST:
+            form = CFSProductForm(data=request.POST, instance=product, schedule=schedule)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                    )
+                )
+
+        else:
+            form = CFSProductForm(instance=product, schedule=schedule)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "form": form,
+            "page_title": "Edit Product",
+            "product": product,
+            "is_biocidal": is_biocidal,
+            "product_type_numbers": product.product_type_numbers.all(),
+            "ingredients": product.active_ingredients.all(),
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product.html", context)
+
+
+@require_POST
+@login_required
+def cfs_delete_product(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        schedule.products.filter(pk=product_pk).delete()
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+            )
+        )
+
+
+@login_required
+def cfs_add_ingredient(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        if request.POST:
+            form = CFSActiveIngredientForm(data=request.POST, product=product)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    )
+                )
+
+        else:
+            form = CFSActiveIngredientForm(product=product)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "form": form,
+            "product": product,
+            "page_title": "Add Active Ingredient",
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
+
+
+@login_required
+def cfs_edit_ingredient(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+    ingredient_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        ingredient: CFSProductActiveIngredient = get_object_or_404(
+            product.active_ingredients.select_for_update(), pk=ingredient_pk
+        )
+
+        if request.POST:
+            form = CFSActiveIngredientForm(data=request.POST, instance=ingredient, product=product)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    )
+                )
+
+        else:
+            form = CFSActiveIngredientForm(instance=ingredient, product=product)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "product": product,
+            "instance": ingredient,
+            "form": form,
+            "page_title": "Edit Active Ingredient",
+            "type": "ingredient",
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
+
+
+@require_POST
+@login_required
+def cfs_delete_ingredient(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+    ingredient_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        product.active_ingredients.filter(pk=ingredient_pk).delete()
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit-product",
+                kwargs={
+                    "application_pk": application_pk,
+                    "schedule_pk": schedule.pk,
+                    "product_pk": product.pk,
+                },
+            )
+        )
+
+
+@login_required
+def cfs_add_product_type(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        if request.POST:
+            form = CFSProductTypeForm(data=request.POST, product=product)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    )
+                )
+
+        else:
+            form = CFSProductTypeForm(product=product)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "form": form,
+            "product": product,
+            "page_title": "Add Product Type Number",
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
+
+
+@login_required
+def cfs_edit_product_type(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+    product_type_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        product_type: CFSProductType = get_object_or_404(
+            product.product_type_numbers.select_for_update(), pk=product_type_pk
+        )
+
+        if request.POST:
+            form = CFSProductTypeForm(data=request.POST, instance=product_type, product=product)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application_pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    )
+                )
+
+        else:
+            form = CFSProductTypeForm(instance=product_type, product=product)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "schedule": schedule,
+            "product": product,
+            "instance": product_type,
+            "form": form,
+            "page_title": "Edit Product Type Number",
+            "type": "product_type",
+        }
+
+        return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
+
+
+@require_POST
+@login_required
+def cfs_delete_product_type(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+    product_pk: int,
+    product_type_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
+
+        product: CFSProduct = get_object_or_404(
+            schedule.products.select_for_update(), pk=product_pk
+        )
+
+        product.product_type_numbers.filter(pk=product_type_pk).delete()
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit-product",
+                kwargs={
+                    "application_pk": application_pk,
+                    "schedule_pk": schedule.pk,
+                    "product_pk": product.pk,
+                },
+            )
+        )
+
+
+@login_required
 def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: CertificateOfFreeSaleApplication = get_object_or_404(
@@ -447,11 +921,9 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
         )
 
     else:
-        total = active_schedules.count()
-
         for idx, schedule in enumerate(active_schedules, start=1):
             schedule_page_errors = PageErrors(
-                page_name=f"Schedule ({idx}/{total})",
+                page_name=f"Schedule {idx}",
                 url=reverse(
                     "export:cfs-schedule-edit",
                     kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
@@ -461,7 +933,68 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
                 EditCFScheduleForm(data=model_to_dict(schedule), instance=schedule),
                 schedule_page_errors,
             )
+
             errors.add(schedule_page_errors)
+
+            # Check that the schedule has products
+            if not schedule.products.exists():
+                product_page_errors = PageErrors(
+                    page_name=f"Schedule {idx} - Product",
+                    url=reverse(
+                        "export:cfs-schedule-add-product",
+                        kwargs={
+                            "application_pk": application.pk,
+                            "schedule_pk": schedule.pk,
+                        },
+                    ),
+                )
+
+                product_page_errors.add(
+                    FieldError(
+                        field_name="Products", messages=["At least one product must be added"]
+                    )
+                )
+
+                errors.add(product_page_errors)
+                continue
+
+            is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
+
+            if not is_biocidal:
+                continue
+
+            # Check all the products are valid for biocidal legislation CFS schedules
+            for product in schedule.products.all():
+                product_page_errors = PageErrors(
+                    page_name=f"Schedule {idx} - Product {product.product_name}",
+                    url=reverse(
+                        "export:cfs-schedule-edit-product",
+                        kwargs={
+                            "application_pk": application.pk,
+                            "schedule_pk": schedule.pk,
+                            "product_pk": product.pk,
+                        },
+                    ),
+                )
+
+                if not product.product_type_numbers.exists():
+                    product_page_errors.add(
+                        FieldError(
+                            field_name="Product Type Numbers",
+                            messages=["Product type numbers must be specified on all product"],
+                        )
+                    )
+
+                if not product.active_ingredients.exists():
+                    product_page_errors.add(
+                        FieldError(
+                            field_name="Active Ingredients",
+                            messages=["Active Ingredients must be specified on all products"],
+                        )
+                    )
+
+                errors.add(product_page_errors)
+
     errors.add(page_errors)
 
     return errors
