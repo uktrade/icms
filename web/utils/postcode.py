@@ -40,4 +40,5 @@ def api_postcode_to_address_lookup(post_code: str) -> list[dict[str, Any]]:
     raise APIError(
         error_msg=error_msg,
         dev_error_msg=f"status_code: {response.status_code}: error: {dev_error}",
+        status_code=response.status_code,
     )

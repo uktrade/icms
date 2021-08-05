@@ -7,6 +7,7 @@ from web.errors import APIError
 from web.types import AuthenticatedHttpRequest
 from web.utils.companieshouse import api_get_companies
 from web.utils.postcode import api_postcode_to_address_lookup
+from web.utils.sentry import capture_exception
 
 
 @login_required
@@ -16,19 +17,23 @@ def postcode_lookup(request: AuthenticatedHttpRequest) -> JsonResponse:
 
     try:
         addresses = api_postcode_to_address_lookup(postcode)
+
         return JsonResponse(addresses, safe=False)
 
     except APIError as e:
+        # don't bother logging sentries when users type in invalid postcodes
+        if e.status_code not in (400, 404):
+            capture_exception()
+
         response_data = {"error_msg": e.error_msg}
 
         if settings.APP_ENV in ("local", "dev"):
             response_data["dev_error_msg"] = e.dev_error_msg
 
-    except Exception as e:
+    except Exception:
+        capture_exception()
+
         response_data = {"error_msg": "Unable to lookup postcode"}
-        # TODO: ICMSLST-888
-        # If an APIError or an unknown error is thrown we need to message sentry
-        print(e)
 
     return JsonResponse(response_data, status=400)
 

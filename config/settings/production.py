@@ -1,9 +1,7 @@
-import os
-
 import environ
-import sentry_sdk
 import structlog
-from sentry_sdk.integrations.django import DjangoIntegration
+
+from web.utils.sentry import init_sentry
 
 from .base import *  # NOQA
 
@@ -98,11 +96,7 @@ LOGGING = {
     },
 }
 
-sentry_sdk.init(
-    os.environ.get("SENTRY_DSN"),
-    environment=os.environ.get("SENTRY_ENVIRONMENT"),
-    integrations=[DjangoIntegration()],
-)
+init_sentry()
 
 # minifi html (djano-htmlmin)
 HTML_MINIFY = True

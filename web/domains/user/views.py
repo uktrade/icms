@@ -10,6 +10,7 @@ from web.errors import APIError
 from web.forms import utils
 from web.types import AuthenticatedHttpRequest
 from web.utils.postcode import api_postcode_to_address_lookup
+from web.utils.sentry import capture_exception
 from web.views import ModelFilterView
 
 from . import actions
@@ -133,13 +134,16 @@ def _address_search(request: AuthenticatedHttpRequest, action: str) -> HttpRespo
             addresses = api_postcode_to_address_lookup(postcode_form.cleaned_data.get("post_code"))
 
         except APIError as e:
+            # don't bother logging sentries when users type in invalid postcodes
+            if e.status_code not in (400, 404):
+                capture_exception()
+
             messages.warning(request, e.error_msg)
 
-        except Exception as e:
+        except Exception:
+            capture_exception()
+
             messages.warning(request, "Unable to lookup postcode")
-            # TODO: ICMSLST-888
-            # If an APIError or an unknown error is thrown we need to message sentry
-            print(e)
 
     return render(
         request,
