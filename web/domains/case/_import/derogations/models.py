@@ -122,3 +122,32 @@ class DerogationsChecklist(ChecklistBase):
         null=True,
         verbose_name="Supporting documentation received?",
     )
+
+    # Optional syria fields
+    sncorf_consulted = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Syria National Coalition for Opposition and Revolutionary Forces (SNCORF) consulted?",
+    )
+
+    sncorf_response_within_30_days = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="SNCORF response within 30 days of consultation?",
+    )
+
+    beneficiaries_not_on_list = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Beneficiaries not on Syria sanctions list?",
+    )
+
+    request_purpose_confirmed = models.CharField(
+        max_length=3,
+        choices=YesNoNAChoices.choices,
+        null=True,
+        verbose_name="Purpose of Syria request confirmed?",
+    )

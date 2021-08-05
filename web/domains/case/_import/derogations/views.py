@@ -25,6 +25,8 @@ from .forms import (
     DerogationsChecklistForm,
     DerogationsChecklistOptionalForm,
     DerogationsForm,
+    DerogationsSyriaChecklistForm,
+    DerogationsSyriaChecklistOptionalForm,
     GoodsDerogationsLicenceForm,
 )
 from .models import DerogationsApplication, DerogationsChecklist
@@ -228,8 +230,18 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
+        syria = Country.objects.get(name="Syria")
+        include_extra = syria in (application.origin_country, application.consignment_country)
+
+        if include_extra:
+            checklist_form = DerogationsSyriaChecklistForm
+            checklist_optional_form = DerogationsSyriaChecklistOptionalForm
+        else:
+            checklist_form = DerogationsChecklistForm
+            checklist_optional_form = DerogationsChecklistOptionalForm
+
         if request.POST:
-            form: DerogationsChecklistForm = DerogationsChecklistOptionalForm(
+            form: DerogationsChecklistForm = checklist_optional_form(
                 request.POST, instance=checklist
             )
 
@@ -244,9 +256,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = DerogationsChecklistForm(instance=checklist)
+                form = checklist_form(instance=checklist)
             else:
-                form = DerogationsChecklistForm(data=model_to_dict(checklist), instance=checklist)
+                form = checklist_form(data=model_to_dict(checklist), instance=checklist)
 
         context = {
             "process": application,

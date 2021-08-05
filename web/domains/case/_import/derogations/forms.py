@@ -130,6 +130,26 @@ class DerogationsChecklistOptionalForm(DerogationsChecklistForm):
             self.fields[f].required = False
 
 
+class DerogationsSyriaChecklistForm(DerogationsChecklistForm):
+    class Meta:
+        model = DerogationsChecklist
+
+        fields = DerogationsChecklistForm.Meta.fields + (
+            "sncorf_consulted",
+            "sncorf_response_within_30_days",
+            "beneficiaries_not_on_list",
+            "request_purpose_confirmed",
+        )
+
+
+class DerogationsSyriaChecklistOptionalForm(DerogationsSyriaChecklistForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for f in self.fields:
+            self.fields[f].required = False
+
+
 class GoodsDerogationsLicenceForm(forms.ModelForm):
     quantity = forms.DecimalField()
     unit = forms.ChoiceField(
