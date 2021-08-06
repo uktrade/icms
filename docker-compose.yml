@@ -12,7 +12,7 @@ services:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=password
         ports:
-            - "5432:5432"
+            - "6000:5432"
 
     web:
         restart: unless-stopped

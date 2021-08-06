@@ -130,7 +130,7 @@ shell: ## Starts the Python interactive interpreter
 
 psql: ## Starts psql
 	@unset UID && \
-	PGPASSWORD=password psql -h localhost -U postgres
+	PGPASSWORD=password psql -p 6000 -h localhost -U postgres
 
 # TODO: does this make sense...?
 all: requirements-web
