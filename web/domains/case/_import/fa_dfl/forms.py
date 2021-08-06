@@ -57,7 +57,8 @@ class PrepareDFLForm(forms.ModelForm):
         self.fields["contact"].queryset = application_contacts(self.instance)
 
         countries = Country.objects.filter(
-            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
+            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries",
+            is_active=True,
         )
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
@@ -79,8 +80,10 @@ class AddDLFGoodsCertificateForm(forms.ModelForm):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
+
         self.fields["issuing_country"].queryset = Country.objects.filter(
-            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
+            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries",
+            is_active=True,
         )
 
 
@@ -100,7 +103,8 @@ class EditDLFGoodsCertificateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         countries = Country.objects.filter(
-            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
+            country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries",
+            is_active=True,
         )
 
         self.fields["issuing_country"].queryset = countries

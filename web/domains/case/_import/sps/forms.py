@@ -33,7 +33,9 @@ class EditSPSForm(forms.ModelForm):
 
         self.fields["customs_cleared_to_uk"].required = True
 
-        countries = Country.objects.filter(country_groups__name="Non EU Single Countries")
+        countries = Country.objects.filter(
+            country_groups__name="Non EU Single Countries", is_active=True
+        )
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
 

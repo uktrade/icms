@@ -54,7 +54,9 @@ class DerogationsForm(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        non_eu_countries = Country.objects.filter(country_groups__name="Non EU Single Countries")
+        non_eu_countries = Country.objects.filter(
+            country_groups__name="Non EU Single Countries", is_active=True
+        )
         self.fields["consignment_country"].queryset = non_eu_countries
 
     def clean(self):

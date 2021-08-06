@@ -40,7 +40,7 @@ class PrepareOILForm(forms.ModelForm):
         self.fields["origin_country"].empty_label = None
         self.fields["consignment_country"].empty_label = None
 
-        countries = Country.objects.filter(name="Any Country")
+        countries = Country.objects.filter(name="Any Country", is_active=True)
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
 

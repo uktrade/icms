@@ -47,10 +47,10 @@ class PrepareSILForm(forms.ModelForm):
         self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields["origin_country"].queryset = Country.objects.filter(
-            country_groups__name="Firearms and Ammunition (SIL) COOs"
+            country_groups__name="Firearms and Ammunition (SIL) COOs", is_active=True
         )
         self.fields["consignment_country"].queryset = Country.objects.filter(
-            country_groups__name="Firearms and Ammunition (SIL) COCs"
+            country_groups__name="Firearms and Ammunition (SIL) COCs", is_active=True
         )
 
         self.fields["know_bought_from"].required = True

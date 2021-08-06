@@ -62,11 +62,11 @@ class EditTextilesForm(forms.ModelForm):
         ]
 
         self.fields["origin_country"].queryset = Country.objects.filter(
-            country_groups__name="Textile COOs"
+            country_groups__name="Textile COOs", is_active=True
         )
 
         self.fields["consignment_country"].queryset = Country.objects.filter(
-            country_groups__name="Textile COCs"
+            country_groups__name="Textile COCs", is_active=True
         )
 
 
