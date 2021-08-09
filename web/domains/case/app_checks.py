@@ -1,6 +1,7 @@
 from typing import Type
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 from django.forms import model_to_dict
 from django.urls import reverse
 
@@ -13,6 +14,7 @@ from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplicat
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case._import.ironsteel.models import IronSteelApplication
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.forms import OPTChecklistForm
 from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
@@ -117,6 +119,9 @@ def _get_import_errors(
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         application_errors.add_many(_get_email_errors(application.sanctionsandadhocapplication, "import"))  # type: ignore[union-attr]
+
+    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
+        application_errors.add_many(_get_ironsteel_errors(application.ironsteelapplication))  # type: ignore[union-attr]
 
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
         # There are no extra checks for these
@@ -254,6 +259,46 @@ def _get_textiles_errors(application: ImportApplication) -> PageErrors:
         "import:textiles:manage-checklist",
         TextilesChecklistForm,
     )
+
+
+def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]:
+    errors = []
+
+    errors.append(
+        _get_checklist_errors(
+            application, "import:ironsteel:manage-checklist", TextilesChecklistForm
+        )
+    )
+
+    certificates = application.certificates.filter(is_active=True)
+    total_certificates = certificates.aggregate(sum_requested=Sum("requested_qty")).get(
+        "sum_requested"
+    )
+    if total_certificates != application.quantity:
+        for cert in certificates:
+            certificate_errors = PageErrors(
+                page_name=f"Edit Certificate: {cert.reference}",
+                url=reverse(
+                    "import:ironsteel:edit-certificate",
+                    kwargs={"application_pk": application.pk, "document_pk": cert.pk},
+                ),
+            )
+
+            certificate_errors.add(
+                FieldError(
+                    f"Requested Quantity: {cert.requested_qty} kg (imported goods {application.quantity} kg)",
+                    messages=[
+                        (
+                            "Please ensure that the sum of export certificate requested"
+                            " quantities equals the total quantity of imported goods."
+                        )
+                    ],
+                )
+            )
+
+            errors.append(certificate_errors)
+
+    return errors
 
 
 def _get_checklist_errors(

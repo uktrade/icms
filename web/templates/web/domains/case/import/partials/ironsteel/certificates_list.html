@@ -26,7 +26,7 @@
           href="{{ icms_url('import:ironsteel:view-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
           {{ doc.filename }}</a> {{ doc.human_readable_file_size() }}
         </td>
-        {% if not read_only %}
+        {% if not read_only and not manage_case %}
           <td>
             <form method="post"
                   action="{{ icms_url('import:ironsteel:delete-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}">
@@ -37,6 +37,15 @@
             <p>
               <a
                 href="{{ icms_url('import:ironsteel:edit-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}"
+                class="link-button icon-pencil button">
+                Edit</a>
+            </p>
+          </td>
+        {% elif not read_only and manage_case %}
+          <td>
+            <p>
+              <a
+                href="{{ icms_url('import:ironsteel:response-prep-edit-certificate', kwargs={'application_pk': process.pk, 'document_pk': doc.pk}) }}"
                 class="link-button icon-pencil button">
                 Edit</a>
             </p>
@@ -52,7 +61,7 @@
   </div>
 {% endif %}
 
-{% if not read_only %}
+{% if not read_only and not manage_case %}
   <a class="button small-button" href="{{ icms_url('import:ironsteel:add-certificate', kwargs={'application_pk': process.pk}) }}">
     Add certificate
   </a>

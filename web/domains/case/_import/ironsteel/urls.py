@@ -26,6 +26,12 @@ certificate_urls = [
                 path("view/", views.view_certificate, name="view-certificate"),
                 path("delete/", views.delete_certificate, name="delete-certificate"),
                 path("edit/", views.edit_certificate, name="edit-certificate"),
+                # Case management
+                path(
+                    "response-prep-edit-certificate/",
+                    views.response_preparation_edit_certificate,
+                    name="response-prep-edit-certificate",
+                ),
             ]
         ),
     ),
@@ -42,6 +48,11 @@ urlpatterns = [
                 path("certificate/", include(certificate_urls)),
                 # Case management
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
+                path(
+                    "response-prep-edit-goods/",
+                    views.response_preparation_edit_goods,
+                    name="response-prep-edit-goods",
+                ),
             ],
         ),
     )

@@ -28,7 +28,7 @@
   {% endcall %}
 
   <h4>Certificates/Documents</h4>
-  {% with read_only = true %}
+  {% with read_only = true, manage_case = false %}
     {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
   {% endwith %}
 

@@ -1,0 +1,52 @@
+{% extends "web/domains/case/manage/prepare-response.html" %}
+
+
+{% block goods_content %}
+  <h4>Goods</h4>
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>Commodity Code</th>
+        <th>Goods Description</th>
+        <th>Quantity</th>
+        <th>Unit</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{ commodity_link(process.commodity) }}
+        </td>
+        <td>
+          {{ process.goods_description }}
+        </td>
+        <td>
+          {{ process.quantity }}
+        </td>
+        <td>
+          Kilos
+        </td>
+        <td>
+          <a
+            class="link-button icon-pencil button"
+            href={{ icms_url('import:ironsteel:response-prep-edit-goods', kwargs={'application_pk': process.pk}) }}>
+            Edit
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr />
+{% endblock %}
+
+{% block certificates_content %}
+  <h4>Export Certificates</h4>
+
+  {% with read_only = false, manage_case=True %}
+    {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
+  {% endwith %}
+
+  <hr />
+{% endblock %}

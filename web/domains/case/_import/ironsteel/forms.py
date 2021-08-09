@@ -136,3 +136,17 @@ class IronSteelChecklistOptionalForm(IronSteelChecklistForm):
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class ResponsePrepGoodsForm(forms.ModelForm):
+    class Meta:
+        model = models.IronSteelApplication
+        fields = ("goods_description", "quantity")
+        widgets = {"quantity": forms.NumberInput(attrs={"step": 1})}
+
+
+class ResponsePrepCertificateForm(forms.ModelForm):
+    class Meta:
+        model = models.IronSteelCertificateFile
+        fields = ("requested_qty",)
+        widgets = {"requested_qty": forms.NumberInput(attrs={"step": 1})}

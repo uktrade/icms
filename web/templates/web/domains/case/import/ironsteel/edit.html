@@ -61,7 +61,7 @@
     Please upload a copy of your certificate. You will be contacted by ILB if the original is required.
   </div>
 
-  {% with read_only = false %}
+  {% with read_only = false, manage_case = false %}
     {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
   {% endwith %}
 

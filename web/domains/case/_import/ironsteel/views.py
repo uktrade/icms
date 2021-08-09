@@ -29,6 +29,8 @@ from .forms import (
     EditIronSteelForm,
     IronSteelChecklistForm,
     IronSteelChecklistOptionalForm,
+    ResponsePrepCertificateForm,
+    ResponsePrepGoodsForm,
 )
 from .models import IronSteelApplication, IronSteelChecklist
 
@@ -158,6 +160,15 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
+
+                # TODO: replace with Endorsement Usage Template (ICMSLST-638)
+                # endorsements are active on ICMS1 but inactive in our db
+                # endorsement = Template.objects.get(
+                #     is_active=True,
+                #     template_type=Template.ENDORSEMENT,
+                #     template_name="Endorsement 1 (must be updated each year)",
+                # )
+                # application.endorsements.create(content=endorsement.template_content)
 
                 return application.redirect_after_submit(request)
 
@@ -412,4 +423,91 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
             context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def response_preparation_edit_goods(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: IronSteelApplication = get_object_or_404(
+            IronSteelApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+        if request.POST:
+            form = ResponsePrepGoodsForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = ResponsePrepGoodsForm(instance=application)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Iron and Steel (Quota) Import Licence - Edit Goods",
+        }
+
+        return render(
+            request, "web/domains/case/import/manage/response-prep-edit-form.html", context
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def response_preparation_edit_certificate(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    document_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: IronSteelApplication = get_object_or_404(
+            IronSteelApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+        document = application.certificates.get(pk=document_pk)
+
+        if request.POST:
+            form = ResponsePrepCertificateForm(data=request.POST, instance=document)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "case:prepare-response",
+                        kwargs={"application_pk": application_pk, "case_type": "import"},
+                    )
+                )
+
+        else:
+            form = ResponsePrepCertificateForm(instance=document)
+
+        context = {
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "import",
+            "page_title": "Iron and Steel (Quota) Import Licence - Edit Certificate",
+        }
+
+        return render(
+            request, "web/domains/case/import/manage/response-prep-edit-form.html", context
         )

@@ -1672,6 +1672,9 @@ def prepare_response(
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
         return _prepare_sps_response(request, application.priorsurveillanceapplication, context)  # type: ignore[union-attr]
 
+    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
+        return _prepare_ironsteel_response(request, application.ironsteelapplication, context)  # type: ignore[union-attr]
+
     # Certificate applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
         return _prepare_com_response(request, application.certificateofmanufactureapplication, context)  # type: ignore[union-attr]
@@ -1679,7 +1682,9 @@ def prepare_response(
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         return _prepare_cfs_response(request, application.certificateoffreesaleapplication, context)  # type: ignore[union-attr]
     else:
-        raise NotImplementedError("Export applications haven't been configured yet")
+        raise NotImplementedError(
+            f"Application process type '{application.process_type}' haven't been configured yet"
+        )
 
 
 def _prepare_fa_oil_response(
@@ -1830,6 +1835,22 @@ def _prepare_sps_response(
     return render(
         request=request,
         template_name="web/domains/case/import/manage/prepare-sps-response.html",
+        context=context,
+    )
+
+
+def _prepare_ironsteel_response(
+    request: AuthenticatedHttpRequest,
+    application: PriorSurveillanceApplication,
+    context: dict[str, Any],
+) -> HttpResponse:
+    context.update(
+        {"process": application, "certificates": application.certificates.filter(is_active=True)}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/import/manage/prepare-ironsteel-response.html",
         context=context,
     )
 
