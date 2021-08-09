@@ -6,6 +6,7 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.access.approval.models import ApprovalRequest
 from web.models import (
     AccessRequest,
     ExportApplication,
@@ -92,6 +93,7 @@ def _get_queryset_user(user: User) -> QuerySet:
         )
         .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
         .filter(is_active=True)
+        .filter(status=ApprovalRequest.OPEN)
         .filter(access_request__exporteraccessrequest__link__in=exporters)
     )
 
@@ -104,6 +106,7 @@ def _get_queryset_user(user: User) -> QuerySet:
         )
         .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
         .filter(is_active=True)
+        .filter(status=ApprovalRequest.OPEN)
         .filter(access_request__importeraccessrequest__link__in=importers)
     )
 

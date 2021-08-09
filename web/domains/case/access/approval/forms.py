@@ -63,11 +63,24 @@ class ImporterApprovalRequestForm(ModelForm):
 
 
 class ApprovalRequestResponseForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["response"].required = True
-
     class Meta:
         model = ApprovalRequest
         fields = ["response", "response_reason"]
         widgets = {"response_reason": Textarea(attrs={"rows": 4})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["response"].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        response = cleaned_data.get("response")
+        reason = cleaned_data.get("response_reason")
+        if response == ApprovalRequest.REFUSE and not reason:
+            self.add_error("response_reason", "You must enter this item")
+        else:
+            cleaned_data["response_reason"] = ""
+
+        return cleaned_data
