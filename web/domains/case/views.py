@@ -17,7 +17,7 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case.export.models import CertificateOfFreeSaleApplication
+from web.domains.case.export.models import CertificateOfFreeSaleApplication, CFSSchedule
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
@@ -1267,6 +1267,9 @@ def view_case(
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
         return _view_com(request, application.certificateofmanufactureapplication)  # type: ignore[union-attr]
 
+    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
+        return _view_cfs(request, application.certificateoffreesaleapplication)
+
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
@@ -1465,6 +1468,25 @@ def _view_com(
     }
 
     return render(request, "web/domains/case/export/com/view.html", context)
+
+
+def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeSaleApplication):
+
+    # Reuse the model verbose_name for the labels
+    cfs_fields = CFSSchedule._meta.get_fields()
+    labels = {f.name: getattr(f, "verbose_name", "") for f in cfs_fields}
+    app_countries = "\n".join(application.countries.all().values_list("name", flat=True))
+
+    context = {
+        "process_template": "web/domains/case/export/partials/process.html",
+        "process": application,
+        "labels": labels,
+        "application_countries": app_countries,
+        "schedules": application.schedules.filter(is_active=True).order_by("created_at"),
+        "page_title": get_page_title("export", application, "View"),
+    }
+
+    return render(request, "web/domains/case/export/cfs-view.html", context)
 
 
 @login_required

@@ -244,7 +244,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "schedules": schedules,
         }
 
-        return render(request, "web/domains/case/export/edit-cfs.html", context)
+        return render(request, "web/domains/case/export/cfs-edit.html", context)
 
 
 @login_required
@@ -310,7 +310,7 @@ def cfs_edit_schedule(
             "is_biocidal": schedule.legislations.filter(is_biocidal=True).exists(),
         }
 
-        return render(request, "web/domains/case/export/edit-cfs-schedule.html", context)
+        return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
 
 
 @require_POST

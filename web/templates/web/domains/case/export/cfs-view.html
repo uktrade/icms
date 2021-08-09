@@ -1,0 +1,84 @@
+{% extends "web/domains/case/view_case.html" %}
+
+{% block css %}
+  {{ super() }}
+  <style>
+      /** Override the default styling for the checkbox */
+      input[type='checkbox'].disabled-cb {
+          position: relative;
+          top: 0;
+      }
+  </style>
+{% endblock %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+    {% for schedule in schedules %}
+      <li><a href="#view-schedule-{{ loop.index }}">Schedule {{ loop.index }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block main_content %}
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call application_section("Certificate of Free Sale") %}
+    {{ application_field(application_countries|nl2br, "Countries") }}
+  {% endcall %}
+
+  {% for schedule in schedules %}
+    {% set schedule_legislations = schedule.legislations.values_list("name", flat=True) %}
+
+    {% call application_section("Shedule " + loop.index|string, "view-schedule-" + loop.index|string) %}
+      {{ application_field(schedule.get_exporter_status_display(), labels["exporter_status"]) }}
+      {{ application_field(schedule.get_brand_name_holder_display(), labels["brand_name_holder"]) }}
+      {{ application_field(schedule_legislations|join("\n")|nl2br, labels["legislations"]) }}
+      {{ application_field(schedule.get_product_eligibility_display(), labels["product_eligibility"]) }}
+      {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
+      {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
+      {{ application_field(schedule.get_any_raw_materials_display(), labels["any_raw_materials"]) }}
+
+      {% if schedule.final_product_end_use %}
+        {{ application_field(schedule.final_product_end_use, labels["final_product_end_use"]) }}
+      {% endif %}
+
+      {{ application_field(schedule.country_of_manufacture, labels["country_of_manufacture"]) }}
+
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">{{ labels["schedule_statements"] }}</label>
+        </div>
+        <div class="six columns">
+          <input
+            class="disabled-cb" type="checkbox" aria-label="Deactivated Firearm" disabled="disabled"
+            {{ 'checked="checked"' if schedule.schedule_statements else "" }}
+          >
+          These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endcall %}
+
+    {% call application_section("Manufactured At") %}
+      {% if schedule.manufacturer_name %}
+        {{ application_field(schedule.manufacturer_name, "Name") }}
+        {{ application_field(schedule.manufacturer_postcode, "Postcode") }}
+        {{ application_field((schedule.manufacturer_address or "") |nl2br, "Address") }}
+      {% else %}
+        <p>No manufacturer details included</p>
+      {% endif %}
+    {% endcall %}
+
+    {% call application_section("Products") %}
+      {% with
+        products = schedule.products.all().order_by("pk"),
+        read_only = True,
+        is_biocidal = schedule.legislations.filter(is_biocidal=True).exists() %}
+        {% include "web/domains/case/export/partials/cfs/schedule-product-list.html" %}
+      {% endwith %}
+    {% endcall %}
+
+  {% endfor %}
+{% endblock %}

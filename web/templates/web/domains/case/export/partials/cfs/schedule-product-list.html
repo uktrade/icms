@@ -1,0 +1,84 @@
+{# Template variabels #}
+{# products #}
+{# read_only #}
+{# is_biocidal #}
+<table class="setoutList">
+  <thead>
+  <tr>
+    <th scope="col">Product Name</th>
+    {% if is_biocidal %}
+      <th scope="col">Product Type Numbers</th>
+      <th scope="col">Active Ingredients</th>
+    {% endif %}
+    {% if not read_only %}
+      <th scope="col">Actions</th>
+    {% endif %}
+  </tr>
+  </thead>
+  <tbody>
+  {% for product in products %}
+    <tr>
+      <td>{{ product.product_name }}</td>
+      {% if is_biocidal %}
+        <td>
+          <table class="nestedListWithHeader setoutList nestedList">
+            <thead>
+            <tr>
+              <th scope="col">Number</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product_type in product.product_type_numbers.all() %}
+              <tr>
+                <td>{{ product_type.product_type_number }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table class="nestedListWithHeader setoutList nestedList">
+            <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">CAS Number</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for ingredient in product.active_ingredients.all() %}
+              <tr>
+                <td>{{ ingredient.name }}</td>
+                <td>{{ ingredient.cas_number }}</td>
+              </tr>
+            {% endfor %}
+          </table>
+        </td>
+      {% endif %}
+      {% if not read_only %}
+        <td>
+          <ul class="menu-out">
+            <li>
+              <a
+                href="{{ icms_url('export:cfs-schedule-edit-product', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk }) }}"
+                class="button link-button icon-pencil">
+                Edit
+              </a>
+            </li>
+            <li>
+              <form
+                method="post"
+                action="{{ icms_url('export:cfs-schedule-delete-product', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk, 'product_pk': product.pk }) }}"
+                class="form-inline">
+                {{ csrf_input }}
+                <button type="submit" class="button link-button icon-bin">
+                  Delete
+                </button>
+              </form>
+            </li>
+          </ul>
+        </td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

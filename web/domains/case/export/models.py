@@ -230,7 +230,7 @@ class CFSSchedule(models.Model):
 
     product_eligibility = models.CharField(
         null=True,
-        verbose_name="Exporter Status",
+        verbose_name="Product Eligibility",
         max_length=22,
         choices=ProductEligibility.choices,
         help_text=(
