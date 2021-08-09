@@ -867,6 +867,66 @@ def cfs_delete_product_type(
 
 
 @login_required
+def cfs_copy_schedule(
+    request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
+) -> HttpResponse:
+    """Copy an application schedule.
+
+    How to copy a model instance
+    https://docs.djangoproject.com/en/3.2/topics/db/queries/#copying-model-instances
+    """
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
+        application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        schedule_to_copy: CFSSchedule = get_object_or_404(application.schedules, pk=schedule_pk)
+
+        # ManyToMany you can just use `.all()` to get the records
+        # ForeignKeys you have to fetch from the db before the save.
+        legislations_to_copy = schedule_to_copy.legislations.all()
+        products_to_copy = [p for p in schedule_to_copy.products.all().order_by("pk")]
+
+        schedule_to_copy.pk = None
+        schedule_to_copy.created_by = request.user
+        schedule_to_copy.save()
+
+        # Copy the legislation records
+        schedule_to_copy.legislations.set(legislations_to_copy)
+
+        # copy the product records
+        for product in products_to_copy:
+            product_types_to_copy = [pt for pt in product.product_type_numbers.all().order_by("pk")]
+            ingredients_to_copy = [i for i in product.active_ingredients.all().order_by("pk")]
+
+            product.pk = None
+            product.schedule = schedule_to_copy
+            product.save()
+
+            for ptn in product_types_to_copy:
+                ptn.pk = None
+                ptn.product = product
+                ptn.save()
+
+            for ingredient in ingredients_to_copy:
+                ingredient.pk = None
+                ingredient.product = product
+                ingredient.save()
+
+        # Add the copied schedule to the application
+        application.schedules.add(schedule_to_copy)
+
+        return redirect(
+            reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": application_pk, "schedule_pk": schedule_to_copy.pk},
+            )
+        )
+
+
+@login_required
 def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: CertificateOfFreeSaleApplication = get_object_or_404(

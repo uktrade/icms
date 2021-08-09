@@ -37,6 +37,7 @@ product_urls = [
 
 schedule_urls = [
     path("edit/", views.cfs_edit_schedule, name="cfs-schedule-edit"),
+    path("copy/", views.cfs_copy_schedule, name="cfs-schedule-copy"),
     path("delete/", views.cfs_delete_schedule, name="cfs-schedule-delete"),
     path("set-manufacturer/", views.cfs_set_manufacturer, name="cfs-schedule-set-manufacturer"),
     path(
