@@ -46,14 +46,14 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
 
 
 class GoodsForm(forms.ModelForm):
-    quantity_amount = forms.DecimalField(label="Quantity Amount")
-    value = forms.DecimalField(label="Value")
-
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
         fields = ["commodity", "goods_description", "quantity_amount", "value"]
-        widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
-        labels = {"value": "Value (GBP CIF)"}
+        widgets = {
+            "goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20}),
+            "quantity_amount": forms.NumberInput(attrs={"step": 1}),
+            "value": forms.NumberInput(attrs={"step": 1}),
+        }
 
     def __init__(self, *args, application: SanctionsAndAdhocApplication, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,9 +68,6 @@ class GoodsForm(forms.ModelForm):
 
 
 class GoodsSanctionsLicenceForm(forms.ModelForm):
-    quantity_amount = forms.DecimalField(label="Quantity Amount")
-    value = forms.DecimalField(label="Value")
-
     class Meta:
         model = SanctionsAndAdhocApplicationGoods
         fields = ["commodity", "goods_description", "quantity_amount", "value"]
