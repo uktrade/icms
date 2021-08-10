@@ -366,6 +366,7 @@ def cfs_set_manufacturer(
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
+            "schedule": schedule,
             "task": task,
             "form": form,
             "page_title": "Edit Manufacturer",

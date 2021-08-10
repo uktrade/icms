@@ -24,6 +24,10 @@
   </div>
 {% endblock %}
 
+{% block task_details %}
+  <h4>{{ page_title }}</h4>
+{% endblock %}
+
 {% block form_content %}
   {{ fields.field(form.exporter_status) }}
   {{ fields.field(form.brand_name_holder) }}

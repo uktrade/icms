@@ -9,6 +9,24 @@
   {{ form.media.css }}
 {% endblock %}
 
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+          class="prev-link">
+          Edit schedule
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block task_details %}
+  <h4>{{ page_title }}</h4>
+{% endblock %}
+
 {% block form_content %}
   {{ fields.field(form.manufacturer_name) }}
   {{ fields.field(form.manufacturer_address_entry_type) }}
