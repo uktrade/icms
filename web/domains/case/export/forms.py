@@ -268,8 +268,13 @@ class EditCFScheduleForm(forms.ModelForm):
             self.add_error("goods_placed_on_uk_market", "Both of these fields cannot be yes")
             self.add_error("goods_export_only", "Both of these fields cannot be yes")
 
-        # check if legislation is not biocidal but products contain ingredients and product type numbers
+        # check legislations do not exceed three
         legislations: QuerySet[ProductLegislation] = self.cleaned_data["legislations"]
+
+        if legislations.count() > 3:
+            self.add_error("legislations", "You must enter no more than 3 items.")
+
+        # Check if legislation is not biocidal but products contain ingredients and product type numbers
         is_biocidal = legislations.filter(is_biocidal=True).exists()
 
         if is_biocidal:
