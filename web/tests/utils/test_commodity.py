@@ -5,7 +5,11 @@ import pytest
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Usage
 from web.domains.country.models import Country
-from web.utils.commodity import get_usage_countries, get_usage_records
+from web.utils.commodity import (
+    get_usage_commodities,
+    get_usage_countries,
+    get_usage_records,
+)
 
 
 @pytest.fixture
@@ -32,23 +36,6 @@ def wood_test_data(db):
     country = Country.objects.get(name="Algeria")
     algeria_group = commodity_group(wood_type, "group_for_algeria", "1234567890", "2345678901")
     create_usage(app_type, country, group=algeria_group)
-
-
-def test_get_usage_records_gets_correct_records(wood_test_data):
-    usage_records = get_usage_records(app_type=ImportApplicationType.Types.WOOD_QUOTA)
-
-    assert usage_records.count() == 3
-    country_qs = get_usage_countries(usage_records)
-
-    actual = [(c.pk, c.name) for c in country_qs]
-
-    expected = [
-        (Country.objects.get(name="Afghanistan").pk, "Afghanistan"),
-        (Country.objects.get(name="Albania").pk, "Albania"),
-        (Country.objects.get(name="Algeria").pk, "Algeria"),
-    ]
-
-    assert expected == actual
 
 
 def test_get_usage_records_correctly_filter_invalid_records(wood_test_data, next_jan):
@@ -136,6 +123,43 @@ def test_get_usage_records_correctly_filter_inactive_records(wood_test_data):
     assert (
         get_usage_records(app_type=ImportApplicationType.Types.WOOD_QUOTA).count() == 3
     ), "Filters inactive group"
+
+
+def test_get_usage_countries_gets_correct_records(wood_test_data):
+    country_qs = get_usage_countries(ImportApplicationType.Types.WOOD_QUOTA)
+
+    actual = [(c.pk, c.name) for c in country_qs]
+
+    expected = [
+        (Country.objects.get(name="Afghanistan").pk, "Afghanistan"),
+        (Country.objects.get(name="Albania").pk, "Albania"),
+        (Country.objects.get(name="Algeria").pk, "Algeria"),
+    ]
+
+    assert expected == actual
+
+
+def test_get_usage_commodities_gets_correct_records(wood_test_data):
+    usage_records = get_usage_records(app_type=ImportApplicationType.Types.WOOD_QUOTA)
+
+    assert usage_records.count() == 3
+
+    commodities = get_usage_commodities(usage_records)
+
+    expected = sorted(
+        [
+            "1234567890",
+            "1234567890",
+            "1234567890",
+            "2345678901",
+            "2345678901",
+            "2345678901",
+            "3456789012",
+        ]
+    )
+    actual = sorted([c.commodity_code for c in commodities])
+
+    assert expected == actual
 
 
 def commodity(

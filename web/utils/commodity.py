@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING, TypedDict
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F
+from django.db.models import F, Model
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity, CommodityGroup, Usage
 from web.domains.country.models import Country
 
@@ -21,36 +20,59 @@ class CommodityGroupData(TypedDict):
 def get_usage_records(app_type: str, app_sub_type: str = None) -> "QuerySet[Usage]":
     """Gets all Usage records for the supplied application type / subtype"""
 
-    filter_kwargs = app_sub_type and {"subtype": app_sub_type} or {}
-    application_type = ImportApplicationType.objects.get(type=app_type, **filter_kwargs)
+    usage_records = Usage.objects.all()
+    usage_records = add_usage_filter(usage_records, app_type, app_sub_type)
+
+    return usage_records.distinct()
+
+
+def add_usage_filter(model: "QuerySet[Model]", app_type: str, app_sub_type: str = None, prefix=""):
+    """Apply all required filters to filter usage records correctly.
+
+    :param model: The model to apply usage filters too.
+    :param app_type: Type of application.
+    :param app_sub_type: Optional subtype of application.
+    :param prefix: The prefix indicating the relationship to the usage records.
+    """
+
+    application_type_filters = {f"{prefix}application_type__type": app_type}
+    if app_sub_type:
+        application_type_filters[f"{prefix}application_type__subtype"] = app_sub_type
+
     today = timezone.now().date()
 
-    application_usage = (
-        Usage.objects.annotate(
-            usage_start_date=F("start_date"),
-            commodity_start_date=F("commodity_group__commodities__validity_start_date"),
-            # Optional end dates need a default when checking
-            usage_end_date=Coalesce("end_date", today),
-            commodity_end_data=Coalesce("commodity_group__commodities__validity_end_date", today),
-        ).filter(
-            application_type=application_type,
-            usage_start_date__lte=today,
-            usage_end_date__gte=today,
-            commodity_start_date__lte=today,
-            commodity_end_data__gte=today,
-            commodity_group__is_active=True,
-            commodity_group__commodities__is_active=True,
+    return (
+        model.filter(
+            **{
+                f"{prefix}start_date__lte": today,
+                f"{prefix}commodity_group__commodities__validity_start_date__lte": today,
+                f"{prefix}commodity_group__is_active": True,
+                f"{prefix}commodity_group__commodities__is_active": True,
+            },
+            **application_type_filters,
         )
-        # Filtering the manytomany commodities causes duplicate records
-        .distinct()
+        .annotate(
+            # Optional end dates need a default when checking
+            usage_end_date=Coalesce(f"{prefix}end_date", today),
+            commodity_end_data=Coalesce(
+                f"{prefix}commodity_group__commodities__validity_end_date", today
+            ),
+        )
+        .filter(
+            usage_end_date__gte=today,
+            commodity_end_data__gte=today,
+        )
     )
 
-    return application_usage
 
-
-def get_usage_countries(application_usage: "QuerySet[Usage]") -> "QuerySet[Country]":
+def get_usage_countries(app_type: str, app_sub_type: str = None) -> "QuerySet[Country]":
     """Return countries linked to the usage records."""
-    return Country.objects.filter(usage__in=application_usage, is_active=True).distinct()
+    # return application_usage.country.all()
+
+    countries = Country.objects.filter(is_active=True)
+    countries = add_usage_filter(countries, app_type, app_sub_type, "usage__")
+
+    return countries.distinct()
 
 
 def get_usage_commodity_groups(application_usage: "QuerySet[Usage]") -> "QuerySet[CommodityGroup]":
@@ -66,6 +88,9 @@ def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Com
         commoditygroup__in=groups,
         is_active=True,
     ).distinct()
+
+
+
 
 
 def get_commodity_group_data(

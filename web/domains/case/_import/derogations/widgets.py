@@ -20,9 +20,7 @@ class DerogationCountryOfOriginSelect(ModelSelect2Widget):
     search_fields = ["name__icontains"]
 
     def get_queryset(self) -> "QuerySet[Country]":
-        return get_usage_countries(
-            get_usage_records(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
-        )
+        return get_usage_countries(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
 
     def build_attrs(
         self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] = None
