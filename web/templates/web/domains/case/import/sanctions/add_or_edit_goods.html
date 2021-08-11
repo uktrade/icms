@@ -1,5 +1,4 @@
 {% extends "flow/task-base.html" %}
-{% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
 {% block sidebar %}
@@ -25,6 +24,13 @@
   {{ fields.field(form.commodity) }}
   {{ fields.field(form.goods_description) }}
   {{ fields.field(form.quantity_amount) }}
+
+  <div class="row">
+    <div class="three columns bold"><div class="float-right"><label>Unit</label></div></div>
+    <div class="six columns"><span id="commodity_unit_description">{{ unit_label or "" }}</span></div>
+    <div class="three columns"></div>
+  </div>
+
   {{ fields.field(form.value) }}
 
 {% endblock form_content %}
@@ -32,3 +38,9 @@
 {% block task_actions %}
   <input type="submit" name="save" class="primary-button button" value="Save"/>
 {% endblock task_actions %}
+
+{% block page_js %}
+  {{ super() }}
+  <script id="commodity_group_data" type="application/json">{{ commodity_group_data|tojson }}</script>
+  <script src="{{ static('web/js/pages/sanctions-goods.js') }}" type="text/javascript"></script>
+{% endblock %}

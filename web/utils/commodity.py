@@ -1,5 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import F
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -10,6 +11,11 @@ from web.domains.country.models import Country
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+
+class CommodityGroupData(TypedDict):
+    unit_description: str
+    group_commodities: list[int]
 
 
 def get_usage_records(app_type: str, app_sub_type: str = None) -> "QuerySet[Usage]":
@@ -60,6 +66,33 @@ def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Com
         commoditygroup__in=groups,
         is_active=True,
     ).distinct()
+
+
+def get_commodity_group_data(
+    application_usage: "QuerySet[Usage]",
+) -> dict[int, CommodityGroupData]:
+    """Returns group data, specifically the linked commodities and the unit description"""
+    groups = (
+        get_usage_commodity_groups(application_usage)
+        .annotate(group_commodities=ArrayAgg("commodities__pk", distinct=True))
+        .order_by("group_name")
+    )
+
+    return {
+        g.pk: {"unit_description": g.unit.description, "group_commodities": g.group_commodities}
+        for g in groups
+    }
+
+
+def get_commodity_unit(
+    commodity_group_data: dict[int, CommodityGroupData], commodity: Commodity
+) -> str:
+    """Return the commodity unit by searching the commodity group data."""
+    for group_id, group_data in commodity_group_data.items():
+        if commodity.pk in group_data["group_commodities"]:
+            return group_data["unit_description"]
+
+    return ""
 
 
 def get_category_commodity_group_data(commodity_type: str) -> dict[str, dict[str, str]]:

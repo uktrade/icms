@@ -13,7 +13,12 @@ from web.domains.case.views import check_application_permission
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
-from web.utils.commodity import get_usage_commodities, get_usage_records
+from web.utils.commodity import (
+    get_commodity_group_data,
+    get_commodity_unit,
+    get_usage_commodities,
+    get_usage_records,
+)
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -108,6 +113,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
             "task": task,
             "form": goods_form,
             "page_title": "Sanctions and Adhoc License Application",
+            "commodity_group_data": _get_sanctions_commodity_group_data(application),
         }
         return render(
             request,
@@ -144,6 +150,9 @@ def edit_goods(
         else:
             form = GoodsForm(instance=goods, application=application)
 
+        commodity_group_data = _get_sanctions_commodity_group_data(application)
+        unit_label = get_commodity_unit(commodity_group_data, goods.commodity)
+
         context = {
             "case_type": "import",
             "process_template": "web/domains/case/import/partials/process.html",
@@ -151,12 +160,19 @@ def edit_goods(
             "task": task,
             "form": form,
             "page_title": "Edit Goods",
+            "commodity_group_data": commodity_group_data,
+            "unit_label": unit_label,
         }
-        return render(
-            request,
-            "web/domains/case/import/sanctions/add_or_edit_goods.html",
-            context,
-        )
+
+        return render(request, "web/domains/case/import/sanctions/add_or_edit_goods.html", context)
+
+
+def _get_sanctions_commodity_group_data(application):
+    usage_records = get_usage_records(
+        ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
+    ).filter(country=application.origin_country)
+
+    return get_commodity_group_data(usage_records)
 
 
 @login_required
