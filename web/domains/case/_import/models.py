@@ -322,6 +322,30 @@ class ImportApplication(ApplicationBase):
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
+    def get_submit_view_name(self) -> str:
+        if self.process_type == ImportApplicationType.ProcessTypes.FA_OIL:
+            return "import:fa-oil:submit-oil"
+        elif self.process_type == ImportApplicationType.ProcessTypes.FA_DFL:
+            return "import:fa-dfl:submit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.FA_SIL:
+            return "import:fa-sil:submit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.OPT:
+            return "import:opt:submit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.DEROGATIONS:
+            return "import:derogations:submit-derogations"
+        elif self.process_type == ImportApplicationType.ProcessTypes.SANCTIONS:
+            return "import:sanctions:submit-sanctions"
+        elif self.process_type == ImportApplicationType.ProcessTypes.WOOD:
+            return "import:wood:submit-quota"
+        elif self.process_type == ImportApplicationType.ProcessTypes.TEXTILES:
+            return "import:textiles:submit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.SPS:
+            return "import:sps:submit"
+        elif self.process_type == ImportApplicationType.ProcessTypes.IRON_STEEL:
+            return "import:ironsteel:submit"
+        else:
+            raise NotImplementedError(f"Unknown process_type {self.process_type}")
+
     def user_is_contact_of_org(self, user: User) -> bool:
         return user.has_perm("web.is_contact_of_importer", self.importer)
 

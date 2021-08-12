@@ -2,6 +2,11 @@
 {% import 'forms/forms.html' as forms %}
 
 
+{% block sidebar %}
+  {% include "partial/case/sidebar.html" %}
+{% endblock %}
+
+
 {% block extra_header %}
   <div class="container contextHeaderGrid">
     {% include process_template %}

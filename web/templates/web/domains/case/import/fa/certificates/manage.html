@@ -1,14 +1,6 @@
 {% extends "flow/task-base.html" %}
 
 
-{% block sidebar %}
-  {% if process.process_type == "OpenIndividualLicenceApplication" %}
-    {% include "partial/case/import/fa-oil/sidebar.html" %}
-  {% elif process.process_type == "SILApplication" %}
-    {% include "partial/case/import/fa-sil/sidebar.html" %}
-  {% endif %}
-{% endblock %}
-
 {% block content_actions %}
 <div class="content-actions">
   <ul class="menu-out flow-across">

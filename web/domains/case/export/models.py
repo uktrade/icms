@@ -155,6 +155,14 @@ class ExportApplication(ApplicationBase):
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
+    def get_submit_view_name(self) -> str:
+        if self.process_type == ExportApplicationType.ProcessTypes.COM:
+            return "export:com-submit"
+        if self.process_type == ExportApplicationType.ProcessTypes.CFS:
+            return "export:cfs-submit"
+        else:
+            raise NotImplementedError(f"Unknown process_type {self.process_type}")
+
     def user_is_contact_of_org(self, user: User) -> bool:
         return user.has_perm("web.is_contact_of_exporter", self.exporter)
 

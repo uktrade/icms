@@ -1,0 +1,77 @@
+{# sidebar used by importer/exporter to create/edit/submit applications #}
+
+<ul class="menu-out">
+  <li>
+    <a href="{{ icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}) }}">Application Details</a>
+  </li>
+  {% if process.process_type == "OpenIndividualLicenceApplication" %}
+    <li>
+      <a href="{{ icms_url('import:fa:manage-certificates', kwargs={'application_pk': process.pk}) }}">Certificates</a>
+    </li>
+    <li>
+      <a href="{{ icms_url('import:fa:list-import-contacts', kwargs={'application_pk': process.pk}) }}">Details of Who Bought From</a>
+    </li>
+  {% elif process.process_type == "DFLApplication" %}
+    <li>
+      <a href="{{ icms_url('import:fa:list-import-contacts', kwargs={'application_pk': process.pk}) }}">Details of Who Bought From</a>
+    </li>
+  {% elif process.process_type == "SILApplication" %}
+    <li>
+      <a href="{{ icms_url('import:fa:manage-certificates', kwargs={'application_pk': process.pk}) }}">Certificates</a>
+    </li>
+    <li>
+      <a href="{{ icms_url('import:fa:list-import-contacts', kwargs={'application_pk': process.pk}) }}">Details of Who Bought From</a>
+    </li>
+  {% elif process.process_type == "OutwardProcessingTradeApplication" %}
+    <li>
+      <a href="{{ icms_url('import:opt:edit-compensating-products', kwargs={'application_pk': process.pk}) }}">
+        Compensating Products
+      </a>
+    </li>
+    <li>
+      <a href="{{ icms_url('import:opt:edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}">
+        Temporary Exported Goods
+      </a>
+    </li>
+    <li>
+      <a href="{{ icms_url('import:opt:edit-further-questions', kwargs={'application_pk': process.pk}) }}">Further
+        Questions</a>
+    </li>
+
+    <ul>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_employment_decreased'}) }}">
+            Level of employment</a>
+      </li>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_prior_authorisation'}) }}">
+            Prior Authorisation</a>
+      </li>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_past_beneficiary'}) }}">
+            Past Beneficiary</a>
+      </li>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_new_application'}) }}">
+            New Application</a>
+      </li>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_further_authorisation'}) }}">
+            Further Authorisation</a>
+      </li>
+      <li>
+        <a href="{{ icms_url('import:opt:edit-further-questions-shared',
+                    kwargs={'application_pk': process.pk, 'fq_type': 'fq_subcontract_production'}) }}">
+            Subcontract production</a>
+      </li>
+    </ul>
+  {% endif %}
+  <li>
+    <a href="{{ icms_url(process.get_submit_view_name(), kwargs={'application_pk': process.pk}) }}">Submit</a>
+  </li>
+</ul>
