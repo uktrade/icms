@@ -19,8 +19,11 @@ SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 # getAddress.io api key
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 
-# used in email content
+# Email/phone contacts
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", "enquiries.ilb@icms.trade.dev.uktrade.io")
+ILB_GSI_CONTACT_EMAIL = env.str(
+    "ICMS_ILB_GSI_CONTACT_EMAIL", "enquiries.ilb.gsi@icms.trade.dev.uktrade.io"
+)
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", "N/A")
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str(
     "ICMS_FIREARMS_HOMEOFFICE_EMAIL", "firearms-homeoffice@example.com"

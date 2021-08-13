@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytz
+from django.conf import settings
 from django.db import migrations
 
 
@@ -739,7 +740,7 @@ def add_email_templates(apps, schema_editor):
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="ICMS Case Reference [[CASE_REFERENCE]] Stopped",
-        template_content="Processing on ICMS Case Reference [[CASE_REFERENCE]] has been stopEmail enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
+        template_content="Processing on ICMS Case Reference [[CASE_REFERENCE]] has been stopped. Please contact ILB if you believe this is in error or require further information.",
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
@@ -751,11 +752,18 @@ def add_email_templates(apps, schema_editor):
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="[[CASE_REFERENCE]] Further Information Request",
-        template_content="""Dear [[IMPORTER_NAME]],
-Please can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]
-Please log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.
-Email enquiries.ilb@trade.gov.uk if you have questions quoting: [[CASE_REFERENCE]].
+        template_content=f"""Dear [[IMPORTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must respond to this information request via the information request  link now assigned to the case. Your application will not be processed further until you respond to this request.
+
+The application will be closed if the requested response is not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_CONTACT_EMAIL } if you have any queries regarding your application.  Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
 Yours sincerely,
+
 [[CASE_OFFICER_NAME]]""",
     )
     Template.objects.get_or_create(
@@ -768,15 +776,21 @@ Yours sincerely,
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="[[CASE_REFERENCE]] Request for Application Update",
-        template_content="""Dear [[IMPORTER_NAME]]
-    Please make the following amendments to your request:
-    [DESCRIBE WHAT UPDATES ARE NEEDED]
-    You can only make the requested amendments using the update link found directly below the 'View Application' and 'Withdraw Application' links in the Actions column on the right hand side of your workbasket.
-    After clicking on the update link, 'start changes' and then 'next' to progress through the screens until you are on the application screen. Make the changes and resubmit.
-    Your request will be closed if the changes are not made within 1 working day.
-    Email enquiries.ilb@trade.gov.uk if you have questions quoting	[[CASE_REFERENCE]].
-    Yours sincerely,
-    [[CASE_OFFICER_NAME]]""",
+        template_content=f"""Dear [[IMPORTER_NAME]]
+
+To enable ILB to process your application, I am writing to ask you for application updates regarding [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must make the requested amendments via the update  link now assigned to the case. Your application will not be processed further until you submit the updates.
+
+The application will be closed if the requested updates are not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application.  Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
+This application will be closed if all requested updates are not completed within 5 working days of our receipt of the original application.
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]""",
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
@@ -788,7 +802,7 @@ Yours sincerely,
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="ICMS Licence [[LICENCE_NUMBER]] Revoked",
-        template_content="Licence [[LICENCE_NUMBER]] has been revoked. Email enquiries.ilb@trade.gov.uk  if you believe this is in error or need more information.",
+        template_content="Licence [[LICENCE_NUMBER]] has been revoked. Please contact ILB if you believe this is in error or require further information.",
     )
     # TODO: template extracted from the test system not from the db as missing
     # search IMA_SANCTION_EMAIL to see usage
@@ -867,7 +881,7 @@ Thanks and best regards
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="Case Reopened: [[CASE_REFERENCE]]",
-        template_content="ILB has reopened case reference [[CASE_REFERENCE]] and will resume processing on this case. Please email enquiries.ilb@trade.gov.uk for further information.",
+        template_content="ILB has reopened case reference [[CASE_REFERENCE]] and will resume processing on this case. Please contact ILB for further information.",
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
@@ -903,7 +917,7 @@ Thanks and best regards
         template_type="EMAIL_TEMPLATE",
         application_domain="CA",
         template_title="ICMS Certificate(s) Revoked",
-        template_content="Certificate(s) [[CERTIFICATE_REFERENCES]] have been revoked. Please email enquiries.ilb@trade.gov.uk if you believe this is in error or want further information.",
+        template_content="Certificate(s) [[CERTIFICATE_REFERENCES]] have been revoked. Please contact ILB if you believe this is in error or require further information.",
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
@@ -915,11 +929,16 @@ Thanks and best regards
         template_type="EMAIL_TEMPLATE",
         application_domain="IAR",
         template_title="[[REQUEST_REFERENCE]] Further Information Request",
-        template_content="""Dear [[REQUESTER_NAME]],
-Please can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]
-Please log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.
-Email enquiries.ilb@trade.gov.uk if you have questions quoting: [[REQUEST_REFERENCE]].
+        template_content=f"""Dear [[REQUESTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must only reply via the information request link now assigned to the request available when you log in.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[REQUEST_REFERENCE]].
+
 Yours sincerely,
+
 [[CURRENT_USER_NAME]]""",
     )
     Template.objects.get_or_create(
@@ -965,18 +984,20 @@ Thanks and best regards
         template_type="EMAIL_TEMPLATE",
         application_domain="CA",
         template_title="[[CASE_REFERENCE]] Request for Application Update",
-        template_content="""Dear [[EXPORTER_NAME]]
-Please make the following amendments to your request:
-[DESCRIBE WHAT UPDATES ARE NEEDED].
-Please hover your cursor over the blue (i) on the right hand side of the application screen, opposite exporter status. You comply with the definition of a manufacturer as detailed in the applicable legislation if you have had the products designed or manufactured and market them under your own name or trademark. Manufacturer is not solely a reference to whoever carries out the manufacturing process. Please amend to I am the manufacturer.[DELETE IF NOT REQUIRED]
-You can still list your contract manufacturer in the 'manufactured at' section if you want their details to be listed on the issued certificate. [DELETE IF NOT REQUIRED]
-You must select the responsible person statement if your company has placed or will be placing these cosmetics products on the EU market. This statement confirms that your company is responsible for ensuring that the products meet the product safety requirements of the EU Cosmetics Regulation. [DELETE IF NOT COSMETICS]
-The Responsible person statement does not refer to the person submitting the application, it refers to your company. [DELETE IF NOT COSMETICS]
-You can only make the requested amendments using the update link found directly below the 'View Application' and 'Withdraw Application' links in the Actions column on the right hand side of your workbasket.
-After clicking on the update link, 'start changes' and then 'next' to progress through the screens until you are on the application screen. Make the changes and resubmit.
-Your request will be closed if the changes are not made within 1 working day.
-Email enquiries.ilb@trade.gov.uk if you have questions quoting	[[CASE_REFERENCE]].
+        template_content=f"""Dear [[EXPORTER_NAME]]
+
+To enable ILB to process your application, I am writing to ask you for application updates regarding [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
+
+You must select the responsible person statement if you have placed the product on the EU market.  This only applies to cosmetics. [DELETE IF NOT APPLICABLE]
+
+You must make the requested amendments via the update  link now assigned to the case. The application will not be processed further until you submit the updates.
+
+The application will be closed if the requested updates are not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
 Yours sincerely,
+
 [[CASE_OFFICER_NAME]]""",
     )
     Template.objects.get_or_create(
@@ -989,11 +1010,18 @@ Yours sincerely,
         template_type="EMAIL_TEMPLATE",
         application_domain="CA",
         template_title="[[CASE_REFERENCE]] Further Information Request",
-        template_content="""Dear [[EXPORTER_NAME]],
-Please can you [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED]
-Please log on to your account and reply using the information request link now assigned to this request. Your request will be closed if you do not reply within 1 working day.
-Email enquiries.ilb@trade.gov.uk if you have questions quoting: [[CASE_REFERENCE]].
+        template_content=f"""Dear [[EXPORTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
+
+You must respond to this information request via the information request link now assigned to the case. Your application will not be processed further until you respond to this request.
+
+The application will be closed if the requested response is not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
 Yours sincerely,
+
 [[CASE_OFFICER_NAME]]""",
     )
 

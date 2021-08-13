@@ -1,4 +1,7 @@
+from typing import Any
+
 import django.contrib.auth.views as auth_views
+from django.conf import settings
 from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,6 +27,12 @@ class LoginView(auth_views.LoginView):
     template_name = "auth/login.html"
     redirect_authenticated_user = True
     authentication_form = LoginForm
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context.update({"ilb_contact_email": settings.ILB_CONTACT_EMAIL})
+
+        return context
 
 
 @user_passes_test(lambda u: u.is_anonymous, login_url="home")
@@ -91,7 +100,11 @@ def reset_password(request):
         return render(
             request,
             "auth/reset-password/reset-password-2.html",
-            {"form": form, "login_id": login_id},
+            {
+                "form": form,
+                "login_id": login_id,
+                "gsi_contact_email": settings.ILB_GSI_CONTACT_EMAIL,
+            },
         )
 
     form = ResetPasswordForm(request.POST or None)
@@ -104,7 +117,11 @@ def reset_password(request):
             return render(
                 request,
                 "auth/reset-password/reset-password-2.html",
-                {"form": form, "login_id": user.username},
+                {
+                    "form": form,
+                    "login_id": user.username,
+                    "gsi_contact_email": settings.ILB_GSI_CONTACT_EMAIL,
+                },
             )
         except ObjectDoesNotExist:
             form.add_error(None, "Invalid login id")
