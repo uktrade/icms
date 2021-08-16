@@ -8,7 +8,11 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.views import check_application_permission, view_application_file
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+    view_application_file,
+)
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -33,7 +37,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = EditTextilesForm(data=request.POST, instance=application)
@@ -82,7 +86,7 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 
@@ -144,7 +148,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -196,7 +200,7 @@ def delete_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -212,7 +216,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: TextilesApplication = get_object_or_404(
             TextilesApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
         checklist, created = TextilesChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
@@ -256,9 +260,8 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
         application: TextilesApplication = get_object_or_404(
             TextilesApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = GoodsTextilesLicenceForm(request.POST, instance=application)

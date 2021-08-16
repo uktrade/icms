@@ -7,7 +7,10 @@ from django.urls import reverse
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import SubmitForm
-from web.domains.case.views import check_application_permission
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+)
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -34,7 +37,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = PrepareOILForm(data=request.POST, instance=application)
@@ -69,7 +72,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 
@@ -172,7 +175,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
         checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
             import_application=application
         )

@@ -9,7 +9,10 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.views import check_application_permission
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+)
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -42,7 +45,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.method == "POST":
             form = SanctionsAndAdhocLicenseForm(data=request.POST, instance=application)
@@ -91,7 +94,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.method == "POST":
             goods_form = GoodsForm(request.POST, application=application)
@@ -133,7 +136,7 @@ def edit_goods(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
         if request.POST:
@@ -184,9 +187,8 @@ def edit_goods_licence(
         application: SanctionsAndAdhocApplication = get_object_or_404(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", "process")
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
 
@@ -249,7 +251,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.method == "POST":
             form = DocumentForm(request.POST, request.FILES)
@@ -297,7 +299,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -315,7 +317,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 

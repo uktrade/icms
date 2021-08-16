@@ -11,6 +11,11 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case import forms as case_forms
 from web.domains.case import views as case_views
 from web.domains.case.forms import SubmitForm
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+    view_application_file,
+)
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -21,7 +26,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from ..models import ImportApplication
 from . import forms, models
 
 GoodsModel = Union[
@@ -296,9 +300,9 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = forms.PrepareSILForm(data=request.POST, instance=application)
@@ -339,9 +343,9 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -361,9 +365,9 @@ def add_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         config = _get_sil_section_app_config(sil_section_type)
 
@@ -404,11 +408,11 @@ def edit_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
         goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = config.form_class(request.POST, instance=goods)
@@ -443,11 +447,11 @@ def delete_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
         goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         goods.is_active = False
         goods.save()
@@ -471,9 +475,7 @@ def response_preparation_edit_goods(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+        task = get_application_current_task(application, "import", "process")
 
         config = _get_sil_section_resp_prep_config(sil_section_type)
         goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
@@ -513,9 +515,9 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = _get_sil_errors(application)
 
@@ -566,9 +568,9 @@ def add_section5_document(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = case_forms.DocumentForm(data=request.POST, files=request.FILES)
@@ -604,8 +606,8 @@ def archive_section5_document(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        check_application_permission(application, request.user, "import")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.user_section5.get(pk=section5_pk)
         document.is_active = False
@@ -622,7 +624,7 @@ def view_section5_document(
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
     get_object_or_404(application.user_section5, pk=section5_pk)
 
-    return case_views.view_application_file(
+    return view_application_file(
         request.user, application, application.user_section5, section5_pk, "import"
     )
 
@@ -636,12 +638,12 @@ def add_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
         section5 = get_object_or_404(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         application.verified_section5.add(section5)
 
@@ -657,10 +659,10 @@ def delete_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
         section5 = get_object_or_404(application.verified_section5, pk=section5_pk)
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         application.verified_section5.remove(section5)
 
@@ -675,12 +677,12 @@ def view_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        case_views.check_application_permission(application, request.user, "import")
+        check_application_permission(application, request.user, "import")
         section5 = get_object_or_404(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -705,9 +707,7 @@ def view_verified_section5_document(
         application.importer.section5_authorities.filter(is_active=True), files__pk=document_pk
     )
 
-    return case_views.view_application_file(
-        request.user, application, section5.files, document_pk, "import"
-    )
+    return view_application_file(request.user, application, section5.files, document_pk, "import")
 
 
 @login_required
@@ -717,7 +717,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
         checklist, created = models.SILChecklist.objects.get_or_create(
             import_application=application
         )
@@ -762,7 +762,7 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = forms.SILCoverLetterTemplateForm(request.POST)

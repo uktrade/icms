@@ -9,7 +9,10 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.views import check_application_permission
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+)
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
@@ -41,7 +44,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = PrepareWoodQuotaForm(data=request.POST, instance=application)
@@ -83,7 +86,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -133,7 +136,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -153,7 +156,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -213,7 +216,7 @@ def delete_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.contract_documents.get(pk=document_pk)
         document.is_active = False
@@ -233,7 +236,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         document = application.contract_documents.get(pk=document_pk)
 
@@ -270,7 +273,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 
@@ -338,7 +341,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
             import_application=application
         )
@@ -383,9 +386,8 @@ def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = GoodsWoodQuotaLicenceForm(request.POST, instance=application)

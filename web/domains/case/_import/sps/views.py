@@ -11,6 +11,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import (
     check_application_permission,
+    get_application_current_task,
     view_application_file,
     view_application_file_direct,
 )
@@ -43,7 +44,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = EditSPSForm(data=request.POST, instance=application)
@@ -83,7 +84,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 
@@ -153,7 +154,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -205,7 +206,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -225,7 +226,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -300,7 +301,7 @@ def delete_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         if application.contract_file:
             file_model = application.contract_file
@@ -326,7 +327,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         document = application.contract_file
 
@@ -367,7 +368,7 @@ def response_preparation_edit_goods(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)

@@ -10,7 +10,11 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.views import check_application_permission, view_application_file
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+    view_application_file,
+)
 from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -45,7 +49,7 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = EditOPTForm(data=request.POST, instance=application)
@@ -88,7 +92,7 @@ def edit_compensating_products(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = CompensatingProductsOPTForm(data=request.POST, instance=application)
@@ -135,7 +139,7 @@ def edit_temporary_exported_goods(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = TemporaryExportedGoodsOPTForm(data=request.POST, instance=application)
@@ -177,7 +181,7 @@ def edit_further_questions(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
@@ -217,7 +221,7 @@ def edit_further_questions_shared(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         form_class = get_fq_form(fq_type)
 
@@ -267,7 +271,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         errors = ApplicationErrors()
 
@@ -403,7 +407,7 @@ def add_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        task = get_application_current_task(application, "import", "prepare")
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -460,7 +464,7 @@ def delete_document(
 
         check_application_permission(application, request.user, "import")
 
-        application.get_task(ImportApplication.Statuses.IN_PROGRESS, "prepare")
+        get_application_current_task(application, "import", "prepare")
 
         document = application.documents.get(pk=document_pk)
         document.is_active = False
@@ -486,7 +490,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:
@@ -530,7 +534,7 @@ def response_preparation_edit_compensating_products(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = ResponsePrepCompensatingProductsOPTForm(data=request.POST, instance=application)
@@ -571,7 +575,7 @@ def response_preparation_edit_temporary_exported_goods(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "import", "process")
 
         if request.POST:
             form = ResponsePrepTemporaryExportedGoodsOPTForm(
