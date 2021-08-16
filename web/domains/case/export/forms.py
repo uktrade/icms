@@ -17,6 +17,7 @@ from web.models.shared import YesNoChoices
 
 from .models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSProduct,
     CFSProductActiveIngredient,
@@ -408,3 +409,28 @@ class CFSActiveIngredientForm(forms.ModelForm):
             self.instance.product = self.product
 
         return super().save(commit=commit)
+
+
+class EditGMPForm(forms.ModelForm):
+    class Meta:
+        model = CertificateOfGoodManufacturingPracticeApplication
+
+        fields = (
+            "contact",
+            "countries",
+        )
+
+        widgets = {
+            "countries": Select2MultipleWidget(
+                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Country"},
+            )
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["contact"].queryset = application_contacts(self.instance)
+
+        application_countries = self.instance.application_type.country_group.countries.filter(
+            is_active=True
+        )
+        self.fields["countries"].queryset = application_countries

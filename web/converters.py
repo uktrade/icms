@@ -22,13 +22,13 @@ class CaseTypeConverter:
 
 
 class ExportApplicationTypeConverter:
-    regex = "cfs|com"
+    regex = "cfs|com|gmp"
 
     def to_python(self, value):
         return value.upper()
 
     def to_url(self, value):
-        if value not in ["cfs", "com"]:
+        if value not in ["cfs", "com", "gmp"]:
             raise ValueError
 
         return value

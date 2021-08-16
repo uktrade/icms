@@ -80,4 +80,13 @@ urlpatterns = [
             ]
         ),
     ),
+    path(
+        "gmp/<int:application_pk>/",
+        include(
+            [
+                path("edit/", views.edit_gmp, name="gmp-edit"),
+                path("submit/", views.submit_gmp, name="gmp-submit"),
+            ]
+        ),
+    ),
 ]

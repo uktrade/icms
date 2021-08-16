@@ -1,0 +1,35 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block css %}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+{% endblock %}
+
+{% block form_content %}
+  <div class="info-box info-box-info">
+    This form is in respect of the Exporting Company. Please provide all
+    the information requested. The information will be used to create a
+    Certificate of Good Manufacturing Practice.
+  </div>
+
+  {{ super() }}
+
+  <h4>Contact</h4>
+  {{ fields.field(form.contact) }}
+
+  <h4>Countries</h4>
+  {{ fields.field(form.countries) }}
+{% endblock %}
+
+{% block task_actions %}
+  <li>
+    <button type="submit" role="action-button" name="close_request" class="primary-button button">
+      Save
+    </button>
+  </li>
+{% endblock %}

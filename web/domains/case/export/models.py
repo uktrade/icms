@@ -152,6 +152,8 @@ class ExportApplication(ApplicationBase):
             return "export:com-edit"
         if self.process_type == ExportApplicationType.ProcessTypes.CFS:
             return "export:cfs-edit"
+        if self.process_type == ExportApplicationType.ProcessTypes.GMP:
+            return "export:gmp-edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
@@ -160,6 +162,8 @@ class ExportApplication(ApplicationBase):
             return "export:com-submit"
         if self.process_type == ExportApplicationType.ProcessTypes.CFS:
             return "export:cfs-submit"
+        if self.process_type == ExportApplicationType.ProcessTypes.GMP:
+            return "export:gmp-submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
@@ -334,3 +338,9 @@ class CFSProductActiveIngredient(models.Model):
     product = models.ForeignKey(
         CFSProduct, related_name="active_ingredients", on_delete=models.CASCADE
     )
+
+
+class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
+    PROCESS_TYPE = ExportApplicationType.ProcessTypes.GMP
+
+    # TODO: Add remaining model fields

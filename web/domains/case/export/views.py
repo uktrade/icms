@@ -33,10 +33,12 @@ from .forms import (
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
+    EditGMPForm,
     PrepareCertManufactureForm,
 )
 from .models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSProduct,
     CFSProductActiveIngredient,
@@ -131,6 +133,13 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
                 " clients outside of the EU.\n\n"
                 "DIT does not issue Certificates of Free Sale for food, foodsupplements, pesticides and CE marked medical devices."
             ),
+        )
+
+    elif type_code == ExportApplicationType.Types.GMP:
+        return CreateExportApplicationConfig(
+            model_class=CertificateOfGoodManufacturingPracticeApplication,
+            form_class=CreateExportApplicationForm,
+            certificate_message="",
         )
 
     raise NotImplementedError(f"type_code not supported: {type_code}")
@@ -1059,3 +1068,82 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
     errors.add(page_errors)
 
     return errors
+
+
+@login_required
+def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+        check_application_permission(application, request.user, "export")
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        errors = ApplicationErrors()
+        page_errors = PageErrors(
+            page_name="Application details",
+            url=reverse("export:gmp-edit", kwargs={"application_pk": application_pk}),
+        )
+        create_page_errors(
+            EditGMPForm(data=model_to_dict(application), instance=application),
+            page_errors,
+        )
+        errors.add(page_errors)
+
+        if request.POST:
+            form = SubmitForm(data=request.POST)
+
+            if form.is_valid() and not errors.has_errors():
+                application.submit_application(request, task)
+
+                return application.redirect_after_submit(request)
+
+        else:
+            form = SubmitForm()
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "exporter_name": application.exporter.name,
+            "form": form,
+            "errors": errors if errors.has_errors() else None,
+        }
+
+        return render(request, "web/domains/case/export/submit-gmp.html", context)
+
+
+@login_required
+def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        task = application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+        if request.POST:
+            form = EditGMPForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+                )
+
+        else:
+            form = EditGMPForm(instance=application, initial={"contact": request.user})
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+        }
+
+        return render(request, "web/domains/case/export/gmp-edit.html", context)
