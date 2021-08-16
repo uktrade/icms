@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import (
     check_application_permission,
@@ -332,6 +332,8 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
         )
 
         errors.add(page_errors)
+
+    errors.add(get_org_update_request_errors(application, "import"))
 
     return errors
 

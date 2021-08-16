@@ -65,6 +65,12 @@ class UpdateRequestForm(forms.ModelForm):
         fields = ("request_subject", "email_cc_address_list", "request_detail")
 
 
+class UpdateRequestResponseForm(forms.ModelForm):
+    class Meta:
+        model = UpdateRequest
+        fields = ("response_detail",)
+
+
 class WithdrawForm(forms.ModelForm):
     class Meta:
         model = WithdrawApplication

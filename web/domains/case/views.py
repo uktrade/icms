@@ -138,10 +138,10 @@ def get_application_current_task(
             return application.get_task(
                 [application.Statuses.SUBMITTED, application.Statuses.WITHDRAWN], task_type
             )
-
         elif task_type == "prepare":
-            return application.get_task(application.Statuses.IN_PROGRESS, task_type)
-
+            return application.get_task(
+                [application.Statuses.IN_PROGRESS, application.Statuses.UPDATE_REQUESTED], task_type
+            )
     elif case_type == "access":
         if task_type == "process":
             return application.get_task(application.Statuses.SUBMITTED, task_type)
@@ -165,7 +165,7 @@ def list_notes(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
         get_application_current_task(application, case_type, "process")
@@ -193,7 +193,7 @@ def add_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -217,7 +217,7 @@ def archive_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -241,7 +241,7 @@ def unarchive_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -264,7 +264,7 @@ def edit_note(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -328,7 +328,7 @@ def add_note_document(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -409,7 +409,7 @@ def delete_note_document(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -434,7 +434,7 @@ def withdraw_case(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -488,7 +488,7 @@ def archive_withdrawal(
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = _get_class_imp_or_exp(case_type)
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -526,33 +526,30 @@ def manage_update_requests(
         )
 
         task = get_application_current_task(application, case_type, "process")
-        update_requests = application.update_requests.filter(is_active=True)
-        current_update_request = update_requests.filter(
-            status__in=[models.UpdateRequest.OPEN, models.UpdateRequest.UPDATE_IN_PROGRESS]
-        ).first()
 
         if case_type == "import":
             template_code = "IMA_APP_UPDATE"
 
-            # TODO: replace with case reference ICMSLST-348
             placeholder_content = {
-                "CASE_REFERENCE": application_pk,
+                "CASE_REFERENCE": application.reference,
                 "IMPORTER_NAME": application.importer.display_name,
                 "CASE_OFFICER_NAME": request.user,
             }
         elif case_type == "export":
             template_code = "CA_APPLICATION_UPDATE_EMAIL"
 
-            # TODO: replace with case reference ICMSLST-348
             placeholder_content = {
-                "CASE_REFERENCE": application_pk,
+                "CASE_REFERENCE": application.reference,
                 "EXPORTER_NAME": application.exporter.name,
                 "CASE_OFFICER_NAME": request.user,
             }
+        else:
+            raise NotImplementedError(
+                f"case type {case_type} is not implemented for update requests"
+            )
 
-        # TODO: replace with case reference ICMSLST-348
         template = Template.objects.get(template_code=template_code, is_active=True)
-        email_subject = template.get_title({"CASE_REFERENCE": application_pk})
+        email_subject = template.get_title({"CASE_REFERENCE": application.reference})
         email_content = template.get_content(placeholder_content)
 
         if request.POST:
@@ -561,7 +558,7 @@ def manage_update_requests(
                 update_request = form.save(commit=False)
                 update_request.requested_by = request.user
                 update_request.request_datetime = timezone.now()
-                update_request.status = models.UpdateRequest.OPEN
+                update_request.status = models.UpdateRequest.Status.OPEN
                 update_request.save()
 
                 application.status = model_class.Statuses.UPDATE_REQUESTED
@@ -582,11 +579,17 @@ def manage_update_requests(
                     contacts = get_users_with_perms(
                         application.exporter, only_with_perms_in=["is_contact_of_exporter"]
                     ).filter(user_permissions__codename="exporter_access")
+                else:
+                    raise NotImplementedError(
+                        f"case type {case_type} is not implemented for update requests"
+                    )
 
-                notify.update_request(
+                recipients = list(contacts.values_list("email", flat=True))
+
+                email.send_email.delay(
                     update_request.request_subject,
                     update_request.request_detail,
-                    contacts,
+                    recipients,
                     update_request.email_cc_address_list,
                 )
 
@@ -599,19 +602,25 @@ def manage_update_requests(
                 }
             )
 
+        update_requests = application.update_requests.filter(is_active=True)
+        update_request = update_requests.filter(
+            status__in=[models.UpdateRequest.Status.OPEN, models.UpdateRequest.Status.RESPONDED]
+        ).first()
+        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+
         context = {
             "process": application,
             "task": task,
             "page_title": get_page_title(case_type, application, "Update Requests"),
             "form": form,
-            "update_requests": update_requests,
-            "current_update_request": current_update_request,
+            "previous_update_requests": previous_update_requests,
+            "update_request": update_request,
             "case_type": case_type,
         }
 
         return render(
             request=request,
-            template_name="web/domains/case/update-requests.html",
+            template_name="web/domains/case/manage/update-requests.html",
             context=context,
         )
 
@@ -629,7 +638,7 @@ def close_update_request(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -637,7 +646,7 @@ def close_update_request(
 
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
-        update_request.status = models.UpdateRequest.CLOSED
+        update_request.status = models.UpdateRequest.Status.CLOSED
         update_request.closed_by = request.user
         update_request.closed_datetime = timezone.now()
         update_request.save()
@@ -648,6 +657,109 @@ def close_update_request(
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
     )
+
+
+@login_required
+def start_update_request(
+    request: AuthenticatedHttpRequest, *, application_pk: int, update_request_pk=int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, case_type)
+
+        get_application_current_task(application, case_type, "prepare")
+
+        update_requests = application.update_requests.filter(is_active=True)
+        update_request = get_object_or_404(
+            update_requests.filter(is_active=True).filter(status=models.UpdateRequest.Status.OPEN),
+            pk=update_request_pk,
+        )
+        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+
+        if request.POST:
+            update_request.status = models.UpdateRequest.Status.UPDATE_IN_PROGRESS
+            update_request.save()
+
+            return redirect(
+                reverse(application.get_edit_view_name(), kwargs={"application_pk": application_pk})
+            )
+
+        context = {
+            "process": application,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "case_type": case_type,
+            "update_request": update_request,
+            "previous_update_requests": previous_update_requests,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/start-update-request.html",
+            context=context,
+        )
+
+
+@login_required
+def respond_update_request(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, case_type)
+
+        get_application_current_task(application, case_type, "prepare")
+
+        update_requests = application.update_requests.filter(is_active=True)
+        update_request = update_requests.get(
+            status__in=[
+                models.UpdateRequest.Status.UPDATE_IN_PROGRESS,
+                models.UpdateRequest.Status.RESPONDED,
+            ]
+        )
+        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+
+        if request.POST:
+            form = forms.UpdateRequestResponseForm(request.POST, instance=update_request)
+            if form.is_valid():
+                update_request = form.save(commit=False)
+                update_request.status = models.UpdateRequest.Status.RESPONDED
+
+                update_request.response_by = request.user
+                update_request.response_datetime = timezone.now()
+                update_request.save()
+
+                return redirect(
+                    reverse(
+                        application.get_edit_view_name(), kwargs={"application_pk": application_pk}
+                    )
+                )
+        else:
+            form = forms.UpdateRequestResponseForm(instance=update_request)
+
+        context = {
+            "process": application,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "case_type": case_type,
+            "form": form,
+            "update_request": update_request,
+            "previous_update_requests": previous_update_requests,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/respond-update-request.html",
+            context=context,
+        )
 
 
 @login_required
@@ -1160,7 +1272,7 @@ def manage_withdrawals(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1506,7 +1618,7 @@ def take_ownership(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1536,7 +1648,7 @@ def release_ownership(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1556,7 +1668,7 @@ def manage_case(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1624,7 +1736,7 @@ def prepare_response(
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1923,7 +2035,7 @@ def start_authorisation(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1962,7 +2074,7 @@ def cancel_authorisation(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -1982,7 +2094,7 @@ def manage_case_emails(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
@@ -2127,7 +2239,7 @@ def create_case_email(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        imp_exp_application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        imp_exp_application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
         application: ApplicationsWithCaseEmail = _get_case_email_application(imp_exp_application)
@@ -2225,7 +2337,7 @@ def edit_case_email(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        imp_exp_application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        imp_exp_application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
         application: ApplicationsWithCaseEmail = _get_case_email_application(imp_exp_application)
@@ -2312,7 +2424,7 @@ def archive_case_email(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
         case_email = get_object_or_404(
@@ -2344,7 +2456,7 @@ def add_response_case_email(
     model_class = _get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(  # type: ignore[assignment]
+        application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 

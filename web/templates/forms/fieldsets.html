@@ -1,0 +1,9 @@
+{% macro fieldset(legend=None) %}
+  <fieldset>
+    {% if legend %}
+      <legend class="bold">{{ legend }}</legend>
+    {% endif %}
+
+    {{ caller() }}
+  </fieldset>
+{% endmacro %}

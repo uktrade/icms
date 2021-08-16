@@ -1,0 +1,59 @@
+{% extends 'flow/task-base.html' %}
+{% import 'forms/fieldsets.html' as fieldsets %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+    <li>
+        <a href="{{ icms_url('case:start-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': 'import'}) }}">
+          Application Updates
+        </a>
+    </li>
+    <li>
+      <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
+        View Application
+      </a>
+    </li>
+  </ul>
+{% endblock %}
+
+
+{% block main_content %}
+  <div class="info-box info-box-info"><div class="screen-reader-only">Information box,</div>
+    <p>
+      <strong>You have received a request to update this application</strong>
+    </p>
+    <p>
+      Please click 'Start Changes' below to begin making the required updates.  This will allow you to edit your application.  Once your changes are complete, please re-submit your application. Once you have started making changes, you can click 'Cancel Changes' at any time to cancel all changes you have made.
+    </p>
+  </div>
+
+  <h4>Start Application Update</h4>
+  {% call fieldsets.fieldset("Application Update") %}
+    {% include "partial/update-request-info.html" %}
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="six columns">
+        <br />
+        <form
+          method="POST"
+          action="{{ icms_url('case:start-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type}) }}">
+          {{ csrf_input }}
+          <input type="submit" class="button primary-button" value="Start Changes">
+        </form>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  {% endcall %}
+
+  {% if previous_update_requests %}
+    <h4>Closed Application Updates</h4>
+    {% for update_request in previous_update_requests %}
+
+      {% call fieldsets.fieldset("Application Update") %}
+        {% include "partial/update-request-info.html" %}
+      {% endcall %}
+
+    {% endfor %}
+  {% endif %}
+
+{% endblock %}

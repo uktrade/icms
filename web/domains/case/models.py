@@ -67,45 +67,58 @@ class VariationRequest(models.Model):
 
 
 class UpdateRequest(models.Model):
-    """Application update requests for import/export cases requested from
-    applicants by case officers"""
+    """Update requests are sent by case officers and allow editing the case again."""
 
-    DRAFT = "DRAFT"
-    OPEN = "OPEN"
-    CLOSED = "CLOSED"
-    UPDATE_IN_PROGRESS = "UPDATE_IN_PROGRESS"
-    RESPONDED = "RESPONDED"
-    DELETED = "DELETED"
+    class Status(models.TextChoices):
+        DRAFT: str = ("DRAFT", "Draft")  # type:ignore[assignment]
+        OPEN: str = ("OPEN", "Open")  # type:ignore[assignment]
+        CLOSED: str = ("CLOSED", "Closed")  # type:ignore[assignment]
+        UPDATE_IN_PROGRESS: str = (
+            "UPDATE_IN_PROGRESS",
+            "Update in Progress",
+        )  # type:ignore[assignment]
+        RESPONDED: str = ("RESPONDED", "Responded")  # type:ignore[assignment]
+        DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30, blank=False, null=False)
-    request_subject = models.CharField(max_length=100, blank=False, null=True)
-    request_detail = models.TextField(blank=False, null=True)
-    email_cc_address_list = models.CharField(max_length=4000, blank=True, null=True)
-    response_detail = models.TextField(blank=False, null=True)
-    request_datetime = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=30, choices=Status.choices)
+
+    request_subject = models.CharField(max_length=100, null=True)
+    request_detail = models.TextField(null=True)
+
+    email_cc_address_list = ArrayField(
+        models.EmailField(max_length=254),
+        help_text=(
+            "You may enter a list of email addresses to CC this email to. Use a comma (,) to"
+            " seperate multiple addresses. E.g. john@smith.com,jane@smith.com"
+        ),
+        verbose_name="Request CC Email Addresses",
+        size=15,
+        blank=True,
+        null=True,
+    )
+
+    response_detail = models.TextField(
+        verbose_name="Summary of Changes",
+        null=True,
+        help_text="Please enter a summary of the updates made",
+    )
+    request_datetime = models.DateTimeField(null=True)
+
     requested_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="requested_import_application_updates",
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
+
     response_datetime = models.DateTimeField(blank=True, null=True)
+
     response_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="responded_import_application_updates",
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
+
     closed_datetime = models.DateTimeField(blank=True, null=True)
+
     closed_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="closed_import_application_updates",
+        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
 
@@ -412,6 +425,52 @@ class ApplicationBase(WorkbasketBase, Process):
                 )
             )
 
+        elif self.status == self.Statuses.UPDATE_REQUESTED:
+            applicant_actions.append(view_action)
+
+            # TODO ICMSLST-958 allow to withdraw when update request is pending
+            # applicant_actions.append(
+            #    WorkbasketAction(
+            #        is_post=False,
+            #        name="Withdraw",
+            #        url=reverse("case:withdraw-case", kwargs=kwargs),
+            #    ),
+            # )
+
+            update_requests = self.update_requests.filter(is_active=True).filter(
+                status__in=[
+                    UpdateRequest.Status.OPEN,
+                    UpdateRequest.Status.UPDATE_IN_PROGRESS,
+                    UpdateRequest.Status.RESPONDED,
+                ]
+            )
+            for update in update_requests:
+                if update.status == UpdateRequest.Status.OPEN:
+                    applicant_actions.append(
+                        WorkbasketAction(
+                            is_post=False,
+                            name="Respond to Update Request",
+                            url=reverse(
+                                "case:start-update-request",
+                                kwargs=kwargs | {"update_request_pk": update.pk},
+                            ),
+                        )
+                    )
+                elif update.status in [
+                    UpdateRequest.Status.UPDATE_IN_PROGRESS,
+                    UpdateRequest.Status.RESPONDED,
+                ]:
+                    applicant_actions.append(
+                        WorkbasketAction(
+                            is_post=False,
+                            name="Resume Update Request",
+                            url=reverse(
+                                "case:respond-update-request",
+                                kwargs=kwargs,
+                            ),
+                        )
+                    )
+
         return applicant_actions
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
@@ -423,9 +482,11 @@ class ApplicationBase(WorkbasketBase, Process):
             # implement GMP application type.
             prefix = "CA"
 
-        self.reference = allocate_case_reference(
-            lock_manager=request.icms.lock_manager, prefix=prefix, use_year=True, min_digits=5
-        )
+        if not self.reference:
+            self.reference = allocate_case_reference(
+                lock_manager=request.icms.lock_manager, prefix=prefix, use_year=True, min_digits=5
+            )
+
         self.status = self.Statuses.SUBMITTED
         self.submit_datetime = timezone.now()
         self.save()

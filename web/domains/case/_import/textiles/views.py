@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import (
     check_application_permission,
@@ -98,6 +98,8 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
             EditTextilesForm(data=model_to_dict(application), instance=application), edit_errors
         )
         errors.add(edit_errors)
+
+        errors.add(get_org_update_request_errors(application, "import"))
 
         if request.POST:
             form = SubmitForm(data=request.POST)

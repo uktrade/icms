@@ -1,0 +1,59 @@
+{% extends 'flow/task-base.html' %}
+{% import 'forms/fields.html' as fields %}
+{% import 'forms/fieldsets.html' as fieldsets %}
+{% import 'forms/forms.html' as forms %}
+
+
+{% block main_content %}
+
+  <div class="info-box info-box-info">
+    <p>
+      <strong>You have received a request to update this application.</strong>
+    </p>
+    <p>
+      Once your changes are complete, please re-submit your application.
+    </p>
+  </div>
+
+  {% with ilb_admin=False %}
+    <h4>Current Application Update</h4>
+    {% call fieldsets.fieldset("Application Update") %}
+      {% include "partial/update-request-info.html" %}
+
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {% for field in form %}
+          {{ fields.field(field) }}
+        {% endfor %}
+
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="eight columns">
+              <ul class="menu-out flow-across">
+                <li>
+                  <input
+                    type="submit"
+                    name="action"
+                    class="primary-button button"
+                    value="Submit" />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      {% endcall %}
+    {% endcall %}
+
+    {% if previous_update_requests %}
+      <h4>Closed Application Updates</h4>
+      {% for update_request in previous_update_requests %}
+
+        {% call fieldsets.fieldset("Application Update") %}
+          {% include "partial/update-request-info.html" %}
+        {% endcall %}
+
+      {% endfor %}
+    {% endif %}
+
+  {% endwith %}
+{% endblock %}

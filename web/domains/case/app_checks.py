@@ -79,8 +79,7 @@ def get_app_errors(
 
     application_errors.add_many(_get_withdrawals_errors(application, case_type))
 
-    # TODO ICMSLST-679 Respond to Update Request
-    # application_errors.add(_get_updates_errors(application, case_type))
+    application_errors.add(_get_update_request_errors(application, case_type))
 
     application_errors.add_many(_get_fir_errors(application, case_type))
 
@@ -411,6 +410,29 @@ def _get_withdrawals_errors(application: ImpOrExp, case_type: str) -> list[PageE
     return errors
 
 
+def _get_update_request_errors(application: ImpOrExp, case_type: str) -> PageErrors:
+    update_request_errors = PageErrors(
+        page_name="Application Updates",
+        url=reverse(
+            "case:manage-update-requests",
+            kwargs={"application_pk": application.pk, "case_type": case_type},
+        ),
+    )
+    if (
+        application.update_requests.filter(is_active=True)
+        .exclude(status=models.UpdateRequest.Status.CLOSED)
+        .exists()
+    ):
+        update_request_errors.add(
+            FieldError(
+                field_name="Status",
+                messages=["Application updates must be closed before the case can be closed."],
+            )
+        )
+
+    return update_request_errors
+
+
 def _get_fir_errors(application: ImpOrExp, case_type: str) -> list[PageErrors]:
     errors = []
 
@@ -499,3 +521,26 @@ def _get_case_notes_errors(application: ImpOrExp, case_type: str) -> list[PageEr
         errors.append(note_errors)
 
     return errors
+
+
+def get_org_update_request_errors(application: ImpOrExp, case_type: str) -> PageErrors:
+    update_request_errors = PageErrors(
+        page_name="Application Updates",
+        url=reverse(
+            "case:respond-update-request",
+            kwargs={"application_pk": application.pk, "case_type": case_type},
+        ),
+    )
+
+    update_requests = application.update_requests.filter(is_active=True)
+    pending_update = update_requests.filter(status=models.UpdateRequest.Status.UPDATE_IN_PROGRESS)
+    incomplete_update = update_requests.filter(status=models.UpdateRequest.Status.RESPONDED).filter(
+        response_detail__isnull=True
+    )
+
+    if pending_update.exists() or incomplete_update.exists():
+        update_request_errors.add(
+            FieldError(field_name="Summary of Changes", messages=["You must enter this item."])
+        )
+
+    return update_request_errors

@@ -4835,7 +4835,7 @@ fieldset {
 	text-transform: uppercase;
 }
 
-.status.open .text-widget, .status.responded .text-widget {
+.status.open .text-widget, .status.responded .text-widget, .status.update_in_progress .text-widget {
     background-color: #FFEB9B;
     border-color: #FFC519;
 }

@@ -1,6 +1,7 @@
 {% extends "web/domains/case/manage/base.html" %}
-{% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+{% import "forms/fieldsets.html" as fieldsets %}
+{% import "forms/forms.html" as forms %}
 
 
 {% block main_content %}
@@ -14,11 +15,7 @@
     </p>
   </div>
 
-  {% if current_update_request %}
-    {% with update_request = current_update_request %}
-      {% include "partial/update-requests/box.html" %}
-    {% endwith %}
-  {% else %}
+  {% if not update_request %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
       {% for field in form %}
         {{ fields.field(field) }}
@@ -34,19 +31,38 @@
                   type="submit"
                   name="action"
                   class="primary-button button"
-                  value="Submit" />
+                  value="Send Request" />
               </li>
             </ul>
           </div>
         </div>
       </div>
-    </fieldset>
     {% endcall %}
+
+  {% else %}
+    {% call fieldsets.fieldset("Application Update") %}
+      {% include "partial/update-request-info.html" %}
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="six columns">
+          <br />
+          <form
+            method="POST"
+            action="{{ icms_url('case:close-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type}) }}">
+            {{ csrf_input }}
+            <input type="submit" class="button primary-button" value="Close Request">
+          </form>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endcall %}
+
   {% endif %}
 
-  {% for update_request in update_requests.all() %}
-    {% with is_ilb_admin = True %}
-      {% include "partial/update-requests/box.html" %}
-    {% endwith %}
+  {% for update_request in previous_update_requests %}
+    {% call fieldsets.fieldset("Application Update") %}
+      {% include "partial/update-request-info.html" %}
+    {% endcall %}
   {% endfor %}
+
 {% endblock %}

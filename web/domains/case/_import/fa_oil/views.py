@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import (
     check_application_permission,
@@ -119,6 +119,8 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             )
 
             errors.add(page_errors)
+
+        errors.add(get_org_update_request_errors(application, "import"))
 
         if request.POST:
             form = SubmitForm(data=request.POST)

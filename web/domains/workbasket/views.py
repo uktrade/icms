@@ -18,7 +18,6 @@ from web.models import (
     ImporterAccessRequest,
     ImporterApprovalRequest,
     Task,
-    UpdateRequest,
     User,
 )
 from web.types import AuthenticatedHttpRequest
@@ -38,7 +37,7 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "web/domains/workbasket/workbasket.html", context)
 
 
-def _get_queryset_admin(user: User) -> QuerySet:
+def _get_queryset_admin(user: User) -> chain[QuerySet]:
     exporter_access_requests = ExporterAccessRequest.objects.filter(
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
@@ -47,16 +46,12 @@ def _get_queryset_admin(user: User) -> QuerySet:
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
-    export_applications = (
-        ExportApplication.objects.filter(is_active=True)
-        .exclude(update_requests__status__in=[UpdateRequest.OPEN, UpdateRequest.UPDATE_IN_PROGRESS])
-        .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+    export_applications = ExportApplication.objects.filter(is_active=True).prefetch_related(
+        Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
     )
 
-    import_applications = (
-        ImportApplication.objects.filter(is_active=True)
-        .exclude(update_requests__status__in=[UpdateRequest.OPEN, UpdateRequest.UPDATE_IN_PROGRESS])
-        .prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
+    import_applications = ImportApplication.objects.filter(is_active=True).prefetch_related(
+        Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
     )
 
     return chain(
@@ -67,7 +62,7 @@ def _get_queryset_admin(user: User) -> QuerySet:
     )
 
 
-def _get_queryset_user(user: User) -> QuerySet:
+def _get_queryset_user(user: User) -> chain[QuerySet]:
     active_exporters = Exporter.objects.filter(is_active=True, main_exporter=None)
     exporters = get_objects_for_user(user, ["is_contact_of_exporter"], active_exporters)
     exporters_managed_by_agents = get_objects_for_user(

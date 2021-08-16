@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import (
     check_application_permission,
@@ -110,6 +111,7 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
             config.model_class.PROCESS_TYPE
         ).label,
         "exporters_with_agents": _exporters_with_agents(request.user),
+        "case_type": "export",
     }
 
     return render(request, "web/domains/case/export/create.html", context)
@@ -177,6 +179,7 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "process": application,
             "task": task,
             "form": form,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/prepare-com.html", context)
@@ -202,6 +205,8 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         )
         errors.add(page_errors)
 
+        errors.add(get_org_update_request_errors(application, "export"))
+
         if request.POST:
             form = SubmitForm(data=request.POST)
 
@@ -220,6 +225,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/submit-com.html", context)
@@ -254,6 +260,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "task": task,
             "form": form,
             "schedules": schedules,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit.html", context)
@@ -320,6 +327,7 @@ def cfs_edit_schedule(
             "products": schedule.products.order_by("pk").all(),
             "has_legislation": schedule.legislations.exists(),
             "is_biocidal": schedule.legislations.filter(is_biocidal=True).exists(),
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
@@ -382,6 +390,7 @@ def cfs_set_manufacturer(
             "task": task,
             "form": form,
             "page_title": "Edit Manufacturer",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-manufacturer-address.html", context)
@@ -471,6 +480,7 @@ def cfs_add_product(
             "schedule": schedule,
             "form": form,
             "page_title": "Add Product",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product.html", context)
@@ -528,6 +538,7 @@ def cfs_edit_product(
             "is_biocidal": is_biocidal,
             "product_type_numbers": product.product_type_numbers.all(),
             "ingredients": product.active_ingredients.all(),
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product.html", context)
@@ -614,6 +625,7 @@ def cfs_add_ingredient(
             "form": form,
             "product": product,
             "page_title": "Add Active Ingredient",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
@@ -677,6 +689,7 @@ def cfs_edit_ingredient(
             "form": form,
             "page_title": "Edit Active Ingredient",
             "type": "ingredient",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
@@ -772,6 +785,7 @@ def cfs_add_product_type(
             "form": form,
             "product": product,
             "page_title": "Add Product Type Number",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
@@ -835,6 +849,7 @@ def cfs_edit_product_type(
             "form": form,
             "page_title": "Edit Product Type Number",
             "type": "product_type",
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
@@ -970,6 +985,7 @@ def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/submit-cfs.html", context)
@@ -1070,6 +1086,8 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
 
     errors.add(page_errors)
 
+    errors.add(get_org_update_request_errors(application, "export"))
+
     return errors
 
 
@@ -1094,6 +1112,8 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         )
         errors.add(page_errors)
 
+        errors.add(get_org_update_request_errors(application, "export"))
+
         if request.POST:
             form = SubmitForm(data=request.POST)
 
@@ -1112,6 +1132,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/submit-gmp.html", context)
@@ -1147,6 +1168,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "process": application,
             "task": task,
             "form": form,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/gmp-edit.html", context)

@@ -1,6 +1,14 @@
 {# sidebar used by importer/exporter to create/edit/submit applications #}
 
 <ul class="menu-out">
+  {% if process.status == "UPDATE_REQUESTED" %}
+    <li>
+      <a
+        href="{{ icms_url('case:respond-update-request', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
+        Application Updates
+      </a>
+    </li>
+  {% endif %}
   <li>
     <a href="{{ icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}) }}">Application Details</a>
   </li>

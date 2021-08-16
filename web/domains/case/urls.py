@@ -113,10 +113,12 @@ further_information_requests_urls = [
 
 update_requests_urls = [
     path("manage/", views.manage_update_requests, name="manage-update-requests"),
+    path("respond/", views.respond_update_request, name="respond-update-request"),
     path(
         "<int:update_request_pk>/",
         include(
             [
+                path("start/", views.start_update_request, name="start-update-request"),
                 path("close/", views.close_update_request, name="close-update-request"),
             ]
         ),

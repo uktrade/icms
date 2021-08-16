@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import (
     check_application_permission,
@@ -85,6 +85,7 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             "category_commodity_groups": category_commodity_groups,
             "commodity_group_label": selected_group.get("label", ""),
             "certificates": certificates,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/ironsteel/edit.html", context)
@@ -159,6 +160,8 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
                     errors.add(certificate_errors)
 
+        errors.add(get_org_update_request_errors(application, "import"))
+
         if request.POST:
             form = SubmitForm(data=request.POST)
 
@@ -194,6 +197,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "page_title": "Iron and Steel (Quota) Import Licence - Submit",
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/ironsteel/submit.html", context)
@@ -229,6 +233,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
             "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add supporting document",
+            "case_type": "import",
         }
 
         return render(
@@ -311,6 +316,7 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
             "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add certificate",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/ironsteel/add_certificate.html", context)
@@ -381,6 +387,7 @@ def edit_certificate(
             "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit certificate",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/ironsteel/edit_certificate.html", context)
