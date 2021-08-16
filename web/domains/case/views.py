@@ -49,6 +49,7 @@ from web.models import (
 from web.notify import email, notify
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
+from web.utils.commodity import annotate_commodity_unit
 from web.utils.s3 import get_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
@@ -1429,11 +1430,16 @@ def _view_fa_sil(
 def _view_sanctions_and_adhoc(
     request: AuthenticatedHttpRequest, application: SanctionsAndAdhocApplication
 ) -> HttpResponse:
+
+    goods = annotate_commodity_unit(
+        application.sanctionsandadhocapplicationgoods_set.all(), "commodity__"
+    ).distinct()
+
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_page_title("import", application, "View"),
-        "goods": application.sanctionsandadhocapplicationgoods_set.all(),
+        "goods": goods,
         "supporting_documents": application.supporting_documents.filter(is_active=True),
     }
 
@@ -1895,9 +1901,12 @@ def _prepare_sanctions_and_adhoc_response(
     application: SanctionsAndAdhocApplication,
     context: dict[str, Any],
 ) -> HttpResponse:
-    context.update(
-        {"process": application, "goods": application.sanctionsandadhocapplicationgoods_set.all()}
-    )
+
+    goods = annotate_commodity_unit(
+        application.sanctionsandadhocapplicationgoods_set.all(), "commodity__"
+    ).distinct()
+
+    context.update({"process": application, "goods": goods})
 
     return render(
         request=request,

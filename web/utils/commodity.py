@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, TypedDict
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F, Model
+from django.db.models import F, Model, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
-from web.domains.commodity.models import Commodity, CommodityGroup, Usage
+from web.domains.commodity.models import Commodity, CommodityGroup, Unit, Usage
 from web.domains.country.models import Country
 
 if TYPE_CHECKING:
@@ -26,36 +26,38 @@ def get_usage_records(app_type: str, app_sub_type: str = None) -> "QuerySet[Usag
     return usage_records.distinct()
 
 
-def add_usage_filter(model: "QuerySet[Model]", app_type: str, app_sub_type: str = None, prefix=""):
+def add_usage_filter(
+    model: "QuerySet[Model]", app_type: str, app_sub_type: str = None, usage_path=""
+):
     """Apply all required filters to filter usage records correctly.
 
     :param model: The model to apply usage filters too.
     :param app_type: Type of application.
     :param app_sub_type: Optional subtype of application.
-    :param prefix: The prefix indicating the relationship to the usage records.
+    :param usage_path: The path indicating the relationship to the usage model.
     """
 
-    application_type_filters = {f"{prefix}application_type__type": app_type}
+    application_type_filters = {f"{usage_path}application_type__type": app_type}
     if app_sub_type:
-        application_type_filters[f"{prefix}application_type__subtype"] = app_sub_type
+        application_type_filters[f"{usage_path}application_type__subtype"] = app_sub_type
 
     today = timezone.now().date()
 
     return (
         model.filter(
             **{
-                f"{prefix}start_date__lte": today,
-                f"{prefix}commodity_group__commodities__validity_start_date__lte": today,
-                f"{prefix}commodity_group__is_active": True,
-                f"{prefix}commodity_group__commodities__is_active": True,
+                f"{usage_path}start_date__lte": today,
+                f"{usage_path}commodity_group__commodities__validity_start_date__lte": today,
+                f"{usage_path}commodity_group__is_active": True,
+                f"{usage_path}commodity_group__commodities__is_active": True,
             },
             **application_type_filters,
         )
         .annotate(
             # Optional end dates need a default when checking
-            usage_end_date=Coalesce(f"{prefix}end_date", today),
+            usage_end_date=Coalesce(f"{usage_path}end_date", today),
             commodity_end_data=Coalesce(
-                f"{prefix}commodity_group__commodities__validity_end_date", today
+                f"{usage_path}commodity_group__commodities__validity_end_date", today
             ),
         )
         .filter(
@@ -67,8 +69,6 @@ def add_usage_filter(model: "QuerySet[Model]", app_type: str, app_sub_type: str 
 
 def get_usage_countries(app_type: str, app_sub_type: str = None) -> "QuerySet[Country]":
     """Return countries linked to the usage records."""
-    # return application_usage.country.all()
-
     countries = Country.objects.filter(is_active=True)
     countries = add_usage_filter(countries, app_type, app_sub_type, "usage__")
 
@@ -84,13 +84,22 @@ def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Com
     """Return commodities linked to the usage records."""
     groups = get_usage_commodity_groups(application_usage)
 
-    return Commodity.objects.filter(
-        commoditygroup__in=groups,
-        is_active=True,
-    ).distinct()
+    return Commodity.objects.filter(commoditygroup__in=groups, is_active=True).distinct()
 
 
+def annotate_commodity_unit(model: "QuerySet[Model]", commodity_path=""):
+    """Annotate a queryset with a unit_description.
 
+    :param model: A model linked to commodities
+    :param commodity_path: The path indicating the relationship to the commodity model.
+    :return: annotated model
+    """
+
+    commodity_unit = Unit.objects.filter(
+        pk=OuterRef(f"{commodity_path}commoditygroup__unit")
+    ).order_by("-pk")
+
+    return model.annotate(unit_description=Subquery(commodity_unit.values("description")[:1]))
 
 
 def get_commodity_group_data(

@@ -9,6 +9,7 @@
         <th>Commodity Code</th>
         <th>Goods Description</th>
         <th>Quantity</th>
+        <th>Unit</th>
         <th>Value (GBP CIF)</th>
         <th>Action</th>
       </tr>
@@ -25,6 +26,7 @@
           <td>
             {{ goods_item.quantity_amount }}
           </td>
+          <td>{{ goods_item.unit_description }}</td>
           <td>
             {{ goods_item.value}}
           </td>

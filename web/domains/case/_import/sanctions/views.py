@@ -18,6 +18,7 @@ from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import (
+    annotate_commodity_unit,
     get_commodity_group_data,
     get_commodity_unit,
     get_usage_commodities,
@@ -71,6 +72,8 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
         goods_list = SanctionsAndAdhocApplicationGoods.objects.filter(
             import_application=application
         )
+
+        goods_list = annotate_commodity_unit(goods_list, "commodity__").distinct()
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
