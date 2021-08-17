@@ -101,7 +101,7 @@ class Usage(models.Model):
     maximum_allocation = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        ordering = ("-start_date",)
+        ordering = ("application_type", "country", "start_date")
 
     def __str__(self):
         return (

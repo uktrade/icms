@@ -7,6 +7,7 @@ from django.forms import (
     ModelMultipleChoiceField,
 )
 from django.forms.widgets import CheckboxInput, Textarea
+from django.utils import timezone
 from django_filters import (
     BooleanFilter,
     CharFilter,
@@ -243,3 +244,44 @@ class UsageForm(ModelForm):
         self.fields["application_type"].queryset = ImportApplicationType.objects.filter(
             is_active=True
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        application_type = cleaned_data["application_type"]
+        country = cleaned_data["country"]
+        commodity_group = cleaned_data["commodity_group"]
+        start_date = cleaned_data["start_date"]
+        end_date = cleaned_data["end_date"]
+
+        today = timezone.now().date()
+        if end_date:
+            if end_date <= start_date:
+                self.add_error("end_date", "End date must be after the start date")
+
+            if end_date < today:
+                self.add_error("end_date", "End date must be today or in the future")
+
+        related_usage = Usage.objects.filter(
+            country=country, application_type=application_type, commodity_group=commodity_group
+        ).order_by("-start_date")
+
+        if self.instance.pk is not None:
+            related_usage = related_usage.exclude(pk=self.instance.pk)
+
+        latest = related_usage.first()
+
+        if latest:
+            if start_date < latest.start_date:
+                self.add_error("start_date", "Start date is before previous start date")
+
+            if latest.end_date and start_date < latest.end_date:
+                self.add_error("start_date", "Start date is before previous end date")
+
+            if not latest.end_date:
+                self.add_error("end_date", "Previous end date has not been set.")
+
+            if end_date and latest.end_date and end_date < latest.end_date:
+                self.add_error("end_date", "End date is before previous end date.")
+
+        return cleaned_data
