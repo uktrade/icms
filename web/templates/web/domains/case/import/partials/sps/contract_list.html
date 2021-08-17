@@ -48,6 +48,7 @@
   </div>
 
   {% if not read_only %}
+
   <a class="button small-button"
       href="{{ icms_url('import:sps:add-contract-document', kwargs={'application_pk': process.pk}) }}">Add contract/invoice</a>
   {% endif %}

@@ -319,6 +319,9 @@ class CFSSchedule(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def is_biocidal(self) -> bool:
+        return self.legislations.filter(is_biocidal=True).exists()
+
 
 class CFSProduct(models.Model):
     product_name = models.CharField(max_length=1000)

@@ -99,6 +99,36 @@
         Once uploaded the products list will be filled out automatically.
       </p>
     </div>
+    <div class="container setoutForm">
+      <div class="row">
+        <div class="two columns"></div>
+        <div class="six columns">
+          <a class="icon icon-download button"
+            href="{{ icms_url('export:cfs-schedule-product-download-template', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">
+            Download Template Spreadsheet
+          </a>
+        </div>
+        <div class="four columns"></div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="two columns">
+          <label class="prompt west">
+            Upload Spreadsheet
+            <span class="mand-label">optional</span>
+          </label>
+        </div>
+        <div class="six columns input-group">
+          <form action="{{ icms_url('export:cfs-schedule-product-spreadsheet-upload', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}" method="post" enctype="multipart/form-data" id="id_upload-product-data">
+            {{ csrf_input }}
+            {{ product_upload_form.file }}
+            <button type="submit" class="button link-button inline-link-button icon-upload" form="id_upload-product-data">Upload</button>
+            </label>
+          </form>
+        </div>
+        <div class="four columns"></div>
+      </div>
+    </div>
     {% if products %}
       {% include "web/domains/case/export/partials/cfs/schedule-product-list.html" %}
     {% endif %}

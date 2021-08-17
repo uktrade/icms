@@ -46,6 +46,16 @@ schedule_urls = [
         name="cfs-schedule-delete-manufacturer",
     ),
     path("product/add/", views.cfs_add_product, name="cfs-schedule-add-product"),
+    path(
+        "product/spreadsheet/download-template/",
+        views.product_spreadsheet_download_template,
+        name="cfs-schedule-product-download-template",
+    ),
+    path(
+        "product/spreadsheet/upload/",
+        views.product_spreadsheet_upload,
+        name="cfs-schedule-product-spreadsheet-upload",
+    ),
     path("product/<int:product_pk>/", include(product_urls)),
 ]
 

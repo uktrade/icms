@@ -75,7 +75,7 @@
       {% with
         products = schedule.products.all().order_by("pk"),
         read_only = True,
-        is_biocidal = schedule.legislations.filter(is_biocidal=True).exists() %}
+        is_biocidal = schedule.is_biocidal() %}
         {% include "web/domains/case/export/partials/cfs/schedule-product-list.html" %}
       {% endwith %}
     {% endcall %}

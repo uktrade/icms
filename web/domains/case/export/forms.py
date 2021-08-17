@@ -10,6 +10,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import application_contacts
 from web.domains.exporter.models import Exporter
+from web.domains.file.utils import ICMSFileField
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -328,7 +329,7 @@ class CFSProductForm(forms.ModelForm):
         product_name = self.cleaned_data["product_name"]
 
         if (
-            self.schedule.products.filter(product_name=product_name)
+            self.schedule.products.filter(product_name__iexact=product_name)
             .exclude(pk=self.instance.pk)
             .exists()
         ):
@@ -399,7 +400,11 @@ class CFSActiveIngredientForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data["name"]
 
-        if self.product.active_ingredients.filter(name=name).exclude(pk=self.instance.pk).exists():
+        if (
+            self.product.active_ingredients.filter(name__iexact=name)
+            .exclude(pk=self.instance.pk)
+            .exists()
+        ):
             raise forms.ValidationError("Active ingredient name must be unique to the product.")
 
         return name
@@ -409,6 +414,10 @@ class CFSActiveIngredientForm(forms.ModelForm):
             self.instance.product = self.product
 
         return super().save(commit=commit)
+
+
+class ProductsFileUploadForm(forms.Form):
+    file = ICMSFileField()
 
 
 class EditGMPForm(forms.ModelForm):

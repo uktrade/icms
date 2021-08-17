@@ -1,6 +1,7 @@
 from typing import List, NamedTuple, Type
 
 import structlog as logging
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
@@ -22,6 +23,8 @@ from web.domains.exporter.models import Exporter
 from web.domains.user.models import User
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import delete_file_from_s3
+from web.utils.sentry import capture_exception
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,
@@ -39,6 +42,7 @@ from .forms import (
     EditCFSForm,
     EditGMPForm,
     PrepareCertManufactureForm,
+    ProductsFileUploadForm,
 )
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -51,6 +55,7 @@ from .models import (
     ExportApplication,
     ExportApplicationType,
 )
+from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
 logger = logging.get_logger(__name__)
 
@@ -324,9 +329,10 @@ def cfs_edit_schedule(
             "form": form,
             "page_title": "Edit Schedule",
             "schedule": schedule,
+            "is_biocidal": schedule.is_biocidal(),
             "products": schedule.products.order_by("pk").all(),
+            "product_upload_form": ProductsFileUploadForm(),
             "has_legislation": schedule.legislations.exists(),
-            "is_biocidal": schedule.legislations.filter(is_biocidal=True).exists(),
             "case_type": "export",
         }
 
@@ -449,24 +455,23 @@ def cfs_add_product(
 
             if form.is_valid():
                 product = form.save()
-                is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
 
-                if not is_biocidal:
+                if schedule.is_biocidal():
                     return redirect(
                         reverse(
-                            "export:cfs-schedule-edit",
-                            kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+                            "export:cfs-schedule-edit-product",
+                            kwargs={
+                                "application_pk": application_pk,
+                                "schedule_pk": schedule.pk,
+                                "product_pk": product.pk,
+                            },
                         )
                     )
 
                 return redirect(
                     reverse(
-                        "export:cfs-schedule-edit-product",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "schedule_pk": schedule.pk,
-                            "product_pk": product.pk,
-                        },
+                        "export:cfs-schedule-edit",
+                        kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
                     )
                 )
 
@@ -509,8 +514,6 @@ def cfs_edit_product(
             schedule.products.select_for_update(), pk=product_pk
         )
 
-        is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
-
         if request.POST:
             form = CFSProductForm(data=request.POST, instance=product, schedule=schedule)
 
@@ -534,8 +537,8 @@ def cfs_edit_product(
             "schedule": schedule,
             "form": form,
             "page_title": "Edit Product",
+            "is_biocidal": schedule.is_biocidal(),
             "product": product,
-            "is_biocidal": is_biocidal,
             "product_type_numbers": product.product_type_numbers.all(),
             "ingredients": product.active_ingredients.all(),
             "case_type": "export",
@@ -855,6 +858,97 @@ def cfs_edit_product_type(
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
 
 
+@login_required
+def product_spreadsheet_download_template(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+) -> HttpResponse:
+    application: CertificateOfFreeSaleApplication = get_object_or_404(
+        CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+    )
+    check_application_permission(application, request.user, "export")
+    application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+    schedule: CFSSchedule = get_object_or_404(
+        CFSSchedule.objects.select_for_update(), pk=schedule_pk
+    )
+
+    mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    response = HttpResponse(content_type=mime_type)
+    is_biocidal = schedule.is_biocidal()
+    workbook = generate_product_template_xlsx(is_biocidal)
+    response.write(workbook)
+
+    filename = "CFS Product Upload Template.xlsx"
+
+    if is_biocidal:
+        filename = "CFS Product Upload Biocide Template.xlsx"
+
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
+    return response
+
+
+@require_POST
+@login_required
+def product_spreadsheet_upload(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    schedule_pk: int,
+) -> HttpResponse:
+    try:
+        with transaction.atomic():
+            application: CertificateOfFreeSaleApplication = get_object_or_404(
+                CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+            )
+            check_application_permission(application, request.user, "export")
+            application.get_task(ExportApplication.Statuses.IN_PROGRESS, "prepare")
+
+            schedule: CFSSchedule = get_object_or_404(
+                CFSSchedule.objects.select_for_update(), pk=schedule_pk
+            )
+
+            form = ProductsFileUploadForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                products_file = form.cleaned_data["file"]
+                product_count = process_products_file(products_file, schedule)
+                messages.success(
+                    request, f"Upload Success: {product_count} products uploaded successfully"
+                )
+
+            else:
+                if form.errors and "file" in form.errors:
+                    err = form.errors["file"][0]
+                else:
+                    err = "No valid file found. Please upload the spreadsheet."
+
+                messages.warning(f"Upload failed: {err}")
+
+    except CustomError as err:
+        messages.warning(request, f"Upload failed: {err}")
+
+    except Exception:
+        messages.warning(request, "Upload failed: An unknown error occurred")
+        capture_exception()
+
+    finally:
+        products_file = request.FILES.get("file")
+
+        if products_file:
+            delete_file_from_s3(products_file.name)
+
+    return redirect(
+        reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": application_pk, "schedule_pk": schedule.pk},
+        )
+    )
+
+
 @require_POST
 @login_required
 def cfs_delete_product_type(
@@ -1047,9 +1141,7 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
                 errors.add(product_page_errors)
                 continue
 
-            is_biocidal = schedule.legislations.filter(is_biocidal=True).exists()
-
-            if not is_biocidal:
+            if not schedule.is_biocidal():
                 continue
 
             # Check all the products are valid for biocidal legislation CFS schedules
