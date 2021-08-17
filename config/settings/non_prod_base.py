@@ -29,6 +29,7 @@ ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str(
     "ICMS_FIREARMS_HOMEOFFICE_EMAIL", "firearms-homeoffice@example.com"
 )
 ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL", "HSE@example.com")
+ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", "BEIS@example.com")
 
 DEBUG_SHOW_ALL_WORKBASKET_ROWS = env.bool("DEBUG_SHOW_ALL_WORKBASKET_ROWS", True)
 

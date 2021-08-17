@@ -976,6 +976,46 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
+            datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="BEIS OPSS Enquiry Email",
+        template_code="CA_BEIS_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="CA",
+        template_title="Good Manufacturing Practice Application Enquiry",
+        template_content="""Dear Colleagues
+
+[[CASE_REFERENCE]]
+
+We have received a [[APPLICATION_TYPE]] application from:
+[[EXPORTER_NAME]]
+[[EXPORTER_ADDRESS]]
+
+Please review and advise whether or not this branch can issue a GMP Certificate for this
+request.
+
+MANUFACTURER:
+[[MANUFACTURER_NAME]]
+[[MANUFACTURER_ADDRESS]]
+[[MANUFACTURER_POSTCODE]]
+
+RESPONSIBLE PERSON:
+[[RESPONSIBLE_PERSON_NAME]]
+[[RESPONSIBLE_PERSON_ADDRESS]]
+[[RESPONSIBLE_PERSON_POSTCODE]]
+
+NAME OF BRAND:
+[[BRAND_NAME]]
+
+Thanks and best regards
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("19-MAR-2019 11:00:11", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,

@@ -531,7 +531,7 @@ class CaseEmail(models.Model):
     body = models.TextField(max_length=4000, null=True)
     attachments = models.ManyToManyField(File)
 
-    response = models.TextField(max_length=4000, blank=True, null=True)
+    response = models.TextField(max_length=4000, null=True)
 
     sent_datetime = models.DateTimeField(null=True)
     closed_datetime = models.DateTimeField(null=True)

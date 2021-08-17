@@ -26,6 +26,7 @@ from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     ExportApplication,
 )
@@ -179,6 +180,13 @@ def _get_export_errors(
 
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         application_errors.add_many(_get_email_errors(application.certificateoffreesaleapplication, case_type))  # type: ignore[union-attr]
+
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        application_errors.add_many(
+            _get_email_errors(application.certificateofgoodmanufacturingpracticeapplication, case_type)  # type: ignore[union-attr]
+        )
+
+        pass
 
     else:
         raise NotImplementedError(

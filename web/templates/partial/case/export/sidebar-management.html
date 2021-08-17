@@ -5,12 +5,19 @@
       Case {{ process.get_reference() }}
     </a>
   </li>
-  {# TODO ICMSLST-797: Manage HSE Emails #}
   {% if process.process_type == "CertificateOfFreeSaleApplication" %}
     <li>
       <a
         href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
         HSE Emails
+      </a>
+    </li>
+  {% endif %}
+  {% if process.process_type == "CertificateofGoodManufacturingPractice" %}
+    <li>
+      <a
+        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
+        BEIS Emails
       </a>
     </li>
   {% endif %}

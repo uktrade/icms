@@ -1,0 +1,20 @@
+{% extends "web/domains/case/manage/prepare-response.html" %}
+
+{% block main_content %}
+  {{ super() }}
+
+  <div class="info-box info-box-info">
+    <h4>Document Preview</h4>
+
+    <p>Click below if you wish to preview documents before issuing.</p>
+
+    <ul>
+    {% for country in countries %}
+      <li>
+        {# TODO: ICMSLST-809 Generate certificate #}
+        <a href="#">Certificate of Good Manufacturing Practice (cosmetic brand) ({{ country.name }})</a>
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

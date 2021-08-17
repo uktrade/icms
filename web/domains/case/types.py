@@ -1,6 +1,9 @@
 from typing import TYPE_CHECKING, List, NamedTuple, Optional, Tuple, Type, Union
 
 from web.domains.case._import.ironsteel.models import IronSteelApplication
+from web.domains.case.export.models import (
+    CertificateOfGoodManufacturingPracticeApplication,
+)
 from web.domains.file.models import File
 from web.models import (
     AccessRequest,
@@ -44,6 +47,7 @@ ApplicationsWithCaseEmail = Union[
     SILApplication,
     SanctionsAndAdhocApplication,
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
 ]
 
 

@@ -17,7 +17,11 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case.export.models import CertificateOfFreeSaleApplication, CFSSchedule
+from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CFSSchedule,
+)
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
@@ -1827,6 +1831,12 @@ def prepare_response(
 
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         return _prepare_cfs_response(request, application.certificateoffreesaleapplication, context)  # type: ignore[union-attr]
+
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        return _prepare_gmp_response(
+            request, application.certificateofgoodmanufacturingpracticeapplication, context  # type: ignore[union-attr]
+        )
+
     else:
         raise NotImplementedError(
             f"Application process type '{application.process_type}' haven't been configured yet"
@@ -2036,6 +2046,22 @@ def _prepare_cfs_response(
     )
 
 
+def _prepare_gmp_response(
+    request: AuthenticatedHttpRequest,
+    application: CertificateOfGoodManufacturingPracticeApplication,
+    context: dict[str, Any],
+) -> HttpResponse:
+    context.update(
+        {"process": application, "countries": application.countries.filter(is_active=True)}
+    )
+
+    return render(
+        request=request,
+        template_name="web/domains/case/export/manage/prepare-gmp-response.html",
+        context=context,
+    )
+
+
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 def start_authorisation(
@@ -2159,6 +2185,9 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         return application.certificateoffreesaleapplication
 
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        return application.certificateofgoodmanufacturingpracticeapplication
+
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
 
@@ -2195,8 +2224,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         )
         content = template.get_content(
             {
-                # TODO: replace with case reference
-                "CASE_REFERENCE": application.pk,
+                "CASE_REFERENCE": application.reference,
                 "IMPORTER_NAME": application.importer.display_name,
                 "IMPORTER_ADDRESS": application.importer_office,
                 "GOODS_DESCRIPTION": "\n".join(goods_descriptions),
@@ -2221,6 +2249,31 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                     application.countries.filter(is_active=True).values_list("name", flat=True)
                 ),
                 # TODO: ICMSLST-583 - Add products to CFS
+                "CASE_OFFICER_NAME": application.case_owner.full_name,
+                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
+                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
+            }
+        )
+        cc_address_list = []
+
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
+        content = template.get_content(
+            {
+                "CASE_REFERENCE": application.reference,
+                "APPLICATION_TYPE": ExportApplicationType.ProcessTypes.GMP.label,  # type: ignore[attr-defined]
+                "EXPORTER_NAME": application.exporter,
+                "EXPORTER_ADDRESS": application.exporter_office,
+                # TODO: ICMSLST-926 add manufacturer
+                "MANUFACTURER_NAME": "TODO ICMLST-926",
+                "MANUFACTURER_ADDRESS": "TODO ICMLST-926",
+                "MANUFACTURER_POSTCODE": "TODO ICMLST-926",
+                # TODO: ICMSLST-924 add responsible person
+                "RESPONSIBLE_PERSON_NAME": "TODO ICMSLST-924",
+                "RESPONSIBLE_PERSON_ADDRESS": "TODO ICMSLST-924",
+                "RESPONSIBLE_PERSON_POSTCODE": "TODO ICMSLST-924",
+                # TODO: ICMSLST-925 add brands
+                "BRAND_NAME": "TODO ICMSLST-925",
                 "CASE_OFFICER_NAME": application.case_owner.full_name,
                 "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
                 "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
@@ -2328,7 +2381,14 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         choices = [(settings.ICMS_CFS_HSE_EMAIL, settings.ICMS_CFS_HSE_EMAIL)]
         files = File.objects.none()
 
-        return CaseEmailConfig(application=application, to_choices=choices, file_qs=None)
+        return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
+
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        choices = [(settings.ICMS_GMP_BEIS_EMAIL, settings.ICMS_GMP_BEIS_EMAIL)]
+        # TODO: ICMSLST-926 add files uploaded from user
+        files = File.objects.none()
+
+        return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
 
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
