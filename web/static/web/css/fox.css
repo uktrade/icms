@@ -4938,3 +4938,15 @@ form .display.closed [value=withdraw] {
     background: #f0f0f0;
     visibility:visible !important;
 }
+
+/* Remove the bullet points from the ul lists for radio inputs */
+ul.radio-input {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Bring the radio button in line with the associated label */
+input.radio-input {
+    top: 0;
+}

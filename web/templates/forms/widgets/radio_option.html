@@ -1,0 +1,6 @@
+{# This template is the same as django/forms/widgets/radio_option.html #}
+{# It adds the extra radio-label class that fox.css has the styling for #}
+
+{% if widget.wrap_label %}<label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %} class="radio-label">{% endif %}
+{% include "django/forms/widgets/input.html" %}
+{% if widget.wrap_label %} {{ widget.label }}</label>{% endif %}

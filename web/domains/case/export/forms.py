@@ -4,10 +4,12 @@ from typing import Any, Optional
 import structlog as logging
 from django import forms
 from django.db.models.query import QuerySet
+from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
 
+import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
 from web.domains.exporter.models import Exporter
 from web.domains.file.utils import ICMSFileField
@@ -427,13 +429,15 @@ class EditGMPForm(forms.ModelForm):
         fields = (
             "contact",
             "countries",
+            "gmp_certificate_issued",
         )
 
         widgets = {
-            "countries": Select2MultipleWidget(
-                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Country"},
-            )
+            "countries": widgets.Select,
+            "gmp_certificate_issued": icms_widgets.RadioSelect,
         }
+
+        help_texts = {"countries": ""}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

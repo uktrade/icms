@@ -346,4 +346,20 @@ class CFSProductActiveIngredient(models.Model):
 class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
     PROCESS_TYPE = ExportApplicationType.ProcessTypes.GMP
 
+    class CertificateTypes(models.TextChoices):
+        ISO_22716 = ("ISO_22716", "ISO 22716")
+        BRC_GLOBAL_STANDARD = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
+
     # TODO: Add remaining model fields
+
+    # Manufacturing certificates fields
+    gmp_certificate_issued = models.CharField(
+        max_length=10,
+        null=True,
+        choices=CertificateTypes.choices,
+        verbose_name=(
+            "Which valid certificate of Good Manufacturing Practice (GMP) has"
+            " your cosmetics manufacturer been issued with?"
+        ),
+        default=None,
+    )
