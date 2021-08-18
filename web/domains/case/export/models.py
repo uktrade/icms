@@ -10,6 +10,7 @@ from web.domains.case.models import (
 )
 from web.domains.country.models import Country, CountryGroup
 from web.domains.exporter.models import Exporter
+from web.domains.file.models import File
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -344,7 +345,7 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
 
     class CertificateTypes(models.TextChoices):
         ISO_22716 = ("ISO_22716", "ISO 22716")
-        BRC_GLOBAL_STANDARD = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
+        BRC_GSOCP = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
 
     class CountryType(models.TextChoices):
         GB = ("GB", "Great Britain")
@@ -437,3 +438,44 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
         ),
         default=None,
     )
+
+    auditor_accredited = models.CharField(
+        max_length=3,
+        null=True,
+        choices=YesNoChoices.choices,
+        verbose_name=(
+            "Is the auditor or auditing body who inspected and certified the"
+            " manufacturing facility accredited according to ISO 17021 by a"
+            " national accreditation body which is a member of the"
+            " International Accreditation Forum?"
+        ),
+        default=None,
+    )
+
+    auditor_certified = models.CharField(
+        max_length=3,
+        null=True,
+        choices=YesNoChoices.choices,
+        verbose_name=(
+            "Is the auditor or auditing body who inspected and certified the"
+            " manufacturing facility accredited according to ISO 17065 by a"
+            " national accreditation body which is a member of the"
+            " International Accreditation Forum?"
+        ),
+        default=None,
+    )
+
+    supporting_documents = models.ManyToManyField("GMPFile")
+
+
+class GMPFile(File):
+    class Type(models.TextChoices):
+        # ISO_22716 file types
+        ISO_22716 = ("ISO_22716", "ISO 22716")
+        ISO_17021 = ("ISO_17021", "ISO 17021")
+        ISO_17065 = ("ISO_17065", "ISO 17065")
+
+        # BRC Global Standard for Consumer Products file types
+        BRC_GSOCP = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
+
+    file_type = models.CharField(max_length=10, choices=Type.choices)

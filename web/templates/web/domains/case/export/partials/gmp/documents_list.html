@@ -1,0 +1,71 @@
+{# variables that need to be set when including this:
+  read_only - Used to show / hide actions
+  mandatory_files - List of required file types to show
+  optional_files - List of optional file types to show
+#}
+
+<table class="setoutList">
+  <thead>
+  <tr>
+    <th>File type</th>
+    <th>Status</th>
+    <th>Uploaded by</th>
+    <th>File (size)</th>
+    {% if not read_only %}
+      <th>Actions</th>
+    {% endif %}
+  </tr>
+  </thead>
+  <tbody>
+
+  {% set all_files = [("Required", mandatory_files), ("Optional", optional_files)] %}
+
+  {% for status, files in all_files %}
+
+    {% for file_type in files %}
+      {% set file = process.supporting_documents.filter(is_active=True, file_type=file_type).first() %}
+      {# Originally used file.get_file_type_display() but its not available when the file doesn't exist #}
+      {% set file_type_label = GMPFileTypes[file_type].label %}
+
+      {% if file %}
+        <tr>
+          <td>{{ file_type_label }}</td>
+          <td>Received By DIT ILB</td>
+          <td>{{ file.created_by.full_name }}<br>{{ file.created_datetime.strftime('%d-%b-%Y %H:%M') }}</td>
+          <td>
+            <a
+              href="{{ icms_url('export:gmp-view-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+              {{ file.filename }}
+            </a>
+            {{ file.human_readable_file_size() }}
+          </td>
+          {% if not read_only %}
+            <td>
+              <form method="post"
+                    action="{{ icms_url('export:gmp-delete-document', kwargs={'application_pk': process.pk, 'document_pk': file.pk}) }}">
+                {{ csrf_input }}
+                <button type="submit" class="link-button icon-bin button">Delete</button>
+              </form>
+            </td>
+          {% endif %}
+        </tr>
+      {% else %}
+        <tr>
+          <td>{{ file_type_label }}</td>
+          <td>{{ status }}</td>
+          <td></td>
+          <td></td>
+          {% if not read_only %}
+            <td>
+              <a class="link-button icon-plus button"
+                 href="{{ icms_url('export:gmp-add-document', kwargs={'application_pk': process.pk, 'file_type': file_type}) }}">
+                Add {{ file_type_label }} File
+              </a>
+            </td>
+          {% endif %}
+        </tr>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>

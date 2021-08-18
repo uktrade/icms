@@ -9,19 +9,22 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.app_checks import get_org_update_request_errors
-from web.domains.case.forms import SubmitForm
+from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import (
     check_application_permission,
     get_application_current_task,
+    view_application_file,
 )
 from web.domains.exporter.models import Exporter
+from web.domains.file.utils import create_file_model
 from web.domains.user.models import User
 from web.flow.models import Task
+from web.models.shared import YesNoChoices
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3
 from web.utils.sentry import capture_exception
@@ -54,6 +57,7 @@ from .models import (
     CFSSchedule,
     ExportApplication,
     ExportApplicationType,
+    GMPFile,
 )
 from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
@@ -1191,6 +1195,157 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
 
 
 @login_required
+def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        task = get_application_current_task(application, "export", "prepare")
+
+        if request.POST:
+            form = EditGMPForm(data=request.POST, instance=application)
+
+            if form.is_valid():
+                application = form.save(commit=False)
+
+                application_files = GMPFile.objects.filter(
+                    certificateofgoodmanufacturingpracticeapplication=application, is_active=True
+                )
+                ft = GMPFile.Type
+
+                if application.gmp_certificate_issued == application.CertificateTypes.ISO_22716:
+                    application_files.filter(file_type=ft.BRC_GSOCP).update(is_active=False)
+
+                elif application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP:
+                    application_files.filter(
+                        file_type__in=[ft.ISO_22716, ft.ISO_17021, ft.ISO_17065]
+                    ).update(is_active=False)
+
+                    application.auditor_accredited = None
+                    application.auditor_certified = None
+
+                application.save()
+
+                return redirect(
+                    reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+                )
+
+        else:
+            form = EditGMPForm(instance=application, initial={"contact": request.user})
+
+        form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
+        show_iso_table = (
+            form_valid
+            and application.gmp_certificate_issued == application.CertificateTypes.ISO_22716
+        )
+        show_brc_table = (
+            form_valid
+            and application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP
+        )
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "case_type": "export",
+            "country": application.countries.first(),
+            "GMPFileTypes": GMPFile.Type,
+            "show_iso_table": show_iso_table,
+            "show_brc_table": show_brc_table,
+        }
+
+        return render(request, "web/domains/case/export/gmp-edit.html", context)
+
+
+@login_required
+def add_gmp_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, file_type: str
+) -> HttpResponse:
+    prev_link = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        task = get_application_current_task(application, "export", "prepare")
+
+        if request.POST:
+            form = DocumentForm(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
+
+                create_file_model(
+                    document,
+                    request.user,
+                    application.supporting_documents,
+                    extra_args={"file_type": file_type},
+                )
+
+                return redirect(prev_link)
+        else:
+            form = DocumentForm()
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": f"Certificate of Good Manufacturing Practice - Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
+            "prev_link": prev_link,
+        }
+
+        return render(request, "web/domains/case/export/add_supporting_document.html", context)
+
+
+@require_GET
+@login_required
+def view_gmp_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+        CertificateOfGoodManufacturingPracticeApplication, pk=application_pk
+    )
+
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk, "export"
+    )
+
+
+@require_POST
+@login_required
+def delete_gmp_document(
+    request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        get_application_current_task(application, "export", "prepare")
+
+        document = application.supporting_documents.get(pk=document_pk)
+        document.is_active = False
+        document.save()
+
+        prev_link = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+
+        return redirect(prev_link)
+
+
+@login_required
 def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
@@ -1205,11 +1360,14 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             page_name="Application details",
             url=reverse("export:gmp-edit", kwargs={"application_pk": application_pk}),
         )
-        create_page_errors(
-            EditGMPForm(data=model_to_dict(application), instance=application),
-            page_errors,
-        )
+
+        main_form = EditGMPForm(data=model_to_dict(application), instance=application)
+
+        create_page_errors(main_form, page_errors)
         errors.add(page_errors)
+
+        if main_form.is_valid():
+            _check_certificate_errors(application, errors)
 
         errors.add(get_org_update_request_errors(application, "export"))
 
@@ -1237,38 +1395,44 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         return render(request, "web/domains/case/export/submit-gmp.html", context)
 
 
-@login_required
-def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
-            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
-            pk=application_pk,
+def _check_certificate_errors(
+    application: CertificateOfGoodManufacturingPracticeApplication, errors: ApplicationErrors
+) -> None:
+    if application.gmp_certificate_issued == application.CertificateTypes.ISO_22716:
+        _add_cert_error(application, errors, GMPFile.Type.ISO_22716)  # type: ignore[arg-type]
+
+        if application.auditor_accredited == YesNoChoices.yes:
+            _add_cert_error(application, errors, GMPFile.Type.ISO_17021)  # type: ignore[arg-type]
+
+        if application.auditor_certified == YesNoChoices.yes:
+            _add_cert_error(application, errors, GMPFile.Type.ISO_17065)  # type: ignore[arg-type]
+
+    elif application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP:
+        _add_cert_error(application, errors, GMPFile.Type.BRC_GSOCP)  # type: ignore[arg-type]
+
+
+def _add_cert_error(
+    application: CertificateOfGoodManufacturingPracticeApplication,
+    errors: ApplicationErrors,
+    file_type: GMPFile.Type,
+) -> None:
+    application_files = GMPFile.objects.filter(
+        certificateofgoodmanufacturingpracticeapplication=application, is_active=True
+    )
+    if not application_files.filter(file_type=file_type).exists():
+        cert_page_errors = PageErrors(
+            page_name=f"{file_type.label} Certificate",
+            url=reverse(
+                "export:gmp-add-document",
+                kwargs={"application_pk": application.pk, "file_type": file_type.value},
+            ),
         )
 
-        check_application_permission(application, request.user, "export")
+        cert_page_errors.add(
+            FieldError(
+                field_name=f"{file_type.label} Certificate",
+                messages=[f"You must upload a {file_type.label} certificate."],
+            )
+        )
 
-        task = get_application_current_task(application, "export", "prepare")
-
-        if request.POST:
-            form = EditGMPForm(data=request.POST, instance=application)
-
-            if form.is_valid():
-                form.save()
-
-                return redirect(
-                    reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
-                )
-
-        else:
-            form = EditGMPForm(instance=application, initial={"contact": request.user})
-
-        context = {
-            "process_template": "web/domains/case/export/partials/process.html",
-            "process": application,
-            "task": task,
-            "form": form,
-            "case_type": "export",
-            "country": application.countries.first(),
-        }
-
-        return render(request, "web/domains/case/export/gmp-edit.html", context)
+        errors.add(cert_page_errors)

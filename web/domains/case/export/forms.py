@@ -431,7 +431,6 @@ class EditGMPForm(forms.ModelForm):
 
         fields = (
             "contact",
-            "gmp_certificate_issued",
             "is_manufacturer",
             "is_responsible_person",
             "manufacturer_address",
@@ -444,16 +443,21 @@ class EditGMPForm(forms.ModelForm):
             "responsible_person_country",
             "responsible_person_name",
             "responsible_person_postcode",
+            "gmp_certificate_issued",
+            "auditor_accredited",
+            "auditor_certified",
         )
 
         widgets = {
             "is_manufacturer": icms_widgets.RadioSelect,
             "is_responsible_person": icms_widgets.RadioSelect,
-            "gmp_certificate_issued": icms_widgets.RadioSelect,
             "manufacturer_address": forms.Textarea,
             "manufacturer_country": icms_widgets.RadioSelect,
             "responsible_person_address": forms.Textarea,
             "responsible_person_country": icms_widgets.RadioSelect,
+            "gmp_certificate_issued": icms_widgets.RadioSelect,
+            "auditor_accredited": icms_widgets.RadioSelect,
+            "auditor_certified": icms_widgets.RadioSelect,
         }
 
     def __init__(self, *args, **kwargs):
@@ -468,7 +472,11 @@ class EditGMPForm(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-    def clean(self):
+        # These are only sometimes required and will be checked in the clean method
+        self.fields["auditor_accredited"].required = False
+        self.fields["auditor_certified"].required = False
+
+    def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
 
         if not self.is_valid():
@@ -493,5 +501,13 @@ class EditGMPForm(forms.ModelForm):
 
         elif not m_postcode.startswith("BT") and m_country == self.instance.CountryType.NIR:
             self.add_error("manufacturer_postcode", "Postcode must start with BT")
+
+        # Manufacturing certificates checks
+        gmp_certificate_issued = cleaned_data["gmp_certificate_issued"]
+
+        if gmp_certificate_issued == self.instance.CertificateTypes.ISO_22716:
+            for field in ("auditor_accredited", "auditor_certified"):
+                if not cleaned_data[field]:
+                    self.add_error(field, "This field is required")
 
         return cleaned_data

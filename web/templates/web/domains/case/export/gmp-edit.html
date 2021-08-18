@@ -46,7 +46,11 @@
 
   <h4>Manufacturing certificates</h4>
   {{ fields.field(form.gmp_certificate_issued) }}
-
+  <div id="iso-fields-wrapper" {% if not process.gmp_certificate_issued == process.CertificateTypes.ISO_22716 %}
+       style="display: none"{% endif %}>
+    {{ fields.field(form.auditor_accredited, show_optional_indicator=False) }}
+    {{ fields.field(form.auditor_certified, show_optional_indicator=False) }}
+  </div>
 {% endblock %}
 
 {% block task_actions %}
@@ -57,8 +61,37 @@
   </li>
 {% endblock %}
 
+{% block subtasks %}
+  <div class="info-box info-box-info" id="application-not-finished-warning">
+    <div class="screen-reader-only">Information box,</div>
+    Please save main form before uploading documents
+  </div>
+
+  {% if show_iso_table %}
+    <div class="info-box info-box-info">
+      <div class="screen-reader-only">Information box,</div>
+      In order to submit the application you must upload an ISO 22716 certificate. You must also upload a valid ISO
+      17021 or ISO 17065 certificate in order to submit.
+    </div>
+    {% with read_only = False, mandatory_files = ["ISO_22716"], optional_files = ["ISO_17021", "ISO_17065"] %}
+      {% include "web/domains/case/export/partials/gmp/documents_list.html" %}
+    {% endwith %}
+
+  {% elif show_brc_table %}
+    <div class="info-box info-box-info">
+      <div class="screen-reader-only">Information box,</div>
+      In order to submit the application you must upload a BRC Global Standard for Consumer Products certificate.
+    </div>
+    {% with read_only = False, mandatory_files = ["BRC_GSOCP"] %}
+      {% include "web/domains/case/export/partials/gmp/documents_list.html" %}
+    {% endwith %}
+
+  {% endif %}
+{% endblock %}
+
 {% block page_js %}
   {{ form.media.js }}
   <script src="{{ static('web/js/api/postcode-lookup.js') }}" type="text/javascript"></script>
   <script src="{{ static('web/js/pages/address-input.js') }}" type="text/javascript"></script>
+  <script src="{{ static('web/js/pages/gmp-edit.js') }}" type="text/javascript"></script>
 {% endblock %}
