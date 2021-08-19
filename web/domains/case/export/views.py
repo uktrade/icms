@@ -103,7 +103,7 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
 
                 # GMP applications are for China only
-                if application_type.type_code == ExportApplicationType.Type.GMP:
+                if application_type.type_code == ExportApplicationType.Types.GMP:
                     country = application_type.country_group.countries.filter(
                         is_active=True
                     ).first()
