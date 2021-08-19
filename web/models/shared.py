@@ -2,6 +2,11 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 
+class AddressEntryType(models.TextChoices):
+    MANUAL = ("M", "Manual")
+    SEARCH = ("S", "Search")
+
+
 class YesNoChoices(models.TextChoices):
     yes = ("yes", "Yes")
     no = ("no", "No")

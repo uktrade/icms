@@ -2264,14 +2264,13 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "APPLICATION_TYPE": ExportApplicationType.ProcessTypes.GMP.label,  # type: ignore[attr-defined]
                 "EXPORTER_NAME": application.exporter,
                 "EXPORTER_ADDRESS": application.exporter_office,
-                # TODO: ICMSLST-926 add manufacturer
-                "MANUFACTURER_NAME": "TODO ICMLST-926",
-                "MANUFACTURER_ADDRESS": "TODO ICMLST-926",
-                "MANUFACTURER_POSTCODE": "TODO ICMLST-926",
+                "MANUFACTURER_NAME": application.manufacturer_name,
+                "MANUFACTURER_ADDRESS": application.manufacturer_address,
+                "MANUFACTURER_POSTCODE": application.manufacturer_postcode,
                 # TODO: ICMSLST-924 add responsible person
-                "RESPONSIBLE_PERSON_NAME": "TODO ICMSLST-924",
-                "RESPONSIBLE_PERSON_ADDRESS": "TODO ICMSLST-924",
-                "RESPONSIBLE_PERSON_POSTCODE": "TODO ICMSLST-924",
+                "RESPONSIBLE_PERSON_NAME": application.responsible_person_name,
+                "RESPONSIBLE_PERSON_ADDRESS": application.responsible_person_address,
+                "RESPONSIBLE_PERSON_POSTCODE": application.responsible_person_postcode,
                 # TODO: ICMSLST-925 add brands
                 "BRAND_NAME": "TODO ICMSLST-925",
                 "CASE_OFFICER_NAME": application.case_owner.full_name,

@@ -114,3 +114,29 @@
 
     {% endif %}
 {% endmacro %}
+
+{% macro address_fields(form, name_field, address_type_field, postcode_field, address_field, id=None) %}
+  <div name="address_entry_form">
+    <div name="name_field">
+      {{ field(form[name_field]) }}
+    </div>
+    <div name="address_type_field">
+      {{ field(form[address_type_field]) }}
+    </div>
+    <div name="postcode_field">
+      {{ field(form[postcode_field]) }}
+    </div>
+    <div class="row" id="row_id_available_addresses{{'_' + id if id else ''}}" name="row_available_addresses" style="display: none">
+      <div class="three columns">
+        <label for="id_available_addresses{{'_' + id if id else ''}}" class="prompt west">Please choose an address:</label>
+      </div>
+      <div class="six columns input-group ">
+        <select id="id_available_addresses{{'_' + id if id else ''}}" name="available_addresses"></select>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div name="address_field">
+      {{ field(form[address_field]) }}
+    </div>
+  </div>
+{% endmacro %}

@@ -13,7 +13,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
-from web.models.shared import YesNoChoices
+from web.models.shared import AddressEntryType, YesNoChoices
 
 
 class ExportApplicationType(models.Model):
@@ -214,10 +214,6 @@ class CFSSchedule(models.Model):
             "The products meet the product safety requirements to be sold on the UK market",
         )
 
-    class AddressEntryType(models.TextChoices):
-        MANUAL = ("M", "Manual")
-        SEARCH = ("S", "Search")
-
     exporter_status = models.CharField(
         null=True, verbose_name="Exporter Status", choices=ExporterStatus.choices, max_length=16
     )
@@ -350,7 +346,85 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
         ISO_22716 = ("ISO_22716", "ISO 22716")
         BRC_GLOBAL_STANDARD = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
 
-    # TODO: Add remaining model fields
+    class CountryType(models.TextChoices):
+        GB = ("GB", "Great Britain")
+        NIR = ("NIR", "Northern Ireland")
+
+    # Responsible person fields
+    is_responsible_person = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        default=None,
+        verbose_name="Are you the responsible person as defined by Cosmetic Products Legislation as applicable in GB or NI?",
+    )
+
+    responsible_person_name = models.CharField(max_length=200, verbose_name="Name", null=True)
+
+    responsible_person_address_entry_type = models.CharField(
+        max_length=10,
+        choices=AddressEntryType.choices,
+        verbose_name="Address Type",
+        default=AddressEntryType.MANUAL,
+    )
+
+    responsible_person_postcode = models.CharField(
+        max_length=30,
+        verbose_name="Postcode",
+        null=True,
+    )
+
+    responsible_person_address = models.CharField(
+        max_length=4000,
+        verbose_name="Address",
+        null=True,
+    )
+
+    responsible_person_country = models.CharField(
+        max_length=3,
+        choices=CountryType.choices,
+        verbose_name="Country of Responsible Person",
+        default=None,
+        null=True,
+    )
+
+    # Manufacturer fields
+    is_manufacturer = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        default=None,
+        verbose_name="Are you the manufacturer of the cosmetic products?",
+    )
+
+    manufacturer_name = models.CharField(max_length=200, verbose_name="Name", null=True)
+
+    manufacturer_address_entry_type = models.CharField(
+        max_length=10,
+        choices=AddressEntryType.choices,
+        verbose_name="Address Type",
+        default=AddressEntryType.MANUAL,
+    )
+
+    manufacturer_postcode = models.CharField(
+        max_length=30,
+        verbose_name="Postcode",
+        null=True,
+    )
+
+    manufacturer_address = models.CharField(
+        max_length=4000,
+        verbose_name="Address",
+        null=True,
+    )
+
+    manufacturer_country = models.CharField(
+        max_length=3,
+        choices=CountryType.choices,
+        verbose_name="Country of Manufacture",
+        null=True,
+        default=None,
+    )
 
     # Manufacturing certificates fields
     gmp_certificate_issued = models.CharField(

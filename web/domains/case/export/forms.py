@@ -4,7 +4,6 @@ from typing import Any, Optional
 import structlog as logging
 from django import forms
 from django.db.models.query import QuerySet
-from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
@@ -16,7 +15,7 @@ from web.domains.file.utils import ICMSFileField
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
-from web.models.shared import YesNoChoices
+from web.models.shared import AddressEntryType, YesNoChoices
 
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -302,19 +301,23 @@ class EditCFScheduleForm(forms.ModelForm):
 class CFSManufacturerDetailsForm(forms.ModelForm):
     class Meta:
         model = CFSSchedule
+
         fields = (
             "manufacturer_name",
             "manufacturer_address_entry_type",
             "manufacturer_postcode",
             "manufacturer_address",
         )
-        widgets = {"manufacturer_address": forms.Textarea}
+
+        widgets = {
+            "manufacturer_address": forms.Textarea,
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         if self.instance.pk:
-            if self.instance.manufacturer_address_entry_type == CFSSchedule.AddressEntryType.SEARCH:
+            if self.instance.manufacturer_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["manufacturer_address"].widget.attrs["readonly"] = True
 
 
@@ -428,22 +431,67 @@ class EditGMPForm(forms.ModelForm):
 
         fields = (
             "contact",
-            "countries",
             "gmp_certificate_issued",
+            "is_manufacturer",
+            "is_responsible_person",
+            "manufacturer_address",
+            "manufacturer_address_entry_type",
+            "manufacturer_country",
+            "manufacturer_name",
+            "manufacturer_postcode",
+            "responsible_person_address",
+            "responsible_person_address_entry_type",
+            "responsible_person_country",
+            "responsible_person_name",
+            "responsible_person_postcode",
         )
 
         widgets = {
-            "countries": widgets.Select,
+            "is_manufacturer": icms_widgets.RadioSelect,
+            "is_responsible_person": icms_widgets.RadioSelect,
             "gmp_certificate_issued": icms_widgets.RadioSelect,
+            "manufacturer_address": forms.Textarea,
+            "manufacturer_country": icms_widgets.RadioSelect,
+            "responsible_person_address": forms.Textarea,
+            "responsible_person_country": icms_widgets.RadioSelect,
         }
-
-        help_texts = {"countries": ""}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if self.instance.pk:
+            if self.instance.manufacturer_address_entry_type == AddressEntryType.SEARCH:
+                self.fields["manufacturer_address"].widget.attrs["readonly"] = True
+
+            if self.instance.responsible_person_address_entry_type == AddressEntryType.SEARCH:
+                self.fields["responsible_person_address"].widget.attrs["readonly"] = True
+
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        application_countries = self.instance.application_type.country_group.countries.filter(
-            is_active=True
-        )
-        self.fields["countries"].queryset = application_countries
+    def clean(self):
+        cleaned_data: dict[str, Any] = super().clean()
+
+        if not self.is_valid():
+            return cleaned_data
+
+        # Check responsible person postcode matches country
+        rp_postcode: str = cleaned_data["responsible_person_postcode"].upper()
+        rp_country: str = cleaned_data["responsible_person_country"]
+
+        if rp_postcode.startswith("BT") and rp_country == self.instance.CountryType.GB:
+            self.add_error("responsible_person_postcode", "Postcode should not start with BT")
+
+        elif not rp_postcode.startswith("BT") and rp_country == self.instance.CountryType.NIR:
+            self.add_error("responsible_person_postcode", "Postcode must start with BT")
+
+        # Check manufacturer postcode matches country
+        m_postcode: str = cleaned_data["manufacturer_postcode"].upper()
+        m_country: str = cleaned_data["manufacturer_country"]
+
+        if m_postcode.startswith("BT") and m_country == self.instance.CountryType.GB:
+            self.add_error("manufacturer_postcode", "Postcode should not start with BT")
+
+        elif not m_postcode.startswith("BT") and m_country == self.intance.CountyType.NIR:
+            self.add_error("manufacturer_postcode", "Postcode must start with BT")
+
+        return cleaned_data

@@ -102,6 +102,13 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
                 application.save()
                 Task.objects.create(process=application, task_type="prepare", owner=request.user)
 
+                # GMP applications are for China only
+                if application_type.type_code == ExportApplicationType.Type.GMP:
+                    country = application_type.country_group.countries.filter(
+                        is_active=True
+                    ).first()
+                    application.countries.add(country)
+
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
             )
@@ -926,7 +933,7 @@ def product_spreadsheet_upload(
                 else:
                     err = "No valid file found. Please upload the spreadsheet."
 
-                messages.warning(f"Upload failed: {err}")
+                messages.warning(request, f"Upload failed: {err}")
 
     except CustomError as err:
         messages.warning(request, f"Upload failed: {err}")
@@ -1261,6 +1268,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "task": task,
             "form": form,
             "case_type": "export",
+            "country": application.countries.first(),
         }
 
         return render(request, "web/domains/case/export/gmp-edit.html", context)
