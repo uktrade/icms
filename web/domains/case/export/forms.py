@@ -491,7 +491,7 @@ class EditGMPForm(forms.ModelForm):
         if m_postcode.startswith("BT") and m_country == self.instance.CountryType.GB:
             self.add_error("manufacturer_postcode", "Postcode should not start with BT")
 
-        elif not m_postcode.startswith("BT") and m_country == self.intance.CountyType.NIR:
+        elif not m_postcode.startswith("BT") and m_country == self.instance.CountryType.NIR:
             self.add_error("manufacturer_postcode", "Postcode must start with BT")
 
         return cleaned_data
