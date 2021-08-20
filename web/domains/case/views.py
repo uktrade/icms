@@ -39,6 +39,7 @@ from web.models import (
     ExportApplication,
     ExportApplicationType,
     ExporterAccessRequest,
+    GMPFile,
     ImportApplication,
     ImporterAccessRequest,
     IronSteelApplication,
@@ -2269,7 +2270,6 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "MANUFACTURER_NAME": application.manufacturer_name,
                 "MANUFACTURER_ADDRESS": application.manufacturer_address,
                 "MANUFACTURER_POSTCODE": application.manufacturer_postcode,
-                # TODO: ICMSLST-924 add responsible person
                 "RESPONSIBLE_PERSON_NAME": application.responsible_person_name,
                 "RESPONSIBLE_PERSON_ADDRESS": application.responsible_person_address,
                 "RESPONSIBLE_PERSON_POSTCODE": application.responsible_person_postcode,
@@ -2386,8 +2386,17 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         choices = [(settings.ICMS_GMP_BEIS_EMAIL, settings.ICMS_GMP_BEIS_EMAIL)]
-        # TODO: ICMSLST-926 add files uploaded from user
-        files = File.objects.none()
+
+        app_files: "QuerySet[GMPFile]" = application.supporting_documents.filter(is_active=True)
+        ft = GMPFile.Type
+        ct = CertificateOfGoodManufacturingPracticeApplication.CertificateTypes
+
+        if application.gmp_certificate_issued == ct.ISO_22716:
+            files = app_files.filter(file_type__in=[ft.ISO_22716, ft.ISO_17021, ft.ISO_17065])
+        elif application.gmp_certificate_issued == ct.BRC_GSOCP:
+            files = app_files.filter(file_type=ft.BRC_GSOCP)
+        else:
+            files = File.objects.none()
 
         return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
 

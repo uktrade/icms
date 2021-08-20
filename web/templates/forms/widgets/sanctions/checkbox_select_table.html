@@ -24,7 +24,14 @@
               <span class="filesize">{{ file.human_readable_file_size() }}</span>
             </td>
             <td>
-              Supporting Document
+              {# a method set on some file model classes (e.g. GMPFIle, OutwardProcessingTradeFile, PriorSurveillanceContractFile ) #}
+              {% set get_file_type = file|attr("get_file_type_display") %}
+
+              {% if get_file_type %}
+                {{ get_file_type() }}
+              {% else %}
+                Supporting documents
+              {% endif %}
             </td>
         </tr>
         {% endwith %}
