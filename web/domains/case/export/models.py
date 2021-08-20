@@ -351,6 +351,8 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
         GB = ("GB", "Great Britain")
         NIR = ("NIR", "Northern Ireland")
 
+    brands = models.ManyToManyField("GMPBrand")
+
     # Responsible person fields
     is_responsible_person = models.CharField(
         max_length=3,
@@ -479,3 +481,7 @@ class GMPFile(File):
         BRC_GSOCP = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
 
     file_type = models.CharField(max_length=10, choices=Type.choices)
+
+
+class GMPBrand(models.Model):
+    brand_name = models.CharField(max_length=20, verbose_name="Name of the brand")

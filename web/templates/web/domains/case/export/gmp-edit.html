@@ -7,18 +7,25 @@
   {{ form.media.css }}
 {% endblock %}
 
-{% block form_content %}
+{% block before_form %}
   <div class="info-box info-box-info">
     This form is in respect of the Exporting Company. Please provide all
     the information requested. The information will be used to create a
     Certificate of Good Manufacturing Practice.
   </div>
 
-  <h4>Contact</h4>
-  {{ fields.field(form.contact) }}
-
   <h4>Countries</h4>
   {{ application_field(country, "Country") }}
+
+  <h4>Brands</h4>
+  {% with read_only = False, brands = process.brands.all() %}
+    {% include "web/domains/case/export/partials/gmp/brands_list.html" %}
+  {% endwith %}
+{% endblock %}
+
+{% block form_content %}
+  <h4>Contact</h4>
+  {{ fields.field(form.contact) }}
 
   <h4>Responsible Person</h4>
   {{ fields.field(form.is_responsible_person) }}

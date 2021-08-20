@@ -1,0 +1,28 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('export:gmp-edit', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Edit application
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {% for field_name in form.fields %}
+      {{ fields.field(form[field_name]) }}
+    {% endfor %}
+    <input type="submit" name="action" class="primary-button button" value="{{ 'Save' if instance else 'Add' }}" />
+  {% endcall %}
+{% endblock %}

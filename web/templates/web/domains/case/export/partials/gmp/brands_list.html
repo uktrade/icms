@@ -1,0 +1,53 @@
+{% if brands %}
+  <br>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Name of the Brand</th>
+      {% if not read_only %}
+        <th>Action</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for brand in brands %}
+      <tr>
+        <td>{{ brand.brand_name }}</td>
+        {% if not read_only %}
+          <td>
+            <a href="{{ icms_url('export:gmp-edit-brand', kwargs={'application_pk': process.pk, 'brand_pk': brand.pk}) }}"
+              class="link-button icon-pencil button">Edit</a>
+            <form method="post"
+                  action="{{ icms_url('export:gmp-delete-brand', kwargs={'application_pk': process.pk, 'brand_pk': brand.pk}) }}"
+                  id="id_delete-brand-{{ brand.pk }}">
+              {{ csrf_input }}
+              <button type="submit" class="link-button icon-bin button" form="id_delete-brand-{{ brand.pk }}">Delete</button>
+            </form>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  {% if read_only %}
+    <div class="info-box info-box-info">
+      There are no brands.
+    </div>
+  {% else %}
+    <div class="info-box info-box-info">
+      You must enter the name of the cosmetic brand.
+    </div>
+  {% endif %}
+{% endif %}
+
+
+{% if not read_only %}
+  <div class="list-actions">
+    <a class="button small-button icon-plus"
+      href="{{ icms_url('export:gmp-add-brand', kwargs={'application_pk': process.pk}) }}">
+      Add brand name
+    </a>
+  </div>
+  <hr>
+{% endif %}

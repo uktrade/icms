@@ -45,6 +45,7 @@
     </div>
   {% endblock %}
 
+  {% block before_form %}{% endblock %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
 

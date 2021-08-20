@@ -44,6 +44,7 @@ from .forms import (
     EditCFScheduleForm,
     EditCFSForm,
     EditGMPForm,
+    GMPBrandForm,
     PrepareCertManufactureForm,
     ProductsFileUploadForm,
 )
@@ -1368,6 +1369,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         if main_form.is_valid():
             _check_certificate_errors(application, errors)
+            _check_brand_errors(application, errors)
 
         errors.add(get_org_update_request_errors(application, "export"))
 
@@ -1436,3 +1438,125 @@ def _add_cert_error(
         )
 
         errors.add(cert_page_errors)
+
+
+@login_required
+def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        task = get_application_current_task(application, "export", "prepare")
+
+        if request.POST:
+            form = GMPBrandForm(data=request.POST)
+
+            if form.is_valid():
+                brand = form.save()
+                application.brands.add(brand)
+
+                return redirect(
+                    reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+                )
+        else:
+            form = GMPBrandForm()
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "page_title": "Add brand",
+            "case_type": "export",
+        }
+
+        return render(request, "web/domains/case/export/gmp-edit-brand.html", context)
+
+
+@login_required
+def gmp_edit_brand(
+    request: AuthenticatedHttpRequest, *, application_pk: int, brand_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        task = get_application_current_task(application, "export", "prepare")
+
+        instance = application.brands.filter(pk=brand_pk).first()
+
+        if not instance:
+            return redirect(reverse("export:gmp-edit", kwargs={"application_pk": application_pk}))
+
+        if request.POST:
+            form = GMPBrandForm(instance=instance, data=request.POST)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+                )
+        else:
+            form = GMPBrandForm(instance=instance)
+
+        context = {
+            "process_template": "web/domains/case/export/partials/process.html",
+            "process": application,
+            "task": task,
+            "form": form,
+            "instance": instance,
+            "page_title": "Edit brand",
+            "case_type": "export",
+        }
+
+        return render(request, "web/domains/case/export/gmp-edit-brand.html", context)
+
+
+@require_POST
+@login_required
+def gmp_delete_brand(
+    request: AuthenticatedHttpRequest, *, application_pk: int, brand_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
+            CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
+            pk=application_pk,
+        )
+
+        check_application_permission(application, request.user, "export")
+
+        instance = application.brands.filter(pk=brand_pk).first()
+
+        if instance:
+            application.brands.remove(instance)
+
+        return redirect(reverse("export:gmp-edit", kwargs={"application_pk": application_pk}))
+
+
+def _check_brand_errors(
+    application: CertificateOfGoodManufacturingPracticeApplication,
+    errors: ApplicationErrors,
+) -> None:
+    if not application.brands.exists():
+        brand_page_errors = PageErrors(
+            page_name="Brands",
+            url=reverse(
+                "export:gmp-add-brand",
+                kwargs={"application_pk": application.pk},
+            ),
+        )
+
+        brand_page_errors.add(
+            FieldError(field_name="Brands", messages=["At least one brand name must be added"])
+        )
+
+        errors.add(brand_page_errors)

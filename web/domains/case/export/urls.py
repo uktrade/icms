@@ -97,6 +97,22 @@ urlpatterns = [
                 path("edit/", views.edit_gmp, name="gmp-edit"),
                 path("submit/", views.submit_gmp, name="gmp-submit"),
                 path(
+                    "brand/",
+                    include(
+                        [
+                            path("add/", views.gmp_add_brand, name="gmp-add-brand"),
+                            path(
+                                "edit/<int:brand_pk>/", views.gmp_edit_brand, name="gmp-edit-brand"
+                            ),
+                            path(
+                                "delete/<int:brand_pk>/",
+                                views.gmp_delete_brand,
+                                name="gmp-delete-brand",
+                            ),
+                        ]
+                    ),
+                ),
+                path(
                     "document/",
                     include(
                         [

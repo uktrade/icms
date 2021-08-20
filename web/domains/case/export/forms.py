@@ -25,6 +25,7 @@ from .models import (
     CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
+    GMPBrand,
 )
 
 logger = logging.get_logger(__name__)
@@ -423,6 +424,12 @@ class CFSActiveIngredientForm(forms.ModelForm):
 
 class ProductsFileUploadForm(forms.Form):
     file = ICMSFileField()
+
+
+class GMPBrandForm(forms.ModelForm):
+    class Meta:
+        model = GMPBrand
+        fields = ("brand_name",)
 
 
 class EditGMPForm(forms.ModelForm):
