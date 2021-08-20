@@ -1431,7 +1431,7 @@ def _add_cert_error(
         cert_page_errors.add(
             FieldError(
                 field_name=f"{file_type.label} Certificate",
-                messages=[f"You must upload a {file_type.label} certificate."],
+                messages=[f"You must upload an {file_type.label} certificate."],
             )
         )
 

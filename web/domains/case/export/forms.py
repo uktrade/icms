@@ -482,6 +482,13 @@ class EditGMPForm(forms.ModelForm):
         if not self.is_valid():
             return cleaned_data
 
+        responsible_person = cleaned_data["is_responsible_person"]
+        if responsible_person != YesNoChoices.yes:
+            self.add_error(
+                "is_responsible_person",
+                "You must be the responsible person to submit this application",
+            )
+
         # Check responsible person postcode matches country
         rp_postcode: str = cleaned_data["responsible_person_postcode"].upper()
         rp_country: str = cleaned_data["responsible_person_country"]
@@ -506,8 +513,21 @@ class EditGMPForm(forms.ModelForm):
         gmp_certificate_issued = cleaned_data["gmp_certificate_issued"]
 
         if gmp_certificate_issued == self.instance.CertificateTypes.ISO_22716:
-            for field in ("auditor_accredited", "auditor_certified"):
-                if not cleaned_data[field]:
-                    self.add_error(field, "This field is required")
+            auditor_accredited: str = cleaned_data["auditor_accredited"]
+            auditor_certified: str = cleaned_data["auditor_certified"]
+
+            if not auditor_accredited:
+                self.add_error("auditor_accredited", "This field is required")
+
+            if not auditor_certified:
+                self.add_error("auditor_certified", "This field is required")
+
+            if auditor_accredited == YesNoChoices.no and auditor_certified == YesNoChoices.no:
+                self.add_error(
+                    "auditor_certified",
+                    "The auditor or auditing body must have been accredited to"
+                    " either ISO 17021 or ISO 17065. You are also required to"
+                    " upload certification confirming this.",
+                )
 
         return cleaned_data
