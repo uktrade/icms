@@ -2250,7 +2250,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                     application.countries.filter(is_active=True).values_list("name", flat=True)
                 ),
                 "SELECTED_PRODUCTS": _get_selected_product_data(
-                    application.certificateoffreesaleapplication
+                    application.schedules.filter(legislations__is_biocidal=True)
                 ),
                 "CASE_OFFICER_NAME": application.case_owner.full_name,
                 "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
@@ -2586,8 +2586,7 @@ def get_page_title(case_type: str, application: ImpOrExpOrAccess, page: str) -> 
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
-def _get_selected_product_data(application: CertificateOfFreeSaleApplication) -> str:
-    biocidal_schedules = application.schedules.filter(legislations__is_biocidal=True)
+def _get_selected_product_data(biocidal_schedules: "QuerySet[CFSSchedule]") -> str:
     products = CFSProduct.objects.filter(schedule__in=biocidal_schedules)
     product_data = []
 
