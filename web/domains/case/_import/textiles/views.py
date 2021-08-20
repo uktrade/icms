@@ -16,9 +16,14 @@ from web.domains.case.views import (
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.types import AuthenticatedHttpRequest
-from web.utils.commodity import get_category_commodity_group_data
+from web.utils.commodity import (
+    get_category_commodity_group_data,
+    get_usage_data,
+    get_usage_records,
+)
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
+from ..models import ImportApplicationType
 from .forms import (
     EditTextilesForm,
     GoodsTextilesLicenceForm,
@@ -54,6 +59,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         category_commodity_groups = get_category_commodity_group_data(commodity_type="TEXTILES")
+        usages = get_usage_data(app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
 
         if application.category_commodity_group:
             selected_group = category_commodity_groups.get(
@@ -72,6 +78,8 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             "category_commodity_groups": category_commodity_groups,
             "commodity_group_label": selected_group.get("label", ""),
             "commodity_group_unit": selected_group.get("unit", ""),
+            "usages": usages,
+            "max_allocation": _get_max_allocation(application),
         }
 
         return render(request, "web/domains/case/import/textiles/edit.html", context)
@@ -136,6 +144,7 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
             "page_title": "Textiles (Quota) Import Licence - Submit",
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "max_allocation": _get_max_allocation(application),
         }
 
         return render(request, "web/domains/case/import/textiles/submit.html", context)
@@ -293,3 +302,20 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
             template_name="web/domains/case/import/manage/response-prep-textiles-edit-form.html",
             context=context,
         )
+
+
+def _get_max_allocation(application: TextilesApplication) -> float:
+    if application.category_commodity_group and application.origin_country:
+        usages = (
+            get_usage_records(app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
+            .filter(
+                commodity_group=application.category_commodity_group,
+                country=application.origin_country,
+            )
+            .exclude(maximum_allocation__isnull=True)
+        )
+        max_allocation = usages.last().maximum_allocation
+    else:
+        max_allocation = None
+
+    return max_allocation

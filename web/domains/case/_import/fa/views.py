@@ -75,9 +75,11 @@ def manage_constabulary_emails(
 @login_required
 def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
+        import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
+        application: FaImportApplication = _get_fa_application(import_application)
+
         check_application_permission(application, request.user, "import")
 
         task = get_application_current_task(application, "import", "prepare")

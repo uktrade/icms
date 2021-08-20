@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import TYPE_CHECKING, TypedDict
 
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -158,3 +159,16 @@ def get_active_commodities(commodities: "QuerySet[Commodity]") -> "QuerySet[Comm
         commodity_end_date__gte=today,
         is_active=True,
     )
+
+
+def get_usage_data(app_type: str, app_sub_type: str = None) -> dict[str, dict[str, float]]:
+    usages = (
+        get_usage_records(app_type, app_sub_type)
+        .exclude(maximum_allocation__isnull=True)
+        .values_list("commodity_group_id", "country_id", "maximum_allocation", named=True)
+    )
+    usage_data: dict[str, dict[str, float]] = defaultdict(dict)
+    for u in usages:
+        usage_data[u.commodity_group_id][u.country_id] = u.maximum_allocation
+
+    return usage_data

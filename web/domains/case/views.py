@@ -20,6 +20,7 @@ from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
+    CFSProduct,
     CFSSchedule,
 )
 from web.domains.constabulary.models import Constabulary
@@ -834,8 +835,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
         get_application_current_task(application, case_type, "process")
 
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
-        # TODO: use case reference
-        title_mapping = {"REQUEST_REFERENCE": application.pk}
+        title_mapping = {"REQUEST_REFERENCE": application.reference}
         content_mapping = {
             "REQUESTER_NAME": application.submitted_by,
             "CURRENT_USER_NAME": request.user,
@@ -2248,7 +2248,9 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "CERT_COUNTRIES": "\n".join(
                     application.countries.filter(is_active=True).values_list("name", flat=True)
                 ),
-                # TODO: ICMSLST-583 - Add products to CFS
+                "SELECTED_PRODUCTS": _get_selected_product_data(
+                    application.certificateoffreesaleapplication
+                ),
                 "CASE_OFFICER_NAME": application.case_owner.full_name,
                 "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
                 "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
@@ -2574,3 +2576,25 @@ def get_page_title(case_type: str, application: ImpOrExpOrAccess, page: str) -> 
         return "Access Request - {page}"
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def _get_selected_product_data(application: CertificateOfFreeSaleApplication) -> str:
+    biocidal_schedules = application.schedules.filter(legislations__is_biocidal=True)
+    products = CFSProduct.objects.filter(schedule__in=biocidal_schedules)
+    product_data = []
+
+    for p in products:
+        p_types = (str(pk) for pk in p.product_type_numbers.values_list("pk", flat=True))
+        ingredient_list = p.active_ingredients.values_list("name", "cas_number")
+        ingredients = (f"{name} ({cas})" for name, cas in ingredient_list)
+
+        product = "\n".join(
+            [
+                f"Product: {p.product_name}",
+                f"Product type numbers: {', '.join(p_types)}",
+                f"Active ingredients (CAS numbers): f{', '.join(ingredients)}",
+            ]
+        )
+        product_data.append(product)
+
+    return "\n\n".join(product_data)

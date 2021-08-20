@@ -4,6 +4,11 @@
 
 
 {% block main_content %}
+  {% if process.quantity and max_allocation and process.quantity > max_allocation %}
+    <h3>Warning</h3>
+
+    {% include "partial/max-allocation-exceeded.html" %}
+  {% endif %}
 
   {% if errors %}
     <h3>Error</h3>

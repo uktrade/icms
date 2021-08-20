@@ -21,6 +21,7 @@
   <h4>Details of who bought from</h4>
   {{ fields.field(form.know_bought_from) }}
 
+  {% include "partial/know-bought-from.html" %}
 {% endblock %}
 
 {% block task_actions %}
@@ -32,4 +33,9 @@
   {% with read_only = false %}
     {% include "partial/case/import/fa-dfl/goods-list.html" %}
   {% endwith %}
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/bought-from.js') }}" type="text/javascript"></script>
 {% endblock %}

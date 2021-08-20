@@ -1,0 +1,8 @@
+<div id="max-allocation-info-box" class="info-box info-box-warning" style="display: {{ 'block' if max_allocation else 'none' }}">
+  <p><strong>Maximum goods allocation exceeded.</strong></p>
+  <p>
+    The maximum allocation of goods may only be exceeded when evidence of past trade is provided. Please
+    ensure evidence is included as a supporting document, or otherwise request a quantity of goods that
+    does not exceed <span id="max-allocation-value">{{ max_allocation }}</span>.
+  </p>
+</div>
