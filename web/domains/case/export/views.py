@@ -1267,7 +1267,8 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 def add_gmp_document(
     request: AuthenticatedHttpRequest, *, application_pk: int, file_type: str
 ) -> HttpResponse:
-    prev_link = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+    gmp_edit: str = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+    prev_link = gmp_edit + "#gmp-document-list"
 
     with transaction.atomic():
         application: CertificateOfGoodManufacturingPracticeApplication = get_object_or_404(
