@@ -6,6 +6,7 @@ from compressor.contrib.jinja2ext import CompressorExtension
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.db.models import Model
 from django.urls import reverse
 from django.utils.formats import get_format
 from jinja2 import Environment, evalcontextfilter
@@ -71,6 +72,11 @@ def menu(request):
     return Menu().as_html(request)
 
 
+def verbose_name(obj: Model, field_name: str) -> str:
+    field = obj._meta.get_field(field_name)
+    return getattr(field, "verbose_name", field.name)
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -85,4 +91,6 @@ def environment(**options):
     env.filters["show_all_attrs"] = show_all_attrs
     env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
+    env.filters["verbose_name"] = verbose_name
+
     return env

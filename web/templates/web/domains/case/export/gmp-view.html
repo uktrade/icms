@@ -1,0 +1,52 @@
+{% extends "web/domains/case/view_case.html" %}
+
+{% block main_content %}
+  {% block application_contact %}
+    {{ super() }}
+  {% endblock %}
+
+  {% call application_section("Certificate of Good Manufacturing Practice") %}
+    {{ application_field(country, "Countries") }}
+  {% endcall %}
+    
+  {% call application_section("Brands") %}
+    {% with read_only = True, brands = process.brands.all() %}
+      {% include "web/domains/case/export/partials/gmp/brands_list.html" %}
+    {% endwith %}
+  {% endcall %}
+
+  {% call application_section("Responisbible Person") %}
+    {{ application_field(process.is_responsible_person|capitalize, process|verbose_name('is_responsible_person'))}}
+    {{ application_field(process.responsible_person_name, "Name")}}
+    {{ application_field(process.responsible_person_address, "Address")}}
+    {{ application_field(process.responsible_person_postcode, "Postcode")}}
+    {{ application_field(process.CountryType[process.responsible_person_country].label, "Country")}}
+  {% endcall %}
+
+  {% call application_section("Manufacturer") %}
+    {{ application_field(process.is_manufacturer|capitalize, process|verbose_name('is_manufacturer'))}}
+    {{ application_field(process.manufacturer_name, "Name")}}
+    {{ application_field(process.manufacturer_address, "Address")}}
+    {{ application_field(process.manufacturer_postcode, "Postcode")}}
+    {{ application_field(process.CountryType[process.manufacturer_country].label, "Country")}}
+  {% endcall %}
+
+  {% call application_section("Manufacturing Certificates") %}
+    {{ application_field(process.gmp_certificate_issued, process|verbose_name('gmp_certificate_issued'))}}
+    {{ application_field(process.auditor_accredited|capitalize, process|verbose_name('auditor_accredited'))}}
+    {{ application_field(process.auditor_certified|capitalize, process|verbose_name('auditor_certified'))}}
+  {% endcall %}
+
+  {% call application_section("Supporting Documents") %}
+    {% if show_iso_table %}
+      {% with read_only = True, mandatory_files = ["ISO_22716"], optional_files = ["ISO_17021", "ISO_17065"] %}
+        {% include "web/domains/case/export/partials/gmp/documents_list.html" %}
+      {% endwith %}
+    {% elif show_brc_table %}
+      {% with read_only = True, mandatory_files = ["BRC_GSOCP"] %}
+        {% include "web/domains/case/export/partials/gmp/documents_list.html" %}
+      {% endwith %}
+    {% endif %}
+  {% endcall %}
+
+{% endblock %}

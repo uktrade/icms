@@ -1396,6 +1396,9 @@ def view_case(
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         return _view_cfs(request, application.certificateoffreesaleapplication)
 
+    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
+        return _view_gmp(request, application.certificateofgoodmanufacturingpracticeapplication)
+
     else:
         raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
@@ -1618,6 +1621,26 @@ def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeS
     }
 
     return render(request, "web/domains/case/export/cfs-view.html", context)
+
+
+def _view_gmp(
+    request: AuthenticatedHttpRequest,
+    application: CertificateOfGoodManufacturingPracticeApplication,
+) -> HttpResponse:
+    show_iso_table = application.gmp_certificate_issued == application.CertificateTypes.ISO_22716
+    show_brc_table = application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP
+
+    context = {
+        "process_template": "web/domains/case/export/partials/process.html",
+        "process": application,
+        "page_title": get_page_title("export", application, "View"),
+        "country": application.countries.first(),
+        "show_iso_table": show_iso_table,
+        "show_brc_table": show_brc_table,
+        "GMPFileTypes": GMPFile.Type,
+    }
+
+    return render(request, "web/domains/case/export/gmp-view.html", context)
 
 
 @login_required
