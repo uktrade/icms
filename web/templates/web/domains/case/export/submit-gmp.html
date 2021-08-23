@@ -14,13 +14,46 @@
 
     <div class="info-box info-box-info">
       This form is in respect of the Exporting Company. Please provide all the information requested.
-      The information will be used to create a Certificate of Good Manufacturing Process and a legal declaration in the form of a
-      Schedule.
+      The information will be used to create a Certificate of Good Manufacturing Process and a legal declaration in the
+      form of a Schedule.
     </div>
     <h3>Declaration of Truth</h3>
-    <div class="info-box info-box-warning">I am authorised to act on behalf of "{{ exporter_name }}". I declare that the
-      information provided is true.
-    </div>
+    <ul>
+      <li>I am authorised to act on behalf of "{{ exporter_name }}"</li>
+      <li>Where I am not the manufacturer, I declare that the manufacturer has provided documentary evidence to me
+        confirming that the information provided is true.
+      </li>
+      <li>I declare that I have reviewed and uploaded documentary evidence to ensure that the information provided is
+        true.
+      </li>
+      <li>I declare that the products meet GB cosmetics regulations requirements and are suitable for placing on the GB
+        and/or NI market.
+      </li>
+    </ul>
+    <br>
+    <strong>Dependent upon issue of the requested certificate ("this certificate"), I agree that:</strong>
+    <p> </p>
+    <ul>
+      <li>I will notify the Department for International Trade within 10 working days if any changes occur that affect
+        the status of the GMP certification of the manufacture of the cosmetic products at the manufacturer's address
+        named in this certificate.
+      </li>
+      <li>I understand that if through any inspection or review process the Office for Product Safety and Standards
+        concludes that the standards consistent with Good Manufacturing Practice are not complied with at the
+        manufacturing facility subject of this application, or cannot be verified, this certificate is rendered invalid
+        from date of the said inspection.
+      </li>
+      <li>I declare that when this certificate expires or becomes invalid, whichever is sooner, I together with , will
+        notify the competent authority in the recipient country immediately unless a new certificate has been issued
+        which is continuous with this certificate. I accept that the Department for International Trade or the Office
+        for Product Safety and Standards may also notify the competent authority in the recipient country of an expired
+        or invalid certificate.
+      </li>
+      <li>DIT may process or share information relevant to the processing of my application for this certificate with
+        external partners involved in reviewing my application.
+      </li>
+    </ul>
+    <br>
 
     <form method="post" action="" class="form-inline" novalidate>
       {{ csrf_input }}
