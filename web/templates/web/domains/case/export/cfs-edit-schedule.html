@@ -35,11 +35,20 @@
   {{ fields.field(form.any_raw_materials) }}
 
   <div id="final-product-end-use-wrapper">
-    {{ fields.field(form.final_product_end_use) }}
+    {{ fields.field(form.final_product_end_use, show_optional_indicator=False) }}
   </div>
 
   {{ fields.field(form.country_of_manufacture) }}
-  {{ fields.field(form.schedule_statements, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
+  {{ fields.field(form.schedule_statements_accordance_with_standards, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
+
+  <div id="schedule-statements-is-responsible-person-wrapper" {% if not show_schedule_statements_is_responsible_person %} style="display: none"{% endif %}>
+    {{ fields.field(
+          form.schedule_statements_is_responsible_person,
+          show_optional_indicator=False,
+          checkbox_label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation."
+       )
+    }}
+  </div>
 {% endblock %}
 
 
@@ -142,5 +151,6 @@
 
 {% block page_js %}
   {{ form.media.js }}
+  <script id="legislation_config" type="application/json">{{ legislation_config|tojson }}</script>
   <script src="{{ static('web/js/pages/cfs-schedule-edit.js') }}" type="text/javascript"></script>
 {% endblock %}

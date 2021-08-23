@@ -216,13 +216,18 @@ class CFSSchedule(models.Model):
         )
 
     exporter_status = models.CharField(
-        null=True, verbose_name="Exporter Status", choices=ExporterStatus.choices, max_length=16
+        null=True,
+        default=None,
+        verbose_name="Exporter Status",
+        choices=ExporterStatus.choices,
+        max_length=16,
     )
 
     brand_name_holder = models.CharField(
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name="Are you the Brand name holder?",
     )
 
@@ -239,6 +244,7 @@ class CFSSchedule(models.Model):
 
     product_eligibility = models.CharField(
         null=True,
+        default=None,
         verbose_name="Product Eligibility",
         max_length=22,
         choices=ProductEligibility.choices,
@@ -252,6 +258,7 @@ class CFSSchedule(models.Model):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name="Have you placed the goods on the UK market or intend to place on UK market in future?",
     )
 
@@ -259,6 +266,7 @@ class CFSSchedule(models.Model):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name="Are these goods for export only and will never be placed by you on the UK market?",
     )
 
@@ -266,6 +274,7 @@ class CFSSchedule(models.Model):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name="Are any of the products raw materials?",
         help_text="Only choose 'Yes' if the product is a material used in the manufacture of a finished product.",
     )
@@ -281,10 +290,12 @@ class CFSSchedule(models.Model):
         help_text="You can only list one country. Add another schedule if product information differs.",
     )
 
-    schedule_statements = models.BooleanField(
-        default=False,
-        verbose_name="Schedule Statements",
-        help_text="Select if applicable",
+    schedule_statements_accordance_with_standards = models.BooleanField(
+        default=False, verbose_name="Schedule Statements", help_text="Select if applicable"
+    )
+
+    schedule_statements_is_responsible_person = models.BooleanField(
+        default=False, help_text="Select if applicable", verbose_name=""
     )
 
     # "Manufactured at" section fields

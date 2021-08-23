@@ -29,12 +29,16 @@
   {% endcall %}
 
   {% for schedule in schedules %}
-    {% set schedule_legislations = schedule.legislations.values_list("name", flat=True) %}
+    {% set schedule_legislations = schedule.legislations.filter(is_active=True) %}
+    {% set schedule_legislation_names = schedule_legislations.values_list("name", flat=True) %}
+    {% set has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists() %}
+    {% set not_export_only = schedule.goods_export_only == "no" %}
+    {% set show_schedule_statements_is_responsible_person = has_cosmetics and not_export_only %}
 
     {% call application_section("Shedule " + loop.index|string, "view-schedule-" + loop.index|string) %}
       {{ application_field(schedule.get_exporter_status_display(), labels["exporter_status"]) }}
       {{ application_field(schedule.get_brand_name_holder_display(), labels["brand_name_holder"]) }}
-      {{ application_field(schedule_legislations|join("\n")|nl2br, labels["legislations"]) }}
+      {{ application_field(schedule_legislation_names|join("\n")|nl2br, labels["legislations"]) }}
       {{ application_field(schedule.get_product_eligibility_display(), labels["product_eligibility"]) }}
       {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
       {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
@@ -48,17 +52,33 @@
 
       <div class="row">
         <div class="three columns">
-          <label class="prompt west">{{ labels["schedule_statements"] }}</label>
+          <label class="prompt west">{{ labels["schedule_statements_accordance_with_standards"] }}</label>
         </div>
         <div class="six columns">
           <input
-            class="disabled-cb" type="checkbox" aria-label="Deactivated Firearm" disabled="disabled"
-            {{ 'checked="checked"' if schedule.schedule_statements else "" }}
+            class="disabled-cb" type="checkbox" aria-label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law" disabled="disabled"
+            {{ 'checked="checked"' if schedule.schedule_statements_accordance_with_standards else "" }}
           >
           These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law
         </div>
         <div class="three columns"></div>
       </div>
+
+      {% if show_schedule_statements_is_responsible_person %}
+        <div class="row">
+          <div class="three columns">
+            <label class="prompt west">{{ labels["schedule_statements_is_responsible_person"] }}</label>
+          </div>
+          <div class="six columns">
+            <input
+              class="disabled-cb" type="checkbox" aria-label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation." disabled="disabled"
+              {{ 'checked="checked"' if schedule.schedule_statements_is_responsible_person else "" }}
+            >
+            I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation.
+          </div>
+          <div class="three columns"></div>
+        </div>
+      {% endif %}
     {% endcall %}
 
     {% call application_section("Manufactured At") %}

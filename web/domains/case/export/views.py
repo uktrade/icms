@@ -59,6 +59,7 @@ from .models import (
     ExportApplication,
     ExportApplicationType,
     GMPFile,
+    ProductLegislation,
 )
 from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
@@ -334,6 +335,17 @@ def cfs_edit_schedule(
         else:
             form = EditCFScheduleForm(instance=schedule)
 
+        schedule_legislations = schedule.legislations.filter(is_active=True)
+
+        has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()
+        not_export_only = schedule.goods_export_only == YesNoChoices.no
+        show_schedule_statements_is_responsible_person = has_cosmetics and not_export_only
+
+        legislation_config = {
+            legislation.pk: {"isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation}
+            for legislation in ProductLegislation.objects.filter(is_active=True)
+        }
+
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
@@ -344,8 +356,10 @@ def cfs_edit_schedule(
             "is_biocidal": schedule.is_biocidal(),
             "products": schedule.products.order_by("pk").all(),
             "product_upload_form": ProductsFileUploadForm(),
-            "has_legislation": schedule.legislations.exists(),
+            "has_legislation": schedule_legislations.exists(),
             "case_type": "export",
+            "legislation_config": legislation_config,
+            "show_schedule_statements_is_responsible_person": show_schedule_statements_is_responsible_person,
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)

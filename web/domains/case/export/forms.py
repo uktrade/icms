@@ -238,13 +238,20 @@ class EditCFScheduleForm(forms.ModelForm):
             "any_raw_materials",
             "final_product_end_use",
             "country_of_manufacture",
-            "schedule_statements",
+            "schedule_statements_accordance_with_standards",
+            "schedule_statements_is_responsible_person",
         )
 
         widgets = {
+            "exporter_status": icms_widgets.RadioSelect,
+            "brand_name_holder": icms_widgets.RadioSelect,
+            "product_eligibility": icms_widgets.RadioSelect,
+            "goods_placed_on_uk_market": icms_widgets.RadioSelect,
+            "goods_export_only": icms_widgets.RadioSelect,
+            "any_raw_materials": icms_widgets.RadioSelect,
             "legislations": Select2MultipleWidget(
                 attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
-            )
+            ),
         }
 
     def clean(self):
