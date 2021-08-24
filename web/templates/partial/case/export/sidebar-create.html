@@ -1,13 +1,7 @@
 <ul class="menu-out">
-  <li>
-    <a href="{{ icms_url('export:create-application', kwargs={'type_code': "cfs" }) }}">Certificate of Free Sale</a>
-  </li>
-  <li>
-    <a href="{{ icms_url('export:create-application', kwargs={'type_code': "com" }) }}">Certificate of
-      Manufacture</a>
-  </li>
-  <li>
-    <a href="{{ icms_url('export:create-application', kwargs={'type_code': "gmp" }) }}">Certificate of
-      Good Manufacturing Practice</a>
-  </li>
+  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "cfs" }), 'Certificate of Free Sale') }}
+
+  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "com" }), 'Certificate of Manufacture') }}
+
+  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "gmp" }), 'Certificate of Good Manufacturing Practice') }}
 </ul>

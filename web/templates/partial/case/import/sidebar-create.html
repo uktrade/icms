@@ -1,54 +1,34 @@
 <ul class="menu-out">
     <h5>Firearms and Ammunition</h5>
 
-    <li>
-        <a href="{{ icms_url('import:create-fa-dfl') }}">Deactivated Firearms Licence</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-fa-dfl'), 'Deactivated Firearms Licence') }}
 
-    <li>
-        <a href="{{ icms_url('import:create-fa-oil') }}">Open Individual Import Licence</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-fa-oil'), 'Open Individual Import Licence') }}
 
-    <li>
-        <a href="{{ icms_url('import:create-fa-sil') }}">Specific Individual Import Licence</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-fa-sil'), 'Specific Individual Import Licence') }}
 
     <h5>Other</h5>
 
-    <li>
-        <a href="{{ icms_url('import:create-derogations') }}">Derogation from Sanctions Import Ban</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-derogations'), 'Derogation from Sanctions Import Ban') }}
 
     {% if show_ironsteel %}
-    <li>
-      <a href="{{ icms_url('import:create-ironsteel') }}">Iron and Steel (Quota)</a>
-    </li>
+      {{ icms_link(request, icms_url('import:create-ironsteel'), 'Iron and Steel (Quota)') }}
     {% endif %}
 
     {% if show_opt %}
-    <li>
-      <a href="{{ icms_url('import:create-opt') }}">Outward Processing Trade</a>
-    </li>
+      {{ icms_link(request, icms_url('import:create-opt'), 'Outward Processing Trade') }}
     {% endif %}
 
     {% if show_sps %}
-    <li>
-      <a href="{{ icms_url('import:create-sps') }}">Prior Surveillance</a>
-    </li>
+      {{ icms_link(request, icms_url('import:create-sps'), 'Prior Surveillance') }}
     {% endif %}
 
-    <li>
-        <a href="{{ icms_url('import:create-sanctions') }}">Sanctions and Adhoc Licence Application</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-sanctions'), 'Sanctions and Adhoc Licence Application') }}
 
     {% if show_textiles %}
-    <li>
-      <a href="{{ icms_url('import:create-textiles') }}">Textiles (Quota)</a>
-    </li>
+      {{ icms_link(request, icms_url('import:create-textiles'), 'Textiles (Quota)') }}
     {% endif %}
 
-    <li>
-        <a href="{{ icms_url('import:create-wood-quota') }}">Wood (Quota)</a>
-    </li>
+    {{ icms_link(request, icms_url('import:create-wood-quota'), 'Wood (Quota)') }}
 
 </ul>
