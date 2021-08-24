@@ -4950,3 +4950,7 @@ ul.radio-input {
 input.radio-input {
     top: 0;
 }
+
+.select2-results__option[aria-selected=true] {
+    display: none;
+}
