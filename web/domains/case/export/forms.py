@@ -254,6 +254,13 @@ class EditCFScheduleForm(forms.ModelForm):
             ),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["legislations"].queryset = ProductLegislation.objects.filter(
+            is_active=True
+        ).order_by("name")
+
     def clean(self):
         cleaned_data: dict[str, Any] = super().clean()
 

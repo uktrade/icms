@@ -4974,6 +4974,7 @@ input.radio-input, input.radio-input-inline {
     top: 0;
 }
 
+/* Hide the selected options from the select2 multiple lists */
 .select2-results__option[aria-selected=true] {
     display: none;
 }

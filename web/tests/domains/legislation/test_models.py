@@ -55,6 +55,4 @@ class ProductLegislationTest(TestCase):
 
     def test_string_representation(self):
         product_legisation = self.create_legislation()
-        self.assertEqual(
-            product_legisation.__str__(), f"Product Legislation ({product_legisation.name})"
-        )
+        self.assertEqual(product_legisation.__str__(), product_legisation.name)

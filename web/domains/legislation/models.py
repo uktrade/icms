@@ -24,9 +24,9 @@ class ProductLegislation(Archivable, models.Model):
 
     def __str__(self):
         if self.id:
-            return f"Product Legislation ({self.name})"
+            return self.name
         else:
-            return "Product Legislation (new) "
+            return "Product Legislation (new)"
 
     class Meta:
         ordering = (
