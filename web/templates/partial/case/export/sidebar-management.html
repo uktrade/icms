@@ -1,72 +1,41 @@
 <h4>Export Case</h4>
 <ul class="menu-out">
-  <li>
-    <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-      Case {{ process.get_reference() }}
-    </a>
-  </li>
-  {% if process.process_type == "CertificateOfFreeSaleApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-        HSE Emails
-      </a>
-    </li>
-  {% endif %}
-  {% if process.process_type == "CertificateofGoodManufacturingPractice" %}
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-        BEIS Emails
-      </a>
-    </li>
-  {% endif %}
-  <li>
-    {% with total = process.withdrawals.count(),
-            processed = process.withdrawals.exclude(status="open").count() %}
-      <a
-        href="{{ icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-        Application Withdrawals ({{ processed }}/{{ total }})
-      </a>
-    {% endwith %}
-  </li>
-  <li>
-    {% with total = process.update_requests.count(),
-    processed = process.update_requests.exclude(status="OPEN").count() %}
-      <a
-        href="{{ icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-        Application Updates ({{ processed }}/{{ total }})
-      </a>
-    {% endwith %}
-  </li>
-  <li>
-    <a href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-      {% with
-        completed=process.further_information_requests.completed().count(),
-        total=process.further_information_requests.exclude(status="DELETED").count() %}
+  {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}), process.get_reference()) }}
 
-        Further Information Requests ({{ completed }}/{{ total }})
-      {% endwith %}
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-      Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}) }}">Response Preparation</a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">Authorisation</a>
-  </li>
+  {% if process.process_type == "CertificateOfFreeSaleApplication" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'HSE Emails') }}
+
+  {% elif process.process_type == "CertificateofGoodManufacturingPractice" %}
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'BEIS Emails') }}
+  {% endif %}
+
+  {% with total = process.withdrawals.count(),
+          processed = process.withdrawals.exclude(status="open").count() %}
+    {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
+                 'Application Withdrawals (' + processed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {% with total = process.update_requests.count(),
+          processed = process.update_requests.exclude(status="OPEN").count() %}
+    {{ icms_link(request, icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
+                 'Application Updates (' + processed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {% with completed=process.further_information_requests.completed().count(),
+          total=process.further_information_requests.exclude(status="DELETED").count() %}
+    {{ icms_link(request, icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
+                 'Further Information Requests (' + completed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {{ icms_link(request, icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
+               'Case Notes (' + process.case_notes.completed().count()|string + '/' + process.case_notes.active().count()|string + ')') }}
+
+  {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
+
+  {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'Authorisation') }}
 </ul>
 
 <h4>Application</h4>
 <ul class="menu-out">
-  <li>
-    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}">
-      View Application
-    </a>
-  </li>
+  {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'View Application') }}
 </ul>

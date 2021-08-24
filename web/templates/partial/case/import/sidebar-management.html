@@ -1,147 +1,74 @@
 <h4>Case</h4>
 <ul class="menu-out">
-  <li>
-    <a
-      class="current-page"
-      href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-      {{ process.get_reference() }}
-    </a>
-  </li>
+  {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}), process.get_reference()) }}
 
   {# Specific import application links #}
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:fa-oil:manage-checklist', kwargs={'application_pk': process.pk}) }}">
-        Checklist
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Constabulary Emails
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:fa-oil:manage-checklist', kwargs={'application_pk': process.pk}), 'Checklist') }}
+
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Sanction Emails
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sanction Emails') }}
+
   {% elif process.process_type == "WoodQuotaApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:wood:manage-checklist', kwargs={'application_pk': process.pk}) }}">
-        Checklist
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:wood:manage-checklist', kwargs={'application_pk': process.pk}), 'Checklist') }}
+
   {% elif process.process_type == "DerogationsApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:derogations:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:derogations:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+
   {% elif process.process_type == "DFLApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:fa-dfl:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Constabulary Emails
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:fa-dfl:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+
   {% elif process.process_type == "SILApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:fa-sil:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
-    <li>
-      <a
-        href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Constabulary Emails
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:fa-sil:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+
+    {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Constabulary Emails') }}
+
   {% elif process.process_type == "OutwardProcessingTradeApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:opt:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:opt:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+
   {% elif process.process_type == "TextilesApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:textiles:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:textiles:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
+
   {% elif process.process_type == "ISQuotaApplication" %}
-    <li>
-      <a
-        href="{{ icms_url('import:ironsteel:manage-checklist', kwargs={"application_pk": process.pk}) }}">
-        Checklist
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('import:ironsteel:manage-checklist', kwargs={"application_pk": process.pk}), 'Checklist') }}
 
   {% endif %}
 
   {# Common import application links #}
-  <li>
-    {% with total = process.withdrawals.count(),
-            processed = process.withdrawals.exclude(status="open").count() %}
-      <a
-        href="{{ icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Application Withdrawals ({{ processed }}/{{ total }})
-      </a>
-    {% endwith %}
-  </li>
-  <li>
-    {% with total = process.update_requests.count(),
-    processed = process.update_requests.exclude(status="OPEN").count() %}
-      <a
-        href="{{ icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        Application Updates ({{ processed }}/{{ total }})
-      </a>
-    {% endwith %}
-  </li>
-  <li>
-    <a href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-      {% with
-        completed=process.further_information_requests.completed().count(),
-        total=process.further_information_requests.exclude(status="DELETED").count() %}
+  {% with total = process.withdrawals.count(),
+          processed = process.withdrawals.exclude(status="open").count() %}
+    {{ icms_link(request, icms_url('case:manage-withdrawals', kwargs={'application_pk': process.pk, 'case_type': 'import'}),
+                  'Application Withdrawals (' + processed|string + '/' + total|string + ')') }}
+  {% endwith %}
 
-        Further Information Requests ({{ completed }}/{{ total }})
-      {% endwith %}
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:list-notes', kwargs={'case_type': 'import', 'application_pk': process.pk}) }}">
-      Case Notes ({{ process.case_notes.completed().count() }}/{{process.case_notes.active().count()}})
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}) }}">Response Preparation</a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">Authorisation</a>
-  </li>
+  {% with total = process.update_requests.count(),
+          processed = process.update_requests.exclude(status="OPEN").count() %}
+    {{ icms_link(request, icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'import'}),
+        'Application Updates (' + processed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {% with completed=process.further_information_requests.completed().count(),
+          total=process.further_information_requests.exclude(status="DELETED").count() %}
+    {{ icms_link(request, icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'import'}),
+        'Further Information Requests (' + completed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {{ icms_link(request, icms_url('case:list-notes', kwargs={'case_type': 'import', 'application_pk': process.pk}),
+      'Case Notes (' + process.case_notes.completed().count()|string + '/' + process.case_notes.active().count()|string + ')') }}
+
+  {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
+
+  {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
 </ul>
 
 <h4>Application</h4>
 <ul class="menu-out">
-  <li>
-    <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-      View Application
-    </a>
-  </li>
+  {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application') }}
+
   <li>
     <a href="#">Responses</a>
   </li>

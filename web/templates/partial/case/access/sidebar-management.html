@@ -1,30 +1,16 @@
 <h4>Access Request</h4>
 {% with entity = "exporter" if process.process_type == "ExporterAccessRequest" else "importer" %}
 <ul class="menu-out">
-  <li>
-    <a href="{{ icms_url('access:case-management', args=[process.pk, entity]) }}">
-      Case {{ process.pk }}
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">
-      {% with
-        completed=process.further_information_requests.completed().count(),
-        total=process.further_information_requests.exclude(status="DELETED").count() %}
+  {{ icms_link(request, icms_url('access:case-management', args=[process.pk, entity]), 'Case ' + process.pk|string) }}
 
-        Further Information Requests ({{ completed }}/{{ total }})
-      {% endwith %}
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('access:case-management-access-approval', args=[process.pk, entity]) }}">
-      Access Approval
-    </a>
-  </li>
-  <li>
-    <a href="{{ icms_url('access:case-management-response', args=[process.pk, entity]) }}">
-      Close Access Request
-    </a>
-  </li>
+  {% with completed=process.further_information_requests.completed().count(),
+          total=process.further_information_requests.exclude(status="DELETED").count() %}
+    {{ icms_link(request, icms_url('case:manage-firs', kwargs={'application_pk': process.pk, 'case_type': 'access'}),
+                 'Further Information Requests (' + completed|string + '/' + total|string + ')') }}
+  {% endwith %}
+
+  {{ icms_link(request, icms_url('access:case-management-access-approval', args=[process.pk, entity]), 'Access Approval') }}
+
+  {{ icms_link(request, icms_url('access:case-management-response', args=[process.pk, entity]), 'Close Access Request') }}
 </ul>
 {% endwith %}

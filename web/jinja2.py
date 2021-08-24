@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Model
+from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.formats import get_format
 from jinja2 import Environment, evalcontextfilter
@@ -68,6 +69,13 @@ def modify_query(request, **new_params):
     return request.build_absolute_uri("?" + params.urlencode())
 
 
+def icms_link(request: HttpRequest, url: str, link_text: str) -> str:
+    # TODO: might have to enhance this to strip out path components after "#" from both urls
+    class_attr = "current-page" if request.path == url else ""
+
+    return Markup(f'<li class="{class_attr}"><a href="{url}">{escape(link_text)}</a></li>')
+
+
 def menu(request):
     return Menu().as_html(request)
 
@@ -83,6 +91,7 @@ def environment(**options):
         {
             "static": staticfiles_storage.url,
             "icms_url": reverse,
+            "icms_link": icms_link,
             "get_messages": messages.get_messages,
             "modify_query": modify_query,
             "menu": menu,
