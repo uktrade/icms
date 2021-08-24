@@ -7,6 +7,7 @@ from django_select2 import forms as s2forms
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity, CommodityGroup, Country
 from web.utils.commodity import get_usage_commodity_groups, get_usage_records
+from web.utils.sort import sort_integer_strings
 
 
 class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
@@ -38,7 +39,9 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
             ImportApplicationType.Types.TEXTILES  # type: ignore[arg-type]
         ).filter(country=country_of_origin)
 
-        return get_usage_commodity_groups(usage_records)
+        commodity_groups = get_usage_commodity_groups(usage_records)
+
+        return sort_integer_strings(commodity_groups, "group_code")
 
 
 class TextilesCommodityWidget(s2forms.ModelSelect2Widget):

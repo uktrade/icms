@@ -314,7 +314,8 @@ def _get_max_allocation(application: TextilesApplication) -> float:
             )
             .exclude(maximum_allocation__isnull=True)
         )
-        max_allocation = usages.last().maximum_allocation
+        latest = usages.last()
+        max_allocation = latest.maximum_allocation if latest else None
     else:
         max_allocation = None
 
