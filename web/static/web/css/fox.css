@@ -4215,8 +4215,8 @@ textarea.tight-field,
     width: auto;
 }
 
-input[type='radio'],
-input[type='checkbox'] {
+/* This changes the Licence For section of Firearms SIL */
+input[type='radio'], input[type='checkbox'] {
     position: absolute;
     top: 0.55em;
     left: 4px;
@@ -4940,14 +4940,37 @@ form .display.closed [value=withdraw] {
 }
 
 /* Remove the bullet points from the ul lists for radio inputs */
-ul.radio-input {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+ul.radio-input, ul.radio-input-inline {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Display the radios inline */
+ul.radio-input-inline > li {
+    display: inline;
+    padding-right: 0.7em;
+}
+
+/* Adjust padding of all but the first list item */
+ul.radio-input > li:not(:first-child) > label {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+
+label.radio-label > input[type='radio'],
+label.radio-label > input[type='checkbox'] {
+    position: absolute;
+    top: 0.55em;
+    left: 0;
+    margin: 0;
+    border: none;
+    padding: 0;
 }
 
 /* Bring the radio button in line with the associated label */
-input.radio-input {
+input.radio-input, input.radio-input-inline {
     top: 0;
 }
 

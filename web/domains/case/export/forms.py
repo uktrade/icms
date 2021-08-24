@@ -244,11 +244,11 @@ class EditCFScheduleForm(forms.ModelForm):
 
         widgets = {
             "exporter_status": icms_widgets.RadioSelect,
-            "brand_name_holder": icms_widgets.RadioSelect,
+            "brand_name_holder": icms_widgets.RadioSelectInline,
             "product_eligibility": icms_widgets.RadioSelect,
-            "goods_placed_on_uk_market": icms_widgets.RadioSelect,
-            "goods_export_only": icms_widgets.RadioSelect,
-            "any_raw_materials": icms_widgets.RadioSelect,
+            "goods_placed_on_uk_market": icms_widgets.RadioSelectInline,
+            "goods_export_only": icms_widgets.RadioSelectInline,
+            "any_raw_materials": icms_widgets.RadioSelectInline,
             "legislations": Select2MultipleWidget(
                 attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
             ),
