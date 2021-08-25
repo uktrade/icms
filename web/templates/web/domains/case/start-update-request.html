@@ -3,16 +3,10 @@
 
 {% block sidebar %}
   <ul class="menu-out">
-    <li>
-        <a href="{{ icms_url('case:start-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': 'import'}) }}">
-          Application Updates
-        </a>
-    </li>
-    <li>
-      <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}">
-        View Application
-      </a>
-    </li>
+    {{ icms_link(request, icms_url('case:start-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type}),
+                 'Application Updates') }}
+
+    {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Application') }}
   </ul>
 {% endblock %}
 
