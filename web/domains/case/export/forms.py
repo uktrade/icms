@@ -326,6 +326,7 @@ class CFSManufacturerDetailsForm(forms.ModelForm):
 
         widgets = {
             "manufacturer_address": forms.Textarea,
+            "manufacturer_address_entry_type": icms_widgets.RadioSelectInline,
         }
 
     def __init__(self, *args, **kwargs):
@@ -470,15 +471,17 @@ class EditGMPForm(forms.ModelForm):
         )
 
         widgets = {
-            "is_manufacturer": icms_widgets.RadioSelect,
-            "is_responsible_person": icms_widgets.RadioSelect,
+            "is_manufacturer": icms_widgets.RadioSelectInline,
+            "is_responsible_person": icms_widgets.RadioSelectInline,
             "manufacturer_address": forms.Textarea,
             "manufacturer_country": icms_widgets.RadioSelect,
+            "manufacturer_address_entry_type": icms_widgets.RadioSelectInline,
+            "responsible_person_address_entry_type": icms_widgets.RadioSelectInline,
             "responsible_person_address": forms.Textarea,
             "responsible_person_country": icms_widgets.RadioSelect,
             "gmp_certificate_issued": icms_widgets.RadioSelect,
-            "auditor_accredited": icms_widgets.RadioSelect,
-            "auditor_certified": icms_widgets.RadioSelect,
+            "auditor_accredited": icms_widgets.RadioSelectInline,
+            "auditor_certified": icms_widgets.RadioSelectInline,
         }
 
     def __init__(self, *args, **kwargs):

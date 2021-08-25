@@ -2,7 +2,8 @@ window.addEventListener('load', (event) => {
   const addressEntries = document.querySelectorAll("div[name='address_entry_form']");
 
   addressEntries.forEach((node) => {
-    const addressTypeSelect = node.querySelector("div[name='address_type_field'] select");
+    const addressTypeSearch = node.querySelector("div[name='address_type_field'] input[value='S']");
+    const addressTypeManual = node.querySelector("div[name='address_type_field'] input[value='M']");
     const addressInput = node.querySelector("div[name='address_field'] textarea");
     const postcodeInputDiv = node.querySelector("div[name='postcode_field'] div.input-group");
     const postcodeInput = node.querySelector("div[name='postcode_field'] input");
@@ -16,14 +17,22 @@ window.addEventListener('load', (event) => {
     let postcodeSearchDelay;
 
     // Setup listeners
-    addressTypeSelect.addEventListener("change", (e) => {
+    addressTypeSearch.addEventListener("change", (e) => {
       clearTimeout(postcodeSearchDelay);
-      let type = e.target.value;
+      let checked = e.target.checked;
 
       // Set readonly depending on search type.
-      addressInput.readOnly = type === SEARCH
+      addressInput.readOnly = checked;
+    });
 
-      if (type !== "search") {
+    addressTypeManual.addEventListener("change", (e) => {
+      clearTimeout(postcodeSearchDelay);
+      let checked = e.target.checked;
+
+      // Set readonly depending on search type.
+      addressInput.readOnly = !checked;
+
+      if (checked) {
         setAddressSelectDisplay(selectAddressWrapper, "none")
       }
     });
@@ -33,7 +42,7 @@ window.addEventListener('load', (event) => {
 
       postcodeSearchDelay = setTimeout(() => {
         const postcode = postcodeInput.value;
-        if (addressTypeSelect.value !== SEARCH) {
+        if (addressTypeManual.checked) {
           return;
         }
 
@@ -58,7 +67,7 @@ window.addEventListener('load', (event) => {
     });
 
     selectAddress.addEventListener("change", (e) => {
-      if (addressTypeSelect.value !== SEARCH) {
+      if (addressTypeManual.checked) {
         return;
       }
       addressInput.value = e.target.value;
