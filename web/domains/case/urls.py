@@ -1,8 +1,12 @@
 from django.urls import include, path
 
-from . import views
+from . import views, views_search
 
 app_name = "case"
+
+search_urls = [
+    path("", views_search.search_cases, name="search"),
+]
 
 note_urls = [
     path("list/", views.list_notes, name="list-notes"),
@@ -152,37 +156,48 @@ email_urls = [
 
 urlpatterns = [
     path(
-        "<casetype:case_type>/<int:application_pk>/",
+        "<casetype:case_type>/",
         include(
             [
-                # Common to applicant/ILB Admin (import/export/accessrequest)
-                path("view/", views.view_case, name="view"),
+                # search (import/export)
+                path("search/", include(search_urls)),
                 #
-                # further information requests ((import/export/accessrequest))
-                path("firs/", include(further_information_requests_urls)),
-                #
-                # applicant case management
-                path("applicant/", include(applicant_urls)),
-                #
-                # ILB Admin Case management (import/export)
-                path("admin/", include(admin_urls)),
-                #
-                # update requests
-                # TODO: implement importer/exporter response: (ICMSLST-679)
-                path("update-requests/", include(update_requests_urls)),
-                #
-                # notes (import/export)
-                path("notes/", include(note_urls)),
-                #
-                # misc stuff (import/export)
-                path("prepare-response/", views.prepare_response, name="prepare-response"),
-                #
-                # Application Authorisation (import/export)
-                path("authorisation/", include(authorisation_urls)),
-                #
-                # Emails (import/export)
-                path("emails/", include(email_urls)),
+                path(
+                    "<int:application_pk>/",
+                    include(
+                        [
+                            # Common to applicant/ILB Admin (import/export/accessrequest)
+                            path("view/", views.view_case, name="view"),
+                            #
+                            # further information requests ((import/export/accessrequest))
+                            path("firs/", include(further_information_requests_urls)),
+                            #
+                            # applicant case management
+                            path("applicant/", include(applicant_urls)),
+                            #
+                            # ILB Admin Case management (import/export)
+                            path("admin/", include(admin_urls)),
+                            #
+                            # update requests
+                            path("update-requests/", include(update_requests_urls)),
+                            #
+                            # notes (import/export)
+                            path("notes/", include(note_urls)),
+                            #
+                            # misc stuff (import/export)
+                            path(
+                                "prepare-response/", views.prepare_response, name="prepare-response"
+                            ),
+                            #
+                            # Application Authorisation (import/export)
+                            path("authorisation/", include(authorisation_urls)),
+                            #
+                            # Emails (import/export)
+                            path("emails/", include(email_urls)),
+                        ]
+                    ),
+                ),
             ]
         ),
-    ),
+    )
 ]

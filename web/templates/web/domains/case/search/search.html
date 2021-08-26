@@ -1,0 +1,50 @@
+{% extends "layout/no-sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block main_content %}
+<div class="no-sidebar" id="content">
+    <div id="content-ie8-float">
+        <div id="form-container">
+            {% call forms.form(method='post', csrf_input=csrf_input) %}
+
+              {% block form_fields %}
+
+              {% if case_type == "import" %}
+                {{ fields.field(form.case_ref, show_optional_indicator=False) }}
+                {{ fields.field(form.licence_ref, show_optional_indicator=False) }}
+                {{ fields.field(form.application_type, show_optional_indicator=False) }}
+                {{ fields.field(form.status, show_optional_indicator=False) }}
+                {{ fields.field(form.decision, show_optional_indicator=False) }}
+              {% else %}
+                {{ fields.field(form.case_ref, show_optional_indicator=False) }}
+                {{ fields.field(form.licence_ref, show_optional_indicator=False) }}
+                {{ fields.field(form.application_type, show_optional_indicator=False) }}
+                {{ fields.field(form.status, show_optional_indicator=False) }}
+                {{ fields.field(form.decision, show_optional_indicator=False) }}
+            {% endif %}
+              {% endblock %}
+
+            <div class="clearBoth"></div>
+                <div class="container">
+                  <div class="row">
+                    <div class="four columns"> </div>
+                    <div class="four columns">
+                      <ul class="menu-out flow-across">
+                        <li>
+                          <button type="submit" class="primary-button button">
+                            Search
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="four columns"> </div>
+                  </div>
+                </div>
+            {% endcall %}
+        </div>
+        <div class="content-actions"></div>
+
+    </div>
+</div>
+{% endblock %}

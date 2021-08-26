@@ -7,12 +7,12 @@ from django.urls import resolve, reverse
 logger = logging.getLogger(__name__)
 
 
-def url(view_name):
+def url(view_name, kwargs):
     """
     Reverse view name and return resolved url
     """
     if view_name:
-        return reverse(view_name)
+        return reverse(view_name, kwargs=kwargs)
 
     return ""
 
@@ -25,7 +25,7 @@ def has_view_access(request, view_name):
         return True
 
     # TODO: ICMSLST-705 do this properly somehow (see comment on line 157)
-    if view_name == "workbasket":
+    if view_name in ("workbasket", "case:search"):
         return True
 
     url = reverse(view_name)
@@ -59,17 +59,22 @@ class MenuItem:
 
 
 class MenuLink(MenuItem):
-    def __init__(self, label=None, view=None):
+    def __init__(self, label=None, view=None, kwargs=None):
         super().__init__(label)
+
         self.view = view
+        self.kwargs = kwargs
 
     def has_access(self, request):
         return has_view_access(request, self.view)
 
+    def get_link(self):
+        return url(self.view, self.kwargs)
+
     def as_html(self, request):
         return f"""
             <li class="top-menu-action">
-              <a href="{url(self.view)}">{self.label}</a>
+              <a href="{self.get_link()}">{self.label}</a>
             </li>
         """
 
@@ -78,7 +83,7 @@ class MenuButton(MenuLink):
     def as_html(self, request):
         return f"""
             <li class="top-menu-button">
-                <a href="{url(self.view) }" class="primary-button button" style="height:33px;line-height: 33px;">
+                <a href="{self.get_link()}" class="primary-button button" style="height:33px;line-height: 33px;">
                     {self.label}
                 </a>
             </li>
@@ -89,7 +94,7 @@ class SubMenuLink(MenuLink):
     def as_html(self, request):
         return f"""
             <li class="top-menu-subcategory-action">
-                <a href="{url(self.view)}">{self.label}</a>
+                <a href="{self.get_link()}">{self.label}</a>
             </li>
         """
 
@@ -173,8 +178,16 @@ class Menu:
             sub_menu_list=[
                 SubMenu(
                     links=[
-                        SubMenuLink(label="Search Import Applications"),
-                        SubMenuLink(label="Search Certificate Applications"),
+                        SubMenuLink(
+                            label="Search Import Applications",
+                            view="case:search",
+                            kwargs={"case_type": "import"},
+                        ),
+                        SubMenuLink(
+                            label="Search Certificate Applications",
+                            view="case:search",
+                            kwargs={"case_type": "export"},
+                        ),
                     ]
                 ),
             ],
