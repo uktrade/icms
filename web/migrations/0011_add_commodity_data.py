@@ -29,7 +29,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -45,7 +45,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -61,7 +61,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -77,7 +77,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -93,7 +93,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -109,7 +109,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -125,7 +125,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -141,7 +141,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -157,7 +157,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -173,7 +173,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -189,7 +189,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -205,7 +205,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -221,7 +221,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -237,7 +237,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -253,7 +253,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -269,7 +269,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -285,7 +285,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -301,7 +301,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -317,7 +317,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -827,7 +827,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -843,7 +843,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -859,7 +859,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -875,7 +875,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -891,7 +891,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -907,7 +907,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -923,7 +923,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -939,7 +939,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -955,7 +955,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -971,7 +971,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -987,7 +987,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1003,7 +1003,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1019,7 +1019,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1035,7 +1035,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1051,7 +1051,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1067,7 +1067,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1083,7 +1083,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1099,7 +1099,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1306,7 +1306,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1322,7 +1322,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1338,7 +1338,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1354,7 +1354,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1370,7 +1370,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1386,7 +1386,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1402,7 +1402,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1418,7 +1418,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1434,7 +1434,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1450,7 +1450,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1466,7 +1466,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1482,7 +1482,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1498,7 +1498,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1514,7 +1514,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1530,7 +1530,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1546,7 +1546,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1562,7 +1562,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1594,7 +1594,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1610,7 +1610,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1626,7 +1626,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1642,7 +1642,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1658,7 +1658,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1674,7 +1674,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1690,7 +1690,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1706,7 +1706,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1722,7 +1722,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1738,7 +1738,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1754,7 +1754,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1770,7 +1770,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1786,7 +1786,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1802,7 +1802,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1818,7 +1818,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1834,7 +1834,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1850,7 +1850,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1866,7 +1866,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1882,7 +1882,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1898,7 +1898,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1914,7 +1914,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1930,7 +1930,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1946,7 +1946,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1962,7 +1962,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -1978,7 +1978,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2295,7 +2295,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2311,7 +2311,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2327,7 +2327,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2343,7 +2343,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2359,7 +2359,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2375,7 +2375,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2391,7 +2391,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2407,7 +2407,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2423,7 +2423,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2439,7 +2439,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2455,7 +2455,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2471,7 +2471,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2487,7 +2487,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2503,7 +2503,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2519,7 +2519,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2535,7 +2535,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2551,7 +2551,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2567,7 +2567,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2583,7 +2583,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2599,7 +2599,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2615,7 +2615,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2631,7 +2631,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2647,7 +2647,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2663,7 +2663,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2679,7 +2679,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2695,7 +2695,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2711,7 +2711,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2727,7 +2727,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2743,7 +2743,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2759,7 +2759,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2775,7 +2775,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2791,7 +2791,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2807,7 +2807,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2823,7 +2823,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -2987,7 +2987,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3003,7 +3003,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3019,7 +3019,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3035,7 +3035,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3051,7 +3051,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3067,7 +3067,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3083,7 +3083,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3099,7 +3099,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3115,7 +3115,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3131,7 +3131,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3147,7 +3147,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3163,7 +3163,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3179,7 +3179,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3195,7 +3195,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3211,7 +3211,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3227,7 +3227,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3243,7 +3243,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3259,7 +3259,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3275,7 +3275,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3291,7 +3291,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3307,7 +3307,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3323,7 +3323,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3339,7 +3339,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3355,7 +3355,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3371,7 +3371,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3387,7 +3387,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3403,7 +3403,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3419,7 +3419,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3435,7 +3435,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3451,7 +3451,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3467,7 +3467,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3483,7 +3483,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3499,7 +3499,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3515,7 +3515,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3531,7 +3531,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3547,7 +3547,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3563,7 +3563,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3579,7 +3579,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3595,7 +3595,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3611,7 +3611,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3627,7 +3627,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3643,7 +3643,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3919,7 +3919,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3935,7 +3935,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3951,7 +3951,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3967,7 +3967,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3983,7 +3983,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -3999,7 +3999,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4015,7 +4015,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4031,7 +4031,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4047,7 +4047,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4063,7 +4063,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4079,7 +4079,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4095,7 +4095,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4111,7 +4111,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4127,7 +4127,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4143,7 +4143,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-NOV-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4159,7 +4159,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-NOV-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4175,7 +4175,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4191,7 +4191,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4207,7 +4207,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4223,7 +4223,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4239,7 +4239,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4255,7 +4255,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4271,7 +4271,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4441,7 +4441,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4457,7 +4457,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4473,7 +4473,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4489,7 +4489,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4505,7 +4505,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4521,7 +4521,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4537,7 +4537,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4553,7 +4553,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4569,7 +4569,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4585,7 +4585,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4601,7 +4601,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("16-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4617,7 +4617,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4633,7 +4633,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4649,7 +4649,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4665,7 +4665,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4681,7 +4681,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4697,7 +4697,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4713,7 +4713,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4729,7 +4729,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4745,7 +4745,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4761,7 +4761,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4777,7 +4777,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4793,7 +4793,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("06-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4809,7 +4809,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4825,7 +4825,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4841,7 +4841,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4857,7 +4857,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4873,7 +4873,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4889,7 +4889,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4905,7 +4905,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4921,7 +4921,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4937,7 +4937,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4953,7 +4953,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4969,7 +4969,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -4985,7 +4985,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5001,7 +5001,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5017,7 +5017,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5033,7 +5033,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("14-DEC-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5049,7 +5049,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5065,7 +5065,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5081,7 +5081,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5097,7 +5097,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5113,7 +5113,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5129,7 +5129,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5145,7 +5145,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5161,7 +5161,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5177,7 +5177,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5193,7 +5193,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5209,7 +5209,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("25-MAY-2018", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5225,7 +5225,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5241,7 +5241,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5257,7 +5257,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5273,7 +5273,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5289,7 +5289,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5305,7 +5305,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5321,7 +5321,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5337,7 +5337,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5353,7 +5353,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5369,7 +5369,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5385,7 +5385,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5401,7 +5401,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5417,7 +5417,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5433,7 +5433,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5449,7 +5449,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5465,7 +5465,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("11-OCT-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5481,7 +5481,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("11-OCT-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5497,7 +5497,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5513,7 +5513,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="SPS",
@@ -5529,7 +5529,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5545,7 +5545,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5730,7 +5730,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5746,7 +5746,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5762,7 +5762,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5778,7 +5778,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5794,7 +5794,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5810,7 +5810,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5826,7 +5826,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5842,7 +5842,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5858,7 +5858,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5874,7 +5874,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5890,7 +5890,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5906,7 +5906,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5922,7 +5922,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5938,7 +5938,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5954,7 +5954,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5970,7 +5970,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -5986,7 +5986,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6002,7 +6002,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6018,7 +6018,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6034,7 +6034,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6050,7 +6050,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="SPS",
@@ -6066,7 +6066,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6082,7 +6082,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6098,7 +6098,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6114,7 +6114,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6130,7 +6130,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6183,7 +6183,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6199,7 +6199,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6215,7 +6215,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6231,7 +6231,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6247,7 +6247,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6263,7 +6263,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6279,7 +6279,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6295,7 +6295,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6311,7 +6311,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6327,7 +6327,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6343,7 +6343,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6359,7 +6359,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6375,7 +6375,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6391,7 +6391,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6407,7 +6407,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6423,7 +6423,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6439,7 +6439,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6455,7 +6455,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6471,7 +6471,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6487,7 +6487,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6503,7 +6503,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6519,7 +6519,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6535,7 +6535,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6551,7 +6551,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6567,7 +6567,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6583,7 +6583,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6599,7 +6599,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6615,7 +6615,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6631,7 +6631,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6647,7 +6647,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6663,7 +6663,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6679,7 +6679,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6721,7 +6721,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("12-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6737,7 +6737,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6753,7 +6753,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6852,7 +6852,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6868,7 +6868,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6884,7 +6884,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6900,7 +6900,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6916,7 +6916,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6932,7 +6932,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6948,7 +6948,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6964,7 +6964,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6980,7 +6980,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -6996,7 +6996,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7012,7 +7012,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7028,7 +7028,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7044,7 +7044,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7060,7 +7060,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7076,7 +7076,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7092,7 +7092,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7108,7 +7108,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7124,7 +7124,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7140,7 +7140,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7156,7 +7156,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7172,7 +7172,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7188,7 +7188,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7204,7 +7204,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7220,7 +7220,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7236,7 +7236,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7252,7 +7252,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7268,7 +7268,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7284,7 +7284,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7300,7 +7300,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7316,7 +7316,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7332,7 +7332,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7348,7 +7348,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7364,7 +7364,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7380,7 +7380,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7433,7 +7433,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("12-JAN-2017", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7619,7 +7619,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7635,7 +7635,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7651,7 +7651,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7667,7 +7667,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7683,7 +7683,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7699,7 +7699,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7715,7 +7715,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7731,7 +7731,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7747,7 +7747,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7763,7 +7763,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7779,7 +7779,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7795,7 +7795,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7811,7 +7811,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7827,7 +7827,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7843,7 +7843,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7859,7 +7859,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7875,7 +7875,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7891,7 +7891,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7907,7 +7907,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7923,7 +7923,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7939,7 +7939,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("11-OCT-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7955,7 +7955,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("11-OCT-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7971,7 +7971,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -7987,7 +7987,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8003,7 +8003,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8019,7 +8019,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8035,7 +8035,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8051,7 +8051,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8067,7 +8067,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8083,7 +8083,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8151,7 +8151,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8306,7 +8306,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8322,7 +8322,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8338,7 +8338,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8354,7 +8354,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8370,7 +8370,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("21-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8386,7 +8386,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8402,7 +8402,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8418,7 +8418,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8434,7 +8434,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8450,7 +8450,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8466,7 +8466,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8482,7 +8482,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8498,7 +8498,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8514,7 +8514,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8530,7 +8530,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8546,7 +8546,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8562,7 +8562,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8578,7 +8578,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8594,7 +8594,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8610,7 +8610,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8626,7 +8626,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8642,7 +8642,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8658,7 +8658,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8674,7 +8674,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8690,7 +8690,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("18-DEC-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8706,7 +8706,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8722,7 +8722,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8738,7 +8738,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8754,7 +8754,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8770,7 +8770,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8786,7 +8786,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8802,7 +8802,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8818,7 +8818,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8834,7 +8834,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8850,7 +8850,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8866,7 +8866,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8882,7 +8882,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8898,7 +8898,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8914,7 +8914,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8930,7 +8930,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -8946,7 +8946,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9117,7 +9117,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9133,7 +9133,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9149,7 +9149,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9165,7 +9165,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9181,7 +9181,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9197,7 +9197,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9213,7 +9213,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9229,7 +9229,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9245,7 +9245,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9261,7 +9261,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("25-MAY-2018", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9277,7 +9277,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9293,7 +9293,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9309,7 +9309,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9325,7 +9325,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9341,7 +9341,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9357,7 +9357,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9373,7 +9373,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9389,7 +9389,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9405,7 +9405,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9421,7 +9421,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9437,7 +9437,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9453,7 +9453,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9469,7 +9469,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9485,7 +9485,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9501,7 +9501,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9517,7 +9517,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9533,7 +9533,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9549,7 +9549,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("20-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9565,7 +9565,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9581,7 +9581,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9597,7 +9597,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9613,7 +9613,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9629,7 +9629,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("17-AUG-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9645,7 +9645,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9661,7 +9661,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("02-NOV-2015", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9677,7 +9677,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9693,7 +9693,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9709,7 +9709,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9725,7 +9725,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9741,7 +9741,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9757,7 +9757,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("01-JAN-2013", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9773,7 +9773,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("15-DEC-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
@@ -9789,7 +9789,7 @@ def add_commodities(apps, schema_editor):
                     datetime.strptime("19-APR-2016", DATE_FORMAT), is_dst=None
                 ),
                 validity_end_date=pytz.timezone("UTC").localize(
-                    datetime.strptime("01-FEB-2019", DATE_FORMAT), is_dst=None
+                    datetime.strptime("01-FEB-2023", DATE_FORMAT), is_dst=None
                 ),
                 quantity_threshold=2500,
                 sigl_product_type="STE",
