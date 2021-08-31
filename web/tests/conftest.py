@@ -129,7 +129,7 @@ def agent_importer(importer):
         is_active=True,
         type=Importer.INDIVIDUAL,
         region_origin=Importer.UK,
-        name="UK based importer",
+        name="UK based agent importer",
         main_importer=importer,
     )
 

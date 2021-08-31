@@ -38,7 +38,9 @@ class Command(BaseCommand):
         self.create_importer_user(importer, "test_import_user")
         self.create_importer_user(importer, "importer_contact")
 
-        agent_importer = self.create_importer(main_importer=importer)
+        agent_importer = self.create_importer(
+            main_importer=importer, name="UK based agent importer"
+        )
         self.create_agent_importer_user(importer, agent_importer, "test_agent_import_user")
 
         # Exporter
@@ -156,7 +158,7 @@ class Command(BaseCommand):
 
         return user
 
-    def create_importer(self, main_importer=None):
+    def create_importer(self, main_importer=None, name="UK based importer"):
         office, _ = Office.objects.get_or_create(
             is_active=True, address="47 some way, someplace", postcode="S410SG"
         )
@@ -165,7 +167,7 @@ class Command(BaseCommand):
             is_active=True,
             type=Importer.INDIVIDUAL,
             region_origin=Importer.UK,
-            name="UK based importer",
+            name=name,
             main_importer=main_importer,
         )
 
