@@ -157,7 +157,8 @@ def get_application_current_task(
             return application.get_task(application.Statuses.SUBMITTED, task_type)
 
     raise NotImplementedError(
-        "State not supporter for app: {application}, case type {case_type} and task type {task_type}."
+        f"State not supported for app: '{application.process_type}', case type: '{case_type}'"
+        f" and task type: '{task_type}'."
     )
 
 

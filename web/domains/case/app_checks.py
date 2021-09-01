@@ -14,6 +14,7 @@ from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplicat
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.forms import ChecklistBaseForm
+from web.domains.case._import.ironsteel.forms import IronSteelChecklistForm
 from web.domains.case._import.ironsteel.models import IronSteelApplication
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.forms import OPTChecklistForm
@@ -273,7 +274,7 @@ def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]
 
     errors.append(
         _get_checklist_errors(
-            application, "import:ironsteel:manage-checklist", TextilesChecklistForm
+            application, "import:ironsteel:manage-checklist", IronSteelChecklistForm
         )
     )
 
