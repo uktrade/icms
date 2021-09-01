@@ -1,0 +1,37 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">
+          Workbasket
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {# TODO: ICMSLST-952 - Check values for this field #}
+  {{ application_field("Response", "Document Set Title") }}
+
+  <h3>Document Packs</h3>
+  {# TODO: ICMSLST-952 #}
+
+  <h3>Sign & Authorise</h3>
+  <div class="info-box info-box-info">
+    <div class="screen-reader-only">Information box,</div>
+    Please re-enter your password to digitally sign and authorise these documents.
+  </div>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ fields.field(form.password) }}
+    <input type="submit" name="action" class="primary-button button" value="Sign and Authorise" />
+  {% endcall %}
+
+{% endblock %}

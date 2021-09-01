@@ -365,7 +365,11 @@ class ApplicationBase(WorkbasketBase, Process):
         elif self.status == self.Statuses.PROCESSING:
             # TODO: implement this
             admin_actions.append(
-                WorkbasketAction(is_post=False, name="Authorise Documents", url="#TODO")
+                WorkbasketAction(
+                    is_post=False,
+                    name="Authorise Documents",
+                    url=reverse("case:authorise-documents", kwargs=kwargs),
+                )
             )
 
             admin_actions.append(
@@ -376,6 +380,9 @@ class ApplicationBase(WorkbasketBase, Process):
                 )
             )
 
+            admin_actions.append(view_action)
+
+        elif self.status == self.Statuses.COMPLETED:
             admin_actions.append(view_action)
 
         return admin_actions

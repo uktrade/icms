@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
@@ -149,6 +150,8 @@ def get_application_current_task(
             return application.get_task(
                 [application.Statuses.IN_PROGRESS, application.Statuses.UPDATE_REQUESTED], task_type
             )
+        elif task_type == "authorise":
+            return application.get_task(application.Statuses.PROCESSING, task_type)
     elif case_type == "access":
         if task_type == "process":
             return application.get_task(application.Statuses.SUBMITTED, task_type)
@@ -2106,6 +2109,12 @@ def start_authorisation(
             application.status = model_class.Statuses.PROCESSING
             application.save()
 
+            task.is_active = False
+            task.finished = timezone.now()
+            task.save()
+
+            Task.objects.create(process=application, task_type="authorise", previous=task)
+
             return redirect(reverse("workbasket"))
 
         else:
@@ -2125,6 +2134,58 @@ def start_authorisation(
 
 
 @login_required
+@sensitive_post_parameters("password")
+@permission_required("web.reference_data_access", raise_exception=True)
+def authorise_documents(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        task = get_application_current_task(application, case_type, "authorise")
+
+        if request.POST:
+            form = forms.AuthoriseForm(data=request.POST, request=request)
+
+            if form.is_valid():
+                # TODO: ICMSLST-809 Check validation that is needed when generating license file
+                application.status = model_class.Statuses.COMPLETED
+                application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.owner = request.user
+                task.save()
+
+                messages.success(
+                    request,
+                    f"Authorise Success: Application {application.reference} has been authorised",
+                )
+                return redirect(reverse("workbasket"))
+        else:
+            form = forms.AuthoriseForm(request=request)
+
+        context = {
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "case_type": case_type,
+            "process": application,
+            "task": task,
+            "page_title": get_page_title(case_type, application, "Authorisation"),
+            "form": form,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/authorise-documents.html",
+            context=context,
+        )
+
+
+@login_required
 @permission_required("web.reference_data_access", raise_exception=True)
 @require_POST
 def cancel_authorisation(
@@ -2137,10 +2198,17 @@ def cancel_authorisation(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, "process")
+        task = get_application_current_task(application, case_type, "authorise")
 
         application.status = model_class.Statuses.SUBMITTED
         application.save()
+
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = request.user
+        task.save()
+
+        Task.objects.create(process=application, task_type="process", previous=task)
 
         return redirect(reverse("workbasket"))
 

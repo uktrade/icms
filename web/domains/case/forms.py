@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any
 
 from django import forms
+from django.contrib.auth import authenticate
 from django_select2 import forms as s2forms
 from guardian.shortcuts import get_users_with_perms
 
@@ -9,6 +10,7 @@ from web.domains.case.export.models import ExportApplication
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.models import User
+from web.types import AuthenticatedHttpRequest
 
 from .models import (
     CASE_NOTE_STATUSES,
@@ -99,6 +101,29 @@ class WithdrawResponseForm(forms.ModelForm):
             and cleaned_data.get("response") == ""
         ):
             self.add_error("response", "This field is required when Withdrawal is refused")
+
+
+class AuthoriseForm(forms.Form):
+    password = forms.CharField(strip=False, widget=forms.widgets.PasswordInput)
+
+    def __init__(self, *args, request: AuthenticatedHttpRequest, **kwargs) -> None:
+        self.request = request
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self) -> str:
+        password = self.cleaned_data["password"]
+        user = self.request.user
+
+        if user.account_status == User.SUSPENDED:
+            self.add_error("password", "User account has been suspended.")
+            return password
+
+        user_cache = authenticate(self.request, username=user.username, password=password)
+
+        if user_cache is None:
+            self.add_error("password", "Please enter your password.")
+
+        return password
 
 
 class ResponsePreparationBaseForm(forms.ModelForm):
