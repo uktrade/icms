@@ -52,20 +52,23 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:
     """Load the SearchTerms from the form data."""
 
+    cd = form.cleaned_data
+
     return SearchTerms(
         case_type=case_type,
-        case_ref=form.data.get("case_ref", None),
-        licence_ref=form.data.get("licence_ref", None),
-        app_type=form.data.get("application_type", None),
-        # app_sub_type=form.application_type,
-        case_status=form.data.get("status", None),
-        response_decision=form.data.get("decision", None),
-        # importer_agent_name=form.case_ref,
-        # submitted_datetime_start=form.case_ref,
-        # submitted_datetime_end=form.case_ref,
-        # licence_date_start=form.case_ref,
-        # licence_date_end=form.case_ref,
-        # issue_date_start=form.case_ref,
-        # issue_date_end=form.case_ref,
-        # reassignment_search=form.case_ref,
+        case_ref=cd.get("case_ref"),
+        licence_ref=cd.get("licence_ref"),
+        app_type=cd.get("application_type"),
+        # app_sub_type=fd.get("application_type"),
+        case_status=cd.get("status"),
+        response_decision=cd.get("decision"),
+        importer_agent_name=cd.get("importer_or_agent"),
+        submitted_datetime_start=cd.get("submitted_from"),
+        submitted_datetime_end=cd.get("submitted_to"),
+        licence_date_start=cd.get("licence_from"),
+        licence_date_end=cd.get("licence_to"),
+        issue_date_start=cd.get("issue_from"),
+        issue_date_end=cd.get("issue_to"),
+        reassignment_search=cd.get("reassignment"),
+        # TODO: add all the export search fields
     )

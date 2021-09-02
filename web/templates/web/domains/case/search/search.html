@@ -16,14 +16,48 @@
                 {{ fields.field(form.application_type, show_optional_indicator=False) }}
                 {{ fields.field(form.status, show_optional_indicator=False) }}
                 {{ fields.field(form.decision, show_optional_indicator=False) }}
+                {{ fields.field(form.importer_or_agent, show_optional_indicator=False) }}
+
+                <div class="row">
+                  {{ fields.inline_field_with_label(form.submitted_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+                  {{ fields.inline_field_with_label(form.submitted_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+                </div>
+
+                <div class="row">
+                  {{ fields.inline_field_with_label(form.licence_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+                  {{ fields.inline_field_with_label(form.licence_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+                </div>
+
+                <div class="row">
+                  {{ fields.inline_field_with_label(form.issue_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+                  {{ fields.inline_field_with_label(form.issue_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+                </div>
+
+                {{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}
               {% else %}
                 {{ fields.field(form.case_ref, show_optional_indicator=False) }}
                 {{ fields.field(form.licence_ref, show_optional_indicator=False) }}
                 {{ fields.field(form.application_type, show_optional_indicator=False) }}
                 {{ fields.field(form.status, show_optional_indicator=False) }}
                 {{ fields.field(form.decision, show_optional_indicator=False) }}
-            {% endif %}
-              {% endblock %}
+                {{ fields.field(form.exporter_or_agent, show_optional_indicator=False) }}
+
+                <div class="row">
+                  {{ fields.inline_field_with_label(form.submitted_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+                  {{ fields.inline_field_with_label(form.submitted_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+                </div>
+
+                <div class="row">
+                  {{ fields.inline_field_with_label(form.closed_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+                  {{ fields.inline_field_with_label(form.closed_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+                </div>
+
+                {{ fields.field(form.cert_country, show_optional_indicator=False) }}
+                {{ fields.field(form.manufacture_country, show_optional_indicator=False) }}
+                {{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}
+              {% endif %}
+
+            {% endblock %}
 
             <div class="clearBoth"></div>
                 <div class="container">
