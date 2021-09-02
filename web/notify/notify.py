@@ -121,7 +121,7 @@ def further_information_requested(fir, contacts):
         context={"subject": fir.request_subject, "request_detail": fir.request_detail},
         # TODO: investigate web.notify.utils.get_notification_emails
         recipients=[contact.email for contact in contacts],
-        cc_list=fir.email_cc_address_list or [],
+        cc_list=fir.email_cc_address_list,
     )
 
 

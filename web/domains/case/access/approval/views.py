@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -16,17 +17,17 @@ from web.domains.case.access.approval.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
 )
-from web.domains.case.access.models import (
-    AccessRequest,
-    ExporterAccessRequest,
-    ImporterAccessRequest,
-)
+from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
+from web.domains.case.views import get_application_current_task
 from web.flow.models import Task
+from web.types import AuthenticatedHttpRequest
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def management_access_approval(request, pk, entity):
+def management_access_approval(
+    request: AuthenticatedHttpRequest, *, pk: int, entity: str
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -38,7 +39,8 @@ def management_access_approval(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
             Form = ExporterApprovalRequestForm
-        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
+
+        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         try:
             approval_request = application.approval_requests.get(is_active=True)
@@ -49,34 +51,15 @@ def management_access_approval(request, pk, entity):
             form = Form(application, data=request.POST)
             if form.is_valid():
 
-                approval_request = form.save()
+                approval_request = form.save(commit=False)
 
                 approval_request.status = ApprovalRequest.OPEN
                 approval_request.access_request = application
                 approval_request.requested_by = request.user
                 approval_request.save()
 
-                task = Task.objects.create(
-                    process=approval_request,
-                    task_type="notify_contacts",
-                    owner=approval_request.requested_from,
-                )
-
                 # TODO: Approval Request is missing email template from Oracle db
                 # to notify importer's or exporter's contacts of the request
-
-                # if requested_from has a user, give them ownership
-                if approval_request.requested_from:
-                    task.is_active = False
-                    task.finished = timezone.now()
-                    task.save()
-
-                    Task.objects.create(
-                        process=approval_request,
-                        task_type="respond",
-                        owner=approval_request.requested_from,
-                        previous=task,
-                    )
 
                 return redirect(
                     reverse(
@@ -105,7 +88,9 @@ def management_access_approval(request, pk, entity):
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def management_access_approval_withdraw(request, application_pk, entity, approval_request_pk):
+def management_access_approval_withdraw(
+    request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, approval_request_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -121,24 +106,11 @@ def management_access_approval_withdraw(request, application_pk, entity, approva
             pk=approval_request_pk,
         )
 
-        application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         approval_request.is_active = False
         approval_request.status = ApprovalRequest.CANCELLED
         approval_request.save()
-
-        # Approval Request can be withdrawn after the task has been completed
-        # TODO: check if needed
-        try:
-            approval_request_task = approval_request.get_task(
-                ApprovalRequest.OPEN, "notify_contacts"
-            )
-        except Exception:
-            pass
-        else:
-            approval_request_task.is_active = False
-            approval_request_task.finished = timezone.now()
-            approval_request_task.save()
 
         return redirect(
             reverse(
@@ -150,7 +122,9 @@ def management_access_approval_withdraw(request, application_pk, entity, approva
 
 @login_required
 @require_POST
-def take_ownership_approval(request, pk, entity):
+def take_ownership_approval(
+    request: AuthenticatedHttpRequest, *, pk: int, entity: str
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -166,6 +140,8 @@ def take_ownership_approval(request, pk, entity):
             group_permission = "web.exporter_access"
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
+
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied
@@ -173,24 +149,17 @@ def take_ownership_approval(request, pk, entity):
         if not request.user.has_perm(permission, link):
             raise PermissionDenied
 
-        task = application.get_task(ApprovalRequest.OPEN, "notify_contacts")
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
         application.requested_from = request.user
         application.save()
-
-        Task.objects.create(
-            process=application, task_type="respond", owner=request.user, previous=task
-        )
 
     return redirect(reverse("workbasket"))
 
 
 @login_required
 @require_POST
-def release_ownership_approval(request, pk, entity):
+def release_ownership_approval(
+    request: AuthenticatedHttpRequest, *, pk: int, entity: str
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -206,6 +175,8 @@ def release_ownership_approval(request, pk, entity):
             group_permission = "web.exporter_access"
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
+
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied
@@ -217,23 +188,13 @@ def release_ownership_approval(request, pk, entity):
         application.requested_from = None
         application.save()
 
-        task = application.get_task(ApprovalRequest.OPEN, "respond")
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
-        application.requested_from = None
-        application.save()
-
-        Task.objects.create(
-            process=application, task_type="notify_contacts", owner=None, previous=task
-        )
-
     return redirect(reverse("workbasket"))
 
 
 @login_required
-def case_approval_respond(request, application_pk, entity, approval_request_pk):
+def case_approval_respond(
+    request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, approval_request_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -260,21 +221,16 @@ def case_approval_respond(request, application_pk, entity, approval_request_pk):
         if not request.user.has_perm(permission, application.link):
             raise PermissionDenied
 
-        application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
-        task = approval.get_task(ApprovalRequest.OPEN, "respond")
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if request.POST:
             form = ApprovalRequestResponseForm(request.POST, instance=approval)
             if form.is_valid():
-                form.save()
+                approval = form.save(commit=False)
                 approval.status = ApprovalRequest.COMPLETED
                 approval.response_date = timezone.now()
                 approval.response_by = request.user
                 approval.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
 
                 return redirect(reverse("workbasket"))
 

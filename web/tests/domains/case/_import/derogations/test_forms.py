@@ -5,6 +5,7 @@ from web.domains.case._import.derogations.forms import DerogationsForm
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 from web.tests.domains.commodity.factory import CommodityTypeFactory
@@ -36,7 +37,7 @@ class DerogationsFormTest(AuthTestCase):
             created_by=self.user,
             last_updated_by=self.user,
         )
-        TaskFactory.create(process=self.process, task_type="prepare")
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
         assign_perm("web.is_contact_of_importer", self.user, self.importer)
         self.login_with_permissions(["importer_access"])

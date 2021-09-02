@@ -9,6 +9,7 @@ from web.domains.case._import.sanctions.models import (
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
@@ -56,7 +57,7 @@ class SanctionsAndAdhocImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application_type.type, ImportApplicationType.Types.SANCTION_ADHOC)
 
         task = application.tasks.get()
-        self.assertEqual(task.task_type, "prepare")
+        self.assertEqual(task.task_type, Task.TaskType.PREPARE)
         self.assertEqual(task.is_active, True)
 
     def test_anonymous_post_access_redirects(self):
@@ -89,7 +90,7 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
             last_updated_by=self.user,
         )
 
-        TaskFactory.create(process=self.process, task_type="prepare")
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
         self.url = f"/import/sanctions/{self.process.pk}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -176,7 +177,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             last_updated_by=self.user,
             origin_country=Country.objects.get(name="Iran"),
         )
-        TaskFactory.create(process=self.process, task_type="prepare")
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
         self.valid_commodity = Commodity.objects.get(commodity_code="2709009000")
         self.goods = SanctionsAndAdhocApplicationGoodsFactory.create(

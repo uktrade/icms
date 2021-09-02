@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.models import ImportApplication
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.views import (
@@ -16,6 +15,7 @@ from web.domains.case.views import (
 from web.domains.country.models import Country
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -45,7 +45,7 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         syria = Country.objects.get(name="Syria")
 
@@ -98,7 +98,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -152,7 +152,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -172,7 +172,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         errors = _get_derogations_errors(application)
 
@@ -229,7 +229,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = DerogationsChecklist.objects.get_or_create(
             import_application=application
         )
@@ -285,9 +285,8 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = GoodsDerogationsLicenceForm(request.POST, instance=application)

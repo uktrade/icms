@@ -353,7 +353,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
                 admin_actions.append(view_action)
 
-            elif (case_owner == user) and task and task.task_type == "process":
+            elif (case_owner == user) and task and task.task_type == Task.TaskType.PROCESS:
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
@@ -502,7 +502,7 @@ class ApplicationBase(WorkbasketBase, Process):
         task.finished = timezone.now()
         task.save()
 
-        Task.objects.create(process=self, task_type="process", previous=task)
+        Task.objects.create(process=self, task_type=Task.TaskType.PROCESS, previous=task)
 
     def redirect_after_submit(self, request: AuthenticatedHttpRequest) -> HttpResponse:
         msg = (

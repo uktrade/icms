@@ -2,6 +2,7 @@ from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
 from web.domains.country.models import Country
+from web.flow.models import Task
 from web.tests.auth.auth import AuthTestCase
 from web.tests.domains.case.export.factories import (
     CertificateOfManufactureApplicationFactory,
@@ -29,7 +30,7 @@ class TestFlow(AuthTestCase):
     def test_flow(self):
         """Assert flow uses process and update tasks."""
         appl = CertificateOfManufactureApplicationFactory.create(status="IN_PROGRESS")
-        appl.tasks.create(is_active=True, task_type="prepare")
+        appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
 
         self.login_with_permissions(["exporter_access"])
         assign_perm("web.is_contact_of_exporter", self.user, appl.exporter)
@@ -58,7 +59,7 @@ class TestFlow(AuthTestCase):
         self.assertEqual(appl.status, "IN_PROGRESS")
         self.assertEqual(appl.tasks.count(), 1)
         task = appl.tasks.get()
-        self.assertEqual(task.task_type, "prepare")
+        self.assertEqual(task.task_type, Task.TaskType.PREPARE)
         self.assertEqual(task.is_active, True)
 
         # declaration of truth
@@ -72,9 +73,9 @@ class TestFlow(AuthTestCase):
         self.assertEqual(appl.tasks.count(), 2)
 
         # previous task is not active anymore
-        prepare_task = appl.tasks.get(task_type="prepare")
+        prepare_task = appl.tasks.get(task_type=Task.TaskType.PREPARE)
         self.assertEqual(prepare_task.is_active, False)
-        appl_task = appl.tasks.get(task_type="process")
+        appl_task = appl.tasks.get(task_type=Task.TaskType.PROCESS)
         self.assertEqual(appl_task.is_active, True)
 
 
@@ -85,7 +86,7 @@ class TestEditCom(AuthTestCase):
         self.url = reverse("export:com-edit", kwargs={"application_pk": self.appl.pk})
 
     def test_edit_ok(self):
-        self.appl.tasks.create(is_active=True, task_type="prepare")
+        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         self.login_with_permissions(["exporter_access"])
 
         assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
@@ -110,7 +111,7 @@ class TestEditCom(AuthTestCase):
         )
 
     def test_edit_no_auth(self):
-        self.appl.tasks.create(is_active=True, task_type="prepare")
+        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         self.login_with_permissions(["exporter_access"])
 
         response = self.client.post(self.url)
@@ -141,7 +142,7 @@ class TestSubmitCom(AuthTestCase):
         self.url = reverse("export:com-submit", kwargs={"application_pk": self.appl.pk})
 
     def test_submit_ok(self):
-        self.appl.tasks.create(is_active=True, task_type="prepare")
+        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         self.login_with_permissions(["exporter_access"])
         assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
 
@@ -149,14 +150,14 @@ class TestSubmitCom(AuthTestCase):
         self.assertRedirects(response, "/workbasket/", fetch_redirect_response=False)
 
     def test_submit_no_auth(self):
-        self.appl.tasks.create(is_active=True, task_type="prepare")
+        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         self.login_with_permissions(["exporter_access"])
 
         response = self.client.post(self.url, data={"confirmation": "I AGREE"})
         assert response.status_code == 403
 
     def test_submit_not_agreed(self):
-        self.appl.tasks.create(is_active=True, task_type="prepare")
+        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         self.login_with_permissions(["exporter_access"])
         assign_perm("web.is_contact_of_exporter", self.user, self.appl.exporter)
 

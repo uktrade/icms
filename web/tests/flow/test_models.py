@@ -1,6 +1,7 @@
 import pytest
 
 from web.flow import errors
+from web.flow.models import Task
 from web.tests.domains.case.access.factories import ImporterAccessRequestFactory
 
 from .factories import TaskFactory
@@ -9,7 +10,7 @@ from .factories import TaskFactory
 @pytest.mark.django_db
 def test_get_task():
     process = ImporterAccessRequestFactory.create(status="submitted")
-    task = TaskFactory.create(process=process, task_type="process")
+    task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     active_task = process.get_task("submitted", "process")
     assert active_task == task
@@ -33,7 +34,7 @@ def test_get_task_error():
         process.get_task("withdraw", "process")
     assert f"Process is in the wrong state: {process.status}" in str(excinfo.value)
 
-    tasks = TaskFactory.create_batch(2, process=process, task_type="prepare")
+    tasks = TaskFactory.create_batch(2, process=process, task_type=Task.TaskType.PREPARE)
 
     with pytest.raises(errors.TaskError) as excinfo:
         process.get_task("submitted", "process")

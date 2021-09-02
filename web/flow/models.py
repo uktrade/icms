@@ -87,9 +87,14 @@ class Task(models.Model):
     NOTE: a task can have multiple child tasks, but only one parent task.
     """
 
+    class TaskType(models.TextChoices):
+        PREPARE: str = ("prepare", "Prepare")  # type:ignore[assignment]
+        PROCESS: str = ("process", "Process")  # type:ignore[assignment]
+        AUTHORISE: str = ("authorise", "Authorise")  # type:ignore[assignment]
+
     process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="tasks")
 
-    task_type = models.CharField(max_length=30)
+    task_type = models.CharField(max_length=30, choices=TaskType.choices)
 
     is_active = models.BooleanField(default=True, db_index=True)
 

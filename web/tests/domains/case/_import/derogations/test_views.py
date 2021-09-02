@@ -8,6 +8,7 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 from web.tests.domains.commodity.factory import CommodityTypeFactory
@@ -53,7 +54,7 @@ class DerogationAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application_type.type, ImportApplicationType.Types.DEROGATION)
 
         task = application.tasks.get()
-        self.assertEqual(task.task_type, "prepare")
+        self.assertEqual(task.task_type, Task.TaskType.PREPARE)
         self.assertEqual(task.is_active, True)
 
     def test_anonymous_post_access_redirects(self):
@@ -86,7 +87,7 @@ class DegrogationDetailsViewTest(AuthTestCase):
             last_updated_by=self.user,
         )
 
-        TaskFactory.create(process=self.process, task_type="prepare")
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
         self.url = f"/import/derogations/{self.process.pk}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 

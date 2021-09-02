@@ -15,6 +15,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.views import get_application_current_task
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.flow.models import Task
@@ -230,7 +231,9 @@ def _create_application(
 
             with transaction.atomic():
                 application.save()
-                Task.objects.create(process=application, task_type="prepare", owner=request.user)
+                Task.objects.create(
+                    process=application, task_type=Task.TaskType.PREPARE, owner=request.user
+                )
 
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
@@ -275,9 +278,8 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = CoverLetterForm(request.POST, instance=application)
@@ -318,9 +320,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         )
         application_type: ImportApplicationType = application.application_type
 
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
             form_class = OPTLicenceForm
@@ -383,9 +383,8 @@ def _add_endorsement(
         application = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = Form(request.POST)
@@ -429,9 +428,8 @@ def edit_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = EndorsementImportApplicationForm(request.POST, instance=endorsement)
@@ -474,9 +472,8 @@ def delete_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
-        application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied
@@ -499,9 +496,8 @@ def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: i
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         context = {
             "process": application,
@@ -534,9 +530,8 @@ def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -
         application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
-        task = application.get_task(
-            [ImportApplication.Statuses.SUBMITTED, ImportApplication.Statuses.WITHDRAWN], "process"
-        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         context = {
             "process": application,

@@ -2,6 +2,7 @@ import pytest
 from django.test import Client
 
 from web.domains.case.fir.models import FurtherInformationRequest
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case.access import factories as access_factories
 from web.tests.domains.case.fir import factory as fir_factories
@@ -22,7 +23,7 @@ class AccessRequestTestBase(AuthTestCase):
         else:
             self.process = access_factories.ExporterAccessRequestFactory()
 
-        process_factories.TaskFactory.create(process=self.process, task_type="process")
+        process_factories.TaskFactory.create(process=self.process, task_type=Task.TaskType.PROCESS)
         self.fir_process = fir_factories.FurtherInformationRequestFactory()
         self.process.further_information_requests.add(self.fir_process)
 

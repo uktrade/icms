@@ -2,6 +2,7 @@ import pytest
 from django.test import Client
 
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.domains.importer import factory as importer_factories
 from web.tests.domains.user import factory as user_factories
 from web.tests.flow import factories as process_factories
@@ -24,7 +25,7 @@ def test_preview_cover_letter():
         last_updated_by=user,
         case_owner=ilb_admin,
     )
-    process_factories.TaskFactory.create(process=process, task_type="process")
+    process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
@@ -55,7 +56,7 @@ def test_preview_licence():
         last_updated_by=user,
         case_owner=ilb_admin,
     )
-    process_factories.TaskFactory.create(process=process, task_type="process")
+    process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")

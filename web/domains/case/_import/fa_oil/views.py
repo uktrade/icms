@@ -12,6 +12,7 @@ from web.domains.case.views import (
     get_application_current_task,
 )
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -37,7 +38,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = PrepareOILForm(data=request.POST, instance=application)
@@ -72,7 +73,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 
@@ -177,7 +178,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
             import_application=application
         )

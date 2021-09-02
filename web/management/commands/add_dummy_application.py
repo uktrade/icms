@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.commodity.models import Commodity
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -37,13 +38,13 @@ class Command(BaseCommand):
         application.exporter_name = "dummy name"
         application.exporter_address = "dummy address"
         application.exporter_vat_nr = "dummy VAT"
-        application.commodity_code = "4403201110"
+        application.commodity = Commodity.objects.get(is_active=True, commodity_code="4403211000")
         application.goods_description = "dummy description"
         application.goods_qty = 42.00
         application.goods_unit = "cubic metres"
 
         application.save()
 
-        Task.objects.create(process=application, task_type="prepare", owner=user)
+        Task.objects.create(process=application, task_type=Task.TaskType.PREPARE, owner=user)
 
         self.stdout.write("Created dummy application")

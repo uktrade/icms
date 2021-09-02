@@ -13,6 +13,7 @@ from web.domains.case.access.filters import (
     ImporterAccessRequestFilter,
 )
 from web.domains.case.utils import allocate_case_reference
+from web.domains.case.views import get_application_current_task
 from web.flow.models import Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
@@ -108,7 +109,9 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                 application.save()
 
                 notify.access_requested_importer(application.pk)
-                Task.objects.create(process=application, task_type="process", owner=request.user)
+                Task.objects.create(
+                    process=application, task_type=Task.TaskType.PROCESS, owner=request.user
+                )
 
                 if request.user.is_importer() or request.user.is_exporter():
                     return redirect(reverse("workbasket"))
@@ -156,7 +159,9 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                 application.save()
 
                 notify.access_requested_exporter(application.pk)
-                Task.objects.create(process=application, task_type="process", owner=request.user)
+                Task.objects.create(
+                    process=application, task_type=Task.TaskType.PROCESS, owner=request.user
+                )
 
                 if request.user.is_importer() or request.user.is_exporter():
                     return redirect(reverse("workbasket"))
@@ -194,7 +199,7 @@ def management(request, pk, entity):
             Form = forms.LinkExporterAccessRequestForm
             permission_codename = "exporter_access"
 
-        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if request.POST:
             form = Form(instance=application, data=request.POST)
@@ -237,7 +242,7 @@ def management_response(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
 
-        task = application.get_task(AccessRequest.Statuses.SUBMITTED, "process")
+        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if request.POST:
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)

@@ -17,6 +17,7 @@ from web.domains.case.views import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import get_category_commodity_group_data
 from web.utils.validation import (
@@ -48,7 +49,7 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = EditIronSteelForm(data=request.POST, instance=application)
@@ -100,7 +101,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 
@@ -212,7 +213,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -265,7 +266,7 @@ def delete_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -283,7 +284,7 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = AddCertificateForm(data=request.POST, files=request.FILES)
@@ -344,7 +345,7 @@ def delete_certificate(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.certificates.get(pk=document_pk)
         document.is_active = False
@@ -364,7 +365,7 @@ def edit_certificate(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.certificates.get(pk=document_pk)
 
@@ -400,7 +401,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: IronSteelApplication = get_object_or_404(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = IronSteelChecklist.objects.get_or_create(
             import_application=application
         )
@@ -447,7 +448,7 @@ def response_preparation_edit_goods(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)
@@ -491,7 +492,7 @@ def response_preparation_edit_certificate(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         document = application.certificates.get(pk=document_pk)
 

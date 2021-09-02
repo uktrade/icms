@@ -24,7 +24,7 @@ def test_exporter_management_access_approval_ok():
     access_request = ExporterAccessRequestFactory.create(
         status=AccessRequest.Statuses.SUBMITTED, link=None
     )
-    Task.objects.create(process=access_request, task_type="process")
+    Task.objects.create(process=access_request, task_type=Task.TaskType.PROCESS)
 
     client.login(username=ilb_admin.username, password="test")
     response = client.get(f"/access/case/{access_request.pk}/exporter/approval-request/")
@@ -47,7 +47,7 @@ def test_importer_management_access_approval_ok():
     access_request = ImporterAccessRequestFactory.create(
         status=AccessRequest.Statuses.SUBMITTED, link=None
     )
-    Task.objects.create(process=access_request, task_type="process")
+    Task.objects.create(process=access_request, task_type=Task.TaskType.PROCESS)
 
     client.login(username=ilb_admin.username, password="test")
     response = client.get(f"/access/case/{access_request.pk}/importer/approval-request/")

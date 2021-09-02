@@ -16,6 +16,7 @@ from web.domains.case.views import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -47,7 +48,7 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = PrepareDFLForm(data=request.POST, instance=application)
@@ -86,7 +87,7 @@ def add_goods_certificate(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "import")
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
@@ -133,7 +134,7 @@ def edit_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -175,7 +176,7 @@ def edit_goods_certificate_description(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -233,7 +234,7 @@ def delete_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.goods_certificates.get(pk=document_pk)
         document.is_active = False
@@ -250,7 +251,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         errors = _get_dfl_errors(application)
 
@@ -345,7 +346,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = DFLChecklist.objects.get_or_create(import_application=application)
 
         if request.POST:

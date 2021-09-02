@@ -6,6 +6,7 @@ from guardian.shortcuts import assign_perm
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import OILApplicationFactory
 from web.tests.domains.importer.factory import ImporterFactory
@@ -50,7 +51,7 @@ class ImportAppplicationCreateViewTest(AuthTestCase):
         self.assertEqual(application_type.sub_type, ImportApplicationType.SubTypes.OIL)
 
         task = application.tasks.get()
-        self.assertEqual(task.task_type, "prepare")
+        self.assertEqual(task.task_type, Task.TaskType.PREPARE)
         self.assertEqual(task.is_active, True)
 
     def test_create_missing_office(self):
@@ -85,7 +86,7 @@ def test_take_ownership():
     process = OILApplicationFactory.create(
         status="SUBMITTED", importer=importer, created_by=user, last_updated_by=user
     )
-    TaskFactory.create(process=process, task_type="process")
+    TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
     client = Client()
@@ -114,7 +115,7 @@ def test_release_ownership():
         last_updated_by=user,
         case_owner=ilb_admin,
     )
-    TaskFactory.create(process=process, task_type="process")
+    TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
@@ -135,7 +136,7 @@ def test_close_case():
         last_updated_by=user,
         case_owner=ilb_admin,
     )
-    task = TaskFactory.create(process=process, task_type="process")
+    task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")

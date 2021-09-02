@@ -7,6 +7,7 @@ from web.domains.case._import.sanctions.forms import (
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
+from web.flow.models import Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocLicenseApplicationFactory,
@@ -40,7 +41,7 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
             last_updated_by=self.user,
             origin_country=Country.objects.get(name="Iran"),
         )
-        TaskFactory.create(process=self.process, task_type="prepare")
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
         assign_perm("web.is_contact_of_importer", self.user, self.importer)
         self.login_with_permissions(["importer_access"])

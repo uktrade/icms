@@ -15,6 +15,7 @@ from web.domains.case.views import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -44,7 +45,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = PrepareWoodQuotaForm(data=request.POST, instance=application)
@@ -86,7 +87,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -136,7 +137,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -156,7 +157,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -216,7 +217,7 @@ def delete_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", "prepare")
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.contract_documents.get(pk=document_pk)
         document.is_active = False
@@ -236,7 +237,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.contract_documents.get(pk=document_pk)
 
@@ -273,7 +274,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", "prepare")
+        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 
@@ -343,7 +344,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
             import_application=application
         )
@@ -389,7 +390,7 @@ def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", "process")
+        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.POST:
             form = GoodsWoodQuotaLicenceForm(request.POST, instance=application)
