@@ -1,0 +1,44 @@
+{% set cd = rec.commodity_details %}
+
+<div class="container setoutForm">
+  <div class="row">
+    <div class="twelve columns"><label class="prompt north">Country of Origin</label></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><span class="text-widget">{{ cd.origin_country }}</span></div>
+  </div>
+
+  <div class="row">
+    <div class="twelve columns"><label class="prompt north">Country of Consignment</label></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><span class="text-widget">{{ cd.consignment_country }}</span></div>
+  </div>
+
+  {% if cd.goods_category %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Goods Category</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cd.goods_category }}</span></div>
+    </div>
+  {% endif %}
+
+  {% if cd.shipping_year %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Shipping Year</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cd.shipping_year }}</span></div>
+    </div>
+  {% endif %}
+
+  {% if cd.commodity_codes %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Commodity Code(s)</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cd.commodity_codes|join(', ') }}</span></div>
+    </div>
+  {% endif %}
+</div>

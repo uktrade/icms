@@ -1,0 +1,10 @@
+
+{% if search_records|length == 0 %}
+{# TODO: Update href link when implementing ICMSLST-941 #}
+<div class="info-box info-box-warning">
+  <div class="screen-reader-only">Warning information box</div>
+  There aren't any applications that match your search. You can <a href="#">turn on advanced mode</a> for more options.
+</div>
+{% else %}
+  {% include "web/domains/case/search/" + case_type + "/results-table.html" %}
+{% endif %}

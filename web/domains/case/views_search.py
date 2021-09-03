@@ -18,6 +18,7 @@ SearchFormT = Type[SearchForm]
 def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     form_class: SearchFormT = ImportSearchForm if case_type == "import" else ExportSearchForm
     app_type = "Import" if case_type == "import" else "Certificate"
+    show_search_results = False
     total_rows = 0
     search_records = []
 
@@ -25,6 +26,7 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
         form = form_class(request.POST)
 
         if form.is_valid():
+            show_search_results = True
             terms = _get_search_terms_from_form(case_type, form)
             results = search_applications(terms)
 
@@ -38,6 +40,7 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
         "form": form,
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
+        "show_search_results": show_search_results,
         "total_rows": total_rows,
         "search_records": search_records,
     }

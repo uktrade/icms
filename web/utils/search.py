@@ -17,7 +17,6 @@ from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplicati
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.models import ApplicationBase
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
@@ -26,6 +25,7 @@ if TYPE_CHECKING:
 @dataclass
 class SearchTerms:
     # import or export - will be used to filter by ImportApplication or ExportApplication
+    # Or we will have an ImportSearchTerms / ExportSearchTerms
     case_type: str
 
     # Search fields
@@ -46,15 +46,52 @@ class SearchTerms:
     reassignment_search: Optional[bool] = False
 
 
-@dataclass
-class SearchResults:
-    total_rows: int
-    records: list
-
-
 class ProcessTypeAndPK(NamedTuple):
     process_type: str
     pk: int
+
+
+@dataclass
+class CaseStatus:
+    case_reference: str
+    application_type: str
+    application_sub_type: str
+    status: str
+    applicant_reference: Optional[str] = None
+    licence_reference: Optional[str] = None
+    licence_validity: Optional[str] = None
+
+
+@dataclass
+class ApplicantDetails:
+    organisation_name: str
+    application_contact: str
+
+
+@dataclass
+class CommodityDetails:
+    origin_country: str
+    consignment_country: str
+    goods_category: Optional[str] = None
+    shipping_year: Optional[int] = None
+    commodity_codes: Optional[list[str]] = None
+
+
+@dataclass
+class ImportResultRow:
+    submitted_at: str
+    case_status: CaseStatus
+    applicant_details: ApplicantDetails
+    commodity_details: CommodityDetails
+
+    # Used to order records
+    submit_datetime: datetime.datetime
+
+
+@dataclass
+class SearchResults:
+    total_rows: int
+    records: list[ImportResultRow]
 
 
 def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
@@ -67,7 +104,8 @@ def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     records = []
     for queryset in _get_search_records(app_pks_and_types[:limit]):
         for rec in queryset:
-            records.append(rec)
+            row = _get_result_row(rec)
+            records.append(row)
 
     # Sort the records by submit_datetime DESC
     records.sort(key=attrgetter("submit_datetime"), reverse=True)
@@ -81,7 +119,7 @@ def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
     Returns a list of pk and process_type pairs for all matching records.
     """
 
-    import_applications = apply_search(ImportApplication.objects.all(), terms)
+    import_applications = _apply_search(ImportApplication.objects.all(), terms)
     import_applications = import_applications.order_by("-submit_datetime")
     app_pks_and_types = import_applications.values_list("pk", "process_type", named=True)
 
@@ -91,7 +129,7 @@ def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
 
 def _get_search_records(
     search_ids_and_types: list[ProcessTypeAndPK],
-) -> "Iterable[QuerySet[ApplicationBase]]":
+) -> "Iterable[QuerySet[ImportApplication]]":
     """Yields records matching the supplied search_ids and app types."""
 
     # Create a mapping of process_type -> list of app.pks
@@ -104,16 +142,16 @@ def _get_search_records(
     pt = ImportApplicationType.ProcessTypes
 
     process_type_map = {
-        pt.DEROGATIONS: get_derogations_applications,
-        pt.FA_DFL: get_fa_dfl_applications,
-        pt.FA_OIL: get_fa_oil_applications,
-        pt.FA_SIL: get_fa_sil_applications,
-        pt.IRON_STEEL: get_ironsteel_applications,
-        pt.OPT: get_opt_applications,
-        pt.SANCTIONS: get_sanctionadhoc_applications,
-        pt.SPS: get_sps_applications,
-        pt.TEXTILES: get_textiles_applications,
-        pt.WOOD: get_wood_applications,
+        pt.DEROGATIONS: _get_derogations_applications,
+        pt.FA_DFL: _get_fa_dfl_applications,
+        pt.FA_OIL: _get_fa_oil_applications,
+        pt.FA_SIL: _get_fa_sil_applications,
+        pt.IRON_STEEL: _get_ironsteel_applications,
+        pt.OPT: _get_opt_applications,
+        pt.SANCTIONS: _get_sanctionadhoc_applications,
+        pt.SPS: _get_sps_applications,
+        pt.TEXTILES: _get_textiles_applications,
+        pt.WOOD: _get_wood_applications,
     }
 
     for pt, search_ids in app_pks.items():  # type:ignore[assignment]
@@ -122,93 +160,144 @@ def _get_search_records(
         yield search_func(search_ids)
 
 
-def get_derogations_applications(search_ids: list[int]) -> "QuerySet[DerogationsApplication]":
+def _get_result_row(rec: ImportApplication) -> ImportResultRow:
+    """Process the incoming application and return a result row."""
+
+    start_date = rec.licence_start_date.strftime("%d %b %Y") if rec.licence_start_date else None
+    end_date = rec.licence_end_date.strftime("%d %b %Y") if rec.licence_end_date else None
+    licence_validity = " - ".join(filter(None, (start_date, end_date)))
+
+    licence_reference = _get_licence_reference(rec)
+    commodity_details = _get_commodity_details(rec)
+
+    if rec.application_type.type == rec.application_type.Types.FIREARMS:
+        application_subtype = rec.application_type.get_sub_type_display()
+    else:
+        application_subtype = ""
+
+    row = ImportResultRow(
+        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
+        case_status=CaseStatus(
+            applicant_reference=getattr(rec, "applicant_reference", ""),
+            case_reference=rec.get_reference(),
+            licence_reference=licence_reference,
+            licence_validity=licence_validity,
+            application_type=rec.application_type.get_type_display(),
+            application_sub_type=application_subtype,
+            status=rec.get_status_display(),
+        ),
+        applicant_details=ApplicantDetails(
+            organisation_name=rec.importer.name,
+            application_contact=rec.contact.full_name,
+        ),
+        commodity_details=commodity_details,
+        submit_datetime=rec.submit_datetime,
+    )
+    return row
+
+
+def _get_licence_reference(rec: ImportApplication) -> str:
+    """Retrieve the licence reference
+
+    Notes when implementing:
+        - The Electronic licence has a link to download the licence
+    """
+
+    # TODO: Revisit when implementing ICMSLST-1048
+    if rec.issue_paper_licence_only:
+        licence_reference = "9001809L (Paper)"
+    else:
+        licence_reference = "GBSAN9001624X (Electronic)"
+
+    return licence_reference
+
+
+def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
+    """Load the commodity details section"""
+
+    # TODO ICMSLST-1049: Replace hardcoded values with application specific versions
+    return CommodityDetails(
+        origin_country="Iran",
+        consignment_country="Algeria",
+        goods_category="ex Chapter 93",
+        shipping_year=2021,
+        commodity_codes=["2801000010", "2850002070"],
+    )
+
+
+def _get_derogations_applications(search_ids: list[int]) -> "QuerySet[DerogationsApplication]":
     applications = DerogationsApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_ironsteel_applications(search_ids: list[int]) -> "QuerySet[IronSteelApplication]":
+def _get_ironsteel_applications(search_ids: list[int]) -> "QuerySet[IronSteelApplication]":
     applications = IronSteelApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTradeApplication]":
+def _get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTradeApplication]":
     applications = OutwardProcessingTradeApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_sanctionadhoc_applications(
+def _get_sanctionadhoc_applications(
     search_ids: list[int],
 ) -> "QuerySet[SanctionsAndAdhocApplication]":
     applications = SanctionsAndAdhocApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceApplication]":
+def _get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceApplication]":
     applications = PriorSurveillanceApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesApplication]":
+def _get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesApplication]":
     applications = TextilesApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplication]":
+def _get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplication]":
     applications = WoodQuotaApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLicenceApplication]":
+def _get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLicenceApplication]":
     applications = OpenIndividualLicenceApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
+def _get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
     applications = DFLApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]":
+def _get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]":
     applications = SILApplication.objects.filter(pk__in=search_ids)
-
-    # TODO Optimise query here for template/excel download (e.g. select related)
+    applications = _apply_import_optimisation(applications)
 
     return applications
 
 
-def not_implemented_yet(terms: SearchTerms):
-    raise NotImplementedError
-
-
-def apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Model]":
+def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Model]":
     """Apply common filtering to the supplied model - Currently just ImportApplications."""
 
     # THe legacy system only includes applications that have been submitted.
@@ -270,5 +359,12 @@ def apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mode
 
     # TODO: Revisit this when doing ICMSLST-964
     # reassignment_search (searches for people not assigned to me)
+
+    return model
+
+
+def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
+    """Selects related tables used for import applications."""
+    model = model.select_related("importer", "contact", "application_type")
 
     return model

@@ -1,0 +1,61 @@
+{% set cs = rec.case_status %}
+
+<div class="container setoutForm">
+  {% if cs.applicant_reference %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Applicant's Reference</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cs.applicant_reference }}</span></div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="twelve columns"><span class="prompt north disabledLink">Case Reference</span></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><a href="#">{{ cs.case_reference }}</a></div>
+  </div>
+
+  {% if cs.licence_reference %}
+    <div class="row">
+      <div class="twelve columns"><span class="prompt north disabledLink">Licence Reference</span></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><a href="#">{{ cs.licence_reference }}</a></div>
+    </div>
+  {% endif %}
+
+  {% if cs.licence_validity %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Licence Validity</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cs.licence_validity }}</span></div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="twelve columns"><label class="prompt north">Application Type</label></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><span class="text-widget">{{ cs.application_type }}</span></div>
+  </div>
+
+  {% if cs.application_sub_type %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Sub-Type</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cs.application_sub_type }}</span>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="twelve columns"><label class="prompt north">Status</label></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><span class="text-widget">{{ cs.status }}</span></div>
+  </div>
+</div>

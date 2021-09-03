@@ -1,0 +1,23 @@
+<table class="setoutList">
+  <thead>
+  <tr>
+    <th scope="col">Case Details</th>
+    <th scope="col">Submitted Date</th>
+    <th scope="col">Applicant Details</th>
+    <th scope="col">Commodity Details</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+
+  {% for rec in search_records %}
+    <tr>
+      <td>{% include "web/domains/case/search/import/case_details.html" %}</td>
+      <td>{% include "web/domains/case/search/import/submitted_date.html" %}</td>
+      <td>{% include "web/domains/case/search/import/applicant_details.html" %}</td>
+      <td>{% include "web/domains/case/search/import/commodity_details.html" %}</td>
+      <td></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

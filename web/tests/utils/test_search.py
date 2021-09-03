@@ -10,7 +10,7 @@ from web.domains.case.models import ApplicationBase
 from web.domains.case.views import get_application_current_task
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
-from web.utils.search import SearchTerms, search_applications
+from web.utils.search import ImportResultRow, SearchTerms, search_applications
 
 if TYPE_CHECKING:
     from web.models import User
@@ -297,7 +297,9 @@ def _test_search_by_licence_date():
     assert results.total_rows == 0
 
 
-def check_application_references(applications, *references, sort_results=False):
+def check_application_references(
+    applications: list[ImportResultRow], *references, sort_results=False
+):
     """Check the returned applications match the supplied references
 
     Sort results if we don't care about the order
@@ -305,7 +307,7 @@ def check_application_references(applications, *references, sort_results=False):
 
     expected = sorted(references) if sort_results else list(references)
 
-    actual = (app.applicant_reference for app in applications)
+    actual = (app.case_status.applicant_reference for app in applications)
     actual = sorted(actual) if sort_results else list(actual)
 
     assert expected == actual
@@ -338,6 +340,7 @@ def _create_application(application_type, process_type, reference, test_data, su
         "submitted_by": test_data.importer_user,
         "application_type": application_type,
         "process_type": process_type,
+        "contact": test_data.importer_user,
     }
 
     models = {

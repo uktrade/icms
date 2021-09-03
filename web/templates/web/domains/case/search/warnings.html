@@ -1,0 +1,7 @@
+{% if total_rows > search_records|length %}
+  <div class="info-box info-box-warning">
+    <div class="screen-reader-only">Warning information box</div>
+    <p><strong>Not all applications could be displayed.</strong></p>
+    <p>Your search returned {{ total_rows }} applications. Only the first {{ search_records|length }} have been displayed, you may wish to narrow your search criteria.</p>
+  </div>
+{% endif %}
