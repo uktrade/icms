@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 @dataclass
 class SearchTerms:
+    # import or export - will be used to filter by ImportApplication or ExportApplication
+    case_type: str
+
+    # Search fields
     case_ref: Optional[str] = None
     licence_ref: Optional[str] = None
     # icms_legacy_cases = str = None

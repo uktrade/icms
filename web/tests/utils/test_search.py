@@ -40,7 +40,7 @@ def test_filter_by_application_type(test_data: FixtureData):
     _create_derogation_application("Derogation ref 1", test_data)
     _create_derogation_application("Derogation ref 2", test_data)
 
-    terms = SearchTerms(app_type=ImportApplicationType.Types.WOOD_QUOTA)
+    terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)
     results = search_applications(terms)
 
     assert results.total_rows == 2
@@ -96,7 +96,7 @@ def test_order_and_limit_works(test_data: FixtureData):
         else:
             raise Exception(f"failed to create: {app_ref}")
 
-    terms = SearchTerms()
+    terms = SearchTerms(case_type="import")
     search_data = search_applications(terms, limit=5)
 
     assert search_data.total_rows == 10
@@ -118,7 +118,7 @@ def _test_fetch_all(test_data: FixtureData):
     _create_wood_application("Wood ref 1", test_data)
     _create_wood_application("Wood ref 2", test_data)
 
-    search_terms = SearchTerms(app_type=ImportApplicationType.Types.WOOD_QUOTA)
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)
     results = search_applications(search_terms)
 
     assert results.total_rows == 2
@@ -135,7 +135,7 @@ def _test_search_by_case_reference(test_data: FixtureData):
     assert case_reference != "Not Assigned"
 
     search_terms = SearchTerms(
-        app_type=ImportApplicationType.Types.WOOD_QUOTA, case_ref=case_reference
+        case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA, case_ref=case_reference
     )
     results = search_applications(search_terms)
 
@@ -148,6 +148,7 @@ def _test_search_by_status():
     # TODO: Revisit this when doing ICMSLST-1036
 
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         case_status=ApplicationBase.Statuses.SUBMITTED,
     )
@@ -163,14 +164,18 @@ def _test_search_by_response_decision():
     submitted_application.save()
 
     search_terms = SearchTerms(
-        app_type=ImportApplicationType.Types.WOOD_QUOTA, response_decision=ApplicationBase.REFUSE
+        case_type="import",
+        app_type=ImportApplicationType.Types.WOOD_QUOTA,
+        response_decision=ApplicationBase.REFUSE,
     )
     results = search_applications(search_terms)
 
     assert results.total_rows == 0
 
     search_terms = SearchTerms(
-        app_type=ImportApplicationType.Types.WOOD_QUOTA, response_decision=ApplicationBase.APPROVE
+        case_type="import",
+        app_type=ImportApplicationType.Types.WOOD_QUOTA,
+        response_decision=ApplicationBase.APPROVE,
     )
     results = search_applications(search_terms)
 
@@ -181,14 +186,18 @@ def _test_search_by_response_decision():
 
 def _test_search_by_importer_or_agent_name(test_data: FixtureData):
     search_terms = SearchTerms(
-        app_type=ImportApplicationType.Types.WOOD_QUOTA, importer_agent_name="Not valid"
+        case_type="import",
+        app_type=ImportApplicationType.Types.WOOD_QUOTA,
+        importer_agent_name="Not valid",
     )
     results = search_applications(search_terms)
 
     assert results.total_rows == 0
 
     search_terms = SearchTerms(
-        app_type=ImportApplicationType.Types.WOOD_QUOTA, importer_agent_name=test_data.importer.name
+        case_type="import",
+        app_type=ImportApplicationType.Types.WOOD_QUOTA,
+        importer_agent_name=test_data.importer.name,
     )
     results = search_applications(search_terms)
 
@@ -202,6 +211,7 @@ def _test_search_by_importer_or_agent_name(test_data: FixtureData):
     application.save()
 
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         importer_agent_name=test_data.agent_importer.name,
     )
@@ -219,6 +229,7 @@ def _test_search_by_submitted_datetime(test_data: FixtureData):
     application.save()
 
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         submitted_datetime_start=datetime.datetime(2020, 1, 2),
     )
@@ -230,6 +241,7 @@ def _test_search_by_submitted_datetime(test_data: FixtureData):
 
     # Now search by end date to only find "Wood ref 4"
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         submitted_datetime_start=datetime.datetime(2020, 1, 1),
         submitted_datetime_end=datetime.datetime(2020, 1, 2),
@@ -250,6 +262,7 @@ def _test_search_by_licence_date():
 
     # Should find the record when the search terms are the same day as the licence dates
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         licence_date_start=datetime.date(2021, 8, 26),
         licence_date_end=datetime.date(2022, 2, 26),
@@ -263,6 +276,7 @@ def _test_search_by_licence_date():
 
     # A later start date should remove the above record
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         licence_date_start=datetime.date(2021, 8, 27),
         licence_date_end=datetime.date(2022, 2, 26),
@@ -273,6 +287,7 @@ def _test_search_by_licence_date():
 
     # an earlier end date should remove the above record
     search_terms = SearchTerms(
+        case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
         licence_date_start=datetime.date(2021, 8, 26),
         licence_date_end=datetime.date(2022, 2, 25),

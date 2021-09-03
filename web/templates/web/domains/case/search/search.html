@@ -44,7 +44,14 @@
             {% endcall %}
         </div>
         <div class="content-actions"></div>
-
     </div>
 </div>
+
+{# TODO: Finish off as part of ICMSLST-942 #}
+<h3>Results</h3>
+{{ total_rows }}
+
+{% for rec in search_records %}
+  <p>{{ rec.application_type.get_type_display() }} - {{ rec.application_type.get_sub_type_display() }} - {{ rec.submit_datetime }}</p>
+{% endfor %}
 {% endblock %}
