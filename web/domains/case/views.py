@@ -2143,11 +2143,57 @@ def authorise_documents(
             "task": task,
             "page_title": get_page_title(case_type, application, "Authorisation"),
             "form": form,
+            "contacts": forms.application_contacts(application),
         }
 
         return render(
             request=request,
             template_name="web/domains/case/authorise-documents.html",
+            context=context,
+        )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def view_document_packs(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    with transaction.atomic():
+        model_class = _get_class_imp_or_exp(case_type)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        task = get_application_current_task(application, case_type, "authorise")
+        application_type = application.application_type
+
+        if case_type == "import":
+            cover_letter_flag = application_type.cover_letter_flag
+            type_label = application_type.Types(application_type.type).label
+            customs_copy = application_type.type == application_type.Types.OPT
+            is_cfs = False
+        else:
+            cover_letter_flag = False
+            type_label = application_type.type
+            customs_copy = False
+            is_cfs = application_type.type_code == application_type.Types.FREE_SALE
+
+        context = {
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "case_type": case_type,
+            "process": application,
+            "task": task,
+            "cover_letter_flag": cover_letter_flag,
+            "page_title": get_page_title(case_type, application, "Authorisation"),
+            "contacts": forms.application_contacts(application),
+            "type_label": type_label,
+            "customs_copy": customs_copy,
+            "is_cfs": is_cfs,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/document-packs.html",
             context=context,
         )
 

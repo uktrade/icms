@@ -18,11 +18,10 @@
 {% endblock %}
 
 {% block main_content %}
-  {# TODO: ICMSLST-952 - Check values for this field #}
-  {{ application_field("Response", "Document Set Title") }}
+  {{ application_field(process.get_reference() + " Response Documents", "Document Set Title") }}
+  {# TODO: ICMSLST-809 - Display a count of all documents which generation status is not complete #}
 
-  <h3>Document Packs</h3>
-  {# TODO: ICMSLST-952 #}
+  {% include "web/domains/case/manage/document-packs-list.html" %}
 
   <h3>Sign & Authorise</h3>
   <div class="info-box info-box-info">
@@ -33,5 +32,4 @@
     {{ fields.field(form.password) }}
     <input type="submit" name="action" class="primary-button button" value="Sign and Authorise" />
   {% endcall %}
-
 {% endblock %}

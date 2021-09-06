@@ -131,8 +131,9 @@ update_requests_urls = [
 
 authorisation_urls = [
     path("start/", views.start_authorisation, name="start-authorisation"),
-    path("authorise-documents/", views.authorise_documents, name="authorise-documents"),
     path("cancel/", views.cancel_authorisation, name="cancel-authorisation"),
+    path("authorise-documents/", views.authorise_documents, name="authorise-documents"),
+    path("document-packs/", views.view_document_packs, name="document-packs"),
 ]
 
 email_urls = [

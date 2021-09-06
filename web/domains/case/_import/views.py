@@ -497,7 +497,11 @@ def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: i
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        # TODO ICMSLST-836: Applications being authorise should use a separate view for the docs
+        if application.status == ImportApplication.Statuses.PROCESSING:
+            task = get_application_current_task(application, "import", Task.TaskType.AUTHORISE)
+        else:
+            task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         context = {
             "process": application,
@@ -531,7 +535,11 @@ def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        # TODO ICMSLST-836: Applications being authorise should use a separate view for the docs
+        if application.status == ImportApplication.Statuses.PROCESSING:
+            task = get_application_current_task(application, "import", Task.TaskType.AUTHORISE)
+        else:
+            task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         context = {
             "process": application,

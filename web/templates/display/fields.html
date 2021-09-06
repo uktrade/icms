@@ -19,7 +19,7 @@ takes a model field like this:
   {{ xxx_field(process.whatever) }}
 #}
 
-{% macro application_field(field, label, default="") -%}
+{% macro application_field(field, label, default="", extra="") -%}
   <div class="row">
     <div class="three columns">
       <label class="prompt west">{{ label }}</label>
@@ -29,6 +29,15 @@ takes a model field like this:
     </div>
     <div class="three columns"></div>
   </div>
+  {% if extra %}
+  <div class="row">
+    <div class="three columns"></div>
+    <div class="six columns list-extra-info">
+      <span class="text-widget">{{ extra }}</span>
+    </div>
+    <div class="three columns"></div>
+  </div>
+  {% endif %}
 {%- endmacro %}
 
 {% macro commodity_link(commodity) -%}

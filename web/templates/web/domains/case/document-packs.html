@@ -1,0 +1,27 @@
+{% extends "flow/task-base.html" %}
+{% from "display/fields.html" import application_field %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('case:authorise-documents', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="prev-link">
+          Document Packs List
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Document Pack</h3>
+  {{ application_field("Response", "Document Set") }}
+  {{ application_field(process.get_reference() + " Response Documents", "Document Pack") }}
+  {% for contact in contacts %}
+    {{ application_field(contact.full_name, "Primary Recipients" if loop.index == 1 else "") }}
+  {% endfor %}
+
+  {% include "web/domains/case/manage/document-list.html" %}
+{% endblock %}
