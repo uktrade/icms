@@ -71,7 +71,7 @@ class ApplicantDetails:
 @dataclass
 class CommodityDetails:
     origin_country: str
-    consignment_country: str
+    consignment_country: Optional[str] = None
     goods_category: Optional[str] = None
     shipping_year: Optional[int] = None
     commodity_codes: Optional[list[str]] = None
@@ -214,15 +214,26 @@ def _get_licence_reference(rec: ImportApplication) -> str:
 
 def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
     """Load the commodity details section"""
+    if rec.process_type == ImportApplicationType.ProcessTypes.WOOD:
+        app: WoodQuotaApplication = rec
 
-    # TODO ICMSLST-1049: Replace hardcoded values with application specific versions
-    return CommodityDetails(
-        origin_country="Iran",
-        consignment_country="Algeria",
-        goods_category="ex Chapter 93",
-        shipping_year=2021,
-        commodity_codes=["2801000010", "2850002070"],
-    )
+        details = CommodityDetails(
+            origin_country="None",  # This is to match legacy for this application type
+            shipping_year=app.shipping_year,
+            commodity_codes=[app.commodity.commodity_code],
+        )
+
+    else:
+        # TODO ICMSLST-1049: Replace hardcoded values with application specific versions
+        details = CommodityDetails(
+            origin_country="Iran",
+            consignment_country="Algeria",
+            goods_category="ex Chapter 93",
+            shipping_year=2021,
+            commodity_codes=["2801000010", "2850002070"],
+        )
+
+    return details
 
 
 def _get_derogations_applications(search_ids: list[int]) -> "QuerySet[DerogationsApplication]":
@@ -272,6 +283,7 @@ def _get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesAppli
 def _get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplication]":
     applications = WoodQuotaApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
+    applications = applications.select_related("commodity")
 
     return applications
 
@@ -304,13 +316,12 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
     model = model.exclude(submit_datetime=None)
 
     if terms.app_type:
-        iat_filter = {"type": terms.app_type}
+        iat_filter = {"application_type__type": terms.app_type}
 
         if terms.app_sub_type:
-            iat_filter["sub_type"] = terms.app_sub_type
+            iat_filter["application_type__sub_type"] = terms.app_sub_type
 
-        iat = ImportApplicationType.objects.get(**iat_filter)
-        model = model.filter(application_type=iat)
+        model = model.filter(**iat_filter)
 
     if terms.case_ref:
         # TODO: Revisit this when doing ICMSLST-1035

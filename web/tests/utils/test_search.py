@@ -8,6 +8,8 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import ApplicationBase
 from web.domains.case.views import get_application_current_task
+from web.domains.commodity.models import Commodity, CommodityType
+from web.domains.country.models import Country
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
 from web.utils.search import ImportResultRow, SearchTerms, search_applications
@@ -111,6 +113,25 @@ def test_order_and_limit_works(test_data: FixtureData):
         "wood app 5",
         "wood app 4",
     )
+
+
+def test_commodity_details_correct(test_data: FixtureData):
+    _create_wood_application(
+        "Wood ref 1", test_data, shipping_year=2030, commodity_code="code654321"
+    )
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+
+    check_application_references(results.records, "Wood ref 1")
+
+    wood_app = results.records[0]
+
+    assert wood_app.commodity_details.origin_country == "None"
+    assert wood_app.commodity_details.shipping_year == 2030
+    assert wood_app.commodity_details.commodity_codes == ["code654321"]
 
 
 def _test_fetch_all(test_data: FixtureData):
@@ -313,13 +334,31 @@ def check_application_references(
     assert expected == actual
 
 
-def _create_wood_application(reference, test_data: FixtureData, submit=True):
+def _create_wood_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    shipping_year=2021,
+    commodity_code="code123456",
+):
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.WOOD_QUOTA
     )
     process_type = ImportApplicationType.ProcessTypes.WOOD.value
+    wood_type = CommodityType.objects.get(type_code="WOOD")
+    commodity, created = Commodity.objects.get_or_create(
+        defaults={"commodity_type": wood_type, "validity_start_date": datetime.date.today()},
+        commodity_code=commodity_code,
+    )
 
-    return _create_application(application_type, process_type, reference, test_data, submit)
+    wood_kwargs = {
+        "shipping_year": shipping_year,
+        "commodity": commodity,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=wood_kwargs
+    )
 
 
 def _create_derogation_application(reference, test_data: FixtureData, submit=True):
@@ -331,7 +370,9 @@ def _create_derogation_application(reference, test_data: FixtureData, submit=Tru
     return _create_application(application_type, process_type, reference, test_data, submit)
 
 
-def _create_application(application_type, process_type, reference, test_data, submit):
+def _create_application(
+    application_type, process_type, reference, test_data, submit, extra_kwargs=None
+):
     kwargs = {
         "applicant_reference": reference,
         "importer": test_data.importer,
@@ -341,7 +382,11 @@ def _create_application(application_type, process_type, reference, test_data, su
         "application_type": application_type,
         "process_type": process_type,
         "contact": test_data.importer_user,
+        "origin_country": Country.objects.get(name="Syria"),
     }
+
+    if extra_kwargs:
+        kwargs.update(**extra_kwargs)
 
     models = {
         ImportApplicationType.ProcessTypes.DEROGATIONS: DerogationsApplication,
