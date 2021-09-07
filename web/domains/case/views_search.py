@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
+from web.domains.case._import.models import ImportApplicationType
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import SearchTerms, search_applications
 
@@ -21,6 +22,7 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
     show_search_results = False
     total_rows = 0
     search_records = []
+    show_application_sub_type = False
 
     if request.POST:
         form = form_class(request.POST)
@@ -33,6 +35,10 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
             total_rows = results.total_rows
             search_records = results.records
 
+        show_application_sub_type = (
+            form.cleaned_data.get("application_type") == ImportApplicationType.Types.FIREARMS
+        )
+
     else:
         form = form_class()
 
@@ -41,6 +47,7 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
         "show_search_results": show_search_results,
+        "show_application_sub_type": show_application_sub_type,
         "total_rows": total_rows,
         "search_records": search_records,
     }
@@ -62,7 +69,7 @@ def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms
         case_ref=cd.get("case_ref"),
         licence_ref=cd.get("licence_ref"),
         app_type=cd.get("application_type"),
-        # app_sub_type=fd.get("application_type"),
+        app_sub_type=cd.get("application_sub_type"),
         case_status=cd.get("status"),
         response_decision=cd.get("decision"),
         importer_agent_name=cd.get("importer_or_agent"),

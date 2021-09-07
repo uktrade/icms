@@ -7,6 +7,7 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.export.models import ExportApplicationType
 from web.domains.case.models import ApplicationBase
 from web.forms.widgets import DateInput
+from web.models.shared import YesNoChoices
 
 
 class SearchFormBase(forms.Form):
@@ -52,11 +53,15 @@ class ImportSearchForm(SearchFormBase):
     )
 
     # TODO: add application_subtype only shown when application_type==firearms
+    application_sub_type = forms.ChoiceField(
+        label="Sub-type",
+        choices=[(None, "Any")] + ImportApplicationType.SubTypes.choices,
+        required=False,
+    )
 
     status = forms.ChoiceField(
         label="Status",
-        # TODO: get choices for import statuses
-        choices=[(None, "Any")] + [],
+        choices=[(None, "Any")] + ApplicationBase.Statuses.choices,
         required=False,
     )
 
@@ -89,8 +94,7 @@ class ExportSearchForm(SearchFormBase):
 
     status = forms.ChoiceField(
         label="Status",
-        # TODO: get choices for export statuses
-        choices=[(None, "Any")] + [],
+        choices=[(None, "Any")] + ApplicationBase.Statuses.choices,
         required=False,
     )
 
@@ -102,7 +106,17 @@ class ExportSearchForm(SearchFormBase):
     cert_country = forms.CharField(label="Certificate country", required=False)
     manufacture_country = forms.CharField(label="Country of manufacture", required=False)
 
-    # TODO: add pending FIRs / update requests, with any/yes/no options
+    pending_firs = forms.ChoiceField(
+        label="Pending Further Information Requests",
+        choices=[(None, "Any")] + YesNoChoices.choices,
+        required=False,
+    )
+
+    pending_update_reqs = forms.ChoiceField(
+        label="Pending Update Requests",
+        choices=[(None, "Any")] + YesNoChoices.choices,
+        required=False,
+    )
 
     def clean(self):
         cd = super().clean()
