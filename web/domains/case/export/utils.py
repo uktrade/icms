@@ -2,8 +2,8 @@ import io
 from collections import OrderedDict
 from dataclasses import dataclass, field
 
+from django.core.files.base import File
 from openpyxl import load_workbook
-from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
@@ -36,7 +36,7 @@ def generate_product_template_xlsx(is_biocidal: bool = False) -> bytes:
     return xlsx_data
 
 
-def process_products_file(products_file: S3Boto3StorageFile, schedule: CFSSchedule) -> int:
+def process_products_file(products_file: File, schedule: CFSSchedule) -> int:
     """Processes the uploaded xlsx file and save the products to the schedule.
 
     Raises an exception on any validation failure.
@@ -75,26 +75,22 @@ def _extract_sheet_header(sheet, is_biocidal: bool = False) -> list[str]:
     """Get the expected header for xlsx and compare it to header in the first row of data"""
 
     header = _get_header(is_biocidal)
-    cols = sheet.max_column
+    header_row = [col.strip() if col else "" for col in next(sheet.values)]
 
-    header_row = [col.strip() for col in next(sheet.values)]
+    # Check the number of columns with data in xlsx file matches the length of the header
+    if "" in header_row:
+        raise CustomError(
+            "Number of columns with data do not match the number of columns in the header"
+        )
 
     # Check the header in the xlsx file matches the expected template header
     if header != header_row:
         raise CustomError("Spreadsheet header does not match the template header")
 
-    # Check the number of columns with data in xlsx file matches the length of the header
-    if cols != len(header):
-        raise CustomError(
-            "Number of columns with data do not match the number of columns in the header"
-        )
-
     return header
 
 
-def _extract_product_data(
-    products_file: S3Boto3StorageFile, is_biocidal: bool = False
-) -> dict[str, ProductData]:
+def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dict[str, ProductData]:
     """Iterates over the rows in the products xlsx and extracts the product data from each row.
 
     Combines product type numbers and ingredients for the each product.
