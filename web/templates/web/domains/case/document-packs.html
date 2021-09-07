@@ -23,5 +23,8 @@
     {{ application_field(contact.full_name, "Primary Recipients" if loop.index == 1 else "") }}
   {% endfor %}
 
-  {% include "web/domains/case/manage/document-list.html" %}
+  <h3>Documents</h3>
+  {% with show_generation_status = True %}
+    {% include "web/domains/case/document-list.html" %}
+  {% endwith %}
 {% endblock %}

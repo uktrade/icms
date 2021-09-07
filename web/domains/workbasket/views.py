@@ -125,6 +125,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         .filter(is_active=True)
         .filter(
             status__in=[
+                ImportApplication.Statuses.COMPLETED,
                 ImportApplication.Statuses.SUBMITTED,
                 ImportApplication.Statuses.IN_PROGRESS,
                 ImportApplication.Statuses.WITHDRAWN,
@@ -150,6 +151,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         .filter(is_active=True)
         .filter(
             status__in=[
+                ExportApplication.Statuses.COMPLETED,
                 ExportApplication.Statuses.SUBMITTED,
                 ExportApplication.Statuses.IN_PROGRESS,
                 ExportApplication.Statuses.WITHDRAWN,

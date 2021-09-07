@@ -71,6 +71,7 @@ from .types import (
     ImpOrExpOrAccess,
     ImpOrExpOrAccessT,
     ImpOrExpT,
+    ImpTypeOrExpType,
 )
 
 if TYPE_CHECKING:
@@ -152,6 +153,10 @@ def get_application_current_task(
             )
         elif task_type == Task.TaskType.AUTHORISE:
             return application.get_task(application.Statuses.PROCESSING, task_type)
+
+        elif task_type == Task.TaskType.ACK:
+            return application.get_task(application.Statuses.COMPLETED, task_type)
+
     elif case_type == "access":
         if task_type == Task.TaskType.PROCESS:
             return application.get_task(application.Statuses.SUBMITTED, task_type)
@@ -2128,6 +2133,14 @@ def authorise_documents(
                 task.owner = request.user
                 task.save()
 
+                if settings.APP_ENV in ("local", "dev"):
+                    # TODO: ICMSLST-813 chief in test mode
+                    Task.objects.create(
+                        process=application, task_type=Task.TaskType.ACK, previous=task
+                    )
+                else:
+                    raise NotImplementedError("Application should be submitted to CHIEF")
+
                 messages.success(
                     request,
                     f"Authorise Success: Application {application.reference} has been authorised",
@@ -2165,30 +2178,16 @@ def view_document_packs(
         )
 
         task = get_application_current_task(application, case_type, "authorise")
-        application_type = application.application_type
-
-        if case_type == "import":
-            cover_letter_flag = application_type.cover_letter_flag
-            type_label = application_type.Types(application_type.type).label
-            customs_copy = application_type.type == application_type.Types.OPT
-            is_cfs = False
-        else:
-            cover_letter_flag = False
-            type_label = application_type.type
-            customs_copy = False
-            is_cfs = application_type.type_code == application_type.Types.FREE_SALE
 
         context = {
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "process": application,
             "task": task,
-            "cover_letter_flag": cover_letter_flag,
             "page_title": get_page_title(case_type, application, "Authorisation"),
+            # TODO: ICMSLST-1046 set agent's contacts
             "contacts": forms.application_contacts(application),
-            "type_label": type_label,
-            "customs_copy": customs_copy,
-            "is_cfs": is_cfs,
+            **get_document_context(case_type, application.application_type),
         }
 
         return render(
@@ -2196,6 +2195,25 @@ def view_document_packs(
             template_name="web/domains/case/document-packs.html",
             context=context,
         )
+
+
+def get_document_context(case_type: str, at: ImpTypeOrExpType) -> dict[str, str]:
+    if case_type == "import":
+        context = {
+            "cover_letter_flag": at.cover_letter_flag,
+            "type_label": at.Types(at.type).label,
+            "customs_copy": at.type == at.Types.OPT,
+            "is_cfs": False,
+        }
+    else:
+        context = {
+            "cover_letter_flag": False,
+            "type_label": at.type,
+            "customs_copy": False,
+            "is_cfs": at.type_code == at.Types.FREE_SALE,
+        }
+
+    return context
 
 
 @login_required
@@ -2424,6 +2442,68 @@ def create_case_email(
                     "case_type": case_type,
                 },
             )
+        )
+
+
+@login_required
+def ack_notification(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = _get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, case_type)
+
+        task = get_application_current_task(application, case_type, Task.TaskType.ACK)
+
+        if request.POST:
+            form = forms.AckReceiptForm(request.POST)
+            if form.is_valid():
+                application.acknowledged_by = request.user
+                application.acknowledged_datetime = timezone.now()
+                application.save()
+
+                # TODO: ICMSLST-20
+                # Notification is not cleared and still appear in the workbasket
+                # It can be cleared with the generic 'Clear' feature in workbasket
+
+                return redirect(
+                    reverse(
+                        "case:ack-notification",
+                        kwargs={"application_pk": application_pk, "case_type": case_type},
+                    )
+                )
+        else:
+            form = forms.AckReceiptForm()
+
+        if case_type == "import":
+            org = application.importer
+        else:
+            org = application.exporter
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
+            "form": form,
+            # TODO: ICMSLST-1046 set agent's contacts
+            "contacts": forms.application_contacts(application),
+            "case_type": case_type,
+            "page_title": get_page_title(case_type, application, "Response"),
+            "acknowledged": application.acknowledged_by and application.acknowledged_datetime,
+            "org": org,
+            "show_generation_status": False,
+            **get_document_context(case_type, application.application_type),
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/ack-notification.html",
+            context=context,
         )
 
 
@@ -2685,7 +2765,7 @@ def get_page_title(case_type: str, application: ImpOrExpOrAccess, page: str) -> 
     elif case_type == "export":
         return f"{ExportApplicationType.ProcessTypes(application.process_type).label} - {page}"
     elif case_type == "access":
-        return "Access Request - {page}"
+        return f"Access Request - {page}"
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
 

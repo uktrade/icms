@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.conf import settings
 from django.contrib import messages
@@ -23,6 +23,9 @@ CASE_NOTE_STATUSES = (
     (CASE_NOTE_DRAFT, "Draft"),
     (CASE_NOTE_COMPLETED, "Completed"),
 )
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class VariationRequest(models.Model):
@@ -257,6 +260,15 @@ class ApplicationBase(WorkbasketBase, Process):
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
     refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
 
+    acknowledged_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+    )
+
+    acknowledged_datetime = models.DateTimeField(null=True)
+
     def is_import_application(self) -> bool:
         raise NotImplementedError
 
@@ -270,6 +282,14 @@ class ApplicationBase(WorkbasketBase, Process):
 
     def user_is_agent_of_org(self, user: User) -> bool:
         """Is the user agent of the org (Importer or Exporter)"""
+        raise NotImplementedError
+
+    def get_org_contacts(self) -> "QuerySet[User]":
+        """Org (Importer or Exporter) contacts."""
+        raise NotImplementedError
+
+    def get_agent_contacts(self) -> "QuerySet[User]":
+        """Agent contacts."""
         raise NotImplementedError
 
     def get_workbasket_subject(self) -> str:
@@ -477,6 +497,22 @@ class ApplicationBase(WorkbasketBase, Process):
                             ),
                         )
                     )
+
+        elif self.status == self.Statuses.COMPLETED:
+            applicant_actions.append(view_action)
+
+            if self.acknowledged_by and self.acknowledged_datetime:
+                action = "View Notification"
+            else:
+                action = "Acknowledge Notification"
+
+            applicant_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name=action,
+                    url=reverse("case:ack-notification", kwargs=kwargs),
+                ),
+            )
 
         return applicant_actions
 

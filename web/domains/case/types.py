@@ -11,7 +11,9 @@ from web.models import (
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
+    ExportApplicationType,
     ImportApplication,
+    ImportApplicationType,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
@@ -22,6 +24,8 @@ from web.models import (
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 
 ImpOrExp = Union[ImportApplication, ExportApplication]
 ImpOrExpT = Type[ImpOrExp]

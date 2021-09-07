@@ -1,4 +1,7 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
+from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
@@ -15,6 +18,9 @@ from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.models.shared import AddressEntryType, YesNoChoices
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 class ExportApplicationType(models.Model):
@@ -173,6 +179,12 @@ class ExportApplication(ApplicationBase):
 
     def user_is_agent_of_org(self, user: User) -> bool:
         return user.has_perm("web.is_agent_of_exporter", self.exporter)
+
+    def get_org_contacts(self) -> "QuerySet[User]":
+        return get_users_with_perms(self.exporter, only_with_perms_in=["is_contact_of_exporter"])
+
+    def get_agent_contacts(self) -> "QuerySet[User]":
+        return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_exporter"])
 
     def get_workbasket_subject(self) -> str:
         return "\n".join(

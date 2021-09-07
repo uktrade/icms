@@ -136,6 +136,10 @@ authorisation_urls = [
     path("document-packs/", views.view_document_packs, name="document-packs"),
 ]
 
+ack_notification_urls = [
+    path("", views.ack_notification, name="ack-notification"),
+]
+
 email_urls = [
     path("manage/", views.manage_case_emails, name="manage-case-emails"),
     path("create/", views.create_case_email, name="create-case-email"),
@@ -192,6 +196,9 @@ urlpatterns = [
                             #
                             # Application Authorisation (import/export)
                             path("authorisation/", include(authorisation_urls)),
+                            #
+                            # Acknowledge Notification (import/export)
+                            path("ack-notification/", include(ack_notification_urls)),
                             #
                             # Emails (import/export)
                             path("emails/", include(email_urls)),

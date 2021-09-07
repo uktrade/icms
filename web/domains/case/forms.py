@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Any
 from django import forms
 from django.contrib.auth import authenticate
 from django_select2 import forms as s2forms
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
@@ -20,7 +19,7 @@ from .models import (
     UpdateRequest,
     WithdrawApplication,
 )
-from .types import CaseEmailConfig, ImpOrExpT
+from .types import CaseEmailConfig, ImpOrExp
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -198,26 +197,27 @@ class CaseEmailResponseForm(forms.ModelForm):
         fields = ("response",)
 
 
-def application_contacts(application: ImpOrExpT) -> "QuerySet[User]":
-    if isinstance(application, ImportApplication):
-        if application.agent:
-            users = get_users_with_perms(
-                application.agent, only_with_perms_in=["is_contact_of_importer"]
-            )
-        else:
-            users = get_users_with_perms(
-                application.importer, only_with_perms_in=["is_contact_of_importer"]
-            )
-    elif isinstance(application, ExportApplication):
-        if application.agent:
-            users = get_users_with_perms(
-                application.agent, only_with_perms_in=["is_contact_of_exporter"]
-            )
-        else:
-            users = get_users_with_perms(
-                application.exporter, only_with_perms_in=["is_contact_of_exporter"]
-            )
+class AckReceiptForm(forms.Form):
+    confirmation = forms.BooleanField(
+        label=(
+            "By acknowledging receipt of this notification, you agree you are authorised to receive"
+            " it and able to act upon it as necessary."
+        )
+    )
+
+    def clean_confirmation(self):
+        confirmation = self.cleaned_data["confirmation"]
+
+        if not confirmation:
+            raise forms.ValidationError("You must enter this item.")
+
+        return confirmation
+
+
+def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
+    if application.agent:
+        users = application.get_agent_contacts()
     else:
-        raise Exception("Application not supported: {}".format(application))
+        users = application.get_org_contacts()
 
     return users.filter(is_active=True)

@@ -1,9 +1,10 @@
-<h3>Documents</h3>
 <table class="setoutList">
   <thead>
   <tr>
     <th>Document Title</th>
-    <th>Generation Status</th>
+    {% if show_generation_status %}
+      <th>Generation Status</th>
+    {% endif %}
     <th>Document</th>
   </tr>
   </thead>
@@ -11,7 +12,9 @@
       {% if cover_letter_flag %}
         <tr>
             <td>{{ type_label }} Cover Letter</td>
-            <td>COMPLETE</td>
+            {% if show_generation_status %}
+              <td>COMPLETE</td>
+            {% endif %}
             <td>
                 {# TODO ICMSLST-836: Replace this link with final cover letter instead of preview #}
                 <a
@@ -26,7 +29,9 @@
       {% if case_type == "import" %}
         <tr>
             <td>{{ type_label }} Licence{{" (Holders Copy)" if customs_copy else ""}}</td>
-            <td>COMPLETE</td>
+            {% if show_generation_status %}
+              <td>COMPLETE</td>
+            {% endif %}
             <td>
                 {# TODO ICMSLST-836: Replace this link with generated licence #}
                 <a
@@ -40,7 +45,9 @@
         {% if customs_copy %}
             <tr>
                 <td>{{ type_label }} Licence (Custom's Copy)</td>
-                <td>COMPLETE</td>
+                {% if show_generation_status %}
+                  <td>COMPLETE</td>
+                {% endif %}
                 <td>
                     {# TODO: Replace this link with generated licence #}
                     <a
@@ -57,7 +64,9 @@
         {% if is_cfs %}
             <tr>
                 <td>Certificates of Free Sale (CFS) issued by the United Kingdom (UK)</td>
-                <td>COMPLETE</td>
+                {% if show_generation_status %}
+                  <td>COMPLETE</td>
+                {% endif %}
                 <td>
                     <a
                         href="#"
@@ -71,7 +80,9 @@
         {% for country in process.countries.all() %}
             <tr>
                 <td>{{ type_label }} ({{ country.name }})</td>
-                <td>COMPLETE</td>
+                {% if show_generation_status %}
+                  <td>COMPLETE</td>
+                {% endif %}
                 <td>
                     <a
                         href="#"
