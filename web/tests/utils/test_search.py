@@ -1,18 +1,39 @@
 import datetime
 from typing import TYPE_CHECKING
 
+from django.utils.timezone import make_aware
 from pytest import fixture
 
 from web.domains.case._import.derogations.models import DerogationsApplication
+from web.domains.case._import.fa_dfl.models import DFLApplication
+from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_sil.models import SILApplication
+from web.domains.case._import.ironsteel.models import IronSteelApplication
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.opt.models import (
+    CP_CATEGORIES,
+    OutwardProcessingTradeApplication,
+)
+from web.domains.case._import.sanctions.models import (
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+)
+from web.domains.case._import.sps.models import PriorSurveillanceApplication
+from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import ApplicationBase
 from web.domains.case.views import get_application_current_task
-from web.domains.commodity.models import Commodity, CommodityType
+from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import Task
+from web.models.shared import FirearmCommodity
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
-from web.utils.search import ImportResultRow, SearchTerms, search_applications
+from web.utils.search import (
+    CommodityDetails,
+    ImportResultRow,
+    SearchTerms,
+    search_applications,
+)
 
 if TYPE_CHECKING:
     from web.models import User
@@ -115,7 +136,266 @@ def test_order_and_limit_works(test_data: FixtureData):
     )
 
 
-def test_commodity_details_correct(test_data: FixtureData):
+def test_derogation_commodity_details_correct(test_data: FixtureData):
+    app = _create_derogation_application("derogation app 1", test_data)
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.DEROGATION)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "derogation app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Tanzania",
+        expected_consignment_country="Algeria",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_commodity_codes=["code112233"],
+    )
+
+
+def test_fa_dfl_commodity_details_correct(test_data: FixtureData):
+    _create_fa_dfl_application("fa-dfl app 1", test_data)
+
+    search_terms = SearchTerms(
+        case_type="import",
+        app_type=ImportApplicationType.Types.FIREARMS,
+        app_sub_type=ImportApplicationType.SubTypes.DFL,
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-dfl app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="the Czech Republic",
+        expected_consignment_country="the Slovak Republic",
+        expected_goods_category=FirearmCommodity.EX_CHAPTER_97.label,
+    )
+
+
+def test_fa_oil_commodity_details_correct(test_data: FixtureData):
+    _create_fa_oil_application("fa-oil app 1", test_data)
+
+    search_terms = SearchTerms(
+        case_type="import",
+        app_type=ImportApplicationType.Types.FIREARMS,
+        app_sub_type=ImportApplicationType.SubTypes.OIL,
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-oil app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Any Country",
+        expected_consignment_country="Any Country",
+        expected_goods_category=FirearmCommodity.EX_CHAPTER_93.label,
+    )
+
+
+def test_fa_sil_commodity_details_correct(test_data: FixtureData):
+    _create_fa_sil_application("fa-sil app 1", test_data)
+
+    search_terms = SearchTerms(
+        case_type="import",
+        app_type=ImportApplicationType.Types.FIREARMS,
+        app_sub_type=ImportApplicationType.SubTypes.SIL,
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-sil app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Argentina",
+        expected_consignment_country="Azerbaijan",
+        expected_goods_category=FirearmCommodity.EX_CHAPTER_97.label,
+    )
+
+
+def test_ironsteel_commodity_details_correct(test_data: FixtureData):
+    _create_ironsteel_application("ironsteel app 1", test_data)
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.IRON_STEEL)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "ironsteel app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Kazakhstan",
+        expected_consignment_country="Bahamas",
+        expected_shipping_year=2021,
+        expected_goods_category="SA1",
+        expected_commodity_codes=["7208370010"],
+    )
+
+
+def test_opt_commodity_details_correct(test_data: FixtureData):
+    app = _create_opt_application("opt app 1", test_data)
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.OPT)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "opt app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Uruguay",
+        expected_consignment_country="USA",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_goods_category=CP_CATEGORIES[0],
+        expected_commodity_codes=[
+            "5006009000",
+            "5007206190",
+            "5112301000",
+            "6205200010",
+            "6205908010",
+        ],
+    )
+
+
+def test_sanctionadhoc_commodity_details_correct(test_data: FixtureData):
+    app = _create_sanctionadhoc_application("sanctionsadhoc app 1", test_data)
+
+    search_terms = SearchTerms(
+        case_type="import", app_type=ImportApplicationType.Types.SANCTION_ADHOC
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "sanctionsadhoc app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Iran",
+        expected_consignment_country="Algeria",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_commodity_codes=["2801000010", "2850002070"],
+    )
+
+
+def test_sps_commodity_details_correct(test_data: FixtureData):
+    app = _create_sps_application("sps app 1", test_data)
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.SPS)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "sps app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Azerbaijan",
+        expected_consignment_country="Jordan",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_commodity_codes=["7208539000"],
+    )
+
+
+def test_sps_commodity_details_correct_multiple(test_data: FixtureData):
+    app_1 = _create_sps_application(
+        "sps app 1",
+        test_data,
+        origin_country="Afghanistan",
+        consignment_country="Armenia",
+        commodity_code="111111",
+    )
+    app_2 = _create_sps_application(
+        "sps app 2",
+        test_data,
+        origin_country="Albania",
+        consignment_country="Australia",
+        commodity_code="222222",
+    )
+    app_3 = _create_sps_application(
+        "sps app 3",
+        test_data,
+        origin_country="Algeria",
+        consignment_country="Azerbaijan",
+        commodity_code="333333",
+    )
+    app_4 = _create_sps_application(
+        "sps app 4",
+        test_data,
+        origin_country="Angola",
+        consignment_country="Bahamas",
+        commodity_code="444444",
+    )
+    app_5 = _create_sps_application(
+        "sps app 5",
+        test_data,
+        origin_country="Argentina",
+        consignment_country="Bahrain",
+        commodity_code="555555",
+    )
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.SPS)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 5
+    check_application_references(
+        results.records, "sps app 5", "sps app 4", "sps app 3", "sps app 2", "sps app 1"
+    )
+
+    check_commodity_details(
+        results.records[4].commodity_details,
+        expected_origin_country="Afghanistan",
+        expected_consignment_country="Armenia",
+        expected_shipping_year=app_1.submit_datetime.year,
+        expected_commodity_codes=["111111"],
+    )
+
+    check_commodity_details(
+        results.records[3].commodity_details,
+        expected_origin_country="Albania",
+        expected_consignment_country="Australia",
+        expected_shipping_year=app_2.submit_datetime.year,
+        expected_commodity_codes=["222222"],
+    )
+
+    check_commodity_details(
+        results.records[2].commodity_details,
+        expected_origin_country="Algeria",
+        expected_consignment_country="Azerbaijan",
+        expected_shipping_year=app_3.submit_datetime.year,
+        expected_commodity_codes=["333333"],
+    )
+
+    check_commodity_details(
+        results.records[1].commodity_details,
+        expected_origin_country="Angola",
+        expected_consignment_country="Bahamas",
+        expected_shipping_year=app_4.submit_datetime.year,
+        expected_commodity_codes=["444444"],
+    )
+
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Argentina",
+        expected_consignment_country="Bahrain",
+        expected_shipping_year=app_5.submit_datetime.year,
+        expected_commodity_codes=["555555"],
+    )
+
+
+def test_textiles_commodity_details_correct(test_data: FixtureData):
+    _create_textiles_application("textiles app 1", test_data)
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.TEXTILES)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "textiles app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Belarus",
+        expected_consignment_country="Argentina",
+        expected_shipping_year=2024,
+        expected_goods_category="22",
+        expected_commodity_codes=["5509620000"],
+    )
+
+
+def test_wood_commodity_details_correct(test_data: FixtureData):
     _create_wood_application(
         "Wood ref 1", test_data, shipping_year=2030, commodity_code="code654321"
     )
@@ -245,14 +525,13 @@ def _test_search_by_importer_or_agent_name(test_data: FixtureData):
 
 def _test_search_by_submitted_datetime(test_data: FixtureData):
     application = _create_wood_application("Wood ref 4", test_data)
-
-    application.submit_datetime = datetime.datetime(2020, 1, 1, 23, 59, 59)
+    application.submit_datetime = make_aware(datetime.datetime(2020, 1, 1, 23, 59, 59))
     application.save()
 
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        submitted_datetime_start=datetime.datetime(2020, 1, 2),
+        submitted_datetime_start=make_aware(datetime.datetime(2020, 1, 2)),
     )
     results = search_applications(search_terms)
 
@@ -264,8 +543,8 @@ def _test_search_by_submitted_datetime(test_data: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        submitted_datetime_start=datetime.datetime(2020, 1, 1),
-        submitted_datetime_end=datetime.datetime(2020, 1, 2),
+        submitted_datetime_start=make_aware(datetime.datetime(2020, 1, 1)),
+        submitted_datetime_end=make_aware(datetime.datetime(2020, 1, 2)),
     )
     results = search_applications(search_terms)
 
@@ -334,6 +613,281 @@ def check_application_references(
     assert expected == actual
 
 
+def check_commodity_details(
+    actual_details: CommodityDetails,
+    *,
+    expected_origin_country: str = None,
+    expected_consignment_country: str = None,
+    expected_goods_category: str = None,
+    expected_shipping_year: int = None,
+    expected_commodity_codes: list[str] = None,
+):
+
+    assert expected_origin_country == actual_details.origin_country
+    assert expected_consignment_country == actual_details.consignment_country
+    assert expected_goods_category == actual_details.goods_category
+    assert expected_shipping_year == actual_details.shipping_year
+    assert expected_commodity_codes == actual_details.commodity_codes
+
+
+def _create_derogation_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Tanzania",
+    consignment_country="Algeria",
+    commodity_code="code112233",
+):
+
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.DEROGATION
+    )
+    process_type = ImportApplicationType.ProcessTypes.DEROGATIONS.value
+    commodity = _create_test_commodity(commodity_code)
+
+    derogation_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "commodity": commodity,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=derogation_kwargs
+    )
+
+
+def _create_fa_dfl_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="the Czech Republic",
+    consignment_country="the Slovak Republic",
+    commodity_code=FirearmCommodity.EX_CHAPTER_97,
+):
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
+    )
+    process_type = ImportApplicationType.ProcessTypes.FA_DFL.value
+
+    fa_dfl_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "commodity_code": commodity_code,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_dfl_kwargs
+    )
+
+
+def _create_fa_oil_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Any Country",
+    consignment_country="Any Country",
+    commodity_code=FirearmCommodity.EX_CHAPTER_93,
+):
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.OIL
+    )
+    process_type = ImportApplicationType.ProcessTypes.FA_OIL.value
+    fa_oil_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "commodity_code": commodity_code,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_oil_kwargs
+    )
+
+
+def _create_fa_sil_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Argentina",
+    consignment_country="Azerbaijan",
+    commodity_code=FirearmCommodity.EX_CHAPTER_97,
+):
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.SIL
+    )
+    process_type = ImportApplicationType.ProcessTypes.FA_SIL.value
+    fa_sil_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "commodity_code": commodity_code,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_sil_kwargs
+    )
+
+
+def _create_ironsteel_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Kazakhstan",
+    consignment_country="Bahamas",
+    shipping_year=2021,
+    category_commodity_group="SA1",
+    commodity_code="7208370010",
+):
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.IRON_STEEL
+    )
+    process_type = ImportApplicationType.ProcessTypes.IRON_STEEL.value
+    commodity = _create_test_commodity(commodity_code)
+    commodity_group = _create_test_commodity_group(category_commodity_group, commodity)
+
+    ironsteel_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "shipping_year": shipping_year,
+        "commodity": commodity,
+        "category_commodity_group": commodity_group,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=ironsteel_kwargs
+    )
+
+
+def _create_opt_application(
+    reference,
+    test_data: FixtureData,
+    origin_country="Uruguay",
+    consignment_country="USA",
+    cp_category=CP_CATEGORIES[0],
+    cp_commodity_codes=("6205200010", "6205908010"),
+    teg_commodity_codes=("5006009000", "5007206190", "5112301000"),
+):
+    application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT)
+    process_type = ImportApplicationType.ProcessTypes.OPT.value
+    cp_commodities = []
+    teg_commodities = []
+
+    for cc in cp_commodity_codes:
+        cp_commodities.append(_create_test_commodity(cc))
+
+    for cc in teg_commodity_codes:
+        teg_commodities.append(_create_test_commodity(cc))
+
+    opt_kwargs = {
+        "cp_origin_country": Country.objects.get(name=origin_country),
+        "cp_processing_country": Country.objects.get(name=consignment_country),
+        "cp_category": cp_category,
+    }
+
+    application: OutwardProcessingTradeApplication = _create_application(
+        application_type, process_type, reference, test_data, submit=False, extra_kwargs=opt_kwargs
+    )
+
+    for com in cp_commodities:
+        application.cp_commodities.add(com)
+
+    for com in teg_commodities:
+        application.teg_commodities.add(com)
+
+    _submit_application(application, test_data)
+
+    return application
+
+
+def _create_sanctionadhoc_application(
+    reference,
+    test_data: FixtureData,
+    origin_country="Iran",
+    consignment_country="Algeria",
+    commodity_codes=("2801000010", "2850002070"),
+):
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.SANCTION_ADHOC
+    )
+    process_type = ImportApplicationType.ProcessTypes.SANCTIONS.value
+
+    sanctionadhoc_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+    }
+
+    application = _create_application(
+        application_type,
+        process_type,
+        reference,
+        test_data,
+        submit=False,
+        extra_kwargs=sanctionadhoc_kwargs,
+    )
+
+    for com in commodity_codes:
+        SanctionsAndAdhocApplicationGoods.objects.create(
+            import_application=application,
+            commodity=_create_test_commodity(com),
+            goods_description=f"Some goods: {com}",
+            quantity_amount=123,
+            value=123,
+        )
+
+    _submit_application(application, test_data)
+
+    return application
+
+
+def _create_sps_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Azerbaijan",
+    consignment_country="Jordan",
+    commodity_code="7208539000",
+):
+    application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SPS)
+    process_type = ImportApplicationType.ProcessTypes.SPS.value
+
+    sps_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "commodity": _create_test_commodity(commodity_code),
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=sps_kwargs
+    )
+
+
+def _create_textiles_application(
+    reference,
+    test_data: FixtureData,
+    submit=True,
+    origin_country="Belarus",
+    consignment_country="Argentina",
+    shipping_year=2024,
+    category_commodity_group="22",
+    commodity_code="5509620000",
+):
+    application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.TEXTILES)
+    process_type = ImportApplicationType.ProcessTypes.TEXTILES.value
+
+    commodity = _create_test_commodity(commodity_code)
+    commodity_group = _create_test_commodity_group(category_commodity_group, commodity)
+
+    textiles_kwargs = {
+        "origin_country": Country.objects.get(name=origin_country),
+        "consignment_country": Country.objects.get(name=consignment_country),
+        "shipping_year": shipping_year,
+        "commodity": commodity,
+        "category_commodity_group": commodity_group,
+    }
+
+    return _create_application(
+        application_type, process_type, reference, test_data, submit, extra_kwargs=textiles_kwargs
+    )
+
+
 def _create_wood_application(
     reference,
     test_data: FixtureData,
@@ -345,11 +899,7 @@ def _create_wood_application(
         type=ImportApplicationType.Types.WOOD_QUOTA
     )
     process_type = ImportApplicationType.ProcessTypes.WOOD.value
-    wood_type = CommodityType.objects.get(type_code="WOOD")
-    commodity, created = Commodity.objects.get_or_create(
-        defaults={"commodity_type": wood_type, "validity_start_date": datetime.date.today()},
-        commodity_code=commodity_code,
-    )
+    commodity = _create_test_commodity(commodity_code)
 
     wood_kwargs = {
         "shipping_year": shipping_year,
@@ -359,15 +909,6 @@ def _create_wood_application(
     return _create_application(
         application_type, process_type, reference, test_data, submit, extra_kwargs=wood_kwargs
     )
-
-
-def _create_derogation_application(reference, test_data: FixtureData, submit=True):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.DEROGATION
-    )
-    process_type = ImportApplicationType.ProcessTypes.DEROGATIONS.value
-
-    return _create_application(application_type, process_type, reference, test_data, submit)
 
 
 def _create_application(
@@ -382,7 +923,6 @@ def _create_application(
         "application_type": application_type,
         "process_type": process_type,
         "contact": test_data.importer_user,
-        "origin_country": Country.objects.get(name="Syria"),
     }
 
     if extra_kwargs:
@@ -390,6 +930,14 @@ def _create_application(
 
     models = {
         ImportApplicationType.ProcessTypes.DEROGATIONS: DerogationsApplication,
+        ImportApplicationType.ProcessTypes.FA_DFL: DFLApplication,
+        ImportApplicationType.ProcessTypes.FA_OIL: OpenIndividualLicenceApplication,
+        ImportApplicationType.ProcessTypes.FA_SIL: SILApplication,
+        ImportApplicationType.ProcessTypes.IRON_STEEL: IronSteelApplication,
+        ImportApplicationType.ProcessTypes.OPT: OutwardProcessingTradeApplication,
+        ImportApplicationType.ProcessTypes.SANCTIONS: SanctionsAndAdhocApplication,
+        ImportApplicationType.ProcessTypes.SPS: PriorSurveillanceApplication,
+        ImportApplicationType.ProcessTypes.TEXTILES: TextilesApplication,
         ImportApplicationType.ProcessTypes.WOOD: WoodQuotaApplication,
     }
 
@@ -412,3 +960,21 @@ def _submit_application(application, test_data: FixtureData):
 
     application.submit_application(test_data.request, task)
     application.save()
+
+
+def _create_test_commodity(commodity_code):
+    com_type = CommodityType.objects.get(type_code="TEXTILES")
+    commodity, created = Commodity.objects.get_or_create(
+        defaults={"commodity_type": com_type, "validity_start_date": datetime.date.today()},
+        commodity_code=commodity_code,
+    )
+    return commodity
+
+
+def _create_test_commodity_group(category_commodity_group: str, commodity: Commodity):
+    group, created = CommodityGroup.objects.get_or_create(group_code=category_commodity_group)
+
+    if created:
+        group.commodities.add(commodity)
+
+    return group

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from operator import attrgetter
 from typing import TYPE_CHECKING, Iterable, NamedTuple, Optional
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
 
 from web.domains.case._import.derogations.models import DerogationsApplication
@@ -214,24 +215,114 @@ def _get_licence_reference(rec: ImportApplication) -> str:
 
 def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
     """Load the commodity details section"""
-    if rec.process_type == ImportApplicationType.ProcessTypes.WOOD:
-        app: WoodQuotaApplication = rec
+
+    app_pt = rec.process_type
+    process_types = ImportApplicationType.ProcessTypes
+
+    if app_pt == process_types.WOOD:
+        wood_app: WoodQuotaApplication = rec
 
         details = CommodityDetails(
             origin_country="None",  # This is to match legacy for this application type
-            shipping_year=app.shipping_year,
-            commodity_codes=[app.commodity.commodity_code],
+            shipping_year=wood_app.shipping_year,
+            commodity_codes=[wood_app.commodity.commodity_code],
+        )
+
+    elif app_pt == process_types.DEROGATIONS:
+        derogation_app: DerogationsApplication = rec
+
+        details = CommodityDetails(
+            origin_country=derogation_app.origin_country.name,
+            consignment_country=derogation_app.consignment_country.name,
+            shipping_year=derogation_app.submit_datetime.year,
+            commodity_codes=[derogation_app.commodity.commodity_code],
+        )
+
+    elif app_pt == process_types.FA_DFL:
+        fa_dfl_app: DFLApplication = rec
+
+        details = CommodityDetails(
+            origin_country=fa_dfl_app.origin_country.name,
+            consignment_country=fa_dfl_app.consignment_country.name,
+            goods_category=fa_dfl_app.get_commodity_code_display(),
+        )
+
+    elif app_pt == process_types.FA_OIL:
+        fa_oil_app: OpenIndividualLicenceApplication = rec
+
+        details = CommodityDetails(
+            origin_country=fa_oil_app.origin_country.name,
+            consignment_country=fa_oil_app.consignment_country.name,
+            goods_category=fa_oil_app.get_commodity_code_display(),
+        )
+
+    elif app_pt == process_types.FA_SIL:
+        fa_sil_app: SILApplication = rec
+
+        details = CommodityDetails(
+            origin_country=fa_sil_app.origin_country.name,
+            consignment_country=fa_sil_app.consignment_country.name,
+            goods_category=fa_sil_app.get_commodity_code_display(),
+        )
+
+    elif app_pt == process_types.IRON_STEEL:
+        ironsteel_app: IronSteelApplication = rec
+
+        details = CommodityDetails(
+            origin_country=ironsteel_app.origin_country.name,
+            consignment_country=ironsteel_app.consignment_country.name,
+            shipping_year=ironsteel_app.shipping_year,
+            goods_category=ironsteel_app.category_commodity_group.group_code,
+            commodity_codes=[ironsteel_app.commodity.commodity_code],
+        )
+
+    elif app_pt == process_types.OPT:
+        opt_app: OutwardProcessingTradeApplication = rec
+
+        # cp_commodity_codes & teg_commodity_codes are annotations
+        commodity_codes = sorted(opt_app.cp_commodity_codes + opt_app.teg_commodity_codes)
+
+        details = CommodityDetails(
+            origin_country=opt_app.cp_origin_country.name,
+            consignment_country=opt_app.cp_processing_country.name,
+            shipping_year=opt_app.submit_datetime.year,
+            goods_category=opt_app.cp_category,
+            commodity_codes=commodity_codes,
+        )
+
+    elif app_pt == process_types.SANCTIONS:
+        sanction_app: SanctionsAndAdhocApplication = rec
+
+        details = CommodityDetails(
+            origin_country=sanction_app.origin_country.name,
+            consignment_country=sanction_app.consignment_country.name,
+            shipping_year=sanction_app.submit_datetime.year,
+            commodity_codes=sorted(sanction_app.commodity_codes),
+        )
+
+    elif app_pt == process_types.SPS:
+        sps_app: PriorSurveillanceApplication = rec
+
+        details = CommodityDetails(
+            origin_country=sps_app.origin_country.name,
+            consignment_country=sps_app.consignment_country.name,
+            shipping_year=sps_app.submit_datetime.year,
+            commodity_codes=[sps_app.commodity.commodity_code],
+        )
+
+    elif app_pt == process_types.TEXTILES:
+        textiles_app: TextilesApplication = rec
+
+        details = CommodityDetails(
+            origin_country=textiles_app.origin_country.name,
+            consignment_country=textiles_app.consignment_country.name,
+            goods_category=textiles_app.category_commodity_group.group_code,
+            shipping_year=textiles_app.shipping_year,
+            commodity_codes=[textiles_app.commodity.commodity_code],
         )
 
     else:
-        # TODO ICMSLST-1049: Replace hardcoded values with application specific versions
-        details = CommodityDetails(
-            origin_country="Iran",
-            consignment_country="Algeria",
-            goods_category="ex Chapter 93",
-            shipping_year=2021,
-            commodity_codes=["2801000010", "2850002070"],
-        )
+        raise NotImplementedError(f"Unsupported process type: {app_pt}")
 
     return details
 
@@ -240,6 +331,35 @@ def _get_derogations_applications(search_ids: list[int]) -> "QuerySet[Derogation
     applications = DerogationsApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
+    applications = applications.select_related("commodity", "origin_country", "consignment_country")
+
+    return applications
+
+
+def _get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
+    applications = DFLApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("origin_country", "consignment_country")
+
+    return applications
+
+
+def _get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLicenceApplication]":
+    applications = OpenIndividualLicenceApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("origin_country", "consignment_country")
+
+    return applications
+
+
+def _get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]":
+    applications = SILApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("origin_country", "consignment_country")
+
     return applications
 
 
@@ -247,12 +367,23 @@ def _get_ironsteel_applications(search_ids: list[int]) -> "QuerySet[IronSteelApp
     applications = IronSteelApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
+    applications = applications.select_related(
+        "origin_country", "consignment_country", "category_commodity_group", "commodity"
+    )
+
     return applications
 
 
 def _get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTradeApplication]":
     applications = OutwardProcessingTradeApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("cp_origin_country", "cp_processing_country")
+
+    applications = applications.annotate(
+        cp_commodity_codes=ArrayAgg("cp_commodities__commodity_code", distinct=True),
+        teg_commodity_codes=ArrayAgg("teg_commodities__commodity_code", distinct=True),
+    )
 
     return applications
 
@@ -263,12 +394,22 @@ def _get_sanctionadhoc_applications(
     applications = SanctionsAndAdhocApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
+    applications = applications.select_related("origin_country", "consignment_country")
+
+    applications = applications.annotate(
+        commodity_codes=ArrayAgg(
+            "sanctionsandadhocapplicationgoods__commodity__commodity_code", distinct=True
+        )
+    )
+
     return applications
 
 
 def _get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceApplication]":
     applications = PriorSurveillanceApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
+
+    applications = applications.select_related("origin_country", "consignment_country", "commodity")
 
     return applications
 
@@ -277,6 +418,10 @@ def _get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesAppli
     applications = TextilesApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
+    applications = applications.select_related(
+        "origin_country", "consignment_country", "category_commodity_group", "commodity"
+    )
+
     return applications
 
 
@@ -284,27 +429,6 @@ def _get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplicat
     applications = WoodQuotaApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
     applications = applications.select_related("commodity")
-
-    return applications
-
-
-def _get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLicenceApplication]":
-    applications = OpenIndividualLicenceApplication.objects.filter(pk__in=search_ids)
-    applications = _apply_import_optimisation(applications)
-
-    return applications
-
-
-def _get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]":
-    applications = DFLApplication.objects.filter(pk__in=search_ids)
-    applications = _apply_import_optimisation(applications)
-
-    return applications
-
-
-def _get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]":
-    applications = SILApplication.objects.filter(pk__in=search_ids)
-    applications = _apply_import_optimisation(applications)
 
     return applications
 
