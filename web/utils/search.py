@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Iterable, NamedTuple, Optional
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
+from django.utils.timezone import make_aware
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
@@ -38,8 +39,8 @@ class SearchTerms:
     case_status: Optional[str] = None
     response_decision: Optional[str] = None
     importer_agent_name: Optional[str] = None
-    submitted_datetime_start: Optional[datetime.datetime] = None
-    submitted_datetime_end: Optional[datetime.datetime] = None
+    submitted_date_start: Optional[datetime.date] = None
+    submitted_date_end: Optional[datetime.date] = None
     licence_date_start: Optional[datetime.date] = None
     licence_date_end: Optional[datetime.date] = None
     issue_date_start: Optional[datetime.date] = None
@@ -469,11 +470,19 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         agent_name = Q(agent__name=name)
         model = model.filter(importer_name | agent_name)
 
-    if terms.submitted_datetime_start:
-        model = model.filter(submit_datetime__gte=terms.submitted_datetime_start)
+    if terms.submitted_date_start:
+        start_datetime = make_aware(
+            datetime.datetime.combine(terms.submitted_date_start, datetime.datetime.min.time())
+        )
 
-    if terms.submitted_datetime_end:
-        model = model.filter(submit_datetime__lte=terms.submitted_datetime_end)
+        model = model.filter(submit_datetime__gte=start_datetime)
+
+    if terms.submitted_date_end:
+        end_datetime = make_aware(
+            datetime.datetime.combine(terms.submitted_date_end, datetime.datetime.max.time())
+        )
+
+        model = model.filter(submit_datetime__lte=end_datetime)
 
     # In legacy licencing assumes application state is in processing (We won't for now)
     if terms.licence_date_start:
