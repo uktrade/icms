@@ -25,6 +25,6 @@ pytest-xdist==1.32.0
 pytest==6.0.1
 PyYAML==5.4.1
 selenium==3.141.0
-sqlparse==0.4.1
+sqlparse==0.4.2
 types-pytz==2021.1.0
 types-requests==2.25.0
