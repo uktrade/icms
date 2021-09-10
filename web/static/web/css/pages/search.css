@@ -1,0 +1,14 @@
+/*
+    The style below resets the style on the search results to match legacy
+    without changing anything else in fox.css
+*/
+
+.search-results .text-widget {
+    padding: 0;
+}
+
+.search-results .text-widget,
+.search-results .prompt
+{
+    margin-top: 0;
+}

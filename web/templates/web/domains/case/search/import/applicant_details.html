@@ -1,12 +1,21 @@
 {% set ad = rec.applicant_details %}
 
-<div class="container setoutForm">
+<div class="container setoutForm search-results">
   <div class="row">
     <div class="twelve columns"><label class="prompt north">Importer</label></div>
   </div>
   <div class="row">
     <div class="twelve columns"><span class="text-widget">{{ ad.organisation_name }}</span></div>
   </div>
+
+  {% if ad.agent_name %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Agent</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget ">{{ ad.agent_name }}</span></div>
+    </div>
+  {% endif %}
 
   <div class="row">
     <div class="twelve columns"><label class="prompt north">Application Contact</label></div>

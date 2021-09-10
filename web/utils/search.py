@@ -68,6 +68,7 @@ class CaseStatus:
 class ApplicantDetails:
     organisation_name: str
     application_contact: str
+    agent_name: Optional[str] = None
 
 
 @dataclass
@@ -190,11 +191,13 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
         ),
         applicant_details=ApplicantDetails(
             organisation_name=rec.importer.name,
+            agent_name=rec.agent.name if rec.agent else None,
             application_contact=rec.contact.full_name,
         ),
         commodity_details=commodity_details,
         submit_datetime=rec.submit_datetime,
     )
+
     return row
 
 

@@ -2,6 +2,10 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/search.css') }}">
+{% endblock %}
+
 {% block main_content %}
 <div class="no-sidebar" id="content">
     <div id="content-ie8-float">
