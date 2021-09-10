@@ -11,11 +11,15 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case.views import get_application_current_task
+from web.domains.case.views import (
+    check_application_permission,
+    get_application_current_task,
+)
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.flow.models import Task
@@ -588,3 +592,47 @@ def view_file(request, application, related_file_model, file_pk):
     response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
 
     return response
+
+
+@login_required
+def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
+            application = application.openindividuallicenceapplication
+        elif application.process_type == SILApplication.PROCESS_TYPE:
+            application = application.silapplication
+        elif application.process_type == DFLApplication.PROCESS_TYPE:
+            application = application.dflapplication
+        else:
+            return redirect(reverse("workbasket"))
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        if request.POST:
+            # TODO ICMSLST-962 Add additional POST steps here
+            application.supplementary_report.is_complete = True
+            application.supplementary_report.completed_datetime = timezone.now()
+            application.supplementary_report.completed_by = request.user
+            application.save()
+
+            return redirect(reverse("workbasket"))
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "page_title": "Firearms Supplementary Information Overview",
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/provide-report.html",
+            context=context,
+        )

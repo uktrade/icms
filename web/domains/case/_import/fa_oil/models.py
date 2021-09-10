@@ -3,7 +3,12 @@ from django.db import models
 from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
-from ..models import ChecklistBase, ImportApplication, ImportApplicationType
+from ..models import (
+    ChecklistBase,
+    FirearmSupplementaryReport,
+    ImportApplication,
+    ImportApplicationType,
+)
 
 
 class OpenIndividualLicenceApplication(ImportApplication):
@@ -32,6 +37,10 @@ class OpenIndividualLicenceApplication(ImportApplication):
             " items over 100 years old. Please contact HMRC classification advisory service,"
             " 01702 366077, if you are unsure of the correct code."
         ),
+    )
+
+    supplementary_report = models.OneToOneField(
+        FirearmSupplementaryReport, on_delete=models.PROTECT, null=True, related_name="+"
     )
 
 

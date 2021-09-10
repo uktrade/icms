@@ -63,4 +63,13 @@ urlpatterns = [
             ]
         ),
     ),
+    # Importer workbasket links
+    path(
+        "case/import/<int:application_pk>/",
+        include(
+            [
+                path("provide-report/", views.provide_report, name="provide-report"),
+            ]
+        ),
+    ),
 ]

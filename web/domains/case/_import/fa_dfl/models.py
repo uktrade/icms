@@ -2,6 +2,7 @@ from django.db import models
 
 from web.domains.case._import.models import (
     ChecklistBase,
+    FirearmSupplementaryReport,
     ImportApplication,
     ImportApplicationType,
 )
@@ -63,6 +64,10 @@ class DFLApplication(ImportApplication):
         blank=False,
         null=True,
         verbose_name="Do you know who you plan to buy/obtain these items from?",
+    )
+
+    supplementary_report = models.OneToOneField(
+        FirearmSupplementaryReport, on_delete=models.PROTECT, null=True, related_name="+"
     )
 
     def __str__(self):

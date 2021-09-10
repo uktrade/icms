@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
+from web.domains.case._import.models import FirearmSupplementaryReport
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import (
@@ -261,6 +262,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
+                application.supplementary_report = FirearmSupplementaryReport.objects.create()
                 template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
                 application.cover_letter = template.get_content(
                     {

@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from web.domains.case._import.models import FirearmSupplementaryReport
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.views import (
@@ -136,6 +137,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                         "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
                     }
                 )
+                application.supplementary_report = FirearmSupplementaryReport.objects.create()
                 application.save()
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)

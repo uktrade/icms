@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from guardian.shortcuts import get_users_with_perms
 
@@ -18,6 +20,7 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
+from web.domains.workbasket.base import WorkbasketAction, WorkbasketRow
 from web.models.shared import YesNoNAChoices
 
 if TYPE_CHECKING:
@@ -372,6 +375,37 @@ class ImportApplication(ApplicationBase):
             ]
         )
 
+    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+        r = super().get_workbasket_row(user)
+
+        is_importer_user = user.has_perm("web.importer_access")
+        include_importer_rows = is_importer_user or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
+
+        if include_importer_rows:
+            importer_actions = self._get_importer_actions()
+
+            if importer_actions:
+                r.actions.append(importer_actions)
+
+        return r
+
+    def _get_importer_actions(self):
+        importer_actions: list[WorkbasketAction] = []
+
+        if (
+            self.status == self.Statuses.COMPLETED
+            and self.application_type.type == ImportApplicationType.Types.FIREARMS
+        ):
+            importer_actions.append(
+                WorkbasketAction(
+                    is_post=False,
+                    name="Provide Report",
+                    url=reverse("import:provide-report", kwargs={"application_pk": self.pk}),
+                ),
+            )
+
+        return importer_actions
+
     @property
     def application_approved(self):
         return self.decision == self.APPROVE
@@ -430,4 +464,26 @@ class ChecklistBase(models.Model):
     authorisation = models.BooleanField(
         default=False,
         verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
+    )
+
+
+class FirearmSupplementaryReport(models.Model):
+    is_complete = models.BooleanField(default=False)
+    completed_datetime = models.DateTimeField(null=True)
+
+    completed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+
+    no_report_reason = models.CharField(
+        max_length=1000,
+        null=True,
+        verbose_name=(
+            "You haven't provided any reports on imported firearms. You must provide a reason"
+            " why no reporting is required before you confirm reporting complete."
+        ),
     )
