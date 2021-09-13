@@ -893,31 +893,32 @@ def product_spreadsheet_download_template(
     application_pk: int,
     schedule_pk: int,
 ) -> HttpResponse:
-    application: CertificateOfFreeSaleApplication = get_object_or_404(
-        CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
-    )
-    check_application_permission(application, request.user, "export")
+    with transaction.atomic():
+        application: CertificateOfFreeSaleApplication = get_object_or_404(
+            CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
+        )
+        check_application_permission(application, request.user, "export")
 
-    get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-    schedule: CFSSchedule = get_object_or_404(
-        CFSSchedule.objects.select_for_update(), pk=schedule_pk
-    )
+        schedule: CFSSchedule = get_object_or_404(
+            CFSSchedule.objects.select_for_update(), pk=schedule_pk
+        )
 
-    mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    response = HttpResponse(content_type=mime_type)
-    is_biocidal = schedule.is_biocidal()
-    workbook = generate_product_template_xlsx(is_biocidal)
-    response.write(workbook)
+        mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        response = HttpResponse(content_type=mime_type)
+        is_biocidal = schedule.is_biocidal()
+        workbook = generate_product_template_xlsx(is_biocidal)
+        response.write(workbook)
 
-    filename = "CFS Product Upload Template.xlsx"
+        filename = "CFS Product Upload Template.xlsx"
 
-    if is_biocidal:
-        filename = "CFS Product Upload Biocide Template.xlsx"
+        if is_biocidal:
+            filename = "CFS Product Upload Biocide Template.xlsx"
 
-    response["Content-Disposition"] = f"attachment; filename={filename}"
+        response["Content-Disposition"] = f"attachment; filename={filename}"
 
-    return response
+        return response
 
 
 @require_POST
