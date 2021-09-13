@@ -112,10 +112,10 @@ class CreateImportApplicationForm(forms.Form):
 
         is_agent = self.user.has_perm("web.is_agent_of_importer", importer)
         if is_agent:
-            if not cleaned_data["agent"]:
+            if not cleaned_data.get("agent"):
                 self.add_error("agent", "You must enter this item")
 
-            if not cleaned_data["agent_office"]:
+            if not cleaned_data.get("agent_office"):
                 self.add_error("agent_office", "You must enter this item")
 
         return cleaned_data
