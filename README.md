@@ -7,6 +7,7 @@
 # ICMS - Import Case Management System
 
 ## Introduction
+# FOO to delete
 
 ICMS is "Import Case Management System", and this repo contains the Python /
 Django / PostgreSQL port of it from the original Oracle-based system.
