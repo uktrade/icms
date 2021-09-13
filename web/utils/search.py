@@ -19,6 +19,7 @@ from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplicati
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
@@ -59,6 +60,10 @@ class CaseStatus:
     application_type: str
     application_sub_type: str
     status: str
+    licence_type: str  # Used in spreadsheet
+    licence_start_date: Optional[str] = None  # Used in spreadsheet
+    licence_end_date: Optional[str] = None  # Used in spreadsheet
+    chief_usage_status: Optional[str] = None  # Used in spreadsheet
     applicant_reference: Optional[str] = None
     licence_reference: Optional[str] = None
     licence_validity: Optional[str] = None
@@ -97,6 +102,28 @@ class SearchResults:
     records: list[ImportResultRow]
 
 
+class SpreadsheetRow(NamedTuple):
+    case_reference: str
+    applicant_reference: Optional[str]
+    licence_reference: Optional[str]
+    licence_type: str
+    licence_start_date: Optional[str]
+    licence_end_date: Optional[str]
+    application_type: str
+    application_sub_type: str
+    case_status: str
+    chief_usage_status: Optional[str]
+    submitted_date: str
+    organisation_name: str
+    agent: Optional[str]
+    application_contact: str
+    origin_country: str
+    country_of_consignment: Optional[str]
+    shipping_year: Optional[int]
+    goods_category: Optional[str]
+    commodity_codes: Optional[str]
+
+
 def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     """Main search function used to find applications.
 
@@ -114,6 +141,41 @@ def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     records.sort(key=attrgetter("submit_datetime"), reverse=True)
 
     return SearchResults(total_rows=len(app_pks_and_types), records=records)
+
+
+def get_search_results_spreadsheet(results: SearchResults) -> bytes:
+    """Return a spreadsheet of the supplied search results"""
+
+    header_data = [
+        "Case Reference",
+        "Applicant's Reference",
+        "Licence Reference",
+        "Licence Type",
+        "Licence Start Date",
+        "Licence End Date",
+        "Application Type",
+        "Application Sub-Type",
+        "Case Status",
+        "Chief Usage Status",
+        "Submitted Date",
+        "Importer",
+        "Agent",
+        "Application Contact",
+        "Country of Origin",
+        "Country of Consignment",
+        "Shipping Year",
+        "Goods Category",
+        "Commodity Code(s)",
+    ]
+
+    config = XlsxConfig()
+    config.header.data = header_data
+    config.header.styles = {"bold": True}
+    config.rows = _get_spreadsheet_rows(results.records)  # type:ignore[assignment]
+    config.column_width = 25
+    config.sheet_name = "Sheet 1"
+
+    return generate_xlsx_file(config)
 
 
 def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
@@ -178,6 +240,8 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
     else:
         application_subtype = ""
 
+    cus = rec.get_chief_usage_status_display() if rec.chief_usage_status else None
+
     row = ImportResultRow(
         submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
         case_status=CaseStatus(
@@ -188,6 +252,11 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
             application_type=rec.application_type.get_type_display(),
             application_sub_type=application_subtype,
             status=rec.get_status_display(),
+            licence_type="Paper" if rec.issue_paper_licence_only else "Electronic",
+            chief_usage_status=cus,
+            # TODO: Revisit when implementing ICMSLST-1048
+            licence_start_date=None,
+            licence_end_date=None,
         ),
         applicant_details=ApplicantDetails(
             organisation_name=rec.importer.name,
@@ -515,3 +584,36 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     model = model.select_related("importer", "contact", "application_type")
 
     return model
+
+
+def _get_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[SpreadsheetRow]:
+    """Converts the incoming records in to a spreadsheet row."""
+
+    for row in records:
+        cs = row.case_status
+        ad = row.applicant_details
+        cd = row.commodity_details
+
+        commodity_codes = ", ".join(cd.commodity_codes) if cd.commodity_codes else None
+
+        yield SpreadsheetRow(
+            case_reference=cs.case_reference,
+            applicant_reference=cs.applicant_reference,
+            licence_reference=cs.licence_reference,
+            licence_type=cs.licence_type,
+            licence_start_date=cs.licence_start_date,
+            licence_end_date=cs.licence_end_date,
+            application_type=cs.application_type,
+            application_sub_type=cs.application_sub_type,
+            case_status=cs.status,
+            chief_usage_status=cs.chief_usage_status,
+            submitted_date=row.submitted_at,
+            organisation_name=ad.organisation_name,
+            agent=ad.agent_name,
+            application_contact=ad.application_contact,
+            origin_country=cd.origin_country,
+            country_of_consignment=cd.consignment_country,
+            shipping_year=cd.shipping_year,
+            goods_category=cd.goods_category,
+            commodity_codes=commodity_codes,
+        )

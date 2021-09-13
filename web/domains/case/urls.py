@@ -6,6 +6,11 @@ app_name = "case"
 
 search_urls = [
     path("", views_search.search_cases, name="search"),
+    path(
+        "search-download-spreadsheet",
+        views_search.download_spreadsheet,
+        name="search-download-spreadsheet",
+    ),
 ]
 
 note_urls = [
