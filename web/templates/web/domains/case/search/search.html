@@ -3,6 +3,7 @@
 {% import "forms/fields.html" as fields %}
 
 {% block css %}
+  {{ form.media.css }}
   <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/search.css') }}">
 {% endblock %}
 

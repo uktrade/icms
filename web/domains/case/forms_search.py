@@ -2,10 +2,12 @@ import datetime
 from typing import Optional
 
 from django import forms
+from django_select2.forms import Select2MultipleWidget
 
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.export.models import ExportApplicationType
 from web.domains.case.models import ApplicationBase
+from web.domains.country.models import Country
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
 
@@ -103,8 +105,19 @@ class ExportSearchForm(SearchFormBase):
     closed_from = forms.DateField(label="Closed date", required=False, widget=DateInput)
     closed_to = forms.DateField(label="To", required=False, widget=DateInput)
 
-    cert_country = forms.CharField(label="Certificate country", required=False)
-    manufacture_country = forms.CharField(label="Country of manufacture", required=False)
+    cert_country = forms.ModelMultipleChoiceField(
+        label="Certificate country",
+        required=False,
+        queryset=Country.objects.none(),
+        widget=Select2MultipleWidget,
+    )
+
+    manufacture_country = forms.ModelMultipleChoiceField(
+        label="Country of manufacture",
+        required=False,
+        queryset=Country.objects.none(),
+        widget=Select2MultipleWidget,
+    )
 
     pending_firs = forms.ChoiceField(
         label="Pending Further Information Requests",
@@ -117,6 +130,14 @@ class ExportSearchForm(SearchFormBase):
         choices=[(None, "Any")] + YesNoChoices.choices,
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
+
+        self.fields["cert_country"].queryset = countries
+        self.fields["manufacture_country"].queryset = countries
 
     def clean(self):
         cd = super().clean()

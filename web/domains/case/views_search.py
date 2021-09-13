@@ -81,4 +81,6 @@ def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms
         issue_date_end=cd.get("issue_to"),
         reassignment_search=cd.get("reassignment"),
         # TODO: add all the export search fields
+        # cert_country=cd.get("cert_country"),
+        # manufacture_country=cd.get("manufacture_country"),
     )
