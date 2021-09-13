@@ -31,19 +31,25 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_agent_form_valid(self):
-        office = OfficeFactory.create(is_active=True)
-        agent_importer = AgentImporterFactory(main_importer_offices=[office])
-        agent = ActiveUserFactory.create()
-        assign_perm("web.is_agent_of_importer", agent, agent_importer.main_importer)
+        office_importer, office_agent = OfficeFactory.create_batch(2, is_active=True)
+
+        agent = AgentImporterFactory(main_importer_offices=[office_importer])
+        agent.offices.add(office_agent)
+
+        contact = ActiveUserFactory.create()
+        assign_perm("web.is_agent_of_importer", contact, agent.main_importer)
+        assign_perm("web.is_contact_of_importer", contact, agent)
 
         form = CreateImportApplicationForm(
             data={
-                "importer": agent_importer.main_importer.pk,
-                "importer_office": office.pk,
+                "importer": agent.main_importer.pk,
+                "importer_office": office_importer.pk,
+                "agent": agent.pk,
+                "agent_office": office_agent.pk,
             },
-            user=agent,
+            user=contact,
         )
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_invalid_form_message(self):
         office = OfficeFactory.create(is_active=True)
