@@ -13,7 +13,7 @@ from web.utils.search import (
     search_applications,
 )
 
-from .forms_search import ExportSearchForm, ImportSearchForm
+from ..forms_search import ExportSearchForm, ImportSearchForm
 
 SearchForm = Union[ImportSearchForm, ExportSearchForm]
 SearchFormT = Type[SearchForm]

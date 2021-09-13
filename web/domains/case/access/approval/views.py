@@ -18,7 +18,7 @@ from web.domains.case.access.approval.models import (
     ImporterApprovalRequest,
 )
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
-from web.domains.case.views import get_application_current_task
+from web.domains.case.utils import get_application_current_task
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 

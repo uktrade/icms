@@ -15,7 +15,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.views import (
+from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     view_application_file,

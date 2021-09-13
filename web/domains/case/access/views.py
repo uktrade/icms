@@ -12,8 +12,7 @@ from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
-from web.domains.case.utils import allocate_case_reference
-from web.domains.case.views import get_application_current_task
+from web.domains.case.utils import allocate_case_reference, get_application_current_task
 from web.flow.models import Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
