@@ -105,7 +105,7 @@ class CreateImportApplicationForm(forms.Form):
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
-        importer = cleaned_data.get("is_importer")
+        importer = cleaned_data.get("importer")
         # if importer is not set agent and agent_office are not displayed.
         if not importer:
             return cleaned_data

@@ -119,7 +119,7 @@ class CreateExportApplicationForm(forms.Form):
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
-        exporter = cleaned_data.get("is_importer")
+        exporter = cleaned_data.get("exporter")
         # if exporter is not set agent and agent_office are not displayed.
         if not exporter:
             return cleaned_data
