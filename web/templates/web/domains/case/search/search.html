@@ -11,7 +11,7 @@
 <div class="no-sidebar" id="content">
     <div id="content-ie8-float">
         <div id="form-container">
-            {% call forms.form(method='post', csrf_input=csrf_input) %}
+            {% call forms.form(method='post', csrf_input=csrf_input, id="search-application-form") %}
 
               {% block form_fields %}
 

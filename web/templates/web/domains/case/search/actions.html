@@ -1,6 +1,13 @@
 <div class="list-actions">
   <ul class="menu-out flow-across">
-    {# TODO: Revisit when doing ICMSLST-972 #}
-    <li><button type="button" class="small-button icon-file-excel button">Download Spreadsheet</button></li>
+    <li>
+      <form
+        action="{{ icms_url('case:search-download-spreadsheet', kwargs={'case_type': case_type}) }}"
+        method="post" enctype="multipart/form-data" id="download-search-spreadsheet"
+      >
+        {{ csrf_input }}
+        <button type="submit" class="small-button icon-file-excel button">Download Spreadsheet</button>
+      </form>
+    </li>
   </ul>
 </div>

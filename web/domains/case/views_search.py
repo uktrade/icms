@@ -3,10 +3,15 @@ from typing import Type, Union
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_POST
 
 from web.domains.case._import.models import ImportApplicationType
 from web.types import AuthenticatedHttpRequest
-from web.utils.search import SearchTerms, search_applications
+from web.utils.search import (
+    SearchTerms,
+    get_search_results_spreadsheet,
+    search_applications,
+)
 
 from .forms_search import ExportSearchForm, ImportSearchForm
 
@@ -57,6 +62,31 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
         template_name="web/domains/case/search/search.html",
         context=context,
     )
+
+
+@require_POST
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
+    """Generates and returns a spreadsheet using same form data as the search form."""
+
+    form_class: SearchFormT = ImportSearchForm if case_type == "import" else ExportSearchForm
+    form = form_class(request.POST)
+
+    if not form.is_valid():
+        return HttpResponse(status=400)
+
+    mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    response = HttpResponse(content_type=mime_type)
+
+    terms = _get_search_terms_from_form(case_type, form)
+    results = search_applications(terms)
+    search_spreadsheet = get_search_results_spreadsheet(results)
+    response.write(search_spreadsheet)
+
+    response["Content-Disposition"] = "attachment; filename=import_application_download.xlsx"
+
+    return response
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:
