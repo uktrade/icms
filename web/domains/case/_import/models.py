@@ -215,36 +215,16 @@ class ImportApplication(ApplicationBase):
     )
 
     importer = models.ForeignKey(
-        Importer,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=False,
-        related_name="import_applications",
+        Importer, on_delete=models.PROTECT, related_name="import_applications"
     )
 
-    agent = models.ForeignKey(
-        Importer,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="agent_import_applications",
-    )
+    agent = models.ForeignKey(Importer, on_delete=models.PROTECT, null=True, related_name="+")
 
     importer_office = models.ForeignKey(
-        Office,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=True,
-        related_name="office_import_applications",
+        Office, on_delete=models.PROTECT, null=True, related_name="+"
     )
 
-    agent_office = models.ForeignKey(
-        Office,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="agent_office_import_applications",
-    )
+    agent_office = models.ForeignKey(Office, on_delete=models.PROTECT, null=True, related_name="+")
 
     contact = models.ForeignKey(
         User,

@@ -97,20 +97,10 @@ class ExportApplication(ApplicationBase):
         related_name="created_export_applications",
     )
 
-    exporter = models.ForeignKey(
-        Exporter,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=False,
-        related_name="export_applications",
-    )
+    exporter = models.ForeignKey(Exporter, on_delete=models.PROTECT, related_name="+")
 
     exporter_office = models.ForeignKey(
-        Office,
-        on_delete=models.PROTECT,
-        blank=False,
-        null=True,
-        related_name="office_export_applications",
+        Office, on_delete=models.PROTECT, null=True, related_name="+"
     )
 
     contact = models.ForeignKey(
@@ -133,20 +123,9 @@ class ExportApplication(ApplicationBase):
         ),
     )
 
-    agent = models.ForeignKey(
-        Exporter,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="agent_export_applications",
-    )
-    agent_office = models.ForeignKey(
-        Office,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="agent_office_export_applications",
-    )
+    agent = models.ForeignKey(Exporter, on_delete=models.PROTECT, null=True, related_name="+")
+    agent_office = models.ForeignKey(Office, on_delete=models.PROTECT, null=True, related_name="+")
+
     case_owner = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )

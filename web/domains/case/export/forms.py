@@ -116,6 +116,24 @@ class CreateExportApplicationForm(forms.Form):
             is_active=True, exporter__in=agents
         )
 
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        exporter = cleaned_data.get("is_importer")
+        # if exporter is not set agent and agent_office are not displayed.
+        if not exporter:
+            return cleaned_data
+
+        is_agent = self.user.has_perm("web.is_agent_of_exporter", exporter)
+        if is_agent:
+            if not cleaned_data["agent"]:
+                self.add_error("agent", "You must enter this item")
+
+            if not cleaned_data["agent_office"]:
+                self.add_error("agent_office", "You must enter this item")
+
+        return cleaned_data
+
 
 class PrepareCertManufactureForm(forms.ModelForm):
     class Meta:

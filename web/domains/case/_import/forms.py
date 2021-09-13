@@ -102,6 +102,24 @@ class CreateImportApplicationForm(forms.Form):
             is_active=True, importer__in=agents
         )
 
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        importer = cleaned_data.get("is_importer")
+        # if importer is not set agent and agent_office are not displayed.
+        if not importer:
+            return cleaned_data
+
+        is_agent = self.user.has_perm("web.is_agent_of_importer", importer)
+        if is_agent:
+            if not cleaned_data["agent"]:
+                self.add_error("agent", "You must enter this item")
+
+            if not cleaned_data["agent_office"]:
+                self.add_error("agent_office", "You must enter this item")
+
+        return cleaned_data
+
 
 class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
     """Create wood quota application form - Defines extra validation logic"""
