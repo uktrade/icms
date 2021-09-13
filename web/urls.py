@@ -11,6 +11,7 @@ register_converter(converters.ExportApplicationTypeConverter, "exportapplication
 register_converter(converters.SILSectionTypeConverter, "silsectiontype")
 register_converter(converters.EntityTypeConverter, "entitytype")
 register_converter(converters.OrgTypeConverter, "orgtype")
+register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
 urlpatterns = [
     path("", include("web.auth.urls")),

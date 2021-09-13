@@ -63,7 +63,7 @@ class ImportApplicationType(models.Model):
     sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SubTypes.choices)
     licence_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
-    chief_flag = models.BooleanField(blank=False, null=False)
+    chief_flag = models.BooleanField()
     chief_licence_prefix = models.CharField(max_length=10, blank=True, null=True)
     paper_licence_flag = models.BooleanField(blank=False, null=False)
     electronic_licence_flag = models.BooleanField(blank=False, null=False)
@@ -157,17 +157,11 @@ class ImportApplicationType(models.Model):
 
 
 class ImportApplication(ApplicationBase):
-    # Chief usage status
-    CANCELLED = "C"
-    EXHAUSTED = "E"
-    EXPIRED = "D"
-    SURRENDERED = "S"
-    CHIEF_STATUSES = (
-        (CANCELLED, "Cancelled"),
-        (EXHAUSTED, "Exhausted"),
-        (EXPIRED, "Expired"),
-        (SURRENDERED, "S"),
-    )
+    class ChiefUsageTypes(models.TextChoices):
+        CANCELLED = ("C", "Cancelled")
+        EXHAUSTED = ("E", "Exhausted")
+        EXPIRED = ("D", "Expired")
+        SURRENDERED = ("S", "S")
 
     applicant_reference = models.CharField(
         max_length=500,
@@ -181,9 +175,7 @@ class ImportApplication(ApplicationBase):
     variation_no = models.IntegerField(blank=False, null=False, default=0)
     legacy_case_flag = models.BooleanField(blank=False, null=False, default=False)
 
-    chief_usage_status = models.CharField(
-        max_length=1, choices=CHIEF_STATUSES, blank=True, null=True
-    )
+    chief_usage_status = models.CharField(max_length=1, choices=ChiefUsageTypes.choices, null=True)
 
     under_appeal_flag = models.BooleanField(blank=False, null=False, default=False)
 

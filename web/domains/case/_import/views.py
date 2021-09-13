@@ -3,6 +3,7 @@ from typing import List, Optional, Type
 import django.forms as django_forms
 import weasyprint
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -636,3 +637,41 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             template_name="web/domains/case/provide-report.html",
             context=context,
         )
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+@require_POST
+def bypass_chief(
+    request: AuthenticatedHttpRequest, *, application_pk: int, chief_status: str
+) -> HttpResponse:
+    if not settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
+        raise PermissionDenied
+
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        task = get_application_current_task(application, "import", Task.TaskType.CHIEF_WAIT)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = request.user
+        task.save()
+
+        if chief_status == "success":
+            application.status = ImportApplication.Statuses.COMPLETED
+            application.save()
+
+            Task.objects.create(process=application, task_type=Task.TaskType.ACK, previous=task)
+        elif chief_status == "failure":
+            Task.objects.create(
+                process=application, task_type=Task.TaskType.CHIEF_ERROR, previous=task
+            )
+
+        messages.success(
+            request,
+            f"CHIEF: faked {chief_status} for application {application.get_reference()}.",
+        )
+
+        return redirect(reverse("workbasket"))

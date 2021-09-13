@@ -236,6 +236,7 @@ class ApplicationBase(WorkbasketBase, Process):
         IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
         SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
         PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
+        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
         COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
         WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
         STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
@@ -359,6 +360,10 @@ class ApplicationBase(WorkbasketBase, Process):
     ) -> list[WorkbasketAction]:
         admin_actions: list[WorkbasketAction] = []
 
+        bypass_chief = (
+            settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD and self.status == self.Statuses.CHIEF
+        )
+
         if self.status in [self.Statuses.SUBMITTED, self.Statuses.WITHDRAWN]:
             case_owner = self.case_owner  # type: ignore[attr-defined]
 
@@ -383,7 +388,6 @@ class ApplicationBase(WorkbasketBase, Process):
                 admin_actions.append(view_action)
 
         elif self.status == self.Statuses.PROCESSING:
-            # TODO: implement this
             admin_actions.append(
                 WorkbasketAction(
                     is_post=False,
@@ -401,6 +405,47 @@ class ApplicationBase(WorkbasketBase, Process):
             )
 
             admin_actions.append(view_action)
+
+        elif bypass_chief:
+            if task and task.task_type == Task.TaskType.CHIEF_WAIT:
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="(TEST) Bypass CHIEF",
+                        url=reverse(
+                            "import:bypass-chief",
+                            kwargs={"application_pk": self.pk, "chief_status": "success"},
+                        ),
+                    )
+                )
+
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="(TEST) Bypass CHIEF induce failure",
+                        url=reverse(
+                            "import:bypass-chief",
+                            kwargs={"application_pk": self.pk, "chief_status": "failure"},
+                        ),
+                    )
+                )
+
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="Monitor Progress",
+                        url="#TODO: ICMSLST-812 - Popup showing progress",
+                    )
+                )
+
+            elif task and task.task_type == Task.TaskType.CHIEF_ERROR:
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Show Licence Details",
+                        url="#TODO: ICMSLST-812 - CHIEF Dashboard",
+                    )
+                )
 
         elif self.status == self.Statuses.COMPLETED:
             admin_actions.append(view_action)

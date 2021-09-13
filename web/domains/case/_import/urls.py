@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -73,3 +74,12 @@ urlpatterns = [
         ),
     ),
 ]
+
+if settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
+    urlpatterns += [
+        path(
+            "case/<int:application_pk>/bypass-chief/<chiefstatus:chief_status>/",
+            views.bypass_chief,
+            name="bypass-chief",
+        )
+    ]

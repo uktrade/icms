@@ -91,6 +91,8 @@ class Task(models.Model):
         PREPARE: str = ("prepare", "Prepare")  # type:ignore[assignment]
         PROCESS: str = ("process", "Process")  # type:ignore[assignment]
         AUTHORISE: str = ("authorise", "Authorise")  # type:ignore[assignment]
+        CHIEF_WAIT: str = ("chief_wait", "CHIEF_WAIT")  # type:ignore[assignment]
+        CHIEF_ERROR: str = ("chief_error", "CHIEF_ERROR")  # type:ignore[assignment]
         ACK: str = ("acknowledge", "Acknowledge")  # type:ignore[assignment]
 
     process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="tasks")
