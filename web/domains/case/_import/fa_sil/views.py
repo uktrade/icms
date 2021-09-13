@@ -12,7 +12,7 @@ from web.domains.case import forms as case_forms
 from web.domains.case._import.models import FirearmSupplementaryReport
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
-from web.domains.case.views import (
+from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     view_application_file,

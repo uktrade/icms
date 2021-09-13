@@ -24,7 +24,7 @@ from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import ApplicationBase
-from web.domains.case.views import get_application_current_task
+from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import Task

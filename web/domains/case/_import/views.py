@@ -17,7 +17,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case.views import (
+from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
 )

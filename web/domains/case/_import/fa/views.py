@@ -13,7 +13,7 @@ from web.domains.case._import.fa.forms import (
     ImportContactPersonForm,
     UserImportCertificateForm,
 )
-from web.domains.case.views import (
+from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     view_application_file,

@@ -10,7 +10,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case.utils import allocate_case_reference
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
@@ -562,6 +561,9 @@ class ApplicationBase(WorkbasketBase, Process):
         return applicant_actions
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
+        # this needs to be here to avoid circular dependencies
+        from web.domains.case.utils import allocate_case_reference
+
         if self.is_import_application():
             prefix = "IMA"
         else:
