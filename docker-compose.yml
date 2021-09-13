@@ -49,6 +49,7 @@ services:
             - CLAM_AV_URL
             - APP_ENV
             - ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
+            - ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
             - DEBUG_SHOW_ALL_WORKBASKET_ROWS
         # stdin_open: true
         # tty: true

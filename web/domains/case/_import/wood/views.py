@@ -71,6 +71,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
             "page_title": "Wood (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
             "contract_documents": contract_documents,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/wood/edit.html", context)
@@ -332,6 +333,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
             "page_title": "Wood (Quota) Import Licence - Submit",
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/wood/submit.html", context)

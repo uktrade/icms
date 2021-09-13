@@ -77,3 +77,16 @@ class OrgTypeConverter:
             raise ValueError
 
         return value
+
+
+class ChiefStatusConverter:
+    regex = "success|failure"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        if value not in ["success", "failure"]:
+            raise ValueError
+
+        return value

@@ -147,14 +147,19 @@ def get_application_current_task(
             return application.get_task(
                 [application.Statuses.SUBMITTED, application.Statuses.WITHDRAWN], task_type
             )
+
         elif task_type == Task.TaskType.PREPARE:
             return application.get_task(
                 [application.Statuses.IN_PROGRESS, application.Statuses.UPDATE_REQUESTED], task_type
             )
+
         elif task_type == Task.TaskType.AUTHORISE:
             return application.get_task(application.Statuses.PROCESSING, task_type)
 
-        elif task_type == Task.TaskType.ACK:
+        elif task_type in [Task.TaskType.CHIEF_WAIT, Task.TaskType.CHIEF_ERROR]:
+            return application.get_task(application.Statuses.CHIEF, task_type)
+
+        elif task_type in Task.TaskType.ACK:
             return application.get_task(application.Statuses.COMPLETED, task_type)
 
     elif case_type == "access":
@@ -2125,21 +2130,26 @@ def authorise_documents(
 
             if form.is_valid():
                 # TODO: ICMSLST-809 Check validation that is needed when generating license file
-                application.status = model_class.Statuses.COMPLETED
-                application.save()
-
                 task.is_active = False
                 task.finished = timezone.now()
                 task.owner = request.user
                 task.save()
 
-                if settings.APP_ENV in ("local", "dev"):
-                    # TODO: ICMSLST-813 chief in test mode
+                # TODO: ICMSLST-812 chief document submission - update application.chief_usage_status
+                if case_type == "import" and application.application_type.chief_flag:
+                    application.status = model_class.Statuses.CHIEF
+                    application.save()
+
+                    Task.objects.create(
+                        process=application, task_type=Task.TaskType.CHIEF_WAIT, previous=task
+                    )
+                else:
+                    application.status = model_class.Statuses.COMPLETED
+                    application.save()
+
                     Task.objects.create(
                         process=application, task_type=Task.TaskType.ACK, previous=task
                     )
-                else:
-                    raise NotImplementedError("Application should be submitted to CHIEF")
 
                 messages.success(
                     request,
