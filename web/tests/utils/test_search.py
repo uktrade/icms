@@ -1,7 +1,9 @@
 import datetime
+import io
 from typing import TYPE_CHECKING
 
 from django.utils.timezone import make_aware
+from openpyxl import load_workbook
 from pytest import fixture
 
 from web.domains.case._import.derogations.models import DerogationsApplication
@@ -32,6 +34,7 @@ from web.utils.search import (
     CommodityDetails,
     ImportResultRow,
     SearchTerms,
+    get_search_results_spreadsheet,
     search_applications,
 )
 
@@ -612,6 +615,83 @@ def _test_search_by_licence_date():
     results = search_applications(search_terms)
 
     assert results.total_rows == 0
+
+
+def test_get_search_results_spreadsheet(test_data: FixtureData):
+    _create_wood_application("Wood ref 1", test_data)
+    _create_wood_application("Wood ref 2", test_data)
+    _create_wood_application("Wood ref 3", test_data)
+    _create_textiles_application("Textiles ref 1", test_data)
+    _create_opt_application("Opt ref 1", test_data)
+    _create_fa_dfl_application("fa-dfl ref 1", test_data)
+
+    search_terms = SearchTerms(case_type="import")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 6
+    check_application_references(
+        results.records,
+        "fa-dfl ref 1",
+        "Opt ref 1",
+        "Textiles ref 1",
+        "Wood ref 3",
+        "Wood ref 2",
+        "Wood ref 1",
+    )
+
+    xlsx_data = get_search_results_spreadsheet(results)
+
+    workbook = load_workbook(filename=io.BytesIO(xlsx_data))
+
+    assert workbook.sheetnames == ["Sheet 1"]
+
+    sheet = workbook["Sheet 1"]
+
+    cols = sheet.max_column
+    rows = sheet.max_row
+    assert cols == 19
+    assert rows == 7
+
+    spreadsheet_rows = sheet.values
+    header = next(spreadsheet_rows)
+
+    assert list(header) == [
+        "Case Reference",
+        "Applicant's Reference",
+        "Licence Reference",
+        "Licence Type",
+        "Licence Start Date",
+        "Licence End Date",
+        "Application Type",
+        "Application Sub-Type",
+        "Case Status",
+        "Chief Usage Status",
+        "Submitted Date",
+        "Importer",
+        "Agent",
+        "Application Contact",
+        "Country of Origin",
+        "Country of Consignment",
+        "Shipping Year",
+        "Goods Category",
+        "Commodity Code(s)",
+    ]
+
+    applicant_refs = []
+
+    # Iterate over the remaining data rows
+    for row in spreadsheet_rows:
+        row_data = list(row)
+        applicant_refs.append(row_data[1])
+
+    assert applicant_refs == [
+        "fa-dfl ref 1",
+        "Opt ref 1",
+        "Textiles ref 1",
+        "Wood ref 3",
+        "Wood ref 2",
+        "Wood ref 1",
+    ]
 
 
 def check_application_references(
