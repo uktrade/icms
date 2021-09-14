@@ -32,13 +32,32 @@
         <td>{{ contact.get_dealer_display() }}</td>
         {% if not read_only %}
           <td>
-            <a
-              href="{{ icms_url(
-                         'import:fa:edit-import-contact',
-                         kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
-              class="button small-button icon-pencil">
-              Edit
-            </a>
+            <ul class="menu-out">
+              <li>
+                <a
+                  href="{{ icms_url(
+                            'import:fa:edit-import-contact',
+                            kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
+                  class="button link-button icon-pencil">
+                  Edit
+                </a>
+              </li>
+              {% if can_delete %}
+              <li>
+                <form
+                  method="post"
+                  action="{{ icms_url(
+                            'import:fa:delete-import-contact',
+                            kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
+                  class="form-inline">
+                  {{ csrf_input }}
+                  <button type="submit" class="button link-button icon-bin">
+                    Delete
+                  </button>
+                </form>
+              </li>
+              {% endif %}
+            </ul>
           </td>
         {% endif %}
       </tr>

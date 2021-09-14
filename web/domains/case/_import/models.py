@@ -446,7 +446,6 @@ class FirearmSupplementaryReport(models.Model):
     completed_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        blank=True,
         null=True,
         related_name="+",
     )

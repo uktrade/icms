@@ -33,6 +33,11 @@ urlpatterns = [
                                             views.edit_import_contact,
                                             name="edit-import-contact",
                                         ),
+                                        path(
+                                            "<int:contact_pk>/delete/",
+                                            views.delete_import_contact,
+                                            name="delete-import-contact",
+                                        ),
                                     ]
                                 ),
                             ),
