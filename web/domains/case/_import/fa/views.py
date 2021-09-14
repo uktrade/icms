@@ -110,7 +110,12 @@ def create_import_contact(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        if application.status == application.Statuses.COMPLETED:
+            task = get_application_current_task(application, "import", Task.TaskType.ACK)
+            template = "web/domains/case/import/fa/provide-report/import-contacts.html"
+        else:
+            task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+            template = "web/domains/case/import/fa/import-contacts/create.html"
 
         if request.POST:
             form = form_class(data=request.POST)
@@ -123,6 +128,11 @@ def create_import_contact(
 
                 # Assume known_bought_from is True if we are adding an import contact
                 _update_know_bought_from(application)
+
+                if application.status == application.Statuses.COMPLETED:
+                    return redirect(
+                        reverse("import:provide-report", kwargs={"application_pk": application.pk})
+                    )
 
                 return redirect(
                     reverse(
@@ -145,7 +155,7 @@ def create_import_contact(
             "page_title": "Firearms & Ammunition - Create Contact",
         }
 
-        return render(request, "web/domains/case/import/fa/import-contacts/create.html", context)
+        return render(request, template, context)
 
 
 @login_required
@@ -164,13 +174,23 @@ def edit_import_contact(
 
         person = get_object_or_404(ImportContact, pk=contact_pk)
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        if application.status == application.Statuses.COMPLETED:
+            task = get_application_current_task(application, "import", Task.TaskType.ACK)
+            template = "web/domains/case/import/fa/provide-report/import-contacts.html"
+        else:
+            task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+            template = "web/domains/case/import/fa/import-contacts/edit.html"
 
         if request.POST:
             form = form_class(data=request.POST, instance=person)
 
             if form.is_valid():
                 form.save()
+
+                if application.status == application.Statuses.COMPLETED:
+                    return redirect(
+                        reverse("import:provide-report", kwargs={"application_pk": application.pk})
+                    )
 
                 return redirect(
                     reverse(
@@ -194,7 +214,24 @@ def edit_import_contact(
             "page_title": "Firearms & Ammunition - Edit Contact",
         }
 
-        return render(request, "web/domains/case/import/fa/import-contacts/edit.html", context)
+        return render(request, template, context)
+
+
+@require_POST
+@login_required
+def delete_import_contact(
+    request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, contact_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.importcontact_set.filter(pk=contact_pk).delete()
+
+        return redirect(reverse("import:provide-report", kwargs={"application_pk": application.pk}))
 
 
 @login_required

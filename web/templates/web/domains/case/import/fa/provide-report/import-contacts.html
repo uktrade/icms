@@ -1,0 +1,17 @@
+{% extends "web/domains/case/import/fa/import-contacts/create.html" %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content_actions %}
+<div class="content-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ icms_url('import:provide-report', kwargs={'application_pk': process.pk}) }}"
+        class="prev-link">
+        Provide Report
+      </a>
+    </li>
+  </ul>
+</div>
+{% endblock %}

@@ -19,7 +19,9 @@
 
 {% block main_content %}
   <h3>Details of who bought from</h3>
-  {# TODO ICMSLST-953 Add who bought from section #}
+  {% with can_delete = True %}
+    {% include "partial/import-contacts/list.html" %}
+  {% endwith %}
 
   {# TODO ICMS-954 Add supplemntary reports section #}
 

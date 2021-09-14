@@ -629,6 +629,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
+            "contacts": application.importcontact_set.all(),
             "page_title": "Firearms Supplementary Information Overview",
         }
 
