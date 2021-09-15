@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -28,6 +29,34 @@ from .utils import get_class_imp_or_exp
 
 
 # "Applicant Case Management" Views
+@login_required
+@require_POST
+def cancel_case(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    with transaction.atomic():
+        model_class = get_class_imp_or_exp(case_type)
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, case_type)
+        get_application_current_task(application, case_type, Task.TaskType.PREPARE)
+
+        # the above accepts UPDATE_REQUESTED, we don't
+        if application.status != model_class.Statuses.IN_PROGRESS:
+            raise PermissionDenied
+
+        # TODO: ICMSLST-1102 some related data is not cleaned up automatically
+        # like CFS schedules etc. implement per-application-type function that
+        # does any necessary cleanup.
+        application.delete()
+
+        messages.success(request, "Application has been canceled.")
+
+        return redirect(reverse("workbasket"))
+
+
 @login_required
 def withdraw_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -392,6 +421,7 @@ def authorise_documents(
                     request,
                     f"Authorise Success: Application {application.reference} has been authorised",
                 )
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.AuthoriseForm(request=request)

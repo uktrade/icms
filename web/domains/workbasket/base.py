@@ -16,6 +16,9 @@ class WorkbasketAction:
     # link name
     name: str
 
+    # confirmation popup text
+    confirm: Optional[str] = None
+
 
 @dataclass
 class WorkbasketRow:

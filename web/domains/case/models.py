@@ -496,6 +496,15 @@ class ApplicationBase(WorkbasketBase, Process):
                 )
             )
 
+            applicant_actions.append(
+                WorkbasketAction(
+                    is_post=True,
+                    name="Cancel",
+                    url=reverse("case:cancel", kwargs=kwargs),
+                    confirm="Are you sure you want to cancel this draft application? All entered data will be lost.",
+                )
+            )
+
         elif self.status == self.Statuses.UPDATE_REQUESTED:
             applicant_actions.append(view_action)
 

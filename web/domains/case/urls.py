@@ -70,6 +70,7 @@ admin_urls = [
 ]
 
 applicant_urls = [
+    path("cancel/", views_misc.cancel_case, name="cancel"),
     path("withdraw/", views_misc.withdraw_case, name="withdraw-case"),
     path(
         "withdraw/<int:withdrawal_pk>/archive/",
