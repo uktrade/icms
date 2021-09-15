@@ -1,6 +1,7 @@
 from django.db import models
 
 from web.domains.file.models import File
+from web.domains.user.models import User
 from web.models import ImportApplication
 
 
@@ -52,3 +53,49 @@ class ImportContact(models.Model):
 
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
+
+
+class SupplementaryReport(models.Model):
+    # TODO ICMSLST-954: Use this model
+
+    class TransportType(models.TextChoices):
+        AIR = ("air", "Air")
+        RAIL = ("rail", "Rail")
+        ROAD = ("road", "Road")
+        SEA = ("sea", "Sea")
+
+    transport = models.CharField(choices=TransportType.choices, max_length=4, blank=False)
+    date_received = models.DateField(verbose_name="Date Received")
+
+    bought_from = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+    )
+
+
+class SupplementaryInfo(models.Model):
+    import_application = models.OneToOneField(
+        ImportApplication, on_delete=models.PROTECT, related_name="supplementary_info"
+    )
+    is_complete = models.BooleanField(default=False)
+    completed_datetime = models.DateTimeField(null=True)
+
+    completed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+    )
+
+    no_report_reason = models.CharField(
+        max_length=1000,
+        null=True,
+        verbose_name=(
+            "You haven't provided any reports on imported firearms. You must provide a reason"
+            " why no reporting is required before you confirm reporting complete."
+        ),
+    )
+
+    reports = models.ManyToManyField(SupplementaryReport)

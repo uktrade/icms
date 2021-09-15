@@ -107,6 +107,8 @@ urlpatterns = [
                         ],
                     ),
                 ),
+                # Firemarm workbasket links
+                path("provide-report/", views.provide_report, name="provide-report"),
             ]
         ),
     )

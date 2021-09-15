@@ -6,6 +6,7 @@ from django.db.models import OuterRef
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.fa.forms import (
@@ -131,7 +132,9 @@ def create_import_contact(
 
                 if application.status == application.Statuses.COMPLETED:
                     return redirect(
-                        reverse("import:provide-report", kwargs={"application_pk": application.pk})
+                        reverse(
+                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
+                        )
                     )
 
                 return redirect(
@@ -189,7 +192,9 @@ def edit_import_contact(
 
                 if application.status == application.Statuses.COMPLETED:
                     return redirect(
-                        reverse("import:provide-report", kwargs={"application_pk": application.pk})
+                        reverse(
+                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
+                        )
                     )
 
                 return redirect(
@@ -231,7 +236,9 @@ def delete_import_contact(
         get_application_current_task(application, "import", Task.TaskType.ACK)
         application.importcontact_set.filter(pk=contact_pk).delete()
 
-        return redirect(reverse("import:provide-report", kwargs={"application_pk": application.pk}))
+        return redirect(
+            reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
+        )
 
 
 @login_required
@@ -488,6 +495,44 @@ def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, au
 
         return render(
             request, "web/domains/case/import/fa/certificates/view-verified.html", context
+        )
+
+
+@login_required
+def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        if request.POST:
+            # TODO ICMSLST-962 Add additional POST steps here
+            application.supplementary_info.is_complete = True
+            application.supplementary_info.completed_datetime = timezone.now()
+            application.supplementary_info.completed_by = request.user
+            application.save()
+
+            return redirect(reverse("workbasket"))
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Firearms Supplementary Information Overview",
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/fa/provide-report/report-info.html",
+            context=context,
         )
 
 
