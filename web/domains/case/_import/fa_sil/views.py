@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case import forms as case_forms
-from web.domains.case._import.models import FirearmSupplementaryReport
+from web.domains.case._import.fa.models import SupplementaryInfo
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.utils import (
@@ -531,8 +531,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
-                application.supplementary_report = FirearmSupplementaryReport.objects.create()
-                application.save()
+                SupplementaryInfo.objects.create(import_application=application)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(

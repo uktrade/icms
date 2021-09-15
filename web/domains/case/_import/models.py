@@ -372,7 +372,7 @@ class ImportApplication(ApplicationBase):
                 WorkbasketAction(
                     is_post=False,
                     name="Provide Report",
-                    url=reverse("import:provide-report", kwargs={"application_pk": self.pk}),
+                    url=reverse("import:fa:provide-report", kwargs={"application_pk": self.pk}),
                 ),
             )
 
@@ -436,25 +436,4 @@ class ChecklistBase(models.Model):
     authorisation = models.BooleanField(
         default=False,
         verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
-    )
-
-
-class FirearmSupplementaryReport(models.Model):
-    is_complete = models.BooleanField(default=False)
-    completed_datetime = models.DateTimeField(null=True)
-
-    completed_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
-
-    no_report_reason = models.CharField(
-        max_length=1000,
-        null=True,
-        verbose_name=(
-            "You haven't provided any reports on imported firearms. You must provide a reason"
-            " why no reporting is required before you confirm reporting complete."
-        ),
     )

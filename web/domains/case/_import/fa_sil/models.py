@@ -5,11 +5,7 @@ from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
-from ..models import (
-    FirearmSupplementaryReport,
-    ImportApplication,
-    ImportApplicationType,
-)
+from ..models import ImportApplication, ImportApplicationType
 
 
 class SILUserSection5(File):
@@ -82,10 +78,6 @@ class SILApplication(ImportApplication):
     )
     verified_certificates = models.ManyToManyField(
         "FirearmsAuthority", related_name="sil_application"
-    )
-
-    supplementary_report = models.OneToOneField(
-        FirearmSupplementaryReport, on_delete=models.PROTECT, null=True, related_name="+"
     )
 
 
