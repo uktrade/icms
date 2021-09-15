@@ -76,9 +76,6 @@ class SupplementaryReport(models.Model):
 
 
 class SupplementaryInfo(models.Model):
-    import_application = models.OneToOneField(
-        ImportApplication, on_delete=models.PROTECT, related_name="supplementary_info"
-    )
     is_complete = models.BooleanField(default=False)
     completed_datetime = models.DateTimeField(null=True)
 
@@ -99,3 +96,12 @@ class SupplementaryInfo(models.Model):
     )
 
     reports = models.ManyToManyField(SupplementaryReport)
+
+
+class FirearmApplicationBase(ImportApplication):
+    supplementary_info = models.OneToOneField(
+        SupplementaryInfo, null=True, related_name="+", on_delete=models.SET_NULL
+    )
+
+    class Meta:
+        abstract = True

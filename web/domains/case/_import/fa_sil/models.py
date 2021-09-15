@@ -1,18 +1,17 @@
 from django.db import models
 
-from web.domains.case._import.models import ChecklistBase
+from web.domains.case._import.fa.models import FirearmApplicationBase
+from web.domains.case._import.models import ChecklistBase, ImportApplicationType
 from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
 from web.models.shared import FirearmCommodity, YesNoNAChoices
-
-from ..models import ImportApplication, ImportApplicationType
 
 
 class SILUserSection5(File):
     """User uploaded section 5 documents."""
 
 
-class SILApplication(ImportApplication):
+class SILApplication(FirearmApplicationBase):
     """Firearms Specific Import Licence Application."""
 
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_SIL

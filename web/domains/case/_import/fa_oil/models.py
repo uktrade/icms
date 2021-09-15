@@ -1,12 +1,12 @@
 from django.db import models
 
+from web.domains.case._import.fa.models import FirearmApplicationBase
+from web.domains.case._import.models import ChecklistBase, ImportApplicationType
 from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
-from ..models import ChecklistBase, ImportApplication, ImportApplicationType
 
-
-class OpenIndividualLicenceApplication(ImportApplication):
+class OpenIndividualLicenceApplication(FirearmApplicationBase):
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_OIL
 
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
