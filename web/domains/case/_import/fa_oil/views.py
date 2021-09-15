@@ -137,9 +137,9 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                         "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
                     }
                 )
-                application.save()
 
-                SupplementaryInfo.objects.create(import_application=application)
+                application.supplementary_info = SupplementaryInfo.objects.create()
+                application.save()
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(

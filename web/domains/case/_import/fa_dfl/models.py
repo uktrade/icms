@@ -1,10 +1,7 @@
 from django.db import models
 
-from web.domains.case._import.models import (
-    ChecklistBase,
-    ImportApplication,
-    ImportApplicationType,
-)
+from web.domains.case._import.fa.models import FirearmApplicationBase
+from web.domains.case._import.models import ChecklistBase, ImportApplicationType
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -34,7 +31,7 @@ class DFLGoodsCertificate(File):
         return f"DFLGoodsCertificate(id={self.pk}, deactivated_certificate_reference={dcf!r})"
 
 
-class DFLApplication(ImportApplication):
+class DFLApplication(FirearmApplicationBase):
     """Firearms & Ammunition Deactivated Firearms Licence application"""
 
     PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_DFL

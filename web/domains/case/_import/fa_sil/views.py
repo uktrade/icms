@@ -531,7 +531,8 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
-                SupplementaryInfo.objects.create(import_application=application)
+                application.supplementary_info = SupplementaryInfo.objects.create()
+                application.save()
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(
