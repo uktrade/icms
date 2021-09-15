@@ -22,6 +22,7 @@ class AccessRequest(WorkbasketBase, Process):
     class Statuses(models.TextChoices):
         SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
         CLOSED: str = ("CLOSED", "Closed")  # type:ignore[assignment]
+        FIR_REQUESTED: str = ("FIR_REQUESTED", "Processing (FIR)")  # type:ignore[assignment]
 
     reference = models.CharField(max_length=100, blank=False, null=False, unique=True)
 

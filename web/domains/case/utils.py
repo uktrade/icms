@@ -88,7 +88,12 @@ def get_application_current_task(
     if case_type in ["import", "export"]:
         if task_type == Task.TaskType.PROCESS:
             return application.get_task(
-                [application.Statuses.SUBMITTED, application.Statuses.WITHDRAWN], task_type
+                [
+                    application.Statuses.SUBMITTED,
+                    application.Statuses.WITHDRAWN,
+                    application.Statuses.FIR_REQUESTED,
+                ],
+                task_type,
             )
 
         elif task_type == Task.TaskType.PREPARE:
@@ -107,7 +112,9 @@ def get_application_current_task(
 
     elif case_type == "access":
         if task_type == Task.TaskType.PROCESS:
-            return application.get_task(application.Statuses.SUBMITTED, task_type)
+            return application.get_task(
+                [application.Statuses.SUBMITTED, application.Statuses.FIR_REQUESTED], task_type
+            )
 
     raise NotImplementedError(
         f"State not supported for app: '{application.process_type}', case type: '{case_type}'"

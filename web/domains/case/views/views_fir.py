@@ -151,8 +151,12 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
                 fir = form.save()
 
                 if "send" in form.data:
+                    application.status = model_class.Statuses.FIR_REQUESTED
+                    application.save()
+
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
+
                     notify.further_information_requested(fir, contacts)
 
                 return _manage_fir_redirect(application_pk, case_type)
@@ -193,6 +197,8 @@ def delete_fir(
         fir.status = FurtherInformationRequest.DELETED
         fir.save()
 
+        _set_app_submitted(application)
+
     return _manage_fir_redirect(application_pk, case_type)
 
 
@@ -213,6 +219,8 @@ def withdraw_fir(
 
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
+
+        _set_app_submitted(application)
 
     return _manage_fir_redirect(application_pk, case_type)
 
@@ -429,12 +437,13 @@ def respond_fir(
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
 
             if form.is_valid():
-                fir = form.save()
-
+                fir = form.save(commit=False)
                 fir.response_datetime = timezone.now()
                 fir.status = FurtherInformationRequest.RESPONDED
                 fir.response_by = request.user
                 fir.save()
+
+                _set_app_submitted(application)
 
                 notify.further_information_responded(application, fir)
 
@@ -451,3 +460,14 @@ def respond_fir(
     }
 
     return render(request, "web/domains/case/respond-fir.html", context)
+
+
+def _set_app_submitted(application: ImpOrExpOrAccess) -> None:
+    """Checks if no OPEN firs are left and sets the application status back to SUBMITTED."""
+    open_firs = application.further_information_requests.filter(
+        status=FurtherInformationRequest.OPEN
+    )
+
+    if not open_firs.exists():
+        application.status = application.Statuses.SUBMITTED
+        application.save()

@@ -235,7 +235,6 @@ class ApplicationBase(WorkbasketBase, Process):
         IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
         SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
         PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
-        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
         COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
         WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
         STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
@@ -245,7 +244,10 @@ class ApplicationBase(WorkbasketBase, Process):
         )  # type:ignore[assignment]
         REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
         DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
+        # Added by us
         UPDATE_REQUESTED: str = ("UPDATE_REQUESTED", "Update Requested")  # type:ignore[assignment]
+        FIR_REQUESTED: str = ("FIR_REQUESTED", "FIR Requested")  # type:ignore[assignment]
+        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
 
     status = models.CharField(
         max_length=30,
@@ -456,7 +458,7 @@ class ApplicationBase(WorkbasketBase, Process):
     ) -> list[WorkbasketAction]:
         applicant_actions: list[WorkbasketAction] = []
 
-        if self.status == self.Statuses.SUBMITTED:
+        if self.status in [self.Statuses.SUBMITTED, self.Statuses.FIR_REQUESTED]:
             applicant_actions.append(view_action)
 
             applicant_actions.append(
