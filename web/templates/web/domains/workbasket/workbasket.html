@@ -162,7 +162,11 @@
                       {% if action.is_post %}
                         <form method="post" action="{{ action.url }}">
                           <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
-                          <button type="submit" class="button link-button-no-padding">{{ action.name }}</button>
+                          <button type="submit" class="button link-button-no-padding"
+                                  {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
+                          >
+                            {{ action.name }}
+                          </button>
                         </form>
                       {% else %}
                         <a href="{{ action.url }}">{{ action.name }}</a>
