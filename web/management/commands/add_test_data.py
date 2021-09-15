@@ -47,7 +47,9 @@ class Command(BaseCommand):
         exporter = self.create_exporter()
         self.create_exporter_user(exporter, "test_export_user")
 
-        agent_exporter = self.create_exporter(main_exporter=exporter)
+        agent_exporter = self.create_exporter(
+            main_exporter=exporter, name="UK based agent exporter"
+        )
         self.create_agent_exporter_user(exporter, agent_exporter, "test_agent_export_user")
 
         # ILB Admin/Case worker
@@ -176,14 +178,14 @@ class Command(BaseCommand):
 
         return importer
 
-    def create_exporter(self, main_exporter=None):
+    def create_exporter(self, main_exporter=None, name="UK based exporter"):
         office, _ = Office.objects.get_or_create(
             is_active=True, address="47 some way, someplace", postcode="S410SG"
         )
 
         exporter, created = Exporter.objects.get_or_create(
             is_active=True,
-            name="UK based exporter",
+            name=name,
             registered_number="422",
             main_exporter=main_exporter,
         )

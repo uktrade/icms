@@ -96,21 +96,29 @@ def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms
 
     return SearchTerms(
         case_type=case_type,
+        # ---- Common search fields (Import and Export applications) ----
+        app_type=cd.get("application_type"),
+        case_status=cd.get("status"),
         case_ref=cd.get("case_ref"),
         licence_ref=cd.get("licence_ref"),
-        app_type=cd.get("application_type"),
-        app_sub_type=cd.get("application_sub_type"),
-        case_status=cd.get("status"),
         response_decision=cd.get("decision"),
-        importer_agent_name=cd.get("importer_or_agent"),
         submitted_date_start=cd.get("submitted_from"),
         submitted_date_end=cd.get("submitted_to"),
+        reassignment_search=cd.get("reassignment"),
+        # ---- Import application fields ----
+        # icms_legacy_cases = str = None
+        app_sub_type=cd.get("application_sub_type"),
+        importer_agent_name=cd.get("importer_or_agent"),
         licence_date_start=cd.get("licence_from"),
         licence_date_end=cd.get("licence_to"),
         issue_date_start=cd.get("issue_from"),
         issue_date_end=cd.get("issue_to"),
-        reassignment_search=cd.get("reassignment"),
-        # TODO: add all the export search fields
-        # cert_country=cd.get("cert_country"),
-        # manufacture_country=cd.get("manufacture_country"),
+        # ---- Export application fields ----
+        exporter_agent_name=cd.get("exporter_or_agent"),
+        closed_date_start=cd.get("closed_from"),
+        closed_date_end=cd.get("closed_to"),
+        certificate_country=cd.get("cert_country"),
+        manufacture_country=cd.get("manufacture_country"),
+        pending_firs=cd.get("pending_firs"),
+        pending_update_reqs=cd.get("pending_update_reqs"),
     )
