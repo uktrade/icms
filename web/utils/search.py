@@ -2,7 +2,7 @@ import datetime
 from collections import defaultdict
 from dataclasses import dataclass
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Optional
+from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Optional, Union
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
@@ -19,10 +19,22 @@ from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplicati
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    ExportApplication,
+    ExportApplicationType,
+)
+from web.domains.case.models import ApplicationBase
+from web.domains.case.types import ImpOrExpT
+from web.models.shared import YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
+
+    from web.domains.country.models import Country
 
 
 @dataclass
@@ -31,22 +43,33 @@ class SearchTerms:
     # Or we will have an ImportSearchTerms / ExportSearchTerms
     case_type: str
 
-    # Search fields
+    # ---- Common search fields (Import and Export applications) ----
+    app_type: Optional[str] = None
+    case_status: Optional[str] = None
     case_ref: Optional[str] = None
     licence_ref: Optional[str] = None
-    # icms_legacy_cases = str = None
-    app_type: Optional[str] = None
-    app_sub_type: Optional[str] = None
-    case_status: Optional[str] = None
     response_decision: Optional[str] = None
-    importer_agent_name: Optional[str] = None
     submitted_date_start: Optional[datetime.date] = None
     submitted_date_end: Optional[datetime.date] = None
+    reassignment_search: Optional[bool] = False
+
+    # ---- Import application fields ----
+    # icms_legacy_cases = str = None
+    app_sub_type: Optional[str] = None
+    importer_agent_name: Optional[str] = None
     licence_date_start: Optional[datetime.date] = None
     licence_date_end: Optional[datetime.date] = None
     issue_date_start: Optional[datetime.date] = None
     issue_date_end: Optional[datetime.date] = None
-    reassignment_search: Optional[bool] = False
+
+    # ---- Export application fields ----
+    exporter_agent_name: Optional[str] = None
+    closed_date_start: Optional[datetime.date] = None
+    closed_date_end: Optional[datetime.date] = None
+    certificate_country: Optional["QuerySet[Country]"] = None
+    manufacture_country: Optional["QuerySet[Country]"] = None
+    pending_firs: Optional[str] = None
+    pending_update_reqs: Optional[str] = None
 
 
 class ProcessTypeAndPK(NamedTuple):
@@ -97,9 +120,21 @@ class ImportResultRow:
 
 
 @dataclass
+class ExportResultRow:
+    # TODO: Flesh out when implementing ICMSLST-978
+    application_type: str
+    submitted_at: str
+    case_reference: str
+    submit_datetime: datetime.datetime
+
+
+ResultRow = Union[ImportResultRow, ExportResultRow]
+
+
+@dataclass
 class SearchResults:
     total_rows: int
-    records: list[ImportResultRow]
+    records: list[ResultRow]
 
 
 class SpreadsheetRow(NamedTuple):
@@ -131,11 +166,14 @@ def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     """
     app_pks_and_types = _get_search_ids_and_types(terms)
 
-    records = []
+    get_result_row = _get_result_row if terms.case_type == "import" else _get_export_result_row
+
+    records: list[ResultRow] = []
+
     for queryset in _get_search_records(app_pks_and_types[:limit]):
         for rec in queryset:
-            row = _get_result_row(rec)
-            records.append(row)
+            row = get_result_row(rec)  # type:ignore[arg-type]
+            records.append(row)  # type:ignore[arg-type]
 
     # Sort the records by submit_datetime DESC
     records.sort(key=attrgetter("submit_datetime"), reverse=True)
@@ -184,9 +222,13 @@ def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
     Returns a list of pk and process_type pairs for all matching records.
     """
 
-    import_applications = _apply_search(ImportApplication.objects.all(), terms)
-    import_applications = import_applications.order_by("-submit_datetime")
-    app_pks_and_types = import_applications.values_list("pk", "process_type", named=True)
+    model_cls: ImpOrExpT = ImportApplication if terms.case_type == "import" else ExportApplication
+
+    applications = _apply_search(model_cls.objects.all(), terms)
+    applications = applications.order_by("-submit_datetime")
+    applications = applications.distinct()
+
+    app_pks_and_types = applications.values_list("pk", "process_type", named=True)
 
     # evaluate the queryset once
     return list(app_pks_and_types)
@@ -204,23 +246,27 @@ def _get_search_records(
         app_pks[app.process_type].append(app.pk)
 
     # Map all available process types to the function used to search those records
-    pt = ImportApplicationType.ProcessTypes
+    imp_pt = ImportApplicationType.ProcessTypes
+    exp_pt = ExportApplicationType.ProcessTypes
 
     process_type_map = {
-        pt.DEROGATIONS: _get_derogations_applications,
-        pt.FA_DFL: _get_fa_dfl_applications,
-        pt.FA_OIL: _get_fa_oil_applications,
-        pt.FA_SIL: _get_fa_sil_applications,
-        pt.IRON_STEEL: _get_ironsteel_applications,
-        pt.OPT: _get_opt_applications,
-        pt.SANCTIONS: _get_sanctionadhoc_applications,
-        pt.SPS: _get_sps_applications,
-        pt.TEXTILES: _get_textiles_applications,
-        pt.WOOD: _get_wood_applications,
+        imp_pt.DEROGATIONS: _get_derogations_applications,
+        imp_pt.FA_DFL: _get_fa_dfl_applications,
+        imp_pt.FA_OIL: _get_fa_oil_applications,
+        imp_pt.FA_SIL: _get_fa_sil_applications,
+        imp_pt.IRON_STEEL: _get_ironsteel_applications,
+        imp_pt.OPT: _get_opt_applications,
+        imp_pt.SANCTIONS: _get_sanctionadhoc_applications,
+        imp_pt.SPS: _get_sps_applications,
+        imp_pt.TEXTILES: _get_textiles_applications,
+        imp_pt.WOOD: _get_wood_applications,
+        exp_pt.CFS: _get_cfs_applications,
+        exp_pt.COM: _get_com_applications,
+        exp_pt.GMP: _get_gmp_applications,
     }
 
-    for pt, search_ids in app_pks.items():  # type:ignore[assignment]
-        search_func = process_type_map[pt]  # type:ignore[index]
+    for app_pt, search_ids in app_pks.items():  # type:ignore[assignment]
+        search_func = process_type_map[app_pt]  # type:ignore[index]
 
         yield search_func(search_ids)
 
@@ -268,6 +314,17 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
     )
 
     return row
+
+
+def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
+    app_type_label = ExportApplicationType.ProcessTypes(rec.process_type).label
+
+    return ExportResultRow(
+        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
+        case_reference=rec.get_reference(),
+        application_type=app_type_label,
+        submit_datetime=rec.submit_datetime,
+    )
 
 
 def _get_licence_reference(rec: ImportApplication) -> str:
@@ -506,14 +563,49 @@ def _get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplicat
     return applications
 
 
+def _get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSaleApplication]":
+    applications = CertificateOfFreeSaleApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_export_optimisation(applications)
+
+    # TODO: ICMSLST-978 Apply any app specific optimisations here:
+    # applications = applications.select_related()
+
+    return applications
+
+
+def _get_com_applications(search_ids: list[int]) -> "QuerySet[CertificateOfManufactureApplication]":
+    applications = CertificateOfManufactureApplication.objects.filter(pk__in=search_ids)
+    applications = _apply_export_optimisation(applications)
+
+    # TODO: ICMSLST-978 Apply any app specific optimisations here:
+    # applications = applications.select_related()
+
+    return applications
+
+
+def _get_gmp_applications(
+    search_ids: list[int],
+) -> "QuerySet[CertificateOfGoodManufacturingPracticeApplication]":
+    applications = CertificateOfGoodManufacturingPracticeApplication.objects.filter(
+        pk__in=search_ids
+    )
+    applications = _apply_export_optimisation(applications)
+
+    # TODO: ICMSLST-978 Apply any app specific optimisations here:
+    # applications = applications.select_related()
+
+    return applications
+
+
 def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Model]":
-    """Apply common filtering to the supplied model - Currently just ImportApplications."""
+    """Apply all search terms for Import and Export applications."""
 
     # THe legacy system only includes applications that have been submitted.
     model = model.exclude(submit_datetime=None)
 
     if terms.app_type:
-        iat_filter = {"application_type__type": terms.app_type}
+        key = "type" if terms.case_type == "import" else "type_code"
+        iat_filter = {f"application_type__{key}": terms.app_type}
 
         if terms.app_sub_type:
             iat_filter["application_type__sub_type"] = terms.app_sub_type
@@ -538,13 +630,6 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
     if terms.response_decision:
         model = model.filter(decision=terms.response_decision)
 
-    if terms.importer_agent_name:
-        name = terms.importer_agent_name
-        # TODO: Revisit this when doing ICMSLST-1035
-        importer_name = Q(importer__name=name)
-        agent_name = Q(agent__name=name)
-        model = model.filter(importer_name | agent_name)
-
     if terms.submitted_date_start:
         start_datetime = make_aware(
             datetime.datetime.combine(terms.submitted_date_start, datetime.datetime.min.time())
@@ -558,6 +643,28 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         )
 
         model = model.filter(submit_datetime__lte=end_datetime)
+
+    # TODO: Revisit this when doing ICMSLST-964
+    # reassignment_search (searches for people not assigned to me)
+
+    if terms.case_type == "import":
+        model = _apply_import_application_filter(model, terms)
+
+    if terms.case_type == "export":
+        model = _apply_export_application_filter(model, terms)
+
+    return model
+
+
+def _apply_import_application_filter(
+    model: "QuerySet[Model]", terms: SearchTerms
+) -> "QuerySet[Model]":
+    if terms.importer_agent_name:
+        name = terms.importer_agent_name
+        # TODO: Revisit this when doing ICMSLST-1035
+        importer_name = Q(importer__name=name)
+        agent_name = Q(agent__name=name)
+        model = model.filter(importer_name | agent_name)
 
     # In legacy licencing assumes application state is in processing (We won't for now)
     if terms.licence_date_start:
@@ -576,8 +683,50 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         # model = model.filter(issue_date__lte=terms.issue_date_end)
         pass
 
-    # TODO: Revisit this when doing ICMSLST-964
-    # reassignment_search (searches for people not assigned to me)
+    return model
+
+
+def _apply_export_application_filter(
+    model: "QuerySet[Model]", terms: SearchTerms
+) -> "QuerySet[Model]":
+    if terms.exporter_agent_name:
+        name = terms.exporter_agent_name
+        # TODO: Revisit this when doing ICMSLST-1035
+        exporter_name = Q(exporter__name=name)
+        agent_name = Q(agent__name=name)
+        model = model.filter(exporter_name | agent_name)
+
+    if terms.closed_date_start:
+        # TODO: Implement when doing ICMSLST-1107
+        ...
+
+    if terms.closed_date_end:
+        # TODO: Implement when doing ICMSLST-1107
+        ...
+
+    if terms.certificate_country:
+        if terms.certificate_country.count() == 1:
+            model = model.filter(countries=terms.certificate_country.first())
+        else:
+            model = model.filter(countries__in=terms.certificate_country)
+
+    if terms.manufacture_country:
+        # CFS apps are the only export application with a manufacturing company
+        if terms.manufacture_country.count() == 1:
+            manufacture_country = terms.manufacture_country.first()
+            model = model.filter(
+                certificateoffreesaleapplication__schedules__country_of_manufacture=manufacture_country
+            )
+        else:
+            model = model.filter(
+                certificateoffreesaleapplication__schedules__country_of_manufacture__in=terms.manufacture_country
+            )
+
+    if terms.pending_firs == YesNoChoices.yes:
+        model = model.filter(status=ApplicationBase.Statuses.FIR_REQUESTED)
+
+    if terms.pending_update_reqs == YesNoChoices.yes:
+        model = model.filter(status=ApplicationBase.Statuses.UPDATE_REQUESTED)
 
     return model
 
@@ -589,13 +738,24 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     return model
 
 
-def _get_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[SpreadsheetRow]:
+def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
+    """Selects related tables used for import applications."""
+    # TODO: ICMSLST-978 Apply any export optimisations here:
+    # model = model.select_related("importer", "contact", "application_type")
+
+    return model
+
+
+def _get_spreadsheet_rows(
+    records: list[Union[ImportResultRow, ExportResultRow]]
+) -> Iterable[SpreadsheetRow]:
     """Converts the incoming records in to a spreadsheet row."""
 
+    # TODO: ICMSLST-979 Remove "# type:ignore[union-attr]"
     for row in records:
-        cs = row.case_status
-        ad = row.applicant_details
-        cd = row.commodity_details
+        cs = row.case_status  # type:ignore[union-attr]
+        ad = row.applicant_details  # type:ignore[union-attr]
+        cd = row.commodity_details  # type:ignore[union-attr]
 
         commodity_codes = ", ".join(cd.commodity_codes) if cd.commodity_codes else None
 

@@ -146,5 +146,8 @@ def exporter():
 def agent_exporter(exporter):
     """Fixture to get an Agent Exporter model instance."""
     return Exporter.objects.get(
-        is_active=True, name="UK based exporter", registered_number="422", main_exporter=exporter
+        is_active=True,
+        name="UK based agent exporter",
+        registered_number="422",
+        main_exporter=exporter,
     )

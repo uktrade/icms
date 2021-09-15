@@ -1,6 +1,6 @@
 import datetime
 import io
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import pytest
 from django.utils.timezone import make_aware
@@ -23,16 +23,22 @@ from web.domains.case._import.sanctions.models import (
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    ExportApplicationType,
+)
 from web.domains.case.models import ApplicationBase
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import Task
-from web.models.shared import FirearmCommodity
+from web.models.shared import FirearmCommodity, YesNoChoices
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
 from web.utils.search import (
     CommodityDetails,
-    ImportResultRow,
+    ResultRow,
     SearchTerms,
     get_search_results_spreadsheet,
     search_applications,
@@ -41,6 +47,7 @@ from web.utils.search import (
 if TYPE_CHECKING:
     from web.models import User
     from web.domains.importer.models import Importer
+    from web.domains.exporter.models import Exporter
 
 from typing import NamedTuple
 
@@ -58,6 +65,21 @@ def test_data(db, importer, agent_importer, test_import_user, request):
     request.icms = ICMSMiddlewareContext()
 
     return FixtureData(importer, agent_importer, test_import_user, request)
+
+
+class ExportFixtureData(NamedTuple):
+    exporter: "Exporter"
+    agent_exporter: "Exporter"
+    exporter_user: "User"
+    request: AuthenticatedHttpRequest
+
+
+@pytest.fixture
+def export_fixture_data(db, exporter, agent_exporter, test_export_user, request):
+    request.user = test_export_user
+    request.icms = ICMSMiddlewareContext()
+
+    return ExportFixtureData(exporter, agent_exporter, test_export_user, request)
 
 
 def test_filter_by_application_type(test_data: FixtureData):
@@ -724,9 +746,162 @@ def test_case_statuses(test_data: FixtureData):
         _test_search_by_status(wt, "unknown status", ["should raise"])
 
 
-def check_application_references(
-    applications: list[ImportResultRow], *references, sort_results=False
-):
+def test_search_by_export_applications(export_fixture_data: ExportFixtureData):
+    cfs_app = _create_cfs_application(export_fixture_data)
+    com_app = _create_com_application(export_fixture_data)
+    gmp_app = _create_gmp_application(export_fixture_data)
+
+    search_terms = SearchTerms(case_type="export")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 3
+    check_export_application_case_reference(
+        results.records, gmp_app.reference, com_app.reference, cfs_app.reference
+    )
+
+
+def test_search_by_app_type(export_fixture_data: ExportFixtureData):
+    cfs_app = _create_cfs_application(export_fixture_data)
+    com_app = _create_com_application(export_fixture_data)
+    gmp_app = _create_gmp_application(export_fixture_data)
+
+    ref_type_pairs = (
+        (cfs_app.reference, ExportApplicationType.Types.FREE_SALE),
+        (com_app.reference, ExportApplicationType.Types.MANUFACTURE),
+        (gmp_app.reference, ExportApplicationType.Types.GMP),
+    )
+
+    for (ref, app_type) in ref_type_pairs:
+        search_terms = SearchTerms(case_type="export", app_type=app_type)
+        results = search_applications(search_terms)
+
+        assert results.total_rows == 1, f"Failed: {ref} - {app_type}"
+        check_export_application_case_reference(results.records, ref)
+
+
+def test_export_search_by_exporter_or_agent(export_fixture_data: ExportFixtureData):
+    cfs_app = _create_cfs_application(export_fixture_data)
+    search_terms = SearchTerms(
+        case_type="export", exporter_agent_name=export_fixture_data.exporter.name
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, cfs_app.reference)
+
+    cfs_app = _create_cfs_application(export_fixture_data)
+    cfs_app.agent = export_fixture_data.agent_exporter
+    cfs_app.save()
+
+    search_terms = SearchTerms(
+        case_type="export", exporter_agent_name=export_fixture_data.agent_exporter.name
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, cfs_app.reference)
+
+    search_terms = SearchTerms(case_type="export", exporter_agent_name="Not valid")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+
+
+def test_export_search_by_closed_dates(export_fixture_data: ExportFixtureData):
+    # TODO: Add test when doing ICMSLST-1107
+    ...
+
+
+def test_export_search_by_certificate_country(export_fixture_data: ExportFixtureData):
+    # all applications have the following certificate countries.
+    # Aruba", "Maldives", "Zambia"
+
+    aruba = Country.objects.filter(name="Aruba")
+    yemen = Country.objects.filter(name="Yemen")
+    aruba_and_yemen = Country.objects.filter(name__in=["Aruba", "Yemen"])
+
+    cfs_app = _create_cfs_application(export_fixture_data)
+    cfs_app2: CertificateOfFreeSaleApplication = _create_cfs_application(export_fixture_data)
+    cfs_app2.countries.add(yemen.first())
+
+    search_terms = SearchTerms(case_type="export", certificate_country=aruba)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+    check_export_application_case_reference(results.records, cfs_app2.reference, cfs_app.reference)
+
+    search_terms = SearchTerms(case_type="export", certificate_country=yemen)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, cfs_app2.reference)
+
+    search_terms = SearchTerms(case_type="export", certificate_country=aruba_and_yemen)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+    check_export_application_case_reference(results.records, cfs_app2.reference, cfs_app.reference)
+
+
+def test_export_search_by_manufacture_country(export_fixture_data: ExportFixtureData):
+    # Default country of manufacture is Peru
+    app = _create_cfs_application(export_fixture_data)
+
+    peru = Country.objects.filter(name="Peru")
+    yemen = Country.objects.filter(name="Yemen")
+    peru_and_yemen = Country.objects.filter(name__in=["Peru", "Yemen"])
+
+    search_terms = SearchTerms(case_type="export", manufacture_country=peru)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, app.reference)
+
+    search_terms = SearchTerms(case_type="export", manufacture_country=yemen)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+
+    search_terms = SearchTerms(case_type="export", manufacture_country=peru_and_yemen)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, app.reference)
+
+
+def test_export_search_by_pending_firs(export_fixture_data: ExportFixtureData):
+    com_app = _create_com_application(export_fixture_data)
+    search_terms = SearchTerms(case_type="export", pending_firs=YesNoChoices.yes)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+
+    com_app.status = ApplicationBase.Statuses.FIR_REQUESTED
+    com_app.save()
+
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, com_app.reference)
+
+
+def test_export_search_by_pending_update_reqs(export_fixture_data: ExportFixtureData):
+    com_app = _create_com_application(export_fixture_data)
+    search_terms = SearchTerms(case_type="export", pending_update_reqs=YesNoChoices.yes)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+
+    com_app.status = ApplicationBase.Statuses.UPDATE_REQUESTED
+    com_app.save()
+
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, com_app.reference)
+
+
+def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references
 
     Sort results if we don't care about the order
@@ -735,6 +910,17 @@ def check_application_references(
     expected = sorted(references) if sort_results else list(references)
 
     actual = (app.case_status.applicant_reference for app in applications)
+    actual = sorted(actual) if sort_results else list(actual)  # type: ignore[type-var, assignment]
+
+    assert expected == actual
+
+
+def check_export_application_case_reference(
+    applications: list[ResultRow], *app_references, sort_results=False
+):
+    expected = sorted(app_references) if sort_results else list(app_references)
+
+    actual = (app.case_reference for app in applications)
     actual = sorted(actual) if sort_results else list(actual)  # type: ignore[type-var, assignment]
 
     assert expected == actual
@@ -1045,6 +1231,46 @@ def _create_wood_application(
     )
 
 
+def _create_cfs_application(
+    export_fixture_data: ExportFixtureData, submit=True, country_of_manufacture="Peru"
+):
+    application_type = ExportApplicationType.objects.get(
+        type_code=ExportApplicationType.Types.FREE_SALE
+    )
+    process_type = ExportApplicationType.ProcessTypes.CFS.value
+
+    com = Country.objects.get(name=country_of_manufacture)
+    app: CertificateOfFreeSaleApplication = _create_export_application(
+        application_type, process_type, export_fixture_data, False, extra_kwargs={}
+    )
+
+    app.schedules.create(country_of_manufacture=com, created_by=export_fixture_data.request.user)
+
+    _submit_application(app, export_fixture_data)
+
+    return app
+
+
+def _create_com_application(export_fixture_data: ExportFixtureData, submit=True):
+    application_type = ExportApplicationType.objects.get(
+        type_code=ExportApplicationType.Types.MANUFACTURE
+    )
+    process_type = ExportApplicationType.ProcessTypes.COM.value
+
+    return _create_export_application(
+        application_type, process_type, export_fixture_data, submit, extra_kwargs={}
+    )
+
+
+def _create_gmp_application(export_fixture_data: ExportFixtureData, submit=True):
+    application_type = ExportApplicationType.objects.get(type_code=ExportApplicationType.Types.GMP)
+    process_type = ExportApplicationType.ProcessTypes.GMP.value
+
+    return _create_export_application(
+        application_type, process_type, export_fixture_data, submit, extra_kwargs={}
+    )
+
+
 def _create_application(
     application_type,
     process_type,
@@ -1098,7 +1324,54 @@ def _create_application(
     return application
 
 
-def _submit_application(application, test_data: FixtureData):
+def _create_export_application(
+    application_type: ExportApplicationType,
+    process_type: str,
+    fixture_data: ExportFixtureData,
+    submit: bool,
+    extra_kwargs: dict = None,
+    certificate_countries=("Aruba", "Maldives", "Zambia"),
+):
+    kwargs = {
+        # "applicant_reference": reference,
+        "exporter": fixture_data.exporter,
+        "created_by": fixture_data.exporter_user,
+        "last_updated_by": fixture_data.exporter_user,
+        "submitted_by": fixture_data.exporter_user,
+        "application_type": application_type,
+        "process_type": process_type,
+        "contact": fixture_data.exporter_user,
+    }
+
+    if extra_kwargs:
+        kwargs.update(**extra_kwargs)
+
+    models = {
+        ExportApplicationType.ProcessTypes.COM: CertificateOfManufactureApplication,
+        ExportApplicationType.ProcessTypes.GMP: CertificateOfGoodManufacturingPracticeApplication,
+        ExportApplicationType.ProcessTypes.CFS: CertificateOfFreeSaleApplication,
+    }
+
+    model_cls = models[process_type]
+
+    application = model_cls.objects.create(**kwargs)  # type: ignore[attr-defined]
+    Task.objects.create(
+        process=application, task_type=Task.TaskType.PREPARE, owner=fixture_data.exporter_user
+    )
+
+    for c in certificate_countries:
+        country = Country.objects.get(name=c)
+        application.countries.add(country)
+
+    application.save()
+
+    if submit:
+        _submit_application(application, fixture_data)
+
+    return application
+
+
+def _submit_application(application, test_data: Union[FixtureData, ExportFixtureData]):
     """Helper function to submit an application (Using the application code to do so)"""
     task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
