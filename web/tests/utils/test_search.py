@@ -2,16 +2,16 @@ import datetime
 import io
 from typing import TYPE_CHECKING
 
+import pytest
 from django.utils.timezone import make_aware
 from openpyxl import load_workbook
-from pytest import fixture
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.models import (
     CP_CATEGORIES,
     OutwardProcessingTradeApplication,
@@ -52,7 +52,7 @@ class FixtureData(NamedTuple):
     request: AuthenticatedHttpRequest
 
 
-@fixture
+@pytest.fixture
 def test_data(db, importer, agent_importer, test_import_user, request):
     request.user = test_import_user
     request.icms = ICMSMiddlewareContext()
@@ -85,7 +85,11 @@ def test_filter_wood(test_data: FixtureData):
 
     _test_search_by_case_reference(test_data)
 
-    _test_search_by_status()
+    _test_search_by_status(
+        ImportApplicationType.Types.WOOD_QUOTA,
+        ImportApplication.Statuses.SUBMITTED,
+        expected=["Wood ref 3", "Wood ref 2", "Wood ref 1"],
+    )
 
     _test_search_by_response_decision()
 
@@ -447,19 +451,14 @@ def _test_search_by_case_reference(test_data: FixtureData):
     check_application_references(results.records, "Wood ref 3")
 
 
-def _test_search_by_status():
+def _test_search_by_status(app_type: str, case_status: str, expected: list[str]):
     """Search by status using the records we have already created"""
-    # TODO: Revisit this when doing ICMSLST-1036
 
-    search_terms = SearchTerms(
-        case_type="import",
-        app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
-        case_status=ApplicationBase.Statuses.SUBMITTED,  # type: ignore[arg-type]
-    )
+    search_terms = SearchTerms(case_type="import", app_type=app_type, case_status=case_status)
     results = search_applications(search_terms)
 
-    assert results.total_rows == 3
-    check_application_references(results.records, "Wood ref 3", "Wood ref 2", "Wood ref 1")
+    assert results.total_rows == len(expected)
+    check_application_references(results.records, *expected)
 
 
 def _test_search_by_response_decision():
@@ -692,6 +691,37 @@ def test_get_search_results_spreadsheet(test_data: FixtureData):
         "Wood ref 2",
         "Wood ref 1",
     ]
+
+
+def test_case_statuses(test_data: FixtureData):
+    _create_test_app_statuses(test_data)
+
+    wt = ImportApplicationType.Types.WOOD_QUOTA
+    st = ImportApplication.Statuses
+
+    _test_search_by_status(wt, st.COMPLETED, expected=["completed"])
+
+    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
+    # _test_search_by_status(wt, scs.IN_PROGRESS, [])
+
+    # TODO: ICMSLST-1105 filter Oustanding Open Requests
+    # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
+
+    _test_search_by_status(wt, st.PROCESSING, expected=["update", "fir", "processing"])
+    _test_search_by_status(wt, st.FIR_REQUESTED, expected=["fir"])
+
+    # TODO: ICMSLST-1104: filter SIGL
+    # _test_search_by_status(wt, scs.PROCESSING_SIGL, "sigl")
+
+    _test_search_by_status(wt, st.UPDATE_REQUESTED, expected=["update"])
+    _test_search_by_status(wt, st.REVOKED, expected=["revoked"])
+    _test_search_by_status(wt, st.STOPPED, expected=["stopped"])
+    _test_search_by_status(wt, st.SUBMITTED, expected=["submitted"])
+    _test_search_by_status(wt, st.VARIATION_REQUESTED, expected=["variation"])
+    _test_search_by_status(wt, st.WITHDRAWN, expected=["withdrawn"])
+
+    with pytest.raises(NotImplementedError):
+        _test_search_by_status(wt, "unknown status", ["should raise"])
 
 
 def check_application_references(
@@ -991,6 +1021,7 @@ def _create_wood_application(
     submit=True,
     shipping_year=2021,
     commodity_code="code123456",
+    override_status=None,
 ):
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.WOOD_QUOTA
@@ -1004,12 +1035,24 @@ def _create_wood_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=wood_kwargs
+        application_type,
+        process_type,
+        reference,
+        test_data,
+        submit,
+        override_status,
+        extra_kwargs=wood_kwargs,
     )
 
 
 def _create_application(
-    application_type, process_type, reference, test_data, submit, extra_kwargs=None
+    application_type,
+    process_type,
+    reference,
+    test_data,
+    submit,
+    override_status=None,
+    extra_kwargs=None,
 ):
     kwargs = {
         "applicant_reference": reference,
@@ -1048,6 +1091,10 @@ def _create_application(
     if submit:
         _submit_application(application, test_data)
 
+    if override_status:
+        application.status = override_status
+        application.save()
+
     return application
 
 
@@ -1075,3 +1122,27 @@ def _create_test_commodity_group(category_commodity_group: str, commodity: Commo
         group.commodities.add(commodity)
 
     return group
+
+
+def _create_test_app_statuses(test_data):
+    st = ApplicationBase.Statuses
+    _create_wood_application("completed", test_data, override_status=st.COMPLETED)
+
+    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
+    # _create_wood_application("in_progress", test_data, submit=False, override_status=st.IN_PROGRESS)
+
+    # TODO: ICMSLST-1105: filter Oustanding Open Requests
+    # _create_wood_application("open_request", test_data)
+
+    _create_wood_application("processing", test_data, override_status=st.PROCESSING)
+    _create_wood_application("fir", test_data, override_status=st.FIR_REQUESTED)
+
+    # TODO: ICMSLST-1104: filter SIGL
+    # _create_wood_application("sigl", test_data)
+
+    _create_wood_application("update", test_data, override_status=st.UPDATE_REQUESTED)
+    _create_wood_application("revoked", test_data, override_status=st.REVOKED)
+    _create_wood_application("stopped", test_data, override_status=st.STOPPED)
+    _create_wood_application("submitted", test_data, override_status=st.SUBMITTED)
+    _create_wood_application("variation", test_data, override_status=st.VARIATION_REQUESTED)
+    _create_wood_application("withdrawn", test_data, override_status=st.WITHDRAWN)

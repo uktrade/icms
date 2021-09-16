@@ -232,20 +232,24 @@ class ApplicationBase(WorkbasketBase, Process):
 
     # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
     class Statuses(models.TextChoices):
-        IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
-        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
-        PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
-        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
         COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
-        WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
+        DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
+        IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
+        PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
+        FIR_REQUESTED: str = ("FIR_REQUESTED", "Processing (FIR)")  # type:ignore[assignment]
+        UPDATE_REQUESTED: str = (
+            "UPDATE_REQUESTED",
+            "Processing (Update)",
+        )  # type:ignore[assignment]
+        REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
         STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
+        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
         VARIATION_REQUESTED: str = (
             "VARIATION_REQUESTED",
             "Variation Requested",
         )  # type:ignore[assignment]
-        REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
-        DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
-        UPDATE_REQUESTED: str = ("UPDATE_REQUESTED", "Update Requested")  # type:ignore[assignment]
+        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
+        WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
 
     status = models.CharField(
         max_length=30,
@@ -456,7 +460,7 @@ class ApplicationBase(WorkbasketBase, Process):
     ) -> list[WorkbasketAction]:
         applicant_actions: list[WorkbasketAction] = []
 
-        if self.status == self.Statuses.SUBMITTED:
+        if self.status in [self.Statuses.SUBMITTED, self.Statuses.FIR_REQUESTED]:
             applicant_actions.append(view_action)
 
             applicant_actions.append(

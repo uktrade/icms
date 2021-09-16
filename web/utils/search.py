@@ -2,7 +2,7 @@ import datetime
 from collections import defaultdict
 from dataclasses import dataclass
 from operator import attrgetter
-from typing import TYPE_CHECKING, Iterable, NamedTuple, Optional
+from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Optional
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
@@ -528,9 +528,12 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         raise NotImplementedError("Searching by Licence Reference isn't supported yet")
 
     if terms.case_status:
-        # This isn't always correct.
-        # e.g. the "state" "Processing (FIR)" should search for applications with open requests.
-        model = model.filter(status=terms.case_status)
+        filter_list = _get_status_to_filter(terms.case_status)
+
+        if len(filter_list) == 1:
+            model = model.filter(status=filter_list[0])
+        else:
+            model = model.filter(status__in=filter_list)
 
     if terms.response_decision:
         model = model.filter(decision=terms.response_decision)
@@ -617,3 +620,26 @@ def _get_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[Spreadshee
             goods_category=cd.goods_category,
             commodity_codes=commodity_codes,
         )
+
+
+def _get_status_to_filter(case_status: str) -> list:
+    st = ImportApplication.Statuses
+
+    choices = dict(get_import_status_choices())
+    if case_status not in choices:
+        raise NotImplementedError(f"Filter ({case_status}) for case status not supported.")
+
+    if case_status == st.PROCESSING:
+        return [st.PROCESSING, st.FIR_REQUESTED, st.UPDATE_REQUESTED]
+    else:
+        return [case_status]
+
+
+def get_import_status_choices() -> list[tuple[Any, str]]:
+    st = ImportApplication.Statuses
+
+    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
+    to_remove = (st.IN_PROGRESS, st.CHIEF, st.DELETED)
+    choices = [(k, v) for k, v in st.choices if k not in to_remove]
+
+    return choices
