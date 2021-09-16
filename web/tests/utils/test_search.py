@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 import pytest
 from django.utils.timezone import make_aware
 from openpyxl import load_workbook
-from pytest import fixture
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
@@ -53,7 +52,7 @@ class FixtureData(NamedTuple):
     request: AuthenticatedHttpRequest
 
 
-@fixture
+@pytest.fixture
 def test_data(db, importer, agent_importer, test_import_user, request):
     request.user = test_import_user
     request.icms = ICMSMiddlewareContext()
