@@ -121,11 +121,29 @@ class ImportResultRow:
 
 @dataclass
 class ExportResultRow:
-    # TODO: Flesh out when implementing ICMSLST-978
-    application_type: str
-    submitted_at: str
+    # Case status fields
     case_reference: str
+    application_type: str
+    status: str
+
+    # certificates fields
+    certificates: list[str]
+
+    submitted_at: str
     submit_datetime: datetime.datetime
+
+    # Certificate details
+    origin_countries: list[str]
+
+    # Applicant details
+    organisation_name: str
+    application_contact: str
+
+    # Certificate details optional
+    manufacturer_countries: Optional[list[str]] = None
+
+    # Applicant details optional
+    agent_name: Optional[str] = None
 
 
 ResultRow = Union[ImportResultRow, ExportResultRow]
@@ -318,12 +336,24 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
 
 def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     app_type_label = ExportApplicationType.ProcessTypes(rec.process_type).label
+    manufacturer_countries = []
+
+    if rec.process_type == ExportApplicationType.ProcessTypes.CFS:
+        manufacturer_countries = rec.manufacturer_countries  # This is an annotation
 
     return ExportResultRow(
-        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
         case_reference=rec.get_reference(),
         application_type=app_type_label,
+        status=rec.get_status_display(),
+        # TODO: Revisit when implementing ICMSLST-1048
+        certificates=["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"],
+        origin_countries=rec.origin_countries,  # This is an annotation
+        organisation_name=rec.exporter.name,
+        application_contact=rec.contact.full_name,
+        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
         submit_datetime=rec.submit_datetime,
+        manufacturer_countries=manufacturer_countries,
+        agent_name=rec.agent.name if rec.agent else None,
     )
 
 
@@ -566,9 +596,9 @@ def _get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplicat
 def _get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSaleApplication]":
     applications = CertificateOfFreeSaleApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
-
-    # TODO: ICMSLST-978 Apply any app specific optimisations here:
-    # applications = applications.select_related()
+    applications = applications.annotate(
+        manufacturer_countries=ArrayAgg("schedules__country_of_manufacture__name", distinct=True)
+    )
 
     return applications
 
@@ -741,8 +771,8 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
     # TODO: ICMSLST-978 Apply any export optimisations here:
-    # model = model.select_related("importer", "contact", "application_type")
-
+    model = model.select_related("exporter", "contact")
+    model = model.annotate(origin_countries=ArrayAgg("countries__name", distinct=True))
     return model
 
 
