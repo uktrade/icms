@@ -44,6 +44,10 @@ class ProcessTypes(models.TextChoices):
 class Process(models.Model):
     """Base class for all processes."""
 
+    # each final subclass needs to set this for downcasting to work; see
+    # get_specific_model. they should also mark themselves with typing.final.
+    IS_FINAL = False
+
     # the default=None is to force all code to set this when creating objects.
     # it will fail when save is called.
     process_type = models.CharField(max_length=50, default=None)
@@ -114,6 +118,66 @@ class Process(models.Model):
             return None
         else:
             raise errors.TaskError(f"Expected one/zero active tasks, got {len(tasks)}")
+
+    def get_specific_model(self) -> "Process":
+        """Downcast to specific model class."""
+
+        # if we already have the specific model, just return it
+        if self.IS_FINAL:
+            return self
+
+        pt = self.process_type
+
+        # importer/exporter access requests
+        if pt == ProcessTypes.IAR:
+            return self.accessrequest.importeraccessrequest
+
+        elif pt == ProcessTypes.EAR:
+            return self.accessrequest.exporteraccessrequest
+
+        # import applications
+        elif pt == ProcessTypes.FA_OIL:
+            return self.importapplication.openindividuallicenceapplication
+
+        elif pt == ProcessTypes.FA_SIL:
+            return self.importapplication.silapplication
+
+        elif pt == ProcessTypes.SANCTIONS:
+            return self.importapplication.sanctionsandadhocapplication
+
+        elif pt == ProcessTypes.WOOD:
+            return self.importapplication.woodquotaapplication
+
+        elif pt == ProcessTypes.DEROGATIONS:
+            return self.importapplication.derogationsapplication
+
+        elif pt == ProcessTypes.FA_DFL:
+            return self.importapplication.dflapplication
+
+        elif pt == ProcessTypes.OPT:
+            return self.importapplication.outwardprocessingtradeapplication
+
+        elif pt == ProcessTypes.TEXTILES:
+            return self.importapplication.textilesapplication
+
+        elif pt == ProcessTypes.SPS:
+            return self.importapplication.priorsurveillanceapplication
+
+        elif pt == ProcessTypes.IRON_STEEL:
+            return self.importapplication.ironsteelapplication
+
+        # Export applications
+        elif pt == ProcessTypes.COM:
+            return self.exportapplication.certificateofmanufactureapplication
+
+        elif pt == ProcessTypes.CFS:
+            return self.exportapplication.certificateoffreesaleapplication
+
+        elif pt == ProcessTypes.GMP:
+            return self.exportapplication.certificateofgoodmanufacturingpracticeapplication
+
+        else:
+            raise NotImplementedError(f"Unknown process_type {pt}")
 
 
 class Task(models.Model):

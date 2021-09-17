@@ -1,7 +1,7 @@
 import pytest
 
 from web.flow import errors
-from web.flow.models import Task
+from web.flow.models import Process, Task
 from web.tests.domains.case.access.factories import ImporterAccessRequestFactory
 
 from .factories import TaskFactory
@@ -39,3 +39,11 @@ def test_get_task_error():
     with pytest.raises(errors.TaskError) as excinfo:
         process.get_task("submitted", "process")
     assert f"Expected one active task, got {len(tasks)}"
+
+
+@pytest.mark.django_db
+def test_downcast_unknown():
+    p = Process(process_type="blaa")
+
+    with pytest.raises(NotImplementedError, match="Unknown process_type blaa"):
+        p.get_specific_model()

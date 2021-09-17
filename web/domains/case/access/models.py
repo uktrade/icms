@@ -1,3 +1,5 @@
+from typing import final
+
 import structlog as logging
 from django.db import models
 from django.urls import reverse
@@ -152,8 +154,10 @@ class AccessRequest(WorkbasketBase, Process):
         return r
 
 
+@final
 class ImporterAccessRequest(AccessRequest):
     PROCESS_TYPE = ProcessTypes.IAR
+    IS_FINAL = True
 
     AGENT_ACCESS = "AGENT_IMPORTER_ACCESS"
     REQUEST_TYPES = (
@@ -179,8 +183,10 @@ class ImporterAccessRequest(AccessRequest):
     )
 
 
+@final
 class ExporterAccessRequest(AccessRequest):
     PROCESS_TYPE = ProcessTypes.EAR
+    IS_FINAL = True
 
     AGENT_ACCESS = "AGENT_EXPORTER_ACCESS"
     REQUEST_TYPES = (

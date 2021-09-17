@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.commodity.models import Commodity
@@ -20,8 +22,10 @@ class WoodContractFile(File):
     )
 
 
+@final
 class WoodQuotaApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.WOOD
+    IS_FINAL = True
 
     shipping_year = models.IntegerField(null=True)
 

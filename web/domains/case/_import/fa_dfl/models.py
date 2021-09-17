@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.fa.models import FirearmApplicationBase
@@ -32,10 +34,12 @@ class DFLGoodsCertificate(File):
         return f"DFLGoodsCertificate(id={self.pk}, deactivated_certificate_reference={dcf!r})"
 
 
+@final
 class DFLApplication(FirearmApplicationBase):
     """Firearms & Ammunition Deactivated Firearms Licence application"""
 
     PROCESS_TYPE = ProcessTypes.FA_DFL
+    IS_FINAL = True
 
     deactivated_firearm = models.BooleanField(verbose_name="Deactivated Firearm", default=True)
     proof_checked = models.BooleanField(verbose_name="Proof Checked", default=False)
