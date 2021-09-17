@@ -14,6 +14,7 @@ class FurtherInformationRequestFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = FurtherInformationRequest
 
+    process_type = FurtherInformationRequest.PROCESS_TYPE
     requested_by = factory.SubFactory(UserFactory)
     is_active = True
     status = FurtherInformationRequest.OPEN

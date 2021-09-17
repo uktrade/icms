@@ -44,7 +44,9 @@ class ImportApplicationTest(TestCase):
         importer = ImporterFactory(
             offices=(OfficeFactory(is_active=True), OfficeFactory(is_active=True))
         )
+
         return ImportApplication.objects.create(
+            process_type=SanctionsAndAdhocApplication.PROCESS_TYPE,
             is_active=True,
             application_type=ImportApplicationType.objects.get(
                 type=ImportApplicationType.Types.SANCTION_ADHOC
