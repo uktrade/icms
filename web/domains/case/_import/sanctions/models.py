@@ -2,12 +2,13 @@ from django.db import models
 
 from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 
-from ..models import ImportApplication, ImportApplicationType
+from ..models import ImportApplication
 
 
 class SanctionsAndAdhocApplication(ImportApplication):
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.SANCTIONS
+    PROCESS_TYPE = ProcessTypes.SANCTIONS
 
     exporter_name = models.CharField(max_length=4096, blank=True, null=True)
     exporter_address = models.CharField(max_length=4096, blank=True, null=True)

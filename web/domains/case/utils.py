@@ -4,11 +4,11 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case.export.models import ExportApplication, ExportApplicationType
+from web.domains.case._import.models import ImportApplication
+from web.domains.case.export.models import ExportApplication
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models.models import CaseReference
 from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
@@ -152,10 +152,8 @@ def view_application_file_direct(
 
 
 def get_case_page_title(case_type: str, application: ImpOrExpOrAccess, page: str) -> str:
-    if case_type == "import":
-        return f"{ImportApplicationType.ProcessTypes(application.process_type).label} - {page}"
-    elif case_type == "export":
-        return f"{ExportApplicationType.ProcessTypes(application.process_type).label} - {page}"
+    if case_type in ("import", "export"):
+        return f"{ProcessTypes(application.process_type).label} - {page}"
     elif case_type == "access":
         return f"Access Request - {page}"
     else:
