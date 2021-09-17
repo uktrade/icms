@@ -1,0 +1,17 @@
+<div class="container setoutForm search-results">
+  <div class="row">
+    <div class="twelve columns"><label class="prompt north">Certificate Countries</label></div>
+  </div>
+  <div class="row">
+    <div class="twelve columns"><span class="text-widget ">{{ rec.origin_countries|join(', ') }}</span></div>
+  </div>
+
+  {% if rec.manufacturer_countries %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">Countries of Manufacture</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget ">{{ rec.manufacturer_countries|join(', ') }}</span></div>
+    </div>
+  {% endif %}
+</div>

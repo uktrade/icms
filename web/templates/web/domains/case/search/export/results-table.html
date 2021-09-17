@@ -1,4 +1,25 @@
-<p>TODO: Implement when doing ICMSLST-978</p>
-{% for rec in search_records %}
-  <p>{{ rec.pk }} - {{ rec.application_type }} - {{ rec.case_reference }}</p>
-{% endfor %}
+<table class="setoutList">
+  <thead>
+  <tr>
+    <th scope="col">Case Details</th>
+    <th scope="col">Certificates</th>
+    <th scope="col">Submitted Date</th>
+    <th scope="col">Certificate Details</th>
+    <th scope="col">Applicant Details</th>
+    <th scope="col">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+
+  {% for rec in search_records %}
+    <tr>
+      <td>{% include "web/domains/case/search/export/case_details.html" %}</td>
+      <td>{% include "web/domains/case/search/export/certificates.html" %}</td>
+      <td>{% include "web/domains/case/search/export/submitted_date.html" %}</td>
+      <td>{% include "web/domains/case/search/export/certificate_details.html" %}</td>
+      <td>{% include "web/domains/case/search/export/applicant_details.html" %}</td>
+      <td>{% include "web/domains/case/search/export/actions.html" %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
