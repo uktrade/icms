@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.fa.models import FirearmApplicationBase
@@ -12,10 +14,12 @@ class SILUserSection5(File):
     """User uploaded section 5 documents."""
 
 
+@final
 class SILApplication(FirearmApplicationBase):
     """Firearms Specific Import Licence Application."""
 
     PROCESS_TYPE = ProcessTypes.FA_SIL
+    IS_FINAL = True
 
     # Select one or more sections related to the firearms licence
     section1 = models.BooleanField(verbose_name="Section 1", default=False)

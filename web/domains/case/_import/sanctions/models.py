@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.commodity.models import Commodity
@@ -7,8 +9,10 @@ from web.flow.models import ProcessTypes
 from ..models import ImportApplication
 
 
+@final
 class SanctionsAndAdhocApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.SANCTIONS
+    IS_FINAL = True
 
     exporter_name = models.CharField(max_length=4096, blank=True, null=True)
     exporter_address = models.CharField(max_length=4096, blank=True, null=True)

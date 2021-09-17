@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase, ImportApplication
@@ -32,8 +34,10 @@ class IronSteelCertificateFile(File):
     )
 
 
+@final
 class IronSteelApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.IRON_STEEL
+    IS_FINAL = True
 
     goods_cleared = models.BooleanField(
         null=True,

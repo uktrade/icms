@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, final
 
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
@@ -162,8 +162,10 @@ class ExportApplication(ApplicationBase):
         return "\n".join(["Certificate Application", ProcessTypes(self.process_type).label])
 
 
+@final
 class CertificateOfManufactureApplication(ExportApplication):
     PROCESS_TYPE = ProcessTypes.COM
+    IS_FINAL = True
 
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
@@ -173,8 +175,10 @@ class CertificateOfManufactureApplication(ExportApplication):
     manufacturing_process = models.TextField(max_length=4000, blank=False)
 
 
+@final
 class CertificateOfFreeSaleApplication(ExportApplication):
     PROCESS_TYPE = ProcessTypes.CFS
+    IS_FINAL = True
 
     schedules = models.ManyToManyField("CFSSchedule")
 
@@ -330,8 +334,10 @@ class CFSProductActiveIngredient(models.Model):
     )
 
 
+@final
 class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
     PROCESS_TYPE = ProcessTypes.GMP
+    IS_FINAL = True
 
     class CertificateTypes(models.TextChoices):
         ISO_22716 = ("ISO_22716", "ISO 22716")

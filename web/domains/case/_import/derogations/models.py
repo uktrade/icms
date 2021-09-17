@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.commodity.models import Commodity
@@ -8,6 +10,7 @@ from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 from ..models import ChecklistBase, ImportApplication
 
 
+@final
 class DerogationsApplication(ImportApplication):
     class Unit(models.TextChoices):
         KG = ("kilos", "kilos")
@@ -19,6 +22,7 @@ class DerogationsApplication(ImportApplication):
         OTHER_CIV_PURPOSE = ("OCP", "Other civilian purposes")
 
     PROCESS_TYPE = ProcessTypes.DEROGATIONS
+    IS_FINAL = True
 
     contract_sign_date = models.DateField(verbose_name="Contract Sign Date", null=True)
     contract_completion_date = models.DateField(verbose_name="Contract Completion Date", null=True)

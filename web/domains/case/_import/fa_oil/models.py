@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.fa.models import FirearmApplicationBase
@@ -7,8 +9,10 @@ from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 
+@final
 class OpenIndividualLicenceApplication(FirearmApplicationBase):
     PROCESS_TYPE = ProcessTypes.FA_OIL
+    IS_FINAL = True
 
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
     section2 = models.BooleanField(verbose_name="Section 2", default=True)

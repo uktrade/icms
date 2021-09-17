@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase, ImportApplication
@@ -7,8 +9,10 @@ from web.flow.models import ProcessTypes
 from web.models.shared import at_least_0
 
 
+@final
 class TextilesApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.TEXTILES
+    IS_FINAL = True
 
     goods_cleared = models.BooleanField(
         null=True,

@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase
@@ -32,8 +34,10 @@ class OutwardProcessingTradeFile(File):
     file_type = models.CharField(max_length=32, choices=Type.choices)
 
 
+@final
 class OutwardProcessingTradeApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.OPT
+    IS_FINAL = True
 
     customs_office_name = models.CharField(
         max_length=100, null=True, verbose_name="Requested customs supervising office name"

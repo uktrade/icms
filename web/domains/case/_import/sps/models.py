@@ -1,3 +1,5 @@
+from typing import final
+
 from django.db import models
 
 from web.domains.case._import.models import ImportApplication
@@ -14,8 +16,10 @@ class PriorSurveillanceContractFile(File):
     file_type = models.CharField(max_length=32, choices=Type.choices)
 
 
+@final
 class PriorSurveillanceApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.SPS
+    IS_FINAL = True
 
     customs_cleared_to_uk = models.BooleanField(
         null=True,
