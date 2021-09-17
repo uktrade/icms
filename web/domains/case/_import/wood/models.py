@@ -2,8 +2,9 @@ from django.db import models
 
 from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 
-from ..models import ChecklistBase, ImportApplication, ImportApplicationType
+from ..models import ChecklistBase, ImportApplication
 
 WOOD_UNIT_CHOICES = [(x, x) for x in ["cubic metres"]]
 
@@ -20,7 +21,7 @@ class WoodContractFile(File):
 
 
 class WoodQuotaApplication(ImportApplication):
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.WOOD
+    PROCESS_TYPE = ProcessTypes.WOOD
 
     shipping_year = models.IntegerField(null=True)
 

@@ -1,12 +1,9 @@
 from django.db import models
 
-from web.domains.case._import.models import (
-    ChecklistBase,
-    ImportApplication,
-    ImportApplicationType,
-)
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 from web.models.shared import YesNoNAChoices, at_least_0
 
 
@@ -36,7 +33,7 @@ class IronSteelCertificateFile(File):
 
 
 class IronSteelApplication(ImportApplication):
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.IRON_STEEL
+    PROCESS_TYPE = ProcessTypes.IRON_STEEL
 
     goods_cleared = models.BooleanField(
         null=True,

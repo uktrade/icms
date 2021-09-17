@@ -17,6 +17,7 @@ from web.domains.file.models import File
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.flow.models import ProcessTypes
 from web.models.shared import AddressEntryType, YesNoChoices
 
 if TYPE_CHECKING:
@@ -28,14 +29,6 @@ class ExportApplicationType(models.Model):
         FREE_SALE = ("CFS", "Certificate of Free Sale")
         MANUFACTURE = ("COM", "Certificate of Manufacture")
         GMP = ("GMP", "Certificate of Good Manufacturing Practice")
-
-    class ProcessTypes(models.TextChoices):
-        COM = ("CertificateOfManufactureApplication", "Certificate of Manufacture")
-        CFS = ("CertificateOfFreeSaleApplication", "Certificate of Free Sale")
-        GMP = (
-            "CertificateofGoodManufacturingPractice",
-            "Certificate of Good Manufacturing Practice",
-        )
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type_code = models.CharField(
@@ -134,21 +127,21 @@ class ExportApplication(ApplicationBase):
         return False
 
     def get_edit_view_name(self) -> str:
-        if self.process_type == ExportApplicationType.ProcessTypes.COM:
+        if self.process_type == ProcessTypes.COM:
             return "export:com-edit"
-        if self.process_type == ExportApplicationType.ProcessTypes.CFS:
+        if self.process_type == ProcessTypes.CFS:
             return "export:cfs-edit"
-        if self.process_type == ExportApplicationType.ProcessTypes.GMP:
+        if self.process_type == ProcessTypes.GMP:
             return "export:gmp-edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
     def get_submit_view_name(self) -> str:
-        if self.process_type == ExportApplicationType.ProcessTypes.COM:
+        if self.process_type == ProcessTypes.COM:
             return "export:com-submit"
-        if self.process_type == ExportApplicationType.ProcessTypes.CFS:
+        if self.process_type == ProcessTypes.CFS:
             return "export:cfs-submit"
-        if self.process_type == ExportApplicationType.ProcessTypes.GMP:
+        if self.process_type == ProcessTypes.GMP:
             return "export:gmp-submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
@@ -166,16 +159,11 @@ class ExportApplication(ApplicationBase):
         return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_exporter"])
 
     def get_workbasket_subject(self) -> str:
-        return "\n".join(
-            [
-                "Certificate Application",
-                ExportApplicationType.ProcessTypes(self.process_type).label,
-            ]
-        )
+        return "\n".join(["Certificate Application", ProcessTypes(self.process_type).label])
 
 
 class CertificateOfManufactureApplication(ExportApplication):
-    PROCESS_TYPE = ExportApplicationType.ProcessTypes.COM
+    PROCESS_TYPE = ProcessTypes.COM
 
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
@@ -186,7 +174,7 @@ class CertificateOfManufactureApplication(ExportApplication):
 
 
 class CertificateOfFreeSaleApplication(ExportApplication):
-    PROCESS_TYPE = ExportApplicationType.ProcessTypes.CFS
+    PROCESS_TYPE = ProcessTypes.CFS
 
     schedules = models.ManyToManyField("CFSSchedule")
 
@@ -343,7 +331,7 @@ class CFSProductActiveIngredient(models.Model):
 
 
 class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
-    PROCESS_TYPE = ExportApplicationType.ProcessTypes.GMP
+    PROCESS_TYPE = ProcessTypes.GMP
 
     class CertificateTypes(models.TextChoices):
         ISO_22716 = ("ISO_22716", "ISO 22716")

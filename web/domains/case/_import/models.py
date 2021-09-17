@@ -21,6 +21,7 @@ from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketRow
+from web.flow.models import ProcessTypes
 from web.models.shared import YesNoNAChoices
 
 if TYPE_CHECKING:
@@ -42,21 +43,6 @@ class ImportApplicationType(models.Model):
         OIL = ("OIL", "Open Individual Import Licence")
         DFL = ("DEACTIVATED", "Deactivated Firearms Import Licence")
         SIL = ("SIL", "Specific Individual Import Licence")
-
-    class ProcessTypes(models.TextChoices):
-        DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
-        FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
-        FA_OIL = (
-            "OpenIndividualLicenceApplication",
-            "Firearms and Ammunition (Open Individual Import Licence)",
-        )
-        FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
-        IRON_STEEL = ("ISQuotaApplication", "Iron and Steel (Quota)")
-        OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
-        SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
-        SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
-        TEXTILES = ("TextilesApplication", "Textiles (Quota)")
-        WOOD = ("WoodQuotaApplication", "Wood (Quota)")
 
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
@@ -124,20 +110,20 @@ class ImportApplicationType(models.Model):
 
     def __str__(self):
         mapped_types = {
-            self.Types.DEROGATION: self.ProcessTypes.DEROGATIONS,
-            self.Types.IRON_STEEL: self.ProcessTypes.IRON_STEEL,
-            self.Types.OPT: self.ProcessTypes.OPT,
-            self.Types.SANCTION_ADHOC: self.ProcessTypes.SANCTIONS,
-            self.Types.SPS: self.ProcessTypes.SPS,
-            self.Types.TEXTILES: self.ProcessTypes.TEXTILES,
-            self.Types.WOOD_QUOTA: self.ProcessTypes.WOOD,
+            self.Types.DEROGATION: ProcessTypes.DEROGATIONS,
+            self.Types.IRON_STEEL: ProcessTypes.IRON_STEEL,
+            self.Types.OPT: ProcessTypes.OPT,
+            self.Types.SANCTION_ADHOC: ProcessTypes.SANCTIONS,
+            self.Types.SPS: ProcessTypes.SPS,
+            self.Types.TEXTILES: ProcessTypes.TEXTILES,
+            self.Types.WOOD_QUOTA: ProcessTypes.WOOD,
         }
 
         mapped_types_with_subtypes = {
             self.Types.FIREARMS: {
-                self.SubTypes.OIL: self.ProcessTypes.FA_OIL,
-                self.SubTypes.DFL: self.ProcessTypes.FA_DFL,
-                self.SubTypes.SIL: self.ProcessTypes.FA_SIL,
+                self.SubTypes.OIL: ProcessTypes.FA_OIL,
+                self.SubTypes.DFL: ProcessTypes.FA_DFL,
+                self.SubTypes.SIL: ProcessTypes.FA_SIL,
             }
         }
 
@@ -150,7 +136,7 @@ class ImportApplicationType(models.Model):
         else:
             raise NotImplementedError(f"Can't get label for {self.type}, {self.sub_type}")
 
-        return self.ProcessTypes(process_type).label
+        return ProcessTypes(process_type).label
 
     class Meta:
         ordering = ("type", "sub_type")
@@ -280,49 +266,49 @@ class ImportApplication(ApplicationBase):
         return True
 
     def get_edit_view_name(self) -> str:
-        if self.process_type == ImportApplicationType.ProcessTypes.FA_OIL:
+        if self.process_type == ProcessTypes.FA_OIL:
             return "import:fa-oil:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.FA_DFL:
+        elif self.process_type == ProcessTypes.FA_DFL:
             return "import:fa-dfl:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.FA_SIL:
+        elif self.process_type == ProcessTypes.FA_SIL:
             return "import:fa-sil:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.OPT:
+        elif self.process_type == ProcessTypes.OPT:
             return "import:opt:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.DEROGATIONS:
+        elif self.process_type == ProcessTypes.DEROGATIONS:
             return "import:derogations:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.SANCTIONS:
+        elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.WOOD:
+        elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.TEXTILES:
+        elif self.process_type == ProcessTypes.TEXTILES:
             return "import:textiles:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.SPS:
+        elif self.process_type == ProcessTypes.SPS:
             return "import:sps:edit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.IRON_STEEL:
+        elif self.process_type == ProcessTypes.IRON_STEEL:
             return "import:ironsteel:edit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
     def get_submit_view_name(self) -> str:
-        if self.process_type == ImportApplicationType.ProcessTypes.FA_OIL:
+        if self.process_type == ProcessTypes.FA_OIL:
             return "import:fa-oil:submit-oil"
-        elif self.process_type == ImportApplicationType.ProcessTypes.FA_DFL:
+        elif self.process_type == ProcessTypes.FA_DFL:
             return "import:fa-dfl:submit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.FA_SIL:
+        elif self.process_type == ProcessTypes.FA_SIL:
             return "import:fa-sil:submit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.OPT:
+        elif self.process_type == ProcessTypes.OPT:
             return "import:opt:submit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.DEROGATIONS:
+        elif self.process_type == ProcessTypes.DEROGATIONS:
             return "import:derogations:submit-derogations"
-        elif self.process_type == ImportApplicationType.ProcessTypes.SANCTIONS:
+        elif self.process_type == ProcessTypes.SANCTIONS:
             return "import:sanctions:submit-sanctions"
-        elif self.process_type == ImportApplicationType.ProcessTypes.WOOD:
+        elif self.process_type == ProcessTypes.WOOD:
             return "import:wood:submit-quota"
-        elif self.process_type == ImportApplicationType.ProcessTypes.TEXTILES:
+        elif self.process_type == ProcessTypes.TEXTILES:
             return "import:textiles:submit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.SPS:
+        elif self.process_type == ProcessTypes.SPS:
             return "import:sps:submit"
-        elif self.process_type == ImportApplicationType.ProcessTypes.IRON_STEEL:
+        elif self.process_type == ProcessTypes.IRON_STEEL:
             return "import:ironsteel:submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
@@ -340,12 +326,7 @@ class ImportApplication(ApplicationBase):
         return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_importer"])
 
     def get_workbasket_subject(self) -> str:
-        return "\n".join(
-            [
-                "Import Application",
-                ImportApplicationType.ProcessTypes(self.process_type).label,
-            ]
-        )
+        return "\n".join(["Import Application", ProcessTypes(self.process_type).label])
 
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         r = super().get_workbasket_row(user)

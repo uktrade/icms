@@ -1,17 +1,14 @@
 from django.db import models
 
-from web.domains.case._import.models import (
-    ChecklistBase,
-    ImportApplication,
-    ImportApplicationType,
-)
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 from web.models.shared import at_least_0
 
 
 class TextilesApplication(ImportApplication):
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.TEXTILES
+    PROCESS_TYPE = ProcessTypes.TEXTILES
 
     goods_cleared = models.BooleanField(
         null=True,

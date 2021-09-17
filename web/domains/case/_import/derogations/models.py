@@ -2,9 +2,10 @@ from django.db import models
 
 from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 
-from ..models import ChecklistBase, ImportApplication, ImportApplicationType
+from ..models import ChecklistBase, ImportApplication
 
 
 class DerogationsApplication(ImportApplication):
@@ -17,7 +18,7 @@ class DerogationsApplication(ImportApplication):
         RESTORE_ECONOMIC_ACTIVITY = ("REA", "Reconstruction or restoring economic activity")
         OTHER_CIV_PURPOSE = ("OCP", "Other civilian purposes")
 
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.DEROGATIONS
+    PROCESS_TYPE = ProcessTypes.DEROGATIONS
 
     contract_sign_date = models.DateField(verbose_name="Contract Sign Date", null=True)
     contract_completion_date = models.DateField(verbose_name="Contract Completion Date", null=True)

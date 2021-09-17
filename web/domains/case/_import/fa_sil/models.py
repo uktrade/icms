@@ -1,9 +1,10 @@
 from django.db import models
 
 from web.domains.case._import.fa.models import FirearmApplicationBase
-from web.domains.case._import.models import ChecklistBase, ImportApplicationType
+from web.domains.case._import.models import ChecklistBase
 from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
+from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 
@@ -14,7 +15,7 @@ class SILUserSection5(File):
 class SILApplication(FirearmApplicationBase):
     """Firearms Specific Import Licence Application."""
 
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_SIL
+    PROCESS_TYPE = ProcessTypes.FA_SIL
 
     # Select one or more sections related to the firearms licence
     section1 = models.BooleanField(verbose_name="Section 1", default=False)

@@ -7,6 +7,40 @@ from django.db.models.query import QuerySet
 from . import errors
 
 
+class ProcessTypes(models.TextChoices):
+    """Values for Process.process_type."""
+
+    # import
+    DEROGATIONS = ("DerogationsApplication", "Derogation from Sanctions Import Ban")
+    FA_DFL = ("DFLApplication", "Firearms and Ammunition (Deactivated Firearms Licence)")
+    FA_OIL = (
+        "OpenIndividualLicenceApplication",
+        "Firearms and Ammunition (Open Individual Import Licence)",
+    )
+    FA_SIL = ("SILApplication", "Firearms and Ammunition (Specific Individual Import Licence)")
+    IRON_STEEL = ("ISQuotaApplication", "Iron and Steel (Quota)")
+    OPT = ("OutwardProcessingTradeApplication", "Outward Processing Trade")
+    SANCTIONS = ("SanctionsAndAdhocApplication", "Sanctions and Adhoc Licence Application")
+    SPS = ("PriorSurveillanceApplication", "Prior Surveillance")
+    TEXTILES = ("TextilesApplication", "Textiles (Quota)")
+    WOOD = ("WoodQuotaApplication", "Wood (Quota)")
+
+    # export
+    COM = ("CertificateOfManufactureApplication", "Certificate of Manufacture")
+    CFS = ("CertificateOfFreeSaleApplication", "Certificate of Free Sale")
+    GMP = (
+        "CertificateofGoodManufacturingPractice",
+        "Certificate of Good Manufacturing Practice",
+    )
+
+    # access requests
+    IAR = ("ImporterAccessRequest", "Importer Access Request")
+    EAR = ("ExporterAccessRequest", "Exporter Access Request")
+
+    # TODO: FIRs and access request approvals also inherit from process, they
+    # should probably be listed here as well
+
+
 class Process(models.Model):
     """Base class for all processes."""
 

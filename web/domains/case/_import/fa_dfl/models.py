@@ -1,10 +1,11 @@
 from django.db import models
 
 from web.domains.case._import.fa.models import FirearmApplicationBase
-from web.domains.case._import.models import ChecklistBase, ImportApplicationType
+from web.domains.case._import.models import ChecklistBase
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 
@@ -34,7 +35,7 @@ class DFLGoodsCertificate(File):
 class DFLApplication(FirearmApplicationBase):
     """Firearms & Ammunition Deactivated Firearms Licence application"""
 
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.FA_DFL
+    PROCESS_TYPE = ProcessTypes.FA_DFL
 
     deactivated_firearm = models.BooleanField(verbose_name="Deactivated Firearm", default=True)
     proof_checked = models.BooleanField(verbose_name="Proof Checked", default=False)

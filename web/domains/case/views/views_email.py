@@ -20,10 +20,9 @@ from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.sanction_email.models import SanctionEmail
 from web.domains.template.models import Template
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models import (
     DFLApplication,
-    ExportApplicationType,
     GMPFile,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
@@ -466,7 +465,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         content = template.get_content(
             {
                 "CASE_REFERENCE": application.reference,
-                "APPLICATION_TYPE": ExportApplicationType.ProcessTypes.CFS.label,  # type: ignore[attr-defined]
+                "APPLICATION_TYPE": ProcessTypes.CFS.label,  # type: ignore[attr-defined]
                 "EXPORTER_NAME": application.exporter,
                 "EXPORTER_ADDRESS": application.exporter_office,
                 "CONTACT_EMAIL": application.contact.email,
@@ -488,7 +487,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         content = template.get_content(
             {
                 "CASE_REFERENCE": application.reference,
-                "APPLICATION_TYPE": ExportApplicationType.ProcessTypes.GMP.label,  # type: ignore[attr-defined]
+                "APPLICATION_TYPE": ProcessTypes.GMP.label,  # type: ignore[attr-defined]
                 "EXPORTER_NAME": application.exporter,
                 "EXPORTER_ADDRESS": application.exporter_office,
                 "MANUFACTURER_NAME": application.manufacturer_name,

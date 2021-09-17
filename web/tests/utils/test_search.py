@@ -33,7 +33,7 @@ from web.domains.case.models import ApplicationBase
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
 from web.utils.search import (
@@ -955,7 +955,7 @@ def _create_derogation_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.DEROGATION
     )
-    process_type = ImportApplicationType.ProcessTypes.DEROGATIONS.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.DEROGATIONS.value  # type: ignore[attr-defined]
     commodity = _create_test_commodity(commodity_code)
 
     derogation_kwargs = {
@@ -980,7 +980,7 @@ def _create_fa_dfl_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
     )
-    process_type = ImportApplicationType.ProcessTypes.FA_DFL.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.FA_DFL.value  # type: ignore[attr-defined]
 
     fa_dfl_kwargs = {
         "origin_country": Country.objects.get(name=origin_country),
@@ -1004,7 +1004,7 @@ def _create_fa_oil_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.OIL
     )
-    process_type = ImportApplicationType.ProcessTypes.FA_OIL.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.FA_OIL.value  # type: ignore[attr-defined]
     fa_oil_kwargs = {
         "origin_country": Country.objects.get(name=origin_country),
         "consignment_country": Country.objects.get(name=consignment_country),
@@ -1027,7 +1027,7 @@ def _create_fa_sil_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.SIL
     )
-    process_type = ImportApplicationType.ProcessTypes.FA_SIL.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.FA_SIL.value  # type: ignore[attr-defined]
     fa_sil_kwargs = {
         "origin_country": Country.objects.get(name=origin_country),
         "consignment_country": Country.objects.get(name=consignment_country),
@@ -1052,7 +1052,7 @@ def _create_ironsteel_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.IRON_STEEL
     )
-    process_type = ImportApplicationType.ProcessTypes.IRON_STEEL.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.IRON_STEEL.value  # type: ignore[attr-defined]
     commodity = _create_test_commodity(commodity_code)
     commodity_group = _create_test_commodity_group(category_commodity_group, commodity)
 
@@ -1079,7 +1079,7 @@ def _create_opt_application(
     teg_commodity_codes=("5006009000", "5007206190", "5112301000"),
 ):
     application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.OPT)
-    process_type = ImportApplicationType.ProcessTypes.OPT.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.OPT.value  # type: ignore[attr-defined]
     cp_commodities = []
     teg_commodities = []
 
@@ -1120,7 +1120,7 @@ def _create_sanctionadhoc_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.SANCTION_ADHOC
     )
-    process_type = ImportApplicationType.ProcessTypes.SANCTIONS.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.SANCTIONS.value  # type: ignore[attr-defined]
 
     sanctionadhoc_kwargs = {
         "origin_country": Country.objects.get(name=origin_country),
@@ -1159,7 +1159,7 @@ def _create_sps_application(
     commodity_code="7208539000",
 ):
     application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.SPS)
-    process_type = ImportApplicationType.ProcessTypes.SPS.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.SPS.value  # type: ignore[attr-defined]
 
     sps_kwargs = {
         "origin_country": Country.objects.get(name=origin_country),
@@ -1183,7 +1183,7 @@ def _create_textiles_application(
     commodity_code="5509620000",
 ):
     application_type = ImportApplicationType.objects.get(type=ImportApplicationType.Types.TEXTILES)
-    process_type = ImportApplicationType.ProcessTypes.TEXTILES.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.TEXTILES.value  # type: ignore[attr-defined]
 
     commodity = _create_test_commodity(commodity_code)
     commodity_group = _create_test_commodity_group(category_commodity_group, commodity)
@@ -1212,7 +1212,7 @@ def _create_wood_application(
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.WOOD_QUOTA
     )
-    process_type = ImportApplicationType.ProcessTypes.WOOD.value  # type: ignore[attr-defined]
+    process_type = ProcessTypes.WOOD.value  # type: ignore[attr-defined]
     commodity = _create_test_commodity(commodity_code)
 
     wood_kwargs = {
@@ -1237,7 +1237,7 @@ def _create_cfs_application(
     application_type = ExportApplicationType.objects.get(
         type_code=ExportApplicationType.Types.FREE_SALE
     )
-    process_type = ExportApplicationType.ProcessTypes.CFS.value
+    process_type = ProcessTypes.CFS.value
 
     com = Country.objects.get(name=country_of_manufacture)
     app: CertificateOfFreeSaleApplication = _create_export_application(
@@ -1255,7 +1255,7 @@ def _create_com_application(export_fixture_data: ExportFixtureData, submit=True)
     application_type = ExportApplicationType.objects.get(
         type_code=ExportApplicationType.Types.MANUFACTURE
     )
-    process_type = ExportApplicationType.ProcessTypes.COM.value
+    process_type = ProcessTypes.COM.value
 
     return _create_export_application(
         application_type, process_type, export_fixture_data, submit, extra_kwargs={}
@@ -1264,7 +1264,7 @@ def _create_com_application(export_fixture_data: ExportFixtureData, submit=True)
 
 def _create_gmp_application(export_fixture_data: ExportFixtureData, submit=True):
     application_type = ExportApplicationType.objects.get(type_code=ExportApplicationType.Types.GMP)
-    process_type = ExportApplicationType.ProcessTypes.GMP.value
+    process_type = ProcessTypes.GMP.value
 
     return _create_export_application(
         application_type, process_type, export_fixture_data, submit, extra_kwargs={}
@@ -1295,16 +1295,16 @@ def _create_application(
         kwargs.update(**extra_kwargs)
 
     models = {
-        ImportApplicationType.ProcessTypes.DEROGATIONS: DerogationsApplication,
-        ImportApplicationType.ProcessTypes.FA_DFL: DFLApplication,
-        ImportApplicationType.ProcessTypes.FA_OIL: OpenIndividualLicenceApplication,
-        ImportApplicationType.ProcessTypes.FA_SIL: SILApplication,
-        ImportApplicationType.ProcessTypes.IRON_STEEL: IronSteelApplication,
-        ImportApplicationType.ProcessTypes.OPT: OutwardProcessingTradeApplication,
-        ImportApplicationType.ProcessTypes.SANCTIONS: SanctionsAndAdhocApplication,
-        ImportApplicationType.ProcessTypes.SPS: PriorSurveillanceApplication,
-        ImportApplicationType.ProcessTypes.TEXTILES: TextilesApplication,
-        ImportApplicationType.ProcessTypes.WOOD: WoodQuotaApplication,
+        ProcessTypes.DEROGATIONS: DerogationsApplication,
+        ProcessTypes.FA_DFL: DFLApplication,
+        ProcessTypes.FA_OIL: OpenIndividualLicenceApplication,
+        ProcessTypes.FA_SIL: SILApplication,
+        ProcessTypes.IRON_STEEL: IronSteelApplication,
+        ProcessTypes.OPT: OutwardProcessingTradeApplication,
+        ProcessTypes.SANCTIONS: SanctionsAndAdhocApplication,
+        ProcessTypes.SPS: PriorSurveillanceApplication,
+        ProcessTypes.TEXTILES: TextilesApplication,
+        ProcessTypes.WOOD: WoodQuotaApplication,
     }
 
     model_cls = models[process_type]
@@ -1347,9 +1347,9 @@ def _create_export_application(
         kwargs.update(**extra_kwargs)
 
     models = {
-        ExportApplicationType.ProcessTypes.COM: CertificateOfManufactureApplication,
-        ExportApplicationType.ProcessTypes.GMP: CertificateOfGoodManufacturingPracticeApplication,
-        ExportApplicationType.ProcessTypes.CFS: CertificateOfFreeSaleApplication,
+        ProcessTypes.COM: CertificateOfManufactureApplication,
+        ProcessTypes.GMP: CertificateOfGoodManufacturingPracticeApplication,
+        ProcessTypes.CFS: CertificateOfFreeSaleApplication,
     }
 
     model_cls = models[process_type]

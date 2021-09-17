@@ -1,8 +1,9 @@
 from django.db import models
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import ImportApplication
 from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
+from web.flow.models import ProcessTypes
 
 
 class PriorSurveillanceContractFile(File):
@@ -14,7 +15,7 @@ class PriorSurveillanceContractFile(File):
 
 
 class PriorSurveillanceApplication(ImportApplication):
-    PROCESS_TYPE = ImportApplicationType.ProcessTypes.SPS
+    PROCESS_TYPE = ProcessTypes.SPS
 
     customs_cleared_to_uk = models.BooleanField(
         null=True,

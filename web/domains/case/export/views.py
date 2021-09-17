@@ -23,7 +23,7 @@ from web.domains.case.utils import (
 from web.domains.exporter.models import Exporter
 from web.domains.file.utils import create_file_model
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models.shared import YesNoChoices
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3
@@ -127,9 +127,7 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
         "form": form,
         "export_application_type": application_type,
         "certificate_message": config.certificate_message,
-        "application_title": ExportApplicationType.ProcessTypes(
-            config.model_class.PROCESS_TYPE
-        ).label,
+        "application_title": ProcessTypes(config.model_class.PROCESS_TYPE).label,
         "exporters_with_agents": _exporters_with_agents(request.user),
         "case_type": "export",
     }

@@ -8,7 +8,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
-from web.flow.models import Process
+from web.flow.models import Process, ProcessTypes
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ class AccessRequest(WorkbasketBase, Process):
 
 
 class ImporterAccessRequest(AccessRequest):
-    PROCESS_TYPE = "ImporterAccessRequest"
+    PROCESS_TYPE = ProcessTypes.IAR
 
     AGENT_ACCESS = "AGENT_IMPORTER_ACCESS"
     REQUEST_TYPES = (
@@ -180,7 +180,7 @@ class ImporterAccessRequest(AccessRequest):
 
 
 class ExporterAccessRequest(AccessRequest):
-    PROCESS_TYPE = "ExporterAccessRequest"
+    PROCESS_TYPE = ProcessTypes.EAR
 
     AGENT_ACCESS = "AGENT_EXPORTER_ACCESS"
     REQUEST_TYPES = (

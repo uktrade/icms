@@ -20,7 +20,7 @@ from guardian.shortcuts import get_objects_for_user
 from web.domains.case.utils import get_application_current_task
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
@@ -246,7 +246,7 @@ def _create_application(
     context = {
         "form": form,
         "import_application_type": at,
-        "application_title": ImportApplicationType.ProcessTypes(model_class.PROCESS_TYPE).label,
+        "application_title": ProcessTypes(model_class.PROCESS_TYPE).label,
         "importers_with_agents": _importers_with_agents(request.user),
         **_get_disabled_application_types(),
     }

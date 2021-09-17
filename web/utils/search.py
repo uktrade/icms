@@ -13,7 +13,7 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
@@ -24,10 +24,10 @@ from web.domains.case.export.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     ExportApplication,
-    ExportApplicationType,
 )
 from web.domains.case.models import ApplicationBase
 from web.domains.case.types import ImpOrExpT
+from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
@@ -264,23 +264,20 @@ def _get_search_records(
         app_pks[app.process_type].append(app.pk)
 
     # Map all available process types to the function used to search those records
-    imp_pt = ImportApplicationType.ProcessTypes
-    exp_pt = ExportApplicationType.ProcessTypes
-
     process_type_map = {
-        imp_pt.DEROGATIONS: _get_derogations_applications,
-        imp_pt.FA_DFL: _get_fa_dfl_applications,
-        imp_pt.FA_OIL: _get_fa_oil_applications,
-        imp_pt.FA_SIL: _get_fa_sil_applications,
-        imp_pt.IRON_STEEL: _get_ironsteel_applications,
-        imp_pt.OPT: _get_opt_applications,
-        imp_pt.SANCTIONS: _get_sanctionadhoc_applications,
-        imp_pt.SPS: _get_sps_applications,
-        imp_pt.TEXTILES: _get_textiles_applications,
-        imp_pt.WOOD: _get_wood_applications,
-        exp_pt.CFS: _get_cfs_applications,
-        exp_pt.COM: _get_com_applications,
-        exp_pt.GMP: _get_gmp_applications,
+        ProcessTypes.DEROGATIONS: _get_derogations_applications,
+        ProcessTypes.FA_DFL: _get_fa_dfl_applications,
+        ProcessTypes.FA_OIL: _get_fa_oil_applications,
+        ProcessTypes.FA_SIL: _get_fa_sil_applications,
+        ProcessTypes.IRON_STEEL: _get_ironsteel_applications,
+        ProcessTypes.OPT: _get_opt_applications,
+        ProcessTypes.SANCTIONS: _get_sanctionadhoc_applications,
+        ProcessTypes.SPS: _get_sps_applications,
+        ProcessTypes.TEXTILES: _get_textiles_applications,
+        ProcessTypes.WOOD: _get_wood_applications,
+        ProcessTypes.CFS: _get_cfs_applications,
+        ProcessTypes.COM: _get_com_applications,
+        ProcessTypes.GMP: _get_gmp_applications,
     }
 
     for app_pt, search_ids in app_pks.items():  # type:ignore[assignment]
@@ -335,10 +332,10 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
 
 
 def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
-    app_type_label = ExportApplicationType.ProcessTypes(rec.process_type).label
+    app_type_label = ProcessTypes(rec.process_type).label
     manufacturer_countries = []
 
-    if rec.process_type == ExportApplicationType.ProcessTypes.CFS:
+    if rec.process_type == ProcessTypes.CFS:
         manufacturer_countries = rec.manufacturer_countries  # This is an annotation
 
     return ExportResultRow(
@@ -377,9 +374,8 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
     """Load the commodity details section"""
 
     app_pt = rec.process_type
-    process_types = ImportApplicationType.ProcessTypes
 
-    if app_pt == process_types.WOOD:
+    if app_pt == ProcessTypes.WOOD:
         wood_app: WoodQuotaApplication = rec
 
         details = CommodityDetails(
@@ -388,7 +384,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=[wood_app.commodity.commodity_code],
         )
 
-    elif app_pt == process_types.DEROGATIONS:
+    elif app_pt == ProcessTypes.DEROGATIONS:
         derogation_app: DerogationsApplication = rec
 
         details = CommodityDetails(
@@ -398,7 +394,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=[derogation_app.commodity.commodity_code],
         )
 
-    elif app_pt == process_types.FA_DFL:
+    elif app_pt == ProcessTypes.FA_DFL:
         fa_dfl_app: DFLApplication = rec
 
         details = CommodityDetails(
@@ -407,7 +403,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             goods_category=fa_dfl_app.get_commodity_code_display(),
         )
 
-    elif app_pt == process_types.FA_OIL:
+    elif app_pt == ProcessTypes.FA_OIL:
         fa_oil_app: OpenIndividualLicenceApplication = rec
 
         details = CommodityDetails(
@@ -416,7 +412,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             goods_category=fa_oil_app.get_commodity_code_display(),
         )
 
-    elif app_pt == process_types.FA_SIL:
+    elif app_pt == ProcessTypes.FA_SIL:
         fa_sil_app: SILApplication = rec
 
         details = CommodityDetails(
@@ -425,7 +421,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             goods_category=fa_sil_app.get_commodity_code_display(),
         )
 
-    elif app_pt == process_types.IRON_STEEL:
+    elif app_pt == ProcessTypes.IRON_STEEL:
         ironsteel_app: IronSteelApplication = rec
 
         details = CommodityDetails(
@@ -436,7 +432,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=[ironsteel_app.commodity.commodity_code],
         )
 
-    elif app_pt == process_types.OPT:
+    elif app_pt == ProcessTypes.OPT:
         opt_app: OutwardProcessingTradeApplication = rec
 
         # cp_commodity_codes & teg_commodity_codes are annotations
@@ -450,7 +446,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=commodity_codes,
         )
 
-    elif app_pt == process_types.SANCTIONS:
+    elif app_pt == ProcessTypes.SANCTIONS:
         sanction_app: SanctionsAndAdhocApplication = rec
 
         details = CommodityDetails(
@@ -460,7 +456,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=sorted(sanction_app.commodity_codes),
         )
 
-    elif app_pt == process_types.SPS:
+    elif app_pt == ProcessTypes.SPS:
         sps_app: PriorSurveillanceApplication = rec
 
         details = CommodityDetails(
@@ -470,7 +466,7 @@ def _get_commodity_details(rec: ImportApplication) -> CommodityDetails:
             commodity_codes=[sps_app.commodity.commodity_code],
         )
 
-    elif app_pt == process_types.TEXTILES:
+    elif app_pt == ProcessTypes.TEXTILES:
         textiles_app: TextilesApplication = rec
 
         details = CommodityDetails(
