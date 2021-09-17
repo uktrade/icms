@@ -3,15 +3,15 @@
 {% block sidebar %}{% endblock %}
 
 {% block content_actions %}
-<div class="content-actions">
-  <ul class="menu-out flow-across">
-    <li>
-      <a
-        href="{{ icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}) }}"
-        class="prev-link">
-        Provide Report
-      </a>
-    </li>
-  </ul>
-</div>
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Firearms Reports Management
+        </a>
+      </li>
+    </ul>
+  </div>
 {% endblock %}
