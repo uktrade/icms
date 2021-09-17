@@ -23,7 +23,9 @@
     {% include "partial/import-contacts/list.html" %}
   {% endwith %}
 
-  {# TODO ICMS-954 Add supplemntary reports section #}
+  {% with reports = process.supplementary_info.reports.all() %}
+    {% include "web/domains/case/import/fa/partials/report-list.html" %}
+  {% endwith %}
 
   <h3>Complete Supplementary Reporting</h3>
   {# TODO ICMSLST-962 Complete supplementary report #}

@@ -3,6 +3,7 @@ from django.db import models
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.models import ImportApplication
+from web.models.shared import YesNoChoices
 
 
 class UserImportCertificate(File):
@@ -54,25 +55,8 @@ class ImportContact(models.Model):
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
 
-
-class SupplementaryReport(models.Model):
-    # TODO ICMSLST-954: Use this model
-
-    class TransportType(models.TextChoices):
-        AIR = ("air", "Air")
-        RAIL = ("rail", "Rail")
-        ROAD = ("road", "Road")
-        SEA = ("sea", "Sea")
-
-    transport = models.CharField(choices=TransportType.choices, max_length=4, blank=False)
-    date_received = models.DateField(verbose_name="Date Received")
-
-    bought_from = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}" if self.last_name else self.first_name
 
 
 class SupplementaryInfo(models.Model):
@@ -81,7 +65,7 @@ class SupplementaryInfo(models.Model):
 
     completed_by = models.ForeignKey(
         User,
-        on_delete=models.PROTECT,
+        on_delete=models.SET_NULL,
         null=True,
         related_name="+",
     )
@@ -95,13 +79,57 @@ class SupplementaryInfo(models.Model):
         ),
     )
 
-    reports = models.ManyToManyField(SupplementaryReport)
+
+class SupplementaryReport(models.Model):
+    class TransportType(models.TextChoices):
+        AIR = ("air", "Air")
+        RAIL = ("rail", "Rail")
+        ROAD = ("road", "Road")
+        SEA = ("sea", "Sea")
+
+    supplementary_info = models.ForeignKey(
+        SupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+    )
+    transport = models.CharField(choices=TransportType.choices, max_length=4, blank=False)
+    date_received = models.DateField(verbose_name="Date Received")
+
+    bought_from = models.ForeignKey(
+        ImportContact,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="+",
+    )
+
+    created = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"Supplementary Report {self.created:%d %B %Y}"
+
+    def str_date_received(self):
+        return f"{self.date_received:%d-%b-%Y}"
+
+
+class SupplementaryReportFirearm(models.Model):
+
+    # TODO: ICMSLST-960: Add FK for uploaded document
+    # TODO: ICMSLST-961: Goods reference for firearm needs to be linked to this info
+
+    report = models.ForeignKey(
+        SupplementaryReport, related_name="firearms", on_delete=models.CASCADE
+    )
+    serial_number = models.CharField(max_length=20, null=True)
+    calibre = models.CharField(max_length=20, null=True)
+    model = models.CharField(max_length=20, verbose_name="Make and Model", null=True)
+    proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
 
 
 class FirearmApplicationBase(ImportApplication):
-    supplementary_info = models.OneToOneField(
-        SupplementaryInfo, null=True, related_name="+", on_delete=models.SET_NULL
-    )
-
     class Meta:
         abstract = True
+
+    supplementary_info = models.OneToOneField(
+        SupplementaryInfo,
+        null=True,
+        related_name="+",
+        on_delete=models.SET_NULL,
+    )

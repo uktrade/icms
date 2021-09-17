@@ -108,7 +108,29 @@ urlpatterns = [
                     ),
                 ),
                 # Firemarm workbasket links
-                path("provide-report/", views.provide_report, name="provide-report"),
+                path(
+                    "provide-report/",
+                    include(
+                        [
+                            path("", views.provide_report, name="provide-report"),
+                            path(
+                                "create/",
+                                views.create_report,
+                                name="create-report",
+                            ),
+                            path(
+                                "<int:report_pk>/edit/",
+                                views.edit_report,
+                                name="edit-report",
+                            ),
+                            path(
+                                "<int:report_pk>/delete/",
+                                views.delete_report,
+                                name="delete-report",
+                            ),
+                        ]
+                    ),
+                ),
             ]
         ),
     )

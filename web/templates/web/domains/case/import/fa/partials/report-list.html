@@ -1,0 +1,85 @@
+{% if not reports %}
+  <div class="info-box info-box-info">
+    There are no supplementary reports provided.
+  </div>
+{% else %}
+  {% for report in reports %}
+    <h3>
+      {{ report }}
+      <span class="list-secondary-actions">
+        <ul class="menu-out flow-across">
+          <li>
+          <a
+            href="{{ icms_url('import:fa:edit-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
+            class="link-button icon-pencil button">
+            Edit
+          </a>
+          </li>
+          <li>
+            <form
+              method="post"
+              action="{{ icms_url('import:fa:delete-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
+              class="form-inline">
+              {{ csrf_input }}
+              <button
+                type="submit"
+                class="button link-button icon-bin"
+                data-confirm="Are you sure you want to delete the Supplementary Report {{ report }}?">
+                Delete
+              </button>
+            </form>
+          </li>
+        </ul>
+      </span>
+    </h3>
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th scope="col">Goods Item</th>
+        <th scope="col">Serial Number</th>
+        <th scope="col">Calibre</th>
+        <th scope="col">Make / Model</th>
+        <th scope="col">Proofing</th>
+        {% if upload %}
+          <th scope="col">Upload</th>
+        {% endif %}
+      </tr>
+      </thead>
+      <tbody>
+      {% for firemarm in report.firearms.all() %}
+        {# TODO: ICMSLST-960: Include link to uploaded document if not manually entered #}
+        {# TODO: ICMSLST-961: Include all relevant firearm fields if not uploaded document #}
+        <tr>
+          <td></td>
+          <td>{{ firearm.serial_number }}</td>
+          <td>{{ firearm.calibre }}</td>
+          <td>{{ firearm.model }}</td>
+          <td></td>
+          {% if not upload %}
+            <td></td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="section-break"></div>
+    <div class="container setOutForm">
+      {{ application_field(report.transport | capitalize, 'Transport')}}
+      {{ application_field(report.str_date_received(), 'Date Received')}}
+      {{ application_field(report.bought_from, 'Bought From')}}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<div class="list-actions">
+  <ul class="menu-out flow-across">
+    <li>
+      <a
+        href="{{ icms_url('import:fa:create-report', kwargs={'application_pk': process.pk}) }}"
+        class="button small-button icon-plus">
+        Add New Supplementary Report
+      </a>
+    </li>
+  </ul>
+</div>

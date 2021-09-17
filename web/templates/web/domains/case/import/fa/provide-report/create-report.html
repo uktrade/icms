@@ -1,0 +1,34 @@
+{% extends "flow/task-base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% block sidebar %}{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}) }}"
+          class="prev-link">
+          Firearms Reports Management
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {% block firearms %}
+  {% endblock %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ fields.field(form.transport) }}
+    {{ fields.field(form.date_received) }}
+    {{ fields.field(form.bought_from) }}
+    {% block submit_button %}
+      <input type="submit" class="button primary-button" value="Add"/>
+    {% endblock %}
+  {% endcall %}
+{% endblock %}
