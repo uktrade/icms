@@ -607,9 +607,6 @@ def _get_com_applications(search_ids: list[int]) -> "QuerySet[CertificateOfManuf
     applications = CertificateOfManufactureApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
 
-    # TODO: ICMSLST-978 Apply any app specific optimisations here:
-    # applications = applications.select_related()
-
     return applications
 
 
@@ -620,9 +617,6 @@ def _get_gmp_applications(
         pk__in=search_ids
     )
     applications = _apply_export_optimisation(applications)
-
-    # TODO: ICMSLST-978 Apply any app specific optimisations here:
-    # applications = applications.select_related()
 
     return applications
 
@@ -770,7 +764,6 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 
 def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
-    # TODO: ICMSLST-978 Apply any export optimisations here:
     model = model.select_related("exporter", "contact")
     model = model.annotate(origin_countries=ArrayAgg("countries__name", distinct=True))
     return model
