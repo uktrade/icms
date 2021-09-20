@@ -25,8 +25,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        if settings.APP_ENV not in ("local", "dev"):
-            raise CommandError("Can only add dummy data in 'dev' / 'local' environments!")
+        if settings.APP_ENV not in ("local", "dev", "staging"):
+            raise CommandError(
+                "Can only add dummy data in 'staging', 'dev' and 'local' environments!"
+            )
 
         # enable disabled application types so we can test/develop them
         ImportApplicationType.objects.filter(
