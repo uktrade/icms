@@ -103,6 +103,9 @@ class SupplementaryReport(models.Model):
     created = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
+        return f"{self.pk} - {self.str_title}"
+
+    def str_title(self) -> str:
         return f"Supplementary Report {self.created:%d %B %Y}"
 
     def str_date_received(self):
@@ -117,9 +120,9 @@ class SupplementaryReportFirearm(models.Model):
     report = models.ForeignKey(
         SupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )
-    serial_number = models.CharField(max_length=20, null=True)
-    calibre = models.CharField(max_length=20, null=True)
-    model = models.CharField(max_length=20, verbose_name="Make and Model", null=True)
+    serial_number = models.CharField(max_length=100, null=True)
+    calibre = models.CharField(max_length=100, null=True)
+    model = models.CharField(max_length=100, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
 
 
