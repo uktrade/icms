@@ -3,12 +3,7 @@ from django import forms
 from web.domains.file.utils import ICMSFileField
 from web.forms.widgets import DateInput
 
-from .models import (
-    ImportContact,
-    SupplementaryInfo,
-    SupplementaryReport,
-    UserImportCertificate,
-)
+from .models import ImportContact, SupplementaryReport, UserImportCertificate
 from .types import FaImportApplication
 
 
@@ -86,20 +81,7 @@ class SupplementaryReportForm(forms.ModelForm):
         fields = ("transport", "date_received", "bought_from")
         widgets = {"date_received": DateInput}
 
-    def __init__(
-        self,
-        *args,
-        application: FaImportApplication,
-        supplementary_info: SupplementaryInfo,
-        **kwargs,
-    ) -> None:
+    def __init__(self, *args, application: FaImportApplication, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.supplementary_info = supplementary_info
         self.fields["bought_from"].queryset = application.importcontact_set.all()
-
-    def save(self, commit=True):
-        if not self.instance.pk:
-            self.instance.supplementary_info = self.supplementary_info
-
-        return super().save(commit=commit)

@@ -553,12 +553,12 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         supplementary_info: SupplementaryInfo = application.supplementary_info
 
         if request.POST:
-            form = SupplementaryReportForm(
-                data=request.POST, application=application, supplementary_info=supplementary_info
-            )
+            form = SupplementaryReportForm(data=request.POST, application=application)
 
             if form.is_valid():
-                report: SupplementaryReport = form.save()
+                report: SupplementaryReport = form.save(commit=False)
+                report.supplementary_info = supplementary_info
+                report.save()
 
                 return redirect(
                     reverse(
@@ -567,9 +567,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
                     )
                 )
         else:
-            form = SupplementaryReportForm(
-                application=application, supplementary_info=supplementary_info
-            )
+            form = SupplementaryReportForm(application=application)
 
         context = {
             "process": application,
@@ -608,19 +606,16 @@ def edit_report(
 
         if request.POST:
             form = SupplementaryReportForm(
-                data=request.POST,
-                instance=report,
-                application=application,
-                supplementary_info=supplementary_info,
+                data=request.POST, instance=report, application=application
             )
 
             if form.is_valid():
-                form.save()
+                report: SupplementaryReport = form.save(commit=False)  # type: ignore[no-redef]
+                report.supplementary_info = supplementary_info
+                report.save()
 
         else:
-            form = SupplementaryReportForm(
-                instance=report, application=application, supplementary_info=supplementary_info
-            )
+            form = SupplementaryReportForm(instance=report, application=application)
 
         context = {
             "process": application,

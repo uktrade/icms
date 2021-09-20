@@ -5,7 +5,7 @@
 {% else %}
   {% for report in reports %}
     <h3>
-      {{ report }}
+      {{ report.str_title() }}
       <span class="list-secondary-actions">
         <ul class="menu-out flow-across">
           <li>
@@ -55,7 +55,7 @@
           <td>{{ firearm.calibre }}</td>
           <td>{{ firearm.model }}</td>
           <td></td>
-          {% if not upload %}
+          {% if upload %}
             <td></td>
           {% endif %}
         </tr>
