@@ -60,7 +60,7 @@ def manage_firs(
             "task": task,
             "firs": application.further_information_requests.exclude(
                 status=FurtherInformationRequest.DELETED
-            ),
+            ).filter(is_active=True),
             "case_type": case_type,
             "page_title": get_case_page_title(
                 case_type, application, "Further Information Requests"
@@ -151,11 +151,11 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
                 fir = form.save()
 
                 if "send" in form.data:
-                    application.status = model_class.Statuses.FIR_REQUESTED
-                    application.save()
-
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
+
+                    # Ideally a FIR will inherit from Process and it will have it's own task
+                    # Task.objects.create(fir, Task.TaskType.PROCESS, previous=prepare_fir_task)
 
                     notify.further_information_requested(fir, contacts)
 
@@ -197,8 +197,6 @@ def delete_fir(
         fir.status = FurtherInformationRequest.DELETED
         fir.save()
 
-        _set_app_submitted(application)
-
     return _manage_fir_redirect(application_pk, case_type)
 
 
@@ -219,8 +217,6 @@ def withdraw_fir(
 
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
-
-        _set_app_submitted(application)
 
     return _manage_fir_redirect(application_pk, case_type)
 
@@ -375,7 +371,8 @@ def _delete_fir_file(
         )
         check_application_permission(application, user, case_type)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        # Ideally a FIR will inherit from Process and it will have it's own task
+        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
 
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -401,7 +398,8 @@ def list_firs(
         )
         check_application_permission(application, request.user, case_type)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        # Ideally a FIR will inherit from Process and it will have it's own task
+        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
 
     context = {
         "process": application,
@@ -431,7 +429,8 @@ def respond_fir(
 
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        # Ideally a FIR will inherit from Process and it will have it's own task
+        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
 
         if request.POST:
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
@@ -442,8 +441,6 @@ def respond_fir(
                 fir.status = FurtherInformationRequest.RESPONDED
                 fir.response_by = request.user
                 fir.save()
-
-                _set_app_submitted(application)
 
                 notify.further_information_responded(application, fir)
 
@@ -460,14 +457,3 @@ def respond_fir(
     }
 
     return render(request, "web/domains/case/respond-fir.html", context)
-
-
-def _set_app_submitted(application: ImpOrExpOrAccess) -> None:
-    """Checks if no OPEN firs are left and sets the application status back to SUBMITTED."""
-    open_firs = application.further_information_requests.filter(
-        status=FurtherInformationRequest.OPEN
-    )
-
-    if not open_firs.exists():
-        application.status = application.Statuses.SUBMITTED
-        application.save()

@@ -43,7 +43,7 @@ def cancel_case(
         check_application_permission(application, request.user, case_type)
         get_application_current_task(application, case_type, Task.TaskType.PREPARE)
 
-        # the above accepts UPDATE_REQUESTED, we don't
+        # the above accepts PROCESSING, we don't
         if application.status != model_class.Statuses.IN_PROGRESS:
             raise PermissionDenied
 
@@ -69,7 +69,11 @@ def withdraw_case(
 
         check_application_permission(application, request.user, case_type)
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        if application.current_update_requests():
+            # application revert to prepare when update is requested
+            task = get_application_current_task(application, case_type, Task.TaskType.PREPARE)
+        else:
+            task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
         if request.POST:
             form = forms.WithdrawForm(request.POST)
@@ -82,19 +86,9 @@ def withdraw_case(
                 elif case_type == "export":
                     withdrawal.export_application = application
 
+                withdrawal.status = WithdrawApplication.STATUS_OPEN
                 withdrawal.request_by = request.user
                 withdrawal.save()
-
-                application.status = model_class.Statuses.WITHDRAWN
-                application.save()
-
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
-                Task.objects.create(
-                    process=application, task_type=Task.TaskType.PROCESS, previous=task
-                )
 
                 return redirect(reverse("workbasket"))
         else:
@@ -127,19 +121,14 @@ def archive_withdrawal(
 
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
-
-        application.status = model_class.Statuses.SUBMITTED
-        application.save()
+        if application.current_update_requests():
+            # application revert to prepare when update is requested
+            get_application_current_task(application, case_type, Task.TaskType.PREPARE)
+        else:
+            get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
         withdrawal.is_active = False
         withdrawal.save()
-
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
-        Task.objects.create(process=application, task_type=Task.TaskType.PROCESS, previous=task)
 
         return redirect(reverse("workbasket"))
 
@@ -171,18 +160,17 @@ def manage_withdrawals(
 
                 # withdrawal accepted - case is closed, else case still open
                 if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
+                    application.status = model_class.Status.WITHDRAWN
                     application.is_active = False
                     application.save()
 
                     task.is_active = False
+                    task.owner = request.user
                     task.finished = timezone.now()
                     task.save()
 
                     return redirect(reverse("workbasket"))
                 else:
-                    application.status = model_class.Statuses.SUBMITTED
-                    application.save()
-
                     task.is_active = False
                     task.finished = timezone.now()
                     task.save()
@@ -231,9 +219,10 @@ def take_ownership(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        application.get_task(model_class.Statuses.SUBMITTED, Task.TaskType.PROCESS)
 
         application.case_owner = request.user
+        application.status = model_class.Statuses.PROCESSING
 
         if case_type == "import":
             # Licence start date is set when ILB Admin takes the case
@@ -263,6 +252,7 @@ def release_ownership(
 
         get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
+        application.status = model_class.Statuses.SUBMITTED
         application.case_owner = None
         application.save()
 
@@ -403,9 +393,6 @@ def authorise_documents(
 
                 # TODO: ICMSLST-812 chief document submission - update application.chief_usage_status
                 if case_type == "import" and application.application_type.chief_flag:
-                    application.status = model_class.Statuses.CHIEF
-                    application.save()
-
                     Task.objects.create(
                         process=application, task_type=Task.TaskType.CHIEF_WAIT, previous=task
                     )

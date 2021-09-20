@@ -25,7 +25,8 @@ from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
     ExportApplication,
 )
-from web.domains.case.models import ApplicationBase
+from web.domains.case.fir.models import FurtherInformationRequest
+from web.domains.case.models import UpdateRequest
 from web.domains.case.types import ImpOrExpT
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices
@@ -640,12 +641,8 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         raise NotImplementedError("Searching by Licence Reference isn't supported yet")
 
     if terms.case_status:
-        filter_list = _get_status_to_filter(terms.case_status)
-
-        if len(filter_list) == 1:
-            model = model.filter(status=filter_list[0])
-        else:
-            model = model.filter(status__in=filter_list)
+        filters = _get_status_to_filter(terms.case_status)
+        model = model.filter(filters)
 
     if terms.response_decision:
         model = model.filter(decision=terms.response_decision)
@@ -743,10 +740,10 @@ def _apply_export_application_filter(
             )
 
     if terms.pending_firs == YesNoChoices.yes:
-        model = model.filter(status=ApplicationBase.Statuses.FIR_REQUESTED)
+        model = model.filter(further_information_requests__status=FurtherInformationRequest.OPEN)
 
     if terms.pending_update_reqs == YesNoChoices.yes:
-        model = model.filter(status=ApplicationBase.Statuses.UPDATE_REQUESTED)
+        model = model.filter(update_requests__status=UpdateRequest.Status.OPEN)
 
     return model
 
@@ -801,24 +798,38 @@ def _get_spreadsheet_rows(
         )
 
 
-def _get_status_to_filter(case_status: str) -> list:
+def _get_status_to_filter(case_status: str) -> Q:
     st = ImportApplication.Statuses
 
     choices = dict(get_import_status_choices())
     if case_status not in choices:
         raise NotImplementedError(f"Filter ({case_status}) for case status not supported.")
 
+    filters = Q(status=case_status)
+
     if case_status == st.PROCESSING:
-        return [st.PROCESSING, st.FIR_REQUESTED, st.UPDATE_REQUESTED]
-    else:
-        return [case_status]
+        filters |= Q(further_information_requests__status=FurtherInformationRequest.OPEN)
+        filters |= Q(update_requests__status=UpdateRequest.Status.OPEN)
+    elif case_status == "FIR_REQUESTED":
+        filters |= Q(further_information_requests__status=FurtherInformationRequest.OPEN)
+    elif case_status == "UPDATE_REQUESTED":
+        filters |= Q(update_requests__status=UpdateRequest.Status.OPEN)
+
+    return filters
 
 
 def get_import_status_choices() -> list[tuple[Any, str]]:
     st = ImportApplication.Statuses
 
-    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
-    to_remove = (st.IN_PROGRESS, st.CHIEF, st.DELETED)
-    choices = [(k, v) for k, v in st.choices if k not in to_remove]
-
-    return choices
+    return [
+        (st.COMPLETED.value, st.COMPLETED.label),  # type: ignore[attr-defined]
+        (st.IN_PROGRESS.value, st.IN_PROGRESS.label),  # type: ignore[attr-defined]
+        (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
+        ("FIR_REQUESTED", "Processing (FIR)"),
+        ("UPDATE_REQUESTED", "Processing (Update)"),
+        (st.REVOKED.value, st.REVOKED.label),  # type: ignore[attr-defined]
+        (st.STOPPED.value, st.STOPPED.label),  # type: ignore[attr-defined]
+        (st.SUBMITTED.value, st.SUBMITTED.label),  # type: ignore[attr-defined]
+        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),  # type: ignore[attr-defined]
+        (st.WITHDRAWN.value, st.WITHDRAWN.label),  # type: ignore[attr-defined]
+    ]

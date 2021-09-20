@@ -86,35 +86,30 @@ def get_application_current_task(
     """
 
     if case_type in ["import", "export"]:
-        if task_type == Task.TaskType.PROCESS:
-            return application.get_task(
-                [
-                    application.Statuses.SUBMITTED,
-                    application.Statuses.WITHDRAWN,
-                    application.Statuses.FIR_REQUESTED,
-                ],
-                task_type,
-            )
+        st = ImportApplication.Statuses
 
-        elif task_type == Task.TaskType.PREPARE:
-            return application.get_task(
-                [application.Statuses.IN_PROGRESS, application.Statuses.UPDATE_REQUESTED], task_type
-            )
+        # importer/exporter edit the application
+        # it can either be:
+        #  - a fresh new application (IN_PROGRESS)
+        #  - an update requested (PROCESSING)
+        if task_type == Task.TaskType.PREPARE:
+            return application.get_task([st.IN_PROGRESS, st.PROCESSING], task_type)
+
+        elif task_type == Task.TaskType.PROCESS:
+            return application.get_task([st.SUBMITTED, st.PROCESSING], task_type)
 
         elif task_type == Task.TaskType.AUTHORISE:
             return application.get_task(application.Statuses.PROCESSING, task_type)
 
         elif task_type in [Task.TaskType.CHIEF_WAIT, Task.TaskType.CHIEF_ERROR]:
-            return application.get_task(application.Statuses.CHIEF, task_type)
+            return application.get_task(application.Statuses.PROCESSING, task_type)
 
         elif task_type in Task.TaskType.ACK:
             return application.get_task(application.Statuses.COMPLETED, task_type)
 
     elif case_type == "access":
         if task_type == Task.TaskType.PROCESS:
-            return application.get_task(
-                [application.Statuses.SUBMITTED, application.Statuses.FIR_REQUESTED], task_type
-            )
+            return application.get_task(application.Statuses.SUBMITTED, task_type)
 
     raise NotImplementedError(
         f"State not supported for app: '{application.process_type}', case type: '{case_type}'"

@@ -29,7 +29,8 @@ from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
     ExportApplicationType,
 )
-from web.domains.case.models import ApplicationBase
+from web.domains.case.fir.models import FurtherInformationRequest
+from web.domains.case.models import ApplicationBase, UpdateRequest
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
@@ -730,12 +731,12 @@ def test_case_statuses(test_data: FixtureData):
     # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
 
     _test_search_by_status(wt, st.PROCESSING, expected=["update", "fir", "processing"])
-    _test_search_by_status(wt, st.FIR_REQUESTED, expected=["fir"])
+    _test_search_by_status(wt, "FIR_REQUESTED", expected=["fir"])
 
     # TODO: ICMSLST-1104: filter SIGL
     # _test_search_by_status(wt, scs.PROCESSING_SIGL, "sigl")
 
-    _test_search_by_status(wt, st.UPDATE_REQUESTED, expected=["update"])
+    _test_search_by_status(wt, "UPDATE_REQUESTED", expected=["update"])
     _test_search_by_status(wt, st.REVOKED, expected=["revoked"])
     _test_search_by_status(wt, st.STOPPED, expected=["stopped"])
     _test_search_by_status(wt, st.SUBMITTED, expected=["submitted"])
@@ -876,8 +877,9 @@ def test_export_search_by_pending_firs(export_fixture_data: ExportFixtureData):
 
     assert results.total_rows == 0
 
-    com_app.status = ApplicationBase.Statuses.FIR_REQUESTED
-    com_app.save()
+    com_app.further_information_requests.create(
+        status=FurtherInformationRequest.OPEN, process_type=FurtherInformationRequest.PROCESS_TYPE
+    )
 
     results = search_applications(search_terms)
 
@@ -892,8 +894,7 @@ def test_export_search_by_pending_update_reqs(export_fixture_data: ExportFixture
 
     assert results.total_rows == 0
 
-    com_app.status = ApplicationBase.Statuses.UPDATE_REQUESTED
-    com_app.save()
+    com_app.update_requests.create(status=UpdateRequest.Status.OPEN)
 
     results = search_applications(search_terms)
 
@@ -1408,12 +1409,17 @@ def _create_test_app_statuses(test_data):
     # _create_wood_application("open_request", test_data)
 
     _create_wood_application("processing", test_data, override_status=st.PROCESSING)
-    _create_wood_application("fir", test_data, override_status=st.FIR_REQUESTED)
+    app = _create_wood_application("fir", test_data, override_status=st.PROCESSING)
+    app.further_information_requests.create(
+        status=FurtherInformationRequest.OPEN, process_type=FurtherInformationRequest.PROCESS_TYPE
+    )
 
     # TODO: ICMSLST-1104: filter SIGL
     # _create_wood_application("sigl", test_data)
 
-    _create_wood_application("update", test_data, override_status=st.UPDATE_REQUESTED)
+    app = _create_wood_application("update", test_data, override_status=st.PROCESSING)
+    app.update_requests.create(status=UpdateRequest.Status.OPEN)
+
     _create_wood_application("revoked", test_data, override_status=st.REVOKED)
     _create_wood_application("stopped", test_data, override_status=st.STOPPED)
     _create_wood_application("submitted", test_data, override_status=st.SUBMITTED)

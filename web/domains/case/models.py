@@ -236,11 +236,7 @@ class ApplicationBase(WorkbasketBase, Process):
         DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
         IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
         PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
-        FIR_REQUESTED: str = ("FIR_REQUESTED", "Processing (FIR)")  # type:ignore[assignment]
-        UPDATE_REQUESTED: str = (
-            "UPDATE_REQUESTED",
-            "Processing (Update)",
-        )  # type:ignore[assignment]
+
         REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
         STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
         SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
@@ -248,7 +244,6 @@ class ApplicationBase(WorkbasketBase, Process):
             "VARIATION_REQUESTED",
             "Variation Requested",
         )  # type:ignore[assignment]
-        CHIEF: str = ("CHIEF", "CHIEF")  # type:ignore[assignment]
         WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
 
     status = models.CharField(
@@ -347,7 +342,7 @@ class ApplicationBase(WorkbasketBase, Process):
                 r.actions.append(admin_actions)
 
         if include_applicant_rows:
-            applicant_actions = self._get_applicant_actions(view_action, kwargs)
+            applicant_actions = self._get_applicant_actions(view_action, task, kwargs)
 
             if applicant_actions:
                 r.actions.append(applicant_actions)
@@ -363,13 +358,9 @@ class ApplicationBase(WorkbasketBase, Process):
     ) -> list[WorkbasketAction]:
         admin_actions: list[WorkbasketAction] = []
 
-        bypass_chief = (
-            settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD and self.status == self.Statuses.CHIEF
-        )
+        case_owner = self.case_owner  # type: ignore[attr-defined]
 
-        if self.status in [self.Statuses.SUBMITTED, self.Statuses.WITHDRAWN]:
-            case_owner = self.case_owner  # type: ignore[attr-defined]
-
+        if self.status == self.Statuses.SUBMITTED:
             if not case_owner:
                 admin_actions.append(
                     WorkbasketAction(
@@ -381,36 +372,39 @@ class ApplicationBase(WorkbasketBase, Process):
 
                 admin_actions.append(view_action)
 
-            elif (case_owner == user) and task and task.task_type == Task.TaskType.PROCESS:
+        elif self.status == self.Statuses.PROCESSING:
+            if case_owner != user:
+                admin_actions.append(view_action)
+
+            elif task and task.task_type == Task.TaskType.PROCESS:
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
                     )
                 )
-            else:
-                admin_actions.append(view_action)
 
-        elif self.status == self.Statuses.PROCESSING:
-            admin_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Authorise Documents",
-                    url=reverse("case:authorise-documents", kwargs=kwargs),
+            elif task and task.task_type == Task.TaskType.AUTHORISE:
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Authorise Documents",
+                        url=reverse("case:authorise-documents", kwargs=kwargs),
+                    )
                 )
-            )
 
-            admin_actions.append(
-                WorkbasketAction(
-                    is_post=True,
-                    name="Cancel Authorisation",
-                    url=reverse("case:cancel-authorisation", kwargs=kwargs),
+                admin_actions.append(
+                    WorkbasketAction(
+                        is_post=True,
+                        name="Cancel Authorisation",
+                        url=reverse("case:cancel-authorisation", kwargs=kwargs),
+                    )
                 )
-            )
 
-            admin_actions.append(view_action)
-
-        elif bypass_chief:
-            if task and task.task_type == Task.TaskType.CHIEF_WAIT:
+            elif (
+                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+                and task
+                and task.task_type == Task.TaskType.CHIEF_WAIT
+            ):
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=True,
@@ -441,7 +435,11 @@ class ApplicationBase(WorkbasketBase, Process):
                     )
                 )
 
-            elif task and task.task_type == Task.TaskType.CHIEF_ERROR:
+            elif (
+                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+                and task
+                and task.task_type == Task.TaskType.CHIEF_ERROR
+            ):
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=False,
@@ -456,20 +454,53 @@ class ApplicationBase(WorkbasketBase, Process):
         return admin_actions
 
     def _get_applicant_actions(
-        self, view_action: WorkbasketAction, kwargs: dict[str, Any]
+        self, view_action: WorkbasketAction, task: Optional[Task], kwargs: dict[str, Any]
     ) -> list[WorkbasketAction]:
         applicant_actions: list[WorkbasketAction] = []
 
-        if self.status in [self.Statuses.SUBMITTED, self.Statuses.FIR_REQUESTED]:
+        if self.status == self.Statuses.SUBMITTED:
             applicant_actions.append(view_action)
 
-            applicant_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Withdraw",
-                    url=reverse("case:withdraw-case", kwargs=kwargs),
-                ),
-            )
+            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).filter(
+                is_active=True
+            ):
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Pending Withdrawal",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
+            else:
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Request Withdrawal",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
+
+        elif self.status == self.Statuses.PROCESSING:
+            applicant_actions.append(view_action)
+
+            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).filter(
+                is_active=True
+            ):
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Pending Withdrawal",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
+            else:
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Request Withdrawal",
+                        url=reverse("case:withdraw-case", kwargs=kwargs),
+                    ),
+                )
 
             for fir in self.further_information_requests.open():  # type: ignore[attr-defined]
                 applicant_actions.append(
@@ -480,16 +511,33 @@ class ApplicationBase(WorkbasketBase, Process):
                     )
                 )
 
-        elif self.status == self.Statuses.WITHDRAWN:
-            applicant_actions.append(view_action)
-
-            applicant_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Pending Withdrawal",
-                    url=reverse("case:withdraw-case", kwargs=kwargs),
-                ),
-            )
+            if task and task.task_type == Task.TaskType.PREPARE:
+                for update in self.current_update_requests():
+                    if update.status == UpdateRequest.Status.OPEN:
+                        applicant_actions.append(
+                            WorkbasketAction(
+                                is_post=False,
+                                name="Respond to Update Request",
+                                url=reverse(
+                                    "case:start-update-request",
+                                    kwargs=kwargs | {"update_request_pk": update.pk},
+                                ),
+                            )
+                        )
+                    elif update.status in [
+                        UpdateRequest.Status.UPDATE_IN_PROGRESS,
+                        UpdateRequest.Status.RESPONDED,
+                    ]:
+                        applicant_actions.append(
+                            WorkbasketAction(
+                                is_post=False,
+                                name="Resume Update Request",
+                                url=reverse(
+                                    "case:respond-update-request",
+                                    kwargs=kwargs,
+                                ),
+                            )
+                        )
 
         elif self.status == self.Statuses.IN_PROGRESS:
             applicant_actions.append(
@@ -508,52 +556,6 @@ class ApplicationBase(WorkbasketBase, Process):
                     confirm="Are you sure you want to cancel this draft application? All entered data will be lost.",
                 )
             )
-
-        elif self.status == self.Statuses.UPDATE_REQUESTED:
-            applicant_actions.append(view_action)
-
-            # TODO ICMSLST-958 allow to withdraw when update request is pending
-            # applicant_actions.append(
-            #    WorkbasketAction(
-            #        is_post=False,
-            #        name="Withdraw",
-            #        url=reverse("case:withdraw-case", kwargs=kwargs),
-            #    ),
-            # )
-
-            update_requests = self.update_requests.filter(is_active=True).filter(
-                status__in=[
-                    UpdateRequest.Status.OPEN,
-                    UpdateRequest.Status.UPDATE_IN_PROGRESS,
-                    UpdateRequest.Status.RESPONDED,
-                ]
-            )
-            for update in update_requests:
-                if update.status == UpdateRequest.Status.OPEN:
-                    applicant_actions.append(
-                        WorkbasketAction(
-                            is_post=False,
-                            name="Respond to Update Request",
-                            url=reverse(
-                                "case:start-update-request",
-                                kwargs=kwargs | {"update_request_pk": update.pk},
-                            ),
-                        )
-                    )
-                elif update.status in [
-                    UpdateRequest.Status.UPDATE_IN_PROGRESS,
-                    UpdateRequest.Status.RESPONDED,
-                ]:
-                    applicant_actions.append(
-                        WorkbasketAction(
-                            is_post=False,
-                            name="Resume Update Request",
-                            url=reverse(
-                                "case:respond-update-request",
-                                kwargs=kwargs,
-                            ),
-                        )
-                    )
 
         elif self.status == self.Statuses.COMPLETED:
             applicant_actions.append(view_action)
@@ -590,7 +592,12 @@ class ApplicationBase(WorkbasketBase, Process):
                 lock_manager=request.icms.lock_manager, prefix=prefix, use_year=True, min_digits=5
             )
 
-        self.status = self.Statuses.SUBMITTED
+        # if case owner is present, an update request has just been filed
+        if self.case_owner:
+            self.status = self.Statuses.PROCESSING
+        else:
+            self.status = self.Statuses.SUBMITTED
+
         self.submit_datetime = timezone.now()
         self.save()
 
@@ -608,6 +615,16 @@ class ApplicationBase(WorkbasketBase, Process):
         messages.success(request, msg)
 
         return redirect(reverse("workbasket"))
+
+    def current_update_requests(self):
+        current = (
+            models.Q(status=UpdateRequest.Status.OPEN)
+            | models.Q(status=UpdateRequest.Status.UPDATE_IN_PROGRESS)
+            | models.Q(status=UpdateRequest.Status.RESPONDED)
+        )
+        update_requests = self.update_requests.filter(current).filter(is_active=True)
+
+        return update_requests
 
 
 class CaseEmail(models.Model):
