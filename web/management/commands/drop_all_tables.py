@@ -14,8 +14,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if settings.APP_ENV not in ("local", "dev"):
-            raise CommandError("Can only drop tables in 'dev' / 'local' environments!")
+        if settings.APP_ENV not in ("local", "dev", "staging"):
+            raise CommandError("Can only drop tables in 'staging', 'dev' and 'local' environments!")
 
         if not settings.ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD:
             raise CommandError(
