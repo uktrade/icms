@@ -400,6 +400,8 @@ class ApplicationBase(WorkbasketBase, Process):
                     )
                 )
 
+                admin_actions.append(view_action)
+
             elif (
                 settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
                 and task
@@ -435,6 +437,8 @@ class ApplicationBase(WorkbasketBase, Process):
                     )
                 )
 
+                admin_actions.append(view_action)
+
             elif (
                 settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
                 and task
@@ -447,6 +451,8 @@ class ApplicationBase(WorkbasketBase, Process):
                         url="#TODO: ICMSLST-812 - CHIEF Dashboard",
                     )
                 )
+
+                admin_actions.append(view_action)
 
         elif self.status == self.Statuses.COMPLETED:
             admin_actions.append(view_action)

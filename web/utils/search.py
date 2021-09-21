@@ -799,21 +799,16 @@ def _get_spreadsheet_rows(
 
 
 def _get_status_to_filter(case_status: str) -> Q:
-    st = ImportApplication.Statuses
-
     choices = dict(get_import_status_choices())
     if case_status not in choices:
         raise NotImplementedError(f"Filter ({case_status}) for case status not supported.")
 
-    filters = Q(status=case_status)
-
-    if case_status == st.PROCESSING:
-        filters |= Q(further_information_requests__status=FurtherInformationRequest.OPEN)
-        filters |= Q(update_requests__status=UpdateRequest.Status.OPEN)
-    elif case_status == "FIR_REQUESTED":
-        filters |= Q(further_information_requests__status=FurtherInformationRequest.OPEN)
+    if case_status == "FIR_REQUESTED":
+        filters = Q(further_information_requests__status=FurtherInformationRequest.OPEN)
     elif case_status == "UPDATE_REQUESTED":
-        filters |= Q(update_requests__status=UpdateRequest.Status.OPEN)
+        filters = Q(update_requests__status=UpdateRequest.Status.OPEN)
+    else:
+        filters = Q(status=case_status)
 
     return filters
 
