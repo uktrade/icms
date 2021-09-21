@@ -467,9 +467,7 @@ class ApplicationBase(WorkbasketBase, Process):
         if self.status == self.Statuses.SUBMITTED:
             applicant_actions.append(view_action)
 
-            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).filter(
-                is_active=True
-            ):
+            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN, is_active=True):
                 applicant_actions.append(
                     WorkbasketAction(
                         is_post=False,
@@ -489,9 +487,7 @@ class ApplicationBase(WorkbasketBase, Process):
         elif self.status == self.Statuses.PROCESSING:
             applicant_actions.append(view_action)
 
-            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).filter(
-                is_active=True
-            ):
+            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN, is_active=True):
                 applicant_actions.append(
                     WorkbasketAction(
                         is_post=False,
@@ -623,12 +619,11 @@ class ApplicationBase(WorkbasketBase, Process):
         return redirect(reverse("workbasket"))
 
     def current_update_requests(self):
-        current = (
-            models.Q(status=UpdateRequest.Status.OPEN)
-            | models.Q(status=UpdateRequest.Status.UPDATE_IN_PROGRESS)
-            | models.Q(status=UpdateRequest.Status.RESPONDED)
+        st = UpdateRequest.Status
+
+        update_requests = self.update_requests.filter(
+            is_active=True, status__in=[st.OPEN, st.UPDATE_IN_PROGRESS, st.RESPONDED]
         )
-        update_requests = self.update_requests.filter(current).filter(is_active=True)
 
         return update_requests
 

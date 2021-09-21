@@ -154,9 +154,6 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
 
-                    # Ideally a FIR will inherit from Process and it will have it's own task
-                    # Task.objects.create(fir, Task.TaskType.PROCESS, previous=prepare_fir_task)
-
                     notify.further_information_requested(fir, contacts)
 
                 return _manage_fir_redirect(application_pk, case_type)
@@ -371,9 +368,6 @@ def _delete_fir_file(
         )
         check_application_permission(application, user, case_type)
 
-        # Ideally a FIR will inherit from Process and it will have it's own task
-        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
-
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
         document.save()
@@ -397,9 +391,6 @@ def list_firs(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, case_type)
-
-        # Ideally a FIR will inherit from Process and it will have it's own task
-        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
 
     context = {
         "process": application,
@@ -428,9 +419,6 @@ def respond_fir(
         check_application_permission(application, request.user, case_type)
 
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
-
-        # Ideally a FIR will inherit from Process and it will have it's own task
-        # fir.get_task(FurtherInformationRequest.OPEN, "PROCESS")
 
         if request.POST:
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
