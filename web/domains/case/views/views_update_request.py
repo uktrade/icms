@@ -70,8 +70,6 @@ def manage_update_requests(
                 update_request.status = models.UpdateRequest.Status.OPEN
                 update_request.save()
 
-                application.status = model_class.Statuses.UPDATE_REQUESTED
-                application.save()
                 application.update_requests.add(update_request)
 
                 task.is_active = False

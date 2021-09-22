@@ -39,13 +39,11 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 def _get_queryset_admin(user: User) -> chain[QuerySet]:
     exporter_access_requests = ExporterAccessRequest.objects.filter(
-        is_active=True,
-        status__in=[AccessRequest.Statuses.SUBMITTED, AccessRequest.Statuses.FIR_REQUESTED],
+        is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
     importer_access_requests = ImporterAccessRequest.objects.filter(
-        is_active=True,
-        status__in=[AccessRequest.Statuses.SUBMITTED, AccessRequest.Statuses.FIR_REQUESTED],
+        is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
     export_applications = ExportApplication.objects.filter(is_active=True).prefetch_related(
@@ -132,9 +130,6 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
                 ImportApplication.Statuses.COMPLETED,
                 ImportApplication.Statuses.SUBMITTED,
                 ImportApplication.Statuses.IN_PROGRESS,
-                ImportApplication.Statuses.WITHDRAWN,
-                ImportApplication.Statuses.UPDATE_REQUESTED,
-                ImportApplication.Statuses.FIR_REQUESTED,
             ]
         )
         .filter(
@@ -159,9 +154,6 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
                 ExportApplication.Statuses.COMPLETED,
                 ExportApplication.Statuses.SUBMITTED,
                 ExportApplication.Statuses.IN_PROGRESS,
-                ExportApplication.Statuses.WITHDRAWN,
-                ExportApplication.Statuses.UPDATE_REQUESTED,
-                ExportApplication.Statuses.FIR_REQUESTED,
             ]
         )
         .filter(
