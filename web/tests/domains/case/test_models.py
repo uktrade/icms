@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from django.test import override_settings
 
@@ -165,7 +167,10 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
 )
 def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
+
+    # bypass-chief urls are not included
+    with patch("web.domains.case.models.reverse"):
+        admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(
         admin_row.actions,
