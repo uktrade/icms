@@ -30,7 +30,7 @@ from web.domains.case.export.models import (
     ExportApplicationType,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import ApplicationBase, UpdateRequest
+from web.domains.case.models import ApplicationBase, CaseEmail, UpdateRequest
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
@@ -484,6 +484,16 @@ def _test_search_by_status(app_type: str, case_status: str, expected: list[str])
     check_application_references(results.records, *expected)
 
 
+def _test_export_search_by_status(app_type: str, case_status: str, expected: list[str]):
+    """Search by status using the records we have already created"""
+
+    search_terms = SearchTerms(case_type="export", app_type=app_type, case_status=case_status)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == len(expected)
+    check_export_application_case_reference(results.records, *expected)
+
+
 def _test_search_by_response_decision():
     submitted_application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 3")
     submitted_application.decision = ApplicationBase.APPROVE
@@ -745,6 +755,25 @@ def test_case_statuses(test_data: FixtureData):
 
     with pytest.raises(NotImplementedError):
         _test_search_by_status(wt, "unknown status", ["should raise"])
+
+
+def test_export_case_statuses(export_fixture_data: ExportFixtureData):
+    st = ApplicationBase.Statuses
+
+    gmp = _create_gmp_application(export_fixture_data)
+    gmp.status = st.PROCESSING
+    gmp.save()
+    gmp.case_emails.create(status=CaseEmail.Status.OPEN)
+
+    cfs = _create_cfs_application(export_fixture_data)
+    cfs.status = st.PROCESSING
+    cfs.save()
+    cfs.case_emails.create(status=CaseEmail.Status.OPEN)
+
+    _test_export_search_by_status(ExportApplicationType.Types.GMP, "BEIS", expected=[gmp.reference])
+    _test_export_search_by_status(
+        ExportApplicationType.Types.FREE_SALE, "HSE", expected=[cfs.reference]
+    )
 
 
 def test_search_by_export_applications(export_fixture_data: ExportFixtureData):

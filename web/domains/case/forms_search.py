@@ -10,7 +10,7 @@ from web.domains.case.models import ApplicationBase
 from web.domains.country.models import Country
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
-from web.utils.search import get_import_status_choices
+from web.utils.search import get_export_status_choices, get_import_status_choices
 
 
 class SearchFormBase(forms.Form):
@@ -97,7 +97,7 @@ class ExportSearchForm(SearchFormBase):
 
     status = forms.ChoiceField(
         label="Status",
-        choices=[(None, "Any")] + ApplicationBase.Statuses.choices,
+        choices=[(None, "Any")] + get_export_status_choices(),
         required=False,
     )
 

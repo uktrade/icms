@@ -26,7 +26,7 @@ from web.domains.case.export.models import (
     ExportApplication,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import UpdateRequest
+from web.domains.case.models import CaseEmail, UpdateRequest
 from web.domains.case.types import ImpOrExpT
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices
@@ -641,7 +641,7 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         raise NotImplementedError("Searching by Licence Reference isn't supported yet")
 
     if terms.case_status:
-        filters = _get_status_to_filter(terms.case_status)
+        filters = _get_status_to_filter(terms.case_type, terms.case_status)
         model = model.filter(filters)
 
     if terms.response_decision:
@@ -798,8 +798,12 @@ def _get_spreadsheet_rows(
         )
 
 
-def _get_status_to_filter(case_status: str) -> Q:
-    choices = dict(get_import_status_choices())
+def _get_status_to_filter(case_type: str, case_status: str) -> Q:
+    if case_type == "import":
+        choices = dict(get_import_status_choices())
+    else:
+        choices = dict(get_export_status_choices())
+
     if case_status not in choices:
         raise NotImplementedError(f"Filter ({case_status}) for case status not supported.")
 
@@ -807,6 +811,12 @@ def _get_status_to_filter(case_status: str) -> Q:
         filters = Q(further_information_requests__status=FurtherInformationRequest.OPEN)
     elif case_status == "UPDATE_REQUESTED":
         filters = Q(update_requests__status=UpdateRequest.Status.OPEN)
+    elif case_status == "BEIS":
+        filters = Q(
+            certificateofgoodmanufacturingpracticeapplication__case_emails__status=CaseEmail.Status.OPEN
+        )
+    elif case_status == "HSE":
+        filters = Q(certificateoffreesaleapplication__case_emails__status=CaseEmail.Status.OPEN)
     else:
         filters = Q(status=case_status)
 
@@ -821,6 +831,25 @@ def get_import_status_choices() -> list[tuple[Any, str]]:
         (st.IN_PROGRESS.value, st.IN_PROGRESS.label),  # type: ignore[attr-defined]
         (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
         ("FIR_REQUESTED", "Processing (FIR)"),
+        ("UPDATE_REQUESTED", "Processing (Update)"),
+        (st.REVOKED.value, st.REVOKED.label),  # type: ignore[attr-defined]
+        (st.STOPPED.value, st.STOPPED.label),  # type: ignore[attr-defined]
+        (st.SUBMITTED.value, st.SUBMITTED.label),  # type: ignore[attr-defined]
+        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),  # type: ignore[attr-defined]
+        (st.WITHDRAWN.value, st.WITHDRAWN.label),  # type: ignore[attr-defined]
+    ]
+
+
+def get_export_status_choices() -> list[tuple[Any, str]]:
+    st = ExportApplication.Statuses
+
+    return [
+        (st.COMPLETED.value, st.COMPLETED.label),  # type: ignore[attr-defined]
+        (st.IN_PROGRESS.value, st.IN_PROGRESS.label),  # type: ignore[attr-defined]
+        (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
+        ("BEIS", "Processing (BEIS)"),
+        ("FIR_REQUESTED", "Processing (FIR)"),
+        ("HSE", "Processing (HSE)"),
         ("UPDATE_REQUESTED", "Processing (Update)"),
         (st.REVOKED.value, st.REVOKED.label),  # type: ignore[attr-defined]
         (st.STOPPED.value, st.STOPPED.label),  # type: ignore[attr-defined]
