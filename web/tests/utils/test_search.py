@@ -931,6 +931,29 @@ def test_export_search_by_pending_update_reqs(export_fixture_data: ExportFixture
     check_export_application_case_reference(results.records, com_app.reference)
 
 
+def test_export_returns_in_progress_applications(export_fixture_data: ExportFixtureData):
+    _create_gmp_application(export_fixture_data, submit=False)
+    submitted_gmp_app = _create_gmp_application(export_fixture_data)
+
+    search_terms = SearchTerms(case_type="export")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+
+    # The in progress application doesn't have a case reference.
+    check_export_application_case_reference(
+        results.records, submitted_gmp_app.reference, "Not Assigned"
+    )
+    assert results.records[1].status == "In Progress"
+
+    search_terms = SearchTerms(case_type="export", case_status=ApplicationBase.Statuses.IN_PROGRESS)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, "Not Assigned")
+    assert results.records[0].status == "In Progress"
+
+
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references
 
