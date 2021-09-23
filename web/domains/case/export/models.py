@@ -347,8 +347,6 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
         GB = ("GB", "Great Britain")
         NIR = ("NIR", "Northern Ireland")
 
-    brands = models.ManyToManyField("GMPBrand")
-
     # Responsible person fields
     is_responsible_person = models.CharField(
         max_length=3,
@@ -480,4 +478,10 @@ class GMPFile(File):
 
 
 class GMPBrand(models.Model):
+    application = models.ForeignKey(
+        CertificateOfGoodManufacturingPracticeApplication,
+        related_name="brands",
+        on_delete=models.CASCADE,
+    )
+
     brand_name = models.CharField(max_length=20, verbose_name="Name of the brand")
