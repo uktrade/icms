@@ -2,8 +2,12 @@ from typing import final
 
 from django.db import models
 
-from web.domains.case._import.fa.models import FirearmApplicationBase
-from web.domains.case._import.models import ChecklistBase
+from web.domains.case._import.fa.models import (
+    SupplementaryInfoBase,
+    SupplementaryReportBase,
+    SupplementaryReportFirearmBase,
+)
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
 from web.flow.models import ProcessTypes
@@ -15,7 +19,7 @@ class SILUserSection5(File):
 
 
 @final
-class SILApplication(FirearmApplicationBase):
+class SILApplication(ImportApplication):
     """Firearms Specific Import Licence Application."""
 
     PROCESS_TYPE = ProcessTypes.FA_SIL
@@ -308,4 +312,22 @@ class SILChecklist(ChecklistBase):
         choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Authority to possess checked with police?",
+    )
+
+
+class SILSupplementaryInfo(SupplementaryInfoBase):
+    import_application = models.OneToOneField(
+        SILApplication, on_delete=models.CASCADE, related_name="supplementary_info"
+    )
+
+
+class SILSupplementaryReport(SupplementaryReportBase):
+    supplementary_info = models.ForeignKey(
+        SILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )

@@ -2,8 +2,12 @@ from typing import final
 
 from django.db import models
 
-from web.domains.case._import.fa.models import FirearmApplicationBase
-from web.domains.case._import.models import ChecklistBase
+from web.domains.case._import.fa.models import (
+    SupplementaryInfoBase,
+    SupplementaryReportBase,
+    SupplementaryReportFirearmBase,
+)
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.file.models import File
@@ -35,7 +39,7 @@ class DFLGoodsCertificate(File):
 
 
 @final
-class DFLApplication(FirearmApplicationBase):
+class DFLApplication(ImportApplication):
     """Firearms & Ammunition Deactivated Firearms Licence application"""
 
     PROCESS_TYPE = ProcessTypes.FA_DFL
@@ -88,4 +92,22 @@ class DFLChecklist(ChecklistBase):
         choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Deactivation certificate issued by competent authority?",
+    )
+
+
+class DFLSupplementaryInfo(SupplementaryInfoBase):
+    import_application = models.OneToOneField(
+        DFLApplication, on_delete=models.CASCADE, related_name="supplementary_info"
+    )
+
+
+class DFLSupplementaryReport(SupplementaryReportBase):
+    supplementary_info = models.ForeignKey(
+        DFLSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+    )
+
+
+class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        DFLSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )

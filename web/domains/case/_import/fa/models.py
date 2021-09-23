@@ -59,7 +59,10 @@ class ImportContact(models.Model):
         return f"{self.first_name} {self.last_name}" if self.last_name else self.first_name
 
 
-class SupplementaryInfo(models.Model):
+class SupplementaryInfoBase(models.Model):
+    class Meta:
+        abstract = True
+
     is_complete = models.BooleanField(default=False)
     completed_datetime = models.DateTimeField(null=True)
 
@@ -80,16 +83,16 @@ class SupplementaryInfo(models.Model):
     )
 
 
-class SupplementaryReport(models.Model):
+class SupplementaryReportBase(models.Model):
     class TransportType(models.TextChoices):
         AIR = ("air", "Air")
         RAIL = ("rail", "Rail")
         ROAD = ("road", "Road")
         SEA = ("sea", "Sea")
 
-    supplementary_info = models.ForeignKey(
-        SupplementaryInfo, related_name="reports", on_delete=models.CASCADE
-    )
+    class Meta:
+        abstract = True
+
     transport = models.CharField(choices=TransportType.choices, max_length=4, blank=False)
     date_received = models.DateField(verbose_name="Date Received")
 
@@ -103,7 +106,7 @@ class SupplementaryReport(models.Model):
     created = models.DateTimeField(auto_now=True)
 
     def __str__(self) -> str:
-        return f"{self.pk} - {self.str_title}"
+        return f"{self.pk} - {self.str_title()}"
 
     def str_title(self) -> str:
         return f"Supplementary Report {self.created:%d %B %Y}"
@@ -112,27 +115,14 @@ class SupplementaryReport(models.Model):
         return f"{self.date_received:%d-%b-%Y}"
 
 
-class SupplementaryReportFirearm(models.Model):
+class SupplementaryReportFirearmBase(models.Model):
+    class Meta:
+        abstract = True
 
     # TODO: ICMSLST-960: Add FK for uploaded document
     # TODO: ICMSLST-961: Goods reference for firearm needs to be linked to this info
 
-    report = models.ForeignKey(
-        SupplementaryReport, related_name="firearms", on_delete=models.CASCADE
-    )
     serial_number = models.CharField(max_length=100, null=True)
     calibre = models.CharField(max_length=100, null=True)
     model = models.CharField(max_length=100, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
-
-
-class FirearmApplicationBase(ImportApplication):
-    class Meta:
-        abstract = True
-
-    supplementary_info = models.OneToOneField(
-        SupplementaryInfo,
-        null=True,
-        related_name="+",
-        on_delete=models.SET_NULL,
-    )

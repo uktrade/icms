@@ -5,7 +5,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from web.domains.case._import.fa.models import SupplementaryInfo
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.utils import (
@@ -27,7 +26,11 @@ from .forms import (
     ChecklistFirearmsOILApplicationOptionalForm,
     PrepareOILForm,
 )
-from .models import ChecklistFirearmsOILApplication, OpenIndividualLicenceApplication
+from .models import (
+    ChecklistFirearmsOILApplication,
+    OILSupplementaryInfo,
+    OpenIndividualLicenceApplication,
+)
 
 
 @login_required
@@ -138,8 +141,9 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                     }
                 )
 
-                application.supplementary_info = SupplementaryInfo.objects.create()
                 application.save()
+
+                OILSupplementaryInfo.objects.create(import_application=application)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(

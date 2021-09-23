@@ -5,6 +5,7 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
+from web.forms.widgets import DateInput
 from web.models import Country
 
 from . import models
@@ -141,3 +142,21 @@ class DFLChecklistOptionalForm(DFLChecklistForm):
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class DFLSupplementaryReportForm(forms.ModelForm):
+    class Meta:
+        model = models.DFLSupplementaryReport
+        fields = ("transport", "date_received", "bought_from")
+        widgets = {"date_received": DateInput}
+
+    def __init__(self, *args, application: models.DFLApplication, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["bought_from"].queryset = application.importcontact_set.all()
+
+
+class DFLSupplementaryReportFirearmForm(forms.ModelForm):
+    class Meta:
+        model = models.DFLSupplementaryReportFirearm
+        fields = ("serial_number", "calibre", "model", "proofing")
