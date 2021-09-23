@@ -7,6 +7,7 @@ from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
+from web.forms.widgets import DateInput
 
 from . import models
 
@@ -484,3 +485,21 @@ class SILCoverLetterTemplateForm(forms.Form):
         self.fields["template"].queryset = Template.objects.filter(
             template_code__startswith="COVER_FIREARMS_SEC5"
         )
+
+
+class SILSupplementaryReportForm(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReport
+        fields = ("transport", "date_received", "bought_from")
+        widgets = {"date_received": DateInput}
+
+    def __init__(self, *args, application: models.SILApplication, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["bought_from"].queryset = application.importcontact_set.all()
+
+
+class SILSupplementaryReportFirearmForm(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearm
+        fields = ("serial_number", "calibre", "model", "proofing")

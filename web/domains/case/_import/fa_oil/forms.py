@@ -3,6 +3,7 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.forms.widgets import DateInput
 
 from . import models
 
@@ -68,3 +69,23 @@ class ChecklistFirearmsOILApplicationOptionalForm(ChecklistFirearmsOILApplicatio
 
         for f in self.fields:
             self.fields[f].required = False
+
+
+class OILSupplementaryReportForm(forms.ModelForm):
+    class Meta:
+        model = models.OILSupplementaryReport
+        fields = ("transport", "date_received", "bought_from")
+        widgets = {"date_received": DateInput}
+
+    def __init__(
+        self, *args, application: models.OpenIndividualLicenceApplication, **kwargs
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.fields["bought_from"].queryset = application.importcontact_set.all()
+
+
+class OILSupplementaryReportFirearmForm(forms.ModelForm):
+    class Meta:
+        model = models.OILSupplementaryReportFirearm
+        fields = ("serial_number", "calibre", "model", "proofing")

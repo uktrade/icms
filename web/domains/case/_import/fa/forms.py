@@ -3,8 +3,7 @@ from django import forms
 from web.domains.file.utils import ICMSFileField
 from web.forms.widgets import DateInput
 
-from .models import ImportContact, SupplementaryReport, UserImportCertificate
-from .types import FaImportApplication
+from .models import ImportContact, UserImportCertificate
 
 
 class ImportContactPersonForm(forms.ModelForm):
@@ -73,15 +72,3 @@ class UserImportCertificateForm(forms.ModelForm):
             self.fields["certificate_type"].choices = (
                 UserImportCertificate.CertificateType.registered_as_choice(),
             )
-
-
-class SupplementaryReportForm(forms.ModelForm):
-    class Meta:
-        model = SupplementaryReport
-        fields = ("transport", "date_received", "bought_from")
-        widgets = {"date_received": DateInput}
-
-    def __init__(self, *args, application: FaImportApplication, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.fields["bought_from"].queryset = application.importcontact_set.all()

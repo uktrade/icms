@@ -2,15 +2,19 @@ from typing import final
 
 from django.db import models
 
-from web.domains.case._import.fa.models import FirearmApplicationBase
-from web.domains.case._import.models import ChecklistBase
+from web.domains.case._import.fa.models import (
+    SupplementaryInfoBase,
+    SupplementaryReportBase,
+    SupplementaryReportFirearmBase,
+)
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.flow.models import ProcessTypes
 from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 
 @final
-class OpenIndividualLicenceApplication(FirearmApplicationBase):
+class OpenIndividualLicenceApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.FA_OIL
     IS_FINAL = True
 
@@ -62,4 +66,24 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
         choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Authority to possess checked with police?",
+    )
+
+
+class OILSupplementaryInfo(SupplementaryInfoBase):
+    import_application = models.OneToOneField(
+        OpenIndividualLicenceApplication,
+        on_delete=models.CASCADE,
+        related_name="supplementary_info",
+    )
+
+
+class OILSupplementaryReport(SupplementaryReportBase):
+    supplementary_info = models.ForeignKey(
+        OILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+    )
+
+
+class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        OILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )
