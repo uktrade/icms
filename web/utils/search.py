@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Optional, Union
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q
+from django.db.models.functions import Coalesce
 from django.utils.timezone import make_aware
 
 from web.domains.case._import.derogations.models import DerogationsApplication
@@ -117,7 +118,7 @@ class ImportResultRow:
     commodity_details: CommodityDetails
 
     # Used to order records
-    submit_datetime: datetime.datetime
+    order_by_datetime: datetime.datetime
 
 
 @dataclass
@@ -131,7 +132,8 @@ class ExportResultRow:
     certificates: list[str]
 
     submitted_at: str
-    submit_datetime: datetime.datetime
+    # Used to order records
+    order_by_datetime: datetime.datetime
 
     # Certificate details
     origin_countries: list[str]
@@ -194,8 +196,8 @@ def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
             row = get_result_row(rec)  # type:ignore[arg-type]
             records.append(row)  # type:ignore[arg-type]
 
-    # Sort the records by submit_datetime DESC
-    records.sort(key=attrgetter("submit_datetime"), reverse=True)
+    # Sort the records by order_by_datetime DESC (submitted date or created date)
+    records.sort(key=attrgetter("order_by_datetime"), reverse=True)
 
     return SearchResults(total_rows=len(app_pks_and_types), records=records)
 
@@ -244,7 +246,7 @@ def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
     model_cls: ImpOrExpT = ImportApplication if terms.case_type == "import" else ExportApplication
 
     applications = _apply_search(model_cls.objects.all(), terms)
-    applications = applications.order_by("-submit_datetime")
+    applications = applications.order_by("-order_by_datetime")
     applications = applications.distinct()
 
     app_pks_and_types = applications.values_list("pk", "process_type", named=True)
@@ -326,7 +328,7 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
             application_contact=rec.contact.full_name,
         ),
         commodity_details=commodity_details,
-        submit_datetime=rec.submit_datetime,
+        order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
     return row
@@ -339,6 +341,9 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     if rec.process_type == ProcessTypes.CFS:
         manufacturer_countries = rec.manufacturer_countries  # This is an annotation
 
+    application_contact = rec.contact.full_name if rec.contact else ""
+    submitted_at = rec.submit_datetime.strftime("%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
+
     return ExportResultRow(
         case_reference=rec.get_reference(),
         application_type=app_type_label,
@@ -347,11 +352,11 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
         certificates=["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"],
         origin_countries=rec.origin_countries,  # This is an annotation
         organisation_name=rec.exporter.name,
-        application_contact=rec.contact.full_name,
-        submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
-        submit_datetime=rec.submit_datetime,
+        application_contact=application_contact,
+        submitted_at=submitted_at,
         manufacturer_countries=manufacturer_countries,
         agent_name=rec.agent.name if rec.agent else None,
+        order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
 
@@ -622,7 +627,8 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
     """Apply all search terms for Import and Export applications."""
 
     # THe legacy system only includes applications that have been submitted.
-    model = model.exclude(submit_datetime=None)
+    if terms.case_type == "import":
+        model = model.exclude(submit_datetime=None)
 
     if terms.app_type:
         key = "type" if terms.case_type == "import" else "type_code"
@@ -669,6 +675,8 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
 
     if terms.case_type == "export":
         model = _apply_export_application_filter(model, terms)
+
+    model = model.annotate(order_by_datetime=Coalesce("submit_datetime", "created"))
 
     return model
 
@@ -751,6 +759,7 @@ def _apply_export_application_filter(
 def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
     model = model.select_related("importer", "contact", "application_type")
+    model = model.annotate(order_by_datetime=Coalesce("submit_datetime", "created"))
 
     return model
 
@@ -758,7 +767,11 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
     model = model.select_related("exporter", "contact")
-    model = model.annotate(origin_countries=ArrayAgg("countries__name", distinct=True))
+    model = model.annotate(
+        origin_countries=ArrayAgg("countries__name", distinct=True),
+        order_by_datetime=Coalesce("submit_datetime", "created"),
+    )
+
     return model
 
 
