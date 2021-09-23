@@ -47,9 +47,6 @@ def cancel_case(
         if application.status != model_class.Statuses.IN_PROGRESS:
             raise PermissionDenied
 
-        # TODO: ICMSLST-1102 some related data is not cleaned up automatically
-        # like CFS schedules etc. implement per-application-type function that
-        # does any necessary cleanup.
         application.delete()
 
         messages.success(request, "Application has been canceled.")

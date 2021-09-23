@@ -1474,8 +1474,9 @@ def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             form = GMPBrandForm(data=request.POST)
 
             if form.is_valid():
-                brand = form.save()
-                application.brands.add(brand)
+                brand = form.save(commit=False)
+                brand.application = application
+                brand.save()
 
                 return redirect(
                     reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
@@ -1552,10 +1553,8 @@ def gmp_delete_brand(
 
         check_application_permission(application, request.user, "export")
 
-        instance = application.brands.filter(pk=brand_pk).first()
-
-        if instance:
-            application.brands.remove(instance)
+        brand = application.brands.get(pk=brand_pk)
+        brand.delete()
 
         return redirect(reverse("export:gmp-edit", kwargs={"application_pk": application_pk}))
 
