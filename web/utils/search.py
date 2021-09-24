@@ -841,7 +841,6 @@ def get_import_status_choices() -> list[tuple[Any, str]]:
 
     return [
         (st.COMPLETED.value, st.COMPLETED.label),  # type: ignore[attr-defined]
-        (st.IN_PROGRESS.value, st.IN_PROGRESS.label),  # type: ignore[attr-defined]
         (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
         ("FIR_REQUESTED", "Processing (FIR)"),
         ("UPDATE_REQUESTED", "Processing (Update)"),
