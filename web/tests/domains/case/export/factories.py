@@ -45,15 +45,6 @@ class CertificateOfFreeSaleApplicationFactory(factory.django.DjangoModelFactory)
     exporter = factory.SubFactory(ExporterFactory)
     last_updated_by = factory.SubFactory(UserFactory)
 
-    @factory.post_generation
-    def schedules(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for schedule in extracted:
-                self.schedules.add(schedule)
-
 
 class CFSScheduleFactory(factory.django.DjangoModelFactory):
     class Meta:

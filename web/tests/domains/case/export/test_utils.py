@@ -4,7 +4,10 @@ import pytest
 from django.core.files.base import File
 
 from web.domains.case.export.utils import CustomError, process_products_file
-from web.tests.domains.case.export.factories import CFSScheduleFactory
+from web.tests.domains.case.export.factories import (
+    CertificateOfFreeSaleApplicationFactory,
+    CFSScheduleFactory,
+)
 from web.tests.domains.legislation.factory import ProductLegislationFactory
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
@@ -46,11 +49,13 @@ def create_dummy_xlsx_file(config: XlsxConfig) -> File:
 
 
 def create_schedule(is_biocidal: bool = False):
+    app = CertificateOfFreeSaleApplicationFactory()
+
     legislation = ProductLegislationFactory()
     legislation.is_biocidal = is_biocidal
     legislation.save()
 
-    schedule = CFSScheduleFactory()
+    schedule = CFSScheduleFactory(application=app)
     schedule.legislations.add(legislation)
 
     return schedule

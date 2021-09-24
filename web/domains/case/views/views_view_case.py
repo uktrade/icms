@@ -324,7 +324,7 @@ def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeS
         "process": application,
         "labels": labels,
         "application_countries": app_countries,
-        "schedules": application.schedules.filter(is_active=True).order_by("created_at"),
+        "schedules": application.schedules.all().order_by("created_at"),
         "page_title": get_case_page_title("export", application, "View"),
     }
 
