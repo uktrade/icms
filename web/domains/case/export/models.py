@@ -180,8 +180,6 @@ class CertificateOfFreeSaleApplication(ExportApplication):
     PROCESS_TYPE = ProcessTypes.CFS
     IS_FINAL = True
 
-    schedules = models.ManyToManyField("CFSSchedule")
-
 
 class CFSSchedule(models.Model):
     class ExporterStatus(models.TextChoices):
@@ -197,6 +195,12 @@ class CFSSchedule(models.Model):
             "MEET_UK_PRODUCT_SAFETY",
             "The products meet the product safety requirements to be sold on the UK market",
         )
+
+    application = models.ForeignKey(
+        CertificateOfFreeSaleApplication,
+        related_name="schedules",
+        on_delete=models.CASCADE,
+    )
 
     exporter_status = models.CharField(
         null=True,
@@ -299,7 +303,6 @@ class CFSSchedule(models.Model):
         max_length=4000, verbose_name="Address", null=True, blank=True
     )
 
-    is_active = models.BooleanField(default=True)
     created_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -307,6 +310,7 @@ class CFSSchedule(models.Model):
         null=False,
         related_name="+",
     )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

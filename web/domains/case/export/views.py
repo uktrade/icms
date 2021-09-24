@@ -24,7 +24,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.file.utils import create_file_model
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
-from web.models.shared import YesNoChoices
+from web.models.shared import AddressEntryType, YesNoChoices
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3
 from web.utils.sentry import capture_exception
@@ -271,7 +271,8 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         else:
             form = EditCFSForm(instance=application, initial={"contact": request.user})
 
-        schedules = application.schedules.filter(is_active=True).order_by("created_at")
+        schedules = application.schedules.all().order_by("created_at")
+
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
@@ -294,7 +295,7 @@ def cfs_add_schedule(request: AuthenticatedHttpRequest, *, application_pk: int) 
         check_application_permission(application, request.user, "export")
         get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        new_schedule = application.schedules.create(created_by=request.user)
+        new_schedule = CFSSchedule.objects.create(application=application, created_by=request.user)
 
         return redirect(
             reverse(
@@ -377,9 +378,8 @@ def cfs_delete_schedule(
         check_application_permission(application, request.user, "export")
         get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        schedule = application.schedules.get(pk=schedule_pk)
-        schedule.is_active = False
-        schedule.save()
+        schedule: CFSSchedule = application.schedules.get(pk=schedule_pk)
+        schedule.delete()
 
         return redirect(reverse("export:cfs-edit", kwargs={"application_pk": application_pk}))
 
@@ -1041,6 +1041,7 @@ def cfs_copy_schedule(
         products_to_copy = [p for p in schedule_to_copy.products.all().order_by("pk")]
 
         schedule_to_copy.pk = None
+        schedule_to_copy._state.adding = True
         schedule_to_copy.created_by = request.user
         schedule_to_copy.save()
 
@@ -1053,21 +1054,21 @@ def cfs_copy_schedule(
             ingredients_to_copy = [i for i in product.active_ingredients.all().order_by("pk")]
 
             product.pk = None
+            product._state.adding = True
             product.schedule = schedule_to_copy
             product.save()
 
             for ptn in product_types_to_copy:
                 ptn.pk = None
+                ptn._state.adding = True
                 ptn.product = product
                 ptn.save()
 
             for ingredient in ingredients_to_copy:
                 ingredient.pk = None
+                ingredient._state.adding = True
                 ingredient.product = product
                 ingredient.save()
-
-        # Add the copied schedule to the application
-        application.schedules.add(schedule_to_copy)
 
         return redirect(
             reverse(
@@ -1126,14 +1127,15 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
     )
 
     # Error checks related to schedules.
-    active_schedules = application.schedules.filter(is_active=True).order_by("created_at")
-    if not active_schedules.exists():
+    schedules = application.schedules.all().order_by("created_at")
+
+    if not schedules.exists():
         page_errors.add(
             FieldError(field_name="Schedule", messages=["At least one schedule must be added"])
         )
 
     else:
-        for idx, schedule in enumerate(active_schedules, start=1):
+        for idx, schedule in enumerate(schedules, start=1):
             schedule_page_errors = PageErrors(
                 page_name=f"Schedule {idx}",
                 url=reverse(
@@ -1168,6 +1170,7 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
                 )
 
                 errors.add(product_page_errors)
+
                 continue
 
             if not schedule.is_biocidal():

@@ -27,6 +27,7 @@ from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
     ExportApplicationType,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
@@ -1294,7 +1295,9 @@ def _create_cfs_application(
         application_type, process_type, export_fixture_data, False, extra_kwargs={}
     )
 
-    app.schedules.create(country_of_manufacture=com, created_by=export_fixture_data.request.user)
+    CFSSchedule.objects.create(
+        application=app, country_of_manufacture=com, created_by=export_fixture_data.request.user
+    )
 
     _submit_application(app, export_fixture_data)
 
