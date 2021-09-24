@@ -445,7 +445,7 @@ def cfs_delete_manufacturer(
         )
 
         schedule.manufacturer_name = None
-        schedule.manufacturer_address_entry_type = CFSSchedule.AddressEntryType.MANUAL
+        schedule.manufacturer_address_entry_type = AddressEntryType.MANUAL
         schedule.manufacturer_postcode = None
         schedule.manufacturer_address = None
         schedule.save()
