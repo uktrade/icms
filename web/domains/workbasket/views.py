@@ -140,6 +140,12 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
             )
             # or applications managed by agents
             | (Q(importer__in=importers_managed_by_agents) & Q(agent__isnull=False))
+            # or applications acknowledged by agents
+            | (
+                Q(importer__in=importers)
+                & Q(agent__isnull=False)
+                & Q(acknowledged_by__isnull=False)
+            )
         )
     )
 
