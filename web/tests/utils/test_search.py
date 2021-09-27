@@ -672,7 +672,7 @@ def test_get_search_results_spreadsheet(test_data: FixtureData):
         "Wood ref 1",
     )
 
-    xlsx_data = get_search_results_spreadsheet(results)
+    xlsx_data = get_search_results_spreadsheet("import", results)
 
     workbook = load_workbook(filename=io.BytesIO(xlsx_data))
 
@@ -713,8 +713,7 @@ def test_get_search_results_spreadsheet(test_data: FixtureData):
     applicant_refs = []
 
     # Iterate over the remaining data rows
-    for row in spreadsheet_rows:
-        row_data = list(row)
+    for row_data in spreadsheet_rows:
         applicant_refs.append(row_data[1])
 
     assert applicant_refs == [
@@ -725,6 +724,57 @@ def test_get_search_results_spreadsheet(test_data: FixtureData):
         "Wood ref 2",
         "Wood ref 1",
     ]
+
+
+def test_get_export_search_results_spreadsheet(export_fixture_data: ExportFixtureData):
+    gmp = _create_gmp_application(export_fixture_data)
+    cfs = _create_cfs_application(export_fixture_data)
+    com = _create_com_application(export_fixture_data)
+
+    search_terms = SearchTerms(case_type="export")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 3
+
+    check_export_application_case_reference(
+        results.records, com.reference, cfs.reference, gmp.reference
+    )
+
+    xlsx_data = get_search_results_spreadsheet("export", results)
+
+    workbook = load_workbook(filename=io.BytesIO(xlsx_data))
+
+    assert workbook.sheetnames == ["Sheet 1"]
+    sheet = workbook["Sheet 1"]
+
+    cols = sheet.max_column
+    rows = sheet.max_row
+    assert cols == 10
+    assert rows == 4
+
+    spreadsheet_rows = sheet.values
+    header = next(spreadsheet_rows)
+
+    assert list(header) == [
+        "Case Reference",
+        "Certificates",
+        "Application Type",
+        "Status",
+        "Submitted Date",
+        "Certificate Countries",
+        "Countries of Manufacture",
+        "Exporter",
+        "Agent",
+        "Application Contact",
+    ]
+
+    case_refs = []
+
+    # Iterate over the remaining data rows
+    for row_data in spreadsheet_rows:
+        case_refs.append(row_data[0])
+
+    assert case_refs == [com.reference, cfs.reference, gmp.reference]
 
 
 def test_case_statuses(test_data: FixtureData):

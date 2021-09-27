@@ -180,6 +180,19 @@ class SpreadsheetRow(NamedTuple):
     commodity_codes: Optional[str]
 
 
+class ExportSpreadsheetRow(NamedTuple):
+    case_reference: str
+    certificates: str
+    application_type: str
+    case_status: str
+    submitted_date: str
+    certificate_countries: str
+    manufacturer_countries: str
+    exporter: str
+    agent: str
+    application_contact: str
+
+
 def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     """Main search function used to find applications.
 
@@ -202,35 +215,55 @@ def search_applications(terms: SearchTerms, limit: int = 200) -> SearchResults:
     return SearchResults(total_rows=len(app_pks_and_types), records=records)
 
 
-def get_search_results_spreadsheet(results: SearchResults) -> bytes:
+def get_search_results_spreadsheet(case_type: str, results: SearchResults) -> bytes:
     """Return a spreadsheet of the supplied search results"""
 
-    header_data = [
-        "Case Reference",
-        "Applicant's Reference",
-        "Licence Reference",
-        "Licence Type",
-        "Licence Start Date",
-        "Licence End Date",
-        "Application Type",
-        "Application Sub-Type",
-        "Case Status",
-        "Chief Usage Status",
-        "Submitted Date",
-        "Importer",
-        "Agent",
-        "Application Contact",
-        "Country of Origin",
-        "Country of Consignment",
-        "Shipping Year",
-        "Goods Category",
-        "Commodity Code(s)",
-    ]
+    rows: Iterable[Union[SpreadsheetRow, ExportSpreadsheetRow]]
+
+    if case_type == "import":
+        header_data = [
+            "Case Reference",
+            "Applicant's Reference",
+            "Licence Reference",
+            "Licence Type",
+            "Licence Start Date",
+            "Licence End Date",
+            "Application Type",
+            "Application Sub-Type",
+            "Case Status",
+            "Chief Usage Status",
+            "Submitted Date",
+            "Importer",
+            "Agent",
+            "Application Contact",
+            "Country of Origin",
+            "Country of Consignment",
+            "Shipping Year",
+            "Goods Category",
+            "Commodity Code(s)",
+        ]
+        rows = _get_import_spreadsheet_rows(results.records)  # type:ignore[arg-type]
+
+    else:
+        header_data = [
+            "Case Reference",
+            "Certificates",
+            "Application Type",
+            "Status",
+            "Submitted Date",
+            "Certificate Countries",
+            "Countries of Manufacture",
+            "Exporter",
+            "Agent",
+            "Application Contact",
+        ]
+
+        rows = _get_export_spreadsheet_rows(results.records)  # type:ignore[arg-type]
 
     config = XlsxConfig()
     config.header.data = header_data
     config.header.styles = {"bold": True}
-    config.rows = _get_spreadsheet_rows(results.records)  # type:ignore[assignment]
+    config.rows = rows  # type: ignore[assignment]
     config.column_width = 25
     config.sheet_name = "Sheet 1"
 
@@ -775,16 +808,13 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     return model
 
 
-def _get_spreadsheet_rows(
-    records: list[Union[ImportResultRow, ExportResultRow]]
-) -> Iterable[SpreadsheetRow]:
+def _get_import_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[SpreadsheetRow]:
     """Converts the incoming records in to a spreadsheet row."""
 
-    # TODO: ICMSLST-979 Remove "# type:ignore[union-attr]"
     for row in records:
-        cs = row.case_status  # type:ignore[union-attr]
-        ad = row.applicant_details  # type:ignore[union-attr]
-        cd = row.commodity_details  # type:ignore[union-attr]
+        cs = row.case_status
+        ad = row.applicant_details
+        cd = row.commodity_details
 
         commodity_codes = ", ".join(cd.commodity_codes) if cd.commodity_codes else None
 
@@ -808,6 +838,30 @@ def _get_spreadsheet_rows(
             shipping_year=cd.shipping_year,
             goods_category=cd.goods_category,
             commodity_codes=commodity_codes,
+        )
+
+
+def _get_export_spreadsheet_rows(records: list[ExportResultRow]) -> Iterable[ExportSpreadsheetRow]:
+    for row in records:
+        certificates = ", ".join(row.certificates)
+
+        certificate_countries = ", ".join(filter(None, row.origin_countries))
+        man_countries = (
+            filter(None, row.manufacturer_countries) if row.manufacturer_countries else []
+        )
+        manufacturer_countries = ", ".join(man_countries)
+
+        yield ExportSpreadsheetRow(
+            case_reference=row.case_reference,
+            certificates=certificates,
+            application_type=row.application_type,
+            case_status=row.status,
+            submitted_date=row.submitted_at,
+            certificate_countries=certificate_countries,
+            manufacturer_countries=manufacturer_countries,
+            exporter=row.organisation_name,
+            agent=row.agent_name or "",
+            application_contact=row.application_contact,
         )
 
 
