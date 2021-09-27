@@ -17,14 +17,27 @@
               <table class="setoutList nestedList">
                   <tbody>
                       <tr>
-                          <td>Primary Recipients</td>
+                          <td class="bold">Primary Recipients</td>
                           <td>
                             <ul class="menu-out">
-                              {% for contact in contacts %}
+                              {% for contact in primary_recipients %}
                                 <li>{{ contact.full_name }}</li>
                               {% endfor %}
                             </ul>
                           </td>
+                      </tr>
+                      {% if copy_recipients %}
+                        <tr>
+                          <td class="bold">Copy Recipients</td>
+                          <td>
+                            <ul class="menu-out">
+                              {% for contact in copy_recipients %}
+                                <li>{{ contact.full_name }}</li>
+                              {% endfor %}
+                            </ul>
+                          </td>
+                        </tr>
+                      {% endif %}
                       </tr>
                   </tbody>
               </table>

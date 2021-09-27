@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -11,6 +13,7 @@ from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.template.models import Template
+from web.domains.user.models import User
 from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
@@ -26,6 +29,9 @@ from ..utils import (
     get_case_page_title,
 )
 from .utils import get_class_imp_or_exp
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 # "Applicant Case Management" Views
@@ -417,7 +423,8 @@ def authorise_documents(
             "task": task,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
             "form": form,
-            "contacts": forms.application_contacts(application),
+            "primary_recipients": _get_primary_recipients(application),
+            "copy_recipients": _get_copy_recipients(application),
         }
 
         return render(
@@ -446,8 +453,8 @@ def view_document_packs(
             "process": application,
             "task": task,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
-            # TODO: ICMSLST-1046 set agent's contacts
-            "contacts": forms.application_contacts(application),
+            "primary_recipients": _get_primary_recipients(application),
+            "copy_recipients": _get_copy_recipients(application),
             **get_document_context(case_type, application.application_type),
         }
 
@@ -550,8 +557,8 @@ def ack_notification(
             "task": task,
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "form": form,
-            # TODO: ICMSLST-1046 set agent's contacts
-            "contacts": forms.application_contacts(application),
+            "primary_recipients": _get_primary_recipients(application),
+            "copy_recipients": _get_copy_recipients(application),
             "case_type": case_type,
             "page_title": get_case_page_title(case_type, application, "Response"),
             "acknowledged": application.acknowledged_by and application.acknowledged_datetime,
@@ -565,3 +572,17 @@ def ack_notification(
             template_name="web/domains/case/ack-notification.html",
             context=context,
         )
+
+
+def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
+    if application.agent:
+        return application.get_agent_contacts()
+    else:
+        return application.get_org_contacts()
+
+
+def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
+    if application.agent:
+        return application.get_org_contacts()
+    else:
+        return User.objects.none()

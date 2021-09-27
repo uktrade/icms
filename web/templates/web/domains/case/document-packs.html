@@ -19,8 +19,13 @@
   <h3>Document Pack</h3>
   {{ application_field("Response", "Document Set") }}
   {{ application_field(process.get_reference() + " Response Documents", "Document Pack") }}
-  {% for contact in contacts %}
+
+  {% for contact in primary_recipients %}
     {{ application_field(contact.full_name, "Primary Recipients" if loop.index == 1 else "") }}
+  {% endfor %}
+
+  {% for contact in copy_recipients %}
+    {{ application_field(contact.full_name, "Copy Recipients" if loop.index == 1 else "") }}
   {% endfor %}
 
   <h3>Documents</h3>

@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.test import override_settings
+from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.wood.models import WoodQuotaApplication
@@ -41,8 +42,10 @@ def app_completed(db, importer, test_import_user):
 
 
 @pytest.fixture
-def completed(db, importer, test_import_user):
-    _create_wood_app(importer, test_import_user, ApplicationBase.Statuses.COMPLETED)
+def app_completed_agent(db, importer, test_agent_import_user, agent_importer):
+    return _create_wood_app(
+        importer, test_agent_import_user, ApplicationBase.Statuses.COMPLETED, agent=agent_importer
+    )
 
 
 def test_actions_in_progress(app_in_progress, test_import_user):
@@ -101,17 +104,32 @@ def test_actions_bypass_chief(app_processing, test_import_user):
     _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
 
 
-def test_actions_acknowledge(app_processing, test_import_user):
-    _update_task(app_processing, Task.TaskType.ACK)
-    user_row = app_processing.get_workbasket_row(test_import_user)
-
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
-
-
 def test_actions_completed(app_completed, test_import_user):
     user_row = app_completed.get_workbasket_row(test_import_user)
 
     _check_actions(user_row.actions, expected_actions={"Acknowledge Notification", "View"})
+
+
+def test_actions_completed_acknowledged(app_completed, test_import_user):
+    app_completed.acknowledged_by = test_import_user
+    app_completed.acknowledged_datetime = timezone.now()
+    user_row = app_completed.get_workbasket_row(test_import_user)
+
+    _check_actions(user_row.actions, expected_actions={"View Notification", "View"})
+
+
+def test_actions_completed_acknowledged_agent(
+    app_completed_agent, test_import_user, test_agent_import_user
+):
+    app_completed_agent.acknowledged_by = test_agent_import_user
+    app_completed_agent.acknowledged_datetime = timezone.now()
+    agent_row = app_completed_agent.get_workbasket_row(test_agent_import_user)
+
+    _check_actions(agent_row.actions, expected_actions={"View Notification", "View"})
+
+    user_row = app_completed_agent.get_workbasket_row(test_import_user)
+
+    _check_actions(user_row.actions, expected_actions={"View Notification", "View"})
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -187,14 +205,6 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
-def test_admin_actions_acknowledge(app_processing, test_icms_admin_user):
-    _update_task(app_processing, Task.TaskType.ACK)
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
-
-    assert admin_row.actions == []
-
-
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_completed(app_completed, test_icms_admin_user):
     admin_row = app_completed.get_workbasket_row(test_icms_admin_user)
 
@@ -229,13 +239,14 @@ def _update_task(app, new_task_type):
     Task.objects.create(process=app, task_type=new_task_type, previous=task)
 
 
-def _create_wood_app(importer, test_import_user, status, case_owner=None):
+def _create_wood_app(importer, test_import_user, status, agent=None, case_owner=None):
     return WoodQuotaApplication.objects.create(
         process_type=WoodQuotaApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
             type=ImportApplicationType.Types.WOOD_QUOTA
         ),
         importer=importer,
+        agent=agent,
         created_by=test_import_user,
         last_updated_by=test_import_user,
         status=status,

@@ -18,52 +18,19 @@
 {% endblock %}
 
 {% block main_content %}
-  <div class="container">
-    <div class="row">
-      <div class="four columns">
-        <label class="prompt west">Reference</label>
-      </div>
-      <div class="eight columns">
-        TODO ICMSLST-836 Set Licence Reference
-      </div>
-    </div>
+  <div class="container setoutForm">
+    {{ application_field("TODO ICMSLST-836 Set Licence Reference", "Reference") }}
+    {{ application_field(org, "Issued to") }}
 
-    <br />
+    {% for contact in primary_recipients %}
+      {{ application_field(contact.full_name, "Primary Recipients" if loop.index == 1 else "") }}
+    {% endfor %}
 
-    <div class="row">
-      <div class="four columns">
-        <label class="prompt west">Issued To</label>
-      </div>
-      <div class="eight columns">
-        {{ org }}
-      </div>
-    </div>
+    {% for contact in copy_recipients %}
+      {{ application_field(contact.full_name, "Copy Recipients" if loop.index == 1 else "") }}
+    {% endfor %}
 
-    <br />
-
-    <div class="row">
-      <div class="four columns">
-        <label class="prompt west">Primary Recipients</label>
-      </div>
-      <div class="eight columns">
-        {% for contact in contacts %}
-          {{ contact }}
-          {% if not loop.last %}<br />{% endif %}
-        {% endfor %}
-      </div>
-    </div>
-
-    <br />
-
-    <div class="row">
-      <div class="four columns">
-        <label class="prompt west">Followup contact</label>
-      </div>
-      <div class="eight columns">
-        {{ process.contact }}
-      </div>
-    </div>
-
+    {{ application_field(process.contact, "Follow-up contact") }}
   </div>
 
   <h3>Notification List</h3>
