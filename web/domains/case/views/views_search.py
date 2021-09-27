@@ -81,10 +81,10 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
 
     terms = _get_search_terms_from_form(case_type, form)
     results = search_applications(terms)
-    search_spreadsheet = get_search_results_spreadsheet(results)
+    search_spreadsheet = get_search_results_spreadsheet(case_type, results)
     response.write(search_spreadsheet)
 
-    response["Content-Disposition"] = "attachment; filename=import_application_download.xlsx"
+    response["Content-Disposition"] = f"attachment; filename={case_type}_application_download.xlsx"
 
     return response
 

@@ -104,9 +104,11 @@
 {% block page_js %}
   {{ form.media.js }}
   {{ super() }}
+  <script src="{{ static('web/js/api/download-spreadsheet.js') }}" type="text/javascript"></script>
 
   {% if case_type == "import" %}
-    {# Revisit this file when doing ICMSLST-979 (It contains the download spreadsheet code) #}
     <script src="{{ static('web/js/pages/search-import.js') }}" type="text/javascript"></script>
+  {% else %}
+    <script src="{{ static('web/js/pages/search-export.js') }}" type="text/javascript"></script>
   {% endif %}
 {% endblock %}
