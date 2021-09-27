@@ -734,9 +734,6 @@ def test_case_statuses(test_data: FixtureData):
 
     _test_search_by_status(wt, st.COMPLETED, expected=["completed"])
 
-    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
-    # _test_search_by_status(wt, scs.IN_PROGRESS, [])
-
     # TODO: ICMSLST-1105 filter Oustanding Open Requests
     # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
 
@@ -1453,9 +1450,6 @@ def _create_test_commodity_group(category_commodity_group: str, commodity: Commo
 def _create_test_app_statuses(test_data):
     st = ApplicationBase.Statuses
     _create_wood_application("completed", test_data, override_status=st.COMPLETED)
-
-    # TODO: ICMSLST-1103 in progress doesn't return anything in v1
-    # _create_wood_application("in_progress", test_data, submit=False, override_status=st.IN_PROGRESS)
 
     # TODO: ICMSLST-1105: filter Oustanding Open Requests
     # _create_wood_application("open_request", test_data)
