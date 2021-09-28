@@ -143,7 +143,7 @@ class ExportResultRow:
     application_contact: str
 
     # Certificate details optional
-    manufacturer_countries: Optional[list[str]] = None
+    manufacturer_countries: list[str]
 
     # Applicant details optional
     agent_name: Optional[str] = None
@@ -369,13 +369,16 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
 
 def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     app_type_label = ProcessTypes(rec.process_type).label
-    manufacturer_countries = []
-
-    if rec.process_type == ProcessTypes.CFS:
-        manufacturer_countries = rec.manufacturer_countries  # This is an annotation
-
     application_contact = rec.contact.full_name if rec.contact else ""
     submitted_at = rec.submit_datetime.strftime("%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
+
+    manufacturer_countries = []
+    if rec.process_type == ProcessTypes.CFS:
+        # This is an annotation and can have a value of [None] for in-progress apps
+        manufacturer_countries = [c for c in rec.manufacturer_countries if c]
+
+    # This is an annotation and can have a value of [None] for in-progress apps
+    origin_countries = [c for c in rec.origin_countries if c]
 
     return ExportResultRow(
         case_reference=rec.get_reference(),
@@ -383,7 +386,7 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
         status=rec.get_status_display(),
         # TODO: Revisit when implementing ICMSLST-1048
         certificates=["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"],
-        origin_countries=rec.origin_countries,  # This is an annotation
+        origin_countries=origin_countries,
         organisation_name=rec.exporter.name,
         application_contact=application_contact,
         submitted_at=submitted_at,
@@ -844,12 +847,8 @@ def _get_import_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[Spr
 def _get_export_spreadsheet_rows(records: list[ExportResultRow]) -> Iterable[ExportSpreadsheetRow]:
     for row in records:
         certificates = ", ".join(row.certificates)
-
-        certificate_countries = ", ".join(filter(None, row.origin_countries))
-        man_countries = (
-            filter(None, row.manufacturer_countries) if row.manufacturer_countries else []
-        )
-        manufacturer_countries = ", ".join(man_countries)
+        certificate_countries = ", ".join(row.origin_countries)
+        manufacturer_countries = ", ".join(row.manufacturer_countries)
 
         yield ExportSpreadsheetRow(
             case_reference=row.case_reference,
