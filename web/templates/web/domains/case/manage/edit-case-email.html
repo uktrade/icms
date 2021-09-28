@@ -17,6 +17,18 @@
 {% block main_content %}
   <h3>Edit Email</h3>
 
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">Status</label>
+    </div>
+    <div class="six columns">
+      <div class="status {{case_email.status|lower}}">
+        <div><span class="text-widget ">{{ case_email.status }}</span></div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
       {{ fields.field(field) }}

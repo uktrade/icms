@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -195,6 +196,7 @@ def edit_case_email(
             "page_title": "Edit Email",
             "form": form,
             "case_type": case_type,
+            "case_email": case_email,
         }
 
         return render(
@@ -415,114 +417,128 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
 
 
 def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
-    attachments: "QuerySet[File]"
+    pt = ProcessTypes
 
     # import applications
-    if application.process_type in [
-        OpenIndividualLicenceApplication.PROCESS_TYPE,
-        DFLApplication.PROCESS_TYPE,
-        SILApplication.PROCESS_TYPE,
-    ]:
-        template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
-        goods_description = (
-            "Firearms, component parts thereof, or ammunition of any applicable"
-            " commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended."
-        )
-        content = template.get_content(
-            {
-                "CASE_REFERENCE": application.reference,
-                "IMPORTER_NAME": application.importer.display_name,
-                "IMPORTER_ADDRESS": application.importer_office,
-                "GOODS_DESCRIPTION": goods_description,
-                "CASE_OFFICER_NAME": application.case_owner.full_name,
-                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-            }
-        )
-        to = None
-        cc_address_list = [settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL]
-        attachments = []
+    if application.process_type in [pt.FA_OIL, pt.FA_DFL, pt.FA_SIL]:
+        return _create_fa_case_email(application)
 
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        template = Template.objects.get(is_active=True, template_code="IMA_SANCTION_EMAIL")
-        goods_descriptions = application.sanctionsandadhocapplicationgoods_set.values_list(
-            "goods_description", flat=True
-        )
-        content = template.get_content(
-            {
-                "CASE_REFERENCE": application.reference,
-                "IMPORTER_NAME": application.importer.display_name,
-                "IMPORTER_ADDRESS": application.importer_office,
-                "GOODS_DESCRIPTION": "\n".join(goods_descriptions),
-                "CASE_OFFICER_NAME": application.case_owner.full_name,
-                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-            }
-        )
-        to = None
-        cc_address_list = []
-        attachments = []
+    elif application.process_type == pt.SANCTIONS:
+        return _create_sanction_case_email(application)
 
     # certificate applications
-    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        template = Template.objects.get(is_active=True, template_code="CA_HSE_EMAIL")
-        content = template.get_content(
-            {
-                "CASE_REFERENCE": application.reference,
-                "APPLICATION_TYPE": ProcessTypes.CFS.label,  # type: ignore[attr-defined]
-                "EXPORTER_NAME": application.exporter,
-                "EXPORTER_ADDRESS": application.exporter_office,
-                "CONTACT_EMAIL": application.contact.email,
-                "CERT_COUNTRIES": "\n".join(
-                    application.countries.filter(is_active=True).values_list("name", flat=True)
-                ),
-                "SELECTED_PRODUCTS": _get_selected_product_data(
-                    application.schedules.filter(legislations__is_biocidal=True)
-                ),
-                "CASE_OFFICER_NAME": application.case_owner.full_name,
-                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-            }
-        )
-        to = settings.ICMS_CFS_HSE_EMAIL
-        cc_address_list = []
-        attachments = []
+    elif application.process_type == pt.CFS:
+        return create_cfs_case_email(application)
 
-    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-        template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
-        content = template.get_content(
-            {
-                "CASE_REFERENCE": application.reference,
-                "APPLICATION_TYPE": ProcessTypes.GMP.label,  # type: ignore[attr-defined]
-                "EXPORTER_NAME": application.exporter,
-                "EXPORTER_ADDRESS": application.exporter_office,
-                "MANUFACTURER_NAME": application.manufacturer_name,
-                "MANUFACTURER_ADDRESS": application.manufacturer_address,
-                "MANUFACTURER_POSTCODE": application.manufacturer_postcode,
-                "RESPONSIBLE_PERSON_NAME": application.responsible_person_name,
-                "RESPONSIBLE_PERSON_ADDRESS": application.responsible_person_address,
-                "RESPONSIBLE_PERSON_POSTCODE": application.responsible_person_postcode,
-                "BRAND_NAMES": ", ".join([b.brand_name for b in application.brands.all()]),
-                "CASE_OFFICER_NAME": application.case_owner.full_name,
-                "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-                "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-            }
-        )
-        cc_address_list = []
-        to = settings.ICMS_GMP_BEIS_EMAIL
-        attachments = application.supporting_documents.filter(is_active=True)
+    elif application.process_type == pt.GMP:
+        return create_gmp_case_email(application)
 
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
 
-    case_email = models.CaseEmail.objects.create(
-        to=to,
-        status=models.CaseEmail.Status.DRAFT,
+
+def _create_fa_case_email(application: FaImportApplication):
+    template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
+    goods_description = (
+        "Firearms, component parts thereof, or ammunition of any applicable"
+        " commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended."
+    )
+    content = template.get_content(
+        {
+            "CASE_REFERENCE": application.reference,
+            "IMPORTER_NAME": application.importer.display_name,
+            "IMPORTER_ADDRESS": application.importer_office,
+            "GOODS_DESCRIPTION": goods_description,
+            "CASE_OFFICER_NAME": application.case_owner.full_name,
+            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
+            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
+        }
+    )
+    return models.CaseEmail.objects.create(
         subject=template.template_title,
         body=content,
-        cc_address_list=cc_address_list,
+        cc_address_list=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL],
     )
 
+
+def _create_sanction_case_email(application: SanctionsAndAdhocApplication):
+    template = Template.objects.get(is_active=True, template_code="IMA_SANCTION_EMAIL")
+    goods_descriptions = application.sanctionsandadhocapplicationgoods_set.values_list(
+        "goods_description", flat=True
+    )
+    content = template.get_content(
+        {
+            "CASE_REFERENCE": application.reference,
+            "IMPORTER_NAME": application.importer.display_name,
+            "IMPORTER_ADDRESS": application.importer_office,
+            "GOODS_DESCRIPTION": "\n".join(goods_descriptions),
+            "CASE_OFFICER_NAME": application.case_owner.full_name,
+            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
+            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
+        }
+    )
+
+    return models.CaseEmail.objects.create(
+        subject=template.template_title,
+        body=content,
+    )
+
+
+def create_cfs_case_email(application: CertificateOfFreeSaleApplication):
+    template = Template.objects.get(is_active=True, template_code="CA_HSE_EMAIL")
+    content = template.get_content(
+        {
+            "CASE_REFERENCE": application.reference,
+            "APPLICATION_TYPE": ProcessTypes.CFS.label,  # type: ignore[attr-defined]
+            "EXPORTER_NAME": application.exporter,
+            "EXPORTER_ADDRESS": application.exporter_office,
+            "CONTACT_EMAIL": application.contact.email,
+            "CERT_COUNTRIES": "\n".join(
+                application.countries.filter(is_active=True).values_list("name", flat=True)
+            ),
+            "SELECTED_PRODUCTS": _get_selected_product_data(
+                application.schedules.filter(legislations__is_biocidal=True)
+            ),
+            "CASE_OFFICER_NAME": application.case_owner.full_name,
+            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
+            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
+        }
+    )
+    return models.CaseEmail.objects.create(
+        to=settings.ICMS_CFS_HSE_EMAIL,
+        subject=template.template_title,
+        body=content,
+    )
+
+
+def create_gmp_case_email(application: CertificateOfGoodManufacturingPracticeApplication):
+    template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
+    content = template.get_content(
+        {
+            "CASE_REFERENCE": application.reference,
+            "APPLICATION_TYPE": ProcessTypes.GMP.label,  # type: ignore[attr-defined]
+            "EXPORTER_NAME": application.exporter,
+            "EXPORTER_ADDRESS": application.exporter_office,
+            "MANUFACTURER_NAME": application.manufacturer_name,
+            "MANUFACTURER_ADDRESS": application.manufacturer_address,
+            "MANUFACTURER_POSTCODE": application.manufacturer_postcode,
+            "RESPONSIBLE_PERSON_NAME": application.responsible_person_name,
+            "RESPONSIBLE_PERSON_ADDRESS": application.responsible_person_address,
+            "RESPONSIBLE_PERSON_POSTCODE": application.responsible_person_postcode,
+            "BRAND_NAMES": ", ".join([b.brand_name for b in application.brands.all()]),
+            "CASE_OFFICER_NAME": application.case_owner.full_name,
+            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
+            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
+        }
+    )
+
+    case_email = models.CaseEmail.objects.create(
+        to=settings.ICMS_GMP_BEIS_EMAIL,
+        subject=template.template_title,
+        body=content,
+    )
+
+    attachments = application.supporting_documents.filter(is_active=True)
     case_email.attachments.add(*attachments)
 
     return case_email

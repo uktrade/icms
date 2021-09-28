@@ -160,7 +160,6 @@ class CaseEmailForm(forms.ModelForm):
     class Meta:
         model = CaseEmail
         fields = (
-            "status",
             "to",
             "cc_address_list",
             "subject",
@@ -176,13 +175,14 @@ class CaseEmailForm(forms.ModelForm):
     def __init__(self, *args: Any, case_email_config: CaseEmailConfig, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
-        self.fields["status"].widget.attrs["readonly"] = True
-
         if case_email_config.to_choices:
-            self.fields["to"].widget = s2forms.Select2Widget()
-            self.fields["to"].widget.choices = case_email_config.to_choices
+            self.fields["to"].widget = s2forms.Select2Widget(
+                attrs={"data-placeholder": "Please choose a Recipient"},
+                choices=case_email_config.to_choices,
+            )
 
         if case_email_config.file_qs:
+            self.fields["attachments"].required = False
             self.fields["attachments"].queryset = case_email_config.file_qs
             # set files and process on the widget to make them available in the widget's template
             self.fields["attachments"].widget.qs = case_email_config.file_qs
