@@ -415,6 +415,8 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
 
 
 def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
+    attachments: "QuerySet[File]"
+
     # import applications
     if application.process_type in [
         OpenIndividualLicenceApplication.PROCESS_TYPE,
@@ -439,6 +441,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         )
         to = None
         cc_address_list = [settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL]
+        attachments = []
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         template = Template.objects.get(is_active=True, template_code="IMA_SANCTION_EMAIL")
@@ -458,6 +461,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         )
         to = None
         cc_address_list = []
+        attachments = []
 
     # certificate applications
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
@@ -482,6 +486,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         )
         to = settings.ICMS_CFS_HSE_EMAIL
         cc_address_list = []
+        attachments = []
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
@@ -505,14 +510,19 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         )
         cc_address_list = []
         to = settings.ICMS_GMP_BEIS_EMAIL
+        attachments = application.supporting_documents.filter(is_active=True)
 
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
 
-    return models.CaseEmail.objects.create(
+    case_email = models.CaseEmail.objects.create(
         to=to,
         status=models.CaseEmail.Status.DRAFT,
         subject=template.template_title,
         body=content,
         cc_address_list=cc_address_list,
     )
+
+    case_email.attachments.add(*attachments)
+
+    return case_email
