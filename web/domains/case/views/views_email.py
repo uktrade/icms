@@ -345,13 +345,11 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
 
     # certificate application
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        choices = [(settings.ICMS_CFS_HSE_EMAIL, settings.ICMS_CFS_HSE_EMAIL)]
         files = File.objects.none()
 
-        return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
+        return CaseEmailConfig(application=application, file_qs=files)
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-        choices = [(settings.ICMS_GMP_BEIS_EMAIL, settings.ICMS_GMP_BEIS_EMAIL)]
 
         app_files: "QuerySet[GMPFile]" = application.supporting_documents.filter(is_active=True)
         ft = GMPFile.Type
@@ -364,7 +362,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         else:
             files = File.objects.none()
 
-        return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
+        return CaseEmailConfig(application=application, file_qs=files)
 
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
@@ -439,6 +437,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
             }
         )
+        to = None
         cc_address_list = [settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL]
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
@@ -457,6 +456,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
             }
         )
+        to = None
         cc_address_list = []
 
     # certificate applications
@@ -480,6 +480,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
                 "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
             }
         )
+        to = settings.ICMS_CFS_HSE_EMAIL
         cc_address_list = []
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
@@ -503,11 +504,13 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
             }
         )
         cc_address_list = []
+        to = settings.ICMS_GMP_BEIS_EMAIL
 
     else:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
 
     return models.CaseEmail.objects.create(
+        to=to,
         status=models.CaseEmail.Status.DRAFT,
         subject=template.template_title,
         body=content,
