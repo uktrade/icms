@@ -57,5 +57,5 @@ ApplicationsWithCaseEmail = Union[
 
 class CaseEmailConfig(NamedTuple):
     application: ApplicationsWithCaseEmail
-    to_choices: Optional[List[Tuple[str, str]]]
     file_qs: "QuerySet[File]"
+    to_choices: Optional[List[Tuple[str, str]]] = None
