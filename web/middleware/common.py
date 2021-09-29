@@ -1,4 +1,3 @@
-from web.utils.db import show_queries
 from web.utils.lock_manager import LockManager
 
 
@@ -31,6 +30,10 @@ class DBQueriesMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
+
+        # importing this at file-level causes non-local environments to fail,
+        # since they don't have pygments etc installed which this module needs
+        from web.utils.db import show_queries
 
         show_queries(0, show_time=True, fancy_print=True)
 
