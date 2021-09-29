@@ -6,6 +6,10 @@ env = environ.Env()
 
 ALLOWED_HOSTS = env.list("ICMS_ALLOWED_HOSTS", default=["localhost", "web"])
 DEBUG = env.bool("ICMS_DEBUG", True)
+SHOW_DB_QUERIES = env.bool("SHOW_DB_QUERIES", False)
+
+if SHOW_DB_QUERIES:
+    MIDDLEWARE += ["web.middleware.common.DBQueriesMiddleware"]  # noqa: F405
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases

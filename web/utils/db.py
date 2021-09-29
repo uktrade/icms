@@ -35,10 +35,10 @@ def debug_queries(show_time: bool = True, fancy_print: bool = True) -> Iterator[
         yield
 
     finally:
-        _show_queries(ignore, show_time, fancy_print)
+        show_queries(ignore, show_time, fancy_print)
 
 
-def _show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
+def show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
     queries_to_debug: List[Query] = connections["default"].queries[ignore:]
     total_queries = len(queries_to_debug)
     total_time = 0.0
@@ -47,8 +47,9 @@ def _show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
         sql = query["sql"]
 
         if show_time:
-            total_time += float(query["time"])
-            print(f"Query (time: {query['time']} seconds)")
+            t = float(query["time"])
+            total_time += t
+            print(f"Query (time: {t:.3f} seconds)")
         else:
             print("Query:")
 
@@ -65,4 +66,4 @@ def _show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
     print(f"Total queries: {total_queries}")
 
     if show_time:
-        print(f"Total time: {total_time} seconds")
+        print(f"Total time: {total_time:.3f} seconds")
