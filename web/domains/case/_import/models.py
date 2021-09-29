@@ -174,6 +174,11 @@ class ImportApplication(ApplicationBase):
     licence_start_date = models.DateField(blank=True, null=True)
     licence_end_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
+
+    # TODO: Revisit when implementing ICMSLST-1048
+    # See def submit_application in ApplicationBase regarding making this unique
+    licence_reference = models.CharField(max_length=100, null=True, unique=True)
+
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
 
     application_type = models.ForeignKey(
