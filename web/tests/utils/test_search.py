@@ -62,7 +62,7 @@ class FixtureData(NamedTuple):
 
 
 @pytest.fixture
-def test_data(db, importer, agent_importer, test_import_user, request):
+def import_fixture_data(db, importer, agent_importer, test_import_user, request):
     request.user = test_import_user
     request.icms = ICMSMiddlewareContext()
 
@@ -84,11 +84,11 @@ def export_fixture_data(db, exporter, agent_exporter, test_export_user, request)
     return ExportFixtureData(exporter, agent_exporter, test_export_user, request)
 
 
-def test_filter_by_application_type(test_data: FixtureData):
-    _create_wood_application("Wood ref 1", test_data)
-    _create_wood_application("Wood ref 2", test_data)
-    _create_derogation_application("Derogation ref 1", test_data)
-    _create_derogation_application("Derogation ref 2", test_data)
+def test_filter_by_application_type(import_fixture_data: FixtureData):
+    _create_wood_application("Wood ref 1", import_fixture_data)
+    _create_wood_application("Wood ref 2", import_fixture_data)
+    _create_derogation_application("Derogation ref 1", import_fixture_data)
+    _create_derogation_application("Derogation ref 2", import_fixture_data)
 
     terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
     results = search_applications(terms)
@@ -98,16 +98,16 @@ def test_filter_by_application_type(test_data: FixtureData):
     check_application_references(results.records, "Wood ref 2", "Wood ref 1")
 
 
-def test_filter_wood(test_data: FixtureData):
+def test_filter_wood(import_fixture_data: FixtureData):
     """Do several tests related to searching for wood queries.
 
     All tests run in a single test for speed.
     The created applications are therefore reused in several tests.
     """
 
-    _test_fetch_all(test_data)
+    _test_fetch_all(import_fixture_data)
 
-    _test_search_by_case_reference(test_data)
+    _test_search_by_case_reference(import_fixture_data)
 
     _test_search_by_status(
         ImportApplicationType.Types.WOOD_QUOTA,
@@ -117,14 +117,14 @@ def test_filter_wood(test_data: FixtureData):
 
     _test_search_by_response_decision()
 
-    _test_search_by_importer_or_agent_name(test_data)
+    _test_search_by_importer_or_agent_name(import_fixture_data)
 
-    _test_search_by_submitted_datetime(test_data)
+    _test_search_by_submitted_datetime(import_fixture_data)
 
     _test_search_by_licence_date()
 
 
-def test_order_and_limit_works(test_data: FixtureData):
+def test_order_and_limit_works(import_fixture_data: FixtureData):
     """Create many applications and ensure only the latest n submitted are returned"""
 
     applications = (
@@ -142,10 +142,10 @@ def test_order_and_limit_works(test_data: FixtureData):
 
     for app_ref in applications:
         if app_ref.startswith("wood"):
-            _create_wood_application(app_ref, test_data)
+            _create_wood_application(app_ref, import_fixture_data)
 
         elif app_ref.startswith("derogation"):
-            _create_derogation_application(app_ref, test_data)
+            _create_derogation_application(app_ref, import_fixture_data)
 
         else:
             raise Exception(f"failed to create: {app_ref}")
@@ -167,8 +167,8 @@ def test_order_and_limit_works(test_data: FixtureData):
     )
 
 
-def test_derogation_commodity_details_correct(test_data: FixtureData):
-    app = _create_derogation_application("derogation app 1", test_data)
+def test_derogation_commodity_details_correct(import_fixture_data: FixtureData):
+    app = _create_derogation_application("derogation app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -184,8 +184,8 @@ def test_derogation_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_fa_dfl_commodity_details_correct(test_data: FixtureData):
-    _create_fa_dfl_application("fa-dfl app 1", test_data)
+def test_fa_dfl_commodity_details_correct(import_fixture_data: FixtureData):
+    _create_fa_dfl_application("fa-dfl app 1", import_fixture_data)
 
     search_terms = SearchTerms(
         case_type="import",
@@ -204,8 +204,8 @@ def test_fa_dfl_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_fa_oil_commodity_details_correct(test_data: FixtureData):
-    _create_fa_oil_application("fa-oil app 1", test_data)
+def test_fa_oil_commodity_details_correct(import_fixture_data: FixtureData):
+    _create_fa_oil_application("fa-oil app 1", import_fixture_data)
 
     search_terms = SearchTerms(
         case_type="import",
@@ -224,8 +224,8 @@ def test_fa_oil_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_fa_sil_commodity_details_correct(test_data: FixtureData):
-    _create_fa_sil_application("fa-sil app 1", test_data)
+def test_fa_sil_commodity_details_correct(import_fixture_data: FixtureData):
+    _create_fa_sil_application("fa-sil app 1", import_fixture_data)
 
     search_terms = SearchTerms(
         case_type="import",
@@ -244,8 +244,8 @@ def test_fa_sil_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_ironsteel_commodity_details_correct(test_data: FixtureData):
-    _create_ironsteel_application("ironsteel app 1", test_data)
+def test_ironsteel_commodity_details_correct(import_fixture_data: FixtureData):
+    _create_ironsteel_application("ironsteel app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.IRON_STEEL)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -262,8 +262,8 @@ def test_ironsteel_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_opt_commodity_details_correct(test_data: FixtureData):
-    app = _create_opt_application("opt app 1", test_data)
+def test_opt_commodity_details_correct(import_fixture_data: FixtureData):
+    app = _create_opt_application("opt app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.OPT)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -286,8 +286,8 @@ def test_opt_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_sanctionadhoc_commodity_details_correct(test_data: FixtureData):
-    app = _create_sanctionadhoc_application("sanctionsadhoc app 1", test_data)
+def test_sanctionadhoc_commodity_details_correct(import_fixture_data: FixtureData):
+    app = _create_sanctionadhoc_application("sanctionsadhoc app 1", import_fixture_data)
 
     search_terms = SearchTerms(
         case_type="import", app_type=ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
@@ -305,8 +305,8 @@ def test_sanctionadhoc_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_sps_commodity_details_correct(test_data: FixtureData):
-    app = _create_sps_application("sps app 1", test_data)
+def test_sps_commodity_details_correct(import_fixture_data: FixtureData):
+    app = _create_sps_application("sps app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.SPS)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -322,38 +322,38 @@ def test_sps_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_sps_commodity_details_correct_multiple(test_data: FixtureData):
+def test_sps_commodity_details_correct_multiple(import_fixture_data: FixtureData):
     app_1 = _create_sps_application(
         "sps app 1",
-        test_data,
+        import_fixture_data,
         origin_country="Afghanistan",
         consignment_country="Armenia",
         commodity_code="111111",
     )
     app_2 = _create_sps_application(
         "sps app 2",
-        test_data,
+        import_fixture_data,
         origin_country="Albania",
         consignment_country="Australia",
         commodity_code="222222",
     )
     app_3 = _create_sps_application(
         "sps app 3",
-        test_data,
+        import_fixture_data,
         origin_country="Algeria",
         consignment_country="Azerbaijan",
         commodity_code="333333",
     )
     app_4 = _create_sps_application(
         "sps app 4",
-        test_data,
+        import_fixture_data,
         origin_country="Angola",
         consignment_country="Bahamas",
         commodity_code="444444",
     )
     app_5 = _create_sps_application(
         "sps app 5",
-        test_data,
+        import_fixture_data,
         origin_country="Argentina",
         consignment_country="Bahrain",
         commodity_code="555555",
@@ -408,8 +408,8 @@ def test_sps_commodity_details_correct_multiple(test_data: FixtureData):
     )
 
 
-def test_textiles_commodity_details_correct(test_data: FixtureData):
-    _create_textiles_application("textiles app 1", test_data)
+def test_textiles_commodity_details_correct(import_fixture_data: FixtureData):
+    _create_textiles_application("textiles app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -426,9 +426,9 @@ def test_textiles_commodity_details_correct(test_data: FixtureData):
     )
 
 
-def test_wood_commodity_details_correct(test_data: FixtureData):
+def test_wood_commodity_details_correct(import_fixture_data: FixtureData):
     _create_wood_application(
-        "Wood ref 1", test_data, shipping_year=2030, commodity_code="code654321"
+        "Wood ref 1", import_fixture_data, shipping_year=2030, commodity_code="code654321"
     )
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
@@ -445,10 +445,10 @@ def test_wood_commodity_details_correct(test_data: FixtureData):
     assert wood_app.commodity_details.commodity_codes == ["code654321"]
 
 
-def _test_fetch_all(test_data: FixtureData):
-    _create_wood_application("Wood in progress", test_data, submit=False)
-    _create_wood_application("Wood ref 1", test_data)
-    _create_wood_application("Wood ref 2", test_data)
+def _test_fetch_all(import_fixture_data: FixtureData):
+    _create_wood_application("Wood in progress", import_fixture_data, submit=False)
+    _create_wood_application("Wood ref 1", import_fixture_data)
+    _create_wood_application("Wood ref 2", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
     results = search_applications(search_terms)
@@ -458,10 +458,10 @@ def _test_fetch_all(test_data: FixtureData):
     check_application_references(results.records, "Wood ref 2", "Wood ref 1")
 
 
-def _test_search_by_case_reference(test_data: FixtureData):
+def _test_search_by_case_reference(import_fixture_data: FixtureData):
     """Test submitting an application and searching for it by the case reference"""
 
-    application = _create_wood_application("Wood ref 3", test_data)
+    application = _create_wood_application("Wood ref 3", import_fixture_data)
     case_reference = application.get_reference()
 
     assert case_reference != "Not Assigned"
@@ -521,7 +521,7 @@ def _test_search_by_response_decision():
     check_application_references(results.records, "Wood ref 3")
 
 
-def _test_search_by_importer_or_agent_name(test_data: FixtureData):
+def _test_search_by_importer_or_agent_name(import_fixture_data: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
@@ -534,7 +534,7 @@ def _test_search_by_importer_or_agent_name(test_data: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
-        importer_agent_name=test_data.importer.name,
+        importer_agent_name=import_fixture_data.importer.name,
     )
     results = search_applications(search_terms)
 
@@ -544,13 +544,13 @@ def _test_search_by_importer_or_agent_name(test_data: FixtureData):
 
     # Set an agent on the first application and check we can search for that.
     application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 1")
-    application.agent = test_data.agent_importer
+    application.agent = import_fixture_data.agent_importer
     application.save()
 
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
-        importer_agent_name=test_data.agent_importer.name,
+        importer_agent_name=import_fixture_data.agent_importer.name,
     )
     results = search_applications(search_terms)
 
@@ -559,8 +559,8 @@ def _test_search_by_importer_or_agent_name(test_data: FixtureData):
     check_application_references(results.records, "Wood ref 1")
 
 
-def _test_search_by_submitted_datetime(test_data: FixtureData):
-    application = _create_wood_application("Wood ref 4", test_data)
+def _test_search_by_submitted_datetime(import_fixture_data: FixtureData):
+    application = _create_wood_application("Wood ref 4", import_fixture_data)
     application.submit_datetime = make_aware(datetime.datetime(2020, 1, 1, 23, 59, 59))
     application.save()
 
@@ -589,8 +589,8 @@ def _test_search_by_submitted_datetime(test_data: FixtureData):
     check_application_references(results.records, "Wood ref 4")
 
 
-def test_search_by_submitted_end_date(test_data: FixtureData):
-    application = _create_wood_application("Wood ref 1", test_data)
+def test_search_by_submitted_end_date(import_fixture_data: FixtureData):
+    application = _create_wood_application("Wood ref 1", import_fixture_data)
     application.submit_datetime = make_aware(datetime.datetime(2020, 1, 2, 23, 59, 59))
     application.save()
 
@@ -650,13 +650,13 @@ def _test_search_by_licence_date():
     assert results.total_rows == 0
 
 
-def test_get_search_results_spreadsheet(test_data: FixtureData):
-    _create_wood_application("Wood ref 1", test_data)
-    _create_wood_application("Wood ref 2", test_data)
-    _create_wood_application("Wood ref 3", test_data)
-    _create_textiles_application("Textiles ref 1", test_data)
-    _create_opt_application("Opt ref 1", test_data)
-    _create_fa_dfl_application("fa-dfl ref 1", test_data)
+def test_get_search_results_spreadsheet(import_fixture_data: FixtureData):
+    _create_wood_application("Wood ref 1", import_fixture_data)
+    _create_wood_application("Wood ref 2", import_fixture_data)
+    _create_wood_application("Wood ref 3", import_fixture_data)
+    _create_textiles_application("Textiles ref 1", import_fixture_data)
+    _create_opt_application("Opt ref 1", import_fixture_data)
+    _create_fa_dfl_application("fa-dfl ref 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import")
     results = search_applications(search_terms)
@@ -777,8 +777,8 @@ def test_get_export_search_results_spreadsheet(export_fixture_data: ExportFixtur
     assert case_refs == [com.reference, cfs.reference, gmp.reference]
 
 
-def test_case_statuses(test_data: FixtureData):
-    _create_test_app_statuses(test_data)
+def test_case_statuses(import_fixture_data: FixtureData):
+    _create_test_app_statuses(import_fixture_data)
 
     wt = ImportApplicationType.Types.WOOD_QUOTA
     st = ImportApplication.Statuses
@@ -1002,6 +1002,72 @@ def test_export_returns_in_progress_applications(export_fixture_data: ExportFixt
     assert results.records[0].status == "In Progress"
 
 
+@pytest.mark.parametrize(
+    ["case_ref_pattern", "should_match"],
+    [
+        ("wood/foo/0001", True),
+        ("wood%", True),
+        ("wood%0001", True),
+        ("wood%oo%000%", True),
+        ("WOOD%", True),
+        ("WOOD%0001", True),
+        ("WOOD%OO%000%", True),
+        ("%foo/0001", True),
+        ("%wood", False),
+        ("%WOOD", False),
+        ("foo/0001%", False),
+    ],
+)
+def test_wildcard_search(import_fixture_data: FixtureData, case_ref_pattern, should_match):
+    """Use case_ref to test the wildcard pattern matching - we don't need to test each field."""
+
+    # Create another record just to ensure its not being returned by mistake
+    not_match_app = _create_fa_dfl_application("fa-dfl-app-reference", import_fixture_data)
+    wood_app = _create_wood_application("wood-applicant-reference", import_fixture_data)
+
+    # We override the reference so we can test the wildcard matching
+    wood_app.reference = "wood/foo/0001"
+    wood_app.save()
+
+    not_match_app.reference = "dfl/bar/1110"
+    not_match_app.save()
+
+    search_terms = SearchTerms(case_type="import", case_ref=case_ref_pattern)
+    results = search_applications(search_terms)
+
+    if should_match:
+        assert results.total_rows == 1
+        assert results.records[0].case_status.case_reference == wood_app.get_reference()
+
+    else:
+        assert results.total_rows == 0
+
+
+def test_case_reference_wildcard_any(
+    import_fixture_data: FixtureData, export_fixture_data: ExportFixtureData
+):
+    # Import applications
+    _create_fa_dfl_application("fa-dfl-app-reference", import_fixture_data)
+    _create_wood_application("wood-applicant-reference", import_fixture_data)
+
+    # Export application
+    gmp_app = _create_gmp_application(export_fixture_data)
+
+    search_terms = SearchTerms(case_type="import", case_ref="%")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+    check_application_references(
+        results.records, "wood-applicant-reference", "fa-dfl-app-reference"
+    )
+
+    search_terms = SearchTerms(case_type="export", case_ref="%")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, gmp_app.reference)
+
+
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references
 
@@ -1046,7 +1112,7 @@ def check_commodity_details(
 
 def _create_derogation_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Tanzania",
     consignment_country="Algeria",
@@ -1066,13 +1132,18 @@ def _create_derogation_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=derogation_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=derogation_kwargs,
     )
 
 
 def _create_fa_dfl_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="the Czech Republic",
     consignment_country="the Slovak Republic",
@@ -1090,13 +1161,18 @@ def _create_fa_dfl_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_dfl_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=fa_dfl_kwargs,
     )
 
 
 def _create_fa_oil_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Any Country",
     consignment_country="Any Country",
@@ -1113,13 +1189,18 @@ def _create_fa_oil_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_oil_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=fa_oil_kwargs,
     )
 
 
 def _create_fa_sil_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Argentina",
     consignment_country="Azerbaijan",
@@ -1136,13 +1217,18 @@ def _create_fa_sil_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=fa_sil_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=fa_sil_kwargs,
     )
 
 
 def _create_ironsteel_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Kazakhstan",
     consignment_country="Bahamas",
@@ -1166,13 +1252,18 @@ def _create_ironsteel_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=ironsteel_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=ironsteel_kwargs,
     )
 
 
 def _create_opt_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     origin_country="Uruguay",
     consignment_country="USA",
     cp_category=CP_CATEGORIES[0],
@@ -1197,7 +1288,12 @@ def _create_opt_application(
     }
 
     application: OutwardProcessingTradeApplication = _create_application(
-        application_type, process_type, reference, test_data, submit=False, extra_kwargs=opt_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit=False,
+        extra_kwargs=opt_kwargs,
     )
 
     for com in cp_commodities:
@@ -1206,14 +1302,14 @@ def _create_opt_application(
     for com in teg_commodities:
         application.teg_commodities.add(com)
 
-    _submit_application(application, test_data)
+    _submit_application(application, import_fixture_data)
 
     return application
 
 
 def _create_sanctionadhoc_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     origin_country="Iran",
     consignment_country="Algeria",
     commodity_codes=("2801000010", "2850002070"),
@@ -1232,7 +1328,7 @@ def _create_sanctionadhoc_application(
         application_type,
         process_type,
         reference,
-        test_data,
+        import_fixture_data,
         submit=False,
         extra_kwargs=sanctionadhoc_kwargs,
     )
@@ -1246,14 +1342,14 @@ def _create_sanctionadhoc_application(
             value=123,
         )
 
-    _submit_application(application, test_data)
+    _submit_application(application, import_fixture_data)
 
     return application
 
 
 def _create_sps_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Azerbaijan",
     consignment_country="Jordan",
@@ -1269,13 +1365,18 @@ def _create_sps_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=sps_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=sps_kwargs,
     )
 
 
 def _create_textiles_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     origin_country="Belarus",
     consignment_country="Argentina",
@@ -1298,13 +1399,18 @@ def _create_textiles_application(
     }
 
     return _create_application(
-        application_type, process_type, reference, test_data, submit, extra_kwargs=textiles_kwargs
+        application_type,
+        process_type,
+        reference,
+        import_fixture_data,
+        submit,
+        extra_kwargs=textiles_kwargs,
     )
 
 
 def _create_wood_application(
     reference,
-    test_data: FixtureData,
+    import_fixture_data: FixtureData,
     submit=True,
     shipping_year=2021,
     commodity_code="code123456",
@@ -1325,7 +1431,7 @@ def _create_wood_application(
         application_type,
         process_type,
         reference,
-        test_data,
+        import_fixture_data,
         submit,
         override_status,
         extra_kwargs=wood_kwargs,
@@ -1378,20 +1484,20 @@ def _create_application(
     application_type,
     process_type,
     reference,
-    test_data,
+    import_fixture_data,
     submit,
     override_status=None,
     extra_kwargs=None,
 ):
     kwargs = {
         "applicant_reference": reference,
-        "importer": test_data.importer,
-        "created_by": test_data.importer_user,
-        "last_updated_by": test_data.importer_user,
-        "submitted_by": test_data.importer_user,
+        "importer": import_fixture_data.importer,
+        "created_by": import_fixture_data.importer_user,
+        "last_updated_by": import_fixture_data.importer_user,
+        "submitted_by": import_fixture_data.importer_user,
         "application_type": application_type,
         "process_type": process_type,
-        "contact": test_data.importer_user,
+        "contact": import_fixture_data.importer_user,
     }
 
     if extra_kwargs:
@@ -1414,11 +1520,13 @@ def _create_application(
 
     application = model_cls.objects.create(**kwargs)  # type: ignore[attr-defined]
     Task.objects.create(
-        process=application, task_type=Task.TaskType.PREPARE, owner=test_data.importer_user
+        process=application,
+        task_type=Task.TaskType.PREPARE,
+        owner=import_fixture_data.importer_user,
     )
 
     if submit:
-        _submit_application(application, test_data)
+        _submit_application(application, import_fixture_data)
 
     if override_status:
         application.status = override_status
@@ -1474,11 +1582,11 @@ def _create_export_application(
     return application
 
 
-def _submit_application(application, test_data: Union[FixtureData, ExportFixtureData]):
+def _submit_application(application, import_fixture_data: Union[FixtureData, ExportFixtureData]):
     """Helper function to submit an application (Using the application code to do so)"""
     task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-    application.submit_application(test_data.request, task)
+    application.submit_application(import_fixture_data.request, task)
     application.save()
 
 
@@ -1500,27 +1608,29 @@ def _create_test_commodity_group(category_commodity_group: str, commodity: Commo
     return group
 
 
-def _create_test_app_statuses(test_data):
+def _create_test_app_statuses(import_fixture_data):
     st = ApplicationBase.Statuses
-    _create_wood_application("completed", test_data, override_status=st.COMPLETED)
+    _create_wood_application("completed", import_fixture_data, override_status=st.COMPLETED)
 
     # TODO: ICMSLST-1105: filter Oustanding Open Requests
-    # _create_wood_application("open_request", test_data)
+    # _create_wood_application("open_request", import_fixture_data)
 
-    _create_wood_application("processing", test_data, override_status=st.PROCESSING)
-    app = _create_wood_application("fir", test_data, override_status=st.PROCESSING)
+    _create_wood_application("processing", import_fixture_data, override_status=st.PROCESSING)
+    app = _create_wood_application("fir", import_fixture_data, override_status=st.PROCESSING)
     app.further_information_requests.create(
         status=FurtherInformationRequest.OPEN, process_type=FurtherInformationRequest.PROCESS_TYPE
     )
 
     # TODO: ICMSLST-1104: filter SIGL
-    # _create_wood_application("sigl", test_data)
+    # _create_wood_application("sigl", import_fixture_data)
 
-    app = _create_wood_application("update", test_data, override_status=st.PROCESSING)
+    app = _create_wood_application("update", import_fixture_data, override_status=st.PROCESSING)
     app.update_requests.create(status=UpdateRequest.Status.OPEN)
 
-    _create_wood_application("revoked", test_data, override_status=st.REVOKED)
-    _create_wood_application("stopped", test_data, override_status=st.STOPPED)
-    _create_wood_application("submitted", test_data, override_status=st.SUBMITTED)
-    _create_wood_application("variation", test_data, override_status=st.VARIATION_REQUESTED)
-    _create_wood_application("withdrawn", test_data, override_status=st.WITHDRAWN)
+    _create_wood_application("revoked", import_fixture_data, override_status=st.REVOKED)
+    _create_wood_application("stopped", import_fixture_data, override_status=st.STOPPED)
+    _create_wood_application("submitted", import_fixture_data, override_status=st.SUBMITTED)
+    _create_wood_application(
+        "variation", import_fixture_data, override_status=st.VARIATION_REQUESTED
+    )
+    _create_wood_application("withdrawn", import_fixture_data, override_status=st.WITHDRAWN)

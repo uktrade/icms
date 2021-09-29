@@ -254,6 +254,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
     submit_datetime = models.DateTimeField(blank=True, null=True)
 
+    # This is the "Case Reference" field
     reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
 
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)

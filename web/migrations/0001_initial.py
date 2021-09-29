@@ -2518,6 +2518,7 @@ class Migration(migrations.Migration):
                 ("licence_start_date", models.DateField(blank=True, null=True)),
                 ("licence_end_date", models.DateField(blank=True, null=True)),
                 ("licence_extended_flag", models.BooleanField(default=False)),
+                ("licence_reference", models.CharField(max_length=100, null=True, unique=True)),
                 ("last_update_datetime", models.DateTimeField(auto_now=True)),
                 ("cover_letter", models.TextField(blank=True, null=True)),
                 (

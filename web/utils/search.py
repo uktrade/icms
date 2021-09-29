@@ -270,6 +270,36 @@ def get_search_results_spreadsheet(case_type: str, results: SearchResults) -> by
     return generate_xlsx_file(config)
 
 
+def get_wildcard_filter(field: str, search_pattern: str) -> dict[str, str]:
+    """Return the filter kwargs for the supplied field and search_pattern.
+
+    Strings with `%` are converted into django ORM code using one of several methods.
+
+    :param field: The name of the field to search on
+    :param search_pattern: the user supplied search pattern
+    """
+
+    if search_pattern.strip() == "%":
+        return {}
+
+    # The default search unless changed below
+    search_regex = search_pattern.replace("%", ".*")
+    search = {f"{field}__iregex": f"^{search_regex}"}
+    wildcards = search_pattern.count("%")
+
+    if wildcards == 0:
+        search = {f"{field}": search_pattern}
+
+    elif wildcards == 1:
+        if search_pattern.startswith("%"):
+            search = {f"{field}__iendswith": search_pattern[1:]}
+
+        elif search_pattern.endswith("%"):
+            search = {f"{field}__istartswith": search_pattern[:-1]}
+
+    return search
+
+
 def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
     """Search ImportApplication records to find records matching the supplied terms.
 
@@ -380,12 +410,13 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     # This is an annotation and can have a value of [None] for in-progress apps
     origin_countries = [c for c in rec.origin_countries if c]
 
+    certificates = _get_certificate_references(rec)
+
     return ExportResultRow(
         case_reference=rec.get_reference(),
         application_type=app_type_label,
         status=rec.get_status_display(),
-        # TODO: Revisit when implementing ICMSLST-1048
-        certificates=["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"],
+        certificates=certificates,
         origin_countries=origin_countries,
         organisation_name=rec.exporter.name,
         application_contact=application_contact,
@@ -396,6 +427,22 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     )
 
 
+def _get_certificate_references(rec: ExportApplication) -> list[str]:
+    """Retrieve the certificate references."""
+
+    # TODO: Revisit when implementing ICMSLST-1138
+    if rec.process_type == ProcessTypes.CFS:
+        certificates = ["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"]
+    elif rec.process_type == ProcessTypes.COM:
+        certificates = ["COM/2021/00004", "COM/2021/00005", "COM/2021/00006"]
+    elif rec.process_type == ProcessTypes.GMP:
+        certificates = ["GMP/2021/00007", "GMP/2021/00008", "GMP/2021/00009"]
+    else:
+        raise NotImplementedError(f"Unknown process type: {rec.process_type}")
+
+    return certificates
+
+
 def _get_licence_reference(rec: ImportApplication) -> str:
     """Retrieve the licence reference
 
@@ -403,7 +450,7 @@ def _get_licence_reference(rec: ImportApplication) -> str:
         - The Electronic licence has a link to download the licence
     """
 
-    # TODO: Revisit when implementing ICMSLST-1048
+    # TODO: Revisit when implementing ICMSLST-1048 (The correct field is rec.licence_reference)
     if rec.issue_paper_licence_only:
         licence_reference = "9001809L (Paper)"
     else:
@@ -676,10 +723,16 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         model = model.filter(**iat_filter)
 
     if terms.case_ref:
-        # TODO: Revisit this when doing ICMSLST-1035
-        model = model.filter(reference=terms.case_ref)
+        reference_filter = get_wildcard_filter("reference", terms.case_ref)
+        model = model.filter(**reference_filter)
 
     if terms.licence_ref:
+        # TODO: Revisit when implementing ICMSLST-1048
+        # Need to wildcard match on the licence_reference field for Import Application's
+
+        # TODO: Revisit when implementing ICMSLST-1138
+        # We need to search one or more certificate references (No model field yet)
+
         raise NotImplementedError("Searching by Licence Reference isn't supported yet")
 
     if terms.case_status:
@@ -721,11 +774,10 @@ def _apply_import_application_filter(
     model: "QuerySet[Model]", terms: SearchTerms
 ) -> "QuerySet[Model]":
     if terms.importer_agent_name:
-        name = terms.importer_agent_name
-        # TODO: Revisit this when doing ICMSLST-1035
-        importer_name = Q(importer__name=name)
-        agent_name = Q(agent__name=name)
-        model = model.filter(importer_name | agent_name)
+        importer_filter = get_wildcard_filter("importer__name", terms.importer_agent_name)
+        agent_filter = get_wildcard_filter("agent__name", terms.importer_agent_name)
+
+        model = model.filter(Q(**importer_filter) | Q(**agent_filter))
 
     # In legacy licencing assumes application state is in processing (We won't for now)
     if terms.licence_date_start:
@@ -751,11 +803,10 @@ def _apply_export_application_filter(
     model: "QuerySet[Model]", terms: SearchTerms
 ) -> "QuerySet[Model]":
     if terms.exporter_agent_name:
-        name = terms.exporter_agent_name
-        # TODO: Revisit this when doing ICMSLST-1035
-        exporter_name = Q(exporter__name=name)
-        agent_name = Q(agent__name=name)
-        model = model.filter(exporter_name | agent_name)
+        exporter_filter = get_wildcard_filter("exporter__name", terms.exporter_agent_name)
+        agent_filter = get_wildcard_filter("agent__name", terms.exporter_agent_name)
+
+        model = model.filter(Q(**exporter_filter) | Q(**agent_filter))
 
     if terms.closed_date_start:
         # TODO: Implement when doing ICMSLST-1107
