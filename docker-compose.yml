@@ -51,6 +51,7 @@ services:
             - ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
             - ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
             - DEBUG_SHOW_ALL_WORKBASKET_ROWS
+            - SHOW_DB_QUERIES
         # stdin_open: true
         # tty: true
         ports:
