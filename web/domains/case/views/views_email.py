@@ -437,7 +437,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         raise Exception(f"CaseEmail for application not supported {application.process_type}")
 
 
-def _create_fa_case_email(application: FaImportApplication):
+def _create_fa_case_email(application: FaImportApplication) -> models.CaseEmail:
     template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
     goods_description = (
         "Firearms, component parts thereof, or ammunition of any applicable"
@@ -461,7 +461,7 @@ def _create_fa_case_email(application: FaImportApplication):
     )
 
 
-def _create_sanction_case_email(application: SanctionsAndAdhocApplication):
+def _create_sanction_case_email(application: SanctionsAndAdhocApplication) -> models.CaseEmail:
     template = Template.objects.get(is_active=True, template_code="IMA_SANCTION_EMAIL")
     goods_descriptions = application.sanctionsandadhocapplicationgoods_set.values_list(
         "goods_description", flat=True
@@ -484,7 +484,7 @@ def _create_sanction_case_email(application: SanctionsAndAdhocApplication):
     )
 
 
-def create_cfs_case_email(application: CertificateOfFreeSaleApplication):
+def create_cfs_case_email(application: CertificateOfFreeSaleApplication) -> models.CaseEmail:
     template = Template.objects.get(is_active=True, template_code="CA_HSE_EMAIL")
     content = template.get_content(
         {
@@ -511,7 +511,9 @@ def create_cfs_case_email(application: CertificateOfFreeSaleApplication):
     )
 
 
-def create_gmp_case_email(application: CertificateOfGoodManufacturingPracticeApplication):
+def create_gmp_case_email(
+    application: CertificateOfGoodManufacturingPracticeApplication,
+) -> models.CaseEmail:
     template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
     content = template.get_content(
         {
