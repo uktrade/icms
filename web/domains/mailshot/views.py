@@ -1,16 +1,23 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from django.contrib import messages
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
+from django.views.decorators.http import require_GET, require_POST
 
 from web.auth.mixins import RequireRegisteredMixin
+from web.domains.case.forms import DocumentForm
+from web.domains.case.utils import view_application_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.notify import notify
+from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import get_file_from_s3
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
@@ -139,7 +146,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             return super().form_invalid(form)
 
     def cancel(self, request, **kwargs):
-        mailshot = Mailshot.objects.get(pk=kwargs.get("mailshot_pk"))
+        mailshot = self.get_object()
         mailshot.status = Mailshot.Statuses.CANCELLED
         mailshot.save()
         messages.success(request, "Mailshot cancelled successfully")
@@ -159,12 +166,17 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         """
         return Mailshot.objects.filter(status=Mailshot.Statuses.DRAFT)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents"] = self.object.documents.filter(is_active=True)
+
+        return context
+
 
 class MailshotDetailView(ModelDetailView):
     template_name = "web/domains/mailshot/view.html"
     form_class = MailshotForm
     model = Mailshot
-    cancel_url = reverse_lazy("mailshot-list")
     permission_required = "web.mailshot_access"
     pk_url_kwarg = "mailshot_pk"
 
@@ -187,6 +199,12 @@ class MailshotDetailView(ModelDetailView):
             return True
 
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents"] = self.object.documents.filter(is_active=True)
+
+        return context
 
 
 class MailshotReceivedDetailView(MailshotDetailView):
@@ -251,3 +269,70 @@ class MailshotRetractView(ModelUpdateView):
 
     def get_page_title(self):
         return f"Retract {self.object}"  # type:ignore[attr-defined]
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_document(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        if request.POST:
+            form = DocumentForm(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
+                create_file_model(document, request.user, mailshot.documents)
+
+                return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
+        else:
+            form = DocumentForm()
+
+        context = {
+            "mailshot": mailshot,
+            "form": form,
+            "page_title": "Mailshot - Add document",
+        }
+
+        return render(request, "web/domains/mailshot/add_document.html", context)
+
+
+@require_GET
+@login_required
+def view_document(
+    request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
+) -> HttpResponse:
+    mailshot = get_object_or_404(Mailshot, pk=mailshot_pk)
+    document = get_object_or_404(mailshot.documents, pk=document_pk)
+
+    user = request.user
+    ilb_admin = user.has_perm("web.reference_data_access")
+    org_access = user.has_perm("web.importer_access") or user.has_perm("web.exporter_access")
+
+    if not ilb_admin and not org_access:
+        raise PermissionDenied
+
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
+
+    return view_application_file(request, mailshot, mailshot.documents, document_pk)
+
+
+@require_POST
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def delete_document(
+    request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        document = mailshot.documents.get(pk=document_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
