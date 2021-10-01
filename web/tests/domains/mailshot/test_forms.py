@@ -20,25 +20,25 @@ class MailshotsFilterTest(TestCase):
         MailshotFactory(
             title="Draft Mailshot",
             description="This is a draft mailshot",
-            status=Mailshot.DRAFT,
+            status=Mailshot.Statuses.DRAFT,
             is_active=False,
         )
         MailshotFactory(
             title="Published Mailshot",
             description="This is a published mailshot",
-            status=Mailshot.PUBLISHED,
+            status=Mailshot.Statuses.PUBLISHED,
             is_active=True,
         )
         MailshotFactory(
             title="Retracted Mailshot",
             description="This is a retracted mailshot",
-            status=Mailshot.RETRACTED,
+            status=Mailshot.Statuses.RETRACTED,
             is_active=True,
         )
         MailshotFactory(
             title="Cancelled Mailshot",
             description="This is a cancelled mailshot",
-            status=Mailshot.CANCELLED,
+            status=Mailshot.Statuses.CANCELLED,
             is_active=True,
         )
 
@@ -55,7 +55,7 @@ class MailshotsFilterTest(TestCase):
         self.assertEqual(results.first().title, "Published Mailshot")
 
     def test_status_filter(self):
-        results = self.run_filter({"status": Mailshot.RETRACTED})
+        results = self.run_filter({"status": Mailshot.Statuses.RETRACTED})
         self.assertEqual(results.count(), 1)
         self.assertEqual(results.first().title, "Retracted Mailshot")
 
@@ -71,40 +71,42 @@ class MailshotsFilterTest(TestCase):
 class ReceivedMailshotsFilterTest(TestCase):
     def create_mailshots(self):
         MailshotFactory(
-            title="Draft Mailshot", description="This is a draft mailshot", status=Mailshot.DRAFT
+            title="Draft Mailshot",
+            description="This is a draft mailshot",
+            status=Mailshot.Statuses.DRAFT,
         )
         MailshotFactory(
             title="Retracted Mailshot",
             description="This is a retracted mailshot",
-            status=Mailshot.RETRACTED,
+            status=Mailshot.Statuses.RETRACTED,
             is_to_importers=True,
             is_to_exporters=True,
         )
         MailshotFactory(
             title="Cancelled Mailshot",
             description="This is a cancelled mailshot",
-            status=Mailshot.CANCELLED,
+            status=Mailshot.Statuses.CANCELLED,
             is_to_importers=True,
             is_to_exporters=True,
         )
         MailshotFactory(
             title="Published Mailshot to importers",
             description="This is a published mailshot to importers",
-            status=Mailshot.PUBLISHED,
+            status=Mailshot.Statuses.PUBLISHED,
             is_to_importers=True,
             is_to_exporters=False,
         )
         MailshotFactory(
             title="Published Mailshot to exporters",
             description="This is a published mailshot to exporters",
-            status=Mailshot.PUBLISHED,
+            status=Mailshot.Statuses.PUBLISHED,
             is_to_importers=False,
             is_to_exporters=True,
         )
         MailshotFactory(
             title="Published Mailshot to all",
             description="This is a published mailshot to all",
-            status=Mailshot.PUBLISHED,
+            status=Mailshot.Statuses.PUBLISHED,
             is_to_importers=True,
             is_to_exporters=True,
         )
@@ -126,16 +128,16 @@ class ReceivedMailshotsFilterTest(TestCase):
         assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
         results = self.run_filter({"title": "Mailshot"}, user=self.user)
         self.assertEqual(results.count(), 3)
-        self.assertTrue(results[0].status, Mailshot.PUBLISHED)
-        self.assertTrue(results[1].status, Mailshot.PUBLISHED)
-        self.assertTrue(results[2].status, Mailshot.PUBLISHED)
+        self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
+        self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
+        self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
 
     def test_superuser_gets_all_published_mailshots(self):
         results = self.run_filter({"title": "Mailshot"}, user=self.superuser)
         self.assertEqual(results.count(), 3)
-        self.assertTrue(results[0].status, Mailshot.PUBLISHED)
-        self.assertTrue(results[1].status, Mailshot.PUBLISHED)
-        self.assertTrue(results[2].status, Mailshot.PUBLISHED)
+        self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
+        self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
+        self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
 
     def test_filter_only_gets_importer_mailshots(self):
         assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)

@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from django.urls import reverse_lazy
+from django.urls import reverse
 
 import web.views.actions as actions
 
@@ -8,21 +6,26 @@ from .models import Mailshot
 
 
 class Edit(actions.Edit):
-    def display(self, mailshot):
-        return mailshot.status == Mailshot.DRAFT
+    def display(self, mailshot: Mailshot) -> bool:
+        return mailshot.status == Mailshot.Statuses.DRAFT
 
 
 class View(actions.View):
-    def display(self, mailshot):
-        return mailshot.status != Mailshot.DRAFT
+    def display(self, mailshot: Mailshot) -> bool:
+        return mailshot.status != Mailshot.Statuses.DRAFT
+
+
+class ViewReceived(View):
+    def href(self, mailshot: Mailshot) -> str:
+        return reverse("mailshot-detail-received", kwargs={"mailshot_pk": mailshot.pk})
 
 
 class Retract(actions.Edit):
     icon = "icon-bin"
     label = "Retract"
 
-    def href(self, object):
-        return reverse_lazy("mailshot-retract", args=(object.id,))
+    def href(self, mailshot: Mailshot) -> str:
+        return reverse("mailshot-retract", kwargs={"mailshot_pk": mailshot.pk})
 
-    def display(self, mailshot):
-        return mailshot.status == Mailshot.PUBLISHED
+    def display(self, mailshot: Mailshot) -> bool:
+        return mailshot.status == Mailshot.Statuses.PUBLISHED

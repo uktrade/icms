@@ -1,21 +1,29 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from django.contrib import messages
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
+from django.views.decorators.http import require_GET, require_POST
 
 from web.auth.mixins import RequireRegisteredMixin
+from web.domains.case.forms import DocumentForm
+from web.domains.case.utils import view_application_file
+from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.notify import notify
+from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import get_file_from_s3
 from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
 from .actions import Edit, Retract
 from .actions import View as Display
+from .actions import ViewReceived
 from .forms import (
     MailshotFilter,
     MailshotForm,
@@ -51,7 +59,7 @@ class ReceivedMailshotsView(ModelFilterView):
             "title": {"header": "Title"},
             "description": {"header": "Description"},
         }
-        actions = [Display()]
+        actions = [ViewReceived()]
 
 
 class MailshotListView(ModelFilterView):
@@ -105,6 +113,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def handle_notification(self, mailshot):
         if mailshot.is_email:
@@ -115,7 +124,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         Publish mailshot if form is valid.
         """
         mailshot = form.instance
-        mailshot.status = Mailshot.PUBLISHED
+        mailshot.status = Mailshot.Statuses.PUBLISHED
         mailshot.published_datetime = timezone.now()
         mailshot.published_by = self.request.user
         response = super().form_valid(form)
@@ -123,7 +132,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             self.handle_notification(mailshot)
         return response
 
-    def save_draft(self, request, pk):
+    def save_draft(self, request, **kwargs):
         """
         Saves mailshot draft bypassing all validation.
         """
@@ -136,9 +145,9 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         else:
             return super().form_invalid(form)
 
-    def cancel(self, request, pk):
-        mailshot = Mailshot.objects.get(pk=pk)
-        mailshot.status = Mailshot.CANCELLED
+    def cancel(self, request, **kwargs):
+        mailshot = self.get_object()
+        mailshot.status = Mailshot.Statuses.CANCELLED
         mailshot.save()
         messages.success(request, "Mailshot cancelled successfully")
         return redirect(self.success_url)
@@ -155,15 +164,21 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         Only allow DRAFT mailshots to be edited by filtering.
         Leads to 404 otherwise
         """
-        return Mailshot.objects.filter(status=Mailshot.DRAFT)
+        return Mailshot.objects.filter(status=Mailshot.Statuses.DRAFT)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents"] = self.object.documents.filter(is_active=True)
+
+        return context
 
 
 class MailshotDetailView(ModelDetailView):
-    template_name = "model/view.html"
+    template_name = "web/domains/mailshot/view.html"
     form_class = MailshotForm
     model = Mailshot
-    cancel_url = reverse_lazy("mailshot-list")
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def has_permission(self):
         if not self.request.user.is_authenticated:
@@ -185,6 +200,16 @@ class MailshotDetailView(ModelDetailView):
 
         return False
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["documents"] = self.object.documents.filter(is_active=True)
+
+        return context
+
+
+class MailshotReceivedDetailView(MailshotDetailView):
+    template_name = "web/domains/mailshot/view_received.html"
+
 
 class MailshotRetractView(ModelUpdateView):
     RETRACT_TEMPLATE_CODE = "RETRACT_MAILSHOT"
@@ -194,6 +219,7 @@ class MailshotRetractView(ModelUpdateView):
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def __init__(self, *args, **kwargs):
         template = Template.objects.get(template_code=self.RETRACT_TEMPLATE_CODE)
@@ -221,7 +247,7 @@ class MailshotRetractView(ModelUpdateView):
         Retract mailshot if form is valid.
         """
         mailshot = form.instance
-        mailshot.status = Mailshot.RETRACTED
+        mailshot.status = Mailshot.Statuses.RETRACTED
         mailshot.retracted_datetime = timezone.now()
         mailshot.retracted_by = self.request.user
         response = super().form_valid(form)
@@ -239,7 +265,74 @@ class MailshotRetractView(ModelUpdateView):
         Only allow PUBLISHED mailshots to be retracted by filtering.
         Leads to 404 otherwise
         """
-        return Mailshot.objects.filter(status=Mailshot.PUBLISHED)
+        return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
         return f"Retract {self.object}"  # type:ignore[attr-defined]
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def add_document(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        if request.POST:
+            form = DocumentForm(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data.get("document")
+                create_file_model(document, request.user, mailshot.documents)
+
+                return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
+        else:
+            form = DocumentForm()
+
+        context = {
+            "mailshot": mailshot,
+            "form": form,
+            "page_title": "Mailshot - Add document",
+        }
+
+        return render(request, "web/domains/mailshot/add_document.html", context)
+
+
+@require_GET
+@login_required
+def view_document(
+    request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
+) -> HttpResponse:
+    mailshot = get_object_or_404(Mailshot, pk=mailshot_pk)
+    document = get_object_or_404(mailshot.documents, pk=document_pk)
+
+    user = request.user
+    ilb_admin = user.has_perm("web.reference_data_access")
+    org_access = user.has_perm("web.importer_access") or user.has_perm("web.exporter_access")
+
+    if not ilb_admin and not org_access:
+        raise PermissionDenied
+
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
+
+    return view_application_file(request, mailshot, mailshot.documents, document_pk)
+
+
+@require_POST
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def delete_document(
+    request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        document = mailshot.documents.get(pk=document_pk)
+        document.is_active = False
+        document.save()
+
+        return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
