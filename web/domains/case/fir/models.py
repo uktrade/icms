@@ -34,6 +34,10 @@ class FurtherInformationRequest(WorkbasketBase, Process):
     """Further information requests for cases requested from
     applicant by case officers"""
 
+    class Meta:
+        indexes = [models.Index(fields=["status"], name="FIR_status_idx")]
+        ordering = ["-requested_datetime"]
+
     PROCESS_TYPE = "FurtherInformationRequest"
 
     DRAFT = "DRAFT"
@@ -105,6 +109,3 @@ class FurtherInformationRequest(WorkbasketBase, Process):
     )
 
     files = models.ManyToManyField(File, blank=True)
-
-    class Meta:
-        ordering = ["-requested_datetime"]

@@ -5,7 +5,7 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Optional, Union
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Q
+from django.db.models import F, Q
 from django.db.models.functions import Coalesce
 from django.utils.timezone import make_aware
 
@@ -765,7 +765,7 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
     if terms.case_type == "export":
         model = _apply_export_application_filter(model, terms)
 
-    model = model.annotate(order_by_datetime=Coalesce("submit_datetime", "created"))
+    model = model.annotate(order_by_datetime=_get_order_by_datetime(terms.case_type))
 
     return model
 
@@ -846,7 +846,7 @@ def _apply_export_application_filter(
 def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
     model = model.select_related("importer", "contact", "application_type")
-    model = model.annotate(order_by_datetime=Coalesce("submit_datetime", "created"))
+    model = model.annotate(order_by_datetime=_get_order_by_datetime("import"))
 
     return model
 
@@ -856,10 +856,17 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     model = model.select_related("exporter", "contact")
     model = model.annotate(
         origin_countries=ArrayAgg("countries__name", distinct=True),
-        order_by_datetime=Coalesce("submit_datetime", "created"),
+        order_by_datetime=_get_order_by_datetime("export"),
     )
 
     return model
+
+
+def _get_order_by_datetime(case_type: str) -> Any:
+    if case_type == "import":
+        return F("submit_datetime")
+    else:
+        return Coalesce("submit_datetime", "created")
 
 
 def _get_import_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[SpreadsheetRow]:

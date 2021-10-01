@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, final
 
+from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
 
@@ -57,6 +58,17 @@ class ExportApplicationType(models.Model):
 
 
 class ExportApplication(ApplicationBase):
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"], name="EA_status_idx"),
+            BTreeIndex(
+                fields=["reference"],
+                name="EA_search_case_reference_idx",
+                opclasses=["text_pattern_ops"],
+            ),
+            models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
+        ]
+
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
     )
