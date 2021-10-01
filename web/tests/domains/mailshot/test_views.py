@@ -129,13 +129,13 @@ class MailshotCreateViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         self.client.get(self.url)
         mailshot = Mailshot.objects.first()
-        self.assertEqual(mailshot.status, Mailshot.DRAFT)
+        self.assertEqual(mailshot.status, Mailshot.Statuses.DRAFT)
 
 
 class MailshotEditViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.mailshot = MailshotFactory(status=Mailshot.DRAFT)  # Create a mailshot
+        self.mailshot = MailshotFactory(status=Mailshot.Statuses.DRAFT)  # Create a mailshot
         self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -159,7 +159,7 @@ class MailshotEditViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         self.client.post(self.url, {"action": "cancel"})
         self.mailshot.refresh_from_db()
-        self.assertEqual(self.mailshot.status, Mailshot.CANCELLED)
+        self.assertEqual(self.mailshot.status, Mailshot.Statuses.CANCELLED)
 
     def test_cancel_redirects_to_list(self):
         self.login_with_permissions(PERMISSIONS)
@@ -188,7 +188,7 @@ class MailshotEditViewTest(AuthTestCase):
 class MailshotRetractViewTest(AuthTestCase):
     def setUp(self):
         super().setUp()
-        self.mailshot = MailshotFactory(status=Mailshot.PUBLISHED)  # Create a mailshot
+        self.mailshot = MailshotFactory(status=Mailshot.Statuses.PUBLISHED)  # Create a mailshot
         self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.id}/retract/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"

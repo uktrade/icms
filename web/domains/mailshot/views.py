@@ -16,6 +16,7 @@ from web.views.mixins import PostActionMixin
 
 from .actions import Edit, Retract
 from .actions import View as Display
+from .actions import ViewReceived
 from .forms import (
     MailshotFilter,
     MailshotForm,
@@ -51,7 +52,7 @@ class ReceivedMailshotsView(ModelFilterView):
             "title": {"header": "Title"},
             "description": {"header": "Description"},
         }
-        actions = [Display()]
+        actions = [ViewReceived()]
 
 
 class MailshotListView(ModelFilterView):
@@ -105,6 +106,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def handle_notification(self, mailshot):
         if mailshot.is_email:
@@ -115,7 +117,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         Publish mailshot if form is valid.
         """
         mailshot = form.instance
-        mailshot.status = Mailshot.PUBLISHED
+        mailshot.status = Mailshot.Statuses.PUBLISHED
         mailshot.published_datetime = timezone.now()
         mailshot.published_by = self.request.user
         response = super().form_valid(form)
@@ -123,7 +125,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             self.handle_notification(mailshot)
         return response
 
-    def save_draft(self, request, pk):
+    def save_draft(self, request, **kwargs):
         """
         Saves mailshot draft bypassing all validation.
         """
@@ -136,9 +138,9 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         else:
             return super().form_invalid(form)
 
-    def cancel(self, request, pk):
-        mailshot = Mailshot.objects.get(pk=pk)
-        mailshot.status = Mailshot.CANCELLED
+    def cancel(self, request, **kwargs):
+        mailshot = Mailshot.objects.get(pk=kwargs.get("mailshot_pk"))
+        mailshot.status = Mailshot.Statuses.CANCELLED
         mailshot.save()
         messages.success(request, "Mailshot cancelled successfully")
         return redirect(self.success_url)
@@ -155,15 +157,16 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         Only allow DRAFT mailshots to be edited by filtering.
         Leads to 404 otherwise
         """
-        return Mailshot.objects.filter(status=Mailshot.DRAFT)
+        return Mailshot.objects.filter(status=Mailshot.Statuses.DRAFT)
 
 
 class MailshotDetailView(ModelDetailView):
-    template_name = "model/view.html"
+    template_name = "web/domains/mailshot/view.html"
     form_class = MailshotForm
     model = Mailshot
     cancel_url = reverse_lazy("mailshot-list")
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def has_permission(self):
         if not self.request.user.is_authenticated:
@@ -186,6 +189,10 @@ class MailshotDetailView(ModelDetailView):
         return False
 
 
+class MailshotReceivedDetailView(MailshotDetailView):
+    template_name = "web/domains/mailshot/view_received.html"
+
+
 class MailshotRetractView(ModelUpdateView):
     RETRACT_TEMPLATE_CODE = "RETRACT_MAILSHOT"
     template_name = "web/domains/mailshot/retract.html"
@@ -194,6 +201,7 @@ class MailshotRetractView(ModelUpdateView):
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
     permission_required = "web.mailshot_access"
+    pk_url_kwarg = "mailshot_pk"
 
     def __init__(self, *args, **kwargs):
         template = Template.objects.get(template_code=self.RETRACT_TEMPLATE_CODE)
@@ -221,7 +229,7 @@ class MailshotRetractView(ModelUpdateView):
         Retract mailshot if form is valid.
         """
         mailshot = form.instance
-        mailshot.status = Mailshot.RETRACTED
+        mailshot.status = Mailshot.Statuses.RETRACTED
         mailshot.retracted_datetime = timezone.now()
         mailshot.retracted_by = self.request.user
         response = super().form_valid(form)
@@ -239,7 +247,7 @@ class MailshotRetractView(ModelUpdateView):
         Only allow PUBLISHED mailshots to be retracted by filtering.
         Leads to 404 otherwise
         """
-        return Mailshot.objects.filter(status=Mailshot.PUBLISHED)
+        return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
         return f"Retract {self.object}"  # type:ignore[attr-defined]

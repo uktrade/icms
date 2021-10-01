@@ -1,0 +1,10 @@
+{% extends "web/domains/mailshot/view.html" %}
+
+
+{% block content_actions_link %}
+  <a
+    href="{{ icms_url('mailshot-received') }}"
+    class="prev-link">
+    Received Mailshots
+  </a>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        {% block content_actions_link %}
+          <a
+            href="{{ icms_url('mailshot-list') }}"
+            class="prev-link">
+            Mailshots
+          </a>
+        {% endblock %}
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+
+{% block main_content %}
+
+  {% include "partial/view-form-fields.html" %}
+
+{% endblock %}

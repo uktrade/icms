@@ -8,7 +8,7 @@ class MailshotTest(TestCase):
     def create_mailshot(
         self,
         title="Test Mailshot",
-        status=Mailshot.DRAFT,
+        status=Mailshot.Statuses.DRAFT,
         is_retraction_email=False,
         is_active=True,
     ):
@@ -25,5 +25,5 @@ class MailshotTest(TestCase):
         mailshot = self.create_mailshot()
         self.assertTrue(isinstance(mailshot, Mailshot))
         self.assertEqual(mailshot.title, "Test Mailshot")
-        self.assertEqual(mailshot.status, Mailshot.DRAFT)
+        self.assertEqual(mailshot.status, Mailshot.Statuses.DRAFT)
         self.assertTrue(mailshot.is_active)

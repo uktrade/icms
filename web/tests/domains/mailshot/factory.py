@@ -1,7 +1,4 @@
-import random
-
 import factory
-import factory.fuzzy
 
 from web.domains.mailshot.models import Mailshot
 from web.tests.domains.user.factory import UserFactory
@@ -13,10 +10,10 @@ class MailshotFactory(factory.django.DjangoModelFactory):
 
     title = factory.Faker("sentence", nb_words=4)
     description = factory.Faker("sentence")
-    status = factory.fuzzy.FuzzyChoice(Mailshot.STATUSES, getter=lambda r: r[0])
-    is_email = random.choice([True, False])
-    is_retraction_email = random.choice([True, False])
-    is_to_importers = random.choice([True, False])
-    is_to_exporters = random.choice([True, False])
+    status = Mailshot.Statuses.DRAFT
+    is_email = True
+    is_retraction_email = True
+    is_to_importers = True
+    is_to_exporters = True
     created_by = factory.SubFactory(UserFactory)
-    is_active = random.choice([True, False])
+    is_active = True
