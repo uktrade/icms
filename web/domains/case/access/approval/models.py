@@ -15,6 +15,10 @@ class ApprovalRequest(WorkbasketBase, Process):
     contacts by case officers for access requests by user
     """
 
+    class Meta:
+        indexes = [models.Index(fields=["status"], name="AppR_status_idx")]
+        ordering = ("-request_date",)
+
     # Approval Request response options
     APPROVE = "APPROVE"
     REFUSE = "REFUSE"
@@ -133,9 +137,6 @@ class ApprovalRequest(WorkbasketBase, Process):
         r.actions.append(actions)
 
         return r
-
-    class Meta:
-        ordering = ("-request_date",)
 
 
 class ExporterApprovalRequest(ApprovalRequest):

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from django.conf import settings
+from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -148,6 +149,17 @@ class ImportApplication(ApplicationBase):
         EXHAUSTED = ("E", "Exhausted")
         EXPIRED = ("D", "Expired")
         SURRENDERED = ("S", "S")
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"], name="IA_status_idx"),
+            BTreeIndex(
+                fields=["reference"],
+                name="IA_search_case_reference_idx",
+                opclasses=["text_pattern_ops"],
+            ),
+            models.Index(fields=["-submit_datetime"], name="IA_submit_datetime_idx"),
+        ]
 
     applicant_reference = models.CharField(
         max_length=500,
