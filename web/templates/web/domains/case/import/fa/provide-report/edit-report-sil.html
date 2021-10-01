@@ -1,0 +1,18 @@
+{% extends "web/domains/case/import/fa/provide-report/create-report.html" %}
+
+{% block firearms %}
+  {% for section_type in report.goods_sections() %}
+    {% for section in report.get_section_certificates(section_type) %}
+      <fieldset>
+        <legend><strong>{{ section.description }}</strong></legend>
+          {% with firearms = section.supplementary_report_firearms.all(), is_readonly = False %}
+            {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
+          {% endwith %}
+      </fieldset>
+    {% endfor %}
+  {% endfor %}
+{% endblock %}
+
+{% block submit_button %}
+  <input type="submit" class="button primary-button" value="Save"/>
+{% endblock %}

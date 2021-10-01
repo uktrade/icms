@@ -23,7 +23,7 @@
     {% include "partial/import-contacts/list.html" %}
   {% endwith %}
 
-  {% with reports = process.supplementary_info.reports.all() %}
+  {% with reports = process.supplementary_info.reports.all(), is_readonly = True %}
     {% include "web/domains/case/import/fa/partials/report-list.html" %}
   {% endwith %}
 

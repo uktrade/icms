@@ -1,6 +1,7 @@
-from typing import final
+from typing import TYPE_CHECKING, Literal, final
 
 from django.db import models
+from django.urls import reverse
 
 from web.domains.case._import.fa.models import (
     SupplementaryInfoBase,
@@ -11,6 +12,9 @@ from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.flow.models import ProcessTypes
 from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 @final
@@ -42,6 +46,14 @@ class OpenIndividualLicenceApplication(ImportApplication):
             " 01702 366077, if you are unsure of the correct code."
         ),
     )
+
+    @staticmethod
+    def goods_description() -> str:
+        return (
+            "Firearms, component parts thereof, or ammunition of any applicable "
+            "commodity code, other than those falling under Section 5 of the "
+            "Firearms Act 1968 as amended."
+        )
 
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
@@ -82,8 +94,36 @@ class OILSupplementaryReport(SupplementaryReportBase):
         OILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
     )
 
+    def get_goods_certificates(self) -> list[str]:
+        return [OpenIndividualLicenceApplication.goods_description()]
+
+    def get_report_firearms(self) -> "QuerySet[OILSupplementaryReportFirearm]":
+        return self.firearms.all()
+
+    def get_manual_add_firearm_url(self) -> str:
+        return reverse(
+            "import:fa-oil:report-firearm-manual-add",
+            kwargs={
+                "application_pk": self.supplementary_info.import_application.pk,
+                "report_pk": self.pk,
+            },
+        )
+
 
 class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     report = models.ForeignKey(
         OILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )
+
+    def get_description(self) -> str:
+        return OpenIndividualLicenceApplication.goods_description()
+
+    def get_manual_url(self, url_type: Literal["edit", "delete"]) -> str:
+        return reverse(
+            f"import:fa-oil:report-firearm-manual-{url_type}",
+            kwargs={
+                "application_pk": self.report.supplementary_info.import_application.pk,
+                "report_pk": self.report.pk,
+                "report_firearm_pk": self.pk,
+            },
+        )

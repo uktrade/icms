@@ -499,7 +499,31 @@ class SILSupplementaryReportForm(forms.ModelForm):
         self.fields["bought_from"].queryset = application.importcontact_set.all()
 
 
-class SILSupplementaryReportFirearmForm(forms.ModelForm):
+class SILSupplementaryReportFirearmSection1Form(forms.ModelForm):
     class Meta:
-        model = models.SILSupplementaryReportFirearm
+        model = models.SILSupplementaryReportFirearmSection1
+        fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class SILSupplementaryReportFirearmSection2Form(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearmSection2
+        fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class SILSupplementaryReportFirearmSection5Form(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearmSection5
+        fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class SILSupplementaryReportFirearmSection582ObsoleteForm(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearmSection582Obsolete
+        fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class SILSupplementaryReportFirearmSection582OtherForm(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearmSection582Other
         fields = ("serial_number", "calibre", "model", "proofing")

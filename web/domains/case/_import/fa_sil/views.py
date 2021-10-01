@@ -1,4 +1,4 @@
-from typing import NamedTuple, Type, Union
+from typing import NamedTuple
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
@@ -27,46 +27,18 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from . import forms, models
-
-GoodsModel = Union[
-    models.SILGoodsSection1,
-    models.SILGoodsSection2,
-    models.SILGoodsSection5,
-    models.SILGoodsSection582Obsolete,
-    models.SILGoodsSection582Other,
-]
-GoodsModelT = Type[GoodsModel]
-
-GoodsForm = Union[
-    forms.SILGoodsSection1Form,
-    forms.SILGoodsSection2Form,
-    forms.SILGoodsSection5Form,
-    forms.SILGoodsSection582ObsoleteForm,
-    forms.SILGoodsSection582OtherForm,
-]
-GoodsFormT = Type[GoodsForm]
-
-ResponsePrepGoodsForm = Union[
-    forms.ResponsePrepSILGoodsSection1Form,
-    forms.ResponsePrepSILGoodsSection2Form,
-    forms.ResponsePrepSILGoodsSection5Form,
-    forms.ResponsePrepSILGoodsSection582ObsoleteForm,
-    forms.ResponsePrepSILGoodsSection582OtherForm,
-]
-
-ResponsePrepGoodsFormT = Type[ResponsePrepGoodsForm]
+from . import forms, models, types
 
 
 class CreateSILSectionConfig(NamedTuple):
-    model_class: GoodsModelT
-    form_class: GoodsFormT
+    model_class: types.GoodsModelT
+    form_class: types.GoodsFormT
     template: str
 
 
 class ResponsePrepEditSILSectionConfig(NamedTuple):
-    model_class: GoodsModelT
-    form_class: ResponsePrepGoodsFormT
+    model_class: types.GoodsModelT
+    form_class: types.ResponsePrepGoodsFormT
 
 
 def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig:
@@ -137,6 +109,25 @@ def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEdit
             model_class=models.SILGoodsSection582Other,
             form_class=forms.ResponsePrepSILGoodsSection582OtherForm,
         )
+
+    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
+
+
+def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFirearmFormsT:
+    if sil_section_type == "section1":
+        return forms.SILSupplementaryReportFirearmSection1Form
+
+    elif sil_section_type == "section2":
+        return forms.SILSupplementaryReportFirearmSection2Form
+
+    elif sil_section_type == "section5":
+        return forms.SILSupplementaryReportFirearmSection5Form
+
+    elif sil_section_type == "section582-obsolete":
+        return forms.SILSupplementaryReportFirearmSection582ObsoleteForm
+
+    elif sil_section_type == "section582-other":
+        return forms.SILSupplementaryReportFirearmSection582OtherForm
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
@@ -413,7 +404,7 @@ def edit_section(
         )
         check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
-        goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
+        goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
@@ -452,7 +443,7 @@ def delete_section(
         )
         check_application_permission(application, request.user, "import")
         config = _get_sil_section_app_config(sil_section_type)
-        goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
+        goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
         get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
@@ -481,7 +472,7 @@ def response_preparation_edit_goods(
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         config = _get_sil_section_resp_prep_config(sil_section_type)
-        goods: GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
+        goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
         if request.POST:
             form = config.form_class(request.POST, instance=goods)
@@ -812,4 +803,165 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
             request=request,
             template_name="web/domains/case/import/manage/response-prep-edit-form.html",
             context=context,
+        )
+
+
+@login_required
+def add_report_firearm_manual(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
+        report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        section_cert = report.get_section_certificates(sil_section_type).get(pk=section_pk)
+
+        form_class = _get_report_firearm_form_class(sil_section_type)
+
+        if request.POST:
+            form = form_class(data=request.POST)
+
+            if form.is_valid():
+                report_firearm = form.save(commit=False)
+                report_firearm.report = report
+                report_firearm.goods_certificate = section_cert
+                report_firearm.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-report",
+                        kwargs={"application_pk": application.pk, "report_pk": report.pk},
+                    )
+                )
+
+        else:
+            form = form_class()
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Add Firearm Details",
+            "form": form,
+            "report": report,
+            "goods_description": section_cert.description,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
+            context=context,
+        )
+
+
+@login_required
+def edit_report_firearm_manual(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    sil_section_type: str,
+    report_pk: int,
+    section_pk: int,
+    report_firearm_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
+        report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        section_cert = report.get_section_certificates(sil_section_type).get(pk=section_pk)
+
+        report_firearm = section_cert.supplementary_report_firearms.get(pk=report_firearm_pk)
+
+        form_class = _get_report_firearm_form_class(sil_section_type)
+
+        if request.POST:
+            form = form_class(instance=report_firearm, data=request.POST)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-report",
+                        kwargs={"application_pk": application.pk, "report_pk": report.pk},
+                    )
+                )
+
+        else:
+            form = form_class(instance=report_firearm)
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Edit Firearm Details",
+            "form": form,
+            "report": report,
+            "goods_description": section_cert.description,
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
+            context=context,
+        )
+
+
+@login_required
+@require_POST
+def delete_report_firearm(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+    report_pk: int,
+    report_firearm_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
+        report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+        section_cert = report.get_section_certificates(sil_section_type).get(pk=section_pk)
+
+        report_firearm = section_cert.supplementary_report_firearms.get(pk=report_firearm_pk)
+
+        report_firearm.delete()
+
+        return redirect(
+            reverse(
+                "import:fa:edit-report",
+                kwargs={"application_pk": application.pk, "report_pk": report.pk},
+            )
         )

@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING, Union
+
 from django.db import models
 
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.models import ImportApplication
 from web.models.shared import YesNoChoices
+
+if TYPE_CHECKING:
+    from django.db import QuerySet
 
 
 class UserImportCertificate(File):
@@ -114,15 +119,25 @@ class SupplementaryReportBase(models.Model):
     def str_date_received(self):
         return f"{self.date_received:%d-%b-%Y}"
 
+    def get_goods_certificates(self) -> "Union[QuerySet, list]":
+        """Get the goods certificates associated with the firearm application."""
+        raise NotImplementedError
+
+    def get_report_firearms(self) -> "QuerySet":
+        """Get the firearm details added to the supplementary report."""
+        raise NotImplementedError
+
 
 class SupplementaryReportFirearmBase(models.Model):
     class Meta:
         abstract = True
 
-    # TODO: ICMSLST-960: Add FK for uploaded document
-    # TODO: ICMSLST-961: Goods reference for firearm needs to be linked to this info
-
     serial_number = models.CharField(max_length=100, null=True)
     calibre = models.CharField(max_length=100, null=True)
     model = models.CharField(max_length=100, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
+    no_firearm_to_report = models.BooleanField(default=False)
+
+    def get_description(self) -> str:
+        """Get the description of the goods line."""
+        raise NotImplementedError
