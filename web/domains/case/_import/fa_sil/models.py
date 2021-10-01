@@ -1,6 +1,8 @@
-from typing import final
+from itertools import chain
+from typing import TYPE_CHECKING, Literal, Union, final
 
 from django.db import models
+from django.urls import reverse
 
 from web.domains.case._import.fa.models import (
     SupplementaryInfoBase,
@@ -12,6 +14,28 @@ from web.domains.file.models import File
 from web.domains.section5.models import Section5Authority
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
+
+ReportFirearms = list[
+    Union[
+        "SILSupplementaryReportFirearmSection1",
+        "SILSupplementaryReportFirearmSection2",
+        "SILSupplementaryReportFirearmSection5",
+        "SILSupplementaryReportFirearmSection582Obsolete",
+        "SILSupplementaryReportFirearmSection582Other",
+    ]
+]
+
+SectionCertificates = Union[
+    "QuerySet[SILGoodsSection1]",
+    "QuerySet[SILGoodsSection2]",
+    "QuerySet[SILGoodsSection5]",
+    "QuerySet[SILGoodsSection582Obsolete]",
+    "QuerySet[SILGoodsSection582Other]",
+]
 
 
 class SILUserSection5(File):
@@ -326,8 +350,126 @@ class SILSupplementaryReport(SupplementaryReportBase):
         SILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
     )
 
+    def goods_sections(self) -> list[str]:
+        return [
+            "section1",
+            "section2",
+            "section5",
+            "section582-obsolete",
+            "section582-other",
+        ]
 
-class SILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
+    def get_section_certificates(self, section_type: str) -> SectionCertificates:
+        if section_type == "section1":
+            return self.supplementary_info.import_application.goods_section1.filter(is_active=True)
+
+        if section_type == "section2":
+            return self.supplementary_info.import_application.goods_section2.filter(is_active=True)
+
+        if section_type == "section5":
+            return self.supplementary_info.import_application.goods_section5.filter(is_active=True)
+
+        if section_type == "section582-obsolete":
+            return self.supplementary_info.import_application.goods_section582_obsoletes.filter(
+                is_active=True
+            )
+
+        if section_type == "section582-other":
+            return self.supplementary_info.import_application.goods_section582_others.filter(
+                is_active=True
+            )
+
+        raise NotImplementedError(f"section_type is not supported: {section_type}")
+
+    def get_report_firearms(self) -> ReportFirearms:
+        return list(
+            chain(
+                self.section1_firearms.all(),
+                self.section2_firearms.all(),
+                self.section5_firearms.all(),
+                self.section582_obsolete_firearms.all(),
+                self.section582_other_firearms.all(),
+            )
+        )
+
+    def get_manual_add_firearm_url(self, section_type: str, section_pk: int) -> str:
+        return reverse(
+            "import:fa-sil:report-firearm-manual-add",
+            kwargs={
+                "application_pk": self.supplementary_info.import_application.pk,
+                "sil_section_type": section_type,
+                "report_pk": self.pk,
+                "section_pk": section_pk,
+            },
+        )
+
+
+class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
+    class Meta:
+        abstract = True
+
+    def get_description(self) -> str:
+        return self.goods_certificate.description
+
+    def get_manual_url(self, url_type: Literal["edit", "delete"], section_type: str) -> str:
+        return reverse(
+            f"import:fa-sil:report-firearm-manual-{url_type}",
+            kwargs={
+                "application_pk": self.report.supplementary_info.import_application.pk,
+                "sil_section_type": section_type,
+                "report_pk": self.report.pk,
+                "section_pk": self.goods_certificate.pk,
+                "report_firearm_pk": self.pk,
+            },
+        )
+
+
+class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
+        SILSupplementaryReport, related_name="section1_firearms", on_delete=models.CASCADE
+    )
+    goods_certificate = models.ForeignKey(
+        SILGoodsSection1, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section2_firearms", on_delete=models.CASCADE
+    )
+    goods_certificate = models.ForeignKey(
+        SILGoodsSection2, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section5_firearms", on_delete=models.CASCADE
+    )
+    goods_certificate = models.ForeignKey(
+        SILGoodsSection5, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection582Obsolete(SILSupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport,
+        related_name="section582_obsolete_firearms",
+        on_delete=models.CASCADE,
+    )
+    goods_certificate = models.ForeignKey(
+        SILGoodsSection582Obsolete,
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
+    )
+
+
+class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
+    )
+    goods_certificate = models.ForeignKey(
+        SILGoodsSection582Other,
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
     )

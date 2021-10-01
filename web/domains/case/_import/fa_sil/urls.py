@@ -36,6 +36,35 @@ urlpatterns = [
                                     ]
                                 ),
                             ),
+                            path(
+                                "<int:section_pk>/report/<int:report_pk>/firearms/",
+                                include(
+                                    [
+                                        path(
+                                            "manual/add/",
+                                            views.add_report_firearm_manual,
+                                            name="report-firearm-manual-add",
+                                        ),
+                                        path(
+                                            "manual/<int:report_firearm_pk>/",
+                                            include(
+                                                [
+                                                    path(
+                                                        "edit/",
+                                                        views.edit_report_firearm_manual,
+                                                        name="report-firearm-manual-edit",
+                                                    ),
+                                                    path(
+                                                        "delete/",
+                                                        views.delete_report_firearm,
+                                                        name="report-firearm-manual-delete",
+                                                    ),
+                                                ]
+                                            ),
+                                        ),
+                                    ]
+                                ),
+                            ),
                         ]
                     ),
                 ),

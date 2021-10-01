@@ -4,6 +4,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
@@ -24,11 +25,14 @@ from web.utils.validation import (
 from .forms import (
     ChecklistFirearmsOILApplicationForm,
     ChecklistFirearmsOILApplicationOptionalForm,
+    OILSupplementaryReportFirearmForm,
     PrepareOILForm,
 )
 from .models import (
     ChecklistFirearmsOILApplication,
     OILSupplementaryInfo,
+    OILSupplementaryReport,
+    OILSupplementaryReportFirearm,
     OpenIndividualLicenceApplication,
 )
 
@@ -222,4 +226,146 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             request=request,
             template_name="web/domains/case/import/management/checklist.html",
             context=context,
+        )
+
+
+@login_required
+def add_report_firearm_manual(
+    request: AuthenticatedHttpRequest, *, application_pk: int, report_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OpenIndividualLicenceApplication = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: OILSupplementaryInfo = application.supplementary_info
+        report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        if request.POST:
+            form = OILSupplementaryReportFirearmForm(data=request.POST)
+
+            if form.is_valid():
+                report_firearm: OILSupplementaryReportFirearm = form.save(commit=False)
+                report_firearm.report = report
+                report_firearm.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-report",
+                        kwargs={"application_pk": application.pk, "report_pk": report.pk},
+                    )
+                )
+
+        else:
+            form = OILSupplementaryReportFirearmForm()
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Add Firearm Details",
+            "form": form,
+            "report": report,
+            "goods_description": application.goods_description(),
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
+            context=context,
+        )
+
+
+@login_required
+def edit_report_firearm_manual(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    report_firearm_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OpenIndividualLicenceApplication = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        supplementary_info: OILSupplementaryInfo = application.supplementary_info
+        report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        report_firearm: OILSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
+
+        if request.POST:
+            form = OILSupplementaryReportFirearmForm(instance=report_firearm, data=request.POST)
+
+            if form.is_valid():
+                form.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-report",
+                        kwargs={"application_pk": application.pk, "report_pk": report.pk},
+                    )
+                )
+
+        else:
+            form = OILSupplementaryReportFirearmForm(instance=report_firearm)
+
+        context = {
+            "process": application,
+            "task": task,
+            "process_template": "web/domains/case/import/partials/process.html",
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Edit Firearm Details",
+            "form": form,
+            "report": report,
+            "goods_description": application.goods_description(),
+        }
+
+        return render(
+            request=request,
+            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
+            context=context,
+        )
+
+
+@login_required
+@require_POST
+def delete_report_firearm(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    report_firearm_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OpenIndividualLicenceApplication = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: OILSupplementaryInfo = application.supplementary_info
+        report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        report_firearm: OILSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
+
+        report_firearm.delete()
+
+        return redirect(
+            reverse(
+                "import:fa:edit-report",
+                kwargs={"application_pk": application.pk, "report_pk": report.pk},
+            )
         )

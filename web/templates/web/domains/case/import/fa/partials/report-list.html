@@ -32,36 +32,10 @@
         </ul>
       </span>
     </h3>
-    <table class="setoutList">
-      <thead>
-      <tr>
-        <th scope="col">Goods Item</th>
-        <th scope="col">Serial Number</th>
-        <th scope="col">Calibre</th>
-        <th scope="col">Make / Model</th>
-        <th scope="col">Proofing</th>
-        {% if upload %}
-          <th scope="col">Upload</th>
-        {% endif %}
-      </tr>
-      </thead>
-      <tbody>
-      {% for firemarm in report.firearms.all() %}
-        {# TODO: ICMSLST-960: Include link to uploaded document if not manually entered #}
-        {# TODO: ICMSLST-961: Include all relevant firearm fields if not uploaded document #}
-        <tr>
-          <td></td>
-          <td>{{ firearm.serial_number }}</td>
-          <td>{{ firearm.calibre }}</td>
-          <td>{{ firearm.model }}</td>
-          <td></td>
-          {% if upload %}
-            <td></td>
-          {% endif %}
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+
+    {% with firearms = report.get_report_firearms(), is_readonly = True %}
+      {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
+    {% endwith %}
 
     <div class="section-break"></div>
     <div class="container setOutForm">

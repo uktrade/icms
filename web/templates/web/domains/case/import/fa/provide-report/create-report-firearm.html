@@ -3,6 +3,7 @@
 {% import "forms/fields.html" as fields %}
 {% from "display/fields.html" import application_field %}
 
+
 {% block sidebar %}{% endblock %}
 
 {% block content_actions %}
@@ -10,9 +11,9 @@
     <ul class="menu-out flow-across">
       <li>
         <a
-          href="{{ icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}) }}"
+          href="{{ icms_url('import:fa:edit-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
           class="prev-link">
-          Firearm Reports Management
+          Firearm Supplementary Report
         </a>
       </li>
     </ul>
@@ -25,11 +26,14 @@
   {% endblock %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{ fields.field(form.transport) }}
-    {{ fields.field(form.date_received) }}
-    {{ fields.field(form.bought_from) }}
+    {{ application_field(goods_description, "Goods Description") }}
+    {{ fields.field(form.serial_number) }}
+    {{ fields.field(form.calibre) }}
+    {{ fields.field(form.model) }}
+    {{ fields.field(form.proofing) }}
+
     {% block submit_button %}
-      <input type="submit" class="button primary-button" value="Add"/>
+      <input type="submit" class="button primary-button" value="{{ 'Add' if not form.instance.pk else 'Save' }}"/>
     {% endblock %}
   {% endcall %}
 {% endblock %}

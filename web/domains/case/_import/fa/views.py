@@ -9,18 +9,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.fa_dfl.forms import (
-    DFLSupplementaryReportFirearmForm,
-    DFLSupplementaryReportForm,
-)
-from web.domains.case._import.fa_oil.forms import (
-    OILSupplementaryReportFirearmForm,
-    OILSupplementaryReportForm,
-)
-from web.domains.case._import.fa_sil.forms import (
-    SILSupplementaryReportFirearmForm,
-    SILSupplementaryReportForm,
-)
+from web.domains.case._import.fa_dfl.forms import DFLSupplementaryReportForm
+from web.domains.case._import.fa_oil.forms import OILSupplementaryReportForm
+from web.domains.case._import.fa_sil.forms import SILSupplementaryReportForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -46,8 +37,6 @@ from .types import (
     FaImportApplication,
     FaSupplementaryInfo,
     FaSupplementaryReport,
-    FaSupplementaryReportFirearm,
-    FaSupplementaryReportFirearmFormT,
     FaSupplementaryReportFormT,
 )
 
@@ -544,6 +533,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms Supplementary Information Overview",
+            "report_type": _get_report_type(application),
         }
 
         return render(
@@ -592,7 +582,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
-            "page_title": "Firearms Supplementary Information Overview",
+            "page_title": "Add Firearm Supplemntary Report",
             "form": form,
         }
 
@@ -620,6 +610,7 @@ def edit_report(
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         report: FaSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+        report_type = _get_report_type(application)
         form_class = _get_supplementary_report_form(application)
 
         if request.POST:
@@ -637,14 +628,15 @@ def edit_report(
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
-            "page_title": "Firearms Supplementary Information Overview",
+            "page_title": "Edit Firearm Supplementary Report",
             "form": form,
             "report": report,
+            "report_type": report_type,
         }
 
         return render(
             request=request,
-            template_name="web/domains/case/import/fa/provide-report/edit-report.html",
+            template_name=f"web/domains/case/import/fa/provide-report/edit-report-{report_type}.html",
             context=context,
         )
 
@@ -667,53 +659,6 @@ def delete_report(
 
         return redirect(
             reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
-        )
-
-
-def add_report_firearm_manual(
-    request: AuthenticatedHttpRequest, *, application_pk: int, report_pk: int
-) -> HttpResponse:
-    with transaction.atomic():
-        import_application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
-        )
-
-        application: FaImportApplication = _get_fa_application(import_application)
-
-        check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
-
-        supplementary_info: FaSupplementaryInfo = application.supplementary_info
-        report: FaSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
-        form_class = _get_supplementary_report_firearm_form(application)
-
-        if request.POST:
-            form = form_class(data=request.POST)
-
-            if form.is_valid():
-                report_firearm: FaSupplementaryReportFirearm = form.save(commit=False)
-                report_firearm.report = report
-                report_firearm.save()
-
-        else:
-            form = form_class()
-
-        context = {
-            "process": application,
-            "task": task,
-            "process_template": "web/domains/case/import/partials/process.html",
-            "case_type": "import",
-            "contacts": application.importcontact_set.all(),
-            "page_title": "Firearms Supplementary Information Overview",
-            "form": form,
-            "report": report,
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa/provide-report/edit-report.html",
-            context=context,
         )
 
 
@@ -769,15 +714,13 @@ def _get_supplementary_report_form(application: FaImportApplication) -> FaSupple
     return form
 
 
-def _get_supplementary_report_firearm_form(
-    application: FaImportApplication,
-) -> FaSupplementaryReportFirearmFormT:
+def _get_report_type(application: FaImportApplication) -> str:
     if application.process_type == ProcessTypes.FA_OIL:
-        form = OILSupplementaryReportFirearmForm
+        report_type = "oil"
     elif application.process_type == ProcessTypes.FA_DFL:
-        form = DFLSupplementaryReportFirearmForm
+        report_type = "dfl"
     elif application.process_type == ProcessTypes.FA_SIL:
-        form = SILSupplementaryReportFirearmForm
+        report_type = "sil"
     else:
         raise NotImplementedError(f"Unknown Firearm process_type: {application.process_type}")
-    return form
+    return report_type

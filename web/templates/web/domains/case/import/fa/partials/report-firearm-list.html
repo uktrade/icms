@@ -1,0 +1,95 @@
+{% if not firearms %}
+  <div class="info-box info-box-info">
+    {% if is_readonly %}
+      There are no firearm details in this report.
+    {% else %}
+      {% if report_type == 'sil' %}
+        There are no firearm details in this goods line.
+      {% else %}
+        How do you want to report the imported firearms?
+      {% endif %}
+    {% endif %}
+  </div>
+{% else %}
+  <table class="setoutList">
+    <thead>
+    <tr>
+      {% if is_readonly %}
+        <th scope="col">Goods Item</th>
+      {% endif %}
+      <th scope="col">Serial Number</th>
+      <th scope="col">Calibre</th>
+      <th scope="col">Make / Model</th>
+      <th scope="col">Proofing</th>
+      {% if upload %}
+        <th scope="col">Upload</th>
+      {% endif %}
+      {% if not is_readonly %}
+        <th scope="col">Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for firearm in firearms %}
+      {# TODO: ICMSLST-960: Include link to uploaded document if not manually entered #}
+      <tr>
+        {% if is_readonly %}
+          <td>{{ firearm.get_description() }}</td>
+        {% endif %}
+        <td>{{ firearm.serial_number }}</td>
+        <td>{{ firearm.calibre }}</td>
+        <td>{{ firearm.model }}</td>
+        <td>{{ firearm.proofing }}</td>
+        {% if upload %}
+          <td></td>
+        {% endif %}
+        {% if not is_readonly %}
+          <td>
+            <ul class="menu-out">
+              <li>
+                <a
+                  href="{{ firearm.get_manual_url('edit', section_type) if report_type == 'sil' else firearm.get_manual_url('edit') }}"
+                  class="button link-button inline-link-button icon-pencil">
+                  Edit
+                </a>
+              </li>
+              <li>
+                <form
+                  method="post"
+                  action="{{ firearm.get_manual_url('delete', section_type) if report_type == 'sil' else firearm.get_manual_url('delete') }}"
+                  class="form-inline"
+                  id="id_delete-report-fa-{{ firearm.pk }}">
+                  {{ csrf_input }}
+                  <button type="submit" class="button link-button inline-link-button icon-bin" form="id_delete-report-fa-{{ firearm.pk }}">
+                    Delete
+                  </button>
+                </form>
+              </li>
+              <li><br/></li>
+            </ul>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% if not is_readonly %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          {% if report_type == 'dfl' %}
+            href="{{ report.get_manual_add_firearm_url(goods.pk) }}"
+          {% elif report_type == 'oil' %}
+            href="{{ report.get_manual_add_firearm_url() }}"
+          {% elif report_type == 'sil' %}
+            href="{{ report.get_manual_add_firearm_url(section_type, section.pk) }}"
+          {% endif %}
+          class="button small-button icon-plus">
+          Manual Add Firearm
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
