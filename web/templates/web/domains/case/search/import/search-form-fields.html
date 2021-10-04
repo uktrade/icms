@@ -1,0 +1,54 @@
+{{ fields.field(form.case_ref, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+{{ fields.field(form.licence_ref, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+
+{% if advanced_search %}
+  {{ fields.field(form.applicant_ref, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+  {{ fields.field(form.licence_type, show_optional_indicator=False) }}
+{% endif %}
+
+{{ fields.field(form.application_type, show_optional_indicator=False) }}
+
+<div id="application-sub-type-wrapper" {% if not show_application_sub_type %} style="display: none"{% endif %}>
+  {{ fields.field(form.application_sub_type, show_optional_indicator=False) }}
+</div>
+
+{{ fields.field(form.status, show_optional_indicator=False) }}
+{{ fields.field(form.decision, show_optional_indicator=False) }}
+
+{% if advanced_search %}
+  {{ fields.field(form.chief_usage_status, show_optional_indicator=False) }}
+{% endif %}
+
+{{ fields.field(form.importer_or_agent, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+
+{% if advanced_search %}
+  {{ fields.field(form.application_contact, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+{% endif %}
+
+<div class="row">
+  {{ fields.inline_field_with_label(form.submitted_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+  {{ fields.inline_field_with_label(form.submitted_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+</div>
+
+<div class="row">
+  {{ fields.inline_field_with_label(form.licence_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+  {{ fields.inline_field_with_label(form.licence_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+</div>
+
+<div class="row">
+  {{ fields.inline_field_with_label(form.issue_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
+  {{ fields.inline_field_with_label(form.issue_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
+</div>
+
+{% if advanced_search %}
+  {{ fields.field(form.origin_country, show_optional_indicator=False) }}
+  {{ fields.field(form.consignment_country, show_optional_indicator=False) }}
+  {{ fields.field(form.shipping_year, show_optional_indicator=False) }}
+  {{ fields.field(form.goods_category, show_optional_indicator=False) }}
+  {{ fields.field(form.commodity_code, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+  {{ fields.field(form.pending_firs, show_optional_indicator=False) }}
+  {{ fields.field(form.pending_update_reqs, show_optional_indicator=False) }}
+  {{ fields.field(form.under_appeal, show_optional_indicator=False) }}
+{% endif %}
+
+{{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}

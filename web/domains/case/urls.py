@@ -16,6 +16,9 @@ app_name = "case"
 search_urls = [
     path("", views_search.search_cases, name="search"),
     path(
+        "advanced/", views_search.search_cases, name="search-advanced", kwargs={"mode": "advanced"}
+    ),
+    path(
         "search-download-spreadsheet",
         views_search.download_spreadsheet,
         name="search-download-spreadsheet",

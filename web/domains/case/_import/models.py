@@ -148,7 +148,7 @@ class ImportApplication(ApplicationBase):
         CANCELLED = ("C", "Cancelled")
         EXHAUSTED = ("E", "Exhausted")
         EXPIRED = ("D", "Expired")
-        SURRENDERED = ("S", "S")
+        SURRENDERED = ("S", "Surrendered")
 
     class Meta:
         indexes = [
