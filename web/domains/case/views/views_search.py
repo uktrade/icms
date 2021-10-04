@@ -6,6 +6,12 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case.forms_search import (
+    ExportSearchAdvancedForm,
+    ExportSearchForm,
+    ImportSearchAdvancedForm,
+    ImportSearchForm,
+)
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -13,16 +19,25 @@ from web.utils.search import (
     search_applications,
 )
 
-from ..forms_search import ExportSearchForm, ImportSearchForm
-
-SearchForm = Union[ImportSearchForm, ExportSearchForm]
+SearchForm = Union[
+    ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm
+]
 SearchFormT = Type[SearchForm]
 
 
 @login_required
 @permission_required("web.reference_data_access", raise_exception=True)
-def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
-    form_class: SearchFormT = ImportSearchForm if case_type == "import" else ExportSearchForm
+def search_cases(
+    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "normal"
+) -> HttpResponse:
+
+    if mode == "advanced":
+        form_class: SearchFormT = (
+            ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
+        )
+    else:
+        form_class = ImportSearchForm if case_type == "import" else ExportSearchForm
+
     app_type = "Import" if case_type == "import" else "Certificate"
     show_search_results = False
     total_rows = 0
@@ -51,6 +66,7 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
         "form": form,
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
+        "advanced_search": mode == "advanced",
         "show_search_results": show_search_results,
         "show_application_sub_type": show_application_sub_type,
         "total_rows": total_rows,
@@ -70,6 +86,8 @@ def search_cases(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpRe
 def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     """Generates and returns a spreadsheet using same form data as the search form."""
 
+    # TODO: Revisit when doing ICMSLST-1153
+    # I think the form class just needs to use the AdvancedSearchForm's
     form_class: SearchFormT = ImportSearchForm if case_type == "import" else ExportSearchForm
     form = form_class(request.POST)
 

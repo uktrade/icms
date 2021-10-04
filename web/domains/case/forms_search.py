@@ -4,9 +4,10 @@ from typing import Optional
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
-from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplicationType
 from web.domains.case.models import ApplicationBase
+from web.domains.commodity.models import CommodityGroup
 from web.domains.country.models import Country
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
@@ -88,6 +89,80 @@ class ImportSearchForm(SearchFormBase):
         return cd
 
 
+class ImportSearchAdvancedForm(ImportSearchForm):
+    applicant_ref = forms.CharField(label="Applicant's Reference", required=False)
+
+    licence_type = forms.ChoiceField(
+        label="Licence Type",
+        choices=[(None, "Any"), ("paper", "Paper"), ("electronic", "Electronic")],
+        required=False,
+    )
+
+    chief_usage_status = forms.ChoiceField(
+        label="CHIEF Usage Status",
+        required=False,
+        choices=[(None, "Any")] + ImportApplication.ChiefUsageTypes.choices,
+    )
+
+    application_contact = forms.CharField(label="Application Contact", required=False)
+
+    origin_country = forms.ModelMultipleChoiceField(
+        label="Country of Origin",
+        required=False,
+        queryset=Country.objects.none(),
+        widget=Select2MultipleWidget,
+    )
+
+    consignment_country = forms.ModelMultipleChoiceField(
+        label="Country of Consignment",
+        required=False,
+        queryset=Country.objects.none(),
+        widget=Select2MultipleWidget,
+    )
+
+    shipping_year = forms.ChoiceField(
+        label="Shipping Year",
+        required=False,
+        choices=[(None, "Any")]
+        + list((x, x) for x in range(2007, datetime.date.today().year + 10)),  # type:ignore[misc]
+    )
+
+    goods_category = forms.ModelChoiceField(
+        label="Goods Category",
+        required=False,
+        queryset=CommodityGroup.objects.all(),
+        widget=Select2MultipleWidget,
+    )
+
+    commodity_code = forms.CharField(label="Commodity Code", required=False)
+
+    pending_firs = forms.ChoiceField(
+        label="Pending Further Information Requests",
+        required=False,
+        choices=[(None, "Any")] + YesNoChoices.choices,
+    )
+
+    pending_update_reqs = forms.ChoiceField(
+        label="Pending Update Requests",
+        required=False,
+        choices=[(None, "Any")] + YesNoChoices.choices,
+    )
+
+    under_appeal = forms.ChoiceField(
+        label="Under Appeal",
+        required=False,
+        choices=[(None, "Any")] + YesNoChoices.choices,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ImportSearchAdvancedForm, self).__init__(*args, **kwargs)
+
+        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
+
+        self.fields["origin_country"].queryset = countries
+        self.fields["consignment_country"].queryset = countries
+
+
 class ExportSearchForm(SearchFormBase):
     application_type = forms.ChoiceField(
         label="Application type",
@@ -147,3 +222,8 @@ class ExportSearchForm(SearchFormBase):
             self.add_error("closed_to", "'From' must be before 'To'")
 
         return cd
+
+
+# TODO: Revisit when implementing ICMSLST-976
+class ExportSearchAdvancedForm(ExportSearchForm):
+    ...
