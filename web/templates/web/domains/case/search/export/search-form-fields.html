@@ -1,10 +1,13 @@
-{# TODO: Revisit when implementing ICMSLST-976 #}
-{{ fields.field(form.case_ref, show_optional_indicator=False) }}
-{{ fields.field(form.licence_ref, show_optional_indicator=False) }}
+{{ fields.field(form.case_ref, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+{{ fields.field(form.licence_ref, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
 {{ fields.field(form.application_type, show_optional_indicator=False) }}
 {{ fields.field(form.status, show_optional_indicator=False) }}
 {{ fields.field(form.decision, show_optional_indicator=False) }}
-{{ fields.field(form.exporter_or_agent, show_optional_indicator=False) }}
+{{ fields.field(form.exporter_or_agent, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+
+{% if advanced_search %}
+  {{ fields.field(form.application_contact, show_optional_indicator=False, tooltip_msg_id="wildcard-matching-tooltip") }}
+{% endif %}
 
 <div class="row">
   {{ fields.inline_field_with_label(form.submitted_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
@@ -16,8 +19,11 @@
   {{ fields.inline_field_with_label(form.closed_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
 </div>
 
-{{ fields.field(form.cert_country, show_optional_indicator=False) }}
-{{ fields.field(form.manufacture_country, show_optional_indicator=False) }}
-{{ fields.field(form.pending_firs, show_optional_indicator=False) }}
-{{ fields.field(form.pending_update_reqs, show_optional_indicator=False) }}
+{% if advanced_search %}
+  {{ fields.field(form.cert_country, show_optional_indicator=False) }}
+  {{ fields.field(form.manufacture_country, show_optional_indicator=False) }}
+  {{ fields.field(form.pending_firs, show_optional_indicator=False) }}
+  {{ fields.field(form.pending_update_reqs, show_optional_indicator=False) }}
+{% endif %}
+
 {{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}

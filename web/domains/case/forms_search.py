@@ -15,17 +15,17 @@ from web.utils.search import get_export_status_choices, get_import_status_choice
 
 
 class SearchFormBase(forms.Form):
-    case_ref = forms.CharField(label="Case reference", required=False)
+    case_ref = forms.CharField(label="Case Reference", required=False)
 
-    licence_ref = forms.CharField(label="Licence reference", required=False)
+    licence_ref = forms.CharField(label="Licence Reference", required=False)
 
     decision = forms.ChoiceField(
-        label="Decision",
+        label="Response Decision",
         choices=[(None, "Any")] + list(ApplicationBase.DECISIONS),  # type:ignore[arg-type]
         required=False,
     )
 
-    submitted_from = forms.DateField(label="Submitted date", required=False, widget=DateInput)
+    submitted_from = forms.DateField(label="Submitted Date", required=False, widget=DateInput)
     submitted_to = forms.DateField(label="To", required=False, widget=DateInput)
 
     reassignment = forms.BooleanField(label="Reassignment", required=False)
@@ -51,30 +51,30 @@ class SearchFormBase(forms.Form):
 
 class ImportSearchForm(SearchFormBase):
     application_type = forms.ChoiceField(
-        label="Application type",
+        label="Application Type",
         choices=[(None, "Any")] + ImportApplicationType.Types.choices,
         required=False,
     )
 
     # TODO: add application_subtype only shown when application_type==firearms
     application_sub_type = forms.ChoiceField(
-        label="Sub-type",
+        label="Sub-Type",
         choices=[(None, "Any")] + ImportApplicationType.SubTypes.choices,
         required=False,
     )
 
     status = forms.ChoiceField(
-        label="Status",
+        label="Case Status",
         choices=[(None, "Any")] + get_import_status_choices(),
         required=False,
     )
 
     importer_or_agent = forms.CharField(label="Importer/Agent", required=False)
 
-    licence_from = forms.DateField(label="Licence date", required=False, widget=DateInput)
+    licence_from = forms.DateField(label="Licence Date", required=False, widget=DateInput)
     licence_to = forms.DateField(label="To", required=False, widget=DateInput)
 
-    issue_from = forms.DateField(label="Issue date", required=False, widget=DateInput)
+    issue_from = forms.DateField(label="Issue Date", required=False, widget=DateInput)
     issue_to = forms.DateField(label="To", required=False, widget=DateInput)
 
     def clean(self):
@@ -165,7 +165,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
 
 class ExportSearchForm(SearchFormBase):
     application_type = forms.ChoiceField(
-        label="Application type",
+        label="Application Type",
         choices=[(None, "Any")] + ExportApplicationType.Types.choices,
         required=False,
     )
@@ -176,20 +176,44 @@ class ExportSearchForm(SearchFormBase):
         required=False,
     )
 
-    exporter_or_agent = forms.CharField(label="Exporter/Agent", required=False)
-
-    closed_from = forms.DateField(label="Closed date", required=False, widget=DateInput)
+    exporter_or_agent = forms.CharField(label="Exporter/Agent Name", required=False)
+    closed_from = forms.DateField(label="Closed Date", required=False, widget=DateInput)
     closed_to = forms.DateField(label="To", required=False, widget=DateInput)
 
+    def clean(self):
+        cd = super().clean()
+
+        if self.dates_are_reversed(cd.get("closed_from"), cd.get("closed_to")):
+            self.add_error("closed_to", "'From' must be before 'To'")
+
+        return cd
+
+    def __init__(self, *args, **kwargs):
+        super(ExportSearchForm, self).__init__(*args, **kwargs)
+        self.fields["licence_ref"].label = "Certificate Reference"
+        self.fields["decision"].label = "Case Decision"
+
+
+class ExportSearchAdvancedForm(ExportSearchForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
+
+        self.fields["cert_country"].queryset = countries
+        self.fields["manufacture_country"].queryset = countries
+
+    application_contact = forms.CharField(label="Application Contact", required=False)
+
     cert_country = forms.ModelMultipleChoiceField(
-        label="Certificate country",
+        label="Certificate Country",
         required=False,
         queryset=Country.objects.none(),
         widget=Select2MultipleWidget,
     )
 
     manufacture_country = forms.ModelMultipleChoiceField(
-        label="Country of manufacture",
+        label="Country of Manufacture",
         required=False,
         queryset=Country.objects.none(),
         widget=Select2MultipleWidget,
@@ -206,24 +230,3 @@ class ExportSearchForm(SearchFormBase):
         choices=[(None, "Any")] + YesNoChoices.choices,
         required=False,
     )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
-
-        self.fields["cert_country"].queryset = countries
-        self.fields["manufacture_country"].queryset = countries
-
-    def clean(self):
-        cd = super().clean()
-
-        if self.dates_are_reversed(cd.get("closed_from"), cd.get("closed_to")):
-            self.add_error("closed_to", "'From' must be before 'To'")
-
-        return cd
-
-
-# TODO: Revisit when implementing ICMSLST-976
-class ExportSearchAdvancedForm(ExportSearchForm):
-    ...
