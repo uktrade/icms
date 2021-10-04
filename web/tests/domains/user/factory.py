@@ -1,5 +1,3 @@
-import random
-
 import factory
 import factory.fuzzy
 from django.contrib.auth.models import Permission
@@ -18,12 +16,10 @@ class UserFactory(factory.django.DjangoModelFactory):
     title = factory.Faker("pystr", max_chars=5)
     password = factory.PostGenerationMethodCall("set_password", "test")
     is_superuser = False
-    is_staff = random.choice([True, False])
-    is_active = random.choice([True, False])
-    account_status = factory.fuzzy.FuzzyChoice(User.STATUSES, getter=lambda r: r[0])
-    password_disposition = factory.fuzzy.FuzzyChoice(
-        User.PASSWORD_DISPOSITION, getter=lambda r: r[0]
-    )
+    is_staff = False
+    is_active = True
+    account_status = User.ACTIVE
+    password_disposition = User.FULL
 
     @factory.post_generation
     def permission_codenames(self, create, extracted, **kwargs):

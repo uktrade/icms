@@ -99,8 +99,8 @@ class CountryGroupView(ModelDetailView):
 
         return CountryGroup.objects.first()
 
-    def get_context_data(self, object):
-        context = super().get_context_data(object)
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         context["groups"] = CountryGroup.objects.all()
         return context
 
@@ -314,7 +314,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         self.country = Country.objects.filter(pk=country_pk).get()
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
         context.update({"translation_set": self.translation_set, "country": self.country})
         return context
 

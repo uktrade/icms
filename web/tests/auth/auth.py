@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.contrib.auth.models import Permission
 
 # from django.contrib.contenttypes.models import ContentType
@@ -9,7 +11,6 @@ from web.tests.domains.user.factory import UserFactory
 
 class AuthTestCase(TestCase):
     # TODO: this might be able to be removed once all old permissions are gone from the code
-    fixtures = ["permissions.yaml"]
 
     def setUp(self):
         self.user = UserFactory(
@@ -29,7 +30,7 @@ class AuthTestCase(TestCase):
         if not self.client.login(username="test_user", password="test"):
             raise Exception("Login Failed!")
 
-    def login_with_permissions(self, permissions=None):
+    def login_with_permissions(self, permissions: Optional[list[str]] = None):
         """
         Log user in and grant defined permissions to user for testing
         """

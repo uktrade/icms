@@ -1,5 +1,4 @@
 from django.test import TestCase
-from guardian.shortcuts import assign_perm
 
 from web.domains.mailshot.forms import (
     MailshotFilter,
@@ -8,8 +7,6 @@ from web.domains.mailshot.forms import (
     ReceivedMailshotsFilter,
 )
 from web.domains.mailshot.models import Mailshot
-from web.tests.domains.exporter.factory import ExporterFactory
-from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
 from .factory import MailshotFactory
@@ -112,60 +109,54 @@ class ReceivedMailshotsFilterTest(TestCase):
         )
 
     def setUp(self):
-        self.user = UserFactory(is_superuser=False)
-        self.superuser = UserFactory(is_superuser=True)
-        self.importer_organisation = ImporterFactory(is_active=True)
-        self.individual_importer = ImporterFactory(is_active=True)
-        self.exporter = ExporterFactory(is_active=True)
+        self.importer_exporter = UserFactory.create(
+            permission_codenames=["importer_access", "exporter_access"]
+        )
+
+        self.importer = UserFactory.create(permission_codenames=["importer_access"])
+        self.exporter = UserFactory.create(permission_codenames=["exporter_access"])
+        self.ilb_admin = UserFactory.create(permission_codenames=["reference_data_access"])
+
         self.create_mailshots()
 
     def run_filter(self, data=None, user=None):
         return ReceivedMailshotsFilter(data=data, user=user).qs
 
     def test_filter_only_gets_published_mailshots(self):
-        self.individual_importer.user = self.user
-        self.individual_importer.save()
-        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
-        results = self.run_filter({"title": "Mailshot"}, user=self.user)
+        results = self.run_filter({"title": "Mailshot"}, user=self.importer_exporter)
         self.assertEqual(results.count(), 3)
         self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
         self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
         self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
 
-    def test_superuser_gets_all_published_mailshots(self):
-        results = self.run_filter({"title": "Mailshot"}, user=self.superuser)
+    def test_case_worker_gets_all_published_mailshots(self):
+        results = self.run_filter({"title": "Mailshot"}, user=self.ilb_admin)
         self.assertEqual(results.count(), 3)
         self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
         self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
         self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
 
     def test_filter_only_gets_importer_mailshots(self):
-        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
-        results = self.run_filter({"title": "Mailshot"}, user=self.user)
+        results = self.run_filter({"title": "Mailshot"}, user=self.importer)
         self.assertEqual(results.count(), 2)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to importers")
 
     def test_filter_only_gets_exporter_mailshots(self):
-        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
-        results = self.run_filter({"title": "Mailshot"}, user=self.user)
+        results = self.run_filter({"title": "Mailshot"}, user=self.exporter)
         self.assertEqual(results.count(), 2)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to exporters")
 
     def test_title_filter(self):
-        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
-        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
-        results = self.run_filter({"title": "mailshot"}, user=self.user)
+        results = self.run_filter({"title": "mailshot"}, user=self.importer_exporter)
         self.assertEqual(results.count(), 3)
         self.assertEqual(results[0].title, "Published Mailshot to all")
         self.assertEqual(results[1].title, "Published Mailshot to exporters")
         self.assertEqual(results[2].title, "Published Mailshot to importers")
 
     def test_description_filter(self):
-        assign_perm("web.is_contact_of_importer", self.user, self.importer_organisation)
-        assign_perm("web.is_contact_of_exporter", self.user, self.exporter)
-        results = self.run_filter({"description": "mailshot"}, user=self.user)
+        results = self.run_filter({"description": "mailshot"}, user=self.importer_exporter)
         self.assertEqual(results.count(), 3)
         self.assertEqual(results[0].description, "This is a published mailshot to all")
         self.assertEqual(results[1].description, "This is a published mailshot to exporters")

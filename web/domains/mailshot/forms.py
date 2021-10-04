@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import structlog as logging
 from django.forms import CharField, ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple, Textarea
@@ -6,6 +8,9 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 from web.forms.mixins import ReadonlyFormMixin
 
 from .models import Mailshot
+
+if TYPE_CHECKING:
+    from django.db import QuerySet
 
 logger = logging.get_logger(__name__)
 
@@ -39,20 +44,24 @@ class ReceivedMailshotsFilter(FilterSet):
     description = CharFilter(field_name="description", lookup_expr="icontains", label="Description")
 
     @property
-    def qs(self):
+    def qs(self) -> "QuerySet[Mailshot]":
         queryset = super().qs.filter(status=Mailshot.Statuses.PUBLISHED)
-        if self.user.is_superuser:
+
+        if self.user.has_perm("web.reference_data_access"):
             return queryset
 
-        is_importer = self.user.is_importer()
-        is_exporter = self.user.is_exporter()
+        importer_access = self.user.has_perm("web.importer_access")
+        exporter_access = self.user.has_perm("web.exporter_access")
 
-        if is_importer and is_exporter:
+        if importer_access and exporter_access:
             return queryset
-        elif is_importer:
+
+        elif importer_access:
             return queryset.filter(is_to_importers=True)
-        elif is_exporter:
+
+        elif exporter_access:
             return queryset.filter(is_to_exporters=True)
+
         else:
             return queryset.none()
 
