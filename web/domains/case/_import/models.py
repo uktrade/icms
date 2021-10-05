@@ -158,7 +158,9 @@ class ImportApplication(ApplicationBase):
                 name="IA_search_case_reference_idx",
                 opclasses=["text_pattern_ops"],
             ),
-            models.Index(fields=["-submit_datetime"], name="IA_submit_datetime_idx"),
+            models.Index(
+                *[models.Q(submit_datetime__isnull=False)], name="IA_submit_datetime_notnull_idx"
+            ),
         ]
 
     applicant_reference = models.CharField(
