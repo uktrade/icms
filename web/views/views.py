@@ -1,4 +1,5 @@
-from black import Any
+from typing import Any
+
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
