@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -40,13 +42,8 @@ class ReceivedMailshotsView(ModelFilterView):
     filterset_class = ReceivedMailshotsFilter
     page_title = "Received Mailshots"
 
-    def has_permission(self):
-        if not self.request.user.is_authenticated:
-            return False
-
-        user: User = self.request.user
-
-        return user.is_superuser or user.is_importer() or user.is_exporter()
+    def has_permission(self) -> bool:
+        return _check_permission(self.request.user)
 
     def get_filterset(self):
         return super().get_filterset(user=self.request.user)
@@ -66,7 +63,7 @@ class MailshotListView(ModelFilterView):
     template_name = "web/domains/mailshot/list.html"
     model = Mailshot
     filterset_class = MailshotFilter
-    permission_required = "web.mailshot_access"
+    permission_required = "web.reference_data_access"
     page_title = "Maintain Mailshots"
 
     class Display:
@@ -91,7 +88,7 @@ class MailshotListView(ModelFilterView):
 
 class MailshotCreateView(RequireRegisteredMixin, View):
     MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
-    permission_required = "web.mailshot_access"
+    permission_required = "web.reference_data_access"
 
     def get(self, request):
         """
@@ -112,7 +109,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = "web.mailshot_access"
+    permission_required = "web.reference_data_access"
     pk_url_kwarg = "mailshot_pk"
 
     def handle_notification(self, mailshot):
@@ -177,38 +174,36 @@ class MailshotDetailView(ModelDetailView):
     template_name = "web/domains/mailshot/view.html"
     form_class = MailshotForm
     model = Mailshot
-    permission_required = "web.mailshot_access"
     pk_url_kwarg = "mailshot_pk"
+    permission_required = "web.reference_data_access"
 
-    def has_permission(self):
-        if not self.request.user.is_authenticated:
-            return False
-
-        user: User = self.request.user
-        has_permission = super().has_permission()
-
-        if has_permission:
-            return True
-
-        mailshot: Mailshot = self.get_object()  # type:ignore[assignment]
-
-        if mailshot.is_to_importers and user.is_importer():
-            return True
-
-        if mailshot.is_to_exporters and user.is_exporter():
-            return True
-
-        return False
-
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["documents"] = self.object.documents.filter(is_active=True)
+        # TODO: ICMSLST-1151 replace pk with reference
+        context["page_title"] = f"Viewing Mailshot ({self.object.pk})"
 
         return context
 
 
 class MailshotReceivedDetailView(MailshotDetailView):
     template_name = "web/domains/mailshot/view_received.html"
+
+    def has_permission(self) -> bool:
+        user: User = self.request.user
+
+        if user.has_perm("web.reference_data_access"):
+            return True
+
+        mailshot: Mailshot = self.get_object()  # type:ignore[assignment]
+
+        if mailshot.is_to_importers and user.has_perm("web.importer_access"):
+            return True
+
+        if mailshot.is_to_exporters and user.has_perm("web.export_access"):
+            return True
+
+        return False
 
 
 class MailshotRetractView(ModelUpdateView):
@@ -218,7 +213,7 @@ class MailshotRetractView(ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = "web.mailshot_access"
+    permission_required = "web.reference_data_access"
     pk_url_kwarg = "mailshot_pk"
 
     def __init__(self, *args, **kwargs):
@@ -305,11 +300,8 @@ def view_document(
     mailshot = get_object_or_404(Mailshot, pk=mailshot_pk)
     document = get_object_or_404(mailshot.documents, pk=document_pk)
 
-    user = request.user
-    ilb_admin = user.has_perm("web.reference_data_access")
-    org_access = user.has_perm("web.importer_access") or user.has_perm("web.exporter_access")
-
-    if not ilb_admin and not org_access:
+    has_perm = _check_permission(request.user)
+    if not has_perm:
         raise PermissionDenied
 
     file_content = get_file_from_s3(document.path)
@@ -336,3 +328,15 @@ def delete_document(
         document.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
+
+
+def _check_permission(user: User) -> bool:
+    """Check the given user has permission to access mailshot."""
+
+    if user.has_perm("web.reference_data_access"):
+        return True
+
+    importer_access = user.has_perm("web.importer_access")
+    exporter_acesss = user.has_perm("web.exporter_access")
+
+    return importer_access or exporter_acesss

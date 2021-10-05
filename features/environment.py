@@ -26,8 +26,6 @@ def configure(context):
 
 def before_feature(context, feature):
     configure(context)
-    # Load permission data
-    context.fixtures = ["permissions.yaml"]
 
 
 def after_step(context, step):

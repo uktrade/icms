@@ -1,3 +1,4 @@
+from black import Any
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
@@ -52,8 +53,8 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin, ListView):
             self.request.GET or None, queryset=self.get_queryset(), **kwargs
         )
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         filterset = self.get_filterset()
         context["filter"] = filterset
         if self.paginate:
@@ -93,9 +94,9 @@ class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
         form = self.form_class(instance=instance)
         return self._readonly(form)
 
-    def get_context_data(self, object):
-        context = super().get_context_data()
-        context["form"] = self.get_form(instance=object)
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["form"] = self.get_form(instance=self.get_object())
         return context
 
     def get_page_title(self):

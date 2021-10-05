@@ -1,15 +1,17 @@
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, TypedDict
 
 import structlog as logging
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic.list import ListView
 
 from web.auth.mixins import RequireRegisteredMixin
+from web.types import AuthenticatedHttpRequest
 from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
 from web.views.mixins import PageTitleMixin, PostActionMixin
 
@@ -99,8 +101,8 @@ class CountryGroupView(ModelDetailView):
 
         return CountryGroup.objects.first()
 
-    def get_context_data(self, object):
-        context = super().get_context_data(object)
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         context["groups"] = CountryGroup.objects.all()
         return context
 
@@ -134,8 +136,8 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         else:
             return self._get_posted_countries()
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         context.update(
             {
                 "groups": CountryGroup.objects.all(),
@@ -145,9 +147,9 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         )
         return context
 
-    def _render(self):
+    def _render(self, **kwargs: dict[str, Any]) -> HttpResponse:
         self.object = self.get_object()
-        return super().render_to_response(self.get_context_data())
+        return super().render_to_response(self.get_context_data(**kwargs))
 
     def add_country(self, request, pk=None):
         countries = self._get_countries()
@@ -157,11 +159,13 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         countries = self._get_posted_countries()
         return search_countries(request, countries)
 
-    def accept_countries(self, request, pk=None):
+    def accept_countries(
+        self, request: AuthenticatedHttpRequest, **kwargs: dict[str, Any]
+    ) -> HttpResponse:
         self.form = CountryGroupEditForm(instance=self.get_object())
-        return self._render()
+        return self._render(**kwargs)
 
-    def get(self, request, pk=None):
+    def get(self, request: AuthenticatedHttpRequest, **kwargs: dict[str, Any]) -> HttpResponse:
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
@@ -314,7 +318,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         self.country = Country.objects.filter(pk=country_pk).get()
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+        context = super().get_context_data(**kwargs)
         context.update({"translation_set": self.translation_set, "country": self.country})
         return context
 

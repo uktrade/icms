@@ -1,3 +1,5 @@
+from typing import Any
+
 import structlog as logging
 from django.views.generic.base import View
 from django.views.generic.list import ListView
@@ -8,8 +10,8 @@ logger = logging.getLogger(__name__)
 class PageTitleMixin(View):
     """Adds page title attribute of view to context"""
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         # Try get_page_title method first which takes precedence
         page_title = getattr(self, "get_page_title", None)
         if page_title:
@@ -24,8 +26,8 @@ class PageTitleMixin(View):
 class DataDisplayConfigMixin(PageTitleMixin, ListView):
     """Adds display configuration for listed object"""
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
         display = getattr(self, "Display", None)
         if display:
             context["display"] = display

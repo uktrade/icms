@@ -1,4 +1,4 @@
-from typing import List, Optional, Type
+from typing import Any, List, Optional, Type
 
 import django.forms as django_forms
 import weasyprint
@@ -68,8 +68,8 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/import/choose.html"
     permission_required = "web.importer_access"
 
-    def get_context_data(self):
-        context = super().get_context_data()
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
 
         context.update(**_get_disabled_application_types())
 
