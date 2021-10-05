@@ -108,7 +108,7 @@ class Command(BaseCommand):
         self.create_user(
             username="ilb_admin",
             password=options["password"],
-            firstname="Ashley",
+            first_name="Ashley",
             last_name="Smith (ilb_admin)",
             permissions=[
                 "importer_access",
@@ -123,7 +123,7 @@ class Command(BaseCommand):
         self.create_user(
             username="importer_user",
             password=options["password"],
-            firstname="Dave",
+            first_name="Dave",
             last_name="Jones (importer_user)",
             permissions=[
                 "importer_access",
@@ -134,7 +134,7 @@ class Command(BaseCommand):
         self.create_user(
             username="exporter_user",
             password=options["password"],
-            firstname="Sally",
+            first_name="Sally",
             last_name="Davis (exporter_user)",
             permissions=[
                 "exporter_access",
@@ -145,7 +145,7 @@ class Command(BaseCommand):
         self.create_user(
             username="agent",
             password=options["password"],
-            firstname="Cameron",
+            first_name="Cameron",
             last_name="Hasra (agent)",
             permissions=[
                 "importer_access",
@@ -166,7 +166,7 @@ class Command(BaseCommand):
         self,
         username: str,
         password: str,
-        firstname: str,
+        first_name: str,
         last_name: str,
         permissions: list[str],
         linked_importers: Collection[Importer] = (),
@@ -184,7 +184,7 @@ class Command(BaseCommand):
             account_status=User.ACTIVE,
             is_active=True,
             email=f"{username}@email.com",
-            first_name=firstname,
+            first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
             security_question="security_question",

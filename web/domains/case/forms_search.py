@@ -200,12 +200,12 @@ class ExportSearchAdvancedForm(ExportSearchForm):
 
         countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
 
-        self.fields["cert_country"].queryset = countries
+        self.fields["certificate_country"].queryset = countries
         self.fields["manufacture_country"].queryset = countries
 
     application_contact = forms.CharField(label="Application Contact", required=False)
 
-    cert_country = forms.ModelMultipleChoiceField(
+    certificate_country = forms.ModelMultipleChoiceField(
         label="Certificate Country",
         required=False,
         queryset=Country.objects.none(),

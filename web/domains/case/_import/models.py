@@ -159,7 +159,7 @@ class ImportApplication(ApplicationBase):
                 opclasses=["text_pattern_ops"],
             ),
             models.Index(
-                *[models.Q(submit_datetime__isnull=False)], name="IA_submit_datetime_notnull_idx"
+                models.Q(submit_datetime__isnull=False), name="IA_submit_datetime_notnull_idx"
             ),
         ]
 
