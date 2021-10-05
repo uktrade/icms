@@ -54,11 +54,23 @@ class SearchTerms:
     submitted_date_start: Optional[datetime.date] = None
     submitted_date_end: Optional[datetime.date] = None
     reassignment_search: Optional[bool] = False
+    application_contact: Optional[str] = None
+    pending_firs: Optional[str] = None
+    pending_update_reqs: Optional[str] = None
 
     # ---- Import application fields ----
     # icms_legacy_cases = str = None
     app_sub_type: Optional[str] = None
+    applicant_ref: Optional[str] = None
     importer_agent_name: Optional[str] = None
+    licence_type: Optional[str] = None
+    chief_usage_status: Optional[str] = None
+    origin_country: Optional["QuerySet[Country]"] = None
+    consignment_country: Optional["QuerySet[Country]"] = None
+    shipping_year: Optional[str] = None
+    goods_category: Optional[str] = None
+    commodity_code: Optional[str] = None
+    under_appeal: Optional[str] = None
     licence_date_start: Optional[datetime.date] = None
     licence_date_end: Optional[datetime.date] = None
     issue_date_start: Optional[datetime.date] = None
@@ -70,8 +82,6 @@ class SearchTerms:
     closed_date_end: Optional[datetime.date] = None
     certificate_country: Optional["QuerySet[Country]"] = None
     manufacture_country: Optional["QuerySet[Country]"] = None
-    pending_firs: Optional[str] = None
-    pending_update_reqs: Optional[str] = None
 
 
 class ProcessTypeAndPK(NamedTuple):
@@ -756,6 +766,18 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
 
         model = model.filter(submit_datetime__lte=end_datetime)
 
+    if terms.application_contact:
+        first_name_filter = get_wildcard_filter("contact__first_name", terms.application_contact)
+        last_name_filter = get_wildcard_filter("contact__last_name", terms.application_contact)
+
+        model = model.filter(Q(**first_name_filter) | Q(**last_name_filter))
+
+    if terms.pending_firs == YesNoChoices.yes:
+        model = model.filter(further_information_requests__status=FurtherInformationRequest.OPEN)
+
+    if terms.pending_update_reqs == YesNoChoices.yes:
+        model = model.filter(update_requests__status=UpdateRequest.Status.OPEN)
+
     # TODO: Revisit this when doing ICMSLST-964
     # reassignment_search (searches for people not assigned to me)
 
@@ -773,11 +795,47 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
 def _apply_import_application_filter(
     model: "QuerySet[Model]", terms: SearchTerms
 ) -> "QuerySet[Model]":
+
+    if terms.applicant_ref:
+        applicant_ref_filter = get_wildcard_filter("applicant_reference", terms.applicant_ref)
+        model = model.filter(**applicant_ref_filter)
+
     if terms.importer_agent_name:
         importer_filter = get_wildcard_filter("importer__name", terms.importer_agent_name)
         agent_filter = get_wildcard_filter("agent__name", terms.importer_agent_name)
 
         model = model.filter(Q(**importer_filter) | Q(**agent_filter))
+
+    if terms.licence_type:
+        paper_only = terms.licence_type == "paper"
+        model = model.filter(issue_paper_licence_only=paper_only)
+
+    if terms.chief_usage_status:
+        model = model.filter(chief_usage_status=terms.chief_usage_status)
+
+    if terms.origin_country:
+        country_filter = _get_country_filter(terms.origin_country, "origin_country")
+        model = model.filter(**country_filter)
+
+    if terms.consignment_country:
+        country_filter = _get_country_filter(terms.consignment_country, "consignment_country")
+        model = model.filter(**country_filter)
+
+    # TODO: Write test & implement (This is different for each application that has it)
+    if terms.shipping_year:
+        ...
+
+    # TODO: Write test & implement (This is different for each application that has it)
+    if terms.goods_category:
+        ...
+
+    # TODO: Write test & implement (This is different for each application that has it)
+    if terms.commodity_code:
+        ...
+
+    # TODO ICMSLST-686 Write test & implement
+    if terms.under_appeal:
+        ...
 
     # In legacy licencing assumes application state is in processing (We won't for now)
     if terms.licence_date_start:
@@ -817,28 +875,16 @@ def _apply_export_application_filter(
         ...
 
     if terms.certificate_country:
-        if terms.certificate_country.count() == 1:
-            model = model.filter(countries=terms.certificate_country.first())
-        else:
-            model = model.filter(countries__in=terms.certificate_country)
+        country_filter = _get_country_filter(terms.certificate_country, "countries")
+        model = model.filter(**country_filter)
 
     if terms.manufacture_country:
         # CFS apps are the only export application with a manufacturing company
-        if terms.manufacture_country.count() == 1:
-            manufacture_country = terms.manufacture_country.first()
-            model = model.filter(
-                certificateoffreesaleapplication__schedules__country_of_manufacture=manufacture_country
-            )
-        else:
-            model = model.filter(
-                certificateoffreesaleapplication__schedules__country_of_manufacture__in=terms.manufacture_country
-            )
-
-    if terms.pending_firs == YesNoChoices.yes:
-        model = model.filter(further_information_requests__status=FurtherInformationRequest.OPEN)
-
-    if terms.pending_update_reqs == YesNoChoices.yes:
-        model = model.filter(update_requests__status=UpdateRequest.Status.OPEN)
+        country_filter = _get_country_filter(
+            terms.manufacture_country,
+            "certificateoffreesaleapplication__schedules__country_of_manufacture",
+        )
+        model = model.filter(**country_filter)
 
     return model
 
@@ -867,6 +913,15 @@ def _get_order_by_datetime(case_type: str) -> Any:
         return F("submit_datetime")
     else:
         return Coalesce("submit_datetime", "created")
+
+
+def _get_country_filter(country_qs: "QuerySet[Country]", field: str) -> dict[str, Any]:
+    if country_qs.count() == 1:
+        country_filter = {field: country_qs.first()}
+    else:
+        country_filter = {f"{field}__in": country_qs}
+
+    return country_filter
 
 
 def _get_import_spreadsheet_rows(records: list[ImportResultRow]) -> Iterable[SpreadsheetRow]:

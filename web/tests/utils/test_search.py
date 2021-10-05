@@ -109,6 +109,8 @@ def test_filter_wood(import_fixture_data: FixtureData):
 
     _test_search_by_case_reference(import_fixture_data)
 
+    _test_search_by_applicant_reference()
+
     _test_search_by_status(
         ImportApplicationType.Types.WOOD_QUOTA,
         ImportApplication.Statuses.SUBMITTED,
@@ -469,6 +471,22 @@ def _test_search_by_case_reference(import_fixture_data: FixtureData):
     search_terms = SearchTerms(
         case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA, case_ref=case_reference  # type: ignore[arg-type]
     )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "Wood ref 3")
+
+
+def _test_search_by_applicant_reference():
+    """We have Wood ref 1, 2 and 3 when this test is run."""
+
+    search_terms = SearchTerms(case_type="import", applicant_ref="wood ref %")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 3
+    check_application_references(results.records, "Wood ref 3", "Wood ref 2", "Wood ref 1")
+
+    search_terms.applicant_ref = "Wood % 3"
     results = search_applications(search_terms)
 
     assert results.total_rows == 1
@@ -1066,6 +1084,103 @@ def test_case_reference_wildcard_any(
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, gmp_app.reference)
+
+
+def test_search_by_application_contact(
+    import_fixture_data: FixtureData, export_fixture_data: ExportFixtureData
+):
+
+    _create_wood_application("wood-applicant-reference", import_fixture_data)
+    gmp_app = _create_gmp_application(export_fixture_data)
+
+    name_search = f"{import_fixture_data.importer_user.first_name}%"
+
+    search_terms = SearchTerms(case_type="import", application_contact=name_search)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "wood-applicant-reference")
+
+    search_terms.application_contact = "Not valid"
+    results = search_applications(search_terms)
+    assert results.total_rows == 0
+
+    name_search = f"%{export_fixture_data.exporter_user.last_name}"
+    search_terms = SearchTerms(case_type="export", application_contact=name_search)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, gmp_app.reference)
+
+
+def test_import_search_by_licence_type(import_fixture_data):
+    wood = _create_wood_application("wood-app-ref", import_fixture_data)
+    wood.issue_paper_licence_only = True
+    wood.save()
+
+    search_terms = SearchTerms(case_type="import", licence_type="electronic")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+
+    search_terms = SearchTerms(case_type="import", licence_type="paper")
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+
+    check_application_references(results.records, "wood-app-ref")
+
+
+def test_import_search_by_chief_usage_status(import_fixture_data):
+    wood = _create_wood_application("wood-app-ref", import_fixture_data)
+
+    for value, label in ImportApplication.ChiefUsageTypes.choices:
+        wood.chief_usage_status = value
+        wood.save()
+
+        search_terms = SearchTerms(case_type="import", chief_usage_status=value)
+        results = search_applications(search_terms)
+
+        assert results.total_rows == 1
+        check_application_references(results.records, "wood-app-ref")
+
+
+def test_import_country_searches(import_fixture_data):
+    _create_fa_sil_application("fa-sil-app", import_fixture_data)
+
+    origin_country = Country.objects.filter(name="Argentina")
+    origin_country_multiple = Country.objects.filter(name__in=["Argentina", "Aruba"])
+
+    consignment_country = Country.objects.filter(name="Azerbaijan")
+    consignment_country_multiple = Country.objects.filter(name__in=["Azerbaijan", "Aruba"])
+
+    search_terms = SearchTerms(case_type="import", origin_country=origin_country)
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-sil-app")
+
+    search_terms = SearchTerms(case_type="import", origin_country=origin_country_multiple)
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-sil-app")
+
+    search_terms = SearchTerms(case_type="import", consignment_country=consignment_country)
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-sil-app")
+
+    search_terms = SearchTerms(case_type="import", consignment_country=consignment_country_multiple)
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-sil-app")
+
+    search_terms = SearchTerms(case_type="import", consignment_country=origin_country)
+    results = search_applications(search_terms)
+    assert results.total_rows == 0
+
+    search_terms = SearchTerms(case_type="import", origin_country=consignment_country)
+    results = search_applications(search_terms)
+    assert results.total_rows == 0
 
 
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
