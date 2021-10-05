@@ -339,7 +339,4 @@ def _check_permission(user: User) -> bool:
     importer_access = user.has_perm("web.importer_access")
     exporter_acesss = user.has_perm("web.exporter_access")
 
-    if importer_access or exporter_acesss:
-        return True
-
-    return False
+    return importer_access or exporter_acesss
