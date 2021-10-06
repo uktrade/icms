@@ -1,10 +1,40 @@
-{% extends "web/domains/mailshot/view.html" %}
+{% extends "layout/sidebar.html" %}
+{% from "display/fields.html" import application_field %}
 
 
-{% block content_actions_link %}
-  <a
-    href="{{ icms_url('mailshot-received') }}"
-    class="prev-link">
-    Received Mailshots
-  </a>
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        {% block content_actions_link %}
+          <a
+            href="{{ icms_url('mailshot-received') }}"
+            class="prev-link">
+            Mailshots
+          </a>
+        {% endblock %}
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+
+{% block main_content %}
+
+  <div class="container setoutForm">
+    {# TODO: ICMSLST-1151 replace pk with reference #}
+    {{ application_field(object.pk, "Reference") }}
+    {{ application_field(object.title, "Title") }}
+    {{ application_field(object.description, "Description") }}
+    {{ application_field(object.published_datetime.strftime('%d-%b-%Y %H:%M'), "Published Date") }}
+  </div>
+
+  <div class="section-break"></div>
+
+  <h4>Documents</h4>
+
+  {% with read_only = True %}
+    {% include "web/domains/mailshot/partials/document_list.html" %}
+  {% endwith %}
+
 {% endblock %}

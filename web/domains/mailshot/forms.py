@@ -1,11 +1,9 @@
 from typing import TYPE_CHECKING
 
 import structlog as logging
-from django.forms import CharField, ModelForm, MultipleChoiceField
+from django.forms import ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxSelectMultiple, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
-
-from web.forms.mixins import ReadonlyFormMixin
 
 from .models import Mailshot
 
@@ -77,13 +75,10 @@ class MailshotForm(ModelForm):
         ("exporters", "Exporters and Agents"),
     )
 
-    reference = CharField(disabled=True, required=False)
-    status = CharField(disabled=True, required=False)
     recipients = MultipleChoiceField(choices=RECIPIENT_CHOICES, widget=CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["reference"].initial = self.instance.id
 
         recipients = []
         if self.instance.is_to_importers:
@@ -101,8 +96,6 @@ class MailshotForm(ModelForm):
     class Meta:
         model = Mailshot
         fields = [
-            "reference",
-            "status",
             "title",
             "description",
             "is_email",
@@ -114,10 +107,6 @@ class MailshotForm(ModelForm):
             "description": Textarea({"rows": 4, "cols": 50}),
             "email_body": Textarea({"rows": 4, "cols": 50}),
         }
-
-
-class MailshotReadonlyForm(ReadonlyFormMixin, MailshotForm):
-    pass
 
 
 class MailshotRetractForm(ModelForm):

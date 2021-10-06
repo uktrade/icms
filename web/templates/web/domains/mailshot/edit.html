@@ -1,7 +1,48 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
 
+{% block css %}
+  {{ super() }}
+  <style>
+      /** Override styling for multiple select checkbox*/
+      ul#id_recipients {
+        margin: 0;
+        padding: 0;
+      }
+
+      #id_recipients li {
+        list-style-type: none;
+      }
+
+      #id_recipients label {
+        font-weight: inherit;
+        text-align: left;
+        padding-left: 1.3em;
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 0.7em;
+        margin-bottom: 0;
+      }
+
+      #id_recipients input[type='checkbox'] {
+        position: absolute;
+        top: 0.55em;
+        left: 0;
+        margin: 0;
+        border: none;
+        padding: 0;
+      }
+
+      /** Override styling checkbox help text */
+      .row_id_is_email .helptext {
+        position: absolute;
+        top: 3em;
+      }
+
+  </style>
+{% endblock %}
 
 {% block content_actions %}
   <div class="content-actions">
@@ -20,10 +61,30 @@
 {% block main_content %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
 
-      {% for field in form %}
-          {{ fields.field(field) }}
-      {% endfor %}
+    {{ application_field(object.pk, "Reference") }}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Status
+          </label>
+        </div>
+        <div class="six columns">
+          <div class="status {{ object.status|lower }}">
+            <div>
+              <span class="text-widget">{{ object.get_status_display() }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="three columns"></div>
+      </div>
 
+      {% for field in form %}
+          {% if field.name == "is_email" %}
+            {{ fields.field(field, checkbox_label="Send emails to recipients") }}
+          {% else %}
+            {{ fields.field(field) }}
+          {% endif %}
+      {% endfor %}
 
       <div class="container">
           <div class="row">
@@ -60,6 +121,5 @@
     {% with read_only = False %}
       {% include "web/domains/mailshot/partials/document_list.html" %}
     {% endwith %}
-
 
 {% endblock %}

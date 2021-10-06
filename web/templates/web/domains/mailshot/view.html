@@ -1,6 +1,14 @@
 {% extends "layout/sidebar.html" %}
-{% import "forms/fields.html" as fields %}
 
+{% block css %}
+  {{ super() }}
+  <style>
+      /** Override styling for multiple select checkbox */
+      .radio-label {
+        margin: 0 !important;
+      }
+  </style>
+{% endblock %}
 
 {% block content_actions %}
   <div class="content-actions">
@@ -21,14 +29,6 @@
 
 {% block main_content %}
 
-  {% include "partial/view-form-fields.html" %}
-
-  <div class="section-break"></div>
-
-  <h4>Documents</h4>
-
-  {% with read_only = True %}
-    {% include "web/domains/mailshot/partials/document_list.html" %}
-  {% endwith %}
+  {% include "web/domains/mailshot/partials/detail.html" %}
 
 {% endblock %}

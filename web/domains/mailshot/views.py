@@ -2,6 +2,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
@@ -10,17 +11,17 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic.detail import DetailView
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
-from web.domains.case.utils import view_application_file
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
-from web.views import ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views import ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
 from .actions import Edit, Retract
@@ -29,7 +30,6 @@ from .actions import ViewReceived
 from .forms import (
     MailshotFilter,
     MailshotForm,
-    MailshotReadonlyForm,
     MailshotRetractForm,
     ReceivedMailshotsFilter,
 )
@@ -154,6 +154,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         if action and action == "save_draft":
             return super().get_success_message(cleaned_data)
 
+        # TODO: ICMSLST-1151 replace pk with reference
         return f"{self.object} published successfully"
 
     def get_queryset(self):
@@ -170,9 +171,8 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         return context
 
 
-class MailshotDetailView(ModelDetailView):
+class MailshotDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = "web/domains/mailshot/view.html"
-    form_class = MailshotForm
     model = Mailshot
     pk_url_kwarg = "mailshot_pk"
     permission_required = "web.reference_data_access"
@@ -223,16 +223,6 @@ class MailshotRetractView(ModelUpdateView):
             "retract_email_body": template.template_content,
         }
 
-    def get_form(self, *args, **kwargs):
-        """
-        Add mailshot form into the context for displaying mailshot details
-        """
-
-        form = super().get_form(*args, **kwargs)
-        self.view_form = MailshotReadonlyForm(instance=self.object)  # type:ignore[attr-defined]
-
-        return form
-
     def handle_notification(self, mailshot):
         if mailshot.is_retraction_email:
             notify.retract_mailshot(mailshot)
@@ -263,6 +253,7 @@ class MailshotRetractView(ModelUpdateView):
         return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
+        # TODO: ICMSLST-1151 replace pk with reference
         return f"Retract {self.object}"  # type:ignore[attr-defined]
 
 
@@ -310,8 +301,6 @@ def view_document(
     response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
 
     return response
-
-    return view_application_file(request, mailshot, mailshot.documents, document_pk)
 
 
 @require_POST
