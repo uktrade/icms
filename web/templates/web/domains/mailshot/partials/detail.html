@@ -1,0 +1,66 @@
+{% from "display/fields.html" import application_field %}
+
+
+<div class="container setoutForm">
+  {# TODO: ICMSLST-1151 replace pk with reference #}
+  {{ application_field(object.pk, "Reference") }}
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Status
+      </label>
+    </div>
+    <div class="six columns">
+      <div class="status {{ object.status|lower }}">
+        <div>
+          <span class="text-widget">{{ object.get_status_display() }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {{ application_field(object.title, "Title") }}
+  {{ application_field(object.description, "Description") }}
+
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">
+        Reference
+      </label>
+    </div>
+
+    <div class="six columns radio-or-tickbox-group" data-xfid="g55">
+      <div class="container multi-item-select" role="group" aria-labelledby="pg55">
+        <div class="row">
+          <div class="twelve columns">
+            <label class="radio-label">
+              <input type="checkbox" aria-label="Importers and Agents" checked="checked" disabled="disabled">Importers and Agents
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="twelve columns">
+            <label class="radio-label">
+              <input type="checkbox" aria-label="Exporters and Agents" checked="checked" disabled="disabled">Exporters and Agents
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  {{ application_field(object.published_datetime.strftime('%d-%b-%Y %H:%M'), "Published Date") }}
+  {{ application_field(object.published_by, "Published By") }}
+</div>
+
+<div class="section-break"></div>
+
+<h4>Documents</h4>
+
+{% with read_only = True %}
+    {% include "web/domains/mailshot/partials/document_list.html" %}
+{% endwith %}

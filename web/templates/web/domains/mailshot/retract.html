@@ -1,5 +1,9 @@
 {% extends "model/edit.html" %}
 
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/view_mailshot.css') }}">
+{% endblock %}
 
 {% block content_actions %}
   <div class="content-actions">
@@ -18,9 +22,8 @@
 {% endblock %}
 
 {% block main_content %}
-  {% with form=view.view_form %}
-    {% include "partial/view-form-fields.html" %}
-  {% endwith %}
+
+  {% include "web/domains/mailshot/partials/detail.html"%}
 
   <h3>Retract</h3>
 
