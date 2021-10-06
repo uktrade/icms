@@ -1,0 +1,4 @@
+/** Override styling for multiple select checkbox */
+.radio-label {
+    margin: 0 !important;
+}

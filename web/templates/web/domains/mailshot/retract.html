@@ -2,12 +2,7 @@
 
 {% block css %}
   {{ super() }}
-  <style>
-      /** Override styling for multiple select checkbox */
-      .radio-label {
-        margin: 0 !important;
-      }
-  </style>
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/pages/view_mailshot.css') }}">
 {% endblock %}
 
 {% block content_actions %}
