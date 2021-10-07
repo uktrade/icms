@@ -582,7 +582,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
-            "page_title": "Add Firearm Supplemntary Report",
+            "page_title": "Add Firearm Supplementary Report",
             "form": form,
         }
 

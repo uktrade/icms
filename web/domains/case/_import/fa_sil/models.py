@@ -392,7 +392,7 @@ class SILSupplementaryReport(SupplementaryReportBase):
             )
         )
 
-    def get_manual_add_firearm_url(self, section_type: str, section_pk: int) -> str:
+    def get_add_firearm_url_manual(self, section_type: str, section_pk: int) -> str:
         return reverse(
             "import:fa-sil:report-firearm-manual-add",
             kwargs={

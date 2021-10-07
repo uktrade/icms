@@ -9,6 +9,7 @@ from web.domains.case._import.fa.models import (
     SupplementaryReportFirearmBase,
 )
 from web.domains.case._import.models import ChecklistBase, ImportApplication
+from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
@@ -100,7 +101,7 @@ class OILSupplementaryReport(SupplementaryReportBase):
     def get_report_firearms(self) -> "QuerySet[OILSupplementaryReportFirearm]":
         return self.firearms.all()
 
-    def get_manual_add_firearm_url(self) -> str:
+    def get_add_firearm_url_manual(self) -> str:
         return reverse(
             "import:fa-oil:report-firearm-manual-add",
             kwargs={
@@ -109,11 +110,25 @@ class OILSupplementaryReport(SupplementaryReportBase):
             },
         )
 
+    def get_add_firearm_url_upload(self) -> str:
+        return reverse(
+            "import:fa-oil:report-firearm-upload-add",
+            kwargs={
+                "application_pk": self.supplementary_info.import_application.pk,
+                "report_pk": self.pk,
+            },
+        )
+
+    def has_upload(self) -> bool:
+        return self.firearms.filter(is_upload=True).exists()
+
 
 class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     report = models.ForeignKey(
         OILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )
+
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
     def get_description(self) -> str:
         return OpenIndividualLicenceApplication.goods_description()
@@ -121,6 +136,16 @@ class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     def get_manual_url(self, url_type: Literal["edit", "delete"]) -> str:
         return reverse(
             f"import:fa-oil:report-firearm-manual-{url_type}",
+            kwargs={
+                "application_pk": self.report.supplementary_info.import_application.pk,
+                "report_pk": self.report.pk,
+                "report_firearm_pk": self.pk,
+            },
+        )
+
+    def get_view_upload_url(self) -> str:
+        return reverse(
+            "import:fa-oil:report-firearm-upload-view",
             kwargs={
                 "application_pk": self.report.supplementary_info.import_application.pk,
                 "report_pk": self.report.pk,

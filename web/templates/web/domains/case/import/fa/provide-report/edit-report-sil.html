@@ -5,7 +5,7 @@
     {% for section in report.get_section_certificates(section_type) %}
       <fieldset>
         <legend><strong>{{ section.description }}</strong></legend>
-          {% with firearms = section.supplementary_report_firearms.all(), is_readonly = False %}
+          {% with firearms = section.supplementary_report_firearms.filter(report_id=report.pk), is_readonly = False %}
             {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
           {% endwith %}
       </fieldset>

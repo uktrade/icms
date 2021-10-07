@@ -33,7 +33,7 @@
       </span>
     </h3>
 
-    {% with firearms = report.get_report_firearms(), is_readonly = True %}
+    {% with firearms = report.get_report_firearms(), is_readonly = True, upload = report.has_upload() %}
       {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
     {% endwith %}
 

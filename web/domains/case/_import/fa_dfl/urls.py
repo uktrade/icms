@@ -54,13 +54,23 @@ urlpatterns = [
                                 name="report-firearm-manual-add",
                             ),
                             path(
-                                "manual/<int:report_firearm_pk>/",
+                                "goods/<int:goods_pk>/upload/add/",
+                                views.add_report_firearm_upload,
+                                name="report-firearm-upload-add",
+                            ),
+                            path(
+                                "<int:report_firearm_pk>/",
                                 include(
                                     [
                                         path(
-                                            "edit/",
+                                            "manual/edit/",
                                             views.edit_report_firearm_manual,
                                             name="report-firearm-manual-edit",
+                                        ),
+                                        path(
+                                            "upload/view/",
+                                            views.view_upload_document,
+                                            name="report-firearm-upload-view",
                                         ),
                                         path(
                                             "delete/",

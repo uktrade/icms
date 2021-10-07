@@ -862,11 +862,9 @@ def add_report_firearm_manual(
             "goods_description": section_cert.description,
         }
 
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
-            context=context,
-        )
+        template = "web/domains/case/import/fa/provide-report/edit-report-firearm-manual.html"
+
+        return render(request=request, template_name=template, context=context)
 
 
 @login_required
@@ -924,11 +922,9 @@ def edit_report_firearm_manual(
             "goods_description": section_cert.description,
         }
 
-        return render(
-            request=request,
-            template_name="web/domains/case/import/fa/provide-report/create-report-firearm.html",
-            context=context,
-        )
+        template = "web/domains/case/import/fa/provide-report/edit-report-firearm-manual.html"
+
+        return render(request=request, template_name=template, context=context)
 
 
 @login_required
