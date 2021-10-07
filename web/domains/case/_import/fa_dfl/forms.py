@@ -160,3 +160,11 @@ class DFLSupplementaryReportFirearmForm(forms.ModelForm):
     class Meta:
         model = models.DFLSupplementaryReportFirearm
         fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class DFLSupplementaryReportUploadFirearmForm(forms.ModelForm):
+    file = ICMSFileField(required=True)
+
+    class Meta:
+        model = models.DFLSupplementaryReportFirearm
+        fields = ("file",)

@@ -3,6 +3,7 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.domains.file.utils import ICMSFileField
 from web.forms.widgets import DateInput
 
 from . import models
@@ -89,3 +90,11 @@ class OILSupplementaryReportFirearmForm(forms.ModelForm):
     class Meta:
         model = models.OILSupplementaryReportFirearm
         fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class OILSupplementaryReportUploadFirearmForm(forms.ModelForm):
+    file = ICMSFileField(required=True)
+
+    class Meta:
+        model = models.OILSupplementaryReportFirearm
+        fields = ("file",)
