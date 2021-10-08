@@ -30,12 +30,13 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseEmail, UpdateRequest
 from web.domains.case.types import ImpOrExpT
 from web.flow.models import ProcessTypes
-from web.models.shared import YesNoChoices
+from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
 
+    from web.domains.commodity.models import CommodityGroup
     from web.domains.country.models import Country
 
 
@@ -68,7 +69,7 @@ class SearchTerms:
     origin_country: Optional["QuerySet[Country]"] = None
     consignment_country: Optional["QuerySet[Country]"] = None
     shipping_year: Optional[str] = None
-    goods_category: Optional[str] = None
+    goods_category: Optional["CommodityGroup"] = None
     commodity_code: Optional[str] = None
     under_appeal: Optional[str] = None
     licence_date_start: Optional[datetime.date] = None
@@ -829,9 +830,8 @@ def _apply_import_application_filter(
 
         model = model.filter(ironsteel_query | textiles_query | wood_query)
 
-    # TODO: Write test & implement (This is different for each application that has it)
     if terms.goods_category:
-        ...
+        model = model.filter(_get_goods_category_filter(terms))
 
     # TODO: Write test & implement (This is different for each application that has it)
     if terms.commodity_code:
@@ -859,6 +859,40 @@ def _apply_import_application_filter(
         pass
 
     return model
+
+
+def _get_goods_category_filter(terms: SearchTerms) -> Q:
+    """Return the goods_category filter for the applications that support it.
+
+    :param terms: Search terms
+    """
+
+    if not terms.goods_category:
+        return Q()
+
+    if terms.goods_category.group_name in FirearmCommodity:  # type: ignore[operator]
+        fa_dfl_query = Q(**{"dflapplication__commodity_code": terms.goods_category.group_name})
+        fa_oil_query = Q(
+            **{"openindividuallicenceapplication__commodity_code": terms.goods_category.group_name}
+        )
+        fa_sil_query = Q(**{"silapplication__commodity_code": terms.goods_category.group_name})
+
+        filter_query = fa_dfl_query | fa_oil_query | fa_sil_query
+
+    else:
+        ironsteel_query = Q(
+            **{"ironsteelapplication__category_commodity_group": terms.goods_category}
+        )
+        textiles_query = Q(
+            **{"textilesapplication__category_commodity_group": terms.goods_category}
+        )
+        opt_query = Q(
+            **{"outwardprocessingtradeapplication__cp_category": terms.goods_category.group_code}
+        )
+
+        filter_query = ironsteel_query | textiles_query | opt_query
+
+    return filter_query
 
 
 def _apply_export_application_filter(
