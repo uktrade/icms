@@ -1263,6 +1263,71 @@ def test_import_search_by_goods_category(import_fixture_data):
     assert results.total_rows == 1
     check_application_references(results.records, "fa-oil-ref")
 
+    search_terms.goods_category = None
+    results = search_applications(search_terms)
+    assert results.total_rows == 6
+
+
+def test_import_search_by_commodity_code(import_fixture_data):
+    _create_derogation_application(
+        "derogation-app", import_fixture_data, commodity_code="xx111111xx"
+    )
+    _create_ironsteel_application("ironsteel-app", import_fixture_data, commodity_code="xx222222xx")
+    _create_opt_application(
+        "opt-app",
+        import_fixture_data,
+        cp_commodity_codes=["xx333333xx"],
+        teg_commodity_codes=["xx444444xx"],
+    )
+    _create_sanctionadhoc_application(
+        "sanctionadhoc-app", import_fixture_data, commodity_codes=["xx555555xx"]
+    )
+    _create_sps_application("sps-app", import_fixture_data, commodity_code="xx666666xx")
+    _create_textiles_application("textiles-app", import_fixture_data, commodity_code="xx777777xx")
+    _create_wood_application("wood-app", import_fixture_data, commodity_code="xx888888xx")
+
+    # Check single wildcard returns all apps
+    search_terms = SearchTerms(case_type="import", commodity_code="%")
+    results = search_applications(search_terms)
+    assert results.total_rows == 7
+
+    # Search for one record by app type
+    search_terms = SearchTerms(
+        case_type="import",
+        commodity_code="xx111111xx",
+        app_type=ImportApplicationType.Types.DEROGATION,
+    )
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "derogation-app")
+
+    # Search for matching record using commodity code:
+    search_pairs = [
+        ("xx111111xx", "derogation-app"),
+        ("xx1%1xx", "derogation-app"),
+        ("xx222222xx", "ironsteel-app"),
+        ("xx2%2xx", "ironsteel-app"),
+        ("xx333333xx", "opt-app"),
+        ("xx3%3xx", "opt-app"),
+        ("xx444444xx", "opt-app"),
+        ("xx4%4xx", "opt-app"),
+        ("xx555555xx", "sanctionadhoc-app"),
+        ("xx5%5xx", "sanctionadhoc-app"),
+        ("xx666666xx", "sps-app"),
+        ("xx6%6xx", "sps-app"),
+        ("xx777777xx", "textiles-app"),
+        ("xx7%7xx", "textiles-app"),
+        ("xx888888xx", "wood-app"),
+        ("xx8%8xx", "wood-app"),
+    ]
+
+    for search_term, app_ref in search_pairs:
+        search_terms = SearchTerms(case_type="import", commodity_code=search_term)
+        results = search_applications(search_terms)
+
+        assert results.total_rows == 1
+        check_application_references(results.records, app_ref)
+
 
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references

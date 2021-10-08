@@ -14,7 +14,7 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
@@ -29,6 +29,7 @@ from web.domains.case.export.models import (
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseEmail, UpdateRequest
 from web.domains.case.types import ImpOrExpT
+from web.domains.commodity.models import Commodity
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
@@ -281,8 +282,8 @@ def get_search_results_spreadsheet(case_type: str, results: SearchResults) -> by
     return generate_xlsx_file(config)
 
 
-def get_wildcard_filter(field: str, search_pattern: str) -> dict[str, str]:
-    """Return the filter kwargs for the supplied field and search_pattern.
+def get_wildcard_filter(field: str, search_pattern: str) -> Q:
+    """Return the filter expression for the supplied field and search_pattern.
 
     Strings with `%` are converted into django ORM code using one of several methods.
 
@@ -291,7 +292,7 @@ def get_wildcard_filter(field: str, search_pattern: str) -> dict[str, str]:
     """
 
     if search_pattern.strip() == "%":
-        return {}
+        return Q()
 
     # The default search unless changed below
     search_regex = search_pattern.replace("%", ".*")
@@ -308,7 +309,7 @@ def get_wildcard_filter(field: str, search_pattern: str) -> dict[str, str]:
         elif search_pattern.endswith("%"):
             search = {f"{field}__istartswith": search_pattern[:-1]}
 
-    return search
+    return Q(**search)
 
 
 def _get_search_ids_and_types(terms: SearchTerms) -> list[ProcessTypeAndPK]:
@@ -735,7 +736,7 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
 
     if terms.case_ref:
         reference_filter = get_wildcard_filter("reference", terms.case_ref)
-        model = model.filter(**reference_filter)
+        model = model.filter(reference_filter)
 
     if terms.licence_ref:
         # TODO: Revisit when implementing ICMSLST-1048
@@ -771,7 +772,7 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         first_name_filter = get_wildcard_filter("contact__first_name", terms.application_contact)
         last_name_filter = get_wildcard_filter("contact__last_name", terms.application_contact)
 
-        model = model.filter(Q(**first_name_filter) | Q(**last_name_filter))
+        model = model.filter(first_name_filter | last_name_filter)
 
     if terms.pending_firs == YesNoChoices.yes:
         model = model.filter(further_information_requests__status=FurtherInformationRequest.OPEN)
@@ -799,13 +800,13 @@ def _apply_import_application_filter(
 
     if terms.applicant_ref:
         applicant_ref_filter = get_wildcard_filter("applicant_reference", terms.applicant_ref)
-        model = model.filter(**applicant_ref_filter)
+        model = model.filter(applicant_ref_filter)
 
     if terms.importer_agent_name:
         importer_filter = get_wildcard_filter("importer__name", terms.importer_agent_name)
         agent_filter = get_wildcard_filter("agent__name", terms.importer_agent_name)
 
-        model = model.filter(Q(**importer_filter) | Q(**agent_filter))
+        model = model.filter(importer_filter | agent_filter)
 
     if terms.licence_type:
         paper_only = terms.licence_type == "paper"
@@ -833,9 +834,9 @@ def _apply_import_application_filter(
     if terms.goods_category:
         model = model.filter(_get_goods_category_filter(terms))
 
-    # TODO: Write test & implement (This is different for each application that has it)
     if terms.commodity_code:
-        ...
+        commodity_filter = _get_commodity_code_filter(terms)
+        model = model.filter(commodity_filter)
 
     # TODO ICMSLST-686 Write test & implement
     if terms.under_appeal:
@@ -867,32 +868,72 @@ def _get_goods_category_filter(terms: SearchTerms) -> Q:
     :param terms: Search terms
     """
 
-    if not terms.goods_category:
-        return Q()
+    good_category: "CommodityGroup" = terms.goods_category  # type: ignore[assignment]
 
-    if terms.goods_category.group_name in FirearmCommodity:  # type: ignore[operator]
-        fa_dfl_query = Q(**{"dflapplication__commodity_code": terms.goods_category.group_name})
-        fa_oil_query = Q(
-            **{"openindividuallicenceapplication__commodity_code": terms.goods_category.group_name}
-        )
-        fa_sil_query = Q(**{"silapplication__commodity_code": terms.goods_category.group_name})
+    if good_category.group_name in FirearmCommodity:  # type: ignore[operator]
+        fa_dfl_query = Q(dflapplication__commodity_code=good_category.group_name)
+        fa_oil_query = Q(openindividuallicenceapplication__commodity_code=good_category.group_name)
+        fa_sil_query = Q(silapplication__commodity_code=good_category.group_name)
 
         filter_query = fa_dfl_query | fa_oil_query | fa_sil_query
 
     else:
-        ironsteel_query = Q(
-            **{"ironsteelapplication__category_commodity_group": terms.goods_category}
-        )
-        textiles_query = Q(
-            **{"textilesapplication__category_commodity_group": terms.goods_category}
-        )
-        opt_query = Q(
-            **{"outwardprocessingtradeapplication__cp_category": terms.goods_category.group_code}
-        )
+        ironsteel_query = Q(ironsteelapplication__category_commodity_group=good_category)
+        textiles_query = Q(textilesapplication__category_commodity_group=good_category)
+        opt_query = Q(outwardprocessingtradeapplication__cp_category=good_category.group_code)
 
         filter_query = ironsteel_query | textiles_query | opt_query
 
     return filter_query
+
+
+def _get_commodity_code_filter(terms: SearchTerms) -> Q:
+    """Return the commodity code filter expression for the applications that support it.
+
+    :param terms: Search terms
+    """
+
+    if not terms.commodity_code or terms.commodity_code.strip() == "%":
+        return Q()
+
+    commodity_filter = get_wildcard_filter("commodity_code", terms.commodity_code)
+    matching_commodiy_ids = list(
+        Commodity.objects.filter(commodity_filter).values_list("pk", flat=True)
+    )
+
+    applications: dict[Any, list[str]] = {
+        ImportApplicationType.Types.DEROGATION: ["derogationsapplication__commodity"],
+        ImportApplicationType.Types.FIREARMS: [],  # Firearm apps don't have commodities to filter
+        ImportApplicationType.Types.IRON_STEEL: ["ironsteelapplication__commodity"],
+        ImportApplicationType.Types.OPT: [
+            "outwardprocessingtradeapplication__cp_commodities",
+            "outwardprocessingtradeapplication__teg_commodities",
+        ],
+        ImportApplicationType.Types.SANCTION_ADHOC: [
+            "sanctionsandadhocapplication__sanctionsandadhocapplicationgoods__commodity"
+        ],
+        ImportApplicationType.Types.SPS: [
+            "priorsurveillanceapplication__commodity",
+        ],
+        ImportApplicationType.Types.TEXTILES: [
+            "textilesapplication__commodity",
+        ],
+        ImportApplicationType.Types.WOOD_QUOTA: ["woodquotaapplication__commodity"],
+    }
+
+    commodity_code_filter = Q()
+    if terms.app_type:
+        apps: list[str] = applications[terms.app_type]  # type: ignore[index]
+
+        for field in apps:
+            commodity_code_filter |= Q(**{f"{field}__in": matching_commodiy_ids})
+
+    else:
+        for app_filters in applications.values():
+            for field in app_filters:
+                commodity_code_filter |= Q(**{f"{field}__in": matching_commodiy_ids})
+
+    return commodity_code_filter
 
 
 def _apply_export_application_filter(
@@ -902,7 +943,7 @@ def _apply_export_application_filter(
         exporter_filter = get_wildcard_filter("exporter__name", terms.exporter_agent_name)
         agent_filter = get_wildcard_filter("agent__name", terms.exporter_agent_name)
 
-        model = model.filter(Q(**exporter_filter) | Q(**agent_filter))
+        model = model.filter(exporter_filter | agent_filter)
 
     if terms.closed_date_start:
         # TODO: Implement when doing ICMSLST-1107
