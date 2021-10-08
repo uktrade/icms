@@ -131,7 +131,6 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         label="Goods Category",
         required=False,
         queryset=CommodityGroup.objects.all(),
-        widget=Select2MultipleWidget,
     )
 
     commodity_code = forms.CharField(label="Commodity Code", required=False)

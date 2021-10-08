@@ -1212,6 +1212,58 @@ def test_import_search_by_shipping_year(import_fixture_data):
     check_application_references(results.records, "wood_two-app-ref")
 
 
+def test_import_search_by_goods_category(import_fixture_data):
+    _create_ironsteel_application(
+        "iron-app-ref", import_fixture_data, category_commodity_group="test-1"
+    )
+    _create_textiles_application(
+        "textiles-app-ref", import_fixture_data, category_commodity_group="test-2"
+    )
+
+    cp_category = CP_CATEGORIES[3]
+    _create_test_commodity_group(cp_category, _create_test_commodity("test-code"))
+    _create_opt_application("opt-app-ref", import_fixture_data, cp_category=cp_category)
+
+    test_pairs = [
+        ("test-1", "iron-app-ref"),
+        ("test-2", "textiles-app-ref"),
+        (cp_category, "opt-app-ref"),
+    ]
+
+    for group_code, app_ref in test_pairs:
+        group = CommodityGroup.objects.get(group_code=group_code)
+
+        search_terms = SearchTerms(case_type="import", goods_category=group)
+        results = search_applications(search_terms)
+        assert results.total_rows == 1
+        check_application_references(results.records, app_ref)
+
+    _create_fa_dfl_application(
+        "fa-dfl-ref", import_fixture_data, commodity_code=FirearmCommodity.EX_CHAPTER_93
+    )
+    _create_fa_sil_application(
+        "fa-sil-ref", import_fixture_data, commodity_code=FirearmCommodity.EX_CHAPTER_93
+    )
+    _create_fa_oil_application(
+        "fa-oil-ref", import_fixture_data, commodity_code=FirearmCommodity.EX_CHAPTER_97
+    )
+
+    chapter_93 = CommodityGroup.objects.get(group_name=FirearmCommodity.EX_CHAPTER_93.label)
+    chapter_97 = CommodityGroup.objects.get(group_name=FirearmCommodity.EX_CHAPTER_97.label)
+
+    search_terms = SearchTerms(case_type="import", goods_category=chapter_93)
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+    check_application_references(results.records, "fa-sil-ref", "fa-dfl-ref")
+
+    search_terms.goods_category = chapter_97
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "fa-oil-ref")
+
+
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references
 
