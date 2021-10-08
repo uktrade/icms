@@ -161,6 +161,19 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        commodity_code: str = cleaned_data.get("commodity_code")
+
+        if commodity_code:
+            com_code_without_wildcard = commodity_code.strip("%")
+
+            if com_code_without_wildcard and len(com_code_without_wildcard) < 3:
+                self.add_error("commodity_code", "Please enter at least 3 non wildcard characters.")
+
+        return cleaned_data
+
 
 class ExportSearchForm(SearchFormBase):
     application_type = forms.ChoiceField(

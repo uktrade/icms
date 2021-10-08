@@ -1,3 +1,4 @@
+from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 
 from web.domains.country.models import Country
@@ -44,6 +45,12 @@ class Commodity(Archivable, models.Model):
         ordering = (
             "-is_active",
             "commodity_code",
+        )
+
+        indexes = (
+            BTreeIndex(
+                fields=["commodity_code"], name="commodity_code_idx", opclasses=["text_pattern_ops"]
+            ),
         )
 
 
