@@ -1183,6 +1183,35 @@ def test_import_country_searches(import_fixture_data):
     assert results.total_rows == 0
 
 
+def test_import_search_by_shipping_year(import_fixture_data):
+    # Doesn't have a shipping year
+    _create_fa_dfl_application("fa_dfl-app-ref", import_fixture_data)
+
+    # Does have a shipping year
+    _create_ironsteel_application("iron-app-ref", import_fixture_data, shipping_year=2022)
+    _create_textiles_application("textiles-app-ref", import_fixture_data, shipping_year=2022)
+    _create_wood_application("wood-app-ref", import_fixture_data, shipping_year=2022)
+    _create_textiles_application("textiles_two-app-ref", import_fixture_data, shipping_year=2023)
+    _create_wood_application("wood_two-app-ref", import_fixture_data, shipping_year=2024)
+
+    search_terms = SearchTerms(case_type="import", shipping_year="2022")
+    results = search_applications(search_terms)
+    assert results.total_rows == 3
+    check_application_references(
+        results.records, "wood-app-ref", "textiles-app-ref", "iron-app-ref"
+    )
+
+    search_terms.shipping_year = "2023"
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "textiles_two-app-ref")
+
+    search_terms.shipping_year = "2024"
+    results = search_applications(search_terms)
+    assert results.total_rows == 1
+    check_application_references(results.records, "wood_two-app-ref")
+
+
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
     """Check the returned applications match the supplied references
 

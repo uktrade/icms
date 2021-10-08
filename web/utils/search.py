@@ -821,9 +821,13 @@ def _apply_import_application_filter(
         country_filter = _get_country_filter(terms.consignment_country, "consignment_country")
         model = model.filter(**country_filter)
 
-    # TODO: Write test & implement (This is different for each application that has it)
     if terms.shipping_year:
-        ...
+        # Shipping year only applies to one of the following applications
+        ironsteel_query = Q(ironsteelapplication__shipping_year=terms.shipping_year)
+        textiles_query = Q(textilesapplication__shipping_year=terms.shipping_year)
+        wood_query = Q(woodquotaapplication__shipping_year=terms.shipping_year)
+
+        model = model.filter(ironsteel_query | textiles_query | wood_query)
 
     # TODO: Write test & implement (This is different for each application that has it)
     if terms.goods_category:
