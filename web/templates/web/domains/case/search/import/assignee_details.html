@@ -1,0 +1,86 @@
+{% set ad = rec.assignee_details %}
+
+<table class="setoutList nestedList search-results">
+  <thead>
+  <tr>
+    <th colspan="1" class="listPrompt">Assignee Details</th>
+  </tr>
+  <tr>
+    <th scope="col"></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>
+      <div class="container setoutForm">
+        <div class="row">
+          <div class="twelve columns">
+            <div class="container setoutForm">
+              <div class="row">
+                <div class="twelve columns">
+                  <span class="text-widget"
+                        style="font-weight: bold">Application Processing (IMA3) / Case Officer</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <span class="text-widget extra-info">{{ ad.ownership_date }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="twelve columns">
+            <div class="container setoutForm">
+              <div class="row">
+                <div class="twelve columns">
+                  <span class="text-widget">{{ ad.assignee_name }}</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <span class="extra-info disabledLink">Reassigned {{ ad.reassignment_date }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# This is where the reassignment action will go #}
+        <div class="row">
+          <div class="twelve columns">
+            <div class="container setoutForm">
+              <div class="row">
+                <div class="twelve columns radio-or-tickbox-group">
+                  <div class="container" role="group" aria-labelledby="pg102">
+                    <label class="radio-label">
+                      <input id="g102/0" value="g102/0" type="checkbox"
+                             aria-label="Select for multiple reassignment...">
+                      Select for multiple reassignment...
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns"><select aria-required="true">
+                  <option value="" selected="selected">Reassign to...</option>
+                </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="twelve columns">
+                  <button role="link" type="button" class="link-button inline-link-button icon-user-check button">
+                    Reassign
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {# End of reassignment action #}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>

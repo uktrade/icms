@@ -4,11 +4,14 @@ from typing import Optional
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
+from web.auth.utils import get_ilb_admin_users
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplicationType
 from web.domains.case.models import ApplicationBase
 from web.domains.commodity.models import CommodityGroup
+from web.domains.contacts.widgets import ContactWidget
 from web.domains.country.models import Country
+from web.domains.user.models import User
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
 from web.utils.search import get_export_status_choices, get_import_status_choices
@@ -77,6 +80,27 @@ class ImportSearchForm(SearchFormBase):
     issue_from = forms.DateField(label="Issue Date", required=False, widget=DateInput)
     issue_to = forms.DateField(label="To", required=False, widget=DateInput)
 
+    reassignment_user = forms.ModelChoiceField(
+        label="Reassignment User",
+        help_text=(
+            "Search a contact. Contacts returned are matched against first/last name,"
+            " email, job title, organisation and department."
+        ),
+        queryset=User.objects.none(),
+        widget=ContactWidget(
+            attrs={
+                "data-minimum-input-length": 1,
+                "data-placeholder": "Search Users",
+            }
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["reassignment_user"].queryset = get_ilb_admin_users()
+
     def clean(self):
         cd = super().clean()
 
@@ -85,6 +109,11 @@ class ImportSearchForm(SearchFormBase):
 
         if self.dates_are_reversed(cd.get("issue_from"), cd.get("issue_to")):
             self.add_error("issue_to", "'From' must be before 'To'")
+
+        if not cd["reassignment"] and cd["reassignment_user"]:
+            self.add_error(
+                "reassignment", "Can't search using Reassignment User without Reassignment enabled"
+            )
 
         return cd
 
@@ -133,6 +162,8 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         queryset=CommodityGroup.objects.all(),
     )
 
+    # TODO: Revisit when doing ICMSLST-1137
+    # We should prevent things like "%%%" etc.
     commodity_code = forms.CharField(label="Commodity Code", required=False)
 
     pending_firs = forms.ChoiceField(

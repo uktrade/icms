@@ -3,6 +3,7 @@ import io
 from typing import TYPE_CHECKING, Union
 
 import pytest
+from django.urls import reverse
 from django.utils.timezone import make_aware
 from openpyxl import load_workbook
 
@@ -1327,6 +1328,53 @@ def test_import_search_by_commodity_code(import_fixture_data):
 
         assert results.total_rows == 1
         check_application_references(results.records, app_ref)
+
+
+def test_reassignment_search(import_fixture_data, client, test_icms_admin_user):
+    wood_app = _create_wood_application("wood-app-1", import_fixture_data)
+    textiles_app = _create_textiles_application("textiles-app-1", import_fixture_data)
+
+    # We need to be the icms case officer to post to the take-ownership endpoint
+    client.force_login(test_icms_admin_user)
+
+    assert wood_app.status == ImportApplication.Statuses.SUBMITTED
+
+    take_ownership_url = reverse(
+        "case:take-ownership", kwargs={"application_pk": wood_app.pk, "case_type": "import"}
+    )
+    response = client.post(take_ownership_url)
+    assert response.status_code == 302
+
+    take_ownership_url = reverse(
+        "case:take-ownership", kwargs={"application_pk": textiles_app.pk, "case_type": "import"}
+    )
+    response = client.post(take_ownership_url)
+    assert response.status_code == 302
+
+    wood_app.refresh_from_db()
+    assert wood_app.status == ImportApplication.Statuses.PROCESSING
+    assert wood_app.case_owner == test_icms_admin_user
+
+    search_terms = SearchTerms(
+        case_type="import",
+        reassignment_search=True,
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 2
+    check_application_references(results.records, "textiles-app-1", "wood-app-1")
+
+    # Override the case owner to test "reassignment_user"
+    textiles_app.case_owner = import_fixture_data.importer_user
+    textiles_app.save()
+
+    search_terms = SearchTerms(
+        case_type="import", reassignment_search=True, reassignment_user=test_icms_admin_user
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "wood-app-1")
 
 
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):

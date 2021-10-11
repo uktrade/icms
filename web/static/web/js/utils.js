@@ -21,3 +21,32 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+const UTILS = {
+    /**
+     * Returns a function that either shows or hides the element.
+     *
+     * Optional callbacks can be supplied when showing / hiding.
+     * @param {string} elementSelector
+     * @returns {(function(boolean, Object=): void)}
+     */
+    getShowElementFunc: function (elementSelector) {
+        const element = document.querySelector(elementSelector);
+
+        return (showElement = false, callbacks = {}) => {
+            const {
+                onShow = () => {},
+                onHide = () => {}
+            } = callbacks;
+
+            if (showElement) {
+                element.style.display = "block";
+                onShow();
+            } else {
+                element.style.display = "none";
+                onHide();
+            }
+        }
+    }
+}
