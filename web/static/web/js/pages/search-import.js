@@ -1,8 +1,21 @@
 window.addEventListener('load', (event) => {
   const appType = document.querySelector("#id_application_type");
+  const appSubType = document.querySelector("#id_application_sub_type");
+  const showAppSubType = UTILS.getShowElementFunc("#application-sub-type-wrapper")
 
   appType.addEventListener("change", (e) => {
-    updateSubType();
+    showAppSubType(e.target.value === "FA", {
+      onHide: () => appSubType.value = ""
+    })
+  });
+
+  const reassignmentCB = document.querySelector("#id_reassignment");
+  const showReassignUser = UTILS.getShowElementFunc("#reassignment-user-wrapper")
+
+  reassignmentCB.addEventListener("change", (e) => {
+    showReassignUser(e.target.checked, {
+      onHide: () => $("#id_reassignment_user").djangoSelect2().empty()
+    });
   });
 
   setupDownloadSpreadsheetEventHandler({
@@ -11,16 +24,3 @@ window.addEventListener('load', (event) => {
     warningId: "#spreadsheet-download-warning"
   });
 });
-
-function updateSubType() {
-  const appType = document.querySelector("#id_application_type");
-  const appSubType = document.querySelector("#id_application_sub_type");
-  const appSubTypeWrapper = document.querySelector("#application-sub-type-wrapper");
-
-  if (appType.value === "FA") {
-    appSubTypeWrapper.style.display = "block";
-  } else {
-    appSubType.value = "";
-    appSubTypeWrapper.style.display = "none";
-  }
-}

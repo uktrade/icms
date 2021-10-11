@@ -231,6 +231,9 @@ def take_ownership(
             # Licence start date is set when ILB Admin takes the case
             application.licence_start_date = timezone.now().date()
 
+        # TODO: Revisit when implementing ICMSLST-1169
+        # We may need to create some more datetime fields
+
         application.save()
 
         return redirect(

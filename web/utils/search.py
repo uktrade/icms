@@ -39,6 +39,7 @@ if TYPE_CHECKING:
 
     from web.domains.commodity.models import CommodityGroup
     from web.domains.country.models import Country
+    from web.domains.user.models import User
 
 
 @dataclass
@@ -56,6 +57,7 @@ class SearchTerms:
     submitted_date_start: Optional[datetime.date] = None
     submitted_date_end: Optional[datetime.date] = None
     reassignment_search: Optional[bool] = False
+    reassignment_user: Optional["User"] = None
     application_contact: Optional[str] = None
     pending_firs: Optional[str] = None
     pending_update_reqs: Optional[str] = None
@@ -123,12 +125,19 @@ class CommodityDetails:
 
 
 @dataclass
+class AssigneeDetails:
+    ownership_date: str
+    assignee_name: str
+    reassignment_date: Optional[str] = None
+
+
+@dataclass
 class ImportResultRow:
     submitted_at: str
     case_status: CaseStatus
     applicant_details: ApplicantDetails
     commodity_details: CommodityDetails
-
+    assignee_details: AssigneeDetails
     # Used to order records
     order_by_datetime: datetime.datetime
 
@@ -380,6 +389,7 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
         application_subtype = ""
 
     cus = rec.get_chief_usage_status_display() if rec.chief_usage_status else None
+    assignee_name = f"{rec.case_owner.full_name} ({rec.case_owner.email})" if rec.case_owner else ""
 
     row = ImportResultRow(
         submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
@@ -403,6 +413,11 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
             application_contact=rec.contact.full_name,
         ),
         commodity_details=commodity_details,
+        assignee_details=AssigneeDetails(
+            ownership_date="05-Oct-2021 09:39",  # TODO: Revisit when implementing ICMSLST-1169
+            assignee_name=assignee_name,
+            reassignment_date="11-Oct-2021 14:52",  # TODO: Revisit when implementing ICMSLST-1169
+        ),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
@@ -723,7 +738,13 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
 
     # THe legacy system only includes applications that have been submitted.
     if terms.case_type == "import":
-        model = model.exclude(submit_datetime=None)
+        model = model.filter(submit_datetime__isnull=False)
+
+    if terms.reassignment_search:
+        model = model.filter(case_owner__isnull=False)
+
+        if terms.reassignment_user:
+            model = model.filter(case_owner=terms.reassignment_user)
 
     if terms.app_type:
         key = "type" if terms.case_type == "import" else "type_code"

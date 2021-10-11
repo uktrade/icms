@@ -8,7 +8,10 @@
 }
 
 .search-results .text-widget,
-.search-results .prompt {
+.search-results .prompt,
+.search-results .radio-label,
+.search-results .radio-or-tickbox-group
+{
     margin-top: 0;
 }
 

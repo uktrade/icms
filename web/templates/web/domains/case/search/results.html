@@ -8,5 +8,13 @@
   {% endif %}
 </div>
 {% else %}
+  {# Tooltip used in import & export results #}
+  <div id="applicant-details-tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+    <div class="screen-reader-only">This item has hint text,</div>
+    If it is possible to reassign a case, a dropdown list of potential assignees will appear in this column.
+    <br>
+    <br>
+    The date below the stage indicates when the stage was reached. If there is a second lower date visible, it represents the date that the assignment was reassigned.
+  </div>
   {% include "web/domains/case/search/" + case_type + "/results-table.html" %}
 {% endif %}

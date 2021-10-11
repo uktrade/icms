@@ -60,7 +60,7 @@ def search_cases(
         )
 
     else:
-        form = form_class()
+        form = form_class(initial={"reassignment": False})
 
     context = {
         "form": form,
@@ -71,6 +71,7 @@ def search_cases(
         "show_application_sub_type": show_application_sub_type,
         "total_rows": total_rows,
         "search_records": search_records,
+        "reassignment_search": form["reassignment"].value(),
     }
 
     return render(
@@ -126,6 +127,7 @@ def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms
         pending_firs=cd.get("pending_firs"),
         pending_update_reqs=cd.get("pending_update_reqs"),
         reassignment_search=cd.get("reassignment"),
+        reassignment_user=cd.get("reassignment_user"),
         # ---- Import application fields ----
         # icms_legacy_cases = str = None
         app_sub_type=cd.get("application_sub_type"),

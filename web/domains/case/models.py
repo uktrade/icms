@@ -628,7 +628,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return update_requests
 
-    def history(self):
+    def history(self) -> None:
         """Debug method to print the history of the application"""
 
         print(f"Current status: {self.get_status_display()}")
