@@ -628,6 +628,14 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return update_requests
 
+    def history(self):
+        """Debug method to print the history of the application"""
+
+        print(f"Current status: {self.get_status_display()}")
+
+        for t in self.tasks.all().order_by("created"):
+            print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+
 
 class CaseEmail(models.Model):
     class Status(models.TextChoices):
