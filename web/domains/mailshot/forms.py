@@ -15,7 +15,7 @@ logger = logging.get_logger(__name__)
 
 class MailshotFilter(FilterSet):
 
-    id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
+    reference = CharFilter(field_name="reference", lookup_expr="icontains", label="Reference")
 
     title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
 

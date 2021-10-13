@@ -10,7 +10,7 @@ class CaseReference(models.Model):
     # e.g. "IMA" for import applications
     prefix = models.CharField(max_length=8)
 
-    # this is null for importer/exporter access requests
+    # this is null for importer/exporter access requests and mailshots
     year = models.IntegerField(null=True)
 
     # incrementing number for each prefix/year combination, starting from 1

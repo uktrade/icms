@@ -15,6 +15,7 @@ from django.views.generic.detail import DetailView
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
+from web.domains.case.utils import allocate_case_reference
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -68,14 +69,14 @@ class MailshotListView(ModelFilterView):
 
     class Display:
         fields = [
-            "id",
+            "reference",
             "status_verbose",
             ("retracted", "published", "started"),
             "title",
             "description",
         ]
         fields_config = {
-            "id": {"header": "Reference"},
+            "reference": {"header": "Reference", "method": "get_reference"},
             "started": {"header": "Activity", "label": "<strong>Started</strong>"},
             "published": {"no_header": True, "label": "<strong>Published</strong>"},
             "retracted": {"no_header": True, "label": "<strong>Retracted</strong>"},
@@ -121,14 +122,29 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         """
         Publish mailshot if form is valid.
         """
-        mailshot = form.instance
-        mailshot.status = Mailshot.Statuses.PUBLISHED
-        mailshot.published_datetime = timezone.now()
-        mailshot.published_by = self.request.user
-        response = super().form_valid(form)
-        if response.status_code == 302 and response.url == self.success_url:
-            self.handle_notification(mailshot)
-        return response
+
+        with transaction.atomic():
+            response = super().form_valid(form)
+
+            mailshot = self.get_object()
+            mailshot.status = Mailshot.Statuses.PUBLISHED
+            mailshot.published_datetime = timezone.now()
+            mailshot.published_by = self.request.user
+            if not mailshot.reference:
+                mailshot.reference = allocate_case_reference(
+                    lock_manager=self.request.icms.lock_manager,
+                    prefix="MAIL",
+                    use_year=False,
+                    min_digits=1,
+                )
+                mailshot.version += 1
+            mailshot.save()
+
+            self.object = mailshot
+
+            if response.status_code == 302 and response.url == self.success_url:
+                self.handle_notification(mailshot)
+            return response
 
     def save_draft(self, request, **kwargs):
         """
@@ -155,8 +171,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         if action and action == "save_draft":
             return super().get_success_message(cleaned_data)
 
-        # TODO: ICMSLST-1151 replace pk with reference
-        return f"{self.object} published successfully"
+        return f"{self.object.get_reference()} published successfully"
 
     def get_queryset(self):
         """
@@ -181,8 +196,7 @@ class MailshotDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["documents"] = self.object.documents.filter(is_active=True)
-        # TODO: ICMSLST-1151 replace pk with reference
-        context["page_title"] = f"Viewing Mailshot ({self.object.pk})"
+        context["page_title"] = f"Viewing Mailshot ({self.object.get_reference()})"
 
         return context
 
@@ -244,7 +258,7 @@ class MailshotRetractView(ModelUpdateView):
         return response
 
     def get_success_message(self, cleaned_data):
-        return f"{self.object} retracted successfully"  # type:ignore[attr-defined]
+        return f"{self.object.get_reference()} retracted successfully"  # type:ignore[attr-defined]
 
     def get_queryset(self):
         """
@@ -254,8 +268,7 @@ class MailshotRetractView(ModelUpdateView):
         return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
-        # TODO: ICMSLST-1151 replace pk with reference
-        return f"Retract {self.object}"  # type:ignore[attr-defined]
+        return f"Retract {self.object.get_reference()}"  # type:ignore[attr-defined]
 
 
 @login_required
