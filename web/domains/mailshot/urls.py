@@ -39,6 +39,7 @@ urlpatterns = [
                     views.MailshotReceivedDetailView.as_view(),
                     name="mailshot-detail-received",
                 ),
+                path("republish/", views.republish, name="mailshot-republish"),
                 path("document/", include(document_urls)),
             ]
         ),

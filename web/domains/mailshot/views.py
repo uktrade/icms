@@ -24,7 +24,7 @@ from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
-from .actions import Edit, Retract
+from .actions import Edit, Republish, Retract
 from .actions import View as Display
 from .actions import ViewReceived
 from .forms import (
@@ -83,7 +83,8 @@ class MailshotListView(ModelFilterView):
             "status_verbose": {"header": "Status"},
             "description": {"header": "Description"},
         }
-        actions = [Edit(), Display(), Retract()]
+
+        actions = [Edit(), Display(), Retract(), Republish()]
 
 
 class MailshotCreateView(RequireRegisteredMixin, View):
@@ -317,6 +318,21 @@ def delete_document(
         document.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        mailshot.pk = None
+        mailshot._state.adding = True
+        mailshot.status = Mailshot.Statuses.DRAFT
+        mailshot.version += 1
+        mailshot.save()
+
+        return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
 
 
 def _check_permission(user: User) -> bool:
