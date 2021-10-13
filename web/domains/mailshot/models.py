@@ -8,6 +8,7 @@ class Mailshot(models.Model):
     class Statuses(models.TextChoices):
         DRAFT = ("DRAFT", "Draft")
         PUBLISHED = ("PUBLISHED", "Published")
+        PUBLISHING = ("PUBLISHING", "Publishing")
         RETRACTED = ("RETRACTED", "Retracted")
         CANCELLED = ("CANCELLED", "Cancelled")
 
