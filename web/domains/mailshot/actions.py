@@ -57,7 +57,10 @@ class Republish(actions.PostAction):
     template = "model/actions/post-inline.html"
 
     def display(self, mailshot: Mailshot) -> bool:
-        return mailshot.status == Mailshot.Statuses.RETRACTED
+        retracted = mailshot.status == Mailshot.Statuses.RETRACTED
+        latest_version = mailshot.last_version_for_ref == mailshot.version
+
+        return retracted and latest_version
 
     def get_context_data(self, obj: Mailshot, csrf_token: str, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(obj, csrf_token, **kwargs)

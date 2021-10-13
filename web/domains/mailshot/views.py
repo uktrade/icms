@@ -1,10 +1,10 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import models, transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -35,6 +35,9 @@ from .forms import (
     ReceivedMailshotsFilter,
 )
 from .models import Mailshot
+
+if TYPE_CHECKING:
+    from django.db import QuerySet
 
 
 class ReceivedMailshotsView(ModelFilterView):
@@ -86,6 +89,20 @@ class MailshotListView(ModelFilterView):
         }
 
         actions = [Edit(), Display(), Retract(), Republish()]
+
+    def get_queryset(self) -> "QuerySet[Mailshot]":
+        refs = (
+            Mailshot.objects.filter(reference=models.OuterRef("reference"))
+            .order_by()
+            .values("reference")
+        )
+        max_versions = refs.annotate(current_version=models.Max("version")).values(
+            "current_version"
+        )
+
+        qs = super().get_queryset()
+
+        return qs.annotate(last_version_for_ref=models.Subquery(max_versions))
 
 
 class MailshotCreateView(RequireRegisteredMixin, View):
@@ -144,6 +161,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
             if response.status_code == 302 and response.url == self.success_url:
                 self.handle_notification(mailshot)
+
             return response
 
     def save_draft(self, request, **kwargs):

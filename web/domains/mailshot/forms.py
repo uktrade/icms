@@ -1,9 +1,10 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import structlog as logging
+from django.db import models
 from django.forms import ModelForm, MultipleChoiceField
-from django.forms.widgets import CheckboxSelectMultiple, Textarea
-from django_filters import CharFilter, ChoiceFilter, FilterSet
+from django.forms.widgets import CheckboxInput, CheckboxSelectMultiple, Textarea
+from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 
 from .models import Mailshot
 
@@ -25,9 +26,28 @@ class MailshotFilter(FilterSet):
         field_name="status", lookup_expr="exact", choices=Mailshot.Statuses.choices, label="Status"
     )
 
+    latest_version = BooleanFilter(
+        label="Only show the current mailshot version",
+        widget=CheckboxInput,
+        method="get_latest_version",
+    )
+
     class Meta:
         model = Mailshot
         fields = []
+
+    def get_latest_version(
+        self, queryset: "QuerySet[Mailshot]", _name: Optional[str], value: Optional[str]
+    ) -> "QuerySet[Mailshot]":
+        if value:
+            last_versions = models.Q(reference__isnull=True) | models.Q(
+                version=models.F("last_version_for_ref")
+            )
+
+            return queryset.filter(last_versions)
+
+        else:
+            return queryset
 
 
 class ReceivedMailshotsFilter(FilterSet):
