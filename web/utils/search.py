@@ -126,6 +126,7 @@ class CommodityDetails:
 
 @dataclass
 class AssigneeDetails:
+    title: str
     ownership_date: str
     assignee_name: str
     reassignment_date: Optional[str] = None
@@ -165,6 +166,9 @@ class ExportResultRow:
 
     # Certificate details optional
     manufacturer_countries: list[str]
+
+    # Assignee details
+    assignee_details: AssigneeDetails
 
     # Applicant details optional
     agent_name: Optional[str] = None
@@ -389,7 +393,12 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
         application_subtype = ""
 
     cus = rec.get_chief_usage_status_display() if rec.chief_usage_status else None
+
+    # TODO: Revisit when implementing ICMSLST-1169
+    assignee_title = "Application Processing (IMA3) / Case Officer"
+    ownership_date = "05-Oct-2021 09:39"
     assignee_name = f"{rec.case_owner.full_name} ({rec.case_owner.email})" if rec.case_owner else ""
+    reassignment_date = "11-Oct-2021 14:52"
 
     row = ImportResultRow(
         submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
@@ -414,9 +423,10 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
         ),
         commodity_details=commodity_details,
         assignee_details=AssigneeDetails(
-            ownership_date="05-Oct-2021 09:39",  # TODO: Revisit when implementing ICMSLST-1169
+            title=assignee_title,
+            ownership_date=ownership_date,
             assignee_name=assignee_name,
-            reassignment_date="11-Oct-2021 14:52",  # TODO: Revisit when implementing ICMSLST-1169
+            reassignment_date=reassignment_date,
         ),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
@@ -439,6 +449,13 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
 
     certificates = _get_certificate_references(rec)
 
+    # TODO: Revisit when implementing ICMSLST-1169
+    # assignee_title = "Authorise Documents (G2) / Authoriser"
+    assignee_title = "Application Processing (CA50) / Case Officer"
+    ownership_date = "05-Oct-2021 09:39"
+    assignee_name = f"{rec.case_owner.full_name} ({rec.case_owner.email})" if rec.case_owner else ""
+    reassignment_date = "11-Oct-2021 14:52"
+
     return ExportResultRow(
         case_reference=rec.get_reference(),
         application_type=app_type_label,
@@ -449,6 +466,12 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
         application_contact=application_contact,
         submitted_at=submitted_at,
         manufacturer_countries=manufacturer_countries,
+        assignee_details=AssigneeDetails(
+            title=assignee_title,
+            ownership_date=ownership_date,
+            assignee_name=assignee_name,
+            reassignment_date=reassignment_date,
+        ),
         agent_name=rec.agent.name if rec.agent else None,
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
