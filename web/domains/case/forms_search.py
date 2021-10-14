@@ -33,6 +33,24 @@ class SearchFormBase(forms.Form):
 
     reassignment = forms.BooleanField(label="Reassignment", required=False)
 
+    reassignment_user = forms.ModelChoiceField(
+        label="Reassignment User",
+        help_text=(
+            "Search a contact. Contacts returned are matched against first/last name,"
+            " email, job title, organisation and department."
+        ),
+        queryset=User.objects.none(),
+        widget=ContactWidget(
+            attrs={"data-minimum-input-length": 1, "data-placeholder": "Search Users"}
+        ),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["reassignment_user"].queryset = get_ilb_admin_users()
+
     @staticmethod
     def dates_are_reversed(
         date_from: Optional[datetime.date], date_to: Optional[datetime.date]
@@ -79,27 +97,6 @@ class ImportSearchForm(SearchFormBase):
 
     issue_from = forms.DateField(label="Issue Date", required=False, widget=DateInput)
     issue_to = forms.DateField(label="To", required=False, widget=DateInput)
-
-    reassignment_user = forms.ModelChoiceField(
-        label="Reassignment User",
-        help_text=(
-            "Search a contact. Contacts returned are matched against first/last name,"
-            " email, job title, organisation and department."
-        ),
-        queryset=User.objects.none(),
-        widget=ContactWidget(
-            attrs={
-                "data-minimum-input-length": 1,
-                "data-placeholder": "Search Users",
-            }
-        ),
-        required=False,
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields["reassignment_user"].queryset = get_ilb_admin_users()
 
     def clean(self):
         cd = super().clean()
@@ -185,7 +182,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(ImportSearchAdvancedForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
 
@@ -232,7 +229,7 @@ class ExportSearchForm(SearchFormBase):
         return cd
 
     def __init__(self, *args, **kwargs):
-        super(ExportSearchForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["licence_ref"].label = "Certificate Reference"
         self.fields["decision"].label = "Case Decision"
 
