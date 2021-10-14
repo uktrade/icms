@@ -1330,7 +1330,9 @@ def test_import_search_by_commodity_code(import_fixture_data):
         check_application_references(results.records, app_ref)
 
 
-def test_reassignment_search(import_fixture_data, client, test_icms_admin_user):
+def test_reassignment_search(
+    import_fixture_data, export_fixture_data, client, test_icms_admin_user
+):
     wood_app = _create_wood_application("wood-app-1", import_fixture_data)
     textiles_app = _create_textiles_application("textiles-app-1", import_fixture_data)
 
@@ -1375,6 +1377,25 @@ def test_reassignment_search(import_fixture_data, client, test_icms_admin_user):
 
     assert results.total_rows == 1
     check_application_references(results.records, "wood-app-1")
+
+    # Test Export applications work with reassignment searching
+    gmp_app = _create_gmp_application(export_fixture_data)
+    search_terms = SearchTerms(
+        case_type="export", reassignment_search=True, reassignment_user=test_icms_admin_user
+    )
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 0
+    take_ownership_url = reverse(
+        "case:take-ownership", kwargs={"application_pk": gmp_app.pk, "case_type": "export"}
+    )
+    response = client.post(take_ownership_url)
+    assert response.status_code == 302
+
+    results = search_applications(search_terms)
+
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, gmp_app.reference)
 
 
 def check_application_references(applications: list[ResultRow], *references, sort_results=False):
