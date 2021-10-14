@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import structlog as logging
 from django.db import models
@@ -37,8 +37,12 @@ class MailshotFilter(FilterSet):
         fields = []
 
     def get_latest_version(
-        self, queryset: "QuerySet[Mailshot]", _name: Optional[str], value: Optional[str]
+        self, queryset: "QuerySet[Mailshot]", name: str, value: bool
     ) -> "QuerySet[Mailshot]":
+        """Custom method to get the latest versions for mailshots.
+
+        `name` is the field name `latest_version`.
+        `value` tells to display or not the latest versions."""
         if value:
             last_versions = models.Q(reference__isnull=True) | models.Q(
                 version=models.F("last_version_for_ref")
