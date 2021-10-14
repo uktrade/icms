@@ -6,6 +6,9 @@
     <th scope="col">Submitted Date</th>
     <th scope="col">Certificate Details</th>
     <th scope="col">Applicant Details</th>
+    {% if reassignment_search %}
+      <th scope="col">Assignee Details<div aria-describedby="applicant-details-tooltip" class="hint icon-info tooltipstered"></div></th>
+    {% endif %}
     <th scope="col">Actions</th>
   </tr>
   </thead>
@@ -18,6 +21,9 @@
       <td>{% include "web/domains/case/search/export/submitted_date.html" %}</td>
       <td>{% include "web/domains/case/search/export/certificate_details.html" %}</td>
       <td>{% include "web/domains/case/search/export/applicant_details.html" %}</td>
+      {% if reassignment_search %}
+        <td>{% include "web/domains/case/search/assignee_details.html" %}</td>
+      {% endif %}
       <td>{% include "web/domains/case/search/export/actions.html" %}</td>
     </tr>
   {% endfor %}
