@@ -91,18 +91,17 @@ class MailshotListView(ModelFilterView):
         actions = [Edit(), Display(), Retract(), Republish()]
 
     def get_queryset(self) -> "QuerySet[Mailshot]":
-        refs = (
-            Mailshot.objects.filter(reference=models.OuterRef("reference"))
-            .order_by()
-            .values("reference")
-        )
-        max_versions = refs.annotate(current_version=models.Max("version")).values(
-            "current_version"
-        )
-
         qs = super().get_queryset()
 
-        return qs.annotate(last_version_for_ref=models.Subquery(max_versions))
+        max_version = Mailshot.objects.filter(reference=models.OuterRef("reference")).order_by(
+            "-version"
+        )
+
+        mailshots = qs.annotate(
+            last_version_for_ref=models.Subquery(max_version.values("version")[:1])
+        )
+
+        return mailshots.order_by("-pk")
 
 
 class MailshotCreateView(RequireRegisteredMixin, View):
