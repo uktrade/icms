@@ -185,6 +185,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         return redirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
+        # TODO: ICMSLST-1173 fix success message
         action = self.request.POST.get("action")
         if action and action == "save_draft":
             return super().get_success_message(cleaned_data)
