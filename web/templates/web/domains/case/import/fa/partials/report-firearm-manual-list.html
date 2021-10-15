@@ -1,0 +1,57 @@
+{% if firearms %}
+  <div class="section-break"></div>
+  <h4>Manual added details</h4>
+  <table class="setoutList">
+    <thead>
+      <tr>
+        {% if read_only %}
+          <th scope="col">Goods Item</th>
+        {% endif %}
+        <th scope="col">Serial Number</th>
+        <th scope="col">Calibre</th>
+        <th scope="col">Make / Model</th>
+        <th scope="col">Proofing</th>
+        {% if not read_only %}
+          <th scope="col">Actions</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+    {% for firearm in firearms %}
+      <tr>
+        {% if read_only %}
+          <td>{{ firearm.get_description() }}</td>
+        {% endif %}
+        <td>{{ firearm.serial_number }}</td>
+        <td>{{ firearm.calibre }}</td>
+        <td>{{ firearm.model }}</td>
+        <td>{{ firearm.proofing }}</td>
+        {% if not read_only %}
+          <td>
+            <ul class="menu-out">
+              <li>{{ buttons.manual_edit_button(firearm, report_type, section_type=section_type) }}</li>
+              <li>{{ buttons.delete_firearm_button(firearm, report_type, csrf_input, section_type=section_type) }}</li>
+              <li><br/></li>
+            </ul>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  {% if not read_only %}
+    <div class="info-box info-box-info">
+      Add manual details to this goods line (optional)
+    </div>
+  {% endif %}
+{% endif %}
+{% if not read_only %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        {{ buttons.manual_add_button(report, report_type, goods=goods, section=section, section_type=section_type) }}
+      </li>
+    </ul>
+  </div>
+{% endif %}

@@ -4,8 +4,13 @@
   {% for section_type in report.goods_sections() %}
     {% for section in report.get_section_certificates(section_type) %}
       <fieldset>
-        <legend><strong>{{ section.description }}</strong></legend>
-          {% with firearms = section.supplementary_report_firearms.filter(report_id=report.pk), is_readonly = False %}
+        <h4><strong>{{ section.description }}</strong></h4>
+          {% with
+            manual_firearms = section.supplementary_report_firearms.filter(report_id=report.pk, is_manual=True),
+            upload_firearms = section.supplementary_report_firearms.filter(report_id=report.pk, is_upload=True),
+            no_firearms = section.supplementary_report_firearms.filter(report_id=report.pk, is_no_firearm=True),
+            read_only = False
+          %}
             {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
           {% endwith %}
       </fieldset>

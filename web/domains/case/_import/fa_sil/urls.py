@@ -46,6 +46,11 @@ urlpatterns = [
                                             name="report-firearm-manual-add",
                                         ),
                                         path(
+                                            "no-firearm/add/",
+                                            views.add_report_firearm_no_firearm,
+                                            name="report-firearm-no-firearm-add",
+                                        ),
+                                        path(
                                             "manual/<int:report_firearm_pk>/",
                                             include(
                                                 [

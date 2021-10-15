@@ -1,6 +1,8 @@
-{% if not firearms %}
+{% import "web/domains/case/import/fa/provide-report/buttons.html" as buttons %}
+
+{% if not manual_firearms and not upload_firearms and not no_firearms %}
   <div class="info-box info-box-info">
-    {% if is_readonly %}
+    {% if read_only %}
       There are no firearm details in this report.
     {% else %}
       {% if report_type == 'sil' %}
@@ -10,109 +12,29 @@
       {% endif %}
     {% endif %}
   </div>
+  {% if not read_only %}
+    <div class="list-actions">
+      <ul class="menu-out flow-across">
+        <li>
+          {{ buttons.manual_add_button(report, report_type, goods=goods, section=section, section_type=section_type) }}
+          {{ buttons.upload_document_button(report, report_type, goods=goods) }}
+          {{ buttons.no_firearm_button(report, report_type, csrf_input, goods=goods, section=section, section_type=section_type) }}
+        </li>
+      </ul>
+    </div>
+  {% endif %}
 {% else %}
-  <table class="setoutList">
-    <thead>
-    <tr>
-      {% if is_readonly %}
-        <th scope="col">Goods Item</th>
-      {% endif %}
-      <th scope="col">Serial Number</th>
-      <th scope="col">Calibre</th>
-      <th scope="col">Make / Model</th>
-      <th scope="col">Proofing</th>
-      {% if upload %}
-        <th scope="col">Upload</th>
-      {% endif %}
-      {% if not is_readonly %}
-        <th scope="col">Actions</th>
-      {% endif %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for firearm in firearms %}
-      <tr>
-        {% if is_readonly %}
-          <td>{{ firearm.get_description() }}</td>
-        {% endif %}
-        <td>{{ firearm.serial_number or "" }}</td>
-        <td>{{ firearm.calibre or "" }}</td>
-        <td>{{ firearm.model or "" }}</td>
-        <td>{{ firearm.proofing or "" }}</td>
-        {% if firearm.is_upload %}
-          <td>
-            <a href="{{ firearm.get_view_upload_url() }}" class="link">
-              {{ firearm.document.filename }}
-            </a>
-          </td>
-        {% endif %}
-        {% if not is_readonly %}
-          <td>
-            <ul class="menu-out">
-              {% if not firearm.is_upload %}
-                <li>
-                  <a
-                    href="{{ firearm.get_manual_url('edit', section_type) if report_type == 'sil' else firearm.get_manual_url('edit') }}"
-                    class="button link-button inline-link-button icon-pencil">
-                    Edit
-                  </a>
-                </li>
-              {% endif %}
-              <li>
-                <form
-                  method="post"
-                  action="{{ firearm.get_manual_url('delete', section_type) if report_type == 'sil' else firearm.get_manual_url('delete') }}"
-                  class="form-inline"
-                  id="id_delete-report-fa-{{ firearm.pk }}">
-                  {{ csrf_input }}
-                  <button type="submit" class="button link-button inline-link-button icon-bin" form="id_delete-report-fa-{{ firearm.pk }}">
-                    Delete
-                  </button>
-                </form>
-              </li>
-              <li><br/></li>
-            </ul>
-          </td>
-        {% endif %}
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-{% endif %}
-{% if not is_readonly %}
-  <div class="list-actions">
-    <ul class="menu-out flow-across">
-      <li>
-        {% if report_type == 'dfl' %}
-          <a
-            href="{{ report.get_add_firearm_url_manual(goods.pk) }}"
-            class="button small-button icon-plus">
-            Manual Add Firearm
-          </a>
-          <a
-            href="{{ report.get_add_firearm_url_upload(goods.pk) }}"
-            class="button small-button icon-plus">
-            Upload Document
-          </a>
-        {% elif report_type == 'oil' %}
-          <a
-            href="{{ report.get_add_firearm_url_manual() }}"
-            class="button small-button icon-plus">
-            Manual Add Firearm
-          </a>
-          <a
-            href="{{ report.get_add_firearm_url_upload() }}"
-            class="button small-button icon-plus">
-            Upload Document
-          </a>
-        {% elif report_type == 'sil' %}
-          <a
-            href="{{ report.get_add_firearm_url_manual(section_type, section.pk) }}"
-            class="button small-button icon-plus">
-            Manual Add Firearm
-          </a>
-        {% endif %}
-      </li>
-    </ul>
-  </div>
+  {% if read_only or not no_firearms %}
+    {% with firearms = manual_firearms %}
+      {% include "web/domains/case/import/fa/partials/report-firearm-manual-list.html" %}
+    {% endwith %}
+
+    {% with firearms = upload_firearms %}
+      {% include "web/domains/case/import/fa/partials/report-firearm-upload-list.html" %}
+    {% endwith %}
+  {% endif %}
+
+  {% with firearms = no_firearms %}
+    {% include "web/domains/case/import/fa/partials/report-firearm-no-firearm-list.html" %}
+  {% endwith %}
 {% endif %}

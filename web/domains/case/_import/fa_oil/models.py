@@ -98,29 +98,31 @@ class OILSupplementaryReport(SupplementaryReportBase):
     def get_goods_certificates(self) -> list[str]:
         return [OpenIndividualLicenceApplication.goods_description()]
 
-    def get_report_firearms(self) -> "QuerySet[OILSupplementaryReportFirearm]":
-        return self.firearms.all()
+    def get_report_firearms(
+        self, is_manual: bool = False, is_upload: bool = False, is_no_firearm: bool = False
+    ) -> "QuerySet[OILSupplementaryReportFirearm]":
+        """Method to filter all report firearms on a firearm report.
 
-    def get_add_firearm_url_manual(self) -> str:
+        :param is_manual: Firearm information which was manually entered
+        :param is_upload: Firearm information which was uploaded as a document
+        :param is_no_firearm: No information included for firearm
+        """
+
+        return self.firearms.filter(
+            is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+        )
+
+    def get_add_firearm_url(self, url_type: Literal["manual", "upload", "no-firearm"]) -> str:
+        if url_type not in ["manual", "upload", "no-firearm"]:
+            raise NotImplementedError(f"Invalid url type {url_type}")
+
         return reverse(
-            "import:fa-oil:report-firearm-manual-add",
+            f"import:fa-oil:report-firearm-{url_type}-add",
             kwargs={
                 "application_pk": self.supplementary_info.import_application.pk,
                 "report_pk": self.pk,
             },
         )
-
-    def get_add_firearm_url_upload(self) -> str:
-        return reverse(
-            "import:fa-oil:report-firearm-upload-add",
-            kwargs={
-                "application_pk": self.supplementary_info.import_application.pk,
-                "report_pk": self.pk,
-            },
-        )
-
-    def has_upload(self) -> bool:
-        return self.firearms.filter(is_upload=True).exists()
 
 
 class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):

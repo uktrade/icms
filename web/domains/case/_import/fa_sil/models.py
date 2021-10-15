@@ -381,20 +381,44 @@ class SILSupplementaryReport(SupplementaryReportBase):
 
         raise NotImplementedError(f"section_type is not supported: {section_type}")
 
-    def get_report_firearms(self) -> ReportFirearms:
+    def get_report_firearms(
+        self, is_manual: bool = False, is_upload: bool = False, is_no_firearm: bool = False
+    ) -> ReportFirearms:
+        """Method to filter all report firearms on a firearm report.
+
+        :param is_manual: Firearm information which was manually entered
+        :param is_upload: Firearm information which was uploaded as a document
+        :param is_no_firearm: No information included for firearm
+        """
+
         return list(
             chain(
-                self.section1_firearms.all(),
-                self.section2_firearms.all(),
-                self.section5_firearms.all(),
-                self.section582_obsolete_firearms.all(),
-                self.section582_other_firearms.all(),
+                self.section1_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
+                self.section2_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
+                self.section5_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
+                self.section582_obsolete_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
+                self.section582_other_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
             )
         )
 
-    def get_add_firearm_url_manual(self, section_type: str, section_pk: int) -> str:
+    def get_add_firearm_url(
+        self, section_type: str, section_pk: int, url_type: Literal["manual", "no-firearm"]
+    ) -> str:
+        if url_type not in ["manual", "no-firearm"]:
+            raise NotImplementedError(f"Invalid url type {url_type}")
+
         return reverse(
-            "import:fa-sil:report-firearm-manual-add",
+            f"import:fa-sil:report-firearm-{url_type}-add",
             kwargs={
                 "application_pk": self.supplementary_info.import_application.pk,
                 "sil_section_type": section_type,

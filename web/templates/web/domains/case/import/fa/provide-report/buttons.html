@@ -1,0 +1,132 @@
+{%- macro manual_add_button(report, report_type, goods=None, section=None, section_type=None) -%}
+  {% if report_type == "dfl" %}
+    <a
+      href="{{ report.get_add_firearm_url(goods.pk, 'manual') }}"
+      class="button small-button icon-plus">
+      Manual Add Firearm
+    </a>
+  {% elif report_type == "oil" %}
+    <a
+      href="{{ report.get_add_firearm_url('manual') }}"
+      class="button small-button icon-plus">
+      Manual Add Firearm
+    </a>
+  {% elif report_type == "sil" %}
+    <a
+      href="{{ report.get_add_firearm_url(section_type, section.pk, 'manual') }}"
+      class="button small-button icon-plus">
+      Manual Add Firearm
+    </a>
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro upload_document_button(report, report_type, goods=None, section=None, section_type=None) -%}
+  {% if report_type == "dfl" %}
+    <a
+      href="{{ report.get_add_firearm_url(goods.pk, 'upload') }}"
+      class="button small-button icon-plus">
+      Upload Document
+    </a>
+  {% elif report_type == "oil" %}
+    <a
+      href="{{ report.get_add_firearm_url('upload') }}"
+      class="button small-button icon-plus">
+      Upload Document
+    </a>
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro no_firearm_button(report, report_type, csrf_input, goods=None, section=None, section_type=None) -%}
+  {% if report_type == "dfl" %}
+    <form
+      method="post"
+      action="{{ report.get_add_firearm_url(goods.pk, 'no-firearm') }}"
+      class="form-inline"
+      id="id_no-firearms-{{ report.pk }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button icon-plus"
+        form="id_no-firearms-{{ report.pk }}">
+        No Firearms to Report
+      </button>
+    </form>
+  {% elif report_type == "oil" %}
+    <form
+      method="post"
+      action="{{ report.get_add_firearm_url('no-firearm') }}"
+      class="form-inline"
+      id="id_no-firearms-{{ report.pk }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button icon-plus"
+        form="id_no-firearms-{{ report.pk }}">
+        No Firearms to Report
+      </button>
+    </form>
+  {% elif report_type == "sil" %}
+    <form
+      method="post"
+      action="{{ report.get_add_firearm_url(section_type, section.pk, 'no-firearm') }}"
+      class="form-inline"
+      id="id_no-firearms-{{ report.pk }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button icon-plus"
+        form="id_no-firearms-{{ report.pk }}">
+        No Firearms to Report
+      </button>
+    </form>
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro manual_edit_button(firearm, report_type, section_type=None) -%}
+  {% if report_type in ["dfl", "oil"] %}
+    <a
+      href="{{ firearm.get_manual_url('edit') }}"
+      class="button link-button inline-link-button icon-pencil">
+      Edit
+    </a>
+  {% elif report_type == "sil" %}
+    <a
+      href="{{ firearm.get_manual_url('edit', section_type) }}"
+      class="button link-button inline-link-button icon-pencil">
+      Edit
+    </a>
+  {% endif %} 
+{%- endmacro -%}
+
+
+{%- macro delete_firearm_button(firearm, report_type, csrf_input, section_type=None) -%}
+  {% if report_type in ["dfl", "oil"] %}
+    <form
+      method="post"
+      action="{{ firearm.get_manual_url('delete') }}"
+      class="form-inline"
+      id="id_delete-report-fa-{{ firearm.pk }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button link-button inline-link-button icon-bin"
+        form="id_delete-report-fa-{{ firearm.pk }}">
+        Delete
+      </button>
+    </form>
+  {% elif report_type == "sil" %}
+    <form
+      method="post"
+      action="{{ firearm.get_manual_url('delete', section_type) }}"
+      class="form-inline"
+      id="id_delete-report-fa-{{ section-type }}-{{ firearm.pk }}">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button link-button inline-link-button icon-bin"
+        form="id_delete-report-fa-{{ section_type}}-{{ firearm.pk }}">
+        Delete
+      </button>
+    </form>
+  {% endif %} 
+{%- endmacro -%}

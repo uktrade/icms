@@ -119,14 +119,13 @@ class SupplementaryReportBase(models.Model):
     def str_date_received(self):
         return f"{self.date_received:%d-%b-%Y}"
 
-    def has_upload(self) -> bool:
-        return False
-
     def get_goods_certificates(self) -> "Union[QuerySet, list]":
         """Get the goods certificates associated with the firearm application."""
         raise NotImplementedError
 
-    def get_report_firearms(self) -> "QuerySet":
+    def get_report_firearms(
+        self, is_manual: bool = False, is_upload: bool = False, is_no_firearm: bool = False
+    ) -> "Union[QuerySet, list]":
         """Get the firearm details added to the supplementary report."""
         raise NotImplementedError
 
@@ -139,8 +138,9 @@ class SupplementaryReportFirearmBase(models.Model):
     calibre = models.CharField(max_length=100, null=True)
     model = models.CharField(max_length=100, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
+    is_manual = models.BooleanField(default=False)
     is_upload = models.BooleanField(default=False)
-    no_firearm_to_report = models.BooleanField(default=False)
+    is_no_firearm = models.BooleanField(default=False)
 
     def get_description(self) -> str:
         """Get the description of the goods line."""

@@ -113,7 +113,7 @@ def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEdit
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
 
-def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFirearmFormsT:
+def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFirearmFormT:
     if sil_section_type == "section1":
         return forms.SILSupplementaryReportFirearmSection1Form
 
@@ -128,6 +128,25 @@ def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFire
 
     elif sil_section_type == "section582-other":
         return forms.SILSupplementaryReportFirearmSection582OtherForm
+
+    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
+
+
+def _get_report_firearm_model(sil_section_type: str) -> types.SILReportFirearmModelT:
+    if sil_section_type == "section1":
+        return models.SILSupplementaryReportFirearmSection1
+
+    elif sil_section_type == "section2":
+        return models.SILSupplementaryReportFirearmSection2
+
+    elif sil_section_type == "section5":
+        return models.SILSupplementaryReportFirearmSection5
+
+    elif sil_section_type == "section582-obsolete":
+        return models.SILSupplementaryReportFirearmSection582Obsolete
+
+    elif sil_section_type == "section582-other":
+        return models.SILSupplementaryReportFirearmSection582Other
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
@@ -837,6 +856,7 @@ def add_report_firearm_manual(
             if form.is_valid():
                 report_firearm = form.save(commit=False)
                 report_firearm.report = report
+                report_firearm.is_manual = True
                 report_firearm.goods_certificate = section_cert
                 report_firearm.save()
 
@@ -925,6 +945,42 @@ def edit_report_firearm_manual(
         template = "web/domains/case/import/fa/provide-report/edit-report-firearm-manual.html"
 
         return render(request=request, template_name=template, context=context)
+
+
+@login_required
+@require_POST
+def add_report_firearm_no_firearm(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
+        report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        section_cert = report.get_section_certificates(sil_section_type).get(pk=section_pk)
+
+        model_class = _get_report_firearm_model(sil_section_type)
+        model_class.objects.create(
+            report=report, goods_certificate=section_cert, is_no_firearm=True
+        )
+
+        return redirect(
+            reverse(
+                "import:fa:edit-report",
+                kwargs={"application_pk": application.pk, "report_pk": report.pk},
+            )
+        )
 
 
 @login_required

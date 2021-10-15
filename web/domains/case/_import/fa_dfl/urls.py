@@ -49,14 +49,26 @@ urlpatterns = [
                     include(
                         [
                             path(
-                                "goods/<int:goods_pk>/manual/add/",
-                                views.add_report_firearm_manual,
-                                name="report-firearm-manual-add",
-                            ),
-                            path(
-                                "goods/<int:goods_pk>/upload/add/",
-                                views.add_report_firearm_upload,
-                                name="report-firearm-upload-add",
+                                "goods/<int:goods_pk>/",
+                                include(
+                                    [
+                                        path(
+                                            "manual/add/",
+                                            views.add_report_firearm_manual,
+                                            name="report-firearm-manual-add",
+                                        ),
+                                        path(
+                                            "upload/add/",
+                                            views.add_report_firearm_upload,
+                                            name="report-firearm-upload-add",
+                                        ),
+                                        path(
+                                            "no-firearm/add/",
+                                            views.add_report_firearm_no_firearm,
+                                            name="report-firearm-no-firearm-add",
+                                        ),
+                                    ]
+                                ),
                             ),
                             path(
                                 "<int:report_firearm_pk>/",

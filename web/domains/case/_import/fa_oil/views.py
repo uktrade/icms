@@ -255,6 +255,7 @@ def add_report_firearm_manual(
             if form.is_valid():
                 report_firearm: OILSupplementaryReportFirearm = form.save(commit=False)
                 report_firearm.report = report
+                report_firearm.is_manual = True
                 report_firearm.save()
 
                 return redirect(
@@ -415,6 +416,33 @@ def view_upload_document(
     return view_application_file(
         request.user, application, report_firearm.document, document.pk, "import"
     )
+
+
+@login_required
+@require_POST
+def add_report_firearm_no_firearm(
+    request: AuthenticatedHttpRequest, *, application_pk: int, report_pk: int
+) -> HttpResponse:
+    with transaction.atomic():
+        application: OpenIndividualLicenceApplication = get_object_or_404(
+            OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: OILSupplementaryInfo = application.supplementary_info
+        report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        OILSupplementaryReportFirearm.objects.create(report=report, is_no_firearm=True)
+
+        return redirect(
+            reverse(
+                "import:fa:edit-report",
+                kwargs={"application_pk": application.pk, "report_pk": report.pk},
+            )
+        )
 
 
 @login_required
