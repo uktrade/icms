@@ -8,6 +8,7 @@ class Mailshot(models.Model):
     class Statuses(models.TextChoices):
         DRAFT = ("DRAFT", "Draft")
         PUBLISHED = ("PUBLISHED", "Published")
+        PUBLISHING = ("PUBLISHING", "Publishing")
         RETRACTED = ("RETRACTED", "Retracted")
         CANCELLED = ("CANCELLED", "Cancelled")
 
@@ -51,6 +52,15 @@ class Mailshot(models.Model):
     retracted_datetime = models.DateTimeField(null=True)
 
     documents = models.ManyToManyField(File, related_name="+")
+
+    reference = models.CharField(max_length=100, blank=True, null=True)
+    version = models.PositiveIntegerField(default=0)
+
+    def get_reference(self) -> str:
+        if not self.reference:
+            return "Not Yet Assigned"
+        else:
+            return f"{self.reference} (Version {self.version})"
 
     @property
     def started(self):

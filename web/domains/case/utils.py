@@ -16,6 +16,7 @@ from web.utils.s3 import get_file_from_s3
 from .types import ImpOrExpOrAccess
 
 
+# TODO: ICMSLST-1175 Rename CaseReference
 def allocate_case_reference(
     *, lock_manager: LockManager, prefix: str, use_year: bool, min_digits: int
 ) -> str:

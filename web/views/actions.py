@@ -40,11 +40,11 @@ class PostAction(ListAction):
             )
         )
 
-    def get_context_data(self, object, csrf_token, **kwargs):
+    def get_context_data(self, obj, csrf_token, **kwargs):
         return {
             "icon": getattr(self, "icon", None),
             "csrf_token": csrf_token,
-            "object": object,
+            "object": obj,
             "confirm": self.confirm,
             "confirm_message": getattr(self, "confirm_message", None),
             "action": self.action,

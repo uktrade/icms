@@ -1,10 +1,10 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import models, transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
@@ -15,6 +15,7 @@ from django.views.generic.detail import DetailView
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
+from web.domains.case.utils import allocate_case_reference
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -24,7 +25,7 @@ from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView, ModelUpdateView
 from web.views.mixins import PostActionMixin
 
-from .actions import Edit, Retract
+from .actions import Edit, Republish, Retract
 from .actions import View as Display
 from .actions import ViewReceived
 from .forms import (
@@ -34,6 +35,9 @@ from .forms import (
     ReceivedMailshotsFilter,
 )
 from .models import Mailshot
+
+if TYPE_CHECKING:
+    from django.db import QuerySet
 
 
 class ReceivedMailshotsView(ModelFilterView):
@@ -68,14 +72,14 @@ class MailshotListView(ModelFilterView):
 
     class Display:
         fields = [
-            "id",
+            "reference",
             "status_verbose",
             ("retracted", "published", "started"),
             "title",
             "description",
         ]
         fields_config = {
-            "id": {"header": "Reference"},
+            "reference": {"header": "Reference", "method": "get_reference"},
             "started": {"header": "Activity", "label": "<strong>Started</strong>"},
             "published": {"no_header": True, "label": "<strong>Published</strong>"},
             "retracted": {"no_header": True, "label": "<strong>Retracted</strong>"},
@@ -83,7 +87,21 @@ class MailshotListView(ModelFilterView):
             "status_verbose": {"header": "Status"},
             "description": {"header": "Description"},
         }
-        actions = [Edit(), Display(), Retract()]
+
+        actions = [Edit(), Display(), Retract(), Republish()]
+
+    def get_queryset(self) -> "QuerySet[Mailshot]":
+        qs = super().get_queryset()
+
+        max_version = Mailshot.objects.filter(reference=models.OuterRef("reference")).order_by(
+            "-version"
+        )
+
+        mailshots = qs.annotate(
+            last_version_for_ref=models.Subquery(max_version.values("version")[:1])
+        )
+
+        return mailshots.order_by("-pk")
 
 
 class MailshotCreateView(RequireRegisteredMixin, View):
@@ -120,14 +138,31 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         """
         Publish mailshot if form is valid.
         """
-        mailshot = form.instance
-        mailshot.status = Mailshot.Statuses.PUBLISHED
-        mailshot.published_datetime = timezone.now()
-        mailshot.published_by = self.request.user
-        response = super().form_valid(form)
-        if response.status_code == 302 and response.url == self.success_url:
-            self.handle_notification(mailshot)
-        return response
+
+        with transaction.atomic():
+            response = super().form_valid(form)
+
+            mailshot = self.get_object()
+            mailshot.status = Mailshot.Statuses.PUBLISHED
+            mailshot.published_datetime = timezone.now()
+            mailshot.published_by = self.request.user
+            if not mailshot.reference:
+                # TODO: ICMSLST-1175 Rename CaseReference
+                mailshot.reference = allocate_case_reference(
+                    lock_manager=self.request.icms.lock_manager,
+                    prefix="MAIL",
+                    use_year=False,
+                    min_digits=1,
+                )
+                mailshot.version = models.F("version") + 1
+            mailshot.save()
+
+            self.object = mailshot
+
+            if response.status_code == 302 and response.url == self.success_url:
+                self.handle_notification(mailshot)
+
+            return response
 
     def save_draft(self, request, **kwargs):
         """
@@ -150,12 +185,12 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         return redirect(self.success_url)
 
     def get_success_message(self, cleaned_data):
+        # TODO: ICMSLST-1173 fix success message
         action = self.request.POST.get("action")
         if action and action == "save_draft":
             return super().get_success_message(cleaned_data)
 
-        # TODO: ICMSLST-1151 replace pk with reference
-        return f"{self.object} published successfully"
+        return f"{self.object.get_reference()} published successfully"
 
     def get_queryset(self):
         """
@@ -180,8 +215,7 @@ class MailshotDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["documents"] = self.object.documents.filter(is_active=True)
-        # TODO: ICMSLST-1151 replace pk with reference
-        context["page_title"] = f"Viewing Mailshot ({self.object.pk})"
+        context["page_title"] = f"Viewing Mailshot ({self.object.get_reference()})"
 
         return context
 
@@ -243,7 +277,7 @@ class MailshotRetractView(ModelUpdateView):
         return response
 
     def get_success_message(self, cleaned_data):
-        return f"{self.object} retracted successfully"  # type:ignore[attr-defined]
+        return f"{self.object.get_reference()} retracted successfully"  # type:ignore[attr-defined]
 
     def get_queryset(self):
         """
@@ -253,8 +287,7 @@ class MailshotRetractView(ModelUpdateView):
         return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
-        # TODO: ICMSLST-1151 replace pk with reference
-        return f"Retract {self.object}"  # type:ignore[attr-defined]
+        return f"Retract {self.object.get_reference()}"  # type:ignore[attr-defined]
 
 
 @login_required
@@ -317,6 +350,21 @@ def delete_document(
         document.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot_pk}))
+
+
+@login_required
+@permission_required("web.reference_data_access", raise_exception=True)
+def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        mailshot.pk = None
+        mailshot._state.adding = True
+        mailshot.status = Mailshot.Statuses.DRAFT
+        mailshot.version = models.F("version") + 1
+        mailshot.save()
+
+        return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
 
 
 def _check_permission(user: User) -> bool:

@@ -2,8 +2,7 @@
 
 
 <div class="container setoutForm">
-  {# TODO: ICMSLST-1151 replace pk with reference #}
-  {{ application_field(object.pk, "Reference") }}
+  {{ application_field(object.get_reference(), "Reference") }}
 
   <div class="row">
     <div class="three columns">

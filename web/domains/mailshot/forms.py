@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
 
 import structlog as logging
+from django.db import models
 from django.forms import ModelForm, MultipleChoiceField
-from django.forms.widgets import CheckboxSelectMultiple, Textarea
-from django_filters import CharFilter, ChoiceFilter, FilterSet
+from django.forms.widgets import CheckboxInput, CheckboxSelectMultiple, Textarea
+from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 
 from .models import Mailshot
 
@@ -15,7 +16,7 @@ logger = logging.get_logger(__name__)
 
 class MailshotFilter(FilterSet):
 
-    id = CharFilter(field_name="id", lookup_expr="icontains", label="Reference")
+    reference = CharFilter(field_name="reference", lookup_expr="icontains", label="Reference")
 
     title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
 
@@ -25,9 +26,33 @@ class MailshotFilter(FilterSet):
         field_name="status", lookup_expr="exact", choices=Mailshot.Statuses.choices, label="Status"
     )
 
+    latest_version = BooleanFilter(
+        label="Only show the current mailshot version",
+        widget=CheckboxInput,
+        method="get_latest_version",
+    )
+
     class Meta:
         model = Mailshot
         fields = []
+
+    def get_latest_version(
+        self, queryset: "QuerySet[Mailshot]", name: str, value: bool
+    ) -> "QuerySet[Mailshot]":
+        """Custom method to get the latest versions for mailshots.
+
+        :param name: field name.
+        :param value: field value to filter or not the latest versions.
+        """
+        if value:
+            last_versions = models.Q(reference__isnull=True) | models.Q(
+                version=models.F("last_version_for_ref")
+            )
+
+            return queryset.filter(last_versions)
+
+        else:
+            return queryset
 
 
 class ReceivedMailshotsFilter(FilterSet):
