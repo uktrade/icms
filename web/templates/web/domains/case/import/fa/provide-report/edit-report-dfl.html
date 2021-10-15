@@ -3,8 +3,13 @@
 {% block firearms %}
   {% for goods in report.get_goods_certificates() %}
     <fieldset>
-      <legend><strong>{{ goods.goods_description }}</strong></legend>
-        {% with firearms = goods.supplementary_report_firearms.filter(report_id=report.pk), is_readonly = False, upload = goods.supplementary_report_firearms.filter(is_upload=True).exists() %}
+      <h4><strong>{{ goods.goods_description }}</strong></h4>
+        {% with
+          manual_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_manual=True),
+          upload_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_upload=True),
+          no_firearms = goods.supplementary_report_firearms.filter(report_id=report.pk, is_no_firearm=True),
+          read_only = False
+        %}
           {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
         {% endwith %}
     </fieldset>

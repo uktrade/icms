@@ -1,0 +1,54 @@
+{% if firearms %}
+  <div class="section-break"></div>
+  <h4>Uploaded documents</h4>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      {% if read_only %}
+        <th scope="col">Goods Item</th>
+      {% endif %}
+      <th scope="col">Upload</th>
+      {% if not read_only %}
+        <th scope="col">Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for firearm in firearms %}
+      <tr>
+        {% if read_only %}
+          <td>{{ firearm.get_description() }}</td>
+        {% endif %}
+        <td>
+          <a href="{{ firearm.get_view_upload_url() }}" class="link">
+            {{ firearm.document.filename }}
+          </a>
+        </td>
+        {% if not read_only %}
+          <td>
+            <ul class="menu-out">
+              <li>{{ buttons.delete_firearm_button(firearm, report_type, csrf_input, section_type=section_type) }}</li>
+              <li><br/></li>
+            </ul>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  {% if not read_only and not report_type == "sil" %}
+    <div class="info-box info-box-info">
+      Add document to this goods line (optional)
+    </div>
+  {% endif %}
+{% endif %}
+{% if not read_only and not report_type == "sil" %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        {{ buttons.upload_document_button(report, report_type, goods=goods, section=section, section_type=section_type) }}
+      </li>
+    </ul>
+  </div>
+{% endif %}

@@ -2,8 +2,13 @@
 
 {% block firearms %}
   <fieldset>
-    <legend><strong>{{ process.goods_description() }}</strong></legend>
-    {% with firearms = report.get_report_firearms(), is_readonly = False, upload = report.has_upload() %}
+    <h4><strong>{{ process.goods_description() }}</strong></h4>
+    {% with
+      manual_firearms = report.get_report_firearms(is_manual=True),
+      upload_firearms = report.get_report_firearms(is_upload=True),
+      no_firearms = report.get_report_firearms(is_no_firearm=True),
+      read_only = False
+    %}
       {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
     {% endwith %}
   </fieldset>

@@ -1,0 +1,30 @@
+{% if firearms %}
+  <div class="section-break"></div>
+  <h4>No firearms to report</h4>
+  <table class="setoutList">
+    {% if read_only %}
+    <thead>
+      <tr><th scope="col">Goods Item</th></tr>
+    </thead>
+    {% endif %}
+    <tbody>
+    {% for firearm in firearms %}
+      <tr>
+        {% if read_only %}
+          <td>{{ firearm.get_description() }}</td>
+        {% else %}
+          <td>No firearms to report for this goods line. Delete to add firearms</td>
+        {% endif %}
+        {% if not read_only %}
+            <td>
+              <ul class="menu-out">
+                <li>{{ buttons.delete_firearm_button(firearm, report_type, csrf_input, section_type=section_type) }}</li>
+                <li><br/></li>
+              </ul>
+            </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}

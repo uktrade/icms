@@ -113,31 +113,34 @@ class DFLSupplementaryReport(SupplementaryReportBase):
     def get_goods_certificates(self) -> "QuerySet[DFLGoodsCertificate]":
         return self.supplementary_info.import_application.goods_certificates.filter(is_active=True)
 
-    def get_report_firearms(self) -> "QuerySet[DFLSupplementaryReportFirearm]":
-        return self.firearms.all()
+    def get_report_firearms(
+        self, is_manual: bool = False, is_upload: bool = False, is_no_firearm: bool = False
+    ) -> "QuerySet[DFLSupplementaryReportFirearm]":
+        """Method to filter all report firearms on a firearm report.
 
-    def get_add_firearm_url_manual(self, goods_pk: int) -> str:
+        :param is_manual: Firearm information which was manually entered
+        :param is_upload: Firearm information which was uploaded as a document
+        :param is_no_firearm: No information included for firearm
+        """
+
+        return self.firearms.filter(
+            is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+        )
+
+    def get_add_firearm_url(
+        self, goods_pk: int, url_type: Literal["manual", "upload", "no-firearm"]
+    ) -> str:
+        if url_type not in ["manual", "upload", "no-firearm"]:
+            raise NotImplementedError(f"Invalid url type {url_type}")
+
         return reverse(
-            "import:fa-dfl:report-firearm-manual-add",
+            f"import:fa-dfl:report-firearm-{url_type}-add",
             kwargs={
                 "application_pk": self.supplementary_info.import_application.pk,
                 "goods_pk": goods_pk,
                 "report_pk": self.pk,
             },
         )
-
-    def get_add_firearm_url_upload(self, goods_pk: int) -> str:
-        return reverse(
-            "import:fa-dfl:report-firearm-upload-add",
-            kwargs={
-                "application_pk": self.supplementary_info.import_application.pk,
-                "goods_pk": goods_pk,
-                "report_pk": self.pk,
-            },
-        )
-
-    def has_upload(self) -> bool:
-        return self.firearms.filter(is_upload=True).exists()
 
 
 class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):

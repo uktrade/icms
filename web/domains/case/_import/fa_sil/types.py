@@ -30,7 +30,7 @@ ResponsePrepGoodsForm = Union[
 
 ResponsePrepGoodsFormT = Type[ResponsePrepGoodsForm]
 
-SILReportFirearmModels = Union[
+SILReportFirearmModel = Union[
     models.SILSupplementaryReportFirearmSection1,
     models.SILSupplementaryReportFirearmSection2,
     models.SILSupplementaryReportFirearmSection5,
@@ -38,7 +38,9 @@ SILReportFirearmModels = Union[
     models.SILSupplementaryReportFirearmSection582Other,
 ]
 
-SILReportFirearmFormsT = Type[
+SILReportFirearmModelT = Type[SILReportFirearmModel]
+
+SILReportFirearmFormT = Type[
     Union[
         forms.SILSupplementaryReportFirearmSection1Form,
         forms.SILSupplementaryReportFirearmSection2Form,

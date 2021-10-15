@@ -419,6 +419,7 @@ def add_report_firearm_manual(
             if form.is_valid():
                 report_firearm: DFLSupplementaryReportFirearm = form.save(commit=False)
                 report_firearm.report = report
+                report_firearm.is_manual = True
                 report_firearm.goods_certificate = goods_certificate
                 report_firearm.save()
 
@@ -583,6 +584,40 @@ def view_upload_document(
     return view_application_file(
         request.user, application, report_firearm.document, document.pk, "import"
     )
+
+
+@login_required
+@require_POST
+def add_report_firearm_no_firearm(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    goods_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: DFLApplication = get_object_or_404(
+            DFLApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_application_permission(application, request.user, "import")
+
+        get_application_current_task(application, "import", Task.TaskType.ACK)
+
+        supplementary_info: DFLSupplementaryInfo = application.supplementary_info
+        report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+        goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
+
+        DFLSupplementaryReportFirearm.objects.create(
+            report=report, goods_certificate=goods_certificate, is_no_firearm=True
+        )
+
+        return redirect(
+            reverse(
+                "import:fa:edit-report",
+                kwargs={"application_pk": application.pk, "report_pk": report.pk},
+            )
+        )
 
 
 @login_required
