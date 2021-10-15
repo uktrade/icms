@@ -41,8 +41,9 @@ class MailshotFilter(FilterSet):
     ) -> "QuerySet[Mailshot]":
         """Custom method to get the latest versions for mailshots.
 
-        `name` is the field name `latest_version`.
-        `value` tells to display or not the latest versions."""
+        :param name: field name.
+        :param value: field value to filter or not the latest versions.
+        """
         if value:
             last_versions = models.Q(reference__isnull=True) | models.Q(
                 version=models.F("last_version_for_ref")

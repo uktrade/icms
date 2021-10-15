@@ -1,6 +1,7 @@
 from django.db import models
 
 
+# TODO: ICMSLST-1175 Rename CaseReference
 class CaseReference(models.Model):
     class Meta:
         constraints = [

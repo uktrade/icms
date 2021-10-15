@@ -1,6 +1,4 @@
-import xml.etree.ElementTree as ET
-
-from django.test import Client
+from django.db.models import F
 from django.utils import timezone
 
 from web.domains.case.utils import allocate_case_reference
@@ -255,6 +253,9 @@ class MailshotDetailViewTest(AuthTestCase):
 
 def test_mailshot_list_queryset(test_icms_admin_user):
     st = Mailshot.Statuses
+    _create_mailshot(st.DRAFT, test_icms_admin_user)
+    _create_mailshot(st.PUBLISHED, test_icms_admin_user, reference_version=True)
+    _create_mailshot(st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True)
     old_version = _create_mailshot(
         st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True
     )
@@ -264,49 +265,19 @@ def test_mailshot_list_queryset(test_icms_admin_user):
     new_version.save()
 
     v = MailshotListView()
-    new_version, old_version = v.get_queryset()
+    new_version, old_version, retracted, published, draft = v.get_queryset()
 
-    assert old_version.get_reference() == "MAIL/1 (Version 1)"
-    assert new_version.get_reference() == "MAIL/1 (Version 2)"
+    assert new_version.get_reference() == "MAIL/3 (Version 2)"
+    assert old_version.get_reference() == "MAIL/3 (Version 1)"
+    assert retracted.get_reference() == "MAIL/2 (Version 1)"
+    assert published.get_reference() == "MAIL/1 (Version 1)"
+    assert draft.get_reference() == "Not Yet Assigned"
 
-    assert old_version.last_version_for_ref == 2
     assert new_version.last_version_for_ref == 2
-
-
-def test_mailshot_list(test_icms_admin_user):
-    st = Mailshot.Statuses
-    _create_mailshot(st.DRAFT, test_icms_admin_user)
-    _create_mailshot(st.PUBLISHED, test_icms_admin_user, reference_version=True)
-    _create_mailshot(st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True)
-
-    old_version = _create_mailshot(
-        st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True
-    )
-    new_version = _create_mailshot(st.DRAFT, test_icms_admin_user)
-    new_version.reference = old_version.reference
-    new_version.version = old_version.version + 1
-    new_version.save()
-
-    client = Client()
-    client.login(username=test_icms_admin_user.username, password="test")
-    response = client.get("/mailshot/")
-    assert response.status_code == 200
-
-    html = ET.fromstring(response.content)
-    results = html.findall(".//*/tr[@class='result-row']")
-    republished, old_version, retracted, published, draft = results
-
-    _check_actions(republished, expected=["Edit"])
-    _check_actions(old_version, expected=["View"])
-    _check_actions(retracted, expected=["View", "Republish"])
-    _check_actions(published, expected=["View", "Retract"])
-    _check_actions(draft, expected=["Edit"])
-
-
-def _check_actions(row: ET.Element, expected: list[str]):
-    row_action = row.find(".//td[last()]")
-    actions = row_action.findall(".//*/a") + row_action.findall(".//*/button")
-    assert [a.text for a in actions] == expected
+    assert old_version.last_version_for_ref == 2
+    assert retracted.last_version_for_ref == 1
+    assert published.last_version_for_ref == 1
+    assert draft.last_version_for_ref is None
 
 
 def _create_mailshot(
@@ -335,13 +306,14 @@ def _create_mailshot(
 
     if reference_version:
         icms = ICMSMiddlewareContext()
+        # TODO: ICMSLST-1175 Rename CaseReference
         mailshot.reference = allocate_case_reference(
             lock_manager=icms.lock_manager,
             prefix="MAIL",
             use_year=False,
             min_digits=1,
         )
-        mailshot.version += 1
+        mailshot.version = F("version") + 1
         mailshot.save()
 
     return mailshot

@@ -147,13 +147,14 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             mailshot.published_datetime = timezone.now()
             mailshot.published_by = self.request.user
             if not mailshot.reference:
+                # TODO: ICMSLST-1175 Rename CaseReference
                 mailshot.reference = allocate_case_reference(
                     lock_manager=self.request.icms.lock_manager,
                     prefix="MAIL",
                     use_year=False,
                     min_digits=1,
                 )
-                mailshot.version += 1
+                mailshot.version = models.F("version") + 1
             mailshot.save()
 
             self.object = mailshot
@@ -360,7 +361,7 @@ def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpRes
         mailshot.pk = None
         mailshot._state.adding = True
         mailshot.status = Mailshot.Statuses.DRAFT
-        mailshot.version += 1
+        mailshot.version = models.F("version") + 1
         mailshot.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
