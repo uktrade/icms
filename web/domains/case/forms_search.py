@@ -12,15 +12,35 @@ from web.domains.commodity.models import CommodityGroup
 from web.domains.contacts.widgets import ContactWidget
 from web.domains.country.models import Country
 from web.domains.user.models import User
+from web.forms.fields import WildcardField
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
 from web.utils.search import get_export_status_choices, get_import_status_choices
 
+# We are restricting what the user can enter in the regex search fields rather than having to
+# escape everything in the search code later.
+# Following characters allowed:
+# % (The wildcard character)
+# \w Matches any alphanumeric character; this is equivalent to the class [a-zA-Z0-9_].
+# Any of the following symbols: ' " , / & @ - \ ( )
+wildcard_field_regex = r"^[%\w'\",/&@-\\\(\)]+$"
+wildcard_invalid_error = "Enter a valid value, see help text for more information"
+
 
 class SearchFormBase(forms.Form):
-    case_ref = forms.CharField(label="Case Reference", required=False)
+    case_ref = WildcardField(
+        label="Case Reference",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
-    licence_ref = forms.CharField(label="Licence Reference", required=False)
+    licence_ref = WildcardField(
+        label="Licence Reference",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
     decision = forms.ChoiceField(
         label="Response Decision",
@@ -90,7 +110,12 @@ class ImportSearchForm(SearchFormBase):
         required=False,
     )
 
-    importer_or_agent = forms.CharField(label="Importer/Agent", required=False)
+    importer_or_agent = WildcardField(
+        label="Importer/Agent",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
     licence_from = forms.DateField(label="Licence Date", required=False, widget=DateInput)
     licence_to = forms.DateField(label="To", required=False, widget=DateInput)
@@ -116,7 +141,12 @@ class ImportSearchForm(SearchFormBase):
 
 
 class ImportSearchAdvancedForm(ImportSearchForm):
-    applicant_ref = forms.CharField(label="Applicant's Reference", required=False)
+    applicant_ref = WildcardField(
+        label="Applicant's Reference",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
     licence_type = forms.ChoiceField(
         label="Licence Type",
@@ -130,7 +160,12 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         choices=[(None, "Any")] + ImportApplication.ChiefUsageTypes.choices,
     )
 
-    application_contact = forms.CharField(label="Application Contact", required=False)
+    application_contact = WildcardField(
+        label="Application Contact",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
     origin_country = forms.ModelMultipleChoiceField(
         label="Country of Origin",
@@ -159,9 +194,12 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         queryset=CommodityGroup.objects.all(),
     )
 
-    # TODO: Revisit when doing ICMSLST-1137
-    # We should prevent things like "%%%" etc.
-    commodity_code = forms.CharField(label="Commodity Code", required=False)
+    commodity_code = WildcardField(
+        label="Commodity Code",
+        required=False,
+        regex="^[0-9%]+$",
+        error_messages={"invalid": wildcard_invalid_error},
+    )
 
     pending_firs = forms.ChoiceField(
         label="Pending Further Information Requests",
@@ -189,18 +227,13 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def clean_commodity_code(self):
+        cc = self.cleaned_data["commodity_code"]
 
-        commodity_code: str = cleaned_data.get("commodity_code")
+        if cc and len(cc.strip("%")) < 3:
+            self.add_error("commodity_code", "Please enter at least 3 non wildcard characters.")
 
-        if commodity_code:
-            com_code_without_wildcard = commodity_code.strip("%")
-
-            if com_code_without_wildcard and len(com_code_without_wildcard) < 3:
-                self.add_error("commodity_code", "Please enter at least 3 non wildcard characters.")
-
-        return cleaned_data
+        return cc
 
 
 class ExportSearchForm(SearchFormBase):
@@ -216,7 +249,13 @@ class ExportSearchForm(SearchFormBase):
         required=False,
     )
 
-    exporter_or_agent = forms.CharField(label="Exporter/Agent Name", required=False)
+    exporter_or_agent = WildcardField(
+        label="Exporter/Agent Name",
+        required=False,
+        regex=wildcard_field_regex,
+        error_messages={"invalid": wildcard_invalid_error},
+    )
+
     closed_from = forms.DateField(label="Closed Date", required=False, widget=DateInput)
     closed_to = forms.DateField(label="To", required=False, widget=DateInput)
 
