@@ -188,6 +188,7 @@ class Menu:
                             view="case:search",
                             kwargs={"case_type": "export"},
                         ),
+                        SubMenuLink(label="Manage IMI Cases", view="import:imi-case-list"),
                     ]
                 ),
             ],

@@ -1,0 +1,41 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% block main_content %}
+  <div id="content">
+    <div id="content-ie8-float">
+      <div class="content-actions"></div>
+      <table class="setoutList">
+        <thead>
+        <tr>
+          <th scope="col">Case Reference</th>
+          <th scope="col">Applicant Details</th>
+          <th scope="col">Approval Date</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for app in imi_list %}
+          <tr>
+            <td><span class="text-widget">{{ app.reference }}</span></td>
+            <td>
+              {% for contact in app.import_contacts %}
+                <span class="text-widget">
+                  {{ contact }}
+                  <br>
+                </span>
+              {% endfor %}
+            </td>
+            <td><span class="text-widget">{{ app.authorised_date.strftime('%d-%b-%Y') }}</span></td>
+            <td>
+              <ul class="menu-out">
+                {# TODO: Revisit when doing ICMSLST-984 #}
+                <li><a href="#">View IMI Summary</a></li>
+              </ul>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
