@@ -1,23 +1,26 @@
-from typing import Any, List, Optional, Type
+from typing import TYPE_CHECKING, Any, List, Optional, Type
 
 import django.forms as django_forms
 import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import PermissionDenied
-from django.db import transaction
+from django.db import models, transaction
+from django.db.models.functions import Concat
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
-from django.views.generic import TemplateView
+from django.views.generic import ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.utils import get_application_current_task
+from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
@@ -45,6 +48,9 @@ from .sanctions.models import SanctionsAndAdhocApplication
 from .sps.models import PriorSurveillanceApplication
 from .textiles.models import TextilesApplication
 from .wood.models import WoodQuotaApplication
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 def _get_disabled_application_types() -> dict[str, bool]:
@@ -628,3 +634,44 @@ def bypass_chief(
         )
 
         return redirect(reverse("workbasket"))
+
+
+class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    permission_required = "web.reference_data_access"
+    template_name = "web/domains/case/import/imi/list.html"
+    context_object_name = "imi_list"
+
+    def get_queryset(self) -> "QuerySet[ImportApplication]":
+        """Return all applications that have been acknowledged."""
+
+        # TODO: ICMSLST-984 Revisit when implementing (as we need to filter by a new column)
+        # TODO: ICMSLST-809 Revisit when the licence file has been generated (to filter on correct task)
+        imi_eu_countries = CountryGroup.objects.get(name="EU Countries (IMI Cases)").countries.all()
+
+        qs = (
+            ImportApplication.objects.filter(
+                application_type__type=ImportApplicationType.Types.FIREARMS,
+                tasks__task_type=Task.TaskType.ACK,
+                importer_office__postcode__istartswith="BT",
+                consignment_country__in=imi_eu_countries,
+            )
+            .annotate(
+                authorised_date=models.F("tasks__created"),
+                import_contacts=ArrayAgg(
+                    Concat(
+                        models.F("importcontact__first_name"),
+                        models.Value(" "),
+                        models.F("importcontact__last_name"),
+                    ),
+                ),
+            )
+            .values_list("reference", "import_contacts", "authorised_date", named=True)
+        )
+
+        return qs
+
+    def get_context_data(self, **kwargs: dict[Any, Any]) -> dict[Any, Any]:
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "IMI Applications"
+
+        return context

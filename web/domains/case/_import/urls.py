@@ -26,6 +26,10 @@ endorsements_urls = [
     ),
 ]
 
+imi_urls = [
+    path("case-list", views.IMICaseListView.as_view(), name="imi-case-list"),
+]
+
 urlpatterns = [
     path("", views.ImportApplicationChoiceView.as_view(), name="choose"),
     # Create import application urls
@@ -64,6 +68,7 @@ urlpatterns = [
             ]
         ),
     ),
+    path("imi/", include(imi_urls)),
 ]
 
 if settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:

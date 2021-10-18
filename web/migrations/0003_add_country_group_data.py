@@ -1515,6 +1515,43 @@ def add_sanctions_and_adhoc_coc(apps, schema_editor):
     add_countries_to_group(group, countries, apps)
 
 
+def add_imi_country_group(apps, schema_editor):
+    CountryGroup = apps.get_model("web", "CountryGroup")
+    group = CountryGroup.objects.create(name="EU Countries (IMI Cases)")
+
+    countries = [
+        "Austria",
+        "Belgium",
+        "Bulgaria",
+        "Croatia",
+        "Cyprus",
+        "Denmark",
+        "Estonia",
+        "Finland",
+        "France",
+        "Germany",
+        "Greece",
+        "Hungary",
+        "Irish Republic",
+        "Italy",
+        "Latvia",
+        "Lithuania",
+        "Luxembourg",
+        "Malta",
+        "Netherlands",
+        "Poland",
+        "Romania",
+        "Slovenia",
+        "Spain",
+        "Sweden",
+        "United Kingdom",
+        "the Czech Republic",
+        "the Slovak Republic",
+    ]
+
+    add_countries_to_group(group, countries, apps)
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("web", "0002_add_country_data"),
@@ -1545,4 +1582,5 @@ class Migration(migrations.Migration):
         migrations.RunPython(load_country_group_data_non_EU_single_countries),
         migrations.RunPython(add_sanctions_and_adhoc_license_country_group),
         migrations.RunPython(add_sanctions_and_adhoc_coc),
+        migrations.RunPython(add_imi_country_group),
     ]
