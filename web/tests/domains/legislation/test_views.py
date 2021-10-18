@@ -34,7 +34,7 @@ class ProductLegislationListViewTest(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         results = response.context_data["results"]
-        self.assertEqual(results.count(), 35)
+        self.assertEqual(results.count(), 26)
 
 
 class ProductLegislationCreateViewTest(AuthTestCase):
