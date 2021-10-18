@@ -28,6 +28,20 @@ class ProductLegislationFilter(FilterSet):
         label="Is EU Cosmetics Regulation",
     )
 
+    gb_legislation = ChoiceFilter(
+        field_name="gb_legislation",
+        choices=((True, "Yes"), (False, "No")),
+        lookup_expr="exact",
+        label="Great Britain Legislation",
+    )
+
+    ni_legislation = ChoiceFilter(
+        field_name="ni_legislation",
+        choices=((True, "Yes"), (False, "No")),
+        lookup_expr="exact",
+        label="Northern Ireland Legislation",
+    )
+
     status = ChoiceFilter(
         field_name="is_active",
         choices=((True, "Current"), (False, "Archived")),
