@@ -50,21 +50,24 @@ class ProductLegislationFilterTest(TestCase):
 
     def test_biocidal_filter(self):
         results = self.run_filter({"is_biocidal": False})
-        self.assertEqual(results.count(), 35)
+        self.assertEqual(results.count(), 25)
 
     def test_biocidal_claim_filter(self):
         results = self.run_filter({"is_biocidal_claim": True})
-        self.assertEqual(results.count(), 1)
+        self.assertEqual(results.count(), 3)
+
+        # Check the test legislation is in the results
+        results = results.filter(name="Test Legislation")
         first = results.first()
         self.assertEqual(first.name, "Test Legislation")
 
     def test_is_cosmetics_regulation_filter(self):
         results = self.run_filter({"is_eu_cosmetics_regulation": True})
-        self.assertEqual(results.count(), 3)
+        self.assertEqual(results.count(), 2)
 
     def test_status_filter(self):
         results = self.run_filter({"status": True})
-        self.assertEqual(results.count(), 28)
+        self.assertEqual(results.count(), 27)
 
     def test_filter_order(self):
         results = self.run_filter({"name": "legislation"})
