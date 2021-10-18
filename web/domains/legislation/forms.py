@@ -43,17 +43,11 @@ class ProductLegislationFilter(FilterSet):
 class ProductLegislationForm(ModelForm):
     class Meta:
         model = ProductLegislation
-        fields = ["name", "is_biocidal", "is_biocidal_claim", "is_eu_cosmetics_regulation"]
-        labels = {
-            "name": "Legislation Name",
-            "is_biocidal": "Biocidal",
-            "is_biocidal_claim": "Biocidal Claim",
-            "is_eu_cosmetics_regulation": "EU Cosmetics Regulation",
-        }
-        help_texts = {
-            "is_biocidal": "Product type numbers and active ingredients must be \
-                entered by the applicant when biocidal legislation is selected",
-            "is_eu_cosmetics_regulation": "A 'responsible person' statement \
-            may be added to the issued certificate schedule when the applicant \
-            selects EU Cosmetics Regulation legislation",
-        }
+        fields = [
+            "name",
+            "is_biocidal",
+            "is_biocidal_claim",
+            "is_eu_cosmetics_regulation",
+            "gb_legislation",
+            "ni_legislation",
+        ]
