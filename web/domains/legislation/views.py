@@ -21,6 +21,8 @@ class ProductLegislationListView(ModelFilterView):
             "is_biocidal_yes_no",
             "is_biocidal_claim_yes_no",
             "is_eu_cosmetics_regulation_yes_no",
+            "is_gb_legislation",
+            "is_ni_legislation",
         ]
 
         fields_config = {
@@ -28,6 +30,8 @@ class ProductLegislationListView(ModelFilterView):
             "is_biocidal_yes_no": {"header": "Is Biocidal"},
             "is_biocidal_claim_yes_no": {"header": "Is Biocidal Claim"},
             "is_eu_cosmetics_regulation_yes_no": {"header": "Is Cosmetics Regulation"},
+            "is_gb_legislation": {"header": "Great Britain Legislation"},
+            "is_ni_legislation": {"header": "Northern Ireland Legislation"},
         }
 
         actions = [Archive(), Unarchive(), Edit()]

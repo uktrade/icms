@@ -41,6 +41,14 @@ class ProductLegislation(Archivable, models.Model):
     def is_eu_cosmetics_regulation_yes_no(self):
         return "Yes" if self.is_eu_cosmetics_regulation else "No"
 
+    @property
+    def is_gb_legislation(self):
+        return "Yes" if self.gb_legislation else "No"
+
+    @property
+    def is_ni_legislation(self):
+        return "Yes" if self.ni_legislation else "No"
+
     def __str__(self):
         if self.id:
             return self.name
