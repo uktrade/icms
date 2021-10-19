@@ -11,7 +11,7 @@ class SanctionEmailsListView(ModelFilterView):
     template_name = "web/domains/sanction-emails/list.html"
     model = models.SanctionEmail
     filterset_class = filters.SanctionEmailsFilter
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "Maintain Sanction Emails"
 
     class Display:
@@ -25,7 +25,7 @@ class SanctionEmailsListView(ModelFilterView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_sanction_email(request):
     if request.POST:
         form = forms.SanctionEmailForm(request.POST)
@@ -44,7 +44,7 @@ def create_sanction_email(request):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_sanction_email(request, pk):
     sanction_email = get_object_or_404(models.SanctionEmail, pk=pk)
 

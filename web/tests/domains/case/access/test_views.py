@@ -46,7 +46,7 @@ class ImporterAccessRequestFIRListViewTest(AccessRequestTestBase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
@@ -55,7 +55,7 @@ class ImporterAccessRequestFIRListViewTest(AccessRequestTestBase):
             is_active=False, status=FurtherInformationRequest.DELETED
         )
         self.process.further_information_requests.add(self.second_fir)
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
@@ -82,7 +82,7 @@ class ImporterAccessRequestFIRListViewTest(AccessRequestTestBase):
             flow_task=self.fir_process.flow_class.respond,
             owner=start_task.owner,
         )
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         self.client.post(self.url, {"_withdraw": "", "_process_id": self.fir_process.pk})
         respond_task.refresh_from_db()
         self.assertEqual(respond_task.status, "CANCELED")
@@ -104,7 +104,7 @@ class ImporterAccessRequestFIRListViewTest(AccessRequestTestBase):
         task = fir_factories.FurtherInformationRequestTaskFactory(
             process=self.fir_process, flow_task=self.fir_process.flow_class.respond
         )
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         self.client.post(self.url, {"_withdraw": "", "_process_id": self.fir_process.pk})
         task = self.fir_process.active_tasks().last()
         self.assertEqual(task.flow_task.name, "send_request")
@@ -432,7 +432,7 @@ def test_list_importer_access_request_ok():
 
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     access_factories.ImporterAccessRequestFactory.create()
     client.login(username=ilb_admin.username, password="test")
     response = client.get("/access/importer/")
@@ -451,7 +451,7 @@ def test_list_exporter_access_request_ok():
 
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     access_factories.ExporterAccessRequestFactory.create()
     client.login(username=ilb_admin.username, password="test")
     response = client.get("/access/exporter/")

@@ -15,7 +15,7 @@ from web.tests.domains.office.factory import OfficeFactory
 from web.tests.domains.user.factory import UserFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["reference_data_access"]
+PERMISSIONS = ["ilb_admin"]
 
 
 class ImporterListViewTest(AuthTestCase):
@@ -368,7 +368,7 @@ def test_create_section5_authority():
         is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
-        permission_codenames=["reference_data_access"],
+        permission_codenames=["ilb_admin"],
     )
     office_one, office_two = OfficeFactory.create_batch(2, is_active=True)
     importer = ImporterFactory.create(is_active=True, offices=[office_one, office_two])

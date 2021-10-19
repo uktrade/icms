@@ -473,7 +473,7 @@ def delete_section(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def response_preparation_edit_goods(
     request: AuthenticatedHttpRequest,
     *,
@@ -726,7 +726,7 @@ def view_verified_section5_document(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -771,7 +771,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(

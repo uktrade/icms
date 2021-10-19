@@ -40,7 +40,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
     page_title = "Maintain Obsolete Calibres"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     paginate = False
 
     class Display:
@@ -56,7 +56,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_obsolete_calibre_group(request):
     if request.POST:
         form = ObsoleteCalibreGroupForm(request.POST)
@@ -80,7 +80,7 @@ def create_obsolete_calibre_group(request):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 
@@ -103,7 +103,7 @@ def edit_obsolete_calibre_group(request, pk):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def order_obsolete_calibre_group(request):
     with transaction.atomic():
         for order, pk in enumerate(request.POST.getlist("order[]")):
@@ -116,7 +116,7 @@ def order_obsolete_calibre_group(request):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def archive_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup.objects.filter(is_active=True), pk=pk)
     calibre_group.is_active = False
@@ -127,7 +127,7 @@ def archive_obsolete_calibre_group(request, pk):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def unarchive_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup.objects.filter(is_active=False), pk=pk)
     calibre_group.is_active = True
@@ -137,7 +137,7 @@ def unarchive_obsolete_calibre_group(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_obsolete_calibre(request, calibre_group_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     if request.POST:
@@ -168,7 +168,7 @@ def create_obsolete_calibre(request, calibre_group_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres, pk=calibre_pk)
@@ -193,7 +193,7 @@ def edit_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def order_obsolete_calibre(request, calibre_group_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
 
@@ -208,7 +208,7 @@ def order_obsolete_calibre(request, calibre_group_pk):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def archive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres.filter(is_active=True), pk=calibre_pk)
@@ -221,7 +221,7 @@ def archive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def unarchive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres.filter(is_active=False), pk=calibre_pk)
@@ -233,7 +233,7 @@ def unarchive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 
@@ -241,7 +241,7 @@ def view_obsolete_calibre_group(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
@@ -285,7 +285,7 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
@@ -322,7 +322,7 @@ def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
@@ -335,7 +335,7 @@ def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(
@@ -348,7 +348,7 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(
@@ -361,7 +361,7 @@ def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
@@ -386,7 +386,7 @@ def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_document_firearms(
     request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
@@ -402,7 +402,7 @@ def view_document_firearms(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_document_firearms(
     request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int

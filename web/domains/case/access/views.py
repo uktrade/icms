@@ -28,7 +28,7 @@ class ListImporterAccessRequest(ModelFilterView):
     template_name = "web/domains/case/access/list-importer.html"
     filterset_class = ImporterAccessRequestFilter
     model = ImporterAccessRequest
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "Search Importer Access Requests"
 
     class Display:
@@ -59,7 +59,7 @@ class ListExporterAccessRequest(ModelFilterView):
     template_name = "web/domains/case/access/list-exporter.html"
     filterset_class = ExporterAccessRequestFilter
     model = ExporterAccessRequest
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "Search Exporter Access Requests"
 
     class Display:
@@ -182,7 +182,7 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "web/domains/case/access/request-exporter-access.html", context)
 
 
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def management(request, pk, entity):
     with transaction.atomic():
         if entity == "importer":
@@ -229,7 +229,7 @@ def management(request, pk, entity):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def management_response(request, pk, entity):
     with transaction.atomic():
         if entity == "importer":

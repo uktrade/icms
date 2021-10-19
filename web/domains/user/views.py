@@ -28,7 +28,7 @@ from .formset import (
 )
 from .models import User
 
-permissions = "web.reference_data_access"
+permissions = "web.ilb_admin"
 
 
 @require_registered

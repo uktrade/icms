@@ -362,7 +362,7 @@ def edit_contract_document(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def response_preparation_edit_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:

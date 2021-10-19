@@ -137,7 +137,7 @@ def archive_withdrawal(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_withdrawals(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -210,7 +210,7 @@ def manage_withdrawals(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def take_ownership(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -244,7 +244,7 @@ def take_ownership(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def release_ownership(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -266,7 +266,7 @@ def release_ownership(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -327,7 +327,7 @@ def manage_case(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def start_authorisation(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -374,7 +374,7 @@ def start_authorisation(
 
 @login_required
 @sensitive_post_parameters("password")
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def authorise_documents(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -438,7 +438,7 @@ def authorise_documents(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_document_packs(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -488,7 +488,7 @@ def get_document_context(case_type: str, at: ImpTypeOrExpType) -> dict[str, str]
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def cancel_authorisation(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str

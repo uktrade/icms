@@ -42,7 +42,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
 
 @pytest.fixture
 def test_icms_admin_user(django_user_model):
-    """Fixture to get user with admin access (the reference_data_access permission)."""
+    """Fixture to get user with admin access (the ilb_admin permission)."""
     return django_user_model.objects.get(username="test_icms_admin_user")
 
 

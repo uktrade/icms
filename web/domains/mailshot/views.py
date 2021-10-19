@@ -67,7 +67,7 @@ class MailshotListView(ModelFilterView):
     template_name = "web/domains/mailshot/list.html"
     model = Mailshot
     filterset_class = MailshotFilter
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "Maintain Mailshots"
 
     class Display:
@@ -106,7 +106,7 @@ class MailshotListView(ModelFilterView):
 
 class MailshotCreateView(RequireRegisteredMixin, View):
     MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get(self, request):
         """
@@ -127,7 +127,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     pk_url_kwarg = "mailshot_pk"
 
     def handle_notification(self, mailshot):
@@ -210,7 +210,7 @@ class MailshotDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView
     template_name = "web/domains/mailshot/view.html"
     model = Mailshot
     pk_url_kwarg = "mailshot_pk"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -226,7 +226,7 @@ class MailshotReceivedDetailView(MailshotDetailView):
     def has_permission(self) -> bool:
         user: User = self.request.user
 
-        if user.has_perm("web.reference_data_access"):
+        if user.has_perm("web.ilb_admin"):
             return True
 
         mailshot: Mailshot = self.get_object()  # type:ignore[assignment]
@@ -247,7 +247,7 @@ class MailshotRetractView(ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     pk_url_kwarg = "mailshot_pk"
 
     def __init__(self, *args, **kwargs):
@@ -291,7 +291,7 @@ class MailshotRetractView(ModelUpdateView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_document(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
     with transaction.atomic():
         mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
@@ -338,7 +338,7 @@ def view_document(
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def delete_document(
     request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
 ) -> HttpResponse:
@@ -353,7 +353,7 @@ def delete_document(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
     with transaction.atomic():
         mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
@@ -370,7 +370,7 @@ def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpRes
 def _check_permission(user: User) -> bool:
     """Check the given user has permission to access mailshot."""
 
-    if user.has_perm("web.reference_data_access"):
+    if user.has_perm("web.ilb_admin"):
         return True
 
     importer_access = user.has_perm("web.importer_access")

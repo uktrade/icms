@@ -101,16 +101,14 @@ class AccessRequest(WorkbasketBase, Process):
         if self.further_information_requests.open():
             info_rows.append("Further Information Requested")
 
-        if self.approval_requests.filter(is_active=True) and user.has_perm(
-            "web.reference_data_access"
-        ):
+        if self.approval_requests.filter(is_active=True) and user.has_perm("web.ilb_admin"):
             info_rows.append("Approval Requested")
 
         r.information = "\n".join(info_rows)
 
         task = self.get_active_task()
 
-        if user.has_perm("web.reference_data_access"):
+        if user.has_perm("web.ilb_admin"):
             admin_actions: list[WorkbasketAction] = []
 
             if self.process_type == "ExporterAccessRequest":

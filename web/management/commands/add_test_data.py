@@ -153,7 +153,7 @@ class Command(BaseCommand):
         for perm in [
             "importer_access",
             "exporter_access",
-            "reference_data_access",
+            "ilb_admin",
             "mailshot_access",
         ]:
             self._assign_permission(user, perm)

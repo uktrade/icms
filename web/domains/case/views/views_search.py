@@ -26,7 +26,7 @@ SearchFormT = Type[SearchForm]
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def search_cases(
     request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "normal"
 ) -> HttpResponse:
@@ -83,7 +83,7 @@ def search_cases(
 
 @require_POST
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     """Generates and returns a spreadsheet using same form data as the search form."""
 

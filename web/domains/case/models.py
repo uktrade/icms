@@ -333,7 +333,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         task = self.get_active_task()
 
-        is_ilb_admin = user.has_perm("web.reference_data_access")
+        is_ilb_admin = user.has_perm("web.ilb_admin")
         include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if is_ilb_admin:

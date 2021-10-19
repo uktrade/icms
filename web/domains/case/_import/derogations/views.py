@@ -223,7 +223,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(
@@ -279,7 +279,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DerogationsApplication = get_object_or_404(

@@ -184,7 +184,7 @@ def _get_sanctions_commodity_group_data(application):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_goods_licence(
     request: AuthenticatedHttpRequest, *, application_pk: int, goods_pk: int
 ) -> HttpResponse:

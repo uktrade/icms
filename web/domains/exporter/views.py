@@ -19,7 +19,7 @@ class ExporterListView(ModelFilterView):
     template_name = "web/domains/exporter/list.html"
     filterset_class = ExporterFilter
     model = Exporter
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "Maintain Exporters"
 
     class Display:
@@ -34,7 +34,7 @@ class ExporterListView(ModelFilterView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
@@ -59,7 +59,7 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
@@ -73,7 +73,7 @@ def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.POST:
         form = ExporterForm(request.POST)
@@ -88,7 +88,7 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_office(request, pk):
     exporter = get_object_or_404(Exporter, pk=pk)
 
@@ -112,7 +112,7 @@ def create_office(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
     office = get_object_or_404(exporter.offices, pk=office_pk)
@@ -133,7 +133,7 @@ def edit_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
@@ -145,7 +145,7 @@ def archive_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
@@ -157,7 +157,7 @@ def unarchive_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_agent(request, exporter_pk):
     exporter: Exporter = get_object_or_404(Exporter, pk=exporter_pk)
 
@@ -180,7 +180,7 @@ def create_agent(request, exporter_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent: Exporter = get_object_or_404(Exporter.objects.agents(), pk=pk)
 
@@ -206,7 +206,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=True), pk=pk)
@@ -217,7 +217,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=False), pk=pk)

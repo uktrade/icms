@@ -54,7 +54,7 @@ def allocate_case_reference(
 def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
     """Check the given user has permission to access the given application."""
 
-    if user.has_perm("web.reference_data_access"):
+    if user.has_perm("web.ilb_admin"):
         return
 
     if case_type == "access":

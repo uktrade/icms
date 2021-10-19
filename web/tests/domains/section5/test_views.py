@@ -13,7 +13,7 @@ def test_list_ok():
         is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
-        permission_codenames=["reference_data_access"],
+        permission_codenames=["ilb_admin"],
     )
     Section5ClauseFactory.create(clause="42aaa", created_by=ilb_admin)
 
@@ -31,7 +31,7 @@ def test_create_ok():
         is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
-        permission_codenames=["reference_data_access"],
+        permission_codenames=["ilb_admin"],
     )
 
     client = Client()
@@ -52,7 +52,7 @@ def test_edit_ok():
         is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
-        permission_codenames=["reference_data_access"],
+        permission_codenames=["ilb_admin"],
     )
     clause = Section5ClauseFactory.create(created_by=ilb_admin)
 

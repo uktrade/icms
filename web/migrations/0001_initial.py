@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 "permissions": (
                     ("importer_access", "Can act as an importer"),
                     ("exporter_access", "Can act as an exporter"),
-                    ("reference_data_access", "Can maintain reference data"),
+                    ("ilb_admin", "Is an ILB administrator"),
                     ("mailshot_access", "Can maintain mailshots"),
                 ),
                 "managed": False,

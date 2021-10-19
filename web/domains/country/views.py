@@ -41,7 +41,7 @@ class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
     template_name = "web/domains/country/list.html"
     filterset_class = CountryNameFilter
     page_title = "Editing All Countries"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("country_groups")
@@ -53,7 +53,7 @@ class CountryEditView(ModelUpdateView):
     form_class = CountryEditForm
     success_url = reverse_lazy("country-list")
     cancel_url = success_url
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
 
 class CountryCreateView(ModelCreateView):
@@ -63,7 +63,7 @@ class CountryCreateView(ModelCreateView):
     success_url = reverse_lazy("country-list")
     cancel_url = success_url
     page_title = "New Country"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
 
 def search_countries(request, selected_countries):
@@ -92,7 +92,7 @@ class CountryGroupView(ModelDetailView):
 
     form_class = CountryGroupEditForm
     cancel_url = reverse_lazy("country-group-view")
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -111,7 +111,7 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     model = CountryGroup
     template_name = "web/domains/country/groups/edit.html"
     form_class = CountryGroupEditForm
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_object(self):
         pk = self.kwargs.get(self.pk_url_kwarg)
@@ -193,7 +193,7 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 
 
 class CountryGroupCreateView(CountryGroupEditView):
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_object(self):
         return CountryGroup()
@@ -207,7 +207,7 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     form_class = CountryTranslationSetEditForm
     template_name = "web/domains/country/translations/list.html"
     page_title = "Manage Country Translation Sets"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     success_url = reverse_lazy("country-translation-set-list")
 
     def archive(self, request):
@@ -241,7 +241,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     template_name = "web/domains/country/translations/edit.html"
     form_class = CountryTranslationSetEditForm
     success_url = "country-translation-set-edit"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get(self, request, pk=None):
         set = super().get_object()
@@ -298,7 +298,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
     model = CountryTranslation
     template_name = "web/domains/country/translations/translation/edit.html"
     form_class = CountryTranslationEditForm
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     def get_object(self, queryset=None):
         try:

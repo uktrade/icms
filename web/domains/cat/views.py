@@ -14,7 +14,7 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     def has_permission(self) -> bool:
         user: User = self.request.user
 
-        ilb_admin = user.has_perm("web.reference_data_access")
+        ilb_admin = user.has_perm("web.ilb_admin")
         exporter_user = user.has_perm("web.exporter_access")
 
         return ilb_admin or exporter_user

@@ -29,7 +29,7 @@ from .utils import get_class_imp_or_exp_or_access
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_firs(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -84,7 +84,7 @@ def _manage_fir_redirect(application_pk: int, case_type: str) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
@@ -116,7 +116,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
@@ -176,7 +176,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_fir(
     request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
@@ -198,7 +198,7 @@ def delete_fir(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def withdraw_fir(
     request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
@@ -219,7 +219,7 @@ def withdraw_fir(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def close_fir(
     request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
@@ -240,7 +240,7 @@ def close_fir(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_fir_file(
     request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
@@ -330,7 +330,7 @@ def view_fir_file(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_fir_file(
     request: AuthenticatedHttpRequest,

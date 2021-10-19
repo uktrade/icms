@@ -75,7 +75,7 @@ class SearchFormBase(forms.Form):
     def dates_are_reversed(
         date_from: Optional[datetime.date], date_to: Optional[datetime.date]
     ) -> bool:
-        """Check if two dates are in reversed (wrong) order. """
+        """Check if two dates are in reversed (wrong) order."""
         if (date_from and date_to) and (date_from > date_to):
             return True
 

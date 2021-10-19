@@ -34,7 +34,7 @@ from .utils import get_class_imp_or_exp
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def prepare_response(
     request: AuthenticatedHttpRequest, application_pk: int, case_type: str
 ) -> HttpResponse:

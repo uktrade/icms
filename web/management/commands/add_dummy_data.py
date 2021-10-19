@@ -113,7 +113,7 @@ class Command(BaseCommand):
             permissions=[
                 "importer_access",
                 "exporter_access",
-                "reference_data_access",
+                "ilb_admin",
                 "mailshot_access",
             ],
             linked_importers=[importer],
