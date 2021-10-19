@@ -281,6 +281,13 @@ class ImportApplication(ApplicationBase):
         verbose_name="Issue paper licence only?",
     )
 
+    # Only relevant to firearms applications
+    imi_submitted_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=True, related_name="+", verbose_name="IMI Submitter"
+    )
+
+    imi_submit_datetime = models.DateTimeField(null=True, verbose_name="Date provided to IMI")
+
     def is_import_application(self) -> bool:
         return True
 
@@ -384,6 +391,7 @@ class ImportApplication(ApplicationBase):
 
     @property
     def licence_issue_date(self):
+        # NOTE: This field is never set but is used in two places
         return self.issue_date or timezone.now().date()
 
 

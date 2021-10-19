@@ -19,13 +19,19 @@ takes a model field like this:
   {{ xxx_field(process.whatever) }}
 #}
 
-{% macro application_field(field, label, default="", extra="") -%}
+{% macro application_field(field, label, default="", extra="", is_safe_html=False) -%}
   <div class="row">
     <div class="three columns">
       <label class="prompt west">{{ label }}</label>
     </div>
     <div class="six columns">
-      <span class="text-widget">{{ field|nl2br or default }}</span>
+        <span class="text-widget">
+          {% if is_safe_html %}
+            {{ field | safe}}
+          {% else %}
+            {{ field | nl2br or default }}
+          {% endif %}
+        </span>
     </div>
     <div class="three columns"></div>
   </div>

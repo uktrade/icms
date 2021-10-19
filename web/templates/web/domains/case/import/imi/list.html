@@ -28,8 +28,11 @@
             <td><span class="text-widget">{{ app.authorised_date.strftime('%d-%b-%Y') }}</span></td>
             <td>
               <ul class="menu-out">
-                {# TODO: Revisit when doing ICMSLST-984 #}
-                <li><a href="#">View IMI Summary</a></li>
+                <li>
+                  <a href="{{ icms_url('import:imi-case-detail', kwargs={'application_pk': app.pk }) }}">
+                    View IMI Summary
+                  </a>
+                </li>
               </ul>
             </td>
           </tr>

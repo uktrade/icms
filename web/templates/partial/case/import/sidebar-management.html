@@ -63,6 +63,9 @@
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
 
   {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
+
+  {# Use to add extra sidebar items in files extending this sidebar #}
+  {% block sidebar_extra %}{% endblock %}
 </ul>
 
 <h4>Application</h4>
