@@ -53,6 +53,7 @@ developing, only within Docker.
   - Create test user(s), add needed permissions to user(s), create dummy importer and exporter, etc
 
 - Ask somebody for a copy of `.env`.
+  - See `.env.example` for common settings.
   - If you want to see all database queries done by each request, add `SHOW_DB_QUERIES=True` to it.
 
 ## Running the application
