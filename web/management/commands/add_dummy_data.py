@@ -61,6 +61,7 @@ class Command(BaseCommand):
             is_active=True,
             name="Dummy importer",
             registered_number="84",
+            eori_number="GBSIL9001730K",
             type=Importer.ORGANISATION,
         )
 

@@ -1,0 +1,5 @@
+{% extends "partial/case/import/sidebar-management.html" %}
+
+{% block sidebar_extra %}
+  {{ icms_link(request, icms_url('import:imi-case-detail', kwargs={'application_pk': process.pk}), 'IMI Summary') }}
+{% endblock %}

@@ -1743,7 +1743,7 @@ def _create_wood_application(
     import_fixture_data: FixtureData,
     submit=True,
     shipping_year=2021,
-    commodity_code="code123456",
+    commodity_code="1234567890",
     override_status=None,
 ):
     application_type = ImportApplicationType.objects.get(

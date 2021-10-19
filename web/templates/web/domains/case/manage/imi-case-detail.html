@@ -1,0 +1,82 @@
+{% extends "web/domains/case/manage/base.html" %}
+{% from "display/fields.html" import application_section, application_field, commodity_link %}
+
+{% block sidebar %}
+  {% include "partial/case/import/sidebar-management-imi.html" %}
+{% endblock %}
+
+{% block content_actions_link %}
+  <a href="{{ icms_url('import:imi-case-list') }}" class="prev-link">IMI Case Management</a>
+{% endblock %}
+
+{% set app = process %}
+{% set importer = app.importer %}
+
+{% block main_content %}
+  <h3>IMI Summary</h3>
+  <p>This page lists all the information to be provided to the EU for this firearms case.</p>
+  {% call application_section("Prior Consent (Art. 4) Details") %}
+    {{ application_field("UK", "Issuing Country") }}
+    {{ application_field("See 'Who bought the Firearms from countries'", "Country in which the firearms are located") }}
+
+    {# TODO: Revisit when implementing ICMSLST-836 - Needs to be a download licence link #}
+    {% set licence_download_url = "#" %}
+    {% set licence_hyperlink = "<a href='" + licence_download_url + "'>" + (app.licence_reference or "GBSIL9001730K") + "</a>" %}
+    {{ application_field(licence_hyperlink, "Licence Document", is_safe_html=True) }}
+  {% endcall %}
+
+  {% call application_section("Licence Details") %}
+    {{ application_field(app.licence_start_date.strftime('%d-%b-%Y'), "Date Issued") }}
+    {{ application_field(app.licence_end_date.strftime('%d-%b-%Y'), "Expiry Date") }}
+
+    {# TODO: Revisit when implementing ICMSLST-1048 #}
+    {{ application_field(app.licence_reference or "GBSIL9001730K", "Reference Number") }}
+
+    {{ application_field("Yes", "Issued by sending authority" ) }}
+  {% endcall %}
+
+  {% call application_section("Purchaser / Acquirer of Firearms") %}
+    {{ application_field(
+         "Legal Person" if importer.is_organisation() else "Natural Person",
+         "Is the purchaser / acquirer a legal or natural person?"
+       ) }}
+
+    {{ application_field(importer.display_name, "Name of Person") }}
+
+    {{ application_field(
+         importer.eori_number or importer.eori_number_ni or "Not Set",
+         "Registration Number"
+       ) }}
+
+    {{ application_field(app.importer_office.address, "Address") }}
+
+    {# TODO: Revisit when implementing ICMSLST-1177 #}
+    {{ application_field("Yes", "Is the purchaser / acquirer a dealer") }}
+  {% endcall %}
+
+  <h4>Who bought the Firearms</h4>
+  {% with read_only = True %}
+    {% include "partial/import-contacts/list.html" %}
+  {% endwith %}
+
+  {% if not app.imi_submit_datetime %}
+    <h4>Complete IMI</h4>
+    <div class="info-box info-box-info">
+      This case is ready to have its information provided to the EU.
+      Once you have confirmed the information has been provided the case will be removed
+      from the list of cases in the IMI Case Management screen.
+    </div>
+    <a href="#" target="_blank">Login to the IMI System</a>
+    <hr>
+    <form method="post" action="{{ icms_url('import:imi-confirm-information', kwargs={'application_pk': app.pk}) }}">
+      {{ csrf_input }}
+      <button type="submit" class="button primary-button">Confirm Information Provided</button>
+    </form>
+
+  {% else %}
+    {% call application_section("IMI Details") %}
+      {{ application_field(app.imi_submit_datetime.strftime('%d-%b-%Y'), "Date provided to IMI") }}
+      {{ application_field(app.imi_submitted_by, "IMI Submitter") }}
+    {% endcall %}
+  {% endif %}
+{% endblock %}

@@ -26,8 +26,22 @@ endorsements_urls = [
     ),
 ]
 
+# ILB Admin urls relating to viewing / managing applications that should be sent to IMI
 imi_urls = [
     path("case-list", views.IMICaseListView.as_view(), name="imi-case-list"),
+    path(
+        "case/<int:application_pk>/",
+        include(
+            [
+                path("summary/", views.IMICaseDetailView.as_view(), name="imi-case-detail"),
+                path(
+                    "confirm-information/",
+                    views.imi_confirm_provided,
+                    name="imi-confirm-information",
+                ),
+            ]
+        ),
+    ),
 ]
 
 urlpatterns = [

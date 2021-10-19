@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
-from django.views.generic import ListView, TemplateView
+from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.utils import get_application_current_task
@@ -515,6 +515,7 @@ def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: i
             "process": application,
             "task": task,
             "page_title": "Cover Letter Preview",
+            # TODO: licence_issue_date is a property and should probably be application.licence_start_date
             "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
             "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         }
@@ -553,6 +554,7 @@ def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -
             "process": application,
             "task": task,
             "page_title": "Licence Preview",
+            # TODO: licence_issue_date is a property and should probably be application.licence_start_date
             "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
         }
 
@@ -644,7 +646,6 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     def get_queryset(self) -> "QuerySet[ImportApplication]":
         """Return all applications that have been acknowledged."""
 
-        # TODO: ICMSLST-984 Revisit when implementing (as we need to filter by a new column)
         # TODO: ICMSLST-809 Revisit when the licence file has been generated (to filter on correct task)
         imi_eu_countries = CountryGroup.objects.get(name="EU Countries (IMI Cases)").countries.all()
 
@@ -654,6 +655,7 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
                 tasks__task_type=Task.TaskType.ACK,
                 importer_office__postcode__istartswith="BT",
                 consignment_country__in=imi_eu_countries,
+                imi_submitted_by__isnull=True,
             )
             .annotate(
                 authorised_date=models.F("tasks__created"),
@@ -665,7 +667,7 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
                     ),
                 ),
             )
-            .values_list("reference", "import_contacts", "authorised_date", named=True)
+            .values_list("pk", "reference", "import_contacts", "authorised_date", named=True)
         )
 
         return qs
@@ -675,3 +677,40 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
         context["page_title"] = "IMI Applications"
 
         return context
+
+
+class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    template_name = "web/domains/case/manage/imi-case-detail.html"
+    permission_required = "web.ilb_admin"
+    pk_url_kwarg = "application_pk"
+    context_object_name = "process"
+    queryset = ImportApplication.objects.select_related(
+        "importer", "importer_office", "case_owner", "application_type", "contact"
+    )
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "page_title": f"Case {self.object.get_reference()}",
+            "case_type": "import",
+            "contacts": self.object.importcontact_set.all(),
+        }
+
+        return super().get_context_data(**kwargs) | context
+
+
+@require_POST
+@permission_required("web.ilb_admin", raise_exception=True)
+@login_required
+def imi_confirm_provided(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
+    """Indicates the relevant details have been sent to IMI."""
+
+    with transaction.atomic():
+        application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        application.imi_submitted_by = request.user
+        application.imi_submit_datetime = timezone.now()
+        application.save()
+
+    return redirect(reverse("import:imi-case-detail", kwargs={"application_pk": application_pk}))
