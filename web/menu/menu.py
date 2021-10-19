@@ -226,6 +226,10 @@ class Menu:
                     label="Users",
                     links=[SubMenuLink(label="Web User Accounts", view="users-list")],
                 ),
+                SubMenu(
+                    label="Certificate",
+                    links=[SubMenuLink(label="Certificate Application Templates", view="cat:list")],
+                ),
             ],
         ),
         MenuButton(label="New Import Application", view="import:choose"),
