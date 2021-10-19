@@ -248,3 +248,5 @@ In case of importer access requests it is `access:importer:fir-list` and `access
 | ELASTIC_APM_SECRET_TOKEN          |                                            | Elastic APM server secret token for sending metrics    |
 | ELASTIC_APM_ENVIRONMENT           |                                            | deployment env to separate metrics per env. e.g. prod  |
 | ELASTIC_APM_URL                   |                                            | Elastic APM server URL                                 |
+
+See also `docker-compose.yml` for additional debug environment variables.
