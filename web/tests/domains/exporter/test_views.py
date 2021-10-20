@@ -34,12 +34,12 @@ class ExporterListViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_admin_access(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         assert "Maintain Exporters" in response.content.decode()
 
@@ -55,14 +55,14 @@ class ExporterListViewTest(AuthTestCase):
     def test_number_of_pages(self):
         ExporterFactory.create_batch(52)
 
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         page = response.context_data["page"]
         self.assertEqual(page.paginator.num_pages, 2)
 
     def test_page_results(self):
         ExporterFactory.create_batch(53, is_active=True)
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
         self.assertEqual(len(page.object_list), 5)
@@ -86,12 +86,12 @@ class ExporterEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_page_title(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         assert f"Editing Exporter '{self.exporter.name}'" in response.content.decode()
 
@@ -111,7 +111,7 @@ class ExporterCreateViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_authorized_access(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
@@ -124,13 +124,13 @@ class ExporterCreateViewTest(AuthTestCase):
                 "locality": "Bruxelles",
             }
         }
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         self.client.post(self.url, {"name": "test exporter", "registered_number": "42"})
         exporter = Exporter.objects.first()
         self.assertEqual(exporter.name, "test exporter")
 
     def test_page_title(self):
-        self.login_with_permissions(["reference_data_access"])
+        self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
         assert "Create Exporter" in response.content.decode()
 
@@ -161,7 +161,7 @@ def test_detail_exporter_ok():
         is_active=True,
         account_status=User.ACTIVE,
         password_disposition=User.FULL,
-        permission_codenames=["reference_data_access"],
+        permission_codenames=["ilb_admin"],
     )
     exporter = ExporterFactory.create(is_active=True)
 

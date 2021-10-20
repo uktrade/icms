@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class ReadonlyFormMixin(Form):
-    """ Makes forms read only, prevents changing any data"""
+    """Makes forms read only, prevents changing any data"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -4,7 +4,7 @@ from web.tests.auth import AuthTestCase
 from .factory import CommodityFactory, CommodityGroupFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["reference_data_access"]
+PERMISSIONS = ["ilb_admin"]
 
 
 class CommodityListView(AuthTestCase):

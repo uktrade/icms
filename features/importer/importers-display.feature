@@ -1,10 +1,10 @@
 Feature: Importer Display
 
     @importer @display @importer-display
-    Scenario: User with refdata permission should be able to view importer in the importer list
+    Scenario: User with ILB admin permission should be able to view importer in the importer list
         Given importer "Elm Street Imports" exists
         Given "Roy" is logged in
-        And "Roy" has permission "reference_data_access"
+        And "Roy" has permission "ilb_admin"
         When "Roy" navigates to "importer-list"
         Then importer "Elm Street Imports" is in the list
 
@@ -12,7 +12,7 @@ Feature: Importer Display
     Scenario: User should see importer details when importer name is clicked
         Given import organisation "Elm Street Imports" exists
         And "John" is logged in
-        And "John" has permission "reference_data_access"
+        And "John" has permission "ilb_admin"
         When "John" navigates to "importer-list"
         And  clicks on importer name "Elm Street Imports"
         Then "importer-view" page for importer "Elm Street Imports" is displayed
@@ -23,7 +23,7 @@ Feature: Importer Display
     Scenario: User should be able to navigate back
         Given importer "Elm Street Imports" exists
         And "Ashley" is logged in
-        And "Ashley" has permission "reference_data_access"
+        And "Ashley" has permission "ilb_admin"
         When "Ashley" views importer "Elm Street Imports"
         And  clicks on the back link
         Then "importer-list" page is displayed
@@ -32,7 +32,7 @@ Feature: Importer Display
     Scenario: User should see correct importer name
         Given import organisation "Elm Street Imports" exists
         And "bren" is logged in
-        And "bren" has permission "reference_data_access"
+        And "bren" has permission "ilb_admin"
         When "bren" views importer "Elm Street Imports"
         Then importer details read as follows
             | Field    | Value              |
@@ -44,7 +44,7 @@ Feature: Importer Display
     Scenario: User should see correct importer region origin
         Given non-European importer "US Imports" exists
         And "bren" is logged in
-        And "bren" has permission "reference_data_access"
+        And "bren" has permission "ilb_admin"
         When "bren" views importer "US Imports"
         Then importer details read as follows
             | Field         | Value        |
@@ -57,7 +57,7 @@ Feature: Importer Display
         Given importer "Hey Ltd" exists
         And importer "Hey Ltd" has an office with address "1428 Elm Street" and postcode "43001"
         And "bren" is logged in
-        And "bren" has permission "reference_data_access"
+        And "bren" has permission "ilb_admin"
         When "bren" views importer "Hey Ltd"
         Then importer offices read as follows
             | Row | Field     | Value           |
@@ -77,7 +77,7 @@ Feature: Importer Display
         And importer "Jane-importer" has an office with address "1428 Elm Street" and postcode "43001"
         And "Jane-importer" is an agent of "Hey Ltd"
         And "Ashley" is logged in
-        And "Ashley" has permission "reference_data_access"
+        And "Ashley" has permission "ilb_admin"
         When "Ashley" views importer "Hey Ltd"
         Then importer agents read as follows
             | Row | Field                                | Value                    |
@@ -95,7 +95,7 @@ Feature: Importer Display
         And user "thecat" exists
         And "thecat" is a contact of importer "Hey Ltd"
         And "bren" is logged in
-        And "bren" has permission "reference_data_access"
+        And "bren" has permission "ilb_admin"
         When "bren" views importer "Hey Ltd"
         Then importer contacts table read as follows
             | Header                     | Contact            |
@@ -108,6 +108,6 @@ Feature: Importer Display
     Scenario: User should see no contact
         Given importer "Hey Ltd" exists
         And "bren" is logged in
-        And "bren" has permission "reference_data_access"
+        And "bren" has permission "ilb_admin"
         When "bren" views importer "Hey Ltd"
         Then text "There isn't anyone in this team" is visible

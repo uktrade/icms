@@ -31,7 +31,7 @@ def _get_class_imp_or_exp(org_type: str) -> OrgT:
 
 # TODO: ICMSLST-859 ICMSLST-860 org's contacts can view/edit org details
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
     model_class = _get_class_imp_or_exp(org_type)
@@ -53,7 +53,7 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
 
 # TODO: ICMSLST-859 ICMSLST-860 org's contacts can view/edit org details
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int, contact_pk: int):
     model_class = _get_class_imp_or_exp(org_type)

@@ -12,7 +12,7 @@ class ProductLegislationListView(ModelFilterView):
     filterset_class = ProductLegislationFilter
     model = ProductLegislation
     page_title = "Maintain Product Legislation"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     paginate = False
 
     class Display:
@@ -44,7 +44,7 @@ class ProductLegislationCreateView(ModelCreateView):
     success_url = reverse_lazy("product-legislation-list")
     cancel_url = success_url
     page_title = "New Product Legislation"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
 
 class ProductLegislationUpdateView(ModelUpdateView):
@@ -53,7 +53,7 @@ class ProductLegislationUpdateView(ModelUpdateView):
     model = ProductLegislation
     success_url = reverse_lazy("product-legislation-list")
     cancel_url = success_url
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
 
 class ProductLegislationDetailView(ModelDetailView):
@@ -61,4 +61,4 @@ class ProductLegislationDetailView(ModelDetailView):
     model = ProductLegislation
     form_class = ProductLegislationForm
     cancel_url = reverse_lazy("product-legislation-list")
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"

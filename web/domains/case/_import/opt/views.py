@@ -487,7 +487,7 @@ def _get_compensating_products_category_descriptions() -> dict[str, str]:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
@@ -528,7 +528,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def response_preparation_edit_compensating_products(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -569,7 +569,7 @@ def response_preparation_edit_compensating_products(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def response_preparation_edit_temporary_exported_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:

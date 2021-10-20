@@ -3,7 +3,7 @@ from web.tests.auth import AuthTestCase
 from .factory import ProductLegislationFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["reference_data_access"]
+PERMISSIONS = ["ilb_admin"]
 
 
 class ProductLegislationListViewTest(AuthTestCase):

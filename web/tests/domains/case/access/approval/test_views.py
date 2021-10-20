@@ -20,7 +20,7 @@ def test_exporter_management_access_approval_ok():
 
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     access_request = ExporterAccessRequestFactory.create(
         status=AccessRequest.Statuses.SUBMITTED, link=None
     )
@@ -43,7 +43,7 @@ def test_importer_management_access_approval_ok():
 
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     access_request = ImporterAccessRequestFactory.create(
         status=AccessRequest.Statuses.SUBMITTED, link=None
     )

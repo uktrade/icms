@@ -45,4 +45,4 @@ def get_users_with_permission(permission_name: str) -> "QuerySet[User]":
 def get_ilb_admin_users() -> "QuerySet[User]":
     """Return all ilb admin users."""
 
-    return get_users_with_permission("web.reference_data_access")
+    return get_users_with_permission("web.ilb_admin")

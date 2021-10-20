@@ -88,7 +88,7 @@ def test_take_ownership():
     )
     TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     client = Client()
     client.login(username=ilb_admin.username, password="test")
     response_workbasket = client.get("/workbasket/")
@@ -104,7 +104,7 @@ def test_take_ownership():
 
 @pytest.mark.django_db
 def test_release_ownership():
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = ActiveUserFactory.create(permission_codenames=["importer_access"])
     importer = ImporterFactory.create(type=Importer.ORGANISATION, user=user)
 
@@ -125,7 +125,7 @@ def test_release_ownership():
 
 @pytest.mark.django_db
 def test_close_case():
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["reference_data_access"])
+    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = ActiveUserFactory.create(permission_codenames=["importer_access"])
     importer = ImporterFactory.create(type=Importer.ORGANISATION, user=user)
 

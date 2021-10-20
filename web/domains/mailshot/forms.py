@@ -70,7 +70,7 @@ class ReceivedMailshotsFilter(FilterSet):
     def qs(self) -> "QuerySet[Mailshot]":
         queryset = super().qs.filter(status=Mailshot.Statuses.PUBLISHED)
 
-        if self.user.has_perm("web.reference_data_access"):
+        if self.user.has_perm("web.ilb_admin"):
             return queryset
 
         importer_access = self.user.has_perm("web.importer_access")

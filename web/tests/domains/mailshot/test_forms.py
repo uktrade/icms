@@ -115,7 +115,7 @@ class ReceivedMailshotsFilterTest(TestCase):
 
         self.importer = UserFactory.create(permission_codenames=["importer_access"])
         self.exporter = UserFactory.create(permission_codenames=["exporter_access"])
-        self.ilb_admin = UserFactory.create(permission_codenames=["reference_data_access"])
+        self.ilb_admin = UserFactory.create(permission_codenames=["ilb_admin"])
 
         self.create_mailshots()
 

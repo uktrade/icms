@@ -46,7 +46,7 @@ class ImporterListView(ModelFilterView):
     model = Importer
     queryset = Importer.objects.prefetch_related("offices").select_related("main_importer")
     page_title = "Maintain Importers"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     class Display:
         fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
@@ -69,7 +69,7 @@ class ImporterListView(ModelFilterView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
@@ -101,7 +101,7 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> HttpResponse:
     if entity_type == "organisation":
         ImporterForm = ImporterOrganisationForm
@@ -129,7 +129,7 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
@@ -173,7 +173,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
@@ -210,7 +210,7 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5 = get_object_or_404(Section5Authority, pk=pk)
 
@@ -223,7 +223,7 @@ def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(
@@ -237,7 +237,7 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(
@@ -251,7 +251,7 @@ def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
@@ -276,7 +276,7 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
@@ -292,7 +292,7 @@ def view_document_section5(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
@@ -307,7 +307,7 @@ def delete_document_section5(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_office(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
     if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
@@ -335,7 +335,7 @@ def create_office(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
     office = get_object_or_404(importer.offices, pk=office_pk)
@@ -360,7 +360,7 @@ def edit_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
@@ -372,7 +372,7 @@ def archive_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
@@ -384,7 +384,7 @@ def unarchive_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_agent(
     request: AuthenticatedHttpRequest, *, importer_pk: int, entity_type: str
 ) -> HttpResponse:
@@ -420,7 +420,7 @@ def create_agent(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent: Importer = get_object_or_404(Importer.objects.agents(), pk=pk)
 
@@ -450,7 +450,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=True), pk=pk)
@@ -461,7 +461,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=False), pk=pk)
@@ -472,7 +472,7 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 

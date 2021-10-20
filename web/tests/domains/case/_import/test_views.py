@@ -12,9 +12,7 @@ from . import factory
 
 @pytest.mark.django_db
 def test_preview_cover_letter():
-    ilb_admin = user_factories.ActiveUserFactory.create(
-        permission_codenames=["reference_data_access"]
-    )
+    ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
     importer = importer_factories.ImporterFactory.create(type=Importer.ORGANISATION, user=user)
 
@@ -43,9 +41,7 @@ def test_preview_cover_letter():
 
 @pytest.mark.django_db
 def test_preview_licence():
-    ilb_admin = user_factories.ActiveUserFactory.create(
-        permission_codenames=["reference_data_access"]
-    )
+    ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
     importer = importer_factories.ImporterFactory.create(type=Importer.ORGANISATION, user=user)
 

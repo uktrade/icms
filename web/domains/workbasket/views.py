@@ -25,7 +25,7 @@ from web.types import AuthenticatedHttpRequest
 
 @login_required
 def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
-    if request.user.has_perm("web.reference_data_access"):
+    if request.user.has_perm("web.ilb_admin"):
         qs = _get_queryset_admin(request.user)
     else:
         qs = _get_queryset_user(request.user)

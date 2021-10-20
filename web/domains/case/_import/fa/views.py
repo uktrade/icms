@@ -42,7 +42,7 @@ from .types import (
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_constabulary_emails(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:

@@ -280,7 +280,7 @@ def _get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
@@ -320,7 +320,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
@@ -371,13 +371,13 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_endorsement(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     return _add_endorsement(request, application_pk, EndorsementChoiceImportApplicationForm)
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_custom_endorsement(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -427,7 +427,7 @@ def _add_endorsement(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_endorsement(
     request: AuthenticatedHttpRequest, *, application_pk: int, endorsement_pk: int
 ) -> HttpResponse:
@@ -497,7 +497,7 @@ def delete_endorsement(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_GET
 def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
@@ -535,7 +535,7 @@ def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: i
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_GET
 def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
@@ -577,14 +577,14 @@ def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -
 # icms/web/domains/case/views.py -> def view_application_file
 def view_file(request, application, related_file_model, file_pk):
     has_perm_importer = request.user.has_perm("web.importer_access")
-    has_perm_reference_data = request.user.has_perm("web.reference_data_access")
+    has_perm_ilb_admin = request.user.has_perm("web.ilb_admin")
 
-    if not has_perm_importer and not has_perm_reference_data:
+    if not has_perm_importer and not has_perm_ilb_admin:
         raise PermissionDenied
 
     # first check is for case managers (who are not marked as contacts of
     # importers), second is for people submitting applications
-    if not has_perm_reference_data and not request.user.has_perm(
+    if not has_perm_ilb_admin and not request.user.has_perm(
         "web.is_contact_of_importer", application.importer
     ):
         raise PermissionDenied
@@ -599,7 +599,7 @@ def view_file(request, application, related_file_model, file_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def bypass_chief(
     request: AuthenticatedHttpRequest, *, application_pk: int, chief_status: str
@@ -637,7 +637,7 @@ def bypass_chief(
 
 
 class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     template_name = "web/domains/case/import/imi/list.html"
     context_object_name = "imi_list"
 

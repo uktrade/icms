@@ -18,7 +18,7 @@ from .utils import get_class_imp_or_exp
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def list_notes(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -45,7 +45,7 @@ def list_notes(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def add_note(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -69,7 +69,7 @@ def add_note(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_note(
     request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
@@ -93,7 +93,7 @@ def archive_note(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_note(
     request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
@@ -117,7 +117,7 @@ def unarchive_note(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_note(
     request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
@@ -177,7 +177,7 @@ def edit_note(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def add_note_document(
     request: AuthenticatedHttpRequest, *, application_pk: int, note_pk: int, case_type: str
 ) -> HttpResponse:
@@ -228,7 +228,7 @@ def add_note_document(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_GET
 def view_note_document(
     request: AuthenticatedHttpRequest,
@@ -252,7 +252,7 @@ def view_note_document(
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_note_document(
     request: AuthenticatedHttpRequest,

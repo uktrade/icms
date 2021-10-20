@@ -30,7 +30,7 @@ class TemplateListView(ModelFilterView):
     model = Template
     filterset_class = TemplatesFilter
     page_title = "Maintain Templates"
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
 
     # Default display fields on the listing page of the model
     class Display:
@@ -63,7 +63,7 @@ def view_template_fwd(request, pk):
 
 # used for non-CFS_SCHEDULE templates
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_template(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -73,7 +73,7 @@ def view_template(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_cfs_schedule(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -85,7 +85,7 @@ def view_cfs_schedule(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def view_cfs_schedule_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -109,7 +109,7 @@ def view_cfs_schedule_translation(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_template(request, pk):
     template = get_object_or_404(Template, pk=pk)
     if template.template_type == Template.DECLARATION:
@@ -147,7 +147,7 @@ class EndorsementCreateView(ModelCreateView):
     model = Template
     success_url = reverse_lazy("template-list")
     cancel_url = success_url
-    permission_required = "web.reference_data_access"
+    permission_required = "web.ilb_admin"
     page_title = "New Endorsement"
 
     def form_valid(self, form):
@@ -163,14 +163,14 @@ class EndorsementCreateView(ModelCreateView):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def list_endorsement_usages(request):
     usages = EndorsementUsage.objects.all()
     return render(request, "web/domains/template/list-endorsement-usages.html", {"objects": usages})
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_endorsement_usage(request, pk):
     usage = get_object_or_404(EndorsementUsage, pk=pk)
     if request.POST:
@@ -186,7 +186,7 @@ def edit_endorsement_usage(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def archive_endorsement_usage_link(request, usage_pk, link_pk):
     usage = get_object_or_404(EndorsementUsage, pk=usage_pk)
     endorsement = get_object_or_404(Template, pk=link_pk)
@@ -196,7 +196,7 @@ def archive_endorsement_usage_link(request, usage_pk, link_pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_cfs_declaration_translation(request):
     if request.POST:
         form = CFSDeclarationTranslationForm(request.POST)
@@ -214,7 +214,7 @@ def create_cfs_declaration_translation(request):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_cfs_declaration_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
     if request.POST:
@@ -232,7 +232,7 @@ def edit_cfs_declaration_translation(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def create_cfs_schedule_translation(request):
     if request.POST:
         form = CFSScheduleTranslationForm(request.POST)
@@ -252,7 +252,7 @@ def create_cfs_schedule_translation(request):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_cfs_schedule_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -289,7 +289,7 @@ def edit_cfs_schedule_translation(request, pk):
 
 
 @login_required
-@permission_required("web.reference_data_access", raise_exception=True)
+@permission_required("web.ilb_admin", raise_exception=True)
 def edit_cfs_schedule_translation_paragraphs(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
