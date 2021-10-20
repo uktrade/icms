@@ -1,8 +1,8 @@
 <!-- [![circle-ci-image]][circle-ci] -->
 <!-- [![codecov-image]][codecov] -->
 
-[![image](https://circleci.com/gh/uktrade/icms/tree/master.svg?style=svg)](https://circleci.com/gh/uktrade/icms/tree/master)
-[![image](https://codecov.io/gh/uktrade/icms/branch/master/graph/badge.svg)](https://codecov.io/gh/uktrade/icms)
+[![image](https://circleci.com/gh/uktrade/icms/tree/develop.svg?style=svg)](https://circleci.com/gh/uktrade/icms/tree/develop)
+[![image](https://codecov.io/gh/uktrade/icms/branch/develop/graph/badge.svg)](https://codecov.io/gh/uktrade/icms)
 
 # ICMS - Import Case Management System
 
