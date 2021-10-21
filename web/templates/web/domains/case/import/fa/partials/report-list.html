@@ -19,18 +19,18 @@
               </a>
               </li>
               <li>
-                <form
-                  method="post"
-                  action="{{ icms_url('import:fa:delete-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
-                  class="form-inline">
-                  {{ csrf_input }}
+                {% call forms.form(
+                  action=icms_url('import:fa:delete-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}),
+                  method='post',
+                  inline=True,
+                  csrf_input=csrf_input) -%}
                   <button
                     type="submit"
                     class="button link-button icon-bin"
                     data-confirm="Are you sure you want to delete the Supplementary Report {{ report }}?">
                     Delete
                   </button>
-                </form>
+                {%- endcall %}
               </li>
             </ul>
           </span>

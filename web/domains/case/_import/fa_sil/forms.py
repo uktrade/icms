@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
@@ -499,7 +501,7 @@ class SILSupplementaryReportForm(forms.ModelForm):
         self.application = application
         self.fields["bought_from"].queryset = self.application.importcontact_set.all()
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Check all goods in the application have been included in the report"""
 
         cleaned_data = super().clean()
@@ -516,17 +518,15 @@ class SILSupplementaryReportForm(forms.ModelForm):
             self.application.goods_section582_others,
         ]
 
-        if any(self._check_section(section) for section in sections):
+        if any(
+            section.filter(is_active=True)
+            .exclude(supplementary_report_firearms__report=self.instance)
+            .exists()
+            for section in sections
+        ):
             self.add_error(None, "You must enter this item.")
 
         return cleaned_data
-
-    def _check_section(self, section):
-        subquery = section.filter(
-            is_active=True, supplementary_report_firearms__report=self.instance
-        )
-
-        return section.exclude(pk__in=subquery).exists()
 
 
 class SILSupplementaryReportFirearmSection1Form(forms.ModelForm):

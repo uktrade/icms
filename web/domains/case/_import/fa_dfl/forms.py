@@ -156,22 +156,17 @@ class DFLSupplementaryReportForm(forms.ModelForm):
         self.application = application
         self.fields["bought_from"].queryset = self.application.importcontact_set.all()
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Check all goods in the application have been included in the report"""
 
         cleaned_data = super().clean()
 
+        # Return cleaned data if creating a new model instance
         if not self.instance.pk:
             return cleaned_data
 
-        goods_details = self.application.goods_certificates.filter(
-            is_active=True, supplementary_report_firearms__report=self.instance
-        )
-
-        if (
-            self.application.goods_certificates.filter(is_active=True)
-            .exclude(pk__in=goods_details)
-            .exists()
+        if self.application.goods_certificates.filter(is_active=True).exclude(
+            supplementary_report_firearms__report=self.instance
         ):
             self.add_error(None, "You must enter this item.")
 

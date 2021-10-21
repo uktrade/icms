@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
@@ -85,11 +87,12 @@ class OILSupplementaryReportForm(forms.ModelForm):
 
         self.fields["bought_from"].queryset = application.importcontact_set.all()
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         """Check all goods in the application have been included in the report"""
 
         cleaned_data = super().clean()
 
+        # Return cleaned data if creating a new model instance
         if not self.instance.pk:
             return cleaned_data
 
