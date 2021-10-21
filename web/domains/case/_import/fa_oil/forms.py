@@ -85,6 +85,19 @@ class OILSupplementaryReportForm(forms.ModelForm):
 
         self.fields["bought_from"].queryset = application.importcontact_set.all()
 
+    def clean(self):
+        """Check all goods in the application have been included in the report"""
+
+        cleaned_data = super().clean()
+
+        if not self.instance.pk:
+            return cleaned_data
+
+        if not self.instance.firearms.exists():
+            self.add_error(None, "You must enter this item.")
+
+        return cleaned_data
+
 
 class OILSupplementaryReportFirearmForm(forms.ModelForm):
     class Meta:

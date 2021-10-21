@@ -153,7 +153,29 @@ class DFLSupplementaryReportForm(forms.ModelForm):
     def __init__(self, *args, application: models.DFLApplication, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.fields["bought_from"].queryset = application.importcontact_set.all()
+        self.application = application
+        self.fields["bought_from"].queryset = self.application.importcontact_set.all()
+
+    def clean(self):
+        """Check all goods in the application have been included in the report"""
+
+        cleaned_data = super().clean()
+
+        if not self.instance.pk:
+            return cleaned_data
+
+        goods_details = self.application.goods_certificates.filter(
+            is_active=True, supplementary_report_firearms__report=self.instance
+        )
+
+        if (
+            self.application.goods_certificates.filter(is_active=True)
+            .exclude(pk__in=goods_details)
+            .exists()
+        ):
+            self.add_error(None, "You must enter this item.")
+
+        return cleaned_data
 
 
 class DFLSupplementaryReportFirearmForm(forms.ModelForm):

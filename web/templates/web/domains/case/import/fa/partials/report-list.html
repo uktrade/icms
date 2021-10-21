@@ -6,62 +6,66 @@
   {% for report in reports %}
     <div class="section-break"></div>
     <fieldset>
-    <h3>
-      {{ report.str_title() }}
-      <span class="list-secondary-actions">
-        <ul class="menu-out flow-across">
-          <li>
-          <a
-            href="{{ icms_url('import:fa:edit-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
-            class="link-button icon-pencil button">
-            Edit
-          </a>
-          </li>
-          <li>
-            <form
-              method="post"
-              action="{{ icms_url('import:fa:delete-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
-              class="form-inline">
-              {{ csrf_input }}
-              <button
-                type="submit"
-                class="button link-button icon-bin"
-                data-confirm="Are you sure you want to delete the Supplementary Report {{ report }}?">
-                Delete
-              </button>
-            </form>
-          </li>
-        </ul>
-      </span>
-    </h3>
+      <h3>
+        {{ report.str_title() }}
+        {% if not read_only %}
+          <span class="list-secondary-actions">
+            <ul class="menu-out flow-across">
+              <li>
+              <a
+                href="{{ icms_url('import:fa:edit-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
+                class="link-button icon-pencil button">
+                Edit
+              </a>
+              </li>
+              <li>
+                <form
+                  method="post"
+                  action="{{ icms_url('import:fa:delete-report', kwargs={'application_pk': process.pk, 'report_pk': report.pk}) }}"
+                  class="form-inline">
+                  {{ csrf_input }}
+                  <button
+                    type="submit"
+                    class="button link-button icon-bin"
+                    data-confirm="Are you sure you want to delete the Supplementary Report {{ report }}?">
+                    Delete
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </span>
+        {% endif %}
+      </h3>
 
-    <div class="section-break"></div>
-    <div class="container setOutForm">
-      {{ application_field(report.transport | capitalize, 'Transport')}}
-      {{ application_field(report.str_date_received(), 'Date Received')}}
-      {{ application_field(report.bought_from, 'Bought From')}}
-    </div>
+      <div class="section-break"></div>
+      <div class="container setOutForm">
+        {{ application_field(report.transport | capitalize, 'Transport')}}
+        {{ application_field(report.str_date_received(), 'Date Received')}}
+        {{ application_field(report.bought_from, 'Bought From')}}
+      </div>
 
-    {% with
-      manual_firearms = report.get_report_firearms(is_manual=True),
-      upload_firearms = report.get_report_firearms(is_upload=True),
-      no_firearms = report.get_report_firearms(is_no_firearm=True),
-      read_only = True
-    %}
-      {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
-    {% endwith %}
+      {% with
+        manual_firearms = report.get_report_firearms(is_manual=True),
+        upload_firearms = report.get_report_firearms(is_upload=True),
+        no_firearms = report.get_report_firearms(is_no_firearm=True),
+        read_only = True
+      %}
+        {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
+      {% endwith %}
+    </fieldset>
   {% endfor %}
-  </fieldset>
 {% endif %}
 
-<div class="list-actions">
-  <ul class="menu-out flow-across">
-    <li>
-      <a
-        href="{{ icms_url('import:fa:create-report', kwargs={'application_pk': process.pk}) }}"
-        class="button small-button icon-plus">
-        Add New Supplementary Report
-      </a>
-    </li>
-  </ul>
-</div>
+{% if not read_only %}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a
+          href="{{ icms_url('import:fa:create-report', kwargs={'application_pk': process.pk}) }}"
+          class="button small-button icon-plus">
+          Add New Supplementary Report
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endif %}
