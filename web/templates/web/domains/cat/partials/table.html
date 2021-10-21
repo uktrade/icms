@@ -1,0 +1,31 @@
+<table class="setoutList">
+  <thead>
+    <tr>
+      <th scope="col">Template Name</th>
+      <th scope="col">Template Description</th>
+      <th scope="col">Application Type</th>
+      <th scope="col">Sharing</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Created</th>
+      <th scope="col">Last Updated</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for template in templates %}
+    <tr>
+      <td>{{ template.name }}</td>
+      <td>{{ template.description|nl2br }}</td>
+      <td>{{ template.application_type }}</td>
+      <td>{{ template.get_sharing_display() }}</td>
+      <td>{{ template.owner }}</td>
+      <td>{{ template.created.strftime('%d-%b-%Y %H:%M') }}</td>
+      <td>{{ template.last_updated.strftime('%d-%b-%Y %H:%M') }}</td>
+      <td>
+        <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil">Edit</a>
+        {# TODO: ICMSLST-1178 Delete #}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

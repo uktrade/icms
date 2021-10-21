@@ -361,7 +361,7 @@ def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpRes
         mailshot.pk = None
         mailshot._state.adding = True
         mailshot.status = Mailshot.Statuses.DRAFT
-        mailshot.version = models.F("version") + 1
+        mailshot.version += 1
         mailshot.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))

@@ -3,10 +3,9 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-
 {% block sidebar %}
     <ul class="menu-out flow-across">
-        <li><a href="#TODO: ICMSLST-1027 Create Template">Create Template</a></li>
+        <li><a href="{{ icms_url('cat:create') }}">Create Template</a></li>
     </ul>
 
     <h4>Filter</h4>
@@ -36,24 +35,14 @@
 {% endblock %}
 
 {% block main_content %}
-    {# TODO: ICMSLST-1028 List of existing Certificate Application Templates #}
-    <ul class="tabs big-tabs">
-        <li class="current-tab" role="presentation">
-            <a href="#">
-                My Templates
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                Templates Shared by Others
-            </a>
-        </li>
-    </ul>
+  <h3>My Templates</h3>
 
-    <div class="tab-content">
-        <div class="info-box info-box-warning"><div class="screen-reader-only">Warning information box,</div>
-            There aren't any templates that match your current filters.
-        </div>
-    </div>
+  {% if not templates %}
+      <div class="info-box info-box-warning"><div class="screen-reader-only">Warning information box,</div>
+          There aren't any templates that match your current filters.
+      </div>
+  {% else %}
+    {% include('web/domains/cat/partials/table.html') %}
+  {% endif %}
 {% endblock %}
 
