@@ -14,10 +14,9 @@ class CertificateApplicationTemplate(models.Model):
         verbose_name="Template Name",
         max_length=70,
         help_text=(
-            "DIT does not issue Certificates of Free Sale for food, food supplements,"
-            " pesticides and CE marked medical devices.\n\n"
-            "Certificates of Manufacture are applicable only to pesticides that are"
-            " for export only and not on free sale on the domestic market."
+            "DIT does not issue Certificates of Free Sale for food, food supplements, pesticides"
+            " and CE marked medical devices. Certificates of Manufacture are applicable only to"
+            " pesticides that are for export only and not on free sale on the domestic market."
         ),
     )
 
@@ -38,4 +37,4 @@ class CertificateApplicationTemplate(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(null=True)
+    last_updated = models.DateTimeField(auto_now=True)

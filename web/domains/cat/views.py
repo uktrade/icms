@@ -8,7 +8,6 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.generic import ListView
 
 from web.domains.cat.models import CertificateApplicationTemplate
@@ -49,7 +48,6 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
             form = CreateCATForm(request.POST)
             if form.is_valid():
                 cat = form.save(commit=False)
-                cat.last_updated = timezone.now()
                 cat.owner = request.user
                 cat.save()
 
@@ -78,9 +76,7 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
         if request.POST:
             form = EditCATForm(request.POST, instance=cat)
             if form.is_valid():
-                cat = form.save(commit=False)
-                cat.last_updated = timezone.now()
-                cat.save()
+                cat = form.save()
 
                 messages.success(request, f"Template '{cat.name}' updated.")
 
