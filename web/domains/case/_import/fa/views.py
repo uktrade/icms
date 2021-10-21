@@ -790,7 +790,7 @@ def _validate_firearms_details(
         ]
 
         if any(
-            (section.filter(Q(is_upload=True) | Q(is_manual=True)).exists() for section in sections)
+            section.filter(Q(is_upload=True) | Q(is_manual=True)).exists() for section in sections
         ):
             return True
 

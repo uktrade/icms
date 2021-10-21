@@ -1,7 +1,7 @@
 {% import "forms/fields.html" as fields %}
 
 {# Renders a form with a form container within with icms styling #}
-{% macro form(action='', method='get', container_class='', csrf_input=None, enctype='application/x-www-form-urlencoded', id='') -%}
+{% macro form(action='', method='get', container_class='', csrf_input=None, enctype='application/x-www-form-urlencoded', id='', inline=False) -%}
   <form
     method="{{ method }}"
     action="{{ action }}"
@@ -11,7 +11,7 @@
     {% if id %}id="{{ id }}"{% endif %}
     novalidate>
       {% if csrf_input %}{{csrf_input}}{% endif %}
-      <div class="container setoutForm {{container_class}}">
+      <div class="container {{ 'setoutForm' if not inline else '' }} {{ container_class }}">
           {% if caller %}{{caller()}}{% endif %}
       </div>
   </form>
