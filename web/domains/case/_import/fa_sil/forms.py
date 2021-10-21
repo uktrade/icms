@@ -496,7 +496,37 @@ class SILSupplementaryReportForm(forms.ModelForm):
     def __init__(self, *args, application: models.SILApplication, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.fields["bought_from"].queryset = application.importcontact_set.all()
+        self.application = application
+        self.fields["bought_from"].queryset = self.application.importcontact_set.all()
+
+    def clean(self):
+        """Check all goods in the application have been included in the report"""
+
+        cleaned_data = super().clean()
+
+        # Return cleaned data if creating a new model instance
+        if not self.instance.pk:
+            return cleaned_data
+
+        sections = [
+            self.application.goods_section1,
+            self.application.goods_section2,
+            self.application.goods_section5,
+            self.application.goods_section582_obsoletes,
+            self.application.goods_section582_others,
+        ]
+
+        if any(self._check_section(section) for section in sections):
+            self.add_error(None, "You must enter this item.")
+
+        return cleaned_data
+
+    def _check_section(self, section):
+        subquery = section.filter(
+            is_active=True, supplementary_report_firearms__report=self.instance
+        )
+
+        return section.exclude(pk__in=subquery).exists()
 
 
 class SILSupplementaryReportFirearmSection1Form(forms.ModelForm):

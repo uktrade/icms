@@ -1,8 +1,9 @@
 from typing import Type, Union
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import OuterRef
+from django.db.models import OuterRef, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -235,13 +236,23 @@ def delete_import_contact(
     request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, contact_pk: int
 ) -> HttpResponse:
     with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
+        import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
+        application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
         get_application_current_task(application, "import", Task.TaskType.ACK)
-        application.importcontact_set.filter(pk=contact_pk).delete()
+
+        contact = application.importcontact_set.get(pk=contact_pk)
+
+        if application.supplementary_info.reports.filter(bought_from=contact).exists():
+            messages.error(
+                request,
+                f"Cannot delete {contact} who is set as bought from in a supplementary report.",
+            )
+        else:
+            contact.delete()
 
         return redirect(
             reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
@@ -512,19 +523,21 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         application: FaImportApplication = _get_fa_application(import_application)
+        supplementary_info: FaSupplementaryInfo = application.supplementary_info
 
         check_application_permission(application, request.user, "import")
 
         task = get_application_current_task(application, "import", Task.TaskType.ACK)
 
         if request.POST:
-            # TODO ICMSLST-962 Add additional POST steps here
-            application.supplementary_info.is_complete = True
-            application.supplementary_info.completed_datetime = timezone.now()
-            application.supplementary_info.completed_by = request.user
-            application.save()
+            supplementary_info.is_complete = True
+            supplementary_info.completed_datetime = timezone.now()
+            supplementary_info.completed_by = request.user
+            supplementary_info.save()
 
-            return redirect(reverse("workbasket"))
+            return redirect(
+                reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
+            )
 
         context = {
             "process": application,
@@ -540,6 +553,27 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             request=request,
             template_name="web/domains/case/import/fa/provide-report/report-info.html",
             context=context,
+        )
+
+
+@login_required
+@require_POST
+def reopen_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        import_application: ImportApplication = get_object_or_404(
+            ImportApplication.objects.select_for_update(), pk=application_pk
+        )
+        application: FaImportApplication = _get_fa_application(import_application)
+
+        check_application_permission(application, request.user, "import")
+
+        application.supplementary_info.is_complete = False
+        application.supplementary_info.completed_datetime = None
+        application.supplementary_info.completed_by = None
+        application.supplementary_info.save()
+
+        return redirect(
+            reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
         )
 
 
@@ -618,6 +652,18 @@ def edit_report(
 
             if form.is_valid():
                 report.save()
+
+                if not _validate_firearms_details(report, application):
+                    messages.error(
+                        request,
+                        "You must provide firearms details for at least one goods line before submitting a report",
+                    )
+                else:
+                    return redirect(
+                        reverse(
+                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
+                        )
+                    )
 
         else:
             form = form_class(instance=report, application=application)
@@ -724,3 +770,28 @@ def _get_report_type(application: FaImportApplication) -> str:
     else:
         raise NotImplementedError(f"Unknown Firearm process_type: {application.process_type}")
     return report_type
+
+
+def _validate_firearms_details(
+    report: FaSupplementaryReport, application: FaImportApplication
+) -> bool:
+    if application.process_type in [ProcessTypes.FA_DFL, ProcessTypes.FA_OIL]:
+        if report.firearms.filter(Q(is_upload=True) | Q(is_manual=True)).exists():
+            return True
+
+    if application.process_type == ProcessTypes.FA_SIL:
+
+        sections = [
+            report.section1_firearms,
+            report.section2_firearms,
+            report.section5_firearms,
+            report.section582_obsolete_firearms,
+            report.section582_other_firearms,
+        ]
+
+        if any(
+            (section.filter(Q(is_upload=True) | Q(is_manual=True)).exists() for section in sections)
+        ):
+            return True
+
+    return False

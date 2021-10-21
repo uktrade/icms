@@ -13,6 +13,10 @@
           %}
             {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
           {% endwith %}
+
+          {% if form.errors and not section.supplementary_report_firearms.filter(report=report).exists() %}
+            <div class="error-message">You must enter this item.</div>
+          {% endif %}
       </fieldset>
     {% endfor %}
   {% endfor %}

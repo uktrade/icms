@@ -119,7 +119,7 @@
       method="post"
       action="{{ firearm.get_manual_url('delete', section_type) }}"
       class="form-inline"
-      id="id_delete-report-fa-{{ section-type }}-{{ firearm.pk }}">
+      id="id_delete-report-fa-{{ section_type }}-{{ firearm.pk }}">
       {{ csrf_input }}
       <button
         type="submit"

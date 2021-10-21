@@ -103,7 +103,7 @@ class SupplementaryReportBase(models.Model):
 
     bought_from = models.ForeignKey(
         ImportContact,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         null=True,
         related_name="+",
     )
