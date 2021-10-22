@@ -1824,7 +1824,6 @@ def _create_application(
         "importer": import_fixture_data.importer,
         "created_by": import_fixture_data.importer_user,
         "last_updated_by": import_fixture_data.importer_user,
-        "submitted_by": import_fixture_data.importer_user,
         "application_type": application_type,
         "process_type": process_type,
         "contact": import_fixture_data.importer_user,

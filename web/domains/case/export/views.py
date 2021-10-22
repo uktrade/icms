@@ -101,7 +101,6 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
             application.process_type = config.model_class.PROCESS_TYPE
             application.created_by = request.user
             application.last_updated_by = request.user
-            application.submitted_by = request.user
             application.application_type = application_type
 
             with transaction.atomic():

@@ -602,6 +602,7 @@ class ApplicationBase(WorkbasketBase, Process):
             self.status = self.Statuses.SUBMITTED
 
         self.submit_datetime = timezone.now()
+        self.submitted_by = request.user
         self.save()
 
         task.is_active = False
