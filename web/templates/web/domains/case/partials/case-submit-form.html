@@ -1,4 +1,4 @@
-<form method="post" action="" class="form-inline" novalidate>
+<form method="post" action="" class="form-inline no-double-submit" novalidate>
   {{ csrf_input }}
   {{ fields.field(form.confirmation, padding='one', input_cols='one', label_cols='six') }}
   <br />
