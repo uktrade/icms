@@ -1,4 +1,4 @@
-window.addEventListener('load', (event) => {
+window.addEventListener('load', function (event) {
   const reassignmentCB = document.querySelector("#id_reassignment");
   const showReassignUser = UTILS.getShowElementFunc("#reassignment-user-wrapper")
 
@@ -13,4 +13,12 @@ window.addEventListener('load', (event) => {
     searchFormId: "#search-application-form",
     warningId: "#spreadsheet-download-warning"
   });
+
+  setupReassignFormEventHandler();
+
+  const selectAllBtn = document.querySelector("#select-all-records");
+  setupToggleCheckboxEventHandler(selectAllBtn, true)
+
+  const unselectAllBtn = document.querySelector("#unselect-all-records")
+  setupToggleCheckboxEventHandler(unselectAllBtn, false)
 });

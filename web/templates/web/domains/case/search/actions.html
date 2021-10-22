@@ -1,13 +1,52 @@
-<div class="list-actions">
+<div class="list-actions" id="search-actions">
   <ul class="menu-out flow-across">
     <li>
       <form
+        id="download-search-spreadsheet"
         action="{{ icms_url('case:search-download-spreadsheet', kwargs={'case_type': case_type}) }}"
-        method="post" enctype="multipart/form-data" id="download-search-spreadsheet"
+        method="post"
+        enctype="multipart/form-data"
       >
         {{ csrf_input }}
         <button type="submit" class="small-button icon-file-excel button">Download Spreadsheet</button>
       </form>
     </li>
   </ul>
+  {% if reassignment_search %}
+    <ul class="menu-out small-menu-out flow-across">
+      <li><button type="button" id="select-all-records" class="icon-checkbox-checked button">Select All</button></li>
+      <li><button type="button" id="unselect-all-records" class="icon-checkbox-unchecked button">Unselect All</button></li>
+    </ul>
+  {% endif %}
 </div>
+
+{% if reassignment_search %}
+  <fieldset class="search-reassign">
+    <legend>
+      <strong>Reassignment</strong>
+    </legend>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <ul class="menu-out flow-across">
+              <li>
+                {% call forms.form(
+                     action=icms_url('case:search-reassign-case-owner', kwargs={'case_type': case_type}),
+                     id="reassign-to-form",
+                     method='post',
+                     csrf_input=csrf_input
+                   )
+                -%}
+                  {{ fields.field(reassignment_form.assign_to) }}
+                  <button type="submit" class="small-button">Reassign To</button>
+                {% endcall %}
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  <div id="reassign-failure-warning" style="display: none" class="info-box info-box-danger"><p>Unable to reassign users.</p></div>
+  </fieldset>
+{% endif %}

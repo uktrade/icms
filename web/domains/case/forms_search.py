@@ -12,6 +12,7 @@ from web.domains.commodity.models import CommodityGroup
 from web.domains.contacts.widgets import ContactWidget
 from web.domains.country.models import Country
 from web.domains.user.models import User
+from web.flow.models import Process
 from web.forms.fields import WildcardField
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices
@@ -309,3 +310,28 @@ class ExportSearchAdvancedForm(ExportSearchForm):
         choices=[(None, "Any")] + YesNoChoices.choices,
         required=False,
     )
+
+
+class ReassignmentUserForm(forms.Form):
+    assign_to = forms.ModelChoiceField(
+        label="Reassignment User",
+        help_text=(
+            "Search a contact. Contacts returned are matched against first/last name,"
+            " email, job title, organisation and department."
+        ),
+        queryset=User.objects.none(),
+        widget=ContactWidget(
+            attrs={"data-minimum-input-length": 1, "data-placeholder": "Search Users"}
+        ),
+        required=True,
+    )
+
+    applications = forms.ModelMultipleChoiceField(
+        queryset=Process.objects.none(), widget=forms.CheckboxSelectMultiple, required=True
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["assign_to"].queryset = get_ilb_admin_users()
+        self.fields["applications"].queryset = Process.objects.all()

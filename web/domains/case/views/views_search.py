@@ -1,16 +1,19 @@
-from typing import Type, Union
+from typing import TYPE_CHECKING, Type, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from web.domains.case._import.models import ImportApplicationType
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case.export.models import ExportApplication
 from web.domains.case.forms_search import (
     ExportSearchAdvancedForm,
     ExportSearchForm,
     ImportSearchAdvancedForm,
     ImportSearchForm,
+    ReassignmentUserForm,
 )
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -18,6 +21,12 @@ from web.utils.search import (
     get_search_results_spreadsheet,
     search_applications,
 )
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+
+    from web.domains.user.models import User
+    from web.flow.models import Process
 
 SearchForm = Union[
     ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm
@@ -64,6 +73,7 @@ def search_cases(
 
     context = {
         "form": form,
+        "reassignment_form": ReassignmentUserForm(),
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
         "advanced_search": mode == "advanced",
@@ -79,6 +89,30 @@ def search_cases(
         template_name="web/domains/case/search/search.html",
         context=context,
     )
+
+
+@login_required
+@permission_required("web.ilb_admin", raise_exception=True)
+def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
+    """Reassign Applications to the chosen ILB admin."""
+
+    with transaction.atomic():
+        form = ReassignmentUserForm(request.POST)
+
+        if form.is_valid():
+            new_case_owner: "User" = form.cleaned_data["assign_to"]
+            applications: "QuerySet[Process]" = form.cleaned_data["applications"]
+
+            if case_type == "import":
+                apps = ImportApplication.objects.select_for_update().filter(pk__in=applications)
+            else:
+                apps = ExportApplication.objects.select_for_update().filter(pk__in=applications)
+
+            apps.update(case_owner=new_case_owner)
+        else:
+            return HttpResponse(status=400)
+
+    return HttpResponse(status=204)
 
 
 @require_POST

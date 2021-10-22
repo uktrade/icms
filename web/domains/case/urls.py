@@ -23,6 +23,11 @@ search_urls = [
         views_search.download_spreadsheet,
         name="search-download-spreadsheet",
     ),
+    path(
+        "search-reassign-case-owner",
+        views_search.reassign_case_owner,
+        name="search-reassign-case-owner",
+    ),
 ]
 
 note_urls = [
