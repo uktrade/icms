@@ -572,7 +572,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/fa-sil/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 @login_required

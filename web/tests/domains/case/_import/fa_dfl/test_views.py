@@ -3,7 +3,12 @@ import re
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertFormError, assertRedirects
+from pytest_django.asserts import (
+    assertContains,
+    assertFormError,
+    assertRedirects,
+    assertTemplateUsed,
+)
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.models import ImportApplication
@@ -271,6 +276,8 @@ def test_submit_dfl_get(client, dfl_app_pk):
         "Firearms and Ammunition (Deactivated Firearms Licence) - Submit Application",
         status_code=200,
     )
+
+    assertTemplateUsed(response, "web/domains/case/import/import-case-submit.html")
 
     # check the errors are displayed in the response
     errors = response.context["errors"]

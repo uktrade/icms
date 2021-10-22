@@ -307,7 +307,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/fa-dfl/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:

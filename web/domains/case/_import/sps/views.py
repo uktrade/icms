@@ -143,7 +143,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/sps/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 @login_required

@@ -157,3 +157,28 @@ class DegrogationDetailsViewTest(AuthTestCase):
         assert application.consignment_country == self.valid_country
         assert application.contract_sign_date == contract_sign_date
         assert application.contract_completion_date == contract_completion_date
+
+
+class DerogationApplicationSubmitViewTest(AuthTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.importer = ImporterFactory.create()
+        assign_perm("web.is_contact_of_importer", self.user, self.importer)
+        self.login_with_permissions(["importer_access"])
+
+        self.process = DerogationsApplicationFactory.create(
+            created_by=self.user,
+            last_updated_by=self.user,
+            importer=self.importer,
+        )
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        self.url = reverse(
+            "import:derogations:submit-derogations", kwargs={"application_pk": self.process.pk}
+        )
+
+    def test_template_context(self):
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "web/domains/case/import/import-case-submit.html")

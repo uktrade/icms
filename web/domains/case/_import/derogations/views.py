@@ -219,7 +219,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/derogations/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 @login_required
