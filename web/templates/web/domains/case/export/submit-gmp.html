@@ -54,23 +54,7 @@
     </ul>
     <br>
 
-    <form method="post" action="" class="form-inline" novalidate>
-      {{ csrf_input }}
-      {{ fields.field(form.confirmation, padding='one', input_cols='one', label_cols='six') }}
-      <br/>
-      <div class="container">
-        <div class="row">
-          <div class="three columns"></div>
-          <div class="eight columns">
-            <ul class="menu-out flow-across">
-              <li>
-                <input type="submit" class="button primary-button" value="Submit Application"/>
-              </li>
-            </ul>
-          </div>
+    {% include "web/domains/case/partials/case-submit-form.html" %}
 
-        </div>
-      </div>
-    </form>
-  {% endif %}
+    {% endif %}
 {% endblock %}

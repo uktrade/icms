@@ -201,7 +201,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "case_type": "import",
         }
 
-        return render(request, "web/domains/case/import/ironsteel/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 @login_required

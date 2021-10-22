@@ -377,7 +377,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "errors": errors if errors.has_errors() else None,
         }
 
-        return render(request, "web/domains/case/import/opt/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 def _get_edit_url(application_pk: int, file_type: str) -> str:

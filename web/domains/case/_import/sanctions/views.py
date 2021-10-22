@@ -398,4 +398,4 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
         "declaration": declaration,
         "errors": errors if errors.has_errors() else None,
     }
-    return render(request, "web/domains/case/import/sanctions/submit.html", context)
+    return render(request, "web/domains/case/import/import-case-submit.html", context)

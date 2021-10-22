@@ -336,7 +336,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
             "case_type": "import",
         }
 
-        return render(request, "web/domains/case/import/wood/submit.html", context)
+        return render(request, "web/domains/case/import/import-case-submit.html", context)
 
 
 @login_required
