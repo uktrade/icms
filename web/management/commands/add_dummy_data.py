@@ -122,6 +122,21 @@ class Command(BaseCommand):
         )
 
         self.create_user(
+            username="ilb_admin_2",
+            password=options["password"],
+            first_name="Samantha",
+            last_name="Stevens (ilb_admin)",
+            permissions=[
+                "importer_access",
+                "exporter_access",
+                "ilb_admin",
+                "mailshot_access",
+            ],
+            linked_importers=[importer],
+            linked_exporters=[exporter],
+        )
+
+        self.create_user(
             username="importer_user",
             password=options["password"],
             first_name="Dave",

@@ -1,4 +1,4 @@
-window.addEventListener('load', (event) => {
+window.addEventListener('load', function(event) {
   const appType = document.querySelector("#id_application_type");
   const appSubType = document.querySelector("#id_application_sub_type");
   const showAppSubType = UTILS.getShowElementFunc("#application-sub-type-wrapper")
@@ -23,4 +23,12 @@ window.addEventListener('load', (event) => {
     searchFormId: "#search-application-form",
     warningId: "#spreadsheet-download-warning"
   });
+
+  setupReassignFormEventHandler();
+
+  const selectAllBtn = document.querySelector("#select-all-records");
+  setupToggleCheckboxEventHandler(selectAllBtn, true)
+
+  const unselectAllBtn = document.querySelector("#unselect-all-records")
+  setupToggleCheckboxEventHandler(unselectAllBtn, false)
 });

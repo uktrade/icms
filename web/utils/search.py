@@ -27,7 +27,7 @@ from web.domains.case.export.models import (
     ExportApplication,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import CaseEmail, UpdateRequest
+from web.domains.case.models import ApplicationBase, CaseEmail, UpdateRequest
 from web.domains.case.types import ImpOrExpT
 from web.domains.commodity.models import Commodity
 from web.flow.models import ProcessTypes
@@ -134,6 +134,7 @@ class AssigneeDetails:
 
 @dataclass
 class ImportResultRow:
+    app_pk: int
     submitted_at: str
     case_status: CaseStatus
     applicant_details: ApplicantDetails
@@ -145,6 +146,7 @@ class ImportResultRow:
 
 @dataclass
 class ExportResultRow:
+    app_pk: int
     # Case status fields
     case_reference: str
     application_type: str
@@ -401,6 +403,7 @@ def _get_result_row(rec: ImportApplication) -> ImportResultRow:
     reassignment_date = "11-Oct-2021 14:52"
 
     row = ImportResultRow(
+        app_pk=rec.pk,
         submitted_at=rec.submit_datetime.strftime("%d %b %Y %H:%M:%S"),
         case_status=CaseStatus(
             applicant_reference=getattr(rec, "applicant_reference", ""),
@@ -457,6 +460,7 @@ def _get_export_result_row(rec: ExportApplication) -> ExportResultRow:
     reassignment_date = "11-Oct-2021 14:52"
 
     return ExportResultRow(
+        app_pk=rec.pk,
         case_reference=rec.get_reference(),
         application_type=app_type_label,
         status=rec.get_status_display(),
@@ -764,7 +768,13 @@ def _apply_search(model: "QuerySet[Model]", terms: SearchTerms) -> "QuerySet[Mod
         model = model.filter(submit_datetime__isnull=False)
 
     if terms.reassignment_search:
-        model = model.filter(case_owner__isnull=False)
+        model = model.filter(
+            case_owner__isnull=False,
+            status__in=[
+                ApplicationBase.Statuses.PROCESSING,
+                ApplicationBase.Statuses.VARIATION_REQUESTED,
+            ],
+        )
 
         if terms.reassignment_user:
             model = model.filter(case_owner=terms.reassignment_user)
