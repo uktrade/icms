@@ -233,7 +233,6 @@ def _create_application(
             application.process_type = model_class.PROCESS_TYPE
             application.created_by = request.user
             application.last_updated_by = request.user
-            application.submitted_by = request.user
             application.application_type = at
             application.issue_paper_licence_only = _get_paper_licence_only(at)
 
