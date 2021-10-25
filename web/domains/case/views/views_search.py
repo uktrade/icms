@@ -121,9 +121,9 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
 def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     """Generates and returns a spreadsheet using same form data as the search form."""
 
-    # TODO: Revisit when doing ICMSLST-1153
-    # I think the form class just needs to use the AdvancedSearchForm's
-    form_class: SearchFormT = ImportSearchForm if case_type == "import" else ExportSearchForm
+    form_class: SearchFormT = (
+        ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
+    )
     form = form_class(request.POST)
 
     if not form.is_valid():
