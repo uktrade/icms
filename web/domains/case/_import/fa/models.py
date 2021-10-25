@@ -81,6 +81,7 @@ class SupplementaryInfoBase(models.Model):
     no_report_reason = models.CharField(
         max_length=1000,
         null=True,
+        blank=True,
         verbose_name=(
             "You haven't provided any reports on imported firearms. You must provide a reason"
             " why no reporting is required before you confirm reporting complete."

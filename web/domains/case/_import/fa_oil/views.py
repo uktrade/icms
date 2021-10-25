@@ -307,7 +307,7 @@ def edit_report_firearm_manual(
         report_firearm: OILSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
 
         if request.POST:
-            form = OILSupplementaryReportFirearmForm(instance=report_firearm, data=request.POST)
+            form = OILSupplementaryReportFirearmForm(data=request.POST, instance=report_firearm)
 
             if form.is_valid():
                 form.save()

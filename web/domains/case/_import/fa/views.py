@@ -10,9 +10,18 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.fa_dfl.forms import DFLSupplementaryReportForm
-from web.domains.case._import.fa_oil.forms import OILSupplementaryReportForm
-from web.domains.case._import.fa_sil.forms import SILSupplementaryReportForm
+from web.domains.case._import.fa_dfl.forms import (
+    DFLSupplementaryInfoForm,
+    DFLSupplementaryReportForm,
+)
+from web.domains.case._import.fa_oil.forms import (
+    OILSupplementaryInfoForm,
+    OILSupplementaryReportForm,
+)
+from web.domains.case._import.fa_sil.forms import (
+    SILSupplementaryInfoForm,
+    SILSupplementaryReportForm,
+)
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -37,6 +46,7 @@ from .forms import (
 from .types import (
     FaImportApplication,
     FaSupplementaryInfo,
+    FaSupplementaryInfoFormT,
     FaSupplementaryReport,
     FaSupplementaryReportFormT,
 )
@@ -523,21 +533,33 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         application: FaImportApplication = _get_fa_application(import_application)
-        supplementary_info: FaSupplementaryInfo = application.supplementary_info
 
         check_application_permission(application, request.user, "import")
-
         task = get_application_current_task(application, "import", Task.TaskType.ACK)
 
-        if request.POST:
-            supplementary_info.is_complete = True
-            supplementary_info.completed_datetime = timezone.now()
-            supplementary_info.completed_by = request.user
-            supplementary_info.save()
+        form_class = _get_supplementary_info_form(application)
 
-            return redirect(
-                reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
+        if request.POST:
+            form = form_class(
+                data=request.POST, instance=application.supplementary_info, application=application
             )
+
+            if form.is_valid():
+                supplementary_info = form.save(commit=False)
+                supplementary_info.is_complete = True
+                supplementary_info.completed_datetime = timezone.now()
+                supplementary_info.completed_by = request.user
+                supplementary_info.save()
+
+                return redirect(
+                    reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
+                )
+
+            elif form.non_field_errors():
+                messages.error(request, form.non_field_errors()[0])
+
+        else:
+            form = form_class(instance=application.supplementary_info, application=application)
 
         context = {
             "process": application,
@@ -547,6 +569,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms Supplementary Information Overview",
             "report_type": _get_report_type(application),
+            "form": form,
         }
 
         return render(
@@ -746,6 +769,18 @@ def _get_fa_application(application: ImportApplication) -> FaImportApplication:
     firearms_application: FaImportApplication = getattr(application, link)
 
     return firearms_application
+
+
+def _get_supplementary_info_form(application: FaImportApplication) -> FaSupplementaryInfoFormT:
+    if application.process_type == ProcessTypes.FA_OIL:
+        form = OILSupplementaryInfoForm
+    elif application.process_type == ProcessTypes.FA_DFL:
+        form = DFLSupplementaryInfoForm
+    elif application.process_type == ProcessTypes.FA_SIL:
+        form = SILSupplementaryInfoForm
+    else:
+        raise NotImplementedError(f"Unknown Firearm process_type: {application.process_type}")
+    return form
 
 
 def _get_supplementary_report_form(application: FaImportApplication) -> FaSupplementaryReportFormT:

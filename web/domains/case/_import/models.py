@@ -368,20 +368,33 @@ class ImportApplication(ApplicationBase):
 
         return r
 
-    def _get_importer_actions(self):
+    def _get_importer_actions(self) -> list[WorkbasketAction]:
         importer_actions: list[WorkbasketAction] = []
 
+        # Add provide report link for firearms supplementary report
         if (
             self.status == self.Statuses.COMPLETED
             and self.application_type.type == ImportApplicationType.Types.FIREARMS
         ):
-            importer_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Provide Report",
-                    url=reverse("import:fa:provide-report", kwargs={"application_pk": self.pk}),
-                ),
-            )
+
+            if self.process_type == ProcessTypes.FA_OIL:
+                supplementary_info = self.openindividuallicenceapplication.supplementary_info
+            elif self.process_type == ProcessTypes.FA_DFL:
+                supplementary_info = self.dflapplication.supplementary_info
+            elif self.process_type == ProcessTypes.FA_SIL:
+                supplementary_info = self.silapplication.supplementary_info
+            else:
+                supplementary_info = None
+
+            # Only show link if supplementary report is not complete
+            if supplementary_info and not supplementary_info.is_complete:
+                importer_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name="Provide Report",
+                        url=reverse("import:fa:provide-report", kwargs={"application_pk": self.pk}),
+                    ),
+                )
 
         return importer_actions
 
