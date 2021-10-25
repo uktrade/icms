@@ -144,6 +144,34 @@ class DFLChecklistOptionalForm(DFLChecklistForm):
             self.fields[f].required = False
 
 
+class DFLSupplementaryInfoForm(forms.ModelForm):
+    class Meta:
+        model = models.DFLSupplementaryInfo
+        fields = ("no_report_reason",)
+        widgets = {"no_report_reason": forms.Textarea({"rows": 3})}
+
+    def __init__(self, *args, application: models.DFLApplication, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.application = application
+
+        if not self.instance.reports.exists():
+            self.fields["no_report_reason"].required = True
+
+    def clean(self) -> dict[str, Any]:
+        if self.application.importcontact_set.exists() and not self.instance.reports.exists():
+            msg = (
+                "You must provide the details of who you bought the items from and one or more"
+                " firearms reports before you can complete reporting. Each report must include the"
+                " means of transport, the date the firearms were received and the details of who"
+                " you bought the items from."
+            )
+
+            self.add_error(None, msg)
+
+        return super().clean()
+
+
 class DFLSupplementaryReportForm(forms.ModelForm):
     class Meta:
         model = models.DFLSupplementaryReport

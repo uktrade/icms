@@ -49,6 +49,14 @@
   <div class="section-break"></div>
 
   {% if process.supplementary_info.is_complete %}
+    {% if not process.supplementary_info.reports.exists() %}
+      <div class="info-box info-box-info">
+        The applicant has completed the supplementary information without any firearms reports due to the following reason:
+        <br><br>
+        {{ process.supplementary_info.no_report_reason }}
+      </div>
+    {% endif %}
+
     {{ application_field(process.supplementary_info.completed_by, "Report Completed By") }}
     {{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'), "Date Reporting Completed") }}
   {% else %}
@@ -59,34 +67,39 @@
       Once reporting has been completed you will still be able to access and update the reports from your application.
     </div>
 
-    <div class="modal-popover-container hidden">
-      <div class="modal-popover regular-popover" tabindex="0">
-        <div class="modal-popover-content">
-          <h2 id="engine-modal-popover-title">Complete Supplementary Reporting Information</h2>
-          <p>
-            You should only complete reporting if you have provided the details of who you bought
-            the items from and goods that will be imported against this licence. Do you want to complete reporting?
-          </p>
-          {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-            <ul class="menu-out modal-popover-actions flow-across">
-              <li>
-                <button type="submit" class="primary-button button">
-                  Confirm
-                </button>
-              </li>
-              <li>
-                <button type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
-                  Cancel
-                </button>
-              </li>
-            </ul>
-          {%- endcall %}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+      <div class="modal-popover-container hidden">
+        <div class="modal-popover regular-popover" tabindex="0">
+          <div class="modal-popover-content">
+            <h2 id="engine-modal-popover-title">Complete Supplementary Reporting Information</h2>
+            <p>
+              You should only complete reporting if you have provided the details of who you bought
+              the items from and goods that will be imported against this licence. Do you want to complete reporting?
+            </p>
+              <ul class="menu-out modal-popover-actions flow-across">
+                <li>
+                  <button type="submit" class="primary-button button">
+                    Confirm
+                  </button>
+                </li>
+                <li>
+                  <button type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
+                    Cancel
+                  </button>
+                </li>
+              </ul>
+          </div>
         </div>
       </div>
-    </div>
+
+      {% if not process.supplementary_info.reports.exists() %}
+        {{ fields.field(form.no_report_reason) }}
+      {% endif %}
+    {%- endcall %}
 
     <button type="button" onclick="$('.modal-popover-container').show()" class="button primary-button">
       Confirm Reporting Complete
     </button>
+
   {% endif %}
 {% endblock %}
