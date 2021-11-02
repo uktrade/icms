@@ -1,0 +1,78 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% block page_js %}
+  {{ form.media.js }}
+{% endblock %}
+
+{% block css %}
+  {{ form.media.css }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('cat:list') }}" class="prev-link">
+          Certificate Application Templates
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+
+{% block main_content_intro %}
+  <div class="info-box info-box-info">
+    TODO: ICMLST-1050 ICMSLST-1051 ICMSLST-1052 - Add div info box referenced in ICMLST-1030
+  </div>
+{% endblock %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+{{ wizard.management_form }}
+  {% block extra_main_content_form %}
+  {{ application_field(instance.application_type, "Application Type") }}
+{% endblock %}
+
+
+  {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+{% if wizard.steps.prev %}
+  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">Previous</button>
+{% endif %}
+
+{% if wizard.steps.next %}
+  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.next }}">Next</button>
+{% endif %}
+
+    <div class="section-break"></div>
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button id="btn-submit" type="submit" class="primary-button button">
+                  {% if form.instance %}
+                    Save
+                  {% else %}
+                    Create
+                  {% endif %}
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}

@@ -4,6 +4,7 @@ django-chunk-upload-handlers==0.0.11
 django-compressor==2.4
 django-environ==0.4.5
 django-filter==2.4.0
+django-formtools==2.3
 django-guardian==2.3.0
 django-htmlmin==0.11.0
 django-phonenumber-field==5.0.0

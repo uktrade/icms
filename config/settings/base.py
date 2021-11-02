@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "web",
     "captcha",
     "compressor",
+    "formtools",
     "phonenumber_field",
     "guardian",
     "django_chunk_upload_handlers",

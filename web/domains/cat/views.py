@@ -9,12 +9,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import ListView
+from formtools.wizard.views import SessionWizardView
 
+from web.domains.case.export.models import ExportApplicationType
 from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.user.models import User
 from web.types import AuthenticatedHttpRequest
 
-from .forms import CreateCATForm, EditCATForm, SearchCATForm
+from . import forms
 
 if TYPE_CHECKING:
     from django.db import QuerySet
@@ -33,7 +35,7 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Certificate Application Templates"
-        context["form"] = SearchCATForm()
+        context["form"] = forms.SearchCATForm()
 
         return context
 
@@ -45,7 +47,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
             raise PermissionDenied
 
         if request.POST:
-            form = CreateCATForm(request.POST)
+            form = forms.CreateCATForm(request.POST)
             if form.is_valid():
                 cat = form.save(commit=False)
                 cat.owner = request.user
@@ -55,7 +57,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
 
                 return redirect(reverse("cat:list"))
         else:
-            form = CreateCATForm()
+            form = forms.CreateCATForm()
 
         context = {
             "page_title": "Create Certificate Application Template",
@@ -74,7 +76,7 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
             raise PermissionDenied
 
         if request.POST:
-            form = EditCATForm(request.POST, instance=cat)
+            form = forms.EditCATForm(request.POST, instance=cat)
             if form.is_valid():
                 cat = form.save()
 
@@ -82,7 +84,7 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
 
                 return redirect(reverse("cat:list"))
         else:
-            form = EditCATForm(instance=cat)
+            form = forms.EditCATForm(instance=cat)
 
         context = {
             "page_title": "Edit Certificate Application Template",
@@ -91,6 +93,50 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
         }
 
         return render(request, "web/domains/cat/edit.html", context)
+
+
+class Edit(SessionWizardView):
+    form_list = [
+        ("metadata", forms.EditCATForm),
+        # Then get_form_list picks which form to show depending on type.
+        (ExportApplicationType.Types.FREE_SALE, forms.CFSTemplateForm),
+        (ExportApplicationType.Types.MANUFACTURE, forms.COMTemplateForm),
+        (ExportApplicationType.Types.GMP, forms.GMPTemplateForm),
+    ]
+    template_name = "web/domains/cat/wizard_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        cat_pk = kwargs["cat_pk"]
+        self.instance = get_object_or_404(CertificateApplicationTemplate, pk=cat_pk)
+        self.check_user_for_template(None, self.instance)
+        return super().dispatch(request, *args, **kwargs)
+
+    @staticmethod
+    def check_user_for_template(user, instance):
+        """Is the user allowed to edit this template instance?
+
+        Raise permission denied if not.
+        """
+        return True
+
+        raise PermissionDenied
+
+    def get_form_list(self) -> dict:
+        """Different forms depending on the application type of the template."""
+        valid_steps = ("metadata", self.instance.application_type)
+        forms = super().get_form_list()
+        forms = {key: forms[key] for key in forms if key in valid_steps}
+
+        return forms
+
+    def get_form_instance(self, step):
+        return self.instance
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs) | {"instance": self.instance}
+
+    def done(self, form_list, form_dict, **kwargs):
+        return redirect(reverse("cat:list"))
 
 
 def _has_permission(user: User) -> bool:
