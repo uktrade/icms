@@ -39,17 +39,12 @@
 {% endblock %}
 
 
+{% block wizard_form_step %}
   {% for field in form %}
-      {{ fields.field(field) }}
-    {% endfor %}
+    {{ fields.field(field) }}
+  {% endfor %}
+{% endblock wizard_form_step %}
 
-{% if wizard.steps.prev %}
-  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">Previous</button>
-{% endif %}
-
-{% if wizard.steps.next %}
-  <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.next }}">Next</button>
-{% endif %}
 
     <div class="section-break"></div>
 
@@ -60,14 +55,21 @@
             <ul class="menu-out flow-across">
               <li>
                 <button id="btn-submit" type="submit" class="primary-button button">
-                  {% if form.instance %}
                     Save
-                  {% else %}
-                    Create
-                  {% endif %}
                 </button>
               </li>
-            </ul>
+              {% if wizard.steps.prev %}
+              <li>
+              <button name="wizard_goto_step" type="submit" class="button" value="{{ wizard.steps.prev }}">Previous</button>
+              </li>
+            {% endif %}
+
+            {% if wizard.steps.next %}
+              <li>
+              <button name="wizard_goto_step" type="submit" class="button" value="{{ wizard.steps.next }}">Next</button>
+              </li>
+            {% endif %}
+                        </ul>
           </div>
           <div class="one columns"></div>
         </div>

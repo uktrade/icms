@@ -1,0 +1,31 @@
+{% extends "web/domains/cat/wizard_form.html" %}
+
+{% block wizard_form_step %}
+<h4>Contact</h4>
+  {{ fields.field(form.contact) }}
+
+  <h4>Responsible Person</h4>
+  {{ fields.field(form.is_responsible_person) }}
+  {{ fields.address_fields(
+    form,
+    'responsible_person_name',
+    'responsible_person_address_entry_type',
+    'responsible_person_postcode',
+    'responsible_person_address',
+    'responsible_person'
+  ) }}
+  {{ fields.field(form.responsible_person_country) }}
+
+  <h4>Manufacturer</h4>
+  {{ fields.field(form.is_manufacturer) }}
+  {{ fields.address_fields(
+    form,
+    'manufacturer_name',
+    'manufacturer_address_entry_type',
+    'manufacturer_postcode',
+    'manufacturer_address',
+    'manufacturer'
+  ) }}
+  {{ fields.field(form.manufacturer_country) }}
+
+{% endblock %}

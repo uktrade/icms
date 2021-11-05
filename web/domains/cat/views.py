@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -95,7 +95,7 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
         return render(request, "web/domains/cat/edit.html", context)
 
 
-class Edit(SessionWizardView):
+class Edit(PermissionRequiredMixin, LoginRequiredMixin, SessionWizardView):
     form_list = [
         ("metadata", forms.EditCATForm),
         # Then get_form_list picks which form to show depending on type.
@@ -109,7 +109,11 @@ class Edit(SessionWizardView):
         cat_pk = kwargs["cat_pk"]
         self.instance = get_object_or_404(CertificateApplicationTemplate, pk=cat_pk)
         self.check_user_for_template(None, self.instance)
+
         return super().dispatch(request, *args, **kwargs)
+
+    def has_permission(self) -> bool:
+        return _has_permission(self.request.user)
 
     @staticmethod
     def check_user_for_template(user, instance):
@@ -134,6 +138,12 @@ class Edit(SessionWizardView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs) | {"instance": self.instance}
+
+    def get_template_names(self) -> List[str]:
+        if self.steps.current == ExportApplicationType.Types.GMP:
+            return ["web/domains/cat/wizard_form_gmp.html"]
+
+        return super().get_template_names()
 
     def done(self, form_list, form_dict, **kwargs):
         return redirect(reverse("cat:list"))
