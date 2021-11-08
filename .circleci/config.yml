@@ -36,3 +36,9 @@ jobs:
             - run:
                 name: run unit tests
                 command: make test
+
+            - run:
+                  name: Publish unit test coverage
+                  command: |
+                      wget -O codecov.sh https://codecov.io/bash
+                      bash ./codecov.sh -s test-reports -f "*.xml"
