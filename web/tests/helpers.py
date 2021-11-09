@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 from web.utils.validation import ApplicationErrors
 
 
@@ -11,3 +13,60 @@ def check_page_errors(errors: ApplicationErrors, page_name: str, error_field_nam
     actual_error_names = sorted(e.field_name for e in page_errors.errors)
 
     assert sorted(error_field_names) == actual_error_names
+
+
+class CaseURLS:
+    """Collection of Case Urls for convenience when testing."""
+
+    # web/domains/case/views/views_misc.py urls
+    @staticmethod
+    def take_ownership(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:take-ownership", kwargs=kwargs)
+
+    @staticmethod
+    def manage(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage", kwargs=kwargs)
+
+    @staticmethod
+    def manage_withdrawals(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage-withdrawals", kwargs=kwargs)
+
+    # web/domains/case/views/views_update_request.py urls
+    @staticmethod
+    def manage_update_requests(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage-update-requests", kwargs=kwargs)
+
+    # web/domains/case/views/views_fir.py urls
+    @staticmethod
+    def manage_firs(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage-firs", kwargs=kwargs)
+
+    # web/domains/case/views/views_note.py urls
+    @staticmethod
+    def list_notes(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:list-notes", kwargs=kwargs)
+
+    # web/domains/case/views/views_prepare_response.py urls
+    @staticmethod
+    def prepare_response(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:prepare-response", kwargs=kwargs)
+
+    @staticmethod
+    def manage_case_emails(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage-case-emails", kwargs=kwargs)
