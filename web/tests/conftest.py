@@ -1,12 +1,23 @@
 import pytest
 from django.core.management import call_command
 from django.test import signals
+from django.test.client import Client
 from jinja2 import Template as Jinja2Template
 
+from web.domains.case._import.fa_dfl.models import DFLApplication
+from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.flow.models import Task
+
+from .application_utils import (
+    create_in_progress_fa_dfl_app,
+    create_in_progress_wood_app,
+    submit_app,
+)
 
 ORIGINAL_JINJA2_RENDERER = Jinja2Template.render
 
@@ -106,7 +117,12 @@ def importer_contact(django_user_model):
 
 @pytest.fixture
 def office():
-    """Fixture to get an office model instance."""
+    """Fixture to get an office model instance (linked to importer)."""
+    return Office.objects.get(is_active=True, address="47 some way, someplace", postcode="BT180LZ")
+
+
+def exporter_office():
+    """Fixture to get an office model instance (linked to exporter)."""
     return Office.objects.get(is_active=True, address="47 some way, someplace", postcode="S410SG")
 
 
@@ -151,3 +167,78 @@ def agent_exporter(exporter):
         registered_number="422",
         main_exporter=exporter,
     )
+
+
+@pytest.fixture()
+def icms_admin_client(test_icms_admin_user) -> Client:
+    client = Client()
+
+    assert (
+        client.login(username=test_icms_admin_user.username, password="test") is True
+    ), "Failed to login"
+
+    return client
+
+
+@pytest.fixture()
+def importer_client(test_import_user) -> Client:
+    client = Client()
+
+    assert (
+        client.login(username=test_import_user.username, password="test") is True
+    ), "Failed to login"
+
+    return client
+
+
+@pytest.fixture()
+def wood_app_in_progress(
+    importer_client, importer, office, test_import_user
+) -> WoodQuotaApplication:
+    """An in progress wood application with a fully valid set of data."""
+
+    app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
+
+    return app
+
+
+@pytest.fixture()
+def wood_app_submitted(importer_client, importer, office, test_import_user) -> WoodQuotaApplication:
+    """A valid wood application in the submitted state."""
+
+    app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
+
+    submit_app(client=importer_client, view_name="import:wood:submit-quota", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    assert app.get_task(ImportApplication.Statuses.SUBMITTED, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def fa_dfl_app_in_progress(
+    importer_client, test_import_user, importer, office, importer_contact
+) -> DFLApplication:
+    """An in progress wood application with a fully valid set of data."""
+
+    # Create the FA-DFL app
+    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
+
+    return app
+
+
+@pytest.fixture()
+def fa_dfl_app_submitted(importer_client, importer, office, importer_contact) -> DFLApplication:
+    """A valid wood application in the submitted state."""
+
+    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
+
+    submit_app(client=importer_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    assert app.get_task(ImportApplication.Statuses.SUBMITTED, Task.TaskType.PROCESS)
+
+    return app
