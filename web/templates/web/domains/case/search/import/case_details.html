@@ -14,7 +14,14 @@
     <div class="twelve columns"><span class="prompt north disabledLink">Case Reference</span></div>
   </div>
   <div class="row">
-    <div class="twelve columns"><a href="#">{{ cs.case_reference }}</a></div>
+    <div class="twelve columns">
+      <a
+        target="_blank"
+        href="{{ icms_url('case:manage', kwargs={'application_pk': rec.app_pk, 'case_type': 'import'}) }}"
+      >
+        {{ cs.case_reference }}
+      </a>
+    </div>
   </div>
 
   {% if cs.licence_reference %}
