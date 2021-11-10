@@ -14,6 +14,7 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.template.models import Template
 from web.domains.user.models import User
+from web.flow.errors import ProcessError
 from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
@@ -143,6 +144,9 @@ def manage_withdrawals(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
+    # FIXME: Replace with real logic
+    readonly_view = True
+
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -200,6 +204,7 @@ def manage_withdrawals(
             "withdrawals": withdrawals,
             "current_withdrawal": current_withdrawal,
             "case_type": case_type,
+            "readonly_view": readonly_view,
         }
 
         return render(
@@ -279,6 +284,10 @@ def manage_case(
 
         task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
+        # readonly_view, task = _get_readonly_status(application, case_type, request)
+        readonly_view = True
+
+        # FIXME: Remove this to its own post only endpoint
         if request.POST:
             form = forms.CloseCaseForm(request.POST)
 
@@ -319,11 +328,33 @@ def manage_case(
             "task": task,
             "page_title": get_case_page_title(case_type, application, "Manage"),
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(
             request=request, template_name="web/domains/case/manage/manage.html", context=context
         )
+
+
+def _get_readonly_status(application, case_type, request):
+    """Logic for "View" or "manage"
+
+    :param application:
+    :param case_type:
+    :param request:
+    :return:
+    """
+
+    try:
+        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        is_case_owner = request.user == application.case_owner
+        readonly_view = not is_case_owner
+
+    except ProcessError:
+        task = application.get_active_task()
+        readonly_view = True
+
+    return readonly_view, task
 
 
 @login_required

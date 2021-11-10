@@ -1,4 +1,5 @@
 <h4>Export Case</h4>
+
 <ul class="menu-out">
   {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}), process.get_reference()) }}
 
@@ -32,7 +33,9 @@
 
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
 
-  {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'Authorisation') }}
+  {% if not readonly_view %}
+    {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'Authorisation') }}
+  {% endif %}
 </ul>
 
 <h4>Application</h4>

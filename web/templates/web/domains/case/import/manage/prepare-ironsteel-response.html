@@ -10,7 +10,7 @@
         <th>Goods Description</th>
         <th>Quantity</th>
         <th>Unit</th>
-        <th>Action</th>
+        {% if not readonly_view %}<th>Action</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -27,13 +27,15 @@
         <td>
           Kilos
         </td>
-        <td>
-          <a
-            class="link-button icon-pencil button"
-            href={{ icms_url('import:ironsteel:response-prep-edit-goods', kwargs={'application_pk': process.pk}) }}>
-            Edit
-          </a>
-        </td>
+        {% if not readonly_view %}
+          <td>
+            <a
+              class="link-button icon-pencil button"
+              href={{ icms_url('import:ironsteel:response-prep-edit-goods', kwargs={'application_pk': process.pk}) }}>
+              Edit
+            </a>
+          </td>
+        {% endif %}
       </tr>
     </tbody>
   </table>
@@ -44,7 +46,7 @@
 {% block certificates_content %}
   <h4>Export Certificates</h4>
 
-  {% with read_only = false, manage_case=True %}
+  {% with read_only = readonly_view, manage_case=True %}
     {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
   {% endwith %}
 

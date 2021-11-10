@@ -21,7 +21,7 @@
     </ul>
   </div>
 
-  {% if case_type != "access" %}
+  {% if case_type != "access" and not readonly_view %}
     <form
       method="post"
       action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"

@@ -9,16 +9,18 @@
 </div>
 
 <div class="list-actions">
-  <ul class="menu-out flow-across">
-    <form
-      method="post"
-      action="{{ icms_url('case:add-fir', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
-      class="form-inline">
+  {% if not readonly_view %}
+    <ul class="menu-out flow-across">
+      <form
+        method="post"
+        action="{{ icms_url('case:add-fir', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+        class="form-inline">
 
-      {{ csrf_input }}
-      <button type="submit" class="small-button icon-plus">New FIR</button>
-    </form>
-  </ul>
+        {{ csrf_input }}
+        <button type="submit" class="small-button icon-plus">New FIR</button>
+      </form>
+    </ul>
+  {% endif %}
 </div>
 
 {% for fir in firs.all() %}

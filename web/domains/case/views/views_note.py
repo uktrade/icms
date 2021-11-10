@@ -24,6 +24,9 @@ def list_notes(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
+    # FIXME: Add correct logic here:
+    readonly_view = True
+
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -35,6 +38,7 @@ def list_notes(
             "notes": application.case_notes,
             "case_type": case_type,
             "page_title": get_case_page_title(case_type, application, "Notes"),
+            "readonly_view": readonly_view,
         }
 
     return render(

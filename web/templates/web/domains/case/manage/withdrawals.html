@@ -69,28 +69,24 @@
         <div class="three columns"></div>
       </div>
 
+      {% if not readonly_view %}
+        {% for field in form %}
+          {{ fields.field(field, show_optional_indicator=False) }}
+        {% endfor %}
 
-      {% for field in form %}
-        {{ fields.field(field, show_optional_indicator=False) }}
-      {% endfor %}
-
-      <div class="container">
-        <div class="row">
-          <div class="three columns"></div>
-          <div class="eight columns">
-            <ul class="menu-out flow-across">
-              <li>
-                <input
-                  type="submit"
-                  name="action"
-                  class="primary-button button"
-                  value="Submit" />
-              </li>
-            </ul>
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="eight columns">
+              <ul class="menu-out flow-across">
+                <li><input type="submit" name="action" class="primary-button button" value="Submit" /></li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    </fieldset>
+      </fieldset>
+    {% endif %}
+
     {% endcall %}
   {% endif %}
 

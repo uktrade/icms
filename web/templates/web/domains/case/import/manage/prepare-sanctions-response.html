@@ -11,7 +11,7 @@
         <th>Quantity</th>
         <th>Unit</th>
         <th>Value (GBP CIF)</th>
-        <th>Action</th>
+        {% if not readonly_view %}<th>Action</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -30,12 +30,14 @@
           <td>
             {{ goods_item.value}}
           </td>
-          <td>
-            <a
-              href={{ icms_url('import:sanctions:edit-goods-licence', args=[process.pk, goods_item.pk]) }}>
-              Edit
-            </a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a
+                href={{ icms_url('import:sanctions:edit-goods-licence', args=[process.pk, goods_item.pk]) }}>
+                Edit
+              </a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>

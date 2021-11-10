@@ -1,11 +1,13 @@
 {% extends "web/domains/case/manage/prepare-response.html" %}
 
 {% block cover_letter_actions %}
-  <a
-    href="{{ icms_url('import:fa-sil:set-cover-letter', kwargs={'application_pk': process.pk}) }}"
-    class="button small-button">
-    Set Cover Letter
-  </a>
+  {% if not readonly_view %}
+    <a
+      href="{{ icms_url('import:fa-sil:set-cover-letter', kwargs={'application_pk': process.pk}) }}"
+      class="button small-button">
+      Set Cover Letter
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block goods_content %}
@@ -33,7 +35,7 @@
         <th>Obsolete Calibre</th>
         <th>Quantity</th>
         <th>Units</th>
-        <th>Actions</th>
+        {% if not readonly_view %}<th>Actions</th>{% endif %}
       </tr>
       </thead>
 
@@ -44,11 +46,13 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section1"}) }}"
-            >Edit</a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section1"}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
 
@@ -59,11 +63,13 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section2"}) }}"
-            >Edit</a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section2"}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
 
@@ -80,11 +86,13 @@
             {% endif %}
           </td>
           <td>units</td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section5"}) }}"
-            >Edit</a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section5"}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
 
@@ -95,11 +103,13 @@
           <td>{{ row.obsolete_calibre }}</td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-obsolete"}) }}"
-            >Edit</a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-obsolete"}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
 
@@ -110,11 +120,13 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-other"}) }}"
-            >Edit</a>
-          </td>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-other"}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </table>

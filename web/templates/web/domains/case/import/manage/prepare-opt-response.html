@@ -22,7 +22,7 @@
       <th>Value (Euro)</th>
       <th>Category</th>
       <th>Category Description</th>
-      <th>Actions</th>
+      {% if not readonly_view %}<th>Actions</th>{% endif %}
     </tr>
     </thead>
 
@@ -32,11 +32,13 @@
       <td>{{ process.cp_total_value }}</td>
       <td>{{ process.cp_category }}</td>
       <td>{{ process.cp_category_licence_description }}</td>
-      <td>
-        <a class="link-button button icon-pencil" data-input_action="edit"
-           href="{{ icms_url('import:opt:response-prep-edit-compensating-products', kwargs={'application_pk': process.pk}) }}"
-        >Edit</a>
-      </td>
+      {% if not readonly_view %}
+        <td>
+          <a class="link-button button icon-pencil" data-input_action="edit"
+             href="{{ icms_url('import:opt:response-prep-edit-compensating-products', kwargs={'application_pk': process.pk}) }}"
+          >Edit</a>
+        </td>
+      {% endif %}
     </tr>
   </table>
 
@@ -57,7 +59,7 @@
       <th>Unit</th>
       <th>Value (Euro)</th>
       <th>Goods Description</th>
-      <th>Actions</th>
+      {% if not readonly_view %}<th>Actions</th>{% endif %}
     </tr>
     </thead>
 
@@ -66,11 +68,13 @@
       <td>kilos</td>
       <td>{{ process.teg_total_value }}</td>
       <td>{{ process.teg_goods_description }}</td>
-      <td>
-        <a class="link-button button icon-pencil" data-input_action="edit"
-           href="{{ icms_url('import:opt:response-prep-edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}"
-        >Edit</a>
-      </td>
+      {% if not readonly_view %}
+        <td>
+          <a class="link-button button icon-pencil" data-input_action="edit"
+             href="{{ icms_url('import:opt:response-prep-edit-temporary-exported-goods', kwargs={'application_pk': process.pk}) }}"
+          >Edit</a>
+        </td>
+      {% endif %}
     </tr>
   </table>
 
@@ -95,7 +99,7 @@
       <th>End Date</th>
       <th>Period for Re-importation (Months)</th>
       <th>Issue paper licence only?</th>
-      <th>Action</th>
+      {% if not readonly_view %}<th>Action</th>{% endif %}
     </tr>
     </thead>
     <tbody>
@@ -122,10 +126,13 @@
           {% endif %}
         </p>
       </td>
-      <td>
-        <a class="link-button button icon-pencil" data-input_action="edit"
-           href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
-        >Edit</a>
+      {% if not readonly_view %}
+        <td>
+          <a class="link-button button icon-pencil" data-input_action="edit"
+             href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
+          >Edit</a>
+        </td>
+      {% endif %}
     </tr>
     </tbody>
   </table>

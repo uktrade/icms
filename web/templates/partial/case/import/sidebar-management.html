@@ -1,4 +1,5 @@
 <h4>Case</h4>
+
 <ul class="menu-out">
   {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}), process.get_reference()) }}
 
@@ -62,7 +63,9 @@
 
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
 
-  {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
+  {% if not readonly_view %}
+    {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
+  {% endif %}
 
   {# Use to add extra sidebar items in files extending this sidebar #}
   {% block sidebar_extra %}{% endblock %}

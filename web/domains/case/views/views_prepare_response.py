@@ -47,6 +47,9 @@ def prepare_response(
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
+    # FIXME: Add correct logic here:
+    readonly_view = True
+
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -88,6 +91,7 @@ def prepare_response(
             # Not used currently but the template probably should.
             # Once the data is confirmed to be correct
             "endorsements_flag": endorsements_flag,
+            "readonly_view": readonly_view,
         }
 
     # Import applications

@@ -496,6 +496,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 
+        # FIXME: Add correct logic here:
+        readonly_view = True
+
         if request.POST:
             form: OPTChecklistForm = OPTChecklistOptionalForm(request.POST, instance=checklist)
 
@@ -509,15 +512,18 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = OPTChecklistForm(instance=checklist)
+                form = OPTChecklistForm(instance=checklist, readonly_form=readonly_view)
             else:
-                form = OPTChecklistForm(data=model_to_dict(checklist), instance=checklist)
+                form = OPTChecklistForm(
+                    data=model_to_dict(checklist), instance=checklist, readonly_form=readonly_view
+                )
 
         context = {
             "process": application,
             "task": task,
             "page_title": "Outward Processing Trade Licence - Checklist",
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(

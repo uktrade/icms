@@ -1,6 +1,5 @@
 {% extends "web/domains/case/manage/base.html" %}
 
-
 {% block main_content %}
   <h3>Case Notes</h3>
   <div class="info-box info-box-info">
@@ -18,14 +17,16 @@
       </li>
   </ul>
 
-  <div class="list-actions">
-    <ul class="menu-out flow-across">
+  {% if not readonly_view %}
+    <div class="list-actions">
+      <ul class="menu-out flow-across">
         <form method="post" action="{{ icms_url('case:add-note', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="form-inline">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-        <button type="submit" class="small-button icon-plus">New Case note</button>
-      </form>
-    </ul>
-  </div>
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+          <button type="submit" class="small-button icon-plus">New Case note</button>
+        </form>
+      </ul>
+    </div>
+  {% endif %}
 
   <div aria-labelledby="notes-current" class="tab-content " style="" data-tab-group="tg-notes" data-tab-key="CURRENT" aria-hidden="false">
     {% for note in notes.active() %}
