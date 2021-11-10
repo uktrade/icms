@@ -229,9 +229,13 @@ class ChecklistBaseForm(forms.ModelForm):
             "authorisation",
         )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, readonly_form: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Change checklist fields to required (e.g. only selected is valid)
         for field in ["response_preparation", "authorisation"]:
             self.fields[field].required = True
+
+        if readonly_form:
+            for f in self.fields:
+                self.fields[f].disabled = True

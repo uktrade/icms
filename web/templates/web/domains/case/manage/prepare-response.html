@@ -26,27 +26,29 @@
     {% endif %}
   {% endif %}
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {% for field in form %}
-      {{ fields.field(field, show_optional_indicator=False) }}
-    {% endfor %}
+  {% if not readonly_view %}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+      {% for field in form %}
+        {{ fields.field(field, show_optional_indicator=False) }}
+      {% endfor %}
 
-    <div class="container">
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="eight columns">
-          <ul class="menu-out flow-across">
-            <li>
-              <input
-                type="submit"
-                class="primary-button button"
-                value="Save" />
-            </li>
-          </ul>
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input
+                  type="submit"
+                  class="primary-button button"
+                  value="Save" />
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  {% endcall %}
+    {% endcall %}
+  {% endif %}
 
 
   {% if process.application_approved %}
@@ -66,12 +68,15 @@
       {% endif %}
       <hr />
 
-      <a
-        href="{{ icms_url('import:edit-cover-letter', kwargs={'application_pk': process.pk}) }}"
-        class="button small-button">
-        Edit Cover Letter
-      </a>
-      {% block cover_letter_actions %}{% endblock %}
+      {% if not readonly_view %}
+        <a
+          href="{{ icms_url('import:edit-cover-letter', kwargs={'application_pk': process.pk}) }}"
+          class="button small-button">
+          Edit Cover Letter
+        </a>
+        {% block cover_letter_actions %}{% endblock %}
+      {% endif %}
+
     {% endif %}
 
     {% block licence_section %}
@@ -82,7 +87,7 @@
           <th>Start Date</th>
           <th>End Date</th>
           <th>Issue paper licence only?</th>
-          <th>Action</th>
+          {% if not readonly_view %}<th>Action</th>{% endif %}
         </tr>
         </thead>
         <tbody>
@@ -108,10 +113,13 @@
               {% endif %}
             </p>
           </td>
-          <td>
-            <a class="link-button button icon-pencil" data-input_action="edit"
-               href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
-            >Edit</a>
+          {% if not readonly_view %}
+            <td>
+              <a class="link-button button icon-pencil" data-input_action="edit"
+                 href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
+              >Edit</a>
+            </td>
+          {% endif %}
         </tr>
         </tbody>
       </table>
@@ -125,7 +133,7 @@
         <thead>
         <tr>
           <th>Endorsement</th>
-          <th>Actions</th>
+          {% if not readonly_view %}<th>Actions</th>{% endif %}
         </tr>
         </thead>
         <tbody>
@@ -134,42 +142,46 @@
             <td>
               {{ endorsement.content|nl2br }}
             </td>
-            <td>
-              <a
-                class="link-button button icon-pencil" data-input_action="edit"
-                href="{{ icms_url('import:edit-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
-              >Edit</a>
-              <form
-                method="post"
-                action="{{ icms_url('import:delete-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
-                class="form-inline">
-                {{ csrf_input }}
-                <button
-                  type="submit"
-                  class="link-button icon-bin button tooltipstered"
-                  aria-label="Delete"
-                  data-confirm="Are you sure you want to delete this record?">Delete
-                </button>
-              </form>
-            </td>
+            {% if not readonly_view %}
+              <td>
+                <a
+                  class="link-button button icon-pencil" data-input_action="edit"
+                  href="{{ icms_url('import:edit-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
+                >Edit</a>
+                <form
+                  method="post"
+                  action="{{ icms_url('import:delete-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
+                  class="form-inline">
+                  {{ csrf_input }}
+                  <button
+                    type="submit"
+                    class="link-button icon-bin button tooltipstered"
+                    aria-label="Delete"
+                    data-confirm="Are you sure you want to delete this record?">Delete
+                  </button>
+                </form>
+              </td>
+            {% endif %}
           </tr>
         {% endfor %}
         </tbody>
       </table>
-      <div class="list-actions">
-        <a
-          href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
-          class="button small-button icon-plus">
-          Add Endorsement
-        </a>
-        <a
-          href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
-          class="button small-button icon-plus">
-          Add Custom Endorsement
-        </a>
-      </div>
-    {% endblock %}
 
+      {% if not readonly_view %}
+        <div class="list-actions">
+          <a
+            href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
+            class="button small-button icon-plus">
+            Add Endorsement
+          </a>
+          <a
+            href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
+            class="button small-button icon-plus">
+            Add Custom Endorsement
+          </a>
+        </div>
+      {% endif %}
+    {% endblock %}
   {% endif %}
 {% endblock %}
 

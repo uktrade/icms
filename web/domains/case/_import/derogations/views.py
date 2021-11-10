@@ -234,6 +234,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
+        # FIXME: Add correct logic here:
+        readonly_view = True
+
         syria = Country.objects.get(name="Syria")
         include_extra = syria in (application.origin_country, application.consignment_country)
 
@@ -260,15 +263,18 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = checklist_form(instance=checklist)
+                form = checklist_form(instance=checklist, readonly_form=readonly_view)
             else:
-                form = checklist_form(data=model_to_dict(checklist), instance=checklist)
+                form = checklist_form(
+                    data=model_to_dict(checklist), instance=checklist, readonly_form=readonly_view
+                )
 
         context = {
             "process": application,
             "task": task,
             "page_title": get_page_title("Checklist"),
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(

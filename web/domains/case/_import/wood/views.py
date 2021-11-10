@@ -351,6 +351,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
+        # FIXME: Add correct logic here:
+        readonly_view = True
+
         if request.POST:
             form: WoodQuotaChecklistForm = WoodQuotaChecklistOptionalForm(
                 request.POST, instance=checklist
@@ -366,15 +369,18 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = WoodQuotaChecklistForm(instance=checklist)
+                form = WoodQuotaChecklistForm(instance=checklist, readonly_form=readonly_view)
             else:
-                form = WoodQuotaChecklistForm(data=model_to_dict(checklist), instance=checklist)
+                form = WoodQuotaChecklistForm(
+                    data=model_to_dict(checklist), instance=checklist, readonly_form=readonly_view
+                )
 
         context = {
             "process": application,
             "task": task,
             "page_title": "Wood (Quota) Import Licence - Checklist",
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(

@@ -35,6 +35,9 @@ def manage_firs(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
+    # FIXME: Add correct logic here:
+    readonly_view = True
+
     with transaction.atomic():
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -65,6 +68,7 @@ def manage_firs(
             "page_title": get_case_page_title(
                 case_type, application, "Further Information Requests"
             ),
+            "readonly_view": readonly_view,
             **extra_context,
         }
     return render(

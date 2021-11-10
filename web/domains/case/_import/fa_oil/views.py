@@ -198,6 +198,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
+        # FIXME: Add correct logic here:
+        readonly_view = True
+
         if request.POST:
             form: ChecklistFirearmsOILApplicationForm = ChecklistFirearmsOILApplicationOptionalForm(
                 request.POST, instance=checklist
@@ -213,10 +216,12 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = ChecklistFirearmsOILApplicationForm(instance=checklist)
+                form = ChecklistFirearmsOILApplicationForm(
+                    instance=checklist, readonly_form=readonly_view
+                )
             else:
                 form = ChecklistFirearmsOILApplicationForm(
-                    data=model_to_dict(checklist), instance=checklist
+                    data=model_to_dict(checklist), instance=checklist, readonly_form=readonly_view
                 )
 
         context = {
@@ -224,6 +229,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "task": task,
             "page_title": "Open Individual Import Licence - Checklist",
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(

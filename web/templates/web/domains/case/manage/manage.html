@@ -6,29 +6,26 @@
 {% block main_content %}
   <h3>{{ process.reference or process.pk }}</h3>
 
-  <h4>Case Stopping</h4>
+  {% if not readonly_view %}
+    <h4>Case Stopping</h4>
 
-  <p>Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.</p>
+    <p>Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.</p>
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{ fields.field(form.send_email, checkbox_label="Inform applicants that the case has been stopped") }}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+      {{ fields.field(form.send_email, checkbox_label="Inform applicants that the case has been stopped") }}
 
-    <div class="container">
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="eight columns">
-          <ul class="menu-out flow-across">
-            <li>
-              <input
-                type="submit"
-                class="primary-button button"
-                value="Stop Case" />
-            </li>
-          </ul>
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li><input type="submit" class="primary-button button" value="Stop Case" /></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  {% endcall %}
+    {% endcall %}
+  {% endif %}
 
   {% if case_type == "import" %}
     <h4>SIGL</h4>

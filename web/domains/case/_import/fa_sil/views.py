@@ -737,6 +737,9 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
+        # FIXME: Add correct logic here:
+        readonly_view = True
+
         if request.POST:
             form: forms.SILChecklistForm = forms.SILChecklistOptionalForm(
                 request.POST, instance=checklist
@@ -752,15 +755,18 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
         else:
             if created:
-                form = forms.SILChecklistForm(instance=checklist)
+                form = forms.SILChecklistForm(instance=checklist, readonly_form=readonly_view)
             else:
-                form = forms.SILChecklistForm(data=model_to_dict(checklist), instance=checklist)
+                form = forms.SILChecklistForm(
+                    data=model_to_dict(checklist), instance=checklist, readonly_form=readonly_view
+                )
 
         context = {
             "process": application,
             "task": task,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Checklist",
             "form": form,
+            "readonly_view": readonly_view,
         }
 
         return render(

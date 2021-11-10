@@ -3,25 +3,30 @@
     Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
   </legend>
 
-  {% if note.is_active %}
-    <a href="{{ icms_url('case:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}"
-      class="button small-button icon-pencil">
-      Edit
-    </a>
-  {% endif %}
 
-  {% if note.is_active and note.status != "COMPLETED" %}
-    <form method="post"
-          action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
-          class="form-inline">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-      <button type="submit" class="small-button icon-bin">Delete</button>
-    </form>
-  {% elif not note.is_active  %}
-    <form method="post" action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}" class="form-inline">
-      <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-      <button type="submit" class="small-button icon-undo">Restore</button>
-    </form>
+  {% if not readonly_view %}
+    {% if note.is_active %}
+      <a
+        href="{{ icms_url('case:edit-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type}) }}"
+        class="button small-button icon-pencil">
+        Edit
+      </a>
+    {% endif %}
+    {% if note.is_active and note.status != "COMPLETED" %}
+      <form method="post"
+            action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
+            class="form-inline">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+        <button type="submit" class="small-button icon-bin">Delete</button>
+      </form>
+    {% elif not note.is_active %}
+      <form method="post"
+            action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
+            class="form-inline">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+        <button type="submit" class="small-button icon-undo">Restore</button>
+      </form>
+    {% endif %}
   {% endif %}
 
   <div class="row">

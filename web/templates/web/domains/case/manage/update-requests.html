@@ -16,28 +16,30 @@
   </div>
 
   {% if not update_request %}
-    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-      {% for field in form %}
-        {{ fields.field(field) }}
-      {% endfor %}
+    {% if not readonly_view %}
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {% for field in form %}
+          {{ fields.field(field) }}
+        {% endfor %}
 
-      <div class="container">
-        <div class="row">
-          <div class="three columns"></div>
-          <div class="eight columns">
-            <ul class="menu-out flow-across">
-              <li>
-                <input
-                  type="submit"
-                  name="action"
-                  class="primary-button button"
-                  value="Send Request" />
-              </li>
-            </ul>
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="eight columns">
+              <ul class="menu-out flow-across">
+                <li>
+                  <input
+                    type="submit"
+                    name="action"
+                    class="primary-button button"
+                    value="Send Request" />
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    {% endcall %}
+      {% endcall %}
+    {% endif %}
 
   {% else %}
     {% call fieldsets.fieldset("Application Update") %}
@@ -45,13 +47,15 @@
       <div class="row">
         <div class="three columns"></div>
         <div class="six columns">
-          <br />
-          <form
-            method="POST"
-            action="{{ icms_url('case:close-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type}) }}">
-            {{ csrf_input }}
-            <input type="submit" class="button primary-button" value="Close Request">
-          </form>
+          {% if not readonly_view %}
+            <br />
+            <form
+              method="POST"
+              action="{{ icms_url('case:close-update-request', kwargs={'application_pk': process.pk, 'update_request_pk': update_request.pk, 'case_type': case_type}) }}">
+              {{ csrf_input }}
+              <input type="submit" class="button primary-button" value="Close Request">
+            </form>
+          {% endif %}
         </div>
         <div class="three columns"></div>
       </div>

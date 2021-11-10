@@ -18,14 +18,16 @@
   </div>
   {% endif %}
 
+  {% if not readonly_view %}
+    <hr />
+    <form
+      method="post"
+      action="{{ icms_url('case:create-case-email', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
+      {{ csrf_input }}
+      <button type="submit" class="button small-button icon-plus">New Email</button>
+    </form>
+  {% endif %}
 
-  <hr />
-  <form
-    method="post"
-    action="{{ icms_url('case:create-case-email', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}">
-    {{ csrf_input }}
-    <button type="submit" class="button small-button icon-plus">New Email</button>
-  </form>
   <hr />
 
   {% for object in case_emails %}

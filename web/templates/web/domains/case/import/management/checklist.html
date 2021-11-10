@@ -37,21 +37,19 @@
       {{fields.field(field, show_optional_indicator=False, input_cols="two")}}
     {% endif %}
     {% endfor %}
-    <div class="container">
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="eight columns">
-          <ul class="menu-out flow-across">
-            <li>
-              <input
-                type="submit"
-                name="action"
-                class="primary-button button"
-                value="Save" />
-            </li>
-          </ul>
+
+    {% if not readonly_view %}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li><input type="submit" name="action" class="primary-button button" value="Save" /></li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    {% endif %}
+
   {%- endcall %}
 {% endblock %}
