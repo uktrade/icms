@@ -45,6 +45,7 @@ from .forms import (
     EditCFScheduleForm,
     EditCFSForm,
     EditGMPForm,
+    EditGMPTemplateForm,
     GMPBrandForm,
     PrepareCertManufactureForm,
     ProductsFileUploadForm,
@@ -112,7 +113,18 @@ def try_application_template_from_request(
 
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
-def create_export_application(request: AuthenticatedHttpRequest, *, type_code: str) -> HttpResponse:
+def create_export_application(
+    request: AuthenticatedHttpRequest, *, type_code: str, template_pk: int = None
+) -> HttpResponse:
+    """Create a certificate application.
+
+    Supports setting application data from an optional template.
+
+    :param request: Request
+    :param type_code: Type of application to create.
+    :param template_pk: Optional PK of a template to populate application
+    """
+
     application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
 
     config = _get_export_app_config(type_code)
@@ -133,6 +145,15 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
 
             with transaction.atomic():
                 application.save()
+
+                if template_pk:
+                    # Set template data and save
+                    template = get_application_template(request.user, template_pk)
+                    set_template_data(application, template, type_code)
+
+                    # Refresh in case any template data has been saved.
+                    application.refresh_from_db()
+
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PREPARE, owner=request.user
                 )
@@ -144,12 +165,10 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
                     ).first()
                     application.countries.add(country)
 
-            view_name = application.get_edit_view_name()
-            url = reverse(view_name, kwargs={"application_pk": application.pk})
-            # Pass along query params like "from-template=".
-            url += "?" + request.GET.urlencode()
+            return redirect(
+                reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
+            )
 
-            return redirect(url)
     else:
         form = config.form_class(user=request.user)
 
@@ -160,10 +179,52 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
         "application_title": ProcessTypes(config.model_class.PROCESS_TYPE).label,
         "exporters_with_agents": _exporters_with_agents(request.user),
         "case_type": "export",
-        "application_template": try_application_template_from_request(request),
+        "application_template": get_application_template(request.user, template_pk),
     }
 
     return render(request, "web/domains/case/export/create.html", context)
+
+
+def get_application_template(
+    user: User, template_pk: Optional[int]
+) -> Optional[CertificateApplicationTemplate]:
+    """Returns an application template if the user has access to it.
+
+    :param user: User requesting the template.
+    :param template_pk: Application template pk.
+    """
+
+    try:
+        template = CertificateApplicationTemplate.objects.get(pk=template_pk)
+
+    # No need to check for value error now its checked by the url config.
+    except CertificateApplicationTemplate.DoesNotExist:
+        return None
+
+    return template if template.user_can_view(user) else None
+
+
+def set_template_data(
+    application: ExportApplication,
+    template: Optional[CertificateApplicationTemplate],
+    type_code: str,
+) -> None:
+    """Update the supplied application with the template data provided.
+
+    :param application: Export Application
+    :param template: Application Template
+    :param type_code: App type.
+    """
+
+    if type_code == ExportApplicationType.Types.GMP:
+        initial = template.initial_data() if template else {}
+        form = EditGMPTemplateForm(instance=application, data=initial)
+
+        if form.is_valid():
+            form.save()
+
+    else:
+        raise Exception(f"Type not supported: {type_code}")
 
 
 def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
@@ -1291,10 +1352,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            app_template = try_application_template_from_request(request)
-            initial = app_template.initial_data() if app_template else {}
-            initial["contact"] = request.user
-            form = EditGMPForm(instance=application, initial=initial)
+            form = EditGMPForm(instance=application, initial={"contact": request.user})
 
         form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
         show_iso_table = (

@@ -465,7 +465,9 @@ class GMPBrandForm(forms.ModelForm):
         fields = ("brand_name",)
 
 
-class EditGMPForm(forms.ModelForm):
+class EditGMPFormBase(forms.ModelForm):
+    """Base class for all GMP forms (editing and creating from a template)"""
+
     class Meta:
         model = CertificateOfGoodManufacturingPracticeApplication
 
@@ -517,6 +519,10 @@ class EditGMPForm(forms.ModelForm):
         # These are only sometimes required and will be checked in the clean method
         self.fields["auditor_accredited"].required = False
         self.fields["auditor_certified"].required = False
+
+
+class EditGMPForm(EditGMPFormBase):
+    """Form used when a user tries to save an application - contains all application specific cleaning logic."""
 
     def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
@@ -573,3 +579,14 @@ class EditGMPForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class EditGMPTemplateForm(EditGMPFormBase):
+    """All fields are optional and only have basic model checks."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Used to enable partial saving (when creating from a template)
+        for f in self.fields:
+            self.fields[f].required = False
