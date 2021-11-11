@@ -1,3 +1,6 @@
+import copy
+
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from web.domains.case.export.models import ExportApplicationType
@@ -38,3 +41,13 @@ class CertificateApplicationTemplate(models.Model):
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
+
+    def initial_data(self) -> dict:
+        """Data to use as a Django form's initial argument."""
+        return copy.deepcopy(self.data)
+
+    def user_can_view(self, user: User) -> bool:
+        # A template may have sensitive information we check if the user
+        # should be allowed to view it (use it to create an application).
+        return user == self.owner

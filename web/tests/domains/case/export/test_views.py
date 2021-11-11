@@ -1,6 +1,10 @@
-from django.urls import reverse
+import pytest
+from django.urls import reverse, reverse_lazy
 from guardian.shortcuts import assign_perm
+from pytest_django.asserts import assertTemplateUsed
 
+from web.domains.case.export.models import ExportApplicationType
+from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.country.models import Country
 from web.flow.models import Task
 from web.tests.auth.auth import AuthTestCase
@@ -9,7 +13,7 @@ from web.tests.domains.case.export.factories import (
 )
 
 
-class TestCreate(AuthTestCase):
+class TestApplicationChoice(AuthTestCase):
     url = reverse("export:choose")
     permission = "exporter_access"
 
@@ -24,6 +28,65 @@ class TestCreate(AuthTestCase):
 
         response = self.client.get(self.url)
         assert response.status_code == 200
+
+    def test_redirect_for_template_query_param(self):
+        self.login_with_permissions([self.permission])
+
+        template = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+        )
+        url = self.url + f"?from-template={template.pk}"
+        response = self.client.get(url)
+
+        assert response.status_code == 302
+        assert response["Location"] == f"/export/create/cfs/?from-template={template.pk}"
+
+    def test_no_error_for_invalid_template_query_param(self):
+        self.login_with_permissions([self.permission])
+
+        with pytest.raises(CertificateApplicationTemplate.DoesNotExist):
+            CertificateApplicationTemplate.objects.get(pk=999)
+
+        url = self.url + "?from-template=999"
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assert [t.name for t in response.templates] == ["web/domains/case/export/choose.html"]
+
+
+class TestCreateApplication(AuthTestCase):
+    permission = "exporter_access"
+    url = reverse_lazy("export:create-application", kwargs={"type_code": "com"})
+
+    def test_application_template_from_query_params(self):
+        self.login_with_permissions([self.permission])
+
+        template = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="Test template",
+            application_type="COM",
+        )
+        url = self.url + f"?from-template={template.pk}"
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/export/create.html")
+        assert response.context["application_template"] == template
+
+    def test_no_error_for_invalid_application_template_query_param(self):
+        self.login_with_permissions([self.permission])
+
+        with pytest.raises(CertificateApplicationTemplate.DoesNotExist):
+            CertificateApplicationTemplate.objects.get(pk=999)
+
+        url = self.url + "?from-template=999"
+        response = self.client.get(url)
+
+        assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/export/create.html")
+        assert response.context["application_template"] is None
 
 
 class TestFlow(AuthTestCase):

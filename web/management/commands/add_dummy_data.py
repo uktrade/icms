@@ -6,6 +6,8 @@ from django.contrib.auth.models import Permission
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
+from web.domains.case.export.models import ExportApplicationType
+from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
@@ -106,7 +108,7 @@ class Command(BaseCommand):
 
         self.stdout.write("Created dummy agent for importer/exporter")
 
-        self.create_user(
+        ilb_admin_user = self.create_user(
             username="ilb_admin",
             password=options["password"],
             first_name="Ashley",
@@ -147,7 +149,7 @@ class Command(BaseCommand):
             linked_importers=[importer],
         )
 
-        self.create_user(
+        exporter_user = self.create_user(
             username="exporter_user",
             password=options["password"],
             first_name="Sally",
@@ -177,6 +179,9 @@ class Command(BaseCommand):
             "Created following users: 'ilb_admin', 'importer_user', 'exporter_user', 'agent'"
         )
         self.stdout.write("Created following superusers: 'admin'")
+
+        create_certificate_application_templates(ilb_admin_user)
+        create_certificate_application_templates(exporter_user)
 
     def create_user(
         self,
@@ -245,3 +250,34 @@ class Command(BaseCommand):
     def _assign_permission(self, user, permission_codename):
         permission = Permission.objects.get(codename=permission_codename)
         user.user_permissions.add(permission)
+
+
+def create_certificate_application_templates(
+    owner: User,
+) -> list[CertificateApplicationTemplate]:
+    data = {
+        "GMP": {
+            "is_responsible_person": "yes",
+            "responsible_person_name": f"{owner.first_name}",
+            "responsible_person_address": "Old Admiralty Building\nLondon\n",
+        },
+        "COM": {
+            "product_name": "Acme Wonder Product",
+            "is_manufacturer": True,
+        },
+    }
+    objs = []
+
+    for type_code, label in ExportApplicationType.Types.choices:
+        objs.append(
+            CertificateApplicationTemplate(
+                name=f"{label} template ({type_code})",
+                description=f"Description of {label} template",
+                application_type=type_code,
+                sharing=CertificateApplicationTemplate.SharingStatuses.PRIVATE,
+                data=data.get(type_code, {}),
+                owner=owner,
+            )
+        )
+
+    return CertificateApplicationTemplate.objects.bulk_create(objs)
