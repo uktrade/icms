@@ -1,7 +1,7 @@
 FROM python:3.9.5-slim
 
 # Install dependencies
-RUN apt-get update && apt-get install wget graphviz libgraphviz-dev gcc postgresql-client npm -y
+RUN apt-get update && apt-get install wget graphviz libgraphviz-dev gcc libpq-dev postgresql-client npm -y
 
 ENV DOCKERIZE_VERSION v0.6.1
 ENV ICMS_WEB_PORT ${ICMS_WEB_PORT}
