@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Type
+from typing import List, NamedTuple, Optional, Type
 
 import structlog as logging
 from django.contrib import messages
@@ -20,6 +20,7 @@ from web.domains.case.utils import (
     get_application_current_task,
     view_application_file,
 )
+from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.exporter.models import Exporter
 from web.domains.file.utils import create_file_model
 from web.domains.user.models import User
@@ -70,6 +71,19 @@ class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/export/choose.html"
     permission_required = "web.exporter_access"
 
+    def get(self, request, *args, **kwargs):
+        template_pk = request.GET.get("from-template")
+        try:
+            template = CertificateApplicationTemplate.objects.get(pk=template_pk)
+        except CertificateApplicationTemplate.DoesNotExist:
+            return super().get(request, *args, **kwargs)
+
+        type_code = template.application_type.lower()
+        url = reverse("export:create-application", kwargs={"type_code": type_code})
+        url += "?" + request.GET.urlencode()
+
+        return redirect(url)
+
 
 class CreateExportApplicationConfig(NamedTuple):
     model_class: Type[ExportApplication]
@@ -80,6 +94,20 @@ class CreateExportApplicationConfig(NamedTuple):
 def _exporters_with_agents(user: User) -> List[int]:
     exporters_with_agents = get_objects_for_user(user, ["web.is_agent_of_exporter"], Exporter)
     return [exporter.pk for exporter in exporters_with_agents]
+
+
+def try_application_template_from_request(
+    request: AuthenticatedHttpRequest,
+) -> Optional[CertificateApplicationTemplate]:
+    template_id = request.GET.get("from-template")
+
+    try:
+        template = CertificateApplicationTemplate.objects.get(pk=template_id)
+    except (CertificateApplicationTemplate.DoesNotExist, ValueError):
+        # ValueError when the query param value is the wrong type.
+        return None
+
+    return template if template.user_can_view(request.user) else None
 
 
 @login_required
@@ -116,9 +144,12 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
                     ).first()
                     application.countries.add(country)
 
-            return redirect(
-                reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
-            )
+            view_name = application.get_edit_view_name()
+            url = reverse(view_name, kwargs={"application_pk": application.pk})
+            # Pass along query params like "from-template=".
+            url += "?" + request.GET.urlencode()
+
+            return redirect(url)
     else:
         form = config.form_class(user=request.user)
 
@@ -129,6 +160,7 @@ def create_export_application(request: AuthenticatedHttpRequest, *, type_code: s
         "application_title": ProcessTypes(config.model_class.PROCESS_TYPE).label,
         "exporters_with_agents": _exporters_with_agents(request.user),
         "case_type": "export",
+        "application_template": try_application_template_from_request(request),
     }
 
     return render(request, "web/domains/case/export/create.html", context)
@@ -187,9 +219,10 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = PrepareCertManufactureForm(
-                instance=application, initial={"contact": request.user}
-            )
+            app_template = try_application_template_from_request(request)
+            initial = app_template.initial_data() if app_template else {}
+            initial["contact"] = request.user
+            form = PrepareCertManufactureForm(instance=application, initial=initial)
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
@@ -268,7 +301,10 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditCFSForm(instance=application, initial={"contact": request.user})
+            app_template = try_application_template_from_request(request)
+            initial = app_template.initial_data() if app_template else {}
+            initial["contact"] = request.user
+            form = EditCFSForm(instance=application, initial=initial)
 
         schedules = application.schedules.all().order_by("created_at")
 
@@ -1255,7 +1291,10 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditGMPForm(instance=application, initial={"contact": request.user})
+            app_template = try_application_template_from_request(request)
+            initial = app_template.initial_data() if app_template else {}
+            initial["contact"] = request.user
+            form = EditGMPForm(instance=application, initial=initial)
 
         form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
         show_iso_table = (

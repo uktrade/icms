@@ -1,6 +1,7 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
 
 {% block css %}
   {{ super() }}
@@ -14,6 +15,18 @@
 {% block main_content %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
     <h3>{{ application_title }}</h3>
+
+    {% if application_template %}
+      <div class="info-box info-box-info">
+        <div class="row">
+          <div class="columns twelve">Create application from the following template:</div>
+        </div>
+        {{ application_field(application_template.name, "Template Name") }}
+        {{ application_field(application_template.description, "Description") }}
+        {{ application_field(application_template.sharing, "Sharing") }}
+      </div>
+    {% endif %}
+
     <p>Please choose the exporter (and agent if applicable) you are acting as.</p>
     {% if certificate_message %}
       <div class="info-box info-box-info">

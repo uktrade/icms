@@ -22,7 +22,8 @@
       <td>{{ template.created.strftime('%d-%b-%Y %H:%M') }}</td>
       <td>{{ template.last_updated.strftime('%d-%b-%Y %H:%M') }}</td>
       <td>
-        <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil">Edit</a>
+        <a href="{{ icms_url('export:choose') }}?from-template={{ template.pk }}" class="link-button button icon-magic-wand" title="Create Application">Create Application</a>
+        <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil" title="Edit Template">Edit</a>
         {# TODO: ICMSLST-1178 Delete #}
       </td>
     </tr>
