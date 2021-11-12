@@ -70,7 +70,7 @@ urlpatterns = [
         name="create-application",
     ),
     path(
-        "create/<exportapplicationtype:type_code>/template/<int:template_pk>",
+        "create/<exportapplicationtype:type_code>/template/<int:template_pk>/",
         views.create_export_application,
         name="create-application-from-template",
     ),

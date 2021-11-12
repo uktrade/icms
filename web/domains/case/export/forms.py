@@ -135,7 +135,7 @@ class CreateExportApplicationForm(forms.Form):
         return cleaned_data
 
 
-class PrepareCertManufactureForm(forms.ModelForm):
+class PrepareCertManufactureFormBase(forms.ModelForm):
     class Meta:
         model = CertificateOfManufactureApplication
 
@@ -174,6 +174,8 @@ class PrepareCertManufactureForm(forms.ModelForm):
         )
         self.fields["countries"].queryset = application_countries
 
+
+class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
     def clean_is_pesticide_on_free_sale_uk(self):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
 
@@ -218,6 +220,14 @@ class PrepareCertManufactureForm(forms.ModelForm):
         return val
 
 
+class PrepareCertManufactureTemplateForm(PrepareCertManufactureFormBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for fname in self.fields:
+            self.fields[fname].required = False
+
+
 class EditCFSForm(forms.ModelForm):
     class Meta:
         model = CertificateOfFreeSaleApplication
@@ -241,6 +251,14 @@ class EditCFSForm(forms.ModelForm):
             is_active=True
         )
         self.fields["countries"].queryset = application_countries
+
+
+class EditCFSTemplateForm(EditCFSForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for fname in self.fields:
+            self.fields[fname].required = False
 
 
 class EditCFScheduleForm(forms.ModelForm):

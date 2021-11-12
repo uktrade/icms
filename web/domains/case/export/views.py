@@ -1,11 +1,12 @@
-from typing import List, NamedTuple, Optional, Type
+from typing import Any, List, NamedTuple, Optional, Type
 
 import structlog as logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.forms.models import model_to_dict
+from django.forms.models import ModelForm, model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -44,10 +45,12 @@ from .forms import (
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
+    EditCFSTemplateForm,
     EditGMPForm,
     EditGMPTemplateForm,
     GMPBrandForm,
     PrepareCertManufactureForm,
+    PrepareCertManufactureTemplateForm,
     ProductsFileUploadForm,
 )
 from .models import (
@@ -72,19 +75,6 @@ class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/export/choose.html"
     permission_required = "web.exporter_access"
 
-    def get(self, request, *args, **kwargs):
-        template_pk = request.GET.get("from-template")
-        try:
-            template = CertificateApplicationTemplate.objects.get(pk=template_pk)
-        except CertificateApplicationTemplate.DoesNotExist:
-            return super().get(request, *args, **kwargs)
-
-        type_code = template.application_type.lower()
-        url = reverse("export:create-application", kwargs={"type_code": type_code})
-        url += "?" + request.GET.urlencode()
-
-        return redirect(url)
-
 
 class CreateExportApplicationConfig(NamedTuple):
     model_class: Type[ExportApplication]
@@ -95,20 +85,6 @@ class CreateExportApplicationConfig(NamedTuple):
 def _exporters_with_agents(user: User) -> List[int]:
     exporters_with_agents = get_objects_for_user(user, ["web.is_agent_of_exporter"], Exporter)
     return [exporter.pk for exporter in exporters_with_agents]
-
-
-def try_application_template_from_request(
-    request: AuthenticatedHttpRequest,
-) -> Optional[CertificateApplicationTemplate]:
-    template_id = request.GET.get("from-template")
-
-    try:
-        template = CertificateApplicationTemplate.objects.get(pk=template_id)
-    except (CertificateApplicationTemplate.DoesNotExist, ValueError):
-        # ValueError when the query param value is the wrong type.
-        return None
-
-    return template if template.user_can_view(request.user) else None
 
 
 @login_required
@@ -124,10 +100,19 @@ def create_export_application(
     :param type_code: Type of application to create.
     :param template_pk: Optional PK of a template to populate application
     """
-
+    app_template: Optional[CertificateApplicationTemplate]
     application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
 
     config = _get_export_app_config(type_code)
+
+    if template_pk:
+        try:
+            app_template = get_application_template(request.user, template_pk)
+        except PermissionDenied:
+            # User cannot use this template, so redirect to the regular form.
+            return redirect("export:create-application", type_code=type_code.lower())
+    else:
+        app_template = None
 
     if request.POST:
         form = config.form_class(request.POST, user=request.user)
@@ -146,10 +131,9 @@ def create_export_application(
             with transaction.atomic():
                 application.save()
 
-                if template_pk:
+                if app_template:
                     # Set template data and save
-                    template = get_application_template(request.user, template_pk)
-                    set_template_data(application, template, type_code)
+                    set_template_data(application, app_template, type_code)
 
                     # Refresh in case any template data has been saved.
                     application.refresh_from_db()
@@ -179,34 +163,29 @@ def create_export_application(
         "application_title": ProcessTypes(config.model_class.PROCESS_TYPE).label,
         "exporters_with_agents": _exporters_with_agents(request.user),
         "case_type": "export",
-        "application_template": get_application_template(request.user, template_pk),
+        "application_template": app_template,
     }
 
     return render(request, "web/domains/case/export/create.html", context)
 
 
-def get_application_template(
-    user: User, template_pk: Optional[int]
-) -> Optional[CertificateApplicationTemplate]:
+def get_application_template(user: User, template_pk: int) -> CertificateApplicationTemplate:
     """Returns an application template if the user has access to it.
 
     :param user: User requesting the template.
     :param template_pk: Application template pk.
     """
+    template = get_object_or_404(CertificateApplicationTemplate, pk=template_pk)
 
-    try:
-        template = CertificateApplicationTemplate.objects.get(pk=template_pk)
-
-    # No need to check for value error now its checked by the url config.
-    except CertificateApplicationTemplate.DoesNotExist:
-        return None
-
-    return template if template.user_can_view(user) else None
+    if template.user_can_view(user):
+        return template
+    else:
+        raise PermissionDenied
 
 
 def set_template_data(
     application: ExportApplication,
-    template: Optional[CertificateApplicationTemplate],
+    template: CertificateApplicationTemplate,
     type_code: str,
 ) -> None:
     """Update the supplied application with the template data provided.
@@ -215,16 +194,21 @@ def set_template_data(
     :param template: Application Template
     :param type_code: App type.
     """
+    types_forms: dict[Any, ModelForm] = {
+        # These form classes have no required fields, no data cleaning methods.
+        ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
+        ExportApplicationType.Types.GMP: EditGMPTemplateForm,
+        ExportApplicationType.Types.MANUFACTURE: PrepareCertManufactureTemplateForm,
+    }
+    try:
+        form_class = types_forms[type_code]
+    except KeyError:
+        raise NotImplementedError(f"Type not supported: {type_code}")
 
-    if type_code == ExportApplicationType.Types.GMP:
-        initial = template.initial_data() if template else {}
-        form = EditGMPTemplateForm(instance=application, data=initial)
+    form = form_class(instance=application, data=template.form_data())
 
-        if form.is_valid():
-            form.save()
-
-    else:
-        raise Exception(f"Type not supported: {type_code}")
+    if form.is_valid():
+        form.save()
 
 
 def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
@@ -280,10 +264,9 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            app_template = try_application_template_from_request(request)
-            initial = app_template.initial_data() if app_template else {}
-            initial["contact"] = request.user
-            form = PrepareCertManufactureForm(instance=application, initial=initial)
+            form = PrepareCertManufactureForm(
+                instance=application, initial={"contact": request.user}
+            )
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
@@ -362,10 +345,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            app_template = try_application_template_from_request(request)
-            initial = app_template.initial_data() if app_template else {}
-            initial["contact"] = request.user
-            form = EditCFSForm(instance=application, initial=initial)
+            form = EditCFSForm(instance=application, initial={"contact": request.user})
 
         schedules = application.schedules.all().order_by("created_at")
 
