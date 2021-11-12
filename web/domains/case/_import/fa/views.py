@@ -52,6 +52,10 @@ from .types import (
 )
 
 
+# Note: this has been replaced by the following:
+# web/domains/case/views/views_email.py -> def manage_case_emails
+# however some of the functionality in web/domains/case/import/fa/manage-constabulary-emails.html
+# doesn't appear to have been ported over.
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def manage_constabulary_emails(
