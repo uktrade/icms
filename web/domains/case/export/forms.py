@@ -135,7 +135,7 @@ class CreateExportApplicationForm(forms.Form):
         return cleaned_data
 
 
-class PrepareCertManufactureForm(forms.ModelForm):
+class PrepareCertManufactureFormBase(forms.ModelForm):
     class Meta:
         model = CertificateOfManufactureApplication
 
@@ -174,6 +174,8 @@ class PrepareCertManufactureForm(forms.ModelForm):
         )
         self.fields["countries"].queryset = application_countries
 
+
+class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
     def clean_is_pesticide_on_free_sale_uk(self):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
 
@@ -218,6 +220,14 @@ class PrepareCertManufactureForm(forms.ModelForm):
         return val
 
 
+class PrepareCertManufactureTemplateForm(PrepareCertManufactureFormBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for fname in self.fields:
+            self.fields[fname].required = False
+
+
 class EditCFSForm(forms.ModelForm):
     class Meta:
         model = CertificateOfFreeSaleApplication
@@ -241,6 +251,14 @@ class EditCFSForm(forms.ModelForm):
             is_active=True
         )
         self.fields["countries"].queryset = application_countries
+
+
+class EditCFSTemplateForm(EditCFSForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for fname in self.fields:
+            self.fields[fname].required = False
 
 
 class EditCFScheduleForm(forms.ModelForm):
@@ -465,7 +483,9 @@ class GMPBrandForm(forms.ModelForm):
         fields = ("brand_name",)
 
 
-class EditGMPForm(forms.ModelForm):
+class EditGMPFormBase(forms.ModelForm):
+    """Base class for all GMP forms (editing and creating from a template)"""
+
     class Meta:
         model = CertificateOfGoodManufacturingPracticeApplication
 
@@ -517,6 +537,10 @@ class EditGMPForm(forms.ModelForm):
         # These are only sometimes required and will be checked in the clean method
         self.fields["auditor_accredited"].required = False
         self.fields["auditor_certified"].required = False
+
+
+class EditGMPForm(EditGMPFormBase):
+    """Form used when a user tries to save an application - contains all application specific cleaning logic."""
 
     def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
@@ -573,3 +597,14 @@ class EditGMPForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class EditGMPTemplateForm(EditGMPFormBase):
+    """All fields are optional and only have basic model checks."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Used to enable partial saving (when creating from a template)
+        for f in self.fields:
+            self.fields[f].required = False

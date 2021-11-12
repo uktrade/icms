@@ -6,10 +6,10 @@ from web.domains.user.models import User
 
 @pytest.mark.django_db
 class TestCertificateApplicationTemplate:
-    def test_initial_data_makes_a_copy(self):
+    def test_form_data_makes_a_copy(self):
         original = {"foo": "bar"}
         obj = CertificateApplicationTemplate(data=original)
-        data = obj.initial_data()
+        data = obj.form_data()
         data["foo"] = "qux"
 
         assert original == {"foo": "bar"}

@@ -69,6 +69,11 @@ urlpatterns = [
         views.create_export_application,
         name="create-application",
     ),
+    path(
+        "create/<exportapplicationtype:type_code>/template/<int:template_pk>/",
+        views.create_export_application,
+        name="create-application-from-template",
+    ),
     # Export application groups
     path(
         "com/<int:application_pk>/",

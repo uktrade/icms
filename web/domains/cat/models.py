@@ -43,11 +43,11 @@ class CertificateApplicationTemplate(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
 
-    def initial_data(self) -> dict:
-        """Data to use as a Django form's initial argument."""
+    def form_data(self) -> dict:
+        """Data to use as a Django form's data argument."""
         return copy.deepcopy(self.data)
 
     def user_can_view(self, user: User) -> bool:
-        # A template may have sensitive information we check if the user
+        # A template may have sensitive information so we check if the user
         # should be allowed to view it (use it to create an application).
         return user == self.owner
