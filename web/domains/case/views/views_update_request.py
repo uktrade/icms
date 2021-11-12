@@ -19,7 +19,7 @@ from ..utils import (
     get_application_current_task,
     get_case_page_title,
 )
-from .utils import get_class_imp_or_exp
+from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 
 @login_required
@@ -29,15 +29,14 @@ def manage_update_requests(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    # FIXME: Add correct logic here:
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
         if case_type == "import":
             template_code = "IMA_APP_UPDATE"
@@ -64,7 +63,7 @@ def manage_update_requests(
         email_subject = template.get_title({"CASE_REFERENCE": application.reference})
         email_content = template.get_content(placeholder_content)
 
-        if request.POST:
+        if request.POST and not readonly_view:
             form = forms.UpdateRequestForm(request.POST)
             if form.is_valid():
                 update_request = form.save(commit=False)

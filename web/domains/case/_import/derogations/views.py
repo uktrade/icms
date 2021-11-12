@@ -12,6 +12,7 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
 )
+from web.domains.case.views.utils import get_current_task_and_readonly_status
 from web.domains.country.models import Country
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -229,13 +230,13 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, "import", request.user, Task.TaskType.PROCESS
+        )
+
         checklist, created = DerogationsChecklist.objects.get_or_create(
             import_application=application
         )
-
-        # FIXME: Add correct logic here:
-        readonly_view = True
 
         syria = Country.objects.get(name="Syria")
         include_extra = syria in (application.origin_country, application.consignment_country)
@@ -247,7 +248,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             checklist_form = DerogationsChecklistForm
             checklist_optional_form = DerogationsChecklistOptionalForm
 
-        if request.POST:
+        if request.POST and not readonly_view:
             form: DerogationsChecklistForm = checklist_optional_form(
                 request.POST, instance=checklist
             )

@@ -14,7 +14,7 @@ from web.utils.s3 import get_file_from_s3
 from .. import forms, models
 from ..types import ImpOrExp
 from ..utils import get_application_current_task, get_case_page_title
-from .utils import get_class_imp_or_exp
+from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 
 @login_required
@@ -24,14 +24,13 @@ def list_notes(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    # FIXME: Add correct logic here:
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
         context = {
             "process": application,

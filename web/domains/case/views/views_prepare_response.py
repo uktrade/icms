@@ -29,8 +29,8 @@ from web.utils.commodity import annotate_commodity_unit
 
 from .. import forms
 from ..types import ImpOrExp
-from ..utils import get_application_current_task, get_case_page_title
-from .utils import get_class_imp_or_exp
+from ..utils import get_case_page_title
+from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 
 @login_required
@@ -47,17 +47,16 @@ def prepare_response(
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
-    # FIXME: Add correct logic here:
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
-        if request.POST:
+        if request.POST and not readonly_view:
             form = form_class(request.POST, instance=application)
 
             if form.is_valid():

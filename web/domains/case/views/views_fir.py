@@ -25,7 +25,7 @@ from ..utils import (
     get_case_page_title,
     view_application_file,
 )
-from .utils import get_class_imp_or_exp_or_access
+from .utils import get_class_imp_or_exp_or_access, get_current_task_and_readonly_status
 
 
 @login_required
@@ -35,15 +35,14 @@ def manage_firs(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
-    # FIXME: Add correct logic here:
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
         if case_type in ["import", "export"]:
             show_firs = True

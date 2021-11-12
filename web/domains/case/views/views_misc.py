@@ -14,7 +14,6 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.errors import ProcessError
 from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
@@ -29,7 +28,7 @@ from ..utils import (
     get_application_current_task,
     get_case_page_title,
 )
-from .utils import get_class_imp_or_exp
+from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -144,20 +143,19 @@ def manage_withdrawals(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    # FIXME: Replace with real logic
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
         withdrawals = application.withdrawals.filter(is_active=True)
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
-        if request.POST:
+        if request.POST and not readonly_view:
             form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
 
             if form.is_valid():
@@ -282,13 +280,11 @@ def manage_case(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
-        # readonly_view, task = _get_readonly_status(application, case_type, request)
-        readonly_view = True
-
-        # FIXME: Remove this to its own post only endpoint
-        if request.POST:
+        if request.POST and not readonly_view:
             form = forms.CloseCaseForm(request.POST)
 
             if form.is_valid():
@@ -334,27 +330,6 @@ def manage_case(
         return render(
             request=request, template_name="web/domains/case/manage/manage.html", context=context
         )
-
-
-def _get_readonly_status(application, case_type, request):
-    """Logic for "View" or "manage"
-
-    :param application:
-    :param case_type:
-    :param request:
-    :return:
-    """
-
-    try:
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
-        is_case_owner = request.user == application.case_owner
-        readonly_view = not is_case_owner
-
-    except ProcessError:
-        task = application.get_active_task()
-        readonly_view = True
-
-    return readonly_view, task
 
 
 @login_required
