@@ -36,7 +36,7 @@ from web.utils.s3 import get_file_from_s3, get_s3_client
 from .. import forms, models
 from ..types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
 from ..utils import get_application_current_task
-from .utils import get_class_imp_or_exp
+from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -49,15 +49,14 @@ def manage_case_emails(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    # FIXME: Add correct logic here:
-    readonly_view = True
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS
+        )
 
     if application.process_type in [
         OpenIndividualLicenceApplication.PROCESS_TYPE,

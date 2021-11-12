@@ -13,6 +13,7 @@ from web.domains.case.utils import (
     get_application_current_task,
     view_application_file,
 )
+from web.domains.case.views.utils import get_current_task_and_readonly_status
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.flow.models import Task
@@ -228,13 +229,12 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: TextilesApplication = get_object_or_404(
             TextilesApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        task, readonly_view = get_current_task_and_readonly_status(
+            application, "import", request.user, Task.TaskType.PROCESS
+        )
         checklist, created = TextilesChecklist.objects.get_or_create(import_application=application)
 
-        # FIXME: Add correct logic here:
-        readonly_view = True
-
-        if request.POST:
+        if request.POST and not readonly_view:
             form: TextilesChecklistForm = TextilesChecklistOptionalForm(
                 request.POST, instance=checklist
             )
