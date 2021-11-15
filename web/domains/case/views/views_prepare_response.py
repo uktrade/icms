@@ -69,7 +69,7 @@ def prepare_response(
                     )
                 )
         else:
-            form = form_class()
+            form = form_class(instance=application)
 
         if case_type == "import":
             cover_letter_flag = application.application_type.cover_letter_flag
