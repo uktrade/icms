@@ -329,7 +329,8 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
                 )
 
         else:
-            form = forms.PrepareSILForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = forms.PrepareSILForm(instance=application, initial=initial)
 
         verified_section5 = application.importer.section5_authorities.currently_active()
         available_verified_section5 = verified_section5.exclude(

@@ -63,7 +63,8 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
                 )
 
         else:
-            form = EditIronSteelForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditIronSteelForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         certificates = application.certificates.filter(is_active=True)

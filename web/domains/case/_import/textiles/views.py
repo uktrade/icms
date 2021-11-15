@@ -57,7 +57,8 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
                 )
 
         else:
-            form = EditTextilesForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditTextilesForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         category_commodity_groups = get_category_commodity_group_data(commodity_type="TEXTILES")

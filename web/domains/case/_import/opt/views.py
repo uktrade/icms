@@ -64,7 +64,8 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditOPTForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditOPTForm(instance=application, initial=initial)
 
         supporting_documents = application.documents.filter(
             is_active=True, file_type=OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT

@@ -69,7 +69,8 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
                 )
         else:
-            form = DerogationsForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = DerogationsForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
