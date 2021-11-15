@@ -6,7 +6,7 @@ from web.domains.file.models import File
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
-from web.models.mixins import Archivable, Sortable
+from web.models.mixins import Archivable
 
 
 class ActiveFirearmsAuthorityManager(models.Manager):
@@ -86,7 +86,7 @@ class ActQuantity(models.Model):
     infinity = models.BooleanField(default=False)
 
 
-class ObsoleteCalibreGroup(Archivable, Sortable, models.Model):
+class ObsoleteCalibreGroup(Archivable, models.Model):
     name = models.CharField(max_length=200, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
