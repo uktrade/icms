@@ -71,7 +71,8 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = PrepareDFLForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = PrepareDFLForm(instance=application, initial=initial)
 
         goods_list = application.goods_certificates.filter(is_active=True).select_related(
             "issuing_country"

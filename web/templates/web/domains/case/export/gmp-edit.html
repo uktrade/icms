@@ -1,7 +1,6 @@
 {% extends "flow/task-base.html" %}
 {% import "forms/fields.html" as fields %}
-{% from "display/fields.html" import application_field %}
-
+{% import "display/fields.html" as display %}
 
 {% block css %}
   {{ form.media.css }}
@@ -15,7 +14,7 @@
   </div>
 
   <h4>Countries</h4>
-  {{ application_field(country, "Country") }}
+  {{ display.application_field(country, "Country") }}
 
   <h4>Brands</h4>
   {% with read_only = False, brands = process.brands.all() %}
@@ -24,8 +23,8 @@
 {% endblock %}
 
 {% block form_content %}
-  <h4>Contact</h4>
-  {{ fields.field(form.contact) }}
+
+  {% include "partial/case/application-contact-details.html" %}
 
   <h4>Responsible Person</h4>
   {{ fields.field(form.is_responsible_person) }}

@@ -60,7 +60,8 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditSPSForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditSPSForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 

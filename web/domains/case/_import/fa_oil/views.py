@@ -64,7 +64,8 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = PrepareOILForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = PrepareOILForm(instance=application, initial=initial)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

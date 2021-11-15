@@ -264,9 +264,8 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = PrepareCertManufactureForm(
-                instance=application, initial={"contact": request.user}
-            )
+            initial = {} if application.contact else {"contact": request.user}
+            form = PrepareCertManufactureForm(instance=application, initial=initial)
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
@@ -345,7 +344,8 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditCFSForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditCFSForm(instance=application, initial=initial)
 
         schedules = application.schedules.all().order_by("created_at")
 
@@ -1332,7 +1332,8 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         else:
-            form = EditGMPForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = EditGMPForm(instance=application, initial=initial)
 
         form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
         show_iso_table = (

@@ -60,9 +60,8 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
                 )
         else:
-            form = SanctionsAndAdhocLicenseForm(
-                instance=application, initial={"contact": request.user}
-            )
+            initial = {} if application.contact else {"contact": request.user}
+            form = SanctionsAndAdhocLicenseForm(instance=application, initial=initial)
 
         # Check if the main application is valid when showing add goods link
         show_add_goods = SanctionsAndAdhocLicenseForm(

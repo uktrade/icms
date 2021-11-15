@@ -1,5 +1,6 @@
 {% extends "flow/task-base.html" %}
 {% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
 
 
 {% block css %}
@@ -19,9 +20,7 @@
 
   {{ super() }}
 
-  <h4>Contact</h4>
-  {# TODO: show contact telephone/email; do we need to reload the form on contact change...? #}
-  {{ fields.field(form.contact) }}
+  {% include "partial/case/application-contact-details.html" %}
 
   <h4>Countries</h4>
   {{ fields.field(form.countries) }}

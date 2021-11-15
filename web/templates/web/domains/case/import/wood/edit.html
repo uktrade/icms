@@ -1,6 +1,7 @@
 {% extends "flow/task-base.html" %}
- {% import "forms/forms.html" as forms %}
- {% import "forms/fields.html" as fields %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
 
 
  {% block main_content %}
@@ -9,8 +10,8 @@
    {% endblock %}
 
    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-     <h4>Contact</h4>
-     {{ fields.field(form.contact) }}
+
+     {% include "partial/case/application-contact-details.html" %}
 
      <h4>Wood (Quota)</h4>
      {{ fields.field(form.applicant_reference) }}

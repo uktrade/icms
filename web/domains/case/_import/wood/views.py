@@ -59,7 +59,8 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
                 )
 
         else:
-            form = PrepareWoodQuotaForm(instance=application, initial={"contact": request.user})
+            initial = {} if application.contact else {"contact": request.user}
+            form = PrepareWoodQuotaForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         contract_documents = application.contract_documents.filter(is_active=True)
