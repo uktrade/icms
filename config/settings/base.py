@@ -18,13 +18,17 @@ from django.forms import Field
 BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
 env = environ.Env()
 
-VCAP_SERVICES = env.json("VCAP_SERVICES", {})
+VCAP_SERVICES = env.json("VCAP_SERVICES", default={})
 
 LOGIN_URL = "/"
 LOGIN_REDIRECT_URL = "/home"
 LOGOUT_REDIRECT_URL = "/"
 
 # Application definition
+DEBUG = env.bool("ICMS_DEBUG", False)
+WSGI_APPLICATION = "config.wsgi.application"
+APP_ENV = env.str("APP_ENV", default="notset")
+
 INSTALLED_APPS = [
     "web",
     "captcha",
@@ -120,6 +124,34 @@ AUTHENTICATION_BACKENDS = [
     "guardian.backends.ObjectPermissionBackend",
 ]
 
+# Email
+EMAIL_BACKEND = "django_ses.SESBackend"
+AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", default="")
+AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", default="")
+AWS_SES_REGION_NAME = "eu-west-1"
+AWS_SES_REGION_ENDPOINT = "email.eu-west-1.amazonaws.com"
+
+# Email/phone contacts
+EMAIL_FROM = env.str("ICMS_EMAIL_FROM", default="")
+ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", default="")
+ILB_GSI_CONTACT_EMAIL = env.str("ICMS_ILB_GSI_CONTACT_EMAIL", default="")
+ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", default="")
+ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str("ICMS_FIREARMS_HOMEOFFICE_EMAIL", default="")
+ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL", default="")
+ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", default="")
+
+# File storage
+# for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
+if "aws-s3-bucket" in VCAP_SERVICES:
+    app_bucket_creds = VCAP_SERVICES["aws-s3-bucket"][0]["credentials"]
+else:
+    app_bucket_creds = {}
+
+AWS_REGION = app_bucket_creds.get("aws_region")
+AWS_ACCESS_KEY_ID = app_bucket_creds.get("aws_access_key_id")
+AWS_SECRET_ACCESS_KEY = app_bucket_creds.get("aws_secret_access_key")
+AWS_STORAGE_BUCKET_NAME = app_bucket_creds.get("bucket_name")
+
 # Date formats
 DATE_INPUT_FORMATS = ["%d-%b-%Y"]  # input formats
 DATETIME_INPUT_FORMATS = ["%d-%b-%Y %H:%M:%S"]
@@ -150,11 +182,6 @@ STATICFILES_FINDERS = (
     "compressor.finders.CompressorFinder",
 )
 
-# Email
-EMAIL_BACKEND = "django_ses.SESBackend"
-AWS_SES_REGION_NAME = "eu-west-1"
-AWS_SES_REGION_ENDPOINT = "email.eu-west-1.amazonaws.com"
-
 # Modify required error messages globally
 Field.default_error_messages = {
     "required": "You must enter this item",
@@ -173,9 +200,9 @@ FILE_UPLOAD_HANDLERS = (
 )
 
 # Anti virus settings
-CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", "test")
-CLAM_AV_PASSWORD = env.str("CLAM_AV_PASSWORD", "")
-CLAM_AV_DOMAIN = env.str("CLAM_AV_DOMAIN", "clamav.london.cloudapps.digital")
+CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", default="test")
+CLAM_AV_PASSWORD = env.str("CLAM_AV_PASSWORD", default="")
+CLAM_AV_DOMAIN = env.str("CLAM_AV_DOMAIN", default="clamav.london.cloudapps.digital")
 
 # Storage Folders
 PATH_STORAGE_FIR = "/documents/fir/"  # start with /
@@ -204,7 +231,7 @@ structlog.configure(
 if "redis" in VCAP_SERVICES:
     REDIS_URL = VCAP_SERVICES["redis"][0]["credentials"]["uri"]
 else:
-    REDIS_URL = env.str("REDIS_URL", "redis://redis:6379")
+    REDIS_URL = env.str("REDIS_URL", default="redis://redis:6379")
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = "django-db"
@@ -225,8 +252,8 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
-# Default domain is used in email templates to pint users to ICMS from emails
-DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", "http://localhost:8080/")
+# Default domain is used in email templates to point users to ICMS from emails
+DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", default="http://localhost:8080/")
 
 SELECT2_CACHE_BACKEND = "default"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
@@ -235,15 +262,26 @@ SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
 COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
 
 # guardian config
-
 GUARDIAN_MONKEY_PATCH = False
 GUARDIAN_RENDER_403 = True
 
-APP_ENV = env.str("APP_ENV", "notset")
-
+# Used to add dummy test in non prod environments
 ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = env.bool(
-    "ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD", False
+    "ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD", default=False
 )
-ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool("ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD", False)
 
+# Used to bypass chief in non prod environments
+ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool(
+    "ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD", default=False
+)
+
+# Shows caseworker and application rows if set
 DEBUG_SHOW_ALL_WORKBASKET_ROWS = False
+
+# getAddress.io api key
+ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
+
+#  Google recaptcha. Using test keys on localhost
+RECAPTCHA_PUBLIC_KEY = env.str("ICMS_RECAPTCHA_PUBLIC_KEY", default="")
+RECAPTCHA_PRIVATE_KEY = env.str("ICMS_RECAPTCHA_PRIVATE_KEY", default="")
+SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])

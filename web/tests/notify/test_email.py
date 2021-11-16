@@ -212,7 +212,9 @@ class TestEmail(TestCase):
     def test_mail_from(self):
         email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
         m = mail.outbox[0]
-        assert m.from_email == "test@example.com"  # in config/settings/test
+
+        # Set in config/settings/non_prod_base.py
+        assert m.from_email == "enquiries.ilb@icms.trade.dev.uktrade.io"
 
     def test_mail_to(self):
         email.send_email(
