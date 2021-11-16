@@ -3,7 +3,7 @@
 TEST_TARGET ?= web/tests
 .EXPORT_ALL_VARIABLES:
 
-DJANGO_SETTINGS_MODULE=config.settings.development
+DJANGO_SETTINGS_MODULE=config.settings.local
 COMPOSE_PROJECT_NAME=icms
 
 # TODO: understand what this is for and whether it's still needed
@@ -47,9 +47,26 @@ migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
 
-check: ## run Django check
+check-local: ## run Django check
 	unset UID && \
 	docker-compose run --rm web python ./manage.py check
+
+check-development: ## run Django check for development environment settings
+	unset UID && \
+	export DATABASE_URL="unset" && \
+	export ICMS_ALLOWED_HOSTS="unset" && \
+    docker-compose run --rm web python ./manage.py check --settings=config.settings.development
+
+check-staging: ## run Django check for staging environment settings
+	unset UID && \
+	export DATABASE_URL="unset" && \
+	export ICMS_ALLOWED_HOSTS="unset" && \
+    docker-compose run --rm web python ./manage.py check --settings=config.settings.staging
+
+check-staging-with-deploy: ## run Django check for staging environment settings with deploy flag
+	unset UID && \
+	export DATABASE_URL="unset" && \
+    docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings.staging
 
 COMMAND="help"
 manage: ## execute manage.py

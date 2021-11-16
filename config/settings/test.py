@@ -1,24 +1,17 @@
-import environ
+# flake8: noqa: F405
+from .non_prod_base import *
 
-from .non_prod_base import *  # NOQA
-
-INSTALLED_APPS += [  # noqa
+INSTALLED_APPS += [
     "behave_django",
 ]
 
-env = environ.Env()
-
 SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
+DATABASES = {"default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")}
+ALLOWED_HOSTS = ["localhost", "web"]
+DEBUG = True
 
 # speed up tests; see https://docs.djangoproject.com/en/3.0/topics/testing/overview/#password-hashing
-PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.MD5PasswordHasher",
-]
-
-# Email
-AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", "test")
-AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", "test")
-EMAIL_FROM = env.str("ICMS_EMAIL_FROM", "test@example.com")
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 CELERY_TASK_ALWAYS_EAGER = True
 
