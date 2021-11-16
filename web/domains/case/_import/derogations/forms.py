@@ -87,6 +87,8 @@ class DerogationsForm(forms.ModelForm):
 
         self._clean_syria_further_details(cleaned_data)
 
+        self._check_valid_countries(cleaned_data)
+
         return cleaned_data
 
     def _clean_syria_further_details(self, cleaned_data: dict[str, Any]) -> None:
@@ -113,6 +115,23 @@ class DerogationsForm(forms.ModelForm):
 
         if is_other_civ_purpose and not civilian_purpose_details:
             self.add_error("civilian_purpose_details", "You must enter this item")
+
+    def _check_valid_countries(self, cleaned_data: dict[str, Any]) -> None:
+        """Check one of origin_country & consignment_country is set to a valid country."""
+
+        valid_countries = ("Iran", "Russian Federation", "Somalia", "Syria")
+        origin_country: Country = cleaned_data["origin_country"]
+        consignment_country: Country = cleaned_data["consignment_country"]
+
+        if (
+            origin_country.name not in valid_countries
+            and consignment_country.name not in valid_countries
+        ):
+            self.add_error(
+                "consignment_country",
+                "The country of origin or country of consignment must be one of"
+                " Iran, Russian Federation, Somalia or Syria",
+            )
 
 
 class DerogationsChecklistForm(ChecklistBaseForm):
