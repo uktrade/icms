@@ -2,8 +2,8 @@
   <div class="flash-message" style="display: block;">
     <div role="alert" class="info-box info-box-{{message.tags}} " tabindex="0">
       <button class="flash-message-close icon-cross" aria-label="Close this message"></button>
-      {{message|safe}}
+      {# Do not use the "safe" template filter here #}
+      {{message}}
     </div>
   </div>
 {% endmacro %}
-
