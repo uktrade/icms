@@ -22,6 +22,9 @@ MIDDLEWARE += [  # NOQA
     "django_audit_log_middleware.AuditLogMiddleware",
 ]
 
+# Audit log middleware user field
+AUDIT_LOG_USER_FIELD = "username"
+
 ELASTIC_APM = {
     "SERVICE_NAME": "ICMS",
     "SECRET_TOKEN": env.str("ELASTIC_APM_SECRET_TOKEN"),
@@ -29,9 +32,6 @@ ELASTIC_APM = {
     "ENVIRONMENT": env.str("ELASTIC_APM_ENVIRONMENT", default="development"),
     "SERVER_TIMEOUT": env.str("ELASTIC_APM_SERVER_TIMEOUT", default="20s"),
 }
-
-# Django Compressor
-COMPRESS_OFFLINE = True
 
 # Print json formatted logs to console
 LOGGING = {
@@ -62,9 +62,3 @@ LOGGING = {
 }
 
 init_sentry()
-
-# minifi html (djano-htmlmin)
-HTML_MINIFY = True
-
-# Audit log middleware user field
-AUDIT_LOG_USER_FIELD = "username"

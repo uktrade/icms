@@ -69,15 +69,15 @@ NPM_FILE_PATTERNS = {
     "sticky-kit": ["dist/sticky-kit.min.js"],
 }
 
-# Django Compressor - uncomment to activate (also set ICMS_DEBUG to False, to trigger compression of js on system start)
-# COMPRESS_OFFLINE = True
-
-# minifi html (djano-htmlmin) - uncomment to activate
-# HTML_MINIFY = True
-
 GRAPH_MODELS = {
     "all_applications": True,
     "group_models": True,
 }
 
 DEBUG_SHOW_ALL_WORKBASKET_ROWS = env.bool("DEBUG_SHOW_ALL_WORKBASKET_ROWS", True)
+
+# minifi html (django-htmlmin)
+HTML_MINIFY = False
+
+# Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
+COMPRESS_OFFLINE = False

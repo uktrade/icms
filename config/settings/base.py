@@ -285,3 +285,10 @@ ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 RECAPTCHA_PUBLIC_KEY = env.str("ICMS_RECAPTCHA_PUBLIC_KEY", default="")
 RECAPTCHA_PRIVATE_KEY = env.str("ICMS_RECAPTCHA_PRIVATE_KEY", default="")
 SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])
+
+
+# minifi html (django-htmlmin)
+HTML_MINIFY = True
+
+# Django Compressor
+COMPRESS_OFFLINE = True
