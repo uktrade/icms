@@ -5,11 +5,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView
+from django.views.generic.edit import FormView
 
+from web.domains.case.export.forms import form_class_for_application_type
 from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.user.models import User
 from web.types import AuthenticatedHttpRequest
@@ -74,6 +77,9 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
             raise PermissionDenied
 
         if request.POST:
+            if not cat.user_can_edit(request.user):
+                raise PermissionDenied
+
             form = EditCATForm(request.POST, instance=cat)
             if form.is_valid():
                 cat = form.save()
@@ -84,10 +90,21 @@ def edit(request: AuthenticatedHttpRequest, *, cat_pk: int) -> HttpResponse:
         else:
             form = EditCATForm(instance=cat)
 
+        type_ = cat.application_type
+        type_display = cat.get_application_type_display()
+        sidebar_links = [
+            (reverse("cat:edit", kwargs={"cat_pk": cat.pk}), "Template"),
+            (
+                reverse("cat:edit-step", kwargs={"cat_pk": cat.pk, "step": type_.lower()}),
+                f"{type_display} Application",
+            ),
+        ]
+
         context = {
             "page_title": "Edit Certificate Application Template",
             "form": form,
-            "application_type": cat.get_application_type_display(),
+            "application_type": type_display,
+            "sidebar_links": sidebar_links,
         }
 
         return render(request, "web/domains/cat/edit.html", context)
@@ -98,3 +115,52 @@ def _has_permission(user: User) -> bool:
     exporter_user = user.has_perm("web.exporter_access")
 
     return ilb_admin or exporter_user
+
+
+class CATEditStepView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+    template_name = "web/domains/cat/edit.html"
+    success_url = reverse_lazy("cat:list")
+
+    def dispatch(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        self.object = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
+
+        if not self.object.user_can_edit(self.request.user):
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def has_permission(self) -> bool:
+        return _has_permission(self.request.user)
+
+    def get_form_class(self) -> ModelForm:
+        return form_class_for_application_type(self.object.application_type)
+
+    def get_initial(self) -> dict[str, Any]:
+        return self.object.form_data()
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        type_ = self.object.application_type
+        type_display = self.object.get_application_type_display()
+        sidebar_links = [
+            (reverse("cat:edit", kwargs={"cat_pk": self.object.pk}), "Template"),
+            (
+                reverse("cat:edit-step", kwargs={"cat_pk": self.object.pk, "step": type_.lower()}),
+                f"{type_display} Application",
+            ),
+        ]
+        kwargs = {
+            "page_title": "Edit Certificate Application Template",
+            "application_type": type_display,
+            "sidebar_links": sidebar_links,
+        }
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form: ModelForm) -> HttpResponse:
+        result = super().form_valid(form)
+        # The JSON field encoder handles querysets as a list of PKs.
+        self.object.data = form.cleaned_data
+        self.object.save()
+
+        messages.success(self.request, f"Template '{self.object.name}' updated.")
+
+        return result
