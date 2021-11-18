@@ -1,4 +1,4 @@
-from typing import Any, List, NamedTuple, Optional, Type
+from typing import List, NamedTuple, Optional, Type
 
 import structlog as logging
 from django.contrib import messages
@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.forms.models import ModelForm, model_to_dict
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -45,13 +45,11 @@ from .forms import (
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
-    EditCFSTemplateForm,
     EditGMPForm,
-    EditGMPTemplateForm,
     GMPBrandForm,
     PrepareCertManufactureForm,
-    PrepareCertManufactureTemplateForm,
     ProductsFileUploadForm,
+    form_class_for_application_type,
 )
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -194,17 +192,7 @@ def set_template_data(
     :param template: Application Template
     :param type_code: App type.
     """
-    types_forms: dict[Any, ModelForm] = {
-        # These form classes have no required fields, no data cleaning methods.
-        ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
-        ExportApplicationType.Types.GMP: EditGMPTemplateForm,
-        ExportApplicationType.Types.MANUFACTURE: PrepareCertManufactureTemplateForm,
-    }
-    try:
-        form_class = types_forms[type_code]
-    except KeyError:
-        raise NotImplementedError(f"Type not supported: {type_code}")
-
+    form_class = form_class_for_application_type(type_code)
     form = form_class(instance=application, data=template.form_data())
 
     if form.is_valid():

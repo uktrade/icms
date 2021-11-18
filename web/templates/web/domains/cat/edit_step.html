@@ -1,0 +1,12 @@
+{% extends "web/domains/cat/base_form.html" %}
+{% from "display/fields.html" import application_field %}
+
+{% block main_content_intro %}
+  <div class="info-box info-box-info">
+    TODO: ICMLST-1050 ICMSLST-1051 ICMSLST-1052 - Add div info box referenced in ICMLST-1030
+  </div>
+{% endblock %}
+
+{% block extra_main_content_form %}
+  {{ application_field(application_type, "Application Type") }}
+{% endblock %}

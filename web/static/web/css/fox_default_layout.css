@@ -486,8 +486,16 @@ main p {
   content: "\25C0\00A0";
 }
 
+.prev-double-link::before {
+  content: "\25C0\25C0\00A0";
+}
+
 .next-link::after {
   content: "\00A0\25B6";
+}
+
+.next-double-link:after {
+  content: "\00A0\25B6\25B6";
 }
 
 .filter-bar {

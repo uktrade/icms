@@ -1,7 +1,20 @@
-{% extends "layout/no-sidebar.html" %}
+{% extends "layout/sidebar.html" %}
 
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+
+{% block css %}
+  {{ form.media.css }}
+  {{ super() }}
+{% endblock %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+    {% for url, link_text in sidebar_links %}
+      {{ icms_link(request, url, link_text) }}
+    {% endfor %}
+  </ul>
+{% endblock %}
 
 {% block content_actions %}
   <div class="content-actions">
@@ -48,4 +61,29 @@
     </div>
   {% endcall %}
 
+
+  {# Next/previous links below the form #}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+    {% for url, link_text in sidebar_links %}
+      {% if url == request.path %}
+
+        {% if loop.previtem %}
+          <li><a href="{{ loop.previtem.0 }}" class="prev-double-link">Previous</a></li>
+        {% endif %}
+
+        {% if loop.nextitem %}
+          <li><a href="{{ loop.nextitem.0 }}" class="next-double-link">Next</a></li>
+        {% endif %}
+
+        {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+
+  {% endblock %}
+
+{% block page_js %}
+  {{ form.media.js }}
+  {{ super() }}
 {% endblock %}

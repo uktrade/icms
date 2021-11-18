@@ -7,6 +7,20 @@ from web.domains.case.export.models import ExportApplicationType
 from web.domains.user.models import User
 
 
+class DjangoQuerysetJSONEncoder(DjangoJSONEncoder):
+    def default(self, o):
+        # Django's serializer encodes a query as a list (good) and a model as
+        # a dict/object with fields for pk, model name, etc. (bad). This
+        # version is more like a form POST request with a list of keys.
+        if isinstance(o, models.Model):
+            return o.pk
+
+        if isinstance(o, models.QuerySet):
+            return [self.default(instance) for instance in o]
+
+        return super().default(o)
+
+
 class CertificateApplicationTemplate(models.Model):
     class SharingStatuses(models.TextChoices):
         PRIVATE = ("private", "Private (do not share)")
@@ -41,7 +55,7 @@ class CertificateApplicationTemplate(models.Model):
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
+    data = models.JSONField(default=dict, encoder=DjangoQuerysetJSONEncoder)
 
     def form_data(self) -> dict:
         """Data to use as a Django form's data argument."""
@@ -50,4 +64,8 @@ class CertificateApplicationTemplate(models.Model):
     def user_can_view(self, user: User) -> bool:
         # A template may have sensitive information so we check if the user
         # should be allowed to view it (use it to create an application).
+        return user == self.owner
+
+    def user_can_edit(self, user: User) -> bool:
+        # Whether the user can edit the template itself.
         return user == self.owner

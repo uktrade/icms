@@ -4,6 +4,7 @@ from typing import Any, Optional
 import structlog as logging
 from django import forms
 from django.db.models.query import QuerySet
+from django.forms.models import ModelForm
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
@@ -25,6 +26,7 @@ from .models import (
     CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
+    ExportApplicationType,
     GMPBrand,
 )
 
@@ -162,6 +164,8 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
             "countries": Select2MultipleWidget,
         }
 
+
+class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["is_pesticide_on_free_sale_uk"].required = True
@@ -174,8 +178,6 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
         )
         self.fields["countries"].queryset = application_countries
 
-
-class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
     def clean_is_pesticide_on_free_sale_uk(self):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
 
@@ -228,7 +230,7 @@ class PrepareCertManufactureTemplateForm(PrepareCertManufactureFormBase):
             self.fields[fname].required = False
 
 
-class EditCFSForm(forms.ModelForm):
+class EditCFSFormBase(forms.ModelForm):
     class Meta:
         model = CertificateOfFreeSaleApplication
 
@@ -243,6 +245,8 @@ class EditCFSForm(forms.ModelForm):
             )
         }
 
+
+class EditCFSForm(EditCFSFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["contact"].queryset = application_contacts(self.instance)
@@ -253,7 +257,7 @@ class EditCFSForm(forms.ModelForm):
         self.fields["countries"].queryset = application_countries
 
 
-class EditCFSTemplateForm(EditCFSForm):
+class EditCFSTemplateForm(EditCFSFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -532,7 +536,7 @@ class EditGMPFormBase(forms.ModelForm):
             if self.instance.responsible_person_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["responsible_person_address"].widget.attrs["readonly"] = True
 
-        self.fields["contact"].queryset = application_contacts(self.instance)
+            self.fields["contact"].queryset = application_contacts(self.instance)
 
         # These are only sometimes required and will be checked in the clean method
         self.fields["auditor_accredited"].required = False
@@ -608,3 +612,16 @@ class EditGMPTemplateForm(EditGMPFormBase):
         # Used to enable partial saving (when creating from a template)
         for f in self.fields:
             self.fields[f].required = False
+
+
+def form_class_for_application_type(type_code: str) -> ModelForm:
+    types_forms: dict[Any, ModelForm] = {
+        # These form classes have no required fields, no data cleaning methods.
+        ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
+        ExportApplicationType.Types.GMP: EditGMPTemplateForm,
+        ExportApplicationType.Types.MANUFACTURE: PrepareCertManufactureTemplateForm,
+    }
+    try:
+        return types_forms[type_code]
+    except KeyError:
+        raise NotImplementedError(f"Type not supported: {type_code}")
