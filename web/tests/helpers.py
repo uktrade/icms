@@ -3,7 +3,11 @@ from django.urls import reverse
 from web.utils.validation import ApplicationErrors
 
 
-def check_page_errors(errors: ApplicationErrors, page_name: str, error_field_names: list[str]):
+def check_page_errors(
+    errors: ApplicationErrors,
+    page_name: str,
+    error_field_names: list[str],
+) -> None:
     """Check if the supplied errors have the expected errors for the given page."""
 
     page_errors = errors.get_page_errors(page_name)
@@ -12,7 +16,15 @@ def check_page_errors(errors: ApplicationErrors, page_name: str, error_field_nam
 
     actual_error_names = sorted(e.field_name for e in page_errors.errors)
 
-    assert sorted(error_field_names) == actual_error_names
+    assert sorted(error_field_names) == actual_error_names, f"Actual errors: {actual_error_names}"
+
+
+def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[str]) -> bool:
+    """Check if the supplied pages have been checked."""
+
+    checked = sorted(e.page_name for e in error.page_errors)
+
+    assert sorted(expected_pages_checked) == checked, f"Actual checked pages: {checked}"
 
 
 class CaseURLS:
