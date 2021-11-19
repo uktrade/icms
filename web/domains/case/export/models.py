@@ -173,6 +173,9 @@ class ExportApplication(ApplicationBase):
     def get_workbasket_subject(self) -> str:
         return "\n".join(["Certificate Application", ProcessTypes(self.process_type).label])
 
+    def get_specific_model(self) -> "ExportApplication":
+        return super().get_specific_model()
+
 
 @final
 class CertificateOfManufactureApplication(ExportApplication):

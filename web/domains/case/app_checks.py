@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
@@ -13,14 +13,12 @@ from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicatio
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
 from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.ironsteel.forms import IronSteelChecklistForm
 from web.domains.case._import.ironsteel.models import IronSteelApplication
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.forms import OPTChecklistForm
 from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
-from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.forms import TextilesChecklistForm
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
@@ -28,7 +26,6 @@ from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
-    CertificateOfManufactureApplication,
     ExportApplication,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
@@ -40,44 +37,34 @@ from web.utils.validation import (
 )
 
 from . import models
-from .types import (
-    ApplicationsWithCaseEmail,
-    ApplicationsWithChecklist,
-    ImpOrExp,
-    ImpOrExpT,
-)
+from .types import ApplicationsWithCaseEmail, ApplicationsWithChecklist, ImpOrExp
 
 
-def get_app_errors(
-    model_class: ImpOrExpT, application: ImpOrExp, case_type: str
-) -> ApplicationErrors:
+def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
     application_errors = ApplicationErrors()
 
-    prepare_errors = PageErrors(
-        page_name="Response Preparation",
-        url=reverse(
-            "case:prepare-response",
-            kwargs={"application_pk": application.pk, "case_type": case_type},
-        ),
-    )
+    # check for checklist errors
+    checklist_errors = get_checklist_errors(application)
+    if checklist_errors:
+        application_errors.add(checklist_errors)
 
-    if case_type == "import":
-        assert isinstance(application, ImportApplication)
+    # When refusing an application the only thing we check is the checklist.
+    if application.decision == application.REFUSE:
+        return application_errors
 
-        _get_import_errors(application, application_errors, prepare_errors, case_type)
+    # Check the response prep screen errors
+    response_prep_errors = get_response_preparation_errors(application, case_type)
+    if response_prep_errors:
+        application_errors.add(response_prep_errors)
 
-    elif case_type == "export":
-        assert isinstance(application, ExportApplication)
+    # All other checks.
+    if isinstance(application, ImportApplication):
+        _get_import_errors(application, application_errors)
 
-        _get_export_errors(application, application_errors, prepare_errors, case_type)
-
-    # Import & export checks
-    if application.decision == model_class.REFUSE:
-        prepare_errors.add(
-            FieldError(field_name="Decision", messages=["Please approve application."])
-        )
-
-    application_errors.add(prepare_errors)
+    elif isinstance(application, ExportApplication):
+        _get_export_errors(application, application_errors)
+    else:
+        raise ValueError(f"Incorrect application type: {application!r}")
 
     application_errors.add_many(_get_withdrawals_errors(application, case_type))
 
@@ -91,11 +78,10 @@ def get_app_errors(
 
 
 def _get_import_errors(
-    application: ImportApplication,
-    application_errors: ApplicationErrors,
-    prepare_errors: PageErrors,
-    case_type: str,
+    application: ImportApplication, application_errors: ApplicationErrors
 ) -> None:
+    """Add any import application errors"""
+
     # Application specific checks
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         application_errors.add_many(_get_fa_oil_errors(application))
@@ -106,106 +92,29 @@ def _get_import_errors(
     elif application.process_type == SILApplication.PROCESS_TYPE:
         application_errors.add_many(_get_fa_sil_errors(application))
 
-    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        application_errors.add(_get_wood_errors(application))
-
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        application_errors.add(_get_derogations_errors(application))
-
-    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
-        application_errors.add(_get_opt_errors(application))
-
-    elif application.process_type == TextilesApplication.PROCESS_TYPE:
-        application_errors.add(_get_textiles_errors(application))
-
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         application_errors.add_many(_get_email_errors(application.sanctionsandadhocapplication, "import"))  # type: ignore[union-attr]
 
     elif application.process_type == IronSteelApplication.PROCESS_TYPE:
         application_errors.add_many(_get_ironsteel_errors(application.ironsteelapplication))  # type: ignore[union-attr]
 
-    elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
-        # There are no extra checks for these
-        pass
-
-    else:
-        raise NotImplementedError(
-            f"process_type {application.process_type!r} hasn't been implemented yet."
-        )
-
-    start_date = application.licence_start_date
-    end_date = application.licence_end_date
-
-    if not start_date:
-        prepare_errors.add(
-            FieldError(field_name="Licence start date", messages=["Licence start date missing."])
-        )
-
-    if not end_date:
-        prepare_errors.add(
-            FieldError(field_name="Licence end date", messages=["Licence end date missing."])
-        )
-
-    if start_date and end_date and end_date <= start_date:
-        prepare_errors.add(
-            FieldError(
-                field_name="Licence end date", messages=["End date must be after the start date."]
-            )
-        )
-
-    app_t: ImportApplicationType = application.application_type
-
-    if app_t.paper_licence_flag and app_t.electronic_licence_flag:
-        if application.issue_paper_licence_only is None:
-            prepare_errors.add(
-                FieldError(
-                    field_name="Issue paper licence only?", messages=["You must enter this item"]
-                )
-            )
-
-    if app_t.cover_letter_flag:
-        if not application.cover_letter:
-            prepare_errors.add(
-                FieldError(field_name="Cover Letter", messages=["You must enter this item"])
-            )
-
 
 def _get_export_errors(
-    application: ExportApplication,
-    application_errors: ApplicationErrors,
-    prepare_errors: PageErrors,
-    case_type: str,
+    application: ExportApplication, application_errors: ApplicationErrors
 ) -> None:
-    if application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
-        pass
+    """Add any export application errors"""
 
-    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        application_errors.add_many(_get_email_errors(application.certificateoffreesaleapplication, case_type))  # type: ignore[union-attr]
+    if application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
+        application_errors.add_many(_get_email_errors(application.certificateoffreesaleapplication, "export"))  # type: ignore[union-attr]
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         application_errors.add_many(
-            _get_email_errors(application.certificateofgoodmanufacturingpracticeapplication, case_type)  # type: ignore[union-attr]
-        )
-
-        pass
-
-    else:
-        raise NotImplementedError(
-            f"process_type {application.process_type!r} hasn't been implemented yet."
+            _get_email_errors(application.certificateofgoodmanufacturingpracticeapplication, "export")  # type: ignore[union-attr]
         )
 
 
 def _get_fa_oil_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-
-    errors.append(
-        _get_checklist_errors(
-            application.openindividuallicenceapplication,  # type: ignore[union-attr]
-            "import:fa-oil:manage-checklist",
-            ChecklistFirearmsOILApplicationForm,
-        )
-    )
-
     errors.extend(_get_email_errors(application.openindividuallicenceapplication, "import"))  # type: ignore[union-attr]
 
     return errors
@@ -213,13 +122,6 @@ def _get_fa_oil_errors(application: ImportApplication) -> list[PageErrors]:
 
 def _get_fa_dfl_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-
-    errors.append(
-        _get_checklist_errors(
-            application.dflapplication, "import:fa-dfl:manage-checklist", DFLChecklistForm  # type: ignore[union-attr]
-        )
-    )
-
     errors.extend(_get_email_errors(application.dflapplication, "import"))  # type: ignore[union-attr]
 
     return errors
@@ -227,56 +129,13 @@ def _get_fa_dfl_errors(application: ImportApplication) -> list[PageErrors]:
 
 def _get_fa_sil_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-
-    errors.append(
-        _get_checklist_errors(
-            application.silapplication, "import:fa-sil:manage-checklist", SILChecklistForm  # type: ignore[union-attr]
-        )
-    )
-
     errors.extend(_get_email_errors(application.silapplication, "import"))  # type: ignore[union-attr]
 
     return errors
 
 
-def _get_wood_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.woodquotaapplication, "import:wood:manage-checklist", WoodQuotaChecklistForm  # type: ignore[union-attr]
-    )
-
-
-def _get_derogations_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.derogationsapplication,  # type: ignore[union-attr]
-        "import:derogations:manage-checklist",
-        DerogationsChecklistForm,
-    )
-
-
-def _get_opt_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.outwardprocessingtradeapplication,  # type: ignore[union-attr]
-        "import:opt:manage-checklist",
-        OPTChecklistForm,
-    )
-
-
-def _get_textiles_errors(application: ImportApplication) -> PageErrors:
-    return _get_checklist_errors(
-        application.textilesapplication,  # type: ignore[union-attr]
-        "import:textiles:manage-checklist",
-        TextilesChecklistForm,
-    )
-
-
 def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]:
     errors = []
-
-    errors.append(
-        _get_checklist_errors(
-            application, "import:ironsteel:manage-checklist", IronSteelChecklistForm
-        )
-    )
 
     certificates = application.certificates.filter(is_active=True)
     total_certificates = certificates.aggregate(sum_requested=Sum("requested_qty")).get(
@@ -309,21 +168,51 @@ def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]
     return errors
 
 
-def _get_checklist_errors(
-    application: ApplicationsWithChecklist,
-    manage_checklist_url: str,
-    checklist_form: Type[ChecklistBaseForm],
-) -> PageErrors:
+def get_checklist_errors(application: ImpOrExp) -> Optional[PageErrors]:
+    """Returns any checklist errors for the applications that have a checklist."""
+
+    app_config = {
+        OpenIndividualLicenceApplication.PROCESS_TYPE: (
+            "import:fa-oil:manage-checklist",
+            ChecklistFirearmsOILApplicationForm,
+        ),
+        DFLApplication.PROCESS_TYPE: ("import:fa-dfl:manage-checklist", DFLChecklistForm),
+        SILApplication.PROCESS_TYPE: ("import:fa-sil:manage-checklist", SILChecklistForm),
+        WoodQuotaApplication.PROCESS_TYPE: ("import:wood:manage-checklist", WoodQuotaChecklistForm),
+        DerogationsApplication.PROCESS_TYPE: (
+            "import:derogations:manage-checklist",
+            DerogationsChecklistForm,
+        ),
+        OutwardProcessingTradeApplication.PROCESS_TYPE: (
+            "import:opt:manage-checklist",
+            OPTChecklistForm,
+        ),
+        TextilesApplication.PROCESS_TYPE: (
+            "import:textiles:manage-checklist",
+            TextilesChecklistForm,
+        ),
+        IronSteelApplication.PROCESS_TYPE: (
+            "import:ironsteel:manage-checklist",
+            IronSteelChecklistForm,
+        ),
+    }
+
+    if application.process_type not in app_config.keys():
+        return None
+
+    import_app: ApplicationsWithChecklist = application.get_specific_model()
+
+    checklist_url, checklist_form_cls = app_config[application.process_type]
 
     checklist_errors = PageErrors(
         page_name="Checklist",
-        url=reverse(manage_checklist_url, kwargs={"application_pk": application.pk}),
+        url=reverse(checklist_url, kwargs={"application_pk": import_app.pk}),
     )
 
     try:
         create_page_errors(
-            checklist_form(
-                data=model_to_dict(application.checklist), instance=application.checklist
+            checklist_form_cls(
+                data=model_to_dict(import_app.checklist), instance=import_app.checklist
             ),
             checklist_errors,
         )
@@ -334,6 +223,66 @@ def _get_checklist_errors(
         )
 
     return checklist_errors
+
+
+def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optional[PageErrors]:
+    """Returns any response preparation errors."""
+
+    prepare_errors = PageErrors(
+        page_name="Response Preparation",
+        url=reverse(
+            "case:prepare-response",
+            kwargs={"application_pk": application.pk, "case_type": case_type},
+        ),
+    )
+
+    if not application.decision:
+        prepare_errors.add(
+            FieldError(field_name="Decision", messages=["Please approve or reject application."])
+        )
+
+    elif case_type == "import" and application.decision == application.APPROVE:
+        start_date = application.licence_start_date
+        end_date = application.licence_end_date
+
+        if not start_date:
+            prepare_errors.add(
+                FieldError(
+                    field_name="Licence start date", messages=["Licence start date missing."]
+                )
+            )
+
+        if not end_date:
+            prepare_errors.add(
+                FieldError(field_name="Licence end date", messages=["Licence end date missing."])
+            )
+
+        if start_date and end_date and end_date <= start_date:
+            prepare_errors.add(
+                FieldError(
+                    field_name="Licence end date",
+                    messages=["End date must be after the start date."],
+                )
+            )
+
+        app_t: ImportApplicationType = application.application_type
+
+        if app_t.paper_licence_flag and app_t.electronic_licence_flag:
+            if application.issue_paper_licence_only is None:
+                prepare_errors.add(
+                    FieldError(
+                        field_name="Issue paper licence only?",
+                        messages=["You must enter this item"],
+                    )
+                )
+
+        if app_t.cover_letter_flag:
+            if not application.cover_letter:
+                prepare_errors.add(
+                    FieldError(field_name="Cover Letter", messages=["You must enter this item"])
+                )
+
+    return prepare_errors
 
 
 def _get_email_errors(application: ApplicationsWithCaseEmail, case_type: str) -> list[PageErrors]:

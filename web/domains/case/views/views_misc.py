@@ -346,7 +346,7 @@ def start_authorisation(
 
         task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
-        application_errors: ApplicationErrors = get_app_errors(model_class, application, case_type)
+        application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.POST and not application_errors.has_errors():
             application.status = model_class.Statuses.PROCESSING

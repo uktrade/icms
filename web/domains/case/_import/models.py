@@ -407,6 +407,9 @@ class ImportApplication(ApplicationBase):
         # NOTE: This field is never set but is used in two places
         return self.issue_date or timezone.now().date()
 
+    def get_specific_model(self) -> "ImportApplication":
+        return super().get_specific_model()
+
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
