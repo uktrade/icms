@@ -9,8 +9,7 @@ from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView
-from django.views.generic.edit import FormView
+from django.views.generic import FormView, ListView, View
 
 from web.domains.case.export.forms import form_class_for_application_type
 from web.domains.cat.models import CertificateApplicationTemplate
@@ -164,3 +163,37 @@ class CATEditStepView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
         messages.success(self.request, f"Template '{self.object.name}' updated.")
 
         return result
+
+
+class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
+
+        if not cat.user_can_edit(self.request.user):
+            raise PermissionDenied
+
+        cat.is_active = False
+        cat.save()
+        messages.success(self.request, f"Template '{cat.name}' archived.")
+
+        return redirect("cat:list")
+
+    def has_permission(self) -> bool:
+        return _has_permission(self.request.user)
+
+
+class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
+
+        if not cat.user_can_edit(self.request.user):
+            raise PermissionDenied
+
+        cat.is_active = True
+        cat.save()
+        messages.success(self.request, f"Template '{cat.name}' restored.")
+
+        return redirect("cat:list")
+
+    def has_permission(self) -> bool:
+        return _has_permission(self.request.user)

@@ -6,6 +6,8 @@ from django.db import models
 from web.domains.case.export.models import ExportApplicationType
 from web.domains.user.models import User
 
+from . import managers
+
 
 class DjangoQuerysetJSONEncoder(DjangoJSONEncoder):
     def default(self, o):
@@ -26,6 +28,8 @@ class CertificateApplicationTemplate(models.Model):
         PRIVATE = ("private", "Private (do not share)")
         VIEW = ("view", "Share (view only)")
         EDIT = ("edit", "Share (allow edit)")
+
+    objects = managers.CATManager()
 
     name = models.CharField(
         verbose_name="Template Name",
@@ -55,6 +59,8 @@ class CertificateApplicationTemplate(models.Model):
     owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    # Use .objects.active() and .objects.inactive() to filter results.
+    is_active = models.BooleanField(default=True)
     data = models.JSONField(default=dict, encoder=DjangoQuerysetJSONEncoder)
 
     def form_data(self) -> dict:

@@ -28,7 +28,19 @@
           Create Application
         </a>
         <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil" title="Edit Template">Edit</a>
-        {# TODO: ICMSLST-1178 Delete #}
+
+        {% if template.is_active %}
+          <form method="POST" action="{{ icms_url('cat:archive', kwargs={'cat_pk': template.pk}) }}">
+            {{ csrf_input }}
+            <button type="submit" class="link-button button icon-bin" title="Archive Template">Archive</button>
+          </form>
+        {% else %}
+          <form method="POST" action="{{ icms_url('cat:restore', kwargs={'cat_pk': template.pk}) }}">
+            {{ csrf_input }}
+            <button type="submit" class="link-button button icon-undo2" title="Restore Template">Restore</button>
+          </form>
+        {% endif %}
+
       </td>
     </tr>
   {% endfor %}
