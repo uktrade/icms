@@ -124,3 +124,73 @@ class TestCATEditStepView(AuthTestCase):
             "responsible_person_postcode": None,
         }
         self.assertEqual(cat.data, expected)
+
+
+class TestCATArchiveView(AuthTestCase):
+    def test_archive_a_template(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="GMP template",
+            application_type=ExportApplicationType.Types.GMP,
+        )
+        self.assertTrue(cat.is_active)
+
+        url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/cat/")
+
+        cat.refresh_from_db()
+
+        self.assertFalse(cat.is_active)
+
+    def test_permission_denied(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+        )
+        url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
+
+        self.login_with_permissions([])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+
+class TestCATRestoreView(AuthTestCase):
+    def test_restore_a_template(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="GMP template",
+            application_type=ExportApplicationType.Types.GMP,
+            is_active=False,
+        )
+        self.assertFalse(cat.is_active)
+
+        url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/cat/")
+
+        cat.refresh_from_db()
+
+        self.assertTrue(cat.is_active)
+
+    def test_permission_denied(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+            is_active=False,
+        )
+        url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
+
+        self.login_with_permissions([])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
