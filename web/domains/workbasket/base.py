@@ -21,6 +21,12 @@ class WorkbasketAction:
 
 
 @dataclass
+class WorkbasketSection:
+    information: str
+    actions: list[WorkbasketAction]
+
+
+@dataclass
 class WorkbasketRow:
     """Note that none of the fields are optional, they're just marked so to make
     constructing these items easier."""
@@ -44,10 +50,10 @@ class WorkbasketRow:
     timestamp: Optional[datetime.datetime] = None
 
     # not clear to me how this is different to status...
-    information: Optional[str] = None
+    # information: Optional[str] = None
 
     # admin/applicant/etc actions go into their own block
-    actions: list[list[WorkbasketAction]] = field(default_factory=list)
+    actions: list[WorkbasketSection] = field(default_factory=list)
 
 
 class WorkbasketBase:

@@ -75,123 +75,171 @@
         </div>
     </div>
     <ul class="menu-out flow-across">
-        <li>
-            <button role="action-button" type="button" data-action="action-filter-workbasket" class="primary-button small-button button"> Apply Filter </button>
-        </li>
-        <li>
-            <button role="action-button" type="button" data-action="action-reset-filter" class="small-button link-button button"> Clear Filter </button>
-        </li>
+      {# NOTE: These don't work, I've removed role="action-button" as it only causes errors #}
+      <li>
+        <button type="button" data-action="action-filter-workbasket" class="primary-button small-button button">
+          Apply Filter
+        </button>
+      </li>
+      <li>
+        <button type="button" data-action="action-reset-filter" class="small-button link-button button">
+          Clear Filter
+        </button>
+      </li>
     </ul>
 
 {% endblock %}
 
 {% block main_content %}
 
-        <div class="list-secondary-actions">
-            <ul class="menu-out grouped small-menu-out flow-across">
-                <li>
-                    <button role="action-button" type="button" data-action="action-sort-wb-asc" class="icon-sort-alpha-asc button no-prompt-action" aria-describedby="hint159-content" aria-label="Sort by selected column, ascending"> </button>
-                    <div id="hint159-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in ascending order</div>
-                </li>
-                <li>
-                    <button role="action-button" type="button" data-action="action-sort-wb-desc" class="icon-sort-alpha-desc button no-prompt-action" aria-describedby="hint160-content" aria-label="Sort by selected column, descending"> </button>
-                    <div id="hint160-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in descending order</div>
-                </li>
-                <li>
-                    <button role="action-button" type="button" data-action="action-clear-sort" class="icon-loop2 button no-prompt-action" aria-describedby="hint161-content" aria-label="Clear sorting"> </button>
-                    <div id="hint161-content" role="tooltip" class="hint-content">Clear sorting</div>
-                </li>
-            </ul>
-        </div>
-        <table class="setoutList">
-            <thead>
+  {# NOTE: These buttons don't work, I've removed role="action-button" as it only causes errors #}
+  <div class="list-secondary-actions">
+    <ul class="menu-out grouped small-menu-out flow-across">
+      <li>
+        <button type="button" data-action="action-sort-wb-asc" class="icon-sort-alpha-asc button no-prompt-action" aria-describedby="hint159-content" aria-label="Sort by selected column, ascending"> </button>
+        <div id="hint159-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in ascending order</div>
+      </li>
+      <li>
+        <button type="button" data-action="action-sort-wb-desc" class="icon-sort-alpha-desc button no-prompt-action" aria-describedby="hint160-content" aria-label="Sort by selected column, descending"> </button>
+        <div id="hint160-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in descending order</div>
+      </li>
+      <li>
+        <button type="button" data-action="action-clear-sort" class="icon-loop2 button no-prompt-action" aria-describedby="hint161-content" aria-label="Clear sorting"> </button>
+        <div id="hint161-content" role="tooltip" class="hint-content">Clear sorting</div>
+      </li>
+    </ul>
+  </div>
 
+  <table class="setoutList">
+    <thead>
+      <tr>
+        <th>
+          <div class="container" role="radiogroup">
+            <label class="radio-label">
+              <input name="sort-transaction" value="sort-transaction" type="radio"> Transaction
+            </label>
+            <label class="radio-label">
+              <input name="sort-ref" value="sort-ref" type="radio"> / Ref
+            </label>
+          </div>
+        </th>
 
-                <tr>
-                    <th>
-                        Transaction <label id="pg45/0" for="g45/0" class="radio-label"><input id="g45/0"  value="g45/0" type="radio" /> </label> /
-                        Ref
-                        <label id="pg47/0" for="g47/0" class="radio-label"><input id="g47/0"  value="g47/0" type="radio" /> </label>
-                    </th>
-                    <th>
-                        Subject <label id="pg48/0" for="g48/0" class="radio-label"><input id="g48/0"  value="g48/0" type="radio" /> </label> /
-                        Topic <label id="pg49/0" for="g49/0" class="radio-label"><input id="g49/0"  value="g49/0" type="radio" /> </label>
-                    </th>
-                    <th>
-                        Company <label id="pg50/0" for="g50/0" class="radio-label"><input id="g50/0"  value="g50/0" type="radio" /> </label>
-                    </th>
-                    <th>
-                        Status <label id="pg51/0" for="g51/0" class="radio-label"><input id="g51/0"  value="g51/0" type="radio" /> </label> /
-                        Date <label id="pg52/0" for="g52/0" class="radio-label"><input id="g52/0"  value="g52/0" type="radio" /> </label>
-                    </th>
-                    <th>
-                      Information
-                    </th>
-                    <th>
-                      Actions
-                    </th>
-                </tr>
+        <th>
+          <div class="container" role="radiogroup">
+            <label class="radio-label">
+              <input name="sort-subject" value="sort-subject" type="radio">Subject
+            </label>
+            <label class="radio-label">
+              <input name="sort-topic" value="sort-topic" type="radio">/ Topic
+            </label>
+          </div>
+        </th>
 
+        <th>
+          <div class="container" role="radiogroup">
+            <label class="radio-label">
+              <input name="sort-company" value="sort-company" type="radio">Company
+            </label>
+          </div>
+        </th>
 
-            </thead>
+        <th>
+          <div class="container" role="radiogroup">
+            <label class="radio-label">
+              <input name="sort-status" value="sort-status" type="radio">Status
+            </label>
+            <label class="radio-label">
+              <input name="sort-date" value="sort-date" type="radio">/ Date
+            </label>
+          </div>
+        </th>
+        <th>
+          <div class="container">
+            <div class="row">
+              <div class="six columns break-word">Information</div>
+              <div class="six columns">Actions</div>
+            </div>
+          </div>
+        </th>
+      </tr>
+      </thead>
 
-            {% for row in rows %}
-              <tr>
-                <td>{{ row.reference }}</td>
+      <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.reference }}</td>
 
-                <td>{{ row.subject|nl2br }}</td>
+          <td>{{ row.subject|nl2br }}</td>
 
-                <td>
-                  {{ row.company|nl2br }}
-                  {% if row.company_agent %}
-                    {{ row.company_agent|nl2br }}
-                  {% endif %}
-                </td>
+          <td>
+            {{ row.company|nl2br }}
+            {% if row.company_agent %}
+              {{ row.company_agent|nl2br }}
+            {% endif %}
+          </td>
 
-                <td>
-                  {{ row.status }}
-                  <br>
-                  {{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
-                </td>
+          <td>
+            {{ row.status }}<br>{{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
+          </td>
 
-                <td>{{ row.information|nl2br }}</td>
+          <td>
+            <div class="container">
+              {% for action_block in row.actions %}
+                <div class="row">
+                  {# Information section #}
+                  <div class="six columns break-word">
+                    <div class="individual-input"><span class="text-widget ">{{ action_block.information|nl2br }}</span></div>
+                  </div>
 
-                <td>
-                  {% for action_block in row.actions %}
-                    {% for action in action_block %}
-                      {% if action.is_post %}
-                        <form method="post" action="{{ action.url }}">
-                          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
-                          <button type="submit" class="button link-button-no-padding"
-                                  {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
-                          >
-                            {{ action.name }}
-                          </button>
-                        </form>
-                      {% else %}
-                        <a href="{{ action.url }}">{{ action.name }}</a>
+                  {# Actions section #}
+                  <div class="six columns">
+                    <table class="nestedList setoutList">
+                      <thead>
+                        <tr>
+                          <th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th>
+                        </tr>
+                      </thead>
 
-                        {% if not loop.last %}
-                          <br>
-                        {% endif %}
-                      {% endif %}
-
-                    {% endfor %}
-
-                    {% if not loop.last %}
-                      <hr>
-                    {% endif %}
-                  {% endfor %}
-                  </td>
-              </tr>
+                      <tbody>
+                        {% for action in action_block.actions %}
+                          <tr>
+                            <td>
+                               {% if action.is_post %}
+                                <form method="post" action="{{ action.url }}">
+                                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                                  <button type="submit" class="button link-button-no-padding"
+                                          {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
+                                  >
+                                    {{ action.name }}
+                                  </button>
+                                </form>
+                              {% else %}
+                                <a href="{{ action.url }}">{{ action.name }}</a>
+                              {% endif %}
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td><span class="text-widget "></span></td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+              </div>
+              {% if not loop.last %}<hr>{% endif %}
             {% endfor %}
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
 
-        </table>
+  <div class="result-count">
+      {{ rows|length }} workbasket items
+  </div>
 
-        <div class="result-count">
-            {{ rows|length }} workbasket items
-        </div>
-
-        <div class="content-actions"></div>
-
+  <div class="content-actions"></div>
 {% endblock %}

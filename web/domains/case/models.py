@@ -12,7 +12,12 @@ from django.utils import timezone
 
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
+from web.domains.workbasket.base import (
+    WorkbasketAction,
+    WorkbasketBase,
+    WorkbasketRow,
+    WorkbasketSection,
+)
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -312,9 +317,6 @@ class ApplicationBase(WorkbasketBase, Process):
 
         r.status = self.get_status_display()
 
-        # TODO: this was harcoded in the template, no idea what this should be
-        r.information = "Application Processing"
-
         if self.is_import_application():
             r.company = self.importer  # type: ignore[attr-defined]
             case_type = "import"
@@ -340,13 +342,19 @@ class ApplicationBase(WorkbasketBase, Process):
             admin_actions = self._get_admin_actions(user, view_action, task, kwargs)
 
             if admin_actions:
-                r.actions.append(admin_actions)
+                r.actions.append(
+                    WorkbasketSection(information=self.get_information(True), actions=admin_actions)
+                )
 
         if include_applicant_rows:
             applicant_actions = self._get_applicant_actions(view_action, task, kwargs)
 
             if applicant_actions:
-                r.actions.append(applicant_actions)
+                r.actions.append(
+                    WorkbasketSection(
+                        information=self.get_information(False), actions=applicant_actions
+                    )
+                )
 
         return r
 
@@ -458,6 +466,10 @@ class ApplicationBase(WorkbasketBase, Process):
         elif self.status == self.Statuses.COMPLETED:
             admin_actions.append(view_action)
 
+            if self.is_rejected():
+                # TODO: ICMSLST-19 A clear action should be added here (We don't have this endpoint atm)
+                ...
+
         return admin_actions
 
     def _get_applicant_actions(
@@ -563,18 +575,19 @@ class ApplicationBase(WorkbasketBase, Process):
         elif self.status == self.Statuses.COMPLETED:
             applicant_actions.append(view_action)
 
-            if self.acknowledged_by and self.acknowledged_datetime:
-                action = "View Notification"
-            else:
-                action = "Acknowledge Notification"
+            if not self.is_rejected():
+                if self.acknowledged_by and self.acknowledged_datetime:
+                    action = "View Notification"
+                else:
+                    action = "Acknowledge Notification"
 
-            applicant_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name=action,
-                    url=reverse("case:ack-notification", kwargs=kwargs),
-                ),
-            )
+                applicant_actions.append(
+                    WorkbasketAction(
+                        is_post=False,
+                        name=action,
+                        url=reverse("case:ack-notification", kwargs=kwargs),
+                    ),
+                )
 
         return applicant_actions
 
@@ -636,6 +649,25 @@ class ApplicationBase(WorkbasketBase, Process):
 
         for t in self.tasks.all().order_by("created"):
             print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+
+    def get_information(self, is_ilb_admin: bool):
+        """Return the latest information about an application.
+
+        TODO: This needs a lot of work to flesh out what it is supposed to show.
+        :param is_ilb_admin: This will probably be needed to determine what the user should see here...
+        """
+
+        if self.is_rejected():
+            return "View Case"
+
+        return "Application Processing"
+
+    def is_rejected(self):
+        """Is the application in a rejected state."""
+
+        latest_task = self.get_active_task()
+
+        return self.status == self.Statuses.COMPLETED and latest_task == Task.TaskType.REJECTED
 
 
 class CaseEmail(models.Model):

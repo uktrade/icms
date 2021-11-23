@@ -9,7 +9,12 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
+from web.domains.workbasket.base import (
+    WorkbasketAction,
+    WorkbasketBase,
+    WorkbasketRow,
+    WorkbasketSection,
+)
 from web.flow.models import Process, ProcessTypes
 
 logger = logging.getLogger(__name__)
@@ -104,7 +109,7 @@ class AccessRequest(WorkbasketBase, Process):
         if self.approval_requests.filter(is_active=True) and user.has_perm("web.ilb_admin"):
             info_rows.append("Approval Requested")
 
-        r.information = "\n".join(info_rows)
+        information = "\n".join(info_rows)
 
         task = self.get_active_task()
 
@@ -126,7 +131,7 @@ class AccessRequest(WorkbasketBase, Process):
                 ),
             )
 
-            r.actions.append(admin_actions)
+            r.actions.append(WorkbasketSection(information=information, actions=admin_actions))
 
         if task and task.owner == user:
             owner_actions: list[WorkbasketAction] = [
@@ -150,7 +155,7 @@ class AccessRequest(WorkbasketBase, Process):
                     ),
                 )
 
-            r.actions.append(owner_actions)
+            r.actions.append(WorkbasketSection(information=information, actions=owner_actions))
 
         return r
 

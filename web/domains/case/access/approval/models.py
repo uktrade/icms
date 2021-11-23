@@ -2,7 +2,12 @@ from django.db import models
 from django.urls import reverse
 
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketAction, WorkbasketBase, WorkbasketRow
+from web.domains.workbasket.base import (
+    WorkbasketAction,
+    WorkbasketBase,
+    WorkbasketRow,
+    WorkbasketSection,
+)
 from web.flow.models import Process
 
 from ..models import AccessRequest
@@ -92,7 +97,7 @@ class ApprovalRequest(WorkbasketBase, Process):
 
         r.timestamp = self.created
 
-        r.information = "Approval Request"
+        information = "Approval Request"
 
         actions: list[WorkbasketAction] = []
 
@@ -134,7 +139,7 @@ class ApprovalRequest(WorkbasketBase, Process):
                 )
             )
 
-        r.actions.append(actions)
+        r.actions.append(WorkbasketSection(information=information, actions=actions))
 
         return r
 

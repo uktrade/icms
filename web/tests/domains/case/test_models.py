@@ -8,7 +8,7 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import ApplicationBase, UpdateRequest, WithdrawApplication
-from web.domains.workbasket.base import WorkbasketAction
+from web.domains.workbasket.base import WorkbasketSection
 from web.flow.models import Task
 
 
@@ -211,11 +211,11 @@ def test_admin_actions_completed(app_completed, test_icms_admin_user):
     _check_actions(admin_row.actions, expected_actions={"View"})
 
 
-def _check_actions(actions: list[list[WorkbasketAction]], expected_actions: set[str]):
+def _check_actions(actions: list[WorkbasketSection], expected_actions: set[str]):
     # Only one set of actions
     assert len(actions) == 1, f"One action expected but {len(actions)} passed"
 
-    row_actions = {r.name for r in actions[0]}
+    row_actions = {r.name for r in actions[0].actions}
     assert row_actions == expected_actions
 
 
