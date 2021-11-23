@@ -32,6 +32,27 @@ class TestCATListView(AuthTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual([t.name for t in response.context["templates"]], ["Foo"])
 
+    def test_filter_defaults_to_current_templates(self):
+        foo = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="foo",
+            application_type=ExportApplicationType.Types.GMP,
+            is_active=True,
+        )
+        CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="bar",
+            application_type=ExportApplicationType.Types.GMP,
+            is_active=False,
+        )
+
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.get(self.url, {})
+
+        self.assertEqual(response.status_code, 200)
+        # The archived template is not shown.
+        self.assertEqual([t.pk for t in response.context["templates"]], [foo.pk])
+
 
 class TestCATCreateView(AuthTestCase):
     def test_can_create_template(self):

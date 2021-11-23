@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import FormView, View
+from django_filters import FilterSet
 from django_filters.views import FilterView
 
 from web.domains.case.export.forms import form_class_for_application_type
@@ -39,6 +40,15 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
         context["page_title"] = "Certificate Application Templates"
 
         return context
+
+    def get_filterset_kwargs(self, filterset_class: FilterSet) -> dict[str, Any]:
+        kwargs = super().get_filterset_kwargs(filterset_class)
+
+        if not self.request.GET:
+            # Default filter of "current" templates.
+            kwargs["data"] = {"is_active": True}
+
+        return kwargs
 
 
 @login_required
