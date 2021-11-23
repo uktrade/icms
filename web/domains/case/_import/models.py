@@ -21,7 +21,11 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketAction, WorkbasketRow
+from web.domains.workbasket.base import (
+    WorkbasketAction,
+    WorkbasketRow,
+    WorkbasketSection,
+)
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoNAChoices
 
@@ -361,10 +365,13 @@ class ImportApplication(ApplicationBase):
         include_importer_rows = is_importer_user or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if include_importer_rows:
+            information = self.get_information(is_ilb_admin=user.has_perm("web.ilb_admin"))
             importer_actions = self._get_importer_actions()
 
             if importer_actions:
-                r.actions.append(importer_actions)
+                r.actions.append(
+                    WorkbasketSection(information=information, actions=importer_actions)
+                )
 
         return r
 
@@ -375,6 +382,7 @@ class ImportApplication(ApplicationBase):
         if (
             self.status == self.Statuses.COMPLETED
             and self.application_type.type == ImportApplicationType.Types.FIREARMS
+            and not self.is_rejected()
         ):
 
             if self.process_type == ProcessTypes.FA_OIL:
