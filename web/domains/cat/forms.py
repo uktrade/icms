@@ -1,17 +1,25 @@
+import django_filters
 from django import forms
 
-from web.domains.case.export.models import ExportApplicationType
-from web.domains.cat.models import CertificateApplicationTemplate
+from web.domains.cat.models import CertificateApplicationTemplate, ExportApplicationType
 
 
-class SearchCATForm(forms.Form):
-    template_name = forms.CharField()
-    application_type = forms.ChoiceField(
-        choices=[("any", "Any")] + ExportApplicationType.Types.choices
+class CATFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(label="Template Name", lookup_expr="icontains")
+    application_type = django_filters.ChoiceFilter(
+        choices=ExportApplicationType.Types.choices,
+        label="Application Type",
+        empty_label="Any",
     )
-    status = forms.ChoiceField(
-        choices=(("any", "Any"), ("current", "Current"), ("archived", "Archived"))
+    is_active = django_filters.ChoiceFilter(
+        choices=((True, "Current"), (False, "Archived")),
+        label="Status",
+        empty_label="Any",
     )
+
+    class Meta:
+        model = CertificateApplicationTemplate
+        fields = ("name", "application_type", "is_active")
 
 
 class CreateCATForm(forms.ModelForm):

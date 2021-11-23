@@ -9,26 +9,27 @@
     </ul>
 
     <h4>Filter</h4>
-    {% call forms.form(action="#TODO: ICMSLST-1043 Filter templates", method='post', csrf_input=csrf_input) -%}
-        {% for field in form %}
+    {% call forms.form(action="", method='GET') -%}
+        {% for field in filter.form %}
             {{ fields.field(field, show_optional_indicator=false, prompt='north', label_cols='twelve', input_cols='twelve') }}
         {% endfor %}
 
         <div class="clearBoth"></div>
         <div class="container">
-        <div class="row">
-            <div class="four columns"></div>
-            <div class="six columns">
-            <ul class="menu-out flow-across">
-                <li>
-                <button type="submit" class="primary-button small-button button">
-                    Apply filter
-                </button>
-                </li>
-            </ul>
+            <div class="row">
+                <div class="twelve columns">
+                <ul class="menu-out flow-across">
+                    <li>
+                    <button type="submit" class="primary-button small-button button">
+                        Apply filter
+                    </button>
+                    </li>
+                    <li>
+                        <a href="{{ request.path }}" class="small-button link-button button">Clear Filter</a>
+                    </li>
+                </ul>
+                </div>
             </div>
-            <div class="two columns"></div>
-        </div>
         </div>
     {%- endcall %}
 
@@ -45,4 +46,3 @@
     {% include('web/domains/cat/partials/table.html') %}
   {% endif %}
 {% endblock %}
-

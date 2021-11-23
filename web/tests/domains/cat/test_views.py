@@ -1,8 +1,36 @@
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from web.domains.case.export.models import ExportApplicationType
+from web.domains.cat.forms import CATFilter
 from web.domains.cat.models import CertificateApplicationTemplate
 from web.tests.auth import AuthTestCase
+
+
+class TestCATListView(AuthTestCase):
+    url = reverse_lazy("cat:list")
+
+    def test_template_context(self):
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "web/domains/cat/list.html")
+        self.assertIsInstance(response.context["filter"], CATFilter)
+
+    def test_filter_queryset_by_name(self):
+        for name in ("Foo", "Bar", "Baz"):
+            CertificateApplicationTemplate.objects.create(
+                owner=self.user,
+                name=name,
+                application_type=ExportApplicationType.Types.GMP,
+            )
+
+        self.login_with_permissions(["exporter_access"])
+        # Filtering with query parameters.
+        response = self.client.get(self.url, {"name": "foo"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([t.name for t in response.context["templates"]], ["Foo"])
 
 
 class TestCATCreateView(AuthTestCase):

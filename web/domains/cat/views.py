@@ -9,22 +9,24 @@ from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import FormView, ListView, View
+from django.views.generic import FormView, View
+from django_filters.views import FilterView
 
 from web.domains.case.export.forms import form_class_for_application_type
 from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.user.models import User
 from web.types import AuthenticatedHttpRequest
 
-from .forms import CreateCATForm, EditCATForm, SearchCATForm
+from .forms import CATFilter, CreateCATForm, EditCATForm
 
 if TYPE_CHECKING:
     from django.db import QuerySet
 
 
-class CATListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
     template_name = "web/domains/cat/list.html"
     context_object_name = "templates"
+    filterset_class = CATFilter
 
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
@@ -35,7 +37,6 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context["page_title"] = "Certificate Application Templates"
-        context["form"] = SearchCATForm()
 
         return context
 
