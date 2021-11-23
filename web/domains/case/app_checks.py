@@ -50,6 +50,7 @@ def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
 
     # When refusing an application the only thing we check is the checklist.
     if application.decision == application.REFUSE:
+        # TODO: Revisit when doing ICMSLST-1219
         return application_errors
 
     # Check the response prep screen errors

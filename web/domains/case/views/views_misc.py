@@ -337,6 +337,11 @@ def manage_case(
 def start_authorisation(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """Authorise the application, in legacy this is called "Close Case Processing".
+
+    `application.decision` is used to determine the next steps.
+    """
+
     model_class = get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -348,17 +353,21 @@ def start_authorisation(
 
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
-        if request.POST and not application_errors.has_errors():
-            application.status = model_class.Statuses.PROCESSING
+        if request.method == "POST" and not application_errors.has_errors():
+            if application.decision == application.REFUSE:
+                application.status = model_class.Statuses.COMPLETED
+                next_task = Task.TaskType.REJECTED
+            else:
+                application.status = model_class.Statuses.PROCESSING
+                next_task = Task.TaskType.AUTHORISE
+
             application.save()
 
             task.is_active = False
             task.finished = timezone.now()
             task.save()
 
-            Task.objects.create(
-                process=application, task_type=Task.TaskType.AUTHORISE, previous=task
-            )
+            Task.objects.create(process=application, task_type=next_task, previous=task)
 
             return redirect(reverse("workbasket"))
 
@@ -508,6 +517,8 @@ def cancel_authorisation(
 
         task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
+        # TODO ICMSLST-1220 change: Should be set to PROCESSING not SUBMITTED?
+        # NOTE: This puts the application in a state that nobody can authorise - it should get the `Manage` action.
         application.status = model_class.Statuses.SUBMITTED
         application.save()
 

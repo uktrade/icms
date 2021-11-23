@@ -59,7 +59,6 @@ def test_get_app_errors_application_refused_no_errors(wood_application: "WoodQuo
 def test_get_app_errors_application_approved_has_errors(
     wood_application: "WoodQuotaApplication",
 ):
-    # Refuse the application (this will change with this feature)
     wood_application.decision = wood_application.APPROVE
 
     # Create an open update request

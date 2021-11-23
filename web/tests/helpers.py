@@ -82,3 +82,9 @@ class CaseURLS:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:manage-case-emails", kwargs=kwargs)
+
+    @staticmethod
+    def authorise_application(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:start-authorisation", kwargs=kwargs)
