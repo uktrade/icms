@@ -109,6 +109,10 @@ def create_export_application(
         except PermissionDenied:
             # User cannot use this template, so redirect to the regular form.
             return redirect("export:create-application", type_code=type_code.lower())
+        else:
+            if not app_template.is_active:
+                messages.info(request, "Cannot create an application from an archived template.")
+                return redirect("export:create-application", type_code=type_code.lower())
     else:
         app_template = None
 

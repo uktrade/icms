@@ -79,6 +79,24 @@ class TestCreateApplicationFromTemplate(AuthTestCase):
         assert response.status_code == 302
         assert response["Location"] == "/export/create/cfs/"
 
+    def test_redirect_for_archived_template(self):
+        self.login_with_permissions([self.permission])
+
+        template = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+            is_active=False,
+        )
+        url = reverse(
+            "export:create-application-from-template",
+            kwargs={"type_code": template.application_type.lower(), "template_pk": template.pk},
+        )
+        response = self.client.get(url)
+
+        assert response.status_code == 302
+        assert response["Location"] == "/export/create/cfs/"
+
 
 class TestFlow(AuthTestCase):
     def test_flow(self):
