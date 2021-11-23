@@ -57,11 +57,11 @@
 
                             <form action="{{ icms_url('import:sanctions:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
                                 {{ csrf_input }}
-                              <button role="action-button"
-                                      type="submit"
-                                      class="link-button icon-bin button tooltipstered"
-                                      aria-label="Delete"
-                                      data-confirm="Are you sure you want to delete this record?">Delete
+                              <button
+                                type="submit"
+                                class="link-button icon-bin button tooltipstered"
+                                aria-label="Delete"
+                                data-confirm="Are you sure you want to delete this record?">Delete
                               </button>
                             </form>
                         </td>

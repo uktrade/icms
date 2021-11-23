@@ -1,3 +1,5 @@
+// This is only used for a very small subset of views that inherit from PostActionMixin
+// Removed most references to it as it was causing exceptions.
 $(document).ready(function() {
     $('[role=action-button]').off().on('click', function(evt){
 
@@ -49,7 +51,3 @@ $(document).ready(function() {
         submit();
     });
 });
-
-
-
-
