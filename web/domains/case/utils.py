@@ -105,7 +105,10 @@ def get_application_current_task(
         elif task_type in [Task.TaskType.CHIEF_WAIT, Task.TaskType.CHIEF_ERROR]:
             return application.get_task(application.Statuses.PROCESSING, task_type)
 
-        elif task_type in Task.TaskType.ACK:
+        elif task_type == Task.TaskType.ACK:
+            return application.get_task(application.Statuses.COMPLETED, task_type)
+
+        elif task_type == Task.TaskType.REJECTED:
             return application.get_task(application.Statuses.COMPLETED, task_type)
 
     elif case_type == "access":
