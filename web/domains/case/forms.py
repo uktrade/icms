@@ -93,13 +93,15 @@ class WithdrawResponseForm(forms.ModelForm):
             "response",
         )
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
-        if (
-            cleaned_data.get("status") == WithdrawApplication.STATUS_REJECTED
-            and cleaned_data.get("response") == ""
-        ):
+        status = cleaned_data.get("status")
+        response = cleaned_data.get("response")
+
+        if status == WithdrawApplication.STATUS_REJECTED and not response:
             self.add_error("response", "This field is required when Withdrawal is refused")
+
+        return cleaned_data
 
 
 class AuthoriseForm(forms.Form):
@@ -134,14 +136,17 @@ class ResponsePreparationBaseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["decision"].required = True
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+        decision = cleaned_data.get("decision")
+        refuse_reason = cleaned_data.get("refuse_reason")
 
-        if (
-            cleaned_data.get("decision") == ApplicationBase.REFUSE
-            and cleaned_data.get("refuse_reason") == ""
-        ):
-            self.add_error("response", "This field is required when the Application is refused")
+        if decision == ApplicationBase.REFUSE and not refuse_reason:
+            self.add_error(
+                "refuse_reason", "This field is required when the Application is refused"
+            )
+
+        return cleaned_data
 
 
 class ResponsePreparationImportForm(ResponsePreparationBaseForm):
