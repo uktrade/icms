@@ -40,11 +40,10 @@ from web.flow.models import ProcessTypes, Task
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
 from web.utils.search import (
-    CommodityDetails,
-    ResultRow,
     SearchTerms,
     get_search_results_spreadsheet,
     search_applications,
+    types,
 )
 
 if TYPE_CHECKING:
@@ -1398,7 +1397,9 @@ def test_reassignment_search(
     check_export_application_case_reference(results.records, gmp_app.reference)
 
 
-def check_application_references(applications: list[ResultRow], *references, sort_results=False):
+def check_application_references(
+    applications: list[types.ResultRow], *references, sort_results=False
+):
     """Check the returned applications match the supplied references
 
     Sort results if we don't care about the order
@@ -1413,7 +1414,7 @@ def check_application_references(applications: list[ResultRow], *references, sor
 
 
 def check_export_application_case_reference(
-    applications: list[ResultRow], *app_references, sort_results=False
+    applications: list[types.ResultRow], *app_references, sort_results=False
 ):
     expected = sorted(app_references) if sort_results else list(app_references)
 
@@ -1424,7 +1425,7 @@ def check_export_application_case_reference(
 
 
 def check_commodity_details(
-    actual_details: CommodityDetails,
+    actual_details: types.CommodityDetails,
     *,
     expected_origin_country: str = None,
     expected_consignment_country: str = None,
