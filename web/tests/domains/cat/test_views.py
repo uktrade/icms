@@ -243,3 +243,33 @@ class TestCATRestoreView(AuthTestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 403)
+
+
+class TestCATReadOnlyView(AuthTestCase):
+    def test_show_disabled_form_for_template(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+        )
+        url = reverse("cat:view", kwargs={"cat_pk": cat.pk})
+
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["read_only"])
+
+    def test_show_disabled_form_for_step(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.user,
+            name="CFS template",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+        )
+        url = reverse("cat:view-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
+
+        self.login_with_permissions(["exporter_access"])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context["read_only"])
