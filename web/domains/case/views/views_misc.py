@@ -165,7 +165,7 @@ def manage_withdrawals(
 
                 # withdrawal accepted - case is closed, else case still open
                 if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
-                    application.status = model_class.Status.WITHDRAWN
+                    application.status = model_class.Statuses.WITHDRAWN
                     application.is_active = False
                     application.save()
 
