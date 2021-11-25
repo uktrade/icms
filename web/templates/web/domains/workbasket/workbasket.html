@@ -206,7 +206,7 @@
                             <td>
                                {% if action.is_post %}
                                 <form method="post" action="{{ action.url }}">
-                                  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                                  {{ csrf_input }}
                                   <button type="submit" class="button link-button-no-padding"
                                           {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
                                   >
