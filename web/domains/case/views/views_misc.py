@@ -517,9 +517,7 @@ def cancel_authorisation(
 
         task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
-        # TODO ICMSLST-1220 change: Should be set to PROCESSING not SUBMITTED?
-        # NOTE: This puts the application in a state that nobody can authorise - it should get the `Manage` action.
-        application.status = model_class.Statuses.SUBMITTED
+        application.status = model_class.Statuses.PROCESSING
         application.save()
 
         task.is_active = False
