@@ -28,6 +28,18 @@ search_urls = [
         views_search.reassign_case_owner,
         name="search-reassign-case-owner",
     ),
+    path(
+        "search-actions/<int:application_pk>/",
+        include(
+            [
+                path(
+                    "reopen-case",
+                    views_search.ReopenApplicationView.as_view(),
+                    name="search-reopen-case",
+                ),
+            ]
+        ),
+    ),
 ]
 
 note_urls = [

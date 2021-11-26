@@ -20,6 +20,15 @@ if TYPE_CHECKING:
     from web.domains.case._import.wood.models import WoodQuotaApplication
 
 
+@pytest.fixture
+def wood_application(icms_admin_client, wood_app_submitted):
+    """A submitted application owned by the ICMS admin user."""
+    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    wood_app_submitted.refresh_from_db()
+
+    return wood_app_submitted
+
+
 def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
     resp = icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     assert resp.status_code == 302
@@ -28,23 +37,29 @@ def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
     assert wood_app_submitted.get_task(ImportApplication.Statuses.PROCESSING, Task.TaskType.PROCESS)
 
 
-def test_take_ownership_in_progess(icms_admin_client: "Client", wood_app_in_progress):
+def test_take_ownership_in_progress(icms_admin_client: "Client", wood_app_in_progress):
     # Can't own an in progress application
     with pytest.raises(ProcessStateError):
         icms_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
 
 
-def test_manage_case_get(icms_admin_client: "Client", wood_app_submitted):
-    resp = icms_admin_client.get(CaseURLS.manage(wood_app_submitted.pk))
+def test_manage_case_get(icms_admin_client: "Client", wood_application):
+    resp = icms_admin_client.get(CaseURLS.manage(wood_application.pk))
 
     assert resp.status_code == 200
     assertContains(resp, "Wood (Quota) - Manage")
     assertTemplateUsed(resp, "web/domains/case/manage/manage.html")
 
 
-# def test_manage_case_post():
-#     # TODO: Add a test to stop a case
-#     ...
+def test_manage_case_close_case(icms_admin_client: "Client", wood_application):
+
+    post_data = {"send_email": False}
+    resp = icms_admin_client.post(CaseURLS.close_case(wood_application.pk), post_data)
+    assertRedirects(resp, reverse("workbasket"), status_code=302)
+
+    wood_application.refresh_from_db()
+
+    assert wood_application.status == wood_application.Statuses.STOPPED
 
 
 def test_manage_withdrawals_get(
@@ -64,15 +79,6 @@ def test_manage_withdrawals_get(
 #     # TODO: Add test for approving a withdrawal
 #     # TODO: Add test to reject a withdrawal
 #     ...
-
-
-@pytest.fixture
-def wood_application(icms_admin_client, wood_app_submitted):
-    """A submitted application owned by the ICMS admin user."""
-    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
-    wood_app_submitted.refresh_from_db()
-
-    return wood_app_submitted
 
 
 def test_start_authorisation_approved_application_has_errors(icms_admin_client, wood_application):

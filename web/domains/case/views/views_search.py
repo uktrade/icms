@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
@@ -15,12 +16,16 @@ from web.domains.case.forms_search import (
     ImportSearchForm,
     ReassignmentUserForm,
 )
+from web.domains.case.models import ApplicationBase
+from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
     get_search_results_spreadsheet,
     search_applications,
 )
+
+from .mixins import ApplicationUpdateView
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -140,6 +145,30 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
     response["Content-Disposition"] = f"attachment; filename={case_type}_application_download.xlsx"
 
     return response
+
+
+@method_decorator(transaction.atomic, name="post")
+class ReopenApplicationView(ApplicationUpdateView):
+    permission_required = ["web.ilb_admin"]
+
+    current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
+    current_task = None
+
+    next_status = ApplicationBase.Statuses.SUBMITTED
+    next_task_type = Task.TaskType.PROCESS
+
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        """Reopen the application."""
+
+        super().post(request, *args, **kwargs)
+
+        self.update_application_status(commit=False)
+        self.application.case_owner = None
+        self.application.save()
+
+        self.update_application_tasks()
+
+        return HttpResponse(status=204)
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

@@ -44,6 +44,13 @@ class CaseURLS:
         return reverse("case:manage", kwargs=kwargs)
 
     @staticmethod
+    def close_case(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        # Close case is the the "post" branch of the manage view
+        return reverse("case:manage", kwargs=kwargs)
+
+    @staticmethod
     def manage_withdrawals(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
@@ -88,3 +95,11 @@ class CaseURLS:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:start-authorisation", kwargs=kwargs)
+
+
+class SearchURLS:
+    @staticmethod
+    def reopen_case(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:search-reopen-case", kwargs=kwargs)

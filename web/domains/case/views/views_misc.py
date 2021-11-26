@@ -284,7 +284,7 @@ def manage_case(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form = forms.CloseCaseForm(request.POST)
 
             if form.is_valid():
