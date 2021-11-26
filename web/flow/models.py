@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 
 from django.conf import settings
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from django.db.models.query import QuerySet
 
@@ -56,6 +57,29 @@ class Process(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(blank=True, null=True)
+
+    def get_expected_task(self, task_type: str) -> "Task":
+        """Get the expected active current task"""
+
+        if not self.is_active:
+            raise errors.ProcessInactiveError("Process is not active")
+
+        try:
+            task = self.get_active_tasks().get(task_type=task_type)
+
+        except (ObjectDoesNotExist, MultipleObjectsReturned) as exc:
+            raise errors.TaskError(f"Failed to get expected task: {task_type}") from exc
+
+        return task
+
+    def check_expected_status(self, expected_statuses: list[str]) -> None:
+        """Check the process has one of the expected statuses."""
+
+        # status is set as a model field on all derived classes
+        status: str = self.status  # type: ignore[attr-defined]
+
+        if status not in expected_statuses:
+            raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
     def get_task(self, expected_state: Union[str, List[str]], task_type: str) -> "Task":
         """Get the latest active task of the given type attached to this
