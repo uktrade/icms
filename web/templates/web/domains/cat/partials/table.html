@@ -14,7 +14,7 @@
   <tbody>
   {% for template in templates %}
     <tr>
-      <td>{{ template.name }}</td>
+      <td><a href="{{ icms_url('cat:view', kwargs={'cat_pk': template.pk}) }}">{{ template.name }}</a></td>
       <td>{{ template.description|nl2br }}</td>
       <td>{{ template.application_type }}</td>
       <td>{{ template.get_sharing_display() }}</td>
