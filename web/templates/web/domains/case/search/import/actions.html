@@ -1,10 +1,10 @@
 <ul class="menu-out">
   {% for action in rec.actions  %}
     <li>
-      <form method="post" action="{{ action.url }}">
+      <form method="post" action="{{ action.url }}" class="{{ action.name }}">
         {{ csrf_input }}
         <button type="submit" class="link-button {{ action.icon }} button">
-          {{ action.name }}
+          {{ action.label }}
         </button>
       </form>
     </li>

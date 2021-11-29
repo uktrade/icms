@@ -14,11 +14,12 @@ window.addEventListener('load', function (event) {
     warningId: "#spreadsheet-download-warning"
   });
 
+  /* Reassignment handlers */
   setupReassignFormEventHandler();
-
   const selectAllBtn = document.querySelector("#select-all-records");
   setupToggleCheckboxEventHandler(selectAllBtn, true)
-
   const unselectAllBtn = document.querySelector("#unselect-all-records")
   setupToggleCheckboxEventHandler(unselectAllBtn, false)
+
+  /* Results table row actions */
 });
