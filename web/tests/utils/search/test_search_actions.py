@@ -30,9 +30,12 @@ test_arg_values = [
 
 @pytest.mark.parametrize(argnames="application, expected_actions", argvalues=test_arg_values)
 def test_get_import_application_search_actions(application, expected_actions):
+    # get_import_record_actions calls reverse and expects a PK to be set.
+    application.pk = 1
+
     actions: list[types.SearchAction] = get_import_record_actions(application)
 
-    assert expected_actions == [a.name for a in actions]
+    assert expected_actions == [a.label for a in actions]
 
 
 def test_get_export_application_search_actions():

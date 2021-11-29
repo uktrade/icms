@@ -104,6 +104,7 @@ class AssigneeDetails:
 class SearchAction:
     url: str
     name: str
+    label: str
     icon: str
 
 

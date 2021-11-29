@@ -4,6 +4,7 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, Union
 
 from django.db import models
+from django.urls import reverse
 from django.utils.timezone import make_aware
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
@@ -724,19 +725,40 @@ def get_import_record_actions(rec: "ImportApplication") -> list[types.SearchActi
 
     if rec.status == ImportApplication.Statuses.COMPLETED:
         # TODO: ICMSLST-686
-        actions.append(types.SearchAction(url="#", name="Request Variation", icon="icon-redo2"))
+        actions.append(
+            types.SearchAction(
+                url="#", name="request-variation", label="Request Variation", icon="icon-redo2"
+            )
+        )
 
         if rec.decision == rec.REFUSE:
             # TODO: ICMSLST-1001
-            actions.append(types.SearchAction(url="#", name="Manage Appeals", icon="icon-warning"))
+            actions.append(
+                types.SearchAction(
+                    url="#", name="manage-appeals", label="Manage Appeals", icon="icon-warning"
+                )
+            )
 
         if rec.licence_end_date and rec.licence_end_date > datetime.date.today():
             # TODO: ICMSLST-999
-            actions.append(types.SearchAction(url="#", name="Revoke Licence", icon="icon-undo2"))
+            actions.append(
+                types.SearchAction(
+                    url="#", name="revoke-licence", label="Revoke Licence", icon="icon-undo2"
+                )
+            )
 
     elif rec.status in [st.STOPPED, st.WITHDRAWN]:
-        # TODO: ICMSLST-1004
-        actions.append(types.SearchAction(url="#", name="Reopen Case", icon="icon-redo2"))
+        actions.append(
+            types.SearchAction(
+                url=reverse(
+                    "case:search-reopen-case",
+                    kwargs={"application_pk": rec.pk, "case_type": "import"},
+                ),
+                name="reopen-case",
+                label="Reopen Case",
+                icon="icon-redo2",
+            )
+        )
 
     return actions
 
