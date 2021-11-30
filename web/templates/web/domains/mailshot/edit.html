@@ -51,31 +51,46 @@
       {% endfor %}
 
       <div class="container">
-          <div class="row">
-              <div class="three columns"></div>
-              <div class="eight columns">
-                  <ul class="menu-out flow-across">
-                    <li>
-                      <button type="submit" data-confirm="Are you sure you want to publish this mailshot?" class="primary-button button">
-                        Publish
-                      </button>
-                    </li>
-                    {% if form.instance.status == 'DRAFT' %}
-                      <li>
-                        <button type="submit" name='action' value='save_draft' class="secondary-button button">
-                          Save Draft
-                        </button>
-                      </li>
-                      <li>
-                        <button type="submit" data-confirm="Are you sure you want to cancel this mailshot?" name='action' value='cancel' class="secondary-button button">
-                          Cancel Draft
-                        </button>
-                      </li>
-                    {% endif %}
-                    </ul>
-              </div>
-              <div class="one columns"></div>
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button
+                  {% if not documents.exists() %} disabled {% endif %}
+                                                  name="action" value="publish"
+                                                  type="submit"
+                                                  data-confirm="Are you sure you want to publish this mailshot?"
+                                                  class="primary-button button"
+                >
+                  Publish
+                </button>
+              </li>
+              {% if form.instance.status == 'DRAFT' %}
+                <li>
+                  <button type="submit" name='action' value='save_draft' class="secondary-button button">
+                    Save Draft
+                  </button>
+                </li>
+                <li>
+                  <button type="submit" data-confirm="Are you sure you want to cancel this mailshot?" name='action'
+                          value='cancel' class="secondary-button button">
+                    Cancel Draft
+                  </button>
+                </li>
+              {% endif %}
+            </ul>
           </div>
+          <div class="one columns"></div>
+        </div>
+
+        {% if not documents.exists() %}
+          <div class="info-box info-box-info">Please upload a document before publishing the mailshot.</div>
+        {% endif %}
+
+        {% for error in form.non_field_errors() %}
+          <div class="info-box info-box-error">{{ error }}</div>
+        {% endfor %}
       </div>
 
     {% endcall %}

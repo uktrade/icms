@@ -164,11 +164,25 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
 
             return response
 
+    def publish(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        """Publish mailshot post action."""
+        self.object = self.get_object()
+        form = self.get_form()
+
+        has_documents = self.object.documents.filter(is_active=True).exists()
+
+        if not has_documents:
+            form.add_error(None, "A document must be uploaded before publishing")
+
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
     def save_draft(self, request, **kwargs):
-        """
-        Saves mailshot draft bypassing all validation.
-        """
-        self.object = super().get_object()
+        """Saves mailshot draft post action bypassing all validation."""
+
+        self.object = self.get_object()
         form = self.get_form()
         for field in form:
             field.field.required = False
@@ -178,6 +192,8 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             return super().form_invalid(form)
 
     def cancel(self, request, **kwargs):
+        """Cancel post action"""
+
         mailshot = self.get_object()
         mailshot.status = Mailshot.Statuses.CANCELLED
         mailshot.save()

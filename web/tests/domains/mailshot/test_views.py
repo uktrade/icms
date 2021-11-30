@@ -163,6 +163,49 @@ class MailshotEditViewTest(AuthTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, "/mailshot/")
 
+    def test_publish_fails_with_no_document(self):
+        self.login_with_permissions(["ilb_admin"])
+
+        response = self.client.post(self.url, {"title": "Test", "action": "publish"})
+        self.assertEqual(response.status_code, 200)
+
+        mailshot_form = response.context_data["form"]
+        self.assertFalse(mailshot_form.is_valid())
+        self.assertIn(
+            "A document must be uploaded before publishing", mailshot_form.non_field_errors()
+        )
+
+    def test_valid_publish_redirects_to_list(self):
+        self.login_with_permissions(["ilb_admin"])
+
+        self.mailshot.documents.create(
+            is_active=True,
+            filename="dummy",
+            content_type="dummy",
+            file_size=0,
+            path="dummy",
+            created_by=self.user,
+        )
+        self.mailshot.save()
+
+        response = self.client.post(
+            self.url,
+            {
+                "action": "publish",
+                "title": "Test",
+                "description": "Test Description",
+                "email_subject": "Test email subject",
+                "email_body": "Test email body",
+                "recipients": "importers",
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/mailshot/")
+
+        self.mailshot.refresh_from_db()
+        self.assertEqual(self.mailshot.status, Mailshot.Statuses.PUBLISHED)
+
     def test_page_title(self):
         self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url)
