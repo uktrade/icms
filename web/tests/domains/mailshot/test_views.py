@@ -1,4 +1,5 @@
 from django.db.models import F
+from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.utils import allocate_case_reference
@@ -157,11 +158,13 @@ class MailshotEditViewTest(AuthTestCase):
         self.mailshot.refresh_from_db()
         self.assertEqual(self.mailshot.title, "Test")
 
-    def test_save_draft_redirects_to_list(self):
+    def test_save_draft_redirects_to_edit(self):
         self.login_with_permissions(["ilb_admin"])
         response = self.client.post(self.url, {"title": "Test", "action": "save_draft"})
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, "/mailshot/")
+        self.assertRedirects(
+            response, reverse("mailshot-edit", kwargs={"mailshot_pk": self.mailshot.pk})
+        )
 
     def test_publish_fails_with_no_document(self):
         self.login_with_permissions(["ilb_admin"])

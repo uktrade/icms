@@ -20,8 +20,8 @@
     <div class="three columns"></div>
   </div>
 
-  {{ application_field(object.title, "Title") }}
-  {{ application_field(object.description, "Description") }}
+  {{ application_field(object.title or "", "Title") }}
+  {{ application_field(object.description or "", "Description") }}
 
 
   <div class="row">
@@ -51,9 +51,8 @@
     </div>
     <div class="three columns"></div>
   </div>
-
-  {{ application_field(object.published_datetime.strftime('%d-%b-%Y %H:%M'), "Published Date") }}
-  {{ application_field(object.published_by, "Published By") }}
+  {{ application_field(object.published_datetime.strftime('%d-%b-%Y %H:%M') if object.published_datetime else "", "Published Date") }}
+  {{ application_field(object.published_by or "", "Published By") }}
 </div>
 
 <div class="section-break"></div>

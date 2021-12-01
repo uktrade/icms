@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -130,6 +130,14 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     permission_required = "web.ilb_admin"
     pk_url_kwarg = "mailshot_pk"
 
+    def get_success_url(self):
+        action = self.request.POST.get("action")
+
+        if action and action == "save_draft":
+            return reverse("mailshot-edit", kwargs={"mailshot_pk": self.object.pk})
+
+        return reverse("mailshot-list")
+
     def handle_notification(self, mailshot):
         if mailshot.is_email:
             notify.mailshot(mailshot)
@@ -140,9 +148,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         """
 
         with transaction.atomic():
-            response = super().form_valid(form)
-
-            mailshot = self.get_object()
+            mailshot = form.save(commit=False)
             mailshot.status = Mailshot.Statuses.PUBLISHED
             mailshot.published_datetime = timezone.now()
             mailshot.published_by = self.request.user
@@ -157,12 +163,15 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
                 mailshot.version = models.F("version") + 1
             mailshot.save()
 
-            self.object = mailshot
+        mailshot.refresh_from_db()
+        self.object = mailshot
 
-            if response.status_code == 302 and response.url == self.success_url:
-                self.handle_notification(mailshot)
+        self.handle_notification(mailshot)
 
-            return response
+        # Finally add the success message before returning the response.
+        messages.success(self.request, self.get_success_message(form.cleaned_data))
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def publish(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         """Publish mailshot post action."""
