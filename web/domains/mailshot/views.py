@@ -130,6 +130,14 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     permission_required = "web.ilb_admin"
     pk_url_kwarg = "mailshot_pk"
 
+    def get_success_url(self):
+        action = self.request.POST.get("action")
+
+        if action and action == "save_draft":
+            return reverse("mailshot-edit", args=(self.object.pk,))
+
+        return reverse("mailshot-list")
+
     def handle_notification(self, mailshot):
         if mailshot.is_email:
             notify.mailshot(mailshot)
@@ -175,7 +183,20 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             form.add_error(None, "A document must be uploaded before publishing")
 
         if form.is_valid():
-            return self.form_valid(form)
+            response = self.form_valid(form)
+            # The success message isn't created correctly in form_valid
+            # It says: "Not Yet Assigned published successfully"
+            # Iterate over the messages to clear the success message
+            list(messages.get_messages(request))
+
+            # Refresh the object (with the correct reference)
+            self.object.refresh_from_db()
+
+            # Finally add the success message before returning the response.
+            messages.success(request, self.get_success_message(form.cleaned_data))
+
+            return response
+
         else:
             return self.form_invalid(form)
 
