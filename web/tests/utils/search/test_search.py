@@ -91,7 +91,7 @@ def test_filter_by_application_type(import_fixture_data: FixtureData):
     _create_derogation_application("Derogation ref 2", import_fixture_data)
 
     terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
-    results = search_applications(terms)
+    results = search_applications(terms, import_fixture_data.request.user)
 
     assert results.total_rows == 2
 
@@ -109,21 +109,22 @@ def test_filter_wood(import_fixture_data: FixtureData):
 
     _test_search_by_case_reference(import_fixture_data)
 
-    _test_search_by_applicant_reference()
+    _test_search_by_applicant_reference(import_fixture_data)
 
     _test_search_by_status(
         ImportApplicationType.Types.WOOD_QUOTA,
         ImportApplication.Statuses.SUBMITTED,
+        import_fixture_data.request.user,
         expected=["Wood ref 3", "Wood ref 2", "Wood ref 1"],
     )
 
-    _test_search_by_response_decision()
+    _test_search_by_response_decision(import_fixture_data)
 
     _test_search_by_importer_or_agent_name(import_fixture_data)
 
     _test_search_by_submitted_datetime(import_fixture_data)
 
-    _test_search_by_licence_date()
+    _test_search_by_licence_date(import_fixture_data)
 
 
 def test_order_and_limit_works(import_fixture_data: FixtureData):
@@ -153,7 +154,7 @@ def test_order_and_limit_works(import_fixture_data: FixtureData):
             raise Exception(f"failed to create: {app_ref}")
 
     terms = SearchTerms(case_type="import")
-    search_data = search_applications(terms, limit=5)
+    search_data = search_applications(terms, import_fixture_data.request.user, limit=5)
 
     assert search_data.total_rows == 10
 
@@ -173,7 +174,7 @@ def test_derogation_commodity_details_correct(import_fixture_data: FixtureData):
     app = _create_derogation_application("derogation app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "derogation app 1")
@@ -194,7 +195,7 @@ def test_fa_dfl_commodity_details_correct(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
         app_sub_type=ImportApplicationType.SubTypes.DFL,  # type: ignore[arg-type]
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "fa-dfl app 1")
@@ -214,7 +215,7 @@ def test_fa_oil_commodity_details_correct(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
         app_sub_type=ImportApplicationType.SubTypes.OIL,  # type: ignore[arg-type]
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "fa-oil app 1")
@@ -234,7 +235,7 @@ def test_fa_sil_commodity_details_correct(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
         app_sub_type=ImportApplicationType.SubTypes.SIL,  # type: ignore[arg-type]
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "fa-sil app 1")
@@ -250,7 +251,7 @@ def test_ironsteel_commodity_details_correct(import_fixture_data: FixtureData):
     _create_ironsteel_application("ironsteel app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.IRON_STEEL)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "ironsteel app 1")
@@ -268,7 +269,7 @@ def test_opt_commodity_details_correct(import_fixture_data: FixtureData):
     app = _create_opt_application("opt app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.OPT)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "opt app 1")
@@ -294,7 +295,7 @@ def test_sanctionadhoc_commodity_details_correct(import_fixture_data: FixtureDat
     search_terms = SearchTerms(
         case_type="import", app_type=ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "sanctionsadhoc app 1")
@@ -311,7 +312,7 @@ def test_sps_commodity_details_correct(import_fixture_data: FixtureData):
     app = _create_sps_application("sps app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.SPS)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "sps app 1")
@@ -362,7 +363,7 @@ def test_sps_commodity_details_correct_multiple(import_fixture_data: FixtureData
     )
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.SPS)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 5
     check_application_references(
@@ -414,7 +415,7 @@ def test_textiles_commodity_details_correct(import_fixture_data: FixtureData):
     _create_textiles_application("textiles app 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "textiles app 1")
@@ -434,7 +435,7 @@ def test_wood_commodity_details_correct(import_fixture_data: FixtureData):
     )
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -453,7 +454,7 @@ def _test_fetch_all(import_fixture_data: FixtureData):
     _create_wood_application("Wood ref 2", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA)  # type: ignore[arg-type]
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 2
 
@@ -471,49 +472,51 @@ def _test_search_by_case_reference(import_fixture_data: FixtureData):
     search_terms = SearchTerms(
         case_type="import", app_type=ImportApplicationType.Types.WOOD_QUOTA, case_ref=case_reference  # type: ignore[arg-type]
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "Wood ref 3")
 
 
-def _test_search_by_applicant_reference():
+def _test_search_by_applicant_reference(import_fixture_data: FixtureData):
     """We have Wood ref 1, 2 and 3 when this test is run."""
 
     search_terms = SearchTerms(case_type="import", applicant_ref="wood ref %")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 3
     check_application_references(results.records, "Wood ref 3", "Wood ref 2", "Wood ref 1")
 
     search_terms.applicant_ref = "Wood % 3"
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "Wood ref 3")
 
 
-def _test_search_by_status(app_type: str, case_status: str, expected: list[str]):
+def _test_search_by_status(app_type: str, case_status: str, user: "User", expected: list[str]):
     """Search by status using the records we have already created"""
 
     search_terms = SearchTerms(case_type="import", app_type=app_type, case_status=case_status)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, user)
 
     assert results.total_rows == len(expected)
     check_application_references(results.records, *expected)
 
 
-def _test_export_search_by_status(app_type: str, case_status: str, expected: list[str]):
+def _test_export_search_by_status(
+    app_type: str, case_status: str, user: "User", expected: list[str]
+):
     """Search by status using the records we have already created"""
 
     search_terms = SearchTerms(case_type="export", app_type=app_type, case_status=case_status)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, user)
 
     assert results.total_rows == len(expected)
     check_export_application_case_reference(results.records, *expected)
 
 
-def _test_search_by_response_decision():
+def _test_search_by_response_decision(import_fixture_data: FixtureData):
     submitted_application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 3")
     submitted_application.decision = ApplicationBase.APPROVE
     submitted_application.save()
@@ -523,7 +526,7 @@ def _test_search_by_response_decision():
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         response_decision=ApplicationBase.REFUSE,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -532,7 +535,7 @@ def _test_search_by_response_decision():
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         response_decision=ApplicationBase.APPROVE,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -545,7 +548,7 @@ def _test_search_by_importer_or_agent_name(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         importer_agent_name="Not valid",
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -554,7 +557,7 @@ def _test_search_by_importer_or_agent_name(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         importer_agent_name=import_fixture_data.importer.name,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 3
 
@@ -570,7 +573,7 @@ def _test_search_by_importer_or_agent_name(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         importer_agent_name=import_fixture_data.agent_importer.name,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -587,7 +590,7 @@ def _test_search_by_submitted_datetime(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         submitted_date_start=datetime.date(2020, 1, 2),
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 3
 
@@ -600,7 +603,7 @@ def _test_search_by_submitted_datetime(import_fixture_data: FixtureData):
         submitted_date_start=datetime.date(2020, 1, 1),
         submitted_date_end=datetime.date(2020, 1, 2),
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -617,14 +620,14 @@ def test_search_by_submitted_end_date(import_fixture_data: FixtureData):
         app_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
         submitted_date_end=datetime.date(2020, 1, 2),
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
     check_application_references(results.records, "Wood ref 1")
 
 
-def _test_search_by_licence_date():
+def _test_search_by_licence_date(import_fixture_data: FixtureData):
     # Set the licence dates on a submitted application (26/AUG/2021 - 26/FEB/2022)
     application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 4")
     application.licence_start_date = datetime.date(2021, 8, 26)
@@ -639,7 +642,7 @@ def _test_search_by_licence_date():
         licence_date_end=datetime.date(2022, 2, 26),
     )
 
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -652,7 +655,7 @@ def _test_search_by_licence_date():
         licence_date_start=datetime.date(2021, 8, 27),
         licence_date_end=datetime.date(2022, 2, 26),
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -663,7 +666,7 @@ def _test_search_by_licence_date():
         licence_date_start=datetime.date(2021, 8, 26),
         licence_date_end=datetime.date(2022, 2, 25),
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -677,7 +680,7 @@ def test_get_search_results_spreadsheet(import_fixture_data: FixtureData):
     _create_fa_dfl_application("fa-dfl ref 1", import_fixture_data)
 
     search_terms = SearchTerms(case_type="import")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 6
     check_application_references(
@@ -750,7 +753,7 @@ def test_get_export_search_results_spreadsheet(export_fixture_data: ExportFixtur
     com = _create_com_application(export_fixture_data)
 
     search_terms = SearchTerms(case_type="export")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 3
 
@@ -800,27 +803,27 @@ def test_case_statuses(import_fixture_data: FixtureData):
 
     wt = ImportApplicationType.Types.WOOD_QUOTA
     st = ImportApplication.Statuses
-
-    _test_search_by_status(wt, st.COMPLETED, expected=["completed"])
+    user = import_fixture_data.request.user
+    _test_search_by_status(wt, st.COMPLETED, user, expected=["completed"])
 
     # TODO: ICMSLST-1105 filter Oustanding Open Requests
     # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
 
-    _test_search_by_status(wt, st.PROCESSING, expected=["update", "fir", "processing"])
-    _test_search_by_status(wt, "FIR_REQUESTED", expected=["fir"])
+    _test_search_by_status(wt, st.PROCESSING, user, expected=["update", "fir", "processing"])
+    _test_search_by_status(wt, "FIR_REQUESTED", user, expected=["fir"])
 
     # TODO: ICMSLST-1104: filter SIGL
     # _test_search_by_status(wt, scs.PROCESSING_SIGL, "sigl")
 
-    _test_search_by_status(wt, "UPDATE_REQUESTED", expected=["update"])
-    _test_search_by_status(wt, st.REVOKED, expected=["revoked"])
-    _test_search_by_status(wt, st.STOPPED, expected=["stopped"])
-    _test_search_by_status(wt, st.SUBMITTED, expected=["submitted"])
-    _test_search_by_status(wt, st.VARIATION_REQUESTED, expected=["variation"])
-    _test_search_by_status(wt, st.WITHDRAWN, expected=["withdrawn"])
+    _test_search_by_status(wt, "UPDATE_REQUESTED", user, expected=["update"])
+    _test_search_by_status(wt, st.REVOKED, user, expected=["revoked"])
+    _test_search_by_status(wt, st.STOPPED, user, expected=["stopped"])
+    _test_search_by_status(wt, st.SUBMITTED, user, expected=["submitted"])
+    _test_search_by_status(wt, st.VARIATION_REQUESTED, user, expected=["variation"])
+    _test_search_by_status(wt, st.WITHDRAWN, user, expected=["withdrawn"])
 
     with pytest.raises(NotImplementedError):
-        _test_search_by_status(wt, "unknown status", ["should raise"])
+        _test_search_by_status(wt, "unknown status", user, ["should raise"])
 
 
 def test_export_case_statuses(export_fixture_data: ExportFixtureData):
@@ -836,9 +839,13 @@ def test_export_case_statuses(export_fixture_data: ExportFixtureData):
     cfs.save()
     cfs.case_emails.create(status=CaseEmail.Status.OPEN)
 
-    _test_export_search_by_status(ExportApplicationType.Types.GMP, "BEIS", expected=[gmp.reference])
+    user = export_fixture_data.request.user
+
     _test_export_search_by_status(
-        ExportApplicationType.Types.FREE_SALE, "HSE", expected=[cfs.reference]
+        ExportApplicationType.Types.GMP, "BEIS", user, expected=[gmp.reference]
+    )
+    _test_export_search_by_status(
+        ExportApplicationType.Types.FREE_SALE, "HSE", user, expected=[cfs.reference]
     )
 
 
@@ -848,7 +855,7 @@ def test_search_by_export_applications(export_fixture_data: ExportFixtureData):
     gmp_app = _create_gmp_application(export_fixture_data)
 
     search_terms = SearchTerms(case_type="export")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 3
     check_export_application_case_reference(
@@ -869,7 +876,7 @@ def test_search_by_app_type(export_fixture_data: ExportFixtureData):
 
     for (ref, app_type) in ref_type_pairs:
         search_terms = SearchTerms(case_type="export", app_type=app_type)
-        results = search_applications(search_terms)
+        results = search_applications(search_terms, export_fixture_data.request.user)
 
         assert results.total_rows == 1, f"Failed: {ref} - {app_type}"
         check_export_application_case_reference(results.records, ref)
@@ -880,7 +887,7 @@ def test_export_search_by_exporter_or_agent(export_fixture_data: ExportFixtureDa
     search_terms = SearchTerms(
         case_type="export", exporter_agent_name=export_fixture_data.exporter.name
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, cfs_app.reference)
@@ -892,13 +899,13 @@ def test_export_search_by_exporter_or_agent(export_fixture_data: ExportFixtureDa
     search_terms = SearchTerms(
         case_type="export", exporter_agent_name=export_fixture_data.agent_exporter.name
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, cfs_app.reference)
 
     search_terms = SearchTerms(case_type="export", exporter_agent_name="Not valid")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -921,19 +928,19 @@ def test_export_search_by_certificate_country(export_fixture_data: ExportFixture
     cfs_app2.countries.add(yemen.first())
 
     search_terms = SearchTerms(case_type="export", certificate_country=aruba)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 2
     check_export_application_case_reference(results.records, cfs_app2.reference, cfs_app.reference)
 
     search_terms = SearchTerms(case_type="export", certificate_country=yemen)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, cfs_app2.reference)
 
     search_terms = SearchTerms(case_type="export", certificate_country=aruba_and_yemen)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 2
     check_export_application_case_reference(results.records, cfs_app2.reference, cfs_app.reference)
@@ -948,18 +955,18 @@ def test_export_search_by_manufacture_country(export_fixture_data: ExportFixture
     peru_and_yemen = Country.objects.filter(name__in=["Peru", "Yemen"])
 
     search_terms = SearchTerms(case_type="export", manufacture_country=peru)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, app.reference)
 
     search_terms = SearchTerms(case_type="export", manufacture_country=yemen)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 0
 
     search_terms = SearchTerms(case_type="export", manufacture_country=peru_and_yemen)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, app.reference)
@@ -968,7 +975,7 @@ def test_export_search_by_manufacture_country(export_fixture_data: ExportFixture
 def test_export_search_by_pending_firs(export_fixture_data: ExportFixtureData):
     com_app = _create_com_application(export_fixture_data)
     search_terms = SearchTerms(case_type="export", pending_firs=YesNoChoices.yes)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 0
 
@@ -976,7 +983,7 @@ def test_export_search_by_pending_firs(export_fixture_data: ExportFixtureData):
         status=FurtherInformationRequest.OPEN, process_type=FurtherInformationRequest.PROCESS_TYPE
     )
 
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, com_app.reference)
@@ -985,13 +992,13 @@ def test_export_search_by_pending_firs(export_fixture_data: ExportFixtureData):
 def test_export_search_by_pending_update_reqs(export_fixture_data: ExportFixtureData):
     com_app = _create_com_application(export_fixture_data)
     search_terms = SearchTerms(case_type="export", pending_update_reqs=YesNoChoices.yes)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 0
 
     com_app.update_requests.create(status=UpdateRequest.Status.OPEN)
 
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, com_app.reference)
@@ -1002,7 +1009,7 @@ def test_export_returns_in_progress_applications(export_fixture_data: ExportFixt
     submitted_gmp_app = _create_gmp_application(export_fixture_data)
 
     search_terms = SearchTerms(case_type="export")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 2
 
@@ -1013,7 +1020,7 @@ def test_export_returns_in_progress_applications(export_fixture_data: ExportFixt
     assert results.records[1].status == "In Progress"
 
     search_terms = SearchTerms(case_type="export", case_status=ApplicationBase.Statuses.IN_PROGRESS)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, "Not Assigned")
@@ -1051,7 +1058,7 @@ def test_wildcard_search(import_fixture_data: FixtureData, case_ref_pattern, sho
     not_match_app.save()
 
     search_terms = SearchTerms(case_type="import", case_ref=case_ref_pattern)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     if should_match:
         assert results.total_rows == 1
@@ -1072,7 +1079,7 @@ def test_case_reference_wildcard_any(
     gmp_app = _create_gmp_application(export_fixture_data)
 
     search_terms = SearchTerms(case_type="import", case_ref="%")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 2
     check_application_references(
@@ -1080,7 +1087,7 @@ def test_case_reference_wildcard_any(
     )
 
     search_terms = SearchTerms(case_type="export", case_ref="%")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, gmp_app.reference)
@@ -1096,18 +1103,18 @@ def test_search_by_application_contact(
     name_search = f"{import_fixture_data.importer_user.first_name}%"
 
     search_terms = SearchTerms(case_type="import", application_contact=name_search)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "wood-applicant-reference")
 
     search_terms.application_contact = "Not valid"
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
     assert results.total_rows == 0
 
     name_search = f"%{export_fixture_data.exporter_user.last_name}"
     search_terms = SearchTerms(case_type="export", application_contact=name_search)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, gmp_app.reference)
@@ -1119,12 +1126,12 @@ def test_import_search_by_licence_type(import_fixture_data):
     wood.save()
 
     search_terms = SearchTerms(case_type="import", licence_type="electronic")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 0
 
     search_terms = SearchTerms(case_type="import", licence_type="paper")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
 
@@ -1139,7 +1146,7 @@ def test_import_search_by_chief_usage_status(import_fixture_data):
         wood.save()
 
         search_terms = SearchTerms(case_type="import", chief_usage_status=value)
-        results = search_applications(search_terms)
+        results = search_applications(search_terms, import_fixture_data.request.user)
 
         assert results.total_rows == 1
         check_application_references(results.records, "wood-app-ref")
@@ -1155,31 +1162,31 @@ def test_import_country_searches(import_fixture_data):
     consignment_country_multiple = Country.objects.filter(name__in=["Azerbaijan", "Aruba"])
 
     search_terms = SearchTerms(case_type="import", origin_country=origin_country)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "fa-sil-app")
 
     search_terms = SearchTerms(case_type="import", origin_country=origin_country_multiple)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "fa-sil-app")
 
     search_terms = SearchTerms(case_type="import", consignment_country=consignment_country)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "fa-sil-app")
 
     search_terms = SearchTerms(case_type="import", consignment_country=consignment_country_multiple)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "fa-sil-app")
 
     search_terms = SearchTerms(case_type="import", consignment_country=origin_country)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 0
 
     search_terms = SearchTerms(case_type="import", origin_country=consignment_country)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 0
 
 
@@ -1195,19 +1202,19 @@ def test_import_search_by_shipping_year(import_fixture_data):
     _create_wood_application("wood_two-app-ref", import_fixture_data, shipping_year=2024)
 
     search_terms = SearchTerms(case_type="import", shipping_year="2022")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 3
     check_application_references(
         results.records, "wood-app-ref", "textiles-app-ref", "iron-app-ref"
     )
 
     search_terms.shipping_year = "2023"
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "textiles_two-app-ref")
 
     search_terms.shipping_year = "2024"
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "wood_two-app-ref")
 
@@ -1234,7 +1241,7 @@ def test_import_search_by_goods_category(import_fixture_data):
         group = CommodityGroup.objects.get(group_code=group_code)
 
         search_terms = SearchTerms(case_type="import", goods_category=group)
-        results = search_applications(search_terms)
+        results = search_applications(search_terms, import_fixture_data.request.user)
         assert results.total_rows == 1
         check_application_references(results.records, app_ref)
 
@@ -1252,19 +1259,19 @@ def test_import_search_by_goods_category(import_fixture_data):
     chapter_97 = CommodityGroup.objects.get(group_name=FirearmCommodity.EX_CHAPTER_97.label)
 
     search_terms = SearchTerms(case_type="import", goods_category=chapter_93)
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 2
     check_application_references(results.records, "fa-sil-ref", "fa-dfl-ref")
 
     search_terms.goods_category = chapter_97
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "fa-oil-ref")
 
     search_terms.goods_category = None
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 6
 
 
@@ -1288,7 +1295,7 @@ def test_import_search_by_commodity_code(import_fixture_data):
 
     # Check single wildcard returns all apps
     search_terms = SearchTerms(case_type="import", commodity_code="%")
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 7
 
     # Search for one record by app type
@@ -1297,7 +1304,7 @@ def test_import_search_by_commodity_code(import_fixture_data):
         commodity_code="xx111111xx",
         app_type=ImportApplicationType.Types.DEROGATION,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
     assert results.total_rows == 1
     check_application_references(results.records, "derogation-app")
 
@@ -1323,7 +1330,7 @@ def test_import_search_by_commodity_code(import_fixture_data):
 
     for search_term, app_ref in search_pairs:
         search_terms = SearchTerms(case_type="import", commodity_code=search_term)
-        results = search_applications(search_terms)
+        results = search_applications(search_terms, import_fixture_data.request.user)
 
         assert results.total_rows == 1
         check_application_references(results.records, app_ref)
@@ -1360,7 +1367,7 @@ def test_reassignment_search(
         case_type="import",
         reassignment_search=True,
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 2
     check_application_references(results.records, "textiles-app-1", "wood-app-1")
@@ -1372,7 +1379,7 @@ def test_reassignment_search(
     search_terms = SearchTerms(
         case_type="import", reassignment_search=True, reassignment_user=test_icms_admin_user
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_application_references(results.records, "wood-app-1")
@@ -1382,7 +1389,7 @@ def test_reassignment_search(
     search_terms = SearchTerms(
         case_type="export", reassignment_search=True, reassignment_user=test_icms_admin_user
     )
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 0
     take_ownership_url = reverse(
@@ -1391,7 +1398,7 @@ def test_reassignment_search(
     response = client.post(take_ownership_url)
     assert response.status_code == 302
 
-    results = search_applications(search_terms)
+    results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, gmp_app.reference)

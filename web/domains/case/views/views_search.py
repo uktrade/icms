@@ -64,7 +64,7 @@ def search_cases(
         if form.is_valid():
             show_search_results = True
             terms = _get_search_terms_from_form(case_type, form)
-            results = search_applications(terms)
+            results = search_applications(terms, request.user)
 
             total_rows = results.total_rows
             search_records = results.records
@@ -138,7 +138,7 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
     response = HttpResponse(content_type=mime_type)
 
     terms = _get_search_terms_from_form(case_type, form)
-    results = search_applications(terms)
+    results = search_applications(terms, request.user)
     search_spreadsheet = get_search_results_spreadsheet(case_type, results)
     response.write(search_spreadsheet)
 
