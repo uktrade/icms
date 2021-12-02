@@ -13,6 +13,7 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import ApplicationBase, CaseEmail, UpdateRequest
 from web.domains.case.types import ImpOrExpT
 from web.domains.commodity.models import Commodity
+from web.domains.user.models import User
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
@@ -26,7 +27,9 @@ if TYPE_CHECKING:
 from . import app_data, types, utils
 
 
-def search_applications(terms: types.SearchTerms, limit: int = 200) -> types.SearchResults:
+def search_applications(
+    terms: types.SearchTerms, user: User, limit: int = 200
+) -> types.SearchResults:
     """Main search function used to find applications.
 
     Returns records matching the supplied search terms.
@@ -39,7 +42,7 @@ def search_applications(terms: types.SearchTerms, limit: int = 200) -> types.Sea
 
     for queryset in _get_search_records(app_pks_and_types[:limit]):
         for rec in queryset:
-            row = get_result_row(rec)  # type:ignore[arg-type]
+            row = get_result_row(rec, user)  # type:ignore[arg-type]
             records.append(row)  # type:ignore[arg-type]
 
     # Sort the records by order_by_datetime DESC (submitted date or created date)
@@ -168,6 +171,7 @@ def get_wildcard_filter(field: str, search_pattern: str) -> models.Q:
     return models.Q(**search)
 
 
+# TODO: ICMSLST-1240 Add permission checks - Restrict the search to the records the user can access
 def _get_search_ids_and_types(terms: types.SearchTerms) -> list[types.ProcessTypeAndPK]:
     """Search ImportApplication records to find records matching the supplied terms.
 
@@ -220,7 +224,7 @@ def _get_search_records(
         yield search_func(search_ids)
 
 
-def _get_result_row(rec: ImportApplication) -> types.ImportResultRow:
+def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow:
     """Process the incoming application and return a result row."""
 
     start_date = rec.licence_start_date.strftime("%d %b %Y") if rec.licence_start_date else None
@@ -272,14 +276,14 @@ def _get_result_row(rec: ImportApplication) -> types.ImportResultRow:
             assignee_name=assignee_name,
             reassignment_date=reassignment_date,
         ),
-        actions=get_import_record_actions(rec),
+        actions=get_import_record_actions(rec, user),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
     return row
 
 
-def _get_export_result_row(rec: ExportApplication) -> types.ExportResultRow:
+def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportResultRow:
     app_type_label = ProcessTypes(rec.process_type).label
     application_contact = rec.contact.full_name if rec.contact else ""
     submitted_at = rec.submit_datetime.strftime("%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
@@ -319,7 +323,7 @@ def _get_export_result_row(rec: ExportApplication) -> types.ExportResultRow:
             reassignment_date=reassignment_date,
         ),
         agent_name=rec.agent.name if rec.agent else None,
-        actions=get_export_record_actions(rec),
+        actions=get_export_record_actions(rec, user),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
@@ -327,7 +331,7 @@ def _get_export_result_row(rec: ExportApplication) -> types.ExportResultRow:
 def _get_certificate_references(rec: ExportApplication) -> list[str]:
     """Retrieve the certificate references."""
 
-    # TODO: Revisit when implementing ICMSLST-1138
+    # TODO: Revisit when implementing ICMSLST-1223
     if rec.process_type == ProcessTypes.CFS:
         certificates = ["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"]
     elif rec.process_type == ProcessTypes.COM:
@@ -392,7 +396,7 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
         # TODO: Revisit when implementing ICMSLST-1048
         # Need to wildcard match on the licence_reference field for Import Application's
 
-        # TODO: Revisit when implementing ICMSLST-1138
+        # TODO: Revisit when implementing ICMSLST-1223
         # We need to search one or more certificate references (No model field yet)
 
         raise NotImplementedError("Searching by Licence Reference isn't supported yet")
@@ -715,13 +719,19 @@ def _get_export_spreadsheet_rows(
         )
 
 
-def get_import_record_actions(rec: "ImportApplication") -> list[types.SearchAction]:
+def get_import_record_actions(rec: "ImportApplication", user: User) -> list[types.SearchAction]:
     """Get the available actions for the supplied import application.
 
     :param rec: Import Application record.
+    :param user: User performing search
     """
     st = ImportApplication.Statuses
     actions = []
+
+    # TODO: ICMSLST-1240: Add actions for Exporter / Exporter agents
+    # Standard User (importer/agent) actions:
+    #   Status = COMPLETED
+    #       Request Variation
 
     if rec.status == ImportApplication.Statuses.COMPLETED:
         # TODO: ICMSLST-686
@@ -763,11 +773,57 @@ def get_import_record_actions(rec: "ImportApplication") -> list[types.SearchActi
     return actions
 
 
-# TODO: ICMSLST-1207
-def get_export_record_actions(rec: "ExportApplication") -> list[types.SearchAction]:
+def get_export_record_actions(rec: "ExportApplication", user: User) -> list[types.SearchAction]:
     """Get the available actions for the supplied export application.
 
     :param rec: Export Application record.
+    :param user: User performing search
     """
 
-    return []
+    st = ExportApplication.Statuses
+    actions: list[types.SearchAction] = []
+
+    # TODO: ICMSLST-1240: Add actions for Exporter / Exporter agents
+    # Exporter / Exporter’s Agent actions:
+    #   Status != STOPPED or WITHDRAWN:
+    #       Copy Application
+    #       Create Template
+
+    if rec.status == st.COMPLETED:
+        # TODO: ICMSLST-1005
+        actions.append(
+            types.SearchAction(
+                url="#", name="open-variation", label="Open Variation", icon="icon-redo2"
+            )
+        )
+
+        # TODO: ICMSLST-1006
+        # TODO: Revisit when implementing ICMSLST-1223
+        # Determine whether the Revoke Certificates should appear or not
+        actions.append(
+            types.SearchAction(
+                url="#", name="revoke-certificates", label="Revoke Certificates", icon="icon-undo2"
+            )
+        )
+
+    if rec.status in [st.STOPPED, st.WITHDRAWN]:
+        # TODO: ICMSLST-1213
+        actions.append(
+            types.SearchAction(url="#", name="reopen-case", label="Reopen Case", icon="icon-redo2")
+        )
+    else:
+        # TODO: ICMSLST-1002/ICMSLST-1226 (Depending on which ticket we do)
+        actions.append(
+            types.SearchAction(
+                url="#", name="copy-application", label="Copy Application", icon="icon-copy"
+            )
+        )
+
+        # TODO: ICMSLST-1241
+        actions.append(
+            types.SearchAction(
+                url="#", name="create-template", label="Create Template", icon="icon-magic-wand"
+            )
+        )
+
+    return actions
