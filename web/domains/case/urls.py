@@ -40,6 +40,11 @@ search_urls = [
                     views_search.ReopenApplicationView.as_view(),
                     name="search-reopen-case",
                 ),
+                path(
+                    "request-variation",
+                    views_search.RequestVariationUpdateView.as_view(),
+                    name="search-request-variation",
+                ),
             ]
         ),
     ),

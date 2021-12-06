@@ -1,6 +1,5 @@
 from typing import Any, ClassVar, Optional
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import timezone
@@ -12,12 +11,7 @@ from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 
-class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleObjectMixin, View):
-    """View for updating an application.
-
-    Supports checking and updating status and the current active task
-    """
-
+class ApplicationTaskMixin(SingleObjectMixin, View):
     # Application record
     application: ImpOrExp
 
@@ -40,6 +34,15 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
     # The next task type to set
     next_task_type: ClassVar[str]
 
+    http_method_names = ["get", "post"]
+
+    def __init__(self, *args, **kwargs):
+        self.task = None
+        # self.application = None  # FIXME
+        self.object = None
+
+        super().__init__(*args, **kwargs)
+
     def setup(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         for attr in ["current_status", "next_status", "next_task_type"]:
             if not hasattr(self, attr):
@@ -47,25 +50,19 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
 
         return super().setup(request, *args, **kwargs)
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
-        """Set the `application` and `task` instance attributes.
-
-        Done here to allow the `post` action to be wrapped in a transaction block.
-        """
-
+    def set_application_and_task(self):
         self.application = self.get_object()
         self.task = self.get_task()
 
-    def get_queryset(self) -> models.QuerySet:
-        """Return the model instance ready for update."""
-
-        return self.model.objects.select_for_update().all()
+        # TODO ICMSLST-1240: a method could be called / overridden here.
+        # self.check_application_permission()
 
     def get_object(self, queryset: models.QuerySet = None) -> ImpOrExp:
         """Downcast to specific model class."""
 
         application = super().get_object(queryset).get_specific_model()
         application.check_expected_status(self.current_status)
+        self.object = application
 
         return application
 
@@ -73,11 +70,21 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
         """Load the current task"""
 
         if not self.current_task:
-            task = self.application.get_active_task()
+            task = self.application.get_active_task()  # TODO: maybe select_for_update
         else:
-            task = self.application.get_expected_task(self.current_task)
+            task = self.application.get_expected_task(
+                self.current_task, select_for_update=self.is_post
+            )
 
         return task
+
+    def get_queryset(self) -> models.QuerySet:
+        """Return the model instance ready for update."""
+
+        if self.is_post:
+            return self.model.objects.select_for_update().all()
+
+        return self.model.objects.all()
 
     def update_application_status(self, commit: bool = True) -> None:
         """Set the application status to the next status"""
@@ -99,3 +106,19 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
         Task.objects.create(
             process=self.application, task_type=self.next_task_type, previous=self.task
         )
+
+    def get(self, request, *args, **kwargs):
+        self.set_application_and_task()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.set_application_and_task()
+        return super().post(request, *args, **kwargs)
+
+    @property
+    def is_post(self):
+        return self.request.method.lower() == "post"
+
+    @property
+    def is_get(self):
+        return self.request.method.lower() == "get"

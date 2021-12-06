@@ -1,12 +1,14 @@
 from typing import TYPE_CHECKING, Type, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import FormView, View
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
@@ -25,7 +27,10 @@ from web.utils.search import (
     get_search_results_spreadsheet,
     search_applications,
 )
-from .mixins import ApplicationUpdateView
+
+from ..forms import RequestVariationForm
+from ..models import VariationRequest
+from .mixins import ApplicationTaskMixin
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -148,7 +153,9 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
 
 
 @method_decorator(transaction.atomic, name="post")
-class ReopenApplicationView(ApplicationUpdateView):
+class ReopenApplicationView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
     permission_required = ["web.ilb_admin"]
 
     current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
@@ -160,8 +167,7 @@ class ReopenApplicationView(ApplicationUpdateView):
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         """Reopen the application."""
 
-        super().post(request, *args, **kwargs)
-
+        self.set_application_and_task()
         self.update_application_status(commit=False)
         self.application.case_owner = None
         self.application.save()
@@ -169,6 +175,52 @@ class ReopenApplicationView(ApplicationUpdateView):
         self.update_application_tasks()
 
         return HttpResponse(status=204)
+
+
+@method_decorator(transaction.atomic, name="post")
+class RequestVariationUpdateView(ApplicationTaskMixin, FormView):
+    # ICMSLST-1240 Need to revisit permissions when they become more clear
+    permission_required = ["web.ilb_admin"]
+
+    # Task Config
+    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_task = None
+
+    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_task_type = Task.TaskType.PROCESS
+
+    # Form config
+    form_class = RequestVariationForm
+
+    # TODO: Redirect to a list view of variation requests
+    success_url = reverse_lazy("workbasket")
+
+    # template config
+    template_name = "web/domains/case/request-variation.html"
+
+    def get_initial(self):
+        # TODO: Test these are saved
+        return {
+            "status": VariationRequest,
+            "requested_by": self.request.user,
+        }
+
+    # def get_success_url(self):
+    #     return reverse(
+    #         "case:search-request-variation", kwargs={
+    #             "application_pk": self.application.pk, "case_type": self.kwargs["case_type"]
+    #         }
+    #     )
+
+    def form_valid(self, form):
+        """If the form is valid, redirect to the supplied URL."""
+
+        variation_request = form.save()
+        self.application.variation_requests.add(variation_request)
+
+        self.update_application_status()
+
+        return super().form_valid(form)
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

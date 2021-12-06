@@ -1,12 +1,18 @@
 <ul class="menu-out">
   {% for action in rec.actions  %}
     <li>
-      <form method="post" action="{{ action.url }}" class="{{ action.name }}">
-        {{ csrf_input }}
-        <button type="submit" class="link-button {{ action.icon }} button">
+      {% if action.is_post %}
+        <form method="post" action="{{ action.url }}" class="{{ action.name }}">
+          {{ csrf_input }}
+          <button type="submit" class="link-button {{ action.icon }} button">
+            {{ action.label }}
+          </button>
+        </form>
+      {% else %}
+        <a href="{{ action.url }}" target="_blank" class="{{ action.name }} link-button {{ action.icon }} button">
           {{ action.label }}
-        </button>
-      </form>
+        </a>
+      {% endif %}
     </li>
   {% endfor %}
 </ul>

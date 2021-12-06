@@ -58,14 +58,14 @@ class Process(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(blank=True, null=True)
 
-    def get_expected_task(self, task_type: str) -> "Task":
+    def get_expected_task(self, task_type: str, *, select_for_update=True) -> "Task":
         """Get the expected active current task"""
 
         if not self.is_active:
             raise errors.ProcessInactiveError("Process is not active")
 
         try:
-            task = self.get_active_tasks().get(task_type=task_type)
+            task = self.get_active_tasks(select_for_update).get(task_type=task_type)
 
         except (ObjectDoesNotExist, MultipleObjectsReturned) as exc:
             raise errors.TaskError(f"Failed to get expected task: {task_type}") from exc
@@ -119,7 +119,7 @@ class Process(models.Model):
 
         return tasks[0]
 
-    def get_active_tasks(self) -> "QuerySet[Task]":
+    def get_active_tasks(self, select_for_update=True) -> "QuerySet[Task]":
         """Get all active task for current process.
 
         NOTE: This locks the tasks for update, so make sure there is an
@@ -127,7 +127,10 @@ class Process(models.Model):
 
         Useful when soft deleting a process.
         """
-        return self.tasks.filter(is_active=True).select_for_update()
+
+        tasks = self.tasks.filter(is_active=True)
+
+        return tasks.select_for_update() if select_for_update else tasks
 
     def get_active_task(self) -> "Optional[Task]":
         """Get the only active task attached to this process. If there is more
