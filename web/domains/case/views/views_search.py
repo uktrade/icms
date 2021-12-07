@@ -1,11 +1,12 @@
 from typing import TYPE_CHECKING, Type, Union
+from urllib import parse
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
@@ -178,49 +179,82 @@ class ReopenApplicationView(
 
 
 @method_decorator(transaction.atomic, name="post")
-class RequestVariationUpdateView(ApplicationTaskMixin, FormView):
+class RequestVariationUpdateView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
+):
     # ICMSLST-1240 Need to revisit permissions when they become more clear
+    # PermissionRequiredMixin config
     permission_required = ["web.ilb_admin"]
 
-    # Task Config
+    # ApplicationTaskMixin Config
     current_status = [ApplicationBase.Statuses.COMPLETED]
     current_task = None
-
     next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
     next_task_type = Task.TaskType.PROCESS
 
-    # Form config
+    # FormView config
     form_class = RequestVariationForm
-
-    # TODO: Redirect to a list view of variation requests
-    success_url = reverse_lazy("workbasket")
-
-    # template config
     template_name = "web/domains/case/request-variation.html"
 
-    def get_initial(self):
-        # TODO: Test these are saved
-        return {
-            "status": VariationRequest,
-            "requested_by": self.request.user,
-        }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
-    # def get_success_url(self):
-    #     return reverse(
-    #         "case:search-request-variation", kwargs={
-    #             "application_pk": self.application.pk, "case_type": self.kwargs["case_type"]
-    #         }
-    #     )
+        return context | {"search_results_url": self.get_success_url()}
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
 
-        variation_request = form.save()
-        self.application.variation_requests.add(variation_request)
+        variation_request: VariationRequest = form.save(commit=False)
 
+        # Refactor to TextChoice
+        variation_request.status = VariationRequest.DRAFT
+        variation_request.requested_by = self.request.user
+
+        self.application.variation_requests.add(variation_request)
         self.update_application_status()
 
         return super().form_valid(form)
+
+    def get_success_url(self):
+        """Upon submitting a valid variation request return to the search screen."""
+
+        if self.request.GET.get("return_url", None):
+            return self._get_return_url()
+
+        # Default to search with variation requested
+        if self.application.is_import_application():
+            case_type = "import"
+        else:
+            case_type = "export"
+
+        search_url = reverse(
+            "case:search-results", kwargs={"case_type": case_type, "mode": "standard"}
+        )
+        query_params = {"case_status": self.application.Statuses.VARIATION_REQUESTED}
+
+        return "".join((search_url, "?", parse.urlencode(query_params)))
+
+    def _get_return_url(self):
+        """Check for a return_url query param and rebuild the search request."""
+
+        url = self.request.GET.get("return_url", None)
+        return_url: parse.ParseResult = parse.urlparse(url)
+
+        is_import = "case/import/" in return_url.path
+        is_standard = "search/standard/" in return_url.path
+
+        search_url = reverse(
+            "case:search-results",
+            kwargs={
+                "case_type": "import" if is_import else "export",
+                "mode": "standard" if is_standard else "advanced",
+            },
+        )
+
+        if return_url.query:
+            search_url = "".join((search_url, "?", return_url.query))
+
+        return search_url
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from urllib import parse
 
 import pytz
 from compressor.contrib.jinja2ext import CompressorExtension
@@ -85,6 +86,11 @@ def verbose_name(obj: Model, field_name: str) -> str:
     return getattr(field, "verbose_name", field.name)
 
 
+# TODO: Decide if we are doing this
+def quote_plus(url):
+    return parse.quote_plus(url)
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -101,5 +107,6 @@ def environment(**options):
     env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
     env.filters["verbose_name"] = verbose_name
+    env.filters["quote_plus"] = quote_plus
 
     return env

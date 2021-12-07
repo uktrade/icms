@@ -12,9 +12,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('workbasket') }}" class="prev-link">
-          Workbasket
-        </a>
+        <a href="{{ search_results_url }}" class="prev-link">Search Results</a>
       </li>
     </ul>
   </div>
@@ -25,7 +23,7 @@
 
 {% block main_content %}
 
-  <table width="100%">
+  <table style="width: 100%">
     <tbody>
       <tr>
         <td><h3>Variation Requests</h3></td>
@@ -74,6 +72,8 @@
           <hr>
         </td>
       </tr>
+
+      {# TODO: ICMSLST-1236 Add previous variation requests here #}
     </tbody>
   </table>
 {% endblock %}

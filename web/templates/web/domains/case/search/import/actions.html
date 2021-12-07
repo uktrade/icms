@@ -9,7 +9,7 @@
           </button>
         </form>
       {% else %}
-        <a href="{{ action.url }}" target="_blank" class="{{ action.name }} link-button {{ action.icon }} button">
+        <a href="{{ action.url + "?return_url=" + request.get_full_path()|quote_plus }}" class="{{ action.name }} link-button {{ action.icon }} button">
           {{ action.label }}
         </a>
       {% endif %}
