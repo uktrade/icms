@@ -18,6 +18,9 @@ window.addEventListener('load', function(event) {
     });
   });
 
+  /* strips empty search values */
+  setupSearchFormEventHandler();
+
   setupDownloadSpreadsheetEventHandler({
     downloadId: "#download-search-spreadsheet",
     searchFormId: "#search-application-form",

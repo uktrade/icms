@@ -14,6 +14,9 @@ window.addEventListener('load', function (event) {
     warningId: "#spreadsheet-download-warning"
   });
 
+  /* strips empty search values */
+  setupSearchFormEventHandler();
+
   /* Reassignment handlers */
   setupReassignFormEventHandler();
   const selectAllBtn = document.querySelector("#select-all-records");

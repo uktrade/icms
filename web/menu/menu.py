@@ -181,12 +181,12 @@ class Menu:
                         SubMenuLink(
                             label="Search Import Applications",
                             view="case:search",
-                            kwargs={"case_type": "import"},
+                            kwargs={"case_type": "import", "mode": "standard"},
                         ),
                         SubMenuLink(
                             label="Search Certificate Applications",
                             view="case:search",
-                            kwargs={"case_type": "export"},
+                            kwargs={"case_type": "export", "mode": "standard"},
                         ),
                         SubMenuLink(label="Manage IMI Cases", view="import:imi-case-list"),
                     ]

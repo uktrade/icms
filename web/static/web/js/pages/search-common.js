@@ -3,6 +3,32 @@ Common code for import and export application search pages.
 */
 
 
+function submitSearchForm(searchForm) {
+  const inputs = searchForm.querySelectorAll("input, select");
+
+  /* Disabling prevents empty values being submitted */
+  inputs.forEach(
+    function (input) {
+      if (!input.value) {
+        input.disabled = true;
+      }
+    }
+  );
+
+  searchForm.submit();
+}
+
+const setupSearchFormEventHandler = function () {
+  const searchForm = document.querySelector("#search-application-form");
+
+  searchForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    submitSearchForm(searchForm);
+  });
+}
+
+
 const setupReassignFormEventHandler = function() {
   const reassignForm = document.querySelector("#reassign-to-form");
   const searchForm = document.querySelector("#search-application-form");
@@ -37,7 +63,7 @@ const setupReassignFormEventHandler = function() {
           showReassignError(true);
         } else {
           // resubmit the search form to update the results
-          searchForm.submit();
+          submitSearchForm(searchForm)
         }
       })
       .catch(function() { showReassignError(true) });
@@ -82,7 +108,7 @@ const setupReopenCaseFormHandlers = function () {
             showReopenCaseWarning(true);
           } else {
             // resubmit the search form to update the results
-            searchForm.submit();
+            submitSearchForm(searchForm);
           }
       })
         .catch(function () { showReopenCaseWarning(true) });

@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
@@ -24,7 +25,6 @@ from web.utils.search import (
     get_search_results_spreadsheet,
     search_applications,
 )
-
 from .mixins import ApplicationUpdateView
 
 if TYPE_CHECKING:
@@ -39,10 +39,11 @@ SearchForm = Union[
 SearchFormT = Type[SearchForm]
 
 
+@require_GET
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def search_cases(
-    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "normal"
+    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "standard", get_results=False
 ) -> HttpResponse:
 
     if mode == "advanced":
@@ -58,26 +59,25 @@ def search_cases(
     search_records = []
     show_application_sub_type = False
 
-    if request.POST:
-        form = form_class(request.POST)
+    form = form_class(request.GET)
 
-        if form.is_valid():
-            show_search_results = True
-            terms = _get_search_terms_from_form(case_type, form)
-            results = search_applications(terms, request.user)
+    if form.is_valid() and get_results:
+        show_search_results = True
+        terms = _get_search_terms_from_form(case_type, form)
+        results = search_applications(terms, request.user)
 
-            total_rows = results.total_rows
-            search_records = results.records
+        total_rows = results.total_rows
+        search_records = results.records
 
         show_application_sub_type = (
             form.cleaned_data.get("application_type") == ImportApplicationType.Types.FIREARMS
         )
 
-    else:
-        form = form_class(initial={"reassignment": False})
+    results_url = reverse("case:search-results", kwargs={"case_type": case_type, "mode": mode})
 
     context = {
         "form": form,
+        "results_url": results_url,
         "reassignment_form": ReassignmentUserForm(),
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
