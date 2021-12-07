@@ -1,8 +1,8 @@
 from typing import Any, ClassVar, Optional
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.http import HttpRequest
 from django.utils import timezone
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
@@ -12,10 +12,12 @@ from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 
-class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleObjectMixin, View):
-    """View for updating an application.
+class ApplicationTaskMixin(SingleObjectMixin, View):
+    """Mixin to define the expected application status & task type.
 
-    Supports checking and updating status and the current active task
+    Overrides get and post methods to ensure the following attributes are set:
+        * self.application
+        * self.task
     """
 
     # Application record
@@ -40,6 +42,15 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
     # The next task type to set
     next_task_type: ClassVar[str]
 
+    http_method_names = ["get", "post"]
+
+    def __init__(self, *args, **kwargs):
+        self.task = None
+        self.application = None  # type:ignore[assignment]
+        self.object = None
+
+        super().__init__(*args, **kwargs)
+
     def setup(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         for attr in ["current_status", "next_status", "next_task_type"]:
             if not hasattr(self, attr):
@@ -47,37 +58,40 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
 
         return super().setup(request, *args, **kwargs)
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
-        """Set the `application` and `task` instance attributes.
-
-        Done here to allow the `post` action to be wrapped in a transaction block.
-        """
-
+    def set_application_and_task(self) -> None:
         self.application = self.get_object()
         self.task = self.get_task()
 
-    def get_queryset(self) -> models.QuerySet:
-        """Return the model instance ready for update."""
-
-        return self.model.objects.select_for_update().all()
+        # TODO ICMSLST-1240: a method could be called / overridden here.
+        # self.check_application_permission()
 
     def get_object(self, queryset: models.QuerySet = None) -> ImpOrExp:
         """Downcast to specific model class."""
 
         application = super().get_object(queryset).get_specific_model()
         application.check_expected_status(self.current_status)
+        self.object = application
 
         return application
 
     def get_task(self) -> Optional[Task]:
         """Load the current task"""
+        is_post = self.request.method == "POST"
 
         if not self.current_task:
-            task = self.application.get_active_task()
+            task = self.application.get_active_task(select_for_update=is_post)
         else:
-            task = self.application.get_expected_task(self.current_task)
+            task = self.application.get_expected_task(self.current_task, select_for_update=is_post)
 
         return task
+
+    def get_queryset(self) -> "models.QuerySet[ImpOrExp]":
+        """Return the model instance ready for update."""
+
+        if self.request.method == "POST":
+            return self.model.objects.select_for_update().all()
+
+        return self.model.objects.all()
 
     def update_application_status(self, commit: bool = True) -> None:
         """Set the application status to the next status"""
@@ -99,3 +113,13 @@ class ApplicationUpdateView(PermissionRequiredMixin, LoginRequiredMixin, SingleO
         Task.objects.create(
             process=self.application, task_type=self.next_task_type, previous=self.task
         )
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+
+        return super().post(request, *args, **kwargs)

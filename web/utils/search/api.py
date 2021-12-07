@@ -737,7 +737,14 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
         # TODO: ICMSLST-686
         actions.append(
             types.SearchAction(
-                url="#", name="request-variation", label="Request Variation", icon="icon-redo2"
+                url=reverse(
+                    "case:search-request-variation",
+                    kwargs={"application_pk": rec.pk, "case_type": "import"},
+                ),
+                name="request-variation",
+                label="Request Variation",
+                icon="icon-redo2",
+                is_post=False,
             )
         )
 

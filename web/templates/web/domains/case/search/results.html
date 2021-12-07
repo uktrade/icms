@@ -4,7 +4,7 @@
   <div class="screen-reader-only">Warning information box</div>
   There aren't any applications that match your search.
   {% if not advanced_search %}
-    You can <a style="padding: 0" href="{{ icms_url('case:search-advanced', kwargs={"case_type": case_type}) }}" class="link-button button">turn on advanced mode</a> for more options.
+    You can <a style="padding: 0" href="{{ icms_url('case:search', kwargs={"case_type": case_type, "mode": "advanced"}) }}" class="link-button button">turn on advanced mode</a> for more options.
   {% endif %}
 </div>
 {% else %}

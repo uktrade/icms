@@ -14,9 +14,12 @@ from .views import (
 app_name = "case"
 
 search_urls = [
-    path("", views_search.search_cases, name="search"),
+    path("<str:mode>/", views_search.search_cases, name="search"),
     path(
-        "advanced/", views_search.search_cases, name="search-advanced", kwargs={"mode": "advanced"}
+        "<str:mode>/results/",
+        views_search.search_cases,
+        name="search-results",
+        kwargs={"get_results": True},
     ),
     path(
         "search-download-spreadsheet",
@@ -36,6 +39,11 @@ search_urls = [
                     "reopen-case",
                     views_search.ReopenApplicationView.as_view(),
                     name="search-reopen-case",
+                ),
+                path(
+                    "request-variation",
+                    views_search.RequestVariationUpdateView.as_view(),
+                    name="search-request-variation",
                 ),
             ]
         ),

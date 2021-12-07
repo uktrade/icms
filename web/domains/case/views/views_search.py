@@ -1,11 +1,15 @@
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Any, Type, Union
+from urllib import parse
 
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import FormView, View
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
@@ -25,7 +29,9 @@ from web.utils.search import (
     search_applications,
 )
 
-from .mixins import ApplicationUpdateView
+from ..forms import RequestVariationForm
+from ..models import VariationRequest
+from .mixins import ApplicationTaskMixin
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -39,10 +45,11 @@ SearchForm = Union[
 SearchFormT = Type[SearchForm]
 
 
+@require_GET
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def search_cases(
-    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "normal"
+    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "standard", get_results=False
 ) -> HttpResponse:
 
     if mode == "advanced":
@@ -58,26 +65,25 @@ def search_cases(
     search_records = []
     show_application_sub_type = False
 
-    if request.POST:
-        form = form_class(request.POST)
+    form = form_class(request.GET)
 
-        if form.is_valid():
-            show_search_results = True
-            terms = _get_search_terms_from_form(case_type, form)
-            results = search_applications(terms, request.user)
+    if form.is_valid() and get_results:
+        show_search_results = True
+        terms = _get_search_terms_from_form(case_type, form)
+        results = search_applications(terms, request.user)
 
-            total_rows = results.total_rows
-            search_records = results.records
+        total_rows = results.total_rows
+        search_records = results.records
 
         show_application_sub_type = (
             form.cleaned_data.get("application_type") == ImportApplicationType.Types.FIREARMS
         )
 
-    else:
-        form = form_class(initial={"reassignment": False})
+    results_url = reverse("case:search-results", kwargs={"case_type": case_type, "mode": mode})
 
     context = {
         "form": form,
+        "results_url": results_url,
         "reassignment_form": ReassignmentUserForm(),
         "case_type": case_type,
         "page_title": f"Search {app_type} Applications",
@@ -96,6 +102,7 @@ def search_cases(
     )
 
 
+@require_POST
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
@@ -148,7 +155,9 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
 
 
 @method_decorator(transaction.atomic, name="post")
-class ReopenApplicationView(ApplicationUpdateView):
+class ReopenApplicationView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
     permission_required = ["web.ilb_admin"]
 
     current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
@@ -160,8 +169,7 @@ class ReopenApplicationView(ApplicationUpdateView):
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         """Reopen the application."""
 
-        super().post(request, *args, **kwargs)
-
+        self.set_application_and_task()
         self.update_application_status(commit=False)
         self.application.case_owner = None
         self.application.save()
@@ -169,6 +177,91 @@ class ReopenApplicationView(ApplicationUpdateView):
         self.update_application_tasks()
 
         return HttpResponse(status=204)
+
+
+@method_decorator(transaction.atomic, name="post")
+class RequestVariationUpdateView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
+):
+    # ICMSLST-1240 Need to revisit permissions when they become more clear
+    # PermissionRequiredMixin config
+    permission_required = ["web.ilb_admin"]
+
+    # ApplicationTaskMixin Config
+    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_task = None
+    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_task_type = Task.TaskType.PROCESS
+
+    # FormView config
+    form_class = RequestVariationForm
+    template_name = "web/domains/case/request-variation.html"
+
+    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        # Store the search url to create the return link later
+        referrer = self.request.META.get("HTTP_REFERER", "")
+        if "search/standard" in referrer or "search/advanced" in referrer:
+            self.request.session["search_results_url"] = referrer
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        return context | {"search_results_url": self.get_success_url()}
+
+    def form_valid(self, form: RequestVariationForm) -> HttpResponseRedirect:
+        """Store the variation request before redirecting to the success url."""
+
+        variation_request: VariationRequest = form.save(commit=False)
+        variation_request.status = VariationRequest.DRAFT
+        variation_request.requested_by = self.request.user
+        variation_request.save()
+
+        self.application.variation_requests.add(variation_request)
+        self.update_application_status()
+
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        """Upon submitting a valid variation request return to the search screen."""
+        if self.request.session.get("search_results_url"):
+            return self._get_return_url()
+
+        return self._default_return_url()
+
+    def _get_return_url(self) -> str:
+        """Check for a search_results_url and rebuild the search request."""
+
+        url = self.request.session.get("search_results_url")
+        return_url: parse.ParseResult = parse.urlparse(url)
+
+        is_import = "case/import/" in return_url.path
+        is_standard = "search/standard/" in return_url.path
+
+        search_url = reverse(
+            "case:search-results",
+            kwargs={
+                "case_type": "import" if is_import else "export",
+                "mode": "standard" if is_standard else "advanced",
+            },
+        )
+
+        if return_url.query:
+            search_url = "".join((search_url, "?", return_url.query))
+
+        return search_url
+
+    def _default_return_url(self) -> str:
+        """Default to search with variation requested"""
+
+        case_type = "import" if self.application.is_import_application() else "export"
+        search_url = reverse(
+            "case:search-results", kwargs={"case_type": case_type, "mode": "standard"}
+        )
+        query_params = {"case_status": self.application.Statuses.VARIATION_REQUESTED}
+
+        return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

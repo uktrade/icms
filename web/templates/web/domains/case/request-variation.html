@@ -1,0 +1,79 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+
+{% block extra_header %}
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ search_results_url }}" class="prev-link">Search Results</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block main_content %}
+
+  <table style="width: 100%">
+    <tbody>
+      <tr>
+        <td><h3>Variation Requests</h3></td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <fieldset>
+            <legend>
+              <strong>
+                Variation Request {{ object.variation_requests.count() + 1 }}
+              </strong>
+            </legend>
+            To request a variation, enter the required fields, then click 'Submit Variation Request'.
+
+            {% call forms.form(method='post', csrf_input=csrf_input) -%}
+              {{ application_field(
+                  '<div class="status draft"><div class="individual-input"><span class="text-widget ">Draft</span></div></div>',
+                  "Status",
+                  is_safe_html=True
+                  ) }}
+
+              {% for field in form %}
+                {{ fields.field(field) }}
+              {% endfor %}
+
+              <div class="container">
+                <div class="row">
+                  <div class="three columns"></div>
+                  <div class="eight columns">
+                    <ul class="menu-out flow-across">
+                      <li>
+                        <input type="submit" name="action" class="primary-button button"
+                               value="Submit Variation Request"/>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            {% endcall %}
+          </fieldset>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <hr>
+        </td>
+      </tr>
+
+      {# TODO: ICMSLST-1236 Add previous variation requests here #}
+    </tbody>
+  </table>
+{% endblock %}

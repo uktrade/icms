@@ -8,6 +8,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
+from web.forms.widgets import DateInput
 from web.models import User
 from web.types import AuthenticatedHttpRequest
 
@@ -17,6 +18,7 @@ from .models import (
     CaseEmail,
     CaseNote,
     UpdateRequest,
+    VariationRequest,
     WithdrawApplication,
 )
 from .types import CaseEmailConfig, ImpOrExp
@@ -226,3 +228,15 @@ def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
         users = application.get_org_contacts()
 
     return users.filter(is_active=True)
+
+
+class RequestVariationForm(forms.ModelForm):
+    class Meta:
+        model = VariationRequest
+        fields = ("what_varied", "why_varied", "when_varied")
+
+        widgets = {
+            "what_varied": forms.Textarea({"rows": 4, "cols": 50}),
+            "why_varied": forms.Textarea({"rows": 4, "cols": 50}),
+            "when_varied": DateInput(),
+        }
