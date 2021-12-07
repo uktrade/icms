@@ -218,6 +218,8 @@ class RequestVariationUpdateView(
     def get_success_url(self):
         """Upon submitting a valid variation request return to the search screen."""
 
+        # TODO: Consider USING HTTP_REFERRER rather than a query param
+        print(self.request.META["HTTP_REFERER"])
         if self.request.GET.get("return_url", None):
             return self._get_return_url()
 
