@@ -11,10 +11,10 @@
   <ul class="menu-out context-header-actions flow-across">
     <li>
       {% if advanced_search %}
-        <a href="{{ icms_url('case:search', kwargs={"case_type": case_type}) }}" class="link-button button">Disable
+        <a href="{{ icms_url('case:search', kwargs={"case_type": case_type, "mode": "standard"}) }}" class="link-button button">Disable
           advanced search</a>
       {% else %}
-        <a href="{{ icms_url('case:search-advanced', kwargs={"case_type": case_type}) }}" class="link-button button">Enable
+        <a href="{{ icms_url('case:search', kwargs={"case_type": case_type, "mode": "advanced"}) }}" class="link-button button">Enable
           advanced search</a>
       {% endif %}
     </li>
@@ -25,8 +25,7 @@
 <div class="no-sidebar" id="content">
     <div id="content-ie8-float">
         <div id="form-container">
-            {% call forms.form(method='post', csrf_input=csrf_input, id="search-application-form") %}
-
+            {% call forms.form(action=results_url, method='GET', id="search-application-form") %}
             {% block form_fields %}
               <div id="wildcard-matching-tooltip" role="tooltip" class="hint-content" aria-hidden="true">
                 <div class="screen-reader-only">This item has hint text,</div>Use the % character for wildcard matching.
@@ -67,7 +66,12 @@
                     <div class="four columns"></div>
                     <div class="four columns">
                       <ul class="menu-out flow-across">
-                        <li><button type="submit" class="primary-button button">Search</button></li>
+                        <li>
+                          <button type="submit" class="primary-button button">Search</button>
+                        </li>
+                        <li>
+                            <a href="{{ icms_url("case:search", kwargs={"case_type": case_type, "mode": "standard"}) }}" class="secondary-button button">Clear Search</a>
+                        </li>
                       </ul>
                     </div>
                     <div class="four columns"></div>

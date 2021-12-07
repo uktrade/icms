@@ -106,6 +106,7 @@ class SearchAction:
     name: str
     label: str
     icon: str
+    is_post: bool = True
 
 
 @dataclass

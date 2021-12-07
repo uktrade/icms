@@ -7,7 +7,7 @@ function setupDownloadSpreadsheetEventHandler({ downloadId, searchFormId, warnin
       e.preventDefault();
       const warning = document.querySelector(warningId);
 
-      handleResultsSpreadsheetDownload(downloadForm.action, searchFormId)
+      handleResultsSpreadsheetDownload(downloadForm, searchFormId)
         .then(() => {
           warning.style.display = "none";
         })
@@ -22,13 +22,16 @@ function setupDownloadSpreadsheetEventHandler({ downloadId, searchFormId, warnin
 
 /**
  * Download an application results spreadsheet.
- * @param {string} downloadUrl
+ * @param {string} downloadForm
  * @param {string} searchFormId
  */
-async function handleResultsSpreadsheetDownload(downloadUrl, searchFormId) {
+async function handleResultsSpreadsheetDownload(downloadForm, searchFormId) {
+  const downloadUrl = downloadForm.action;
+
   // Copy the search form data
   const searchForm = document.querySelector(searchFormId);
-  const formData = new FormData(searchForm)
+  let formData = new FormData(searchForm)
+  formData.append("csrfmiddlewaretoken", downloadForm.csrfmiddlewaretoken.value)
 
   const response = await fetch(downloadUrl, {mode: 'same-origin', method: "POST", body: formData})
 

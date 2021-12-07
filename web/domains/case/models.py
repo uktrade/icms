@@ -56,16 +56,22 @@ class VariationRequest(models.Model):
         (CLOSED, "Closed"),
     )
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(max_length=30, choices=STATUSES, blank=False, null=False)
-    extension_flag = models.BooleanField(blank=False, null=False, default=False)
-    requested_datetime = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=30, choices=STATUSES)
+    extension_flag = models.BooleanField(default=False)
+    requested_datetime = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="requested_variations"
+        User, on_delete=models.PROTECT, related_name="requested_variations"
     )
-    what_varied = models.CharField(max_length=4000, blank=True, null=True)
-    why_varied = models.CharField(max_length=4000, blank=True, null=True)
-    when_varied = models.DateField(blank=True, null=True)
+    what_varied = models.CharField(
+        max_length=4000, verbose_name="What would you like to vary about the current licence(s)"
+    )
+    why_varied = models.CharField(
+        max_length=4000, verbose_name="Why would you like to vary the licence(s) in this way"
+    )
+    when_varied = models.DateField(
+        verbose_name="What date would the varied licence(s) come into effect"
+    )
     reject_reason = models.CharField(max_length=4000, blank=True, null=True)
     closed_datetime = models.DateTimeField(blank=True, null=True)
     closed_by = models.ForeignKey(

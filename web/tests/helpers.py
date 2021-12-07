@@ -103,3 +103,10 @@ class SearchURLS:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:search-reopen-case", kwargs=kwargs)
+
+    @staticmethod
+    def request_variation(application_pk: int, case_type: str = "import") -> str:
+        return reverse(
+            "case:search-request-variation",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
+        )
