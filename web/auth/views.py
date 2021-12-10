@@ -134,7 +134,7 @@ def set_password(request):
     form = update_password(request)
 
     if form.is_valid():
-        return redirect("home")
+        return redirect("workbasket")
 
     return render(request, "auth/set-password.html", {"form": form})
 

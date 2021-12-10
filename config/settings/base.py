@@ -21,7 +21,7 @@ env = environ.Env()
 VCAP_SERVICES = env.json("VCAP_SERVICES", default={})
 
 LOGIN_URL = "/"
-LOGIN_REDIRECT_URL = "/home"
+LOGIN_REDIRECT_URL = "workbasket"
 LOGOUT_REDIRECT_URL = "/"
 
 # Application definition
