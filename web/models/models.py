@@ -8,6 +8,9 @@ class CaseReference(models.Model):
             models.UniqueConstraint(fields=["prefix", "year", "reference"], name="reference_unique")
         ]
 
+    def __str__(self):
+        return f"CaseReference(prefix={self.prefix!r}, year={self.year!r}, reference={self.reference!r})"
+
     # e.g. "IMA" for import applications
     prefix = models.CharField(max_length=8)
 

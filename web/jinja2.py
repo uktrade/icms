@@ -69,11 +69,13 @@ def modify_query(request, **new_params):
     return request.build_absolute_uri("?" + params.urlencode())
 
 
-def icms_link(request: HttpRequest, url: str, link_text: str) -> str:
+def icms_link(request: HttpRequest, url: str, link_text: str, target: str = "_self") -> str:
     # TODO: might have to enhance this to strip out path components after "#" from both urls
     class_attr = "current-page" if request.path == url else ""
 
-    return Markup(f'<li class="{class_attr}"><a href="{url}">{escape(link_text)}</a></li>')
+    return Markup(
+        f'<li class="{class_attr}"><a href="{url}" target={target}>{escape(link_text)}</a></li>'
+    )
 
 
 def menu(request):

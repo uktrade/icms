@@ -1,0 +1,22 @@
+{% extends "web/domains/case/manage/base.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "web/domains/case/variations/macros.html" import variation_request_fieldset %}
+
+
+{% block main_content %}
+  <table style="width: 100%">
+    <tbody>
+      <tr>
+        <td><h3>Variation Requests</h3></td>
+      </tr>
+      {% for vr in variation_requests %}
+        <tr>
+          <td>{{ variation_request_fieldset(vr, readonly_view) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

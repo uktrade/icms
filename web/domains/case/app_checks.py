@@ -237,6 +237,15 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optiona
         ),
     )
 
+    is_variation_requested = application.status == application.Statuses.VARIATION_REQUESTED
+    if is_variation_requested and not application.variation_decision:
+        prepare_errors.add(
+            FieldError(
+                field_name="Variation Decision",
+                messages=["Please approve or reject application variation request."],
+            )
+        )
+
     if not application.decision:
         prepare_errors.add(
             FieldError(field_name="Decision", messages=["Please approve or reject application."])

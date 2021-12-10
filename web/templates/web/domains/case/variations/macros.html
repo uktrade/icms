@@ -1,0 +1,68 @@
+{% from "display/fields.html" import application_field %}
+
+{% macro get_status_widget(status, label) %}
+  {# NOTE: I considered doing {{ status.lower() }} as the class but its explicit this way. #}
+  {% if status == "DRAFT" %}
+    {% set status_class = "draft" %}
+
+  {% elif status == "OPEN" %}
+    {% set status_class = "open" %}
+
+  {% elif status == "CANCELLED" %}
+    {% set status_class = "cancelled" %}
+
+  {% elif status == "REJECTED" %}
+    {% set status_class = "rejected" %}
+
+  {% elif status == "ACCEPTED" %}
+    {% set status_class = "accepted" %}
+
+  {% elif status == "WITHDRAWN" %}
+    {% set status_class = "withdrawn" %}
+
+  {% elif status == "DELETED" %}
+    {% set status_class = "deleted" %}
+
+  {% elif status == "CLOSED" %}
+    {% set status_class = "closed" %}
+  {% endif %}
+
+  <div class="status {{ status_class }}">
+    <div class="individual-input"><span class="text-widget" style="margin-top: 0">{{ label }}</span></div>
+  </div>
+{% endmacro %}
+
+
+{% macro variation_request_fieldset(vr, readonly) %}
+  <fieldset>
+    <legend>
+      <strong>
+        {# TODO: ICMSLST-1287 Need correct variation request number #}
+        Variation Request {{ vr.pk }}
+      </strong>
+    </legend>
+    {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}
+    {{ application_field(vr.requested_datetime.strftime('%d-%b-%Y') , "Request Date") }}
+    {{ application_field(vr.requested_by , "Requested By") }}
+    {{ application_field(vr.what_varied , "What would you like to vary about the current licence(s)") }}
+    {{ application_field(vr.why_varied , "Why would you like to vary the licence(s) in this way") }}
+    {{ application_field(vr.when_varied , "What date would the varied licence(s) come into effect") }}
+
+    {% if vr.status == "OPEN" and not readonly %}
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="six columns">
+          <ul class="menu-out flow-across">
+            {# TODO: ICMSLST-1273 Implement action #}
+            <li><button type="button" class=" button">Reject/Cancel Variation Request</button></li>
+
+            {# TODO: ICMSLST-1274 Implement action #}
+            <li><button class=" button">Request Update</button></li>
+          </ul>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
+
+  </fieldset>
+{% endmacro %}

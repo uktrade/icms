@@ -12,6 +12,7 @@ from django.utils import timezone
 
 from web.domains.file.models import File
 from web.domains.user.models import User
+from web.domains.workbasket.actions import get_workbasket_actions
 from web.domains.workbasket.base import (
     WorkbasketAction,
     WorkbasketBase,
@@ -20,6 +21,8 @@ from web.domains.workbasket.base import (
 )
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
+
+from .shared import ImpExpStatus
 
 CASE_NOTE_DRAFT = "DRAFT"
 CASE_NOTE_COMPLETED = "COMPLETED"
@@ -241,21 +244,9 @@ class ApplicationBase(WorkbasketBase, Process):
     APPROVE = "APPROVE"
     DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
 
-    # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
-    class Statuses(models.TextChoices):
-        COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
-        DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
-        IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
-        PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
-
-        REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
-        STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
-        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
-        VARIATION_REQUESTED: str = (
-            "VARIATION_REQUESTED",
-            "Variation Requested",
-        )  # type:ignore[assignment]
-        WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
+    # Note: There are too many places to refactor this in this pr.
+    # At some point it would be better if everything called ImpExpStatus directly.
+    Statuses = ImpExpStatus
 
     status = models.CharField(
         max_length=30,
@@ -308,6 +299,8 @@ class ApplicationBase(WorkbasketBase, Process):
         raise NotImplementedError
 
     def get_reference(self) -> str:
+        # TODO: ICMSLST-1287 Need to work out how to increment the variations requested.
+        # As in what increments it / what decrements it (if anything).
         return self.reference or "Not Assigned"
 
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
@@ -468,6 +461,12 @@ class ApplicationBase(WorkbasketBase, Process):
                 )
 
                 admin_actions.append(view_action)
+
+        elif self.status == self.Statuses.VARIATION_REQUESTED:
+            rv_actions = get_workbasket_actions(
+                user=user, case_type=kwargs["case_type"], application=self
+            )
+            admin_actions.extend(rv_actions)
 
         elif self.status == self.Statuses.COMPLETED:
             admin_actions.append(view_action)
@@ -651,10 +650,21 @@ class ApplicationBase(WorkbasketBase, Process):
     def history(self) -> None:
         """Debug method to print the history of the application"""
 
+        print("*-" * 40)
         print(f"Current status: {self.get_status_display()}")
 
-        for t in self.tasks.all().order_by("created"):
+        all_tasks = self.tasks.all().order_by("created")
+        active = all_tasks.filter(is_active=True)
+
+        print("Active Tasks in order:")
+        for t in active:
             print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+
+        print("All tasks in order:")
+        for t in all_tasks:
+            print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+
+        print("*-" * 40)
 
     def get_information(self, is_ilb_admin: bool):
         """Return the latest information about an application.

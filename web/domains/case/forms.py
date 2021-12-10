@@ -163,6 +163,29 @@ class ResponsePreparationExportForm(ResponsePreparationBaseForm):
         fields = ResponsePreparationBaseForm.Meta.fields
 
 
+class ResponsePreparationVariationRequestImportForm(forms.ModelForm):
+    class Meta:
+        model = ImportApplication
+        fields = ("decision", "variation_decision", "variation_refuse_reason")
+        widgets = {"variation_refuse_reason": forms.Textarea}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["decision"].disabled = True
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+        decision = cleaned_data.get("variation_decision")
+        refuse_reason = cleaned_data.get("variation_refuse_reason")
+
+        if decision == ApplicationBase.REFUSE and not refuse_reason:
+            self.add_error(
+                "variation_refuse_reason", "This field is required when the Application is refused"
+            )
+
+        return cleaned_data
+
+
 class CaseEmailForm(forms.ModelForm):
     class Meta:
         model = CaseEmail

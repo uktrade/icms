@@ -93,6 +93,7 @@ note_urls = [
 admin_urls = [
     path("manage/", views_misc.manage_case, name="manage"),
     path("take-ownership/", views_misc.take_ownership, name="take-ownership"),
+    path("manage-variations/", views_misc.ManageVariationsView.as_view(), name="manage-variations"),
     path("release-ownership/", views_misc.release_ownership, name="release-ownership"),
     path("manage-withdrawals/", views_misc.manage_withdrawals, name="manage-withdrawals"),
 ]

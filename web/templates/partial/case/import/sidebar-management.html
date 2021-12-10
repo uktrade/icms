@@ -39,6 +39,11 @@
 
   {% endif %}
 
+  {% if process.variation_requests.all().count() > 0 %}
+    {# TODO: ICMSLST-1287 Update the variation requests count open_count / total_count #}
+    {{ icms_link(request, icms_url('case:manage-variations', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Variations') }}
+  {% endif %}
+
   {# Common import application links #}
   {% with total = process.withdrawals.count(),
           processed = process.withdrawals.exclude(status="open").count() %}
@@ -73,7 +78,7 @@
 
 <h4>Application</h4>
 <ul class="menu-out">
-  {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application') }}
+  {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
 
   <li>
     <a href="#">Responses</a>

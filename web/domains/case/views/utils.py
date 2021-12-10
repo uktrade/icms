@@ -31,7 +31,11 @@ def get_class_imp_or_exp_or_access(case_type: str) -> ImpOrExpOrAccessT:
 
 
 def get_current_task_and_readonly_status(
-    application: ImpOrExp, case_type: str, user: "User", task_type: str
+    application: ImpOrExp,
+    case_type: str,
+    user: "User",
+    task_type: str,
+    select_for_update: bool = True,
 ) -> tuple["Task", bool]:
     """For the supplied application work out if the view should be readonly or not.
 
@@ -39,7 +43,9 @@ def get_current_task_and_readonly_status(
     """
 
     try:
-        task = get_application_current_task(application, case_type, task_type)
+        task = get_application_current_task(
+            application, case_type, task_type, select_for_update=select_for_update
+        )
         is_case_owner = user == application.case_owner
         is_readonly = not is_case_owner
 

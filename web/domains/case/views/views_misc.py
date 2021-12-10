@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
@@ -10,11 +11,13 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
+from django.views.generic import DetailView
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case.models import VariationRequest
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import Process, Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
@@ -225,18 +228,25 @@ def take_ownership(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(model_class.Statuses.SUBMITTED, Task.TaskType.PROCESS)
+        application.get_task(
+            expected_state=[
+                model_class.Statuses.SUBMITTED,
+                model_class.Statuses.VARIATION_REQUESTED,
+            ],
+            task_type=Task.TaskType.PROCESS,
+        )
+
+        if application.status == model_class.Statuses.SUBMITTED:
+            application.status = model_class.Statuses.PROCESSING
+
+            if case_type == "import":
+                # Licence start date is set when ILB Admin takes the case
+                application.licence_start_date = timezone.now().date()
+
+            # TODO: Revisit when implementing ICMSLST-1169
+            # We may need to create some more datetime fields
 
         application.case_owner = request.user
-        application.status = model_class.Statuses.PROCESSING
-
-        if case_type == "import":
-            # Licence start date is set when ILB Admin takes the case
-            application.licence_start_date = timezone.now().date()
-
-        # TODO: Revisit when implementing ICMSLST-1169
-        # We may need to create some more datetime fields
-
         application.save()
 
         return redirect(
@@ -261,7 +271,9 @@ def release_ownership(
 
         get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
-        application.status = model_class.Statuses.SUBMITTED
+        if application.status != model_class.Statuses.VARIATION_REQUESTED:
+            application.status = model_class.Statuses.SUBMITTED
+
         application.case_owner = None
         application.save()
 
@@ -354,12 +366,26 @@ def start_authorisation(
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
-            if application.decision == application.REFUSE:
-                application.status = model_class.Statuses.COMPLETED
-                next_task = Task.TaskType.REJECTED
+            if application.status == application.Statuses.VARIATION_REQUESTED:
+                vr = application.variation_requests.get(status=VariationRequest.OPEN)
+
+                if application.variation_decision == application.REFUSE:
+                    # Note: this is currently the last task when completed (I'm not sure its correct).
+                    next_task = Task.TaskType.ACK
+                    application.status = model_class.Statuses.COMPLETED
+                    vr.status = VariationRequest.REJECTED
+                    vr.save()
+
+                else:
+                    next_task = Task.TaskType.AUTHORISE
+
             else:
-                application.status = model_class.Statuses.PROCESSING
-                next_task = Task.TaskType.AUTHORISE
+                if application.decision == application.REFUSE:
+                    next_task = Task.TaskType.REJECTED
+                    application.status = model_class.Statuses.COMPLETED
+                else:
+                    next_task = Task.TaskType.AUTHORISE
+                    application.status = model_class.Statuses.PROCESSING
 
             application.save()
 
@@ -418,6 +444,11 @@ def authorise_documents(
                         process=application, task_type=Task.TaskType.CHIEF_WAIT, previous=task
                     )
                 else:
+                    if application.status == model_class.Statuses.VARIATION_REQUESTED:
+                        vr = application.variation_requests.get(status=VariationRequest.OPEN)
+                        vr.status = VariationRequest.ACCEPTED
+                        vr.save()
+
                     application.status = model_class.Statuses.COMPLETED
                     application.save()
 
@@ -517,7 +548,9 @@ def cancel_authorisation(
 
         task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
-        application.status = model_class.Statuses.PROCESSING
+        if application.status != model_class.Statuses.VARIATION_REQUESTED:
+            application.status = model_class.Statuses.PROCESSING
+
         application.save()
 
         task.is_active = False
@@ -590,6 +623,43 @@ def ack_notification(
             template_name="web/domains/case/ack-notification.html",
             context=context,
         )
+
+
+class ManageVariationsView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    """Case management view for viewing application variations."""
+
+    # PermissionRequiredMixin config
+    permission_required = ["web.ilb_admin"]
+
+    # DetailView config
+    model = Process
+    pk_url_kwarg = "application_pk"
+    template_name = "web/domains/case/manage/manage-variations.html"
+
+    def get_context_data(self, **kwargs):
+        application = self.object.get_specific_model()
+        case_type = self.kwargs["case_type"]
+
+        task, readonly_view = get_current_task_and_readonly_status(
+            application,
+            case_type,
+            self.request.user,
+            Task.TaskType.PROCESS,
+            select_for_update=False,
+        )
+
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": f"Variations {application.get_reference()}",
+            "process": application,
+            "case_type": case_type,
+            "readonly_view": readonly_view,
+            # TODO: ICMSLST-1287 Need to annotate this
+            "variation_requests": application.variation_requests.all().order_by(
+                "-requested_datetime"
+            ),
+        }
 
 
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":

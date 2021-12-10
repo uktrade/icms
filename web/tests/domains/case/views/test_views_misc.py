@@ -3,11 +3,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.wood.models import WoodQuotaChecklist
-from web.domains.case.models import UpdateRequest
+from web.domains.case.models import UpdateRequest, VariationRequest
+from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.flow.models import Task
 from web.models.shared import YesNoNAChoices
@@ -110,9 +112,7 @@ def test_start_authorisation_approved_application_has_no_errors(
     wood_application.decision = wood_application.APPROVE
 
     # Set licence details
-    wood_application.licence_start_date = datetime.date.today()
-    wood_application.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
-    wood_application.save()
+    _set_valid_licence(wood_application)
 
     # Create the checklist (fully valid)
     _add_valid_checklist(wood_application)
@@ -176,6 +176,174 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     assert current_task is not None
 
 
+def test_start_authorisation_approved_variation_requested_application(
+    icms_admin_client, wood_application, test_icms_admin_user
+):
+    """Test an approved variation requested application ends in the correct status & has the correct task"""
+    wood_application.decision = wood_application.APPROVE
+    _set_valid_licence(wood_application)
+    _add_valid_checklist(wood_application)
+
+    # Set the variation fields
+    wood_application.status = ImpExpStatus.VARIATION_REQUESTED
+    wood_application.variation_decision = wood_application.APPROVE
+    _add_variation_request(wood_application, test_icms_admin_user)
+
+    wood_application.save()
+
+    # Now start authorisation
+    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+    wood_application.refresh_from_db()
+
+    wood_application.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+    expected_task = wood_application.get_expected_task(Task.TaskType.AUTHORISE)
+    vr = wood_application.variation_requests.first()
+    assert vr.status == VariationRequest.OPEN
+
+    assert expected_task is not None
+
+
+def test_start_authorisation_rejected_variation_requested_application(
+    icms_admin_client, wood_application, test_icms_admin_user
+):
+    """Test an rejected variation requested application ends in the correct status & has the correct task"""
+    wood_application.decision = wood_application.APPROVE
+    _set_valid_licence(wood_application)
+    _add_valid_checklist(wood_application)
+
+    # Set the variation fields
+    wood_application.status = ImpExpStatus.VARIATION_REQUESTED
+    wood_application.variation_decision = wood_application.REFUSE
+    _add_variation_request(wood_application, test_icms_admin_user)
+
+    wood_application.save()
+
+    # Now start authorisation
+    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+    wood_application.refresh_from_db()
+
+    wood_application.check_expected_status([ImpExpStatus.COMPLETED])
+    expected_task = wood_application.get_expected_task(Task.TaskType.ACK)
+    vr = wood_application.variation_requests.first()
+    assert vr.status == VariationRequest.REJECTED
+
+    assert expected_task is not None
+
+
+class TestAuthoriseDocumentsView:
+    needed_task = Task.TaskType.AUTHORISE
+    needed_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+
+    form_data = {"password": "test"}
+
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, wood_app_submitted):
+        """Using the submitted app override the app to the state we want."""
+
+        wood_app_submitted.status = ImpExpStatus.PROCESSING
+        wood_app_submitted.save()
+
+        task = wood_app_submitted.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(
+            process=wood_app_submitted, task_type=Task.TaskType.AUTHORISE, previous=task
+        )
+
+        self.wood_app = wood_app_submitted
+
+    def test_authorise_post_valid(self):
+        post_data = {"password": "test"}
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+
+        assertRedirects(resp, reverse("workbasket"), status_code=302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.wood_app.get_expected_task(Task.TaskType.ACK)
+
+    def test_authorise_variation_request_post_valid(self, test_icms_admin_user):
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        _add_variation_request(self.wood_app, test_icms_admin_user)
+        self.wood_app.save()
+
+        post_data = {"password": "test"}
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+
+        assertRedirects(resp, reverse("workbasket"), status_code=302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.wood_app.get_expected_task(Task.TaskType.ACK)
+
+        vr = self.wood_app.variation_requests.first()
+        assert vr.status == VariationRequest.ACCEPTED
+
+    def test_authorise_post_valid_for_app_requiring_chief(self):
+        # Override the chief flag for the wood quota application type to send to chief.
+        iat = self.wood_app.application_type
+        iat.chief_flag = True
+        iat.save()
+
+        post_data = {"password": "test"}
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+
+        assertRedirects(resp, reverse("workbasket"), status_code=302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.PROCESSING])
+        self.wood_app.get_expected_task(Task.TaskType.CHIEF_WAIT)
+
+
+class TestManageVariationsView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, wood_app_submitted):
+        self.wood_app = wood_app_submitted
+
+    def test_get_variations(self, test_icms_admin_user):
+        self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
+
+        # Add a few previous variation requests
+        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.REJECTED)
+        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.ACCEPTED)
+        # Add an open one last (as it's the latest)
+        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.OPEN)
+
+        response = self.client.get(CaseURLS.manage_variations(self.wood_app.pk))
+        assert response.status_code == 200
+
+        cd = response.context_data
+        vrs = cd["variation_requests"]
+
+        expected_status_order = [
+            VariationRequest.OPEN,
+            VariationRequest.ACCEPTED,
+            VariationRequest.REJECTED,
+        ]
+
+        assert expected_status_order == [vr.status for vr in vrs]
+
+
+def _set_valid_licence(wood_application):
+    wood_application.licence_start_date = datetime.date.today()
+    wood_application.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+
+
 def _add_valid_checklist(wood_application):
     wood_application.checklist = WoodQuotaChecklist.objects.create(
         import_application=wood_application,
@@ -186,4 +354,14 @@ def _add_valid_checklist(wood_application):
         response_preparation=True,
         authorisation=True,
         sigl_wood_application_logged=True,
+    )
+
+
+def _add_variation_request(wood_application, user, status=VariationRequest.OPEN):
+    wood_application.variation_requests.create(
+        status=status,
+        what_varied="Dummy what_varied",
+        why_varied="Dummy why_varied",
+        when_varied=timezone.now().date(),
+        requested_by=user,
     )
