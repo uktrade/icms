@@ -4826,28 +4826,48 @@ fieldset {
 }
 
 .status .text-widget {
-	border: 1px solid;
-	border-radius: 3px;
-	color: #000;
-	padding-left: 1.25em;
-	padding-right: 1.25em;
-	font-size: 0.8em;
-	text-transform: uppercase;
+  border: 1px solid;
+  border-radius: 3px;
+  color: #000;
+  padding-left: 1.25em;
+  padding-right: 1.25em;
+  font-size: 0.8em;
+  text-transform: uppercase;
 }
 
-.status.open .text-widget, .status.responded .text-widget, .status.update_in_progress .text-widget {
-    background-color: #FFEB9B;
-    border-color: #FFC519;
+.status.draft .text-widget,
+.status.deleted .text-widget {
+  background-color: #E6E6E6;
+  border-color: #C2C2C2;
 }
 
-.status.draft .text-widget, .status.deleted .text-widget {
-    background-color: #E6E6E6;
-    border-color: #C2C2C2;
+.status.open .text-widget,
+.status.responded .text-widget {
+  background-color: #FFEB9B;
+  border-color: #FFC519;
 }
 
-.status.closed .text-widget, .status.completed .text-widget {
-    background-color: #08A7A7;
-    border-color: #007B76;
+.status.update_in_progress .text-widget {
+  background-color: #FFFFCC;
+  border-color: #FFE18E;
+}
+
+.status.closed .text-widget,
+.status.completed .text-widget {
+  background-color: #08A7A7;
+  border-color: #007B76;
+}
+
+.status.accepted .text-widget {
+  background-color: #A0E477;
+  border-color: #5DD226;
+}
+
+.status.rejected .text-widget,
+.status.cancelled .text-widget,
+.status.withdrawn .text-widget {
+  background-color: #F2BAA7;
+  border-color: #E25836;
 }
 
 form.form-inline {

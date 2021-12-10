@@ -184,10 +184,14 @@ class ImportApplication(ApplicationBase):
     under_appeal_flag = models.BooleanField(blank=False, null=False, default=False)
 
     variation_decision = models.CharField(
-        max_length=10, choices=ApplicationBase.DECISIONS, blank=True, null=True
+        max_length=10,
+        choices=ApplicationBase.DECISIONS,
+        null=True,
+        verbose_name="Variation Decision",
     )
-
-    variation_refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    variation_refuse_reason = models.CharField(
+        max_length=4000, blank=True, null=True, verbose_name="Variation Refusal Reason"
+    )
     issue_date = models.DateField(blank=True, null=True)
     licence_start_date = models.DateField(blank=True, null=True)
     licence_end_date = models.DateField(blank=True, null=True)

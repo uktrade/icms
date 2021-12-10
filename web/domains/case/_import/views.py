@@ -19,6 +19,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.models import VariationRequest
 from web.domains.case.utils import get_application_current_task
 from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
@@ -620,10 +621,17 @@ def bypass_chief(
         task.save()
 
         if chief_status == "success":
+            # TODO: The "real" chief success will have to do this too.
+            if application.status == ImportApplication.Statuses.VARIATION_REQUESTED:
+                vr = application.variation_requests.get(status=VariationRequest.OPEN)
+                vr.status = VariationRequest.ACCEPTED
+                vr.save()
+
             application.status = ImportApplication.Statuses.COMPLETED
             application.save()
 
             Task.objects.create(process=application, task_type=Task.TaskType.ACK, previous=task)
+
         elif chief_status == "failure":
             Task.objects.create(
                 process=application, task_type=Task.TaskType.CHIEF_ERROR, previous=task

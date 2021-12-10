@@ -160,6 +160,7 @@ class ReopenApplicationView(
 ):
     permission_required = ["web.ilb_admin"]
 
+    # ApplicationTaskMixin Config
     current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
     current_task = None
 
@@ -170,10 +171,9 @@ class ReopenApplicationView(
         """Reopen the application."""
 
         self.set_application_and_task()
-        self.update_application_status(commit=False)
         self.application.case_owner = None
-        self.application.save()
 
+        self.update_application_status()
         self.update_application_tasks()
 
         return HttpResponse(status=204)
@@ -208,18 +208,35 @@ class RequestVariationUpdateView(
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        return context | {"search_results_url": self.get_success_url()}
+        return context | {
+            "page_title": f"Application {self.application.get_reference()}",
+            "search_results_url": self.get_success_url(),
+            "process": self.application,
+            "case_type": self.kwargs["case_type"],
+            # TODO: ICMSLST-1287 Need to annotate this
+            "variation_requests": self.application.variation_requests.all().order_by(
+                "-requested_datetime"
+            ),
+        }
 
     def form_valid(self, form: RequestVariationForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
 
         variation_request: VariationRequest = form.save(commit=False)
-        variation_request.status = VariationRequest.DRAFT
+        variation_request.status = VariationRequest.OPEN
         variation_request.requested_by = self.request.user
         variation_request.save()
 
         self.application.variation_requests.add(variation_request)
+        self.application.case_owner = None
+        self.application.variation_decision = None
+        self.application.variation_refuse_reason = None
+
+        # TODO: ICMSLST-1287 Update reference to include variation number
+        # self.application.reference = reference + f"/{variation_no}"
+
         self.update_application_status()
+        self.update_application_tasks()
 
         return super().form_valid(form)
 

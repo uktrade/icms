@@ -3,6 +3,7 @@
 {% import "forms/fields.html" as fields %}
 {% from "display/fields.html" import application_field %}
 
+{% from "web/domains/case/variations/macros.html" import get_status_widget, variation_request_fieldset %}
 
 {% block extra_header %}
   {{ super() }}
@@ -19,10 +20,14 @@
 {% endblock %}
 
 {% block sidebar %}
+  <ul class="menu-out">
+    {{ icms_link(request, icms_url('case:search-request-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
+    {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
+    <li><a href="#" target="_blank">Sent Responses</a></li>
+  </ul>
 {% endblock %}
 
 {% block main_content %}
-
   <table style="width: 100%">
     <tbody>
       <tr>
@@ -40,12 +45,7 @@
             To request a variation, enter the required fields, then click 'Submit Variation Request'.
 
             {% call forms.form(method='post', csrf_input=csrf_input) -%}
-              {{ application_field(
-                  '<div class="status draft"><div class="individual-input"><span class="text-widget ">Draft</span></div></div>',
-                  "Status",
-                  is_safe_html=True
-                  ) }}
-
+              {{ application_field(get_status_widget("DRAFT", "Draft"), "Status", is_safe_html=True) }}
               {% for field in form %}
                 {{ fields.field(field) }}
               {% endfor %}
@@ -67,13 +67,12 @@
           </fieldset>
         </td>
       </tr>
-      <tr>
-        <td colspan="2">
-          <hr>
-        </td>
-      </tr>
+      {% for vr in variation_requests %}
+        <tr>
+          <td>{{ variation_request_fieldset(vr, True) }}</td>
+        </tr>
+      {% endfor %}
 
-      {# TODO: ICMSLST-1236 Add previous variation requests here #}
     </tbody>
   </table>
 {% endblock %}

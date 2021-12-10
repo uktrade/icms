@@ -13,6 +13,7 @@ from web.models.models import CaseReference
 from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
+from .shared import ImpExpStatus
 from .types import ImpOrExpOrAccess
 
 
@@ -79,7 +80,7 @@ def check_application_permission(application: ImpOrExpOrAccess, user: User, case
 
 
 def get_application_current_task(
-    application: ImpOrExpOrAccess, case_type: str, task_type: str
+    application: ImpOrExpOrAccess, case_type: str, task_type: str, select_for_update: bool = True
 ) -> Task:
     """Gets the current valid task for all application types.
 
@@ -87,33 +88,45 @@ def get_application_current_task(
     """
 
     if case_type in ["import", "export"]:
-        st = ImportApplication.Statuses
+        st = ImpExpStatus
 
         # importer/exporter edit the application
         # it can either be:
         #  - a fresh new application (IN_PROGRESS)
         #  - an update requested (PROCESSING)
         if task_type == Task.TaskType.PREPARE:
-            return application.get_task([st.IN_PROGRESS, st.PROCESSING], task_type)
+            return application.get_task(
+                [st.IN_PROGRESS, st.PROCESSING], task_type, select_for_update
+            )
 
         elif task_type == Task.TaskType.PROCESS:
-            return application.get_task([st.SUBMITTED, st.PROCESSING], task_type)
+            return application.get_task(
+                [st.SUBMITTED, st.PROCESSING, st.VARIATION_REQUESTED], task_type, select_for_update
+            )
 
         elif task_type == Task.TaskType.AUTHORISE:
-            return application.get_task(application.Statuses.PROCESSING, task_type)
+            return application.get_task(
+                [application.Statuses.PROCESSING, st.VARIATION_REQUESTED],
+                task_type,
+                select_for_update,
+            )
 
         elif task_type in [Task.TaskType.CHIEF_WAIT, Task.TaskType.CHIEF_ERROR]:
-            return application.get_task(application.Statuses.PROCESSING, task_type)
+            return application.get_task(
+                [st.PROCESSING, st.VARIATION_REQUESTED], task_type, select_for_update
+            )
 
         elif task_type == Task.TaskType.ACK:
-            return application.get_task(application.Statuses.COMPLETED, task_type)
+            return application.get_task(st.COMPLETED, task_type, select_for_update)
 
         elif task_type == Task.TaskType.REJECTED:
-            return application.get_task(application.Statuses.COMPLETED, task_type)
+            return application.get_task(st.COMPLETED, task_type, select_for_update)
 
     elif case_type == "access":
         if task_type == Task.TaskType.PROCESS:
-            return application.get_task(application.Statuses.SUBMITTED, task_type)
+            return application.get_task(
+                application.Statuses.SUBMITTED, task_type, select_for_update
+            )
 
     raise NotImplementedError(
         f"State not supported for app: '{application.process_type}', case type: '{case_type}'"

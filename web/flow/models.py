@@ -81,7 +81,9 @@ class Process(models.Model):
         if status not in expected_statuses:
             raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
-    def get_task(self, expected_state: Union[str, List[str]], task_type: str) -> "Task":
+    def get_task(
+        self, expected_state: Union[str, List[str]], task_type: str, select_for_update: bool = True
+    ) -> "Task":
         """Get the latest active task of the given type attached to this
         process, while also checking the process is in the expected state.
 
@@ -108,11 +110,10 @@ class Process(models.Model):
             if status != expected_state:
                 raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
-        tasks = (
-            self.tasks.filter(is_active=True, task_type=task_type)
-            .order_by("created")
-            .select_for_update()
-        )
+        tasks = self.tasks.filter(is_active=True, task_type=task_type).order_by("created")
+
+        if select_for_update:
+            tasks = tasks.select_for_update()
 
         if len(tasks) != 1:
             raise errors.TaskError(f"Expected one active task, got {len(tasks)}")

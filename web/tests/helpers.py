@@ -91,10 +91,22 @@ class CaseURLS:
         return reverse("case:manage-case-emails", kwargs=kwargs)
 
     @staticmethod
+    def manage_variations(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:manage-variations", kwargs=kwargs)
+
+    @staticmethod
     def authorise_application(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:start-authorisation", kwargs=kwargs)
+
+    @staticmethod
+    def authorise_documents(application_pk: int, case_type="import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:authorise-documents", kwargs=kwargs)
 
 
 class SearchURLS:

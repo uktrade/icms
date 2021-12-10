@@ -120,7 +120,7 @@ class TestRequestVariationUpdateView:
         expected = "/case/import/search/standard/results/?case_status=VARIATION_REQUESTED"
         assert resp.context["search_results_url"] == expected
 
-    def test_post_updates_status(self):
+    def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
         form_data = {
@@ -129,6 +129,11 @@ class TestRequestVariationUpdateView:
             "when_varied": "01-Jan-2021",
         }
 
+        # Set this fields as reopening a case should clear them.
+        self.wood_app.case_owner = test_icms_admin_user
+        self.wood_app.variation_decision = WoodQuotaApplication.REFUSE
+        self.wood_app.variation_refuse_reason = "test value"
+
         resp = self.client.post(url, data=form_data)
         default_redirect_url = (
             "/case/import/search/standard/results/?case_status=VARIATION_REQUESTED"
@@ -136,6 +141,10 @@ class TestRequestVariationUpdateView:
 
         assertRedirects(resp, default_redirect_url, 302)
         self.wood_app.refresh_from_db()
+
+        assert not self.wood_app.case_owner
+        assert not self.wood_app.variation_decision
+        assert not self.wood_app.variation_refuse_reason
 
         self.wood_app.check_expected_status([WoodQuotaApplication.Statuses.VARIATION_REQUESTED])
         self.wood_app.get_expected_task(Task.TaskType.PROCESS)

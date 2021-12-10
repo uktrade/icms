@@ -40,17 +40,22 @@ def prepare_response(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    if case_type == "import":
-        form_class = forms.ResponsePreparationImportForm
-    elif case_type == "export":
-        form_class = forms.ResponsePreparationExportForm
-    else:
-        raise NotImplementedError(f"Unknown case_type {case_type}")
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
+
+        if case_type == "import":
+            if application.status == application.Statuses.VARIATION_REQUESTED:
+                form_class = forms.ResponsePreparationVariationRequestImportForm
+            else:
+                form_class = forms.ResponsePreparationImportForm
+
+        elif case_type == "export":
+            form_class = forms.ResponsePreparationExportForm
+
+        else:
+            raise NotImplementedError(f"Unknown case_type {case_type}")
 
         task, readonly_view = get_current_task_and_readonly_status(
             application, case_type, request.user, Task.TaskType.PROCESS

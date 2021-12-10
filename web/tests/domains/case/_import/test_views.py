@@ -1,6 +1,12 @@
 import pytest
 from django.test import Client
+from django.urls import reverse
+from django.utils import timezone
+from pytest_django.asserts import assertRedirects
 
+from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.models import VariationRequest
+from web.domains.case.shared import ImpExpStatus
 from web.domains.importer.models import Importer
 from web.flow.models import Task
 from web.tests.domains.importer import factory as importer_factories
@@ -66,3 +72,85 @@ def test_preview_licence():
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
     assert 19000 < len(pdf) < 30000
+
+
+class TestBypassChiefView:
+    client: "Client"
+    wood_app: WoodQuotaApplication
+
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, wood_app_submitted):
+        """using the submitted app override the app to the state we want."""
+        wood_app_submitted.status = ImpExpStatus.PROCESSING
+        wood_app_submitted.save()
+
+        task = wood_app_submitted.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(
+            process=wood_app_submitted, task_type=Task.TaskType.CHIEF_WAIT, previous=task
+        )
+
+        self.wood_app = wood_app_submitted
+
+    def test_bypass_chief_success(self):
+        url = reverse(
+            "import:bypass-chief",
+            kwargs={"application_pk": self.wood_app.pk, "chief_status": "success"},
+        )
+        resp = self.client.post(url)
+
+        assertRedirects(resp, reverse("workbasket"), 302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.wood_app.get_expected_task(Task.TaskType.ACK)
+
+    def test_bypass_chief_failure(self):
+        url = reverse(
+            "import:bypass-chief",
+            kwargs={"application_pk": self.wood_app.pk, "chief_status": "failure"},
+        )
+        resp = self.client.post(url)
+
+        assertRedirects(resp, reverse("workbasket"), 302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.PROCESSING])
+        self.wood_app.get_expected_task(Task.TaskType.CHIEF_ERROR)
+
+    def test_bypass_chief_variation_request_success(self, test_icms_admin_user):
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.wood_app.variation_requests.create(
+            status=VariationRequest.OPEN,
+            what_varied="Dummy what_varied",
+            why_varied="Dummy why_varied",
+            when_varied=timezone.now().date(),
+            requested_by=test_icms_admin_user,
+        )
+
+        self.wood_app.save()
+
+        url = reverse(
+            "import:bypass-chief",
+            kwargs={"application_pk": self.wood_app.pk, "chief_status": "success"},
+        )
+        resp = self.client.post(url)
+
+        assertRedirects(resp, reverse("workbasket"), 302)
+
+        self.wood_app.refresh_from_db()
+
+        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.wood_app.get_expected_task(Task.TaskType.ACK)
+
+        vr = self.wood_app.variation_requests.first()
+        assert vr.status == VariationRequest.ACCEPTED
