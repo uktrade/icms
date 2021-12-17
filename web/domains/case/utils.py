@@ -134,6 +134,27 @@ def get_application_current_task(
     )
 
 
+def update_process_tasks(
+    process: ImpOrExpOrAccess, previous_task: Optional[Task], next_task_type: str, user: "User"
+) -> Task:
+    """Update tasks linked to a process.
+
+    :param process: Process record
+    :param previous_task: The task that has been completed
+    :param next_task_type: The next task
+    :param user: The user who completed the task
+    :return: The new task
+    """
+
+    if previous_task:
+        previous_task.is_active = False
+        previous_task.finished = timezone.now()
+        previous_task.owner = user
+        previous_task.save()
+
+    return Task.objects.create(process=process, task_type=next_task_type, previous=previous_task)
+
+
 def view_application_file(
     user: User, application: ImpOrExpOrAccess, related_file_model: Any, file_pk: int, case_type: str
 ) -> HttpResponse:

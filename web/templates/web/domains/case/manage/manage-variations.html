@@ -13,7 +13,7 @@
       </tr>
       {% for vr in variation_requests %}
         <tr>
-          <td>{{ variation_request_fieldset(vr, readonly_view) }}</td>
+          <td>{{ variation_request_fieldset(process, vr, readonly_view, case_type) }}</td>
         </tr>
       {% endfor %}
     </tbody>

@@ -3,11 +3,11 @@ from typing import Any, ClassVar, Optional
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.http import HttpRequest
-from django.utils import timezone
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.types import ImpOrExp
+from web.domains.case.utils import update_process_tasks
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -104,15 +104,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     def update_application_tasks(self) -> None:
         """Update the application task set to the next task."""
 
-        if self.task:
-            self.task.is_active = False
-            self.task.finished = timezone.now()
-            self.task.owner = self.request.user
-            self.task.save()
-
-        Task.objects.create(
-            process=self.application, task_type=self.next_task_type, previous=self.task
-        )
+        update_process_tasks(self.application, self.task, self.next_task_type, self.request.user)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
