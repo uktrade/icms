@@ -215,6 +215,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     # Set the variation fields
     wood_application.status = ImpExpStatus.VARIATION_REQUESTED
     wood_application.variation_decision = wood_application.REFUSE
+    wood_application.variation_refuse_reason = "test refuse reason"
     _add_variation_request(wood_application, test_icms_admin_user)
 
     wood_application.save()
@@ -228,6 +229,8 @@ def test_start_authorisation_rejected_variation_requested_application(
     expected_task = wood_application.get_expected_task(Task.TaskType.ACK)
     vr = wood_application.variation_requests.first()
     assert vr.status == VariationRequest.REJECTED
+    assert vr.reject_cancellation_reason == "test refuse reason"
+    assert vr.closed_datetime.date() == timezone.now().date()
 
     assert expected_task is not None
 
@@ -337,6 +340,55 @@ class TestManageVariationsView:
         ]
 
         assert expected_status_order == [vr.status for vr in vrs]
+
+
+# TODO: Write tests for this view.
+class TestCancelVariationRequestView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, set_client, wood_app_submitted, test_icms_admin_user):
+        self.wood_app = wood_app_submitted
+        self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
+
+        self.wood_app.refresh_from_db()
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        _add_variation_request(self.wood_app, test_icms_admin_user)
+        self.wood_app.save()
+
+    def test_cancel_variation_request_get(self):
+        vr = self.wood_app.variation_requests.first()
+        resp = self.client.get(CaseURLS.cancel_variation_request(self.wood_app.pk, vr.pk))
+
+        cd = resp.context_data
+
+        assert resp.status_code == 200
+        assert cd["object"] == vr
+        assert cd["process"] == self.wood_app
+        assert cd["page_title"] == f"Variations {self.wood_app.get_reference()}"
+        assert cd["case_type"] == "import"
+
+    def test_cancel_variation_request_post(self, test_icms_admin_user):
+        vr = self.wood_app.variation_requests.first()
+        resp = self.client.post(
+            CaseURLS.cancel_variation_request(self.wood_app.pk, vr.pk),
+            {"reject_cancellation_reason": "Test cancellation reason"},
+        )
+
+        assertRedirects(resp, reverse("workbasket"), 302)
+
+        self.wood_app.refresh_from_db()
+        vr.refresh_from_db()
+
+        assert vr.status == VariationRequest.CANCELLED
+        assert vr.reject_cancellation_reason == "Test cancellation reason"
+        assert vr.closed_by == test_icms_admin_user
+        assert vr.closed_datetime.date() == timezone.now().date()
+
+        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.wood_app.get_expected_task(Task.TaskType.ACK, select_for_update=False)
 
 
 def _set_valid_licence(wood_application):

@@ -97,6 +97,18 @@ class CaseURLS:
         return reverse("case:manage-variations", kwargs=kwargs)
 
     @staticmethod
+    def cancel_variation_request(
+        application_pk: int, variation_request_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "variation_request_pk": variation_request_pk,
+        }
+
+        return reverse("case:cancel-variation-request", kwargs=kwargs)
+
+    @staticmethod
     def authorise_application(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 

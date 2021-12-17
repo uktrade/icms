@@ -29,7 +29,7 @@ from web.utils.search import (
     search_applications,
 )
 
-from ..forms import RequestVariationForm
+from ..forms import VariationRequestForm
 from ..models import VariationRequest
 from .mixins import ApplicationTaskMixin
 
@@ -194,7 +194,7 @@ class RequestVariationUpdateView(
     next_task_type = Task.TaskType.PROCESS
 
     # FormView config
-    form_class = RequestVariationForm
+    form_class = VariationRequestForm
     template_name = "web/domains/case/request-variation.html"
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
@@ -219,7 +219,7 @@ class RequestVariationUpdateView(
             ),
         }
 
-    def form_valid(self, form: RequestVariationForm) -> HttpResponseRedirect:
+    def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
 
         variation_request: VariationRequest = form.save(commit=False)

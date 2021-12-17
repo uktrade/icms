@@ -253,7 +253,7 @@ def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
     return users.filter(is_active=True)
 
 
-class RequestVariationForm(forms.ModelForm):
+class VariationRequestForm(forms.ModelForm):
     class Meta:
         model = VariationRequest
         fields = ("what_varied", "why_varied", "when_varied")

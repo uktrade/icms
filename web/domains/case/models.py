@@ -75,10 +75,12 @@ class VariationRequest(models.Model):
     when_varied = models.DateField(
         verbose_name="What date would the varied licence(s) come into effect"
     )
-    reject_reason = models.CharField(max_length=4000, blank=True, null=True)
-    closed_datetime = models.DateTimeField(blank=True, null=True)
+    reject_cancellation_reason = models.CharField(
+        max_length=4000, null=True, verbose_name="Cancellation reason"
+    )
+    closed_datetime = models.DateTimeField(null=True)
     closed_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="closed_variations"
+        User, on_delete=models.PROTECT, null=True, related_name="closed_variations"
     )
 
 

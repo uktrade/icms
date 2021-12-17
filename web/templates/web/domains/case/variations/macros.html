@@ -33,7 +33,7 @@
 {% endmacro %}
 
 
-{% macro variation_request_fieldset(vr, readonly) %}
+{% macro variation_request_fieldset(application, vr, readonly, case_type) %}
   <fieldset>
     <legend>
       <strong>
@@ -48,13 +48,26 @@
     {{ application_field(vr.why_varied , "Why would you like to vary the licence(s) in this way") }}
     {{ application_field(vr.when_varied , "What date would the varied licence(s) come into effect") }}
 
+    {% if vr.reject_cancellation_reason %}
+      {{ application_field(vr.reject_cancellation_reason , "Cancellation reason") }}
+    {% endif %}
+
+    {% if vr.closed_datetime %}
+      {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y'), "Closed Date") }}
+    {% endif %}
+
     {% if vr.status == "OPEN" and not readonly %}
       <div class="row">
         <div class="three columns"></div>
         <div class="six columns">
           <ul class="menu-out flow-across">
-            {# TODO: ICMSLST-1273 Implement action #}
-            <li><button type="button" class=" button">Reject/Cancel Variation Request</button></li>
+            <li>
+              <a
+                href="{{ icms_url("case:cancel-variation-request", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
+                class="button">
+                Reject/Cancel Variation Request
+              </a>
+            </li>
 
             {# TODO: ICMSLST-1274 Implement action #}
             <li><button class=" button">Request Update</button></li>
