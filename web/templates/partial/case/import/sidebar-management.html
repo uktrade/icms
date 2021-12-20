@@ -39,9 +39,12 @@
 
   {% endif %}
 
-  {% if process.variation_requests.all().count() > 0 %}
-    {# TODO: ICMSLST-1287 Update the variation requests count open_count / total_count #}
-    {{ icms_link(request, icms_url('case:manage-variations', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Variations') }}
+  {% set all_vr = process.variation_requests.all() %}
+  {% set all_vt_count = all_vr.count() %}
+  {% if all_vt_count > 0 %}
+    {% set open_vr_count = all_vr.filter(status="OPEN").count() %}
+    {% set vr_label = "Variations (" + open_vr_count|string + "/" + all_vt_count|string + ")" %}
+    {{ icms_link(request, icms_url('case:manage-variations', kwargs={'application_pk': process.pk, 'case_type': 'import'}), vr_label) }}
   {% endif %}
 
   {# Common import application links #}

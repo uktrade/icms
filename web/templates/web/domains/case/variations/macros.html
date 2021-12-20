@@ -37,8 +37,7 @@
   <fieldset>
     <legend>
       <strong>
-        {# TODO: ICMSLST-1287 Need correct variation request number #}
-        Variation Request {{ vr.pk }}
+        Variation Request {{ vr.vr_num }}
       </strong>
     </legend>
     {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}

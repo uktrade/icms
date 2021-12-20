@@ -4,6 +4,8 @@ from urllib import parse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
+from django.db.models import Window
+from django.db.models.functions import RowNumber
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -21,6 +23,7 @@ from web.domains.case.forms_search import (
     ReassignmentUserForm,
 )
 from web.domains.case.models import ApplicationBase
+from web.domains.case.utils import get_variation_request_case_reference
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -208,15 +211,18 @@ class RequestVariationUpdateView(
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
+        variation_requests = (
+            self.application.variation_requests.all()
+            .order_by("-requested_datetime")
+            .annotate(vr_num=Window(expression=RowNumber()))
+        )
+
         return context | {
             "page_title": f"Application {self.application.get_reference()}",
             "search_results_url": self.get_success_url(),
             "process": self.application,
             "case_type": self.kwargs["case_type"],
-            # TODO: ICMSLST-1287 Need to annotate this
-            "variation_requests": self.application.variation_requests.all().order_by(
-                "-requested_datetime"
-            ),
+            "variation_requests": variation_requests,
         }
 
     def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
@@ -232,8 +238,7 @@ class RequestVariationUpdateView(
         self.application.variation_decision = None
         self.application.variation_refuse_reason = None
 
-        # TODO: ICMSLST-1287 Update reference to include variation number
-        # self.application.reference = reference + f"/{variation_no}"
+        self.application.reference = get_variation_request_case_reference(self.application)
 
         self.update_application_status()
         self.update_application_tasks()

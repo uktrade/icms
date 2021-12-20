@@ -14,7 +14,7 @@ from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
 from .shared import ImpExpStatus
-from .types import ImpOrExpOrAccess
+from .types import ImpOrExp, ImpOrExpOrAccess
 
 
 # TODO: ICMSLST-1175 Rename CaseReference
@@ -50,6 +50,24 @@ def allocate_case_reference(
         return "/".join([prefix, str(year), new_ref_str])
     else:
         return "/".join([prefix, new_ref_str])
+
+
+def get_variation_request_case_reference(application: ImpOrExp) -> str:
+    """Get the case reference updated with the count of variations associated with the application."""
+
+    ref = application.get_reference()
+
+    if ref == application.DEFAULT_REF:
+        raise ValueError("Application has not been assigned yet.")
+
+    variations = application.variation_requests.count()
+
+    if not variations:
+        raise ValueError("Application has no variation requests.")
+
+    prefix, year, reference = ref.split("/")[:3]
+
+    return "/".join([prefix, year, reference, str(variations)])
 
 
 def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
