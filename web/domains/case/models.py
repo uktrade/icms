@@ -241,6 +241,8 @@ class ApplicationBase(WorkbasketBase, Process):
     class Meta:
         abstract = True
 
+    DEFAULT_REF = "Not Assigned"
+
     # Decision
     REFUSE = "REFUSE"
     APPROVE = "APPROVE"
@@ -301,9 +303,7 @@ class ApplicationBase(WorkbasketBase, Process):
         raise NotImplementedError
 
     def get_reference(self) -> str:
-        # TODO: ICMSLST-1287 Need to work out how to increment the variations requested.
-        # As in what increments it / what decrements it (if anything).
-        return self.reference or "Not Assigned"
+        return self.reference or self.DEFAULT_REF
 
     def get_workbasket_row(self, user: User) -> WorkbasketRow:
         """Get data to show in the workbasket."""

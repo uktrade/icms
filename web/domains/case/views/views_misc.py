@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Window
+from django.db.models.functions import RowNumber
 from django.forms import ModelForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
@@ -657,15 +659,18 @@ class ManageVariationsView(PermissionRequiredMixin, LoginRequiredMixin, DetailVi
 
         context = super().get_context_data(**kwargs)
 
+        variation_requests = (
+            application.variation_requests.all()
+            .order_by("-requested_datetime")
+            .annotate(vr_num=Window(expression=RowNumber()))
+        )
+
         return context | {
             "page_title": f"Variations {application.get_reference()}",
             "process": application,
             "case_type": case_type,
             "readonly_view": readonly_view,
-            # TODO: ICMSLST-1287 Need to annotate this
-            "variation_requests": application.variation_requests.all().order_by(
-                "-requested_datetime"
-            ),
+            "variation_requests": variation_requests,
         }
 
 
