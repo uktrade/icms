@@ -381,8 +381,8 @@ def test_create_section5_authority():
     data = {
         "linked_offices": office_one.pk,
         "reference": "12",
-        "postcode": "ox51dw",
-        "address": "1 Beech Crescent Kidlington Oxfordshire",
+        "postcode": "ox51dw",  # /PS-IGNORE
+        "address": "1 Some road Town County",
         "start_date": "01-Dec-2020",
         "end_date": "02-Dec-2020",
         "clausequantity_set-TOTAL_FORMS": 0,

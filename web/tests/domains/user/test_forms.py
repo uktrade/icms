@@ -23,7 +23,7 @@ class UserListFilterTest(TestCase):
         UserFactory(
             username="aloy",
             is_active=True,
-            email="aloy@example.com",
+            email="aloy@example.com",  # /PS-IGNORE
             first_name="Aloy",
             last_name="Unknown",
             organisation="Unknown",
@@ -34,7 +34,7 @@ class UserListFilterTest(TestCase):
         UserFactory(
             username="willem",
             is_active=True,
-            email="willem@example.com",
+            email="willem@example.com",  # /PS-IGNORE
             first_name="Willem",
             last_name="Unknown",
             organisation="Byrgenwerth College",
@@ -45,7 +45,7 @@ class UserListFilterTest(TestCase):
         UserFactory(
             username="nathan.drake",
             is_active=True,
-            email="nathan.drake@example.com",
+            email="nathan.drake@example.com",  # /PS-IGNORE
             first_name="Nathan",
             last_name="Drake",
             organisation="N/A",
@@ -56,7 +56,7 @@ class UserListFilterTest(TestCase):
         UserFactory(
             username="ori",
             is_active=True,
-            email="ori@example.com",
+            email="ori@example.com",  # /PS-IGNORE
             first_name="Ori",
             last_name="Unknown",
             organisation="Blind Forest",
@@ -67,7 +67,7 @@ class UserListFilterTest(TestCase):
         UserFactory(
             username="mario",
             is_active=True,
-            email="mario@example.com",
+            email="mario@example.com",  # /PS-IGNORE
             first_name="Mario",
             last_name="Bro",
             organisation="Bros. Plumbers Ltd.",
@@ -122,7 +122,7 @@ class UserListFilterTest(TestCase):
 
 class PeopleFilterTest(TestCase):
     def create_email(self, user):
-        email = PersonalEmail(user=user, email=f"{user.username}@example.com")
+        email = PersonalEmail(user=user, email=f"{user.username}@example.com")  # /PS-IGNORE
         email.save()
         return email
 

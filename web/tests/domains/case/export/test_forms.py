@@ -14,9 +14,9 @@ def test_gmp_form_clean_ni_postcode_gb_country(mocker):
     form = EditGMPForm(
         instance=instance,
         data={
-            "manufacturer_postcode": "BT43XX",
+            "manufacturer_postcode": "BT43XX",  # /PS-IGNORE
             "manufacturer_country": "GB",
-            "responsible_person_postcode": "BT43XX",
+            "responsible_person_postcode": "BT43XX",  # /PS-IGNORE
             "responsible_person_country": "GB",
             "is_responsible_person": "yes",
             "gmp_certificate_issued": "BRC_GSOCP",
@@ -37,9 +37,9 @@ def test_gmp_form_clean_gb_postcode_ni_country(mocker):
     form = EditGMPForm(
         instance=instance,
         data={
-            "manufacturer_postcode": "SW1A1AA",
+            "manufacturer_postcode": "SW1A1AA",  # /PS-IGNORE
             "manufacturer_country": "NIR",
-            "responsible_person_postcode": "SW1A1AA",
+            "responsible_person_postcode": "SW1A1AA",  # /PS-IGNORE
             "responsible_person_country": "NIR",
             "is_responsible_person": "yes",
             "gmp_certificate_issued": "BRC_GSOCP",

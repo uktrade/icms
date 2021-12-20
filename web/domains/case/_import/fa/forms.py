@@ -22,7 +22,7 @@ class ImportContactPersonForm(forms.ModelForm):
             "dealer",
         )
         labels = {
-            "first_name": "First Name",
+            "first_name": "First Name",  # /PS-IGNORE
             "last_name": "Surname",
             "dealer": "Did you buy from a dealer?",
         }

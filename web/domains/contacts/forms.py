@@ -9,7 +9,7 @@ class ContactForm(forms.Form):
     contact = forms.ModelChoiceField(
         label="",
         help_text=(
-            "Search a contact to add. Contacts returned are matched against first/last name,"
+            "Search a contact to add. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
         ),
         queryset=User.objects.filter(is_active=True),

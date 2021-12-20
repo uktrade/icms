@@ -2,12 +2,14 @@
 from .non_prod_base import *
 
 SECRET_KEY = env.str("ICMS_SECRET_KEY", default="development")
-DATABASES = {"default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")}
+DATABASES = {
+    "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
+}
 ALLOWED_HOSTS = ["localhost", "web"]
 DEBUG = True
 
 # Google recaptcha. Using fake test keys on localhost
-RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"  # /PS-IGNORE
 RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 

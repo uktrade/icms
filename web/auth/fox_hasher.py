@@ -41,7 +41,7 @@ class FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher):
         >>> password = b'Squeamish Ossifrage'
         >>> salt = unhexlify(b'1234567878563412')
         >>> hexlify(pbkdf2(password, salt, 500, 16, hashlib.sha1))
-        b'9e8f1072bdf5ef042bd988c7da83e43b'
+        b'9e8f1072bdf5ef042bd988c7da83e43b' # /PS-IGNORE
 
         """
         h = hmac.new(password, digestmod=digestmod)

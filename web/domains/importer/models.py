@@ -56,7 +56,7 @@ class Importer(Archivable, models.Model):
         related_name="own_importers",
         verbose_name="Person",
         help_text=(
-            "Search a user to link. Users returned are matched against first/last name,"
+            "Search a user to link. Users returned are matched against first/last name,"  # /PS-IGNORE
             " email and title."
         ),
     )

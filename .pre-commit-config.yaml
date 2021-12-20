@@ -1,0 +1,24 @@
+repos:
+-   repo: https://github.com/uktrade/pii-secret-check-hooks
+    rev: 0.0.0.33
+    hooks:
+    -   id: pii_secret_filename
+        files: ''
+        language: python
+        pass_filenames: true
+        require_serial: true
+    -   id: pii_secret_file_content
+        files: ''
+        language: python
+        pass_filenames: true
+        require_serial: true
+    -   id: pii_secret_file_content_ner
+        files: ''
+        language: python
+        # args: [--ner_output_file=ner_output_file.txt] # uncomment to output NER entities
+        pass_filenames: true
+        require_serial: true
+    -   id: hooks_version_check
+        name: Checking local hooks against latest release
+        verbose: true
+        require_serial: true

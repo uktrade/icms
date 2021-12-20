@@ -10,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 URL = "https://api.companieshouse.gov.uk/search/companies?q={query}&items_per_page=20"
 URL_COMPANY = "https://api.companieshouse.gov.uk/company/{company_number}"
-TOKEN = base64.b64encode(bytes(settings.COMPANIES_HOUSE_TOKEN, "utf-8")).decode("utf-8")
+TOKEN = base64.b64encode(bytes(settings.COMPANIES_HOUSE_TOKEN, "utf-8")).decode(  # /PS-IGNORE
+    "utf-8"
+)
 
 
 class CompaniesHouseException(Exception):

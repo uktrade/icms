@@ -38,7 +38,7 @@ class PriorSurveillanceApplication(ImportApplication):
             "It is the responsibility of the applicant to ensure that the"
             " commodity code in this box is correct. If you are unsure of the"
             " correct commodity code, consult the HM Revenue & Customs at"
-            " classification.enquiries@hmrc.gsi.gov.uk or use the online trade"
+            " classification.enquiries@hmrc.gsi.gov.uk or use the online trade"  # /PS-IGNORE
             " tariff https://www.gov.uk/trade-tariff/sections."
         ),
     )

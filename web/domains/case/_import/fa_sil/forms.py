@@ -202,13 +202,13 @@ class SILGoodsSection5Form(forms.ModelForm):
             cleaned_data["quantity"] = None
 
 
-class SILGoodsSection582ObsoleteForm(forms.ModelForm):
+class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
     obsolete_calibre = forms.ChoiceField(
         label="Obsolete Calibre", choices=(), widget=s2forms.Select2Widget
     )
 
     class Meta:
-        model = models.SILGoodsSection582Obsolete
+        model = models.SILGoodsSection582Obsolete  # /PS-IGNORE
         fields = (
             "curiosity_ornament",
             "acknowledgment",
@@ -293,9 +293,9 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):
         return original_chambering
 
 
-class SILGoodsSection582OtherForm(forms.ModelForm):
+class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
     class Meta:
-        model = models.SILGoodsSection582Other
+        model = models.SILGoodsSection582Other  # /PS-IGNORE
         fields = (
             "curiosity_ornament",
             "acknowledgment",
@@ -396,7 +396,8 @@ class SILGoodsSection582OtherForm(forms.ModelForm):
 
         if (
             ignition
-            and ignition_details == models.SILGoodsSection582Other.IgnitionDetail.OTHER
+            and ignition_details
+            == models.SILGoodsSection582Other.IgnitionDetail.OTHER  # /PS-IGNORE
             and not cleaned_data.get("ignition_other")
         ):
             self.add_error("ignition_other", "You must enter this item")
@@ -467,15 +468,15 @@ class ResponsePrepSILGoodsSection5Form(ResponsePrepBaseForm):
             cleaned_data["quantity"] = None
 
 
-class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):
+class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):  # /PS-IGNORE
     class Meta:
-        model = models.SILGoodsSection582Obsolete
+        model = models.SILGoodsSection582Obsolete  # /PS-IGNORE
         fields = ResponsePrepBaseForm.Meta.fields
 
 
-class ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm):
+class ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm):  # /PS-IGNORE
     class Meta:
-        model = models.SILGoodsSection582Other
+        model = models.SILGoodsSection582Other  # /PS-IGNORE
         fields = ResponsePrepBaseForm.Meta.fields
 
 
@@ -575,13 +576,13 @@ class SILSupplementaryReportFirearmSection5Form(forms.ModelForm):
         fields = ("serial_number", "calibre", "model", "proofing")
 
 
-class SILSupplementaryReportFirearmSection582ObsoleteForm(forms.ModelForm):
+class SILSupplementaryReportFirearmSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
     class Meta:
-        model = models.SILSupplementaryReportFirearmSection582Obsolete
+        model = models.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
         fields = ("serial_number", "calibre", "model", "proofing")
 
 
-class SILSupplementaryReportFirearmSection582OtherForm(forms.ModelForm):
+class SILSupplementaryReportFirearmSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
     class Meta:
-        model = models.SILSupplementaryReportFirearmSection582Other
+        model = models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
         fields = ("serial_number", "calibre", "model", "proofing")

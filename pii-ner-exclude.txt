@@ -1,0 +1,2120 @@
+newCountry
+Exit
+Git
+dev_head=
+Repo
+" && \
+git checkout
+git reset
+git merge
+newVersion
+function on_error
+git checkout -f #
+MAIN
+LINENO
+INT # Run on_error
+ERR # Run on_error
+BUMP
+git checkout --quiet -b
+Response Preparation
+Cover Letter</h3
+class="three columns"></div
+Jodit('textarea
+Remove
+ChecklistBase
+ImportApplication
+Commodity
+CommodityGroup
+ProcessTypes
+max_digits=9
+the European Union
+# Goods
+Customs
+Integrated Tariff Book
+Classification Advisory Service
+ManyToManyField(IronSteelCertificateFile
+web.domains.user.models
+DIT
+Certificates of Free Sale
+max_length=3
+ForeignKey(User
+copy.deepcopy(self.data
+user_can_edit(self
+MultipleObjectsReturned
+Values for Process.process_type
+DerogationsApplication
+Firearms and Ammunition (Deactivated Firearms Licence
+Firearms and Ammunition (Open Individual Import Licence
+Firearms and Ammunition (Specific Individual Import Licence
+Iron and Steel (Quota
+OPT
+Outward Processing Trade
+Adhoc Licence Application
+Prior Surveillance
+Quota
+WOOD
+Wood
+CFS
+Importer Access Request
+EAR
+ExporterAccessRequest
+Exporter Access Request
+FIRs
+exc
+get_task
+isinstance(expected_state
+self.accessrequest.exporteraccessrequest
+self.importapplication.derogationsapplication
+SPS
+# Export
+GMP
+TaskType(models
+ACK
+Acknowledge
+certificate</h4
+>Commodities</h4
+Pa11y
+Puppeteer
+function(err
+function report(url
+report('http://web:8080
+# File
+HERE="$(cd
+ILB Case Officers
+ILB Case Officers:Certificate Application Case Officer
+Resume Task
+Link Exporter
+Review
+Pal Ltd
+Close Request
+Access Approval
+Approved"
+the Good Manufacturing Practice
+Cosmetic Regulation
+Regulation
+application_field((schedule.manufacturer_address
+Address
+Ammunition</h4
+Firearm
+EU
+Exporter Access Requests
+class="button
+event.preventDefault
+method='POST
+CFS Declaration Translation</h3
+Import Case Management System Login
+CommodityFilter
+CommodityForm
+CommodityType
+CommodityFactory
+Group 2
+Request
+Linked
+Prior Authorisation
+Past Beneficiary
+Further Authorisation
+Home
+Home.as_view
+URLconf
+django.contrib import
+admin.site.urls
+include(debug_toolbar.urls
+Ownership" class="button
+Respond
+process.status}}</span></div
+CLAM_AV_DOMAIN=
+CLAM_AV_PASSWORD=
+View
+RequireRegisteredMixin
+web.domains.template.models
+web.views
+ViewReceived
+MailshotForm
+ReceivedMailshotsView(ModelFilterView
+Received Mailshots
+check_permission(self.request.user
+Display
+MailshotListView(ModelFilterView
+Maintain Mailshots
+Republish
+mailshots.order_by("-pk
+MailshotEditView(PostActionMixin, ModelUpdateView
+mailshot_pk
+mailshot.refresh_from_db(
+MailshotRetractView(ModelUpdateView
+PUBLISHED
+@permission_required("web.ilb_admin
+mailshot_pk}
+class="tabs
+section 5
+class="prompt
+kwargs={"pk
+ImpOrExpOrAccessT
+ImpOrExpT
+ProcessError
+web.models
+AccessRequest
+ExportApplication
+target="blank
+Preview Licence
+process.licence_start_date.strftime('%d-%b-%Y
+process.licence_end_date.strftime('%d-%b-%Y
+>Endorsement</h4
+bin button
+aria-label="Delete
+template:</div
+Sharing
+BaseInlineFormSet
+AlternativeEmail
+PersonalEmail
+Don
+def new_user_phones_formset(request
+prefix="alternative_email
+WSGI
+class="prompt west
+Chapter 93
+web.domains.importer.models
+ImporterFactory(factory.django
+# Simple
+CFSSchedule
+GMPFile
+get_case_page_title
+# Import
+view_fa_sil(request
+view_fa_sil
+view_textiles_quota
+view_gmp
+default=
+# Application
+RequestMiddleware
+ICMSMiddleware
+DIRS
+OPTIONS
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+# Auth
+env.str("AWS_SES_SECRET_ACCESS_KEY
+Europe
+s3
+structlog.stdlib.add_log_level
+structlog.processors.format_exc_info
+# Celery & Redis
+env.str("ICMS_DEFAULT_DOMAIN
+ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
+.menu
+ICMSLST-16 Workbasket
+Access Request
+FurtherInformationRequest
+ApplicationBase
+CaseEmail
+UpdateRequest
+FirearmCommodity
+XlsxConfig
+web.domains.commodity.models
+app_data
+ResultRow
+Sort
+SpreadsheetRow
+Case Reference
+Applicant's Reference
+Licence Reference
+Licence Start Date
+Application Type
+Application Sub-Type
+Case Status
+Application Contact
+Commodity Code(s
+Certificate Countries
+Countries of Manufacture
+Sheet 1
+Processing (Update
+HSE
+ORM
+applications.values_list("pk
+ImportResultRow
+Revisit
+Application Processing (IMA3) / Case Officer
+CaseStatus
+Authorise Documents (G2) / Authoriser
+Application Processing
+CFS/2021/00003
+9001809L (Paper
+Import and Export
+model.filter(case_owner
+Import Application's
+certificateofgoodmanufacturingpracticeapplication__case_emails__status=CaseEmail
+model.filter(ironsteel_query
+Q(**{f"{field}__in
+model.filter(exporter_filter
+ImportResultRow]
+applicant_reference=cs.applicant_reference
+row.application_type
+row.status
+Import Application
+Exporter / Exporter
+Standard User
+ICMSLST-1001
+name="revoke
+Export Application
+WITHDRAWN
+label="Copy Application
+process_products_file
+CFS Products
+Product Type Numbers
+4,5,6
+xlsx_data = generate_xlsx_file(config
+BytesIO(xlsx_data
+@pytest.mark.django_db
+test_process_products_file(is_biocidal
+assert count
+assert
+assert product_1.product_type_numbers.count
+CFS Products'
+config =
+Spreadsheet
+test_invalid_row_width(is_biocidal
+config = create_dummy_config(is_biocidal
+CAS
+http://stellarchariot.com/blog/2011/02/dynamically-add-form-to-formset-using-javascript-and-django/
+function addForm(btn
+Insert
+row).removeAttr('id').hide().insertAfter(".item
+function(evt
+el = $
+Text
+Title
+Title'
+By</dt
+application_pk
+Approval Request
+Maintain Sanction Emails
+Email Address
+sanction_email.pk
+Create Sanction Email
+Edit Sanction Email
+Create Office
+Create Office for Exporter '
+MailshotListView.as_view
+MailshotReceivedDetailView.as_view
+Create Usage for Commodity Group
+import xlsxwriter
+@dataclass
+XlsxHeaderData
+BytesIO(
+config.column_width
+row_data
+N/A'
+Supporting Documents
+Copy of Prior Authorisation
+Evidence/Past Correspondence
+cp_commodities
+# Temporary Exported Goods
+Article 2 (2
+EC
+Article 3 (3
+Article 5 (4) of Regulation
+Article 3(4)
+Article 3(4) of Regulation (EC)
+Article 3(5
+Article 2(2)(a) of Regulation
+European Commission
+web.domains.exporter.models
+WorkbasketBase
+WorkbasketRow
+Process, ProcessTypes
+REFUSED
+self.further_information_requests.open
+IAR
+GB
+Importer Search
+@importer
+@search @importer-search
+Old Toby Imports Ltd
+Dissolved Importers Ltd
+Agile Importers
+Dissolved Importers Ltd"
+Archived"
+Agile Importers Ltd
+section 1 and 2
+Home Office
+the Home Office Guide on Firearms Licensing Law
+requirements-dev.txt
+git-hooks
+WorkbasketAction
+self.get_kwargs
+# Post
+Misc
+get_workbasket_actions
+view.has_permission
+MenuItem
+sub_menu
+PermissionRequiredMixin
+Mailshots
+SubMenu
+Import Applications
+view="import
+label="Importers/Exporters
+SubMenuLink(label="Section 5 Clauses
+MenuButton(label="New Import Application
+LogoutView
+LogoutView.as_view
+auth_views.reset_password
+auth_views.set_password
+auth_views.change_password
+container.classList.add('hidden
+Create Commodity
+Initialize Sentry
+param
+traceback.print_exc
+process.contract_file
+template_name
+Declaration Title
+Declaration Text
+Email Template Name
+Email Subject
+Email Body
+Endorsement Name
+Endorsement Text
+Letter Template Name
+Fragment Name
+Fragment Text
+f"These
+self.english_paras
+the Exporting Company
+Schedule
+reassignmentCB
+#id_reassignment_user").djangoSelect2().empty
+R1C1
+R1C2
+R2C2
+R3C1
+assert list(row_data
+assert list(header
+aria-disabled="{%if
+the Home Office
+section.start_date.strftime('%d-%b-%Y
+Invokes
+forms_data.append(f.data
+json.loads(data
+ENDORSEMENT
+LETTER_FRAGMENT
+CFS_SCHEDULE
+ACCESS_REQUEST
+Access Requests
+ARCHIVED
+@staticmethod
+e.g: Template.get_choice_entry(Template
+CFSScheduleParagraph(models
+"Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation
+ManyToManyField(Template
+Countries
+CountryListView.as_view
+# Country Groups Management
+# Coutry
+name="Very Best Importers Ltd.
+Importer
+ExporterForm(ModelForm
+Companies House
+web.domains.case._import.models
+get_usage_countries(ImportApplicationType
+DerogationCommoditySelect(ModelSelect2Widget
+get_usage_records(ImportApplicationType
+Request Importer/
+@access
+som_user
+Access Request Type
+Access Request Type                                         | True
+| Organisation
+Agents Ltd
+Test Imports
+Agents Ltd"
+Export Agents Ltd
+EM
+EASTERN
+LO
+RU
+SCOTLAND
+SE
+East Midlands
+Eastern
+Isle of Man
+North East
+South East
+West Midlands
+REGIONS
+Constabulary (New
+Iron, Steel and Aluminium
+Precious Metals and Stones
+Global Trade Tariff: Look
+VAT
+ClassVar
+ImproperlyConfigured
+Process, Task
+# Current
+ClassVar[str
+next_task_type
+"Load the current task
+self.next_task_type
+test_exporter_management_access_approval_ok
+ilb_admin =
+password="test
+Exporter Access Approval
+test_importer_management_access_approval_ok
+Importer Access Approval
+test_import_user
+SUBMITTED
+test_export_user
+MANUFACTURE
+in_progress_exp_appl
+submitted_agent_imp_appl
+client.login(username
+_check_submitted_workbasket(submitted_agent_imp_appl, html
+assert re.search(link
+web.domains.constabulary.models
+ConstabularyFactory(factory.django
+Sequence(lambda
+Import Case Management System{%
+Case Management System</p>
+Constabulary
+EAST_MIDLANDS
+Test Constabulary
+Commodity Code
+Firearms and Ammunition (Deactivated Firearms Licence) - Response Preparation
+#     #
+LockManager
+transaction.get_autocommit
+table._meta.db_table
+# Address Entry
+ENTRY_TYPES
+CharField(max_length=10
+Elastic
+elasticapm
+Audit
+AUDIT_LOG_USER_FIELD
+SERVICE_NAME
+ProcessorFormatter
+StreamHandler
+style="width
+Applicant Reference
+Section 1
+CharField(max_length=4096
+Customs Integrated Tariff Book
+the Stationery Office
+the Classification Advisory Service
+commodity_code = models
+Chapter 97
+Section 5
+max_length=10
+is_upload
+get_add_firearm_url(self
+f"import
+OneToOneField(File
+ExporterFactory
+CertificateOfGMPApplicationFactory(factory.django
+web.domains.office.models import
+Office
+an Import Company
+dest="first_name
+default="van Rossum
+Derogation from Sanctions Import Ban'
+Outward Processing Trade'
+Prior Surveillance'
+Adhoc Licence Application'
+Section 5 Clauses
+S3Boto3StorageFile
+FieldError
+PageErrors
+DFLSupplementaryReport
+reverse("import
+Admin
+view_goods_certificate
+LICENCE_NUMBER
+DECLARATION
+goods_errors.add
+template_name="web
+Add Firearm Details
+Edit Firearm Details
+add_report_firearm_no_firearm
+class="nine
+kwargs={"case_type
+Search</a
+context.browser.find_element_by_id("id_request_reason").send_keys(reason
+create_importer_access_request_task(context
+@given('an
+Somewhere"
+Manchester
+assert label
+assert element_count
+north disabledLink">Case Reference</span></div>
+target="_blank
+north">Licence Validity</label></div>
+cs.application_sub_type
+web.domains.firearms.models
+ObsoleteCalibre
+yes_no_fields
+less than 60 cm
+less than 24 inches
+less than 40 inches
+9mm
+5(1)(c
+5(1A)(g
+Section 58(2
+Section 2 or Section 5
+Obsolete Calibre
+IgnitionDetail
+ResponsePrepSILGoodsSection582OtherForm(ResponsePrepBaseForm
+msg =
+msg
+AWS_ACCESS_KEY_ID
+region_name=settings
+class="small-button
+Create Organisation
+Goods Description
+CreateSILSectionConfig(NamedTuple
+get_report_firearm_model(sil_section_type
+PageErrors(page_name="Add Licence for Section 1
+PageErrors(page_name="Add Licence for Section 2
+PageErrors(page_name="Add Licence for Section 5
+PageErrors(page_name="Add Licence for Section 58(2
+Section 5 Authorities
+messages=
+Section 5 Authority
+Certificates
+application.verified_certificates.filter(is_active=True).exists
+Firearms and Ammunition (Specific Import Licence
+Endorsement Usage Template (ICMSLST-638
+Sanctions COO & COC
+AC & AY
+application.user_section5
+application.verified_section5.remove(section5
+COUNTRY_OF_CONSIGNMENT
+Convert GBP
+web.domains.case._import.sanctions.models
+OILApplicationFactory(factory.django
+button">Save</button
+href="{{view.cancel_url
+Sovereign Territory
+Country Translation Set (new
+details</h4>
+ChiefStatusConverter
+path("import/
+include("web.domains.mailshot.urls
+docker_flake8
+-O codecov.sh https://codecov.io/bash
+ConstabularyCreateView.as_view
+CheckboxInput
+SanctionEmailsFilter(django_filters
+BooleanFilter
+Edit Office
+Surveillance
+GBP/£
+method='get'
+quantity_threshold=8
+commodity_code=commodity_code
+create_commodity_group
+kwargs={'mailshot_pk
+Compensating Products'
+Prior Authorisation'
+New Application'
+Further Authorisation'
+TOML
+py37
+Import Case Management System Account
+Generate
+fir.email_cc_address_list
+Create Certificate Application
+ApplicationErrors
+CompensatingProductsOPTForm
+Outward Processing Trade Import Licence - Edit
+Outward Processing Trade Import Licence - Edit Compensating Products
+Outward Processing Trade Import Licence - Edit Temporary Exported Goods
+Outward Processing Trade Import Licence - Edit Further Questions
+fq_type
+str
+file_type.startswith("fq
+Further Questions - " + get_fq_page_name(file_type
+Outward Processing Trade Import Licence - Submit
+get_edit_url(application_pk
+Outward Processing Trade Licence - Add
+Outward Processing Trade Licence - Checklist
+Adhoc Licence
+id="pg37
+for="g37
+id="pg39
+for="g39
+west">Address
+aria-describedby=
+DIT Import
+Licensing Branch
+rg41 hint50-content
+aria-describedby="hint50-content
+for="g42
+class="prompt west">Telephone
+"Creates Usage records for several application types
+self.bulk_create(self.load_iron_and_steel_quota
+101
+130A
+146A
+146B
+151A
+151B
+the Outward Processing Trade
+the Derogation From Sanctions Import Ban
+self.country.objects.get(name="Russian Federation
+SAN4
+the Iron and Steel (Quota
+self.country.objects.get(name="Kazakhstan
+Sanctions
+Derogation From Sanctions Import
+sanction_and_adhoc_pk
+Kilos
+var
+TerminalFormatter
+@contextmanager
+>Cancel</button>' +
+e.preventDefault
+el.on('click'
+ConstabulariesFilter
+ConstabularyForm
+ConstabularyFactory
+London Constabulary
+That Constabulary
+the HM Revenue & Customs
+PositiveIntegerField
+approve">OK</button
+>Cancel</button>
+addr =
+function(data
+addr = row['formatted_address'].join(' '
+Postcode
+Archive, Edit
+ConstabularyListView(ModelFilterView
+Maintain Constabularies
+Constabulary Region
+New Constabulary
+ConstabularyEditView(ModelUpdateView
+Sum
+ResponsePrepCertificateForm
+ICMS1
+Import Licence - Add
+Import Licence - Edit Goods
+Import Licence - Edit Certificate
+ReadonlyFormMixin(Form
+ImporterFactory
+Importer Organisation
+Individual Importer
+Assert
+assert form.is_valid
+test_invalid_eori_number_importer_individual_form
+assert error
+test_type_importer_individual_form
+CommandError("Can
+# Assume
+# Access
+name="UK
+test_agent_export_user
+# ILB Admin/Case
+User
+date_of_birth
+self._assign_permission(user
+postcode="BT180LZ
+CountryFactory
+CountryGroupFactory
+self.assertEqual(response.status_code
+Editing All Countries
+super().setUp
+Editing Astoria
+CountryGroupFactory(name="Asian
+CountryGroupFactory(name="American
+American
+CountryGroupViewTest(AuthTestCase
+European
+African
+New Country 2
+Editing Arabic Translation Set
+CountryTranslationSetFactory(name="New Country 4"
+Editing New Country 4
+New Country 5
+north">Case Reference</label></div>
+update &&
+ENV
+https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+mkdir
+COPY requirements-*.txt
+CMD
+RowNumber
+web.domains.case.models
+VariationRequest
+WithdrawApplication
+app_checks
+Applicant Case Management" Views
+ILB Admin
+Manage
+Close Case Processing
+application.variation_refuse_reason
+f"Authorise Success: Application
+at.cover_letter_flag
+# Notification
+ManageVariationsView(PermissionRequiredMixin, LoginRequiredMixin
+# Having
+User.objects.none
+formats:\n\
+United
+STD NUMBER\n\
++36
+NDD:\n\
+Strip
+west">Proof checked</label
+DerogationsForm
+TaskFactory
+ICMS - Import Case Management System
+Import Case Management System
+the Python /
+Oracle
+Docker
+cli
+http://localhost:8080
+npm audit
+icms_pgdata
+web/migrations/*.py
+ClamAV
+FurtherInformationRequestProcess
+ImporterAccessRequestProcess(FurtherInformationProcessMixin
+IMP_EDIT_APP
+| ICMS_SECRET_KEY
+Comma
+AWS_SECRET_ACCESS_KEY
+CLAM_AV_DOMAIN                    |
+CLAM_AV_PASSWORD                  |
+ELASTIC_APM_SECRET_TOKEN
+no_firearms
+View Application'
+f"/constabulary/{self.constabulary.id}/edit/
+goods.</p
+CountryFactory(name="Shire
+CountryNameFilter(data
+SOVEREIGN_TERRITORY
+TST
+CountryCreateForm(data=
+Dothraki
+Supplementary Report
+ResponsePreparationVariationRequestImportForm
+application.application_type.electronic_licence_flag
+section_1
+password_update(_form
+assign_to
+button.addEventListener('click'
+Importer/Exporter Access Request{%
+el =
+DLL
+var/
+PyInstaller
+# Installer
+pip-delete-this-directory.txt
+local_settings.py
+Scrapy
+Sphinx
+PyBuilder
+Jupyter Notebook
+env/
+ENV/
+# Rope
+dmypy.json
+Pyre
+Edit Section5 Authority
+Section5 Authority
+ImportError
+PYTHONPATH
+Matrix
+value="Start Authorisation (Close Case Processing
+value="Send Request
+CaseReference
+str(year
+new_ref_str
+assert isinstance(application
+application.user_is_contact_of_org(user
+CATEditView.as_view
+ICMSLST-809 - Display
+fields.field(form.password
+value="Sign and Authorise" />
+DerogationsChecklist
+Decimal
+purpose_of_request
+f"Quantity
+self.add_error(f
+is_other_civ_purpose
+Russian
+DerogationsChecklistForm.Meta.fields
+Section5AuthorityManager(models
+Section5AuthorityManager
+Maintain Contact Edit Address{%
+Importer</h4
+Main Individual Importer
+IntegerField
+class="small-button">Close</button
+fir.status
+Unit(models
+Humanitarian
+DEROGATIONS
+max_length=4096
+Provide the name
+Revolutionary Forces
+Article 2 of"
+EU Regulations 2580/2001
+881/2002
+Article 14
+Syrian
+National Coalition for Opposition
+Revolutionary Forces (SNCORF
+{ category_descriptions|tojson }
+commodity_type_class.objects.get(type="Iron, Steel and Aluminium
+2714
+commodity_code[:4
+assert ct
+views.reopen_report
+web.domains.commodity.widgets
+CommodityWidget
+customs_office_address
+f"Invalid
+OPTChecklistOptionalForm(OPTChecklistForm
+TemplateResponse
+CountryTranslation
+MissingTranslationsDict(TypedDict
+CountryListView(RequireRegisteredMixin
+CountryEditView(ModelUpdateView
+CountryCreateView(ModelCreateView
+New Country
+TemplateResponse(request
+CountryGroupView(ModelDetailView
+CountryGroupEditView(PostActionMixin, ModelUpdateView
+self.object.countries.all
+Country.objects.none
+CountryGroup
+New Country Group
+CountryTranslationSetListView(PostActionMixin, ModelCreateView
+Manage Country Translation Sets"
+CountryTranslationCreateUpdateView(ModelUpdateView
+self.translation_set
+form.instance.country_id = self.country.id
+JsonResponse
+update_request.requested_by
+update_request.request_detail
+Update Requests
+start_update_request
+update_requests.get
+RESPONDED
+ICMSLST-836 - Replace
+<li><button
+kwargs={'case_type
+users.</p></div
+textiles_app_pk
+assert TextilesApplication.objects.all().count
+assert textiles_app.category_licence_description
+note</button
+aria-labelledby="tks1Kzx6n_plrnqVW43-tg-notesARCHIVED
+re_path
+Union[DFLSupplementaryReportForm
+page_no=1
+Create Commodity Group
+Maintain Commodity Groups
+TaskResult
+RequestFactory
+email="second_email@example.com
+notify.register(self.user
+assert len(outbox
+assert len(m.to
+file.get_file_type_display
+views.company_lookup
+ConstabularyForm(ModelForm
+SearchURLS
+TODO Add
+TestReopenApplicationView
+self.wood_app.case_owner
+CharField(max_length=255
+Copy Recipients
+class="prompt west">Acknowledgement
+workbasket.</li
+Authorised Contacts
+Information Contacts
+notifications.</li
+File</th
+Verified Firearms Authority
+Application Reference
+Exporter Address
+application_field(process.exporter_vat_nr
+Exporter VAT Number
+Unit
+ContactWidget
+MailshotFactory
+RETRACTED
+Retracted Mailshot
+Retracted Mailshot"
+Access Request</h3
+OfficeFactory
+Importer Limited
+GB3423453234
+self.importer_eori
+sanctions/{self.process.pk}/edit/
+assert self.importer_eori in
+REF64563343
+goods_description="old
+f"/import
+In Progress
+assert self.importer_eori
+assert len(SanctionsAndAdhocApplicationGoods.objects.all
+validate_date_of_birth_not_in_future(form
+h3
+General Details</h3
+aria-describedby="edit
+Work Address
+Non-DIT ILB
+non-DIT
+Email Addresses
+Coalesce
+imp_or_exp
+CharFilter(field_name="title
+MailshotForm(ModelForm
+Importers and Agents
+Exporters and Agents
+MailshotRetractForm(ModelForm
+header(field
+config.date_format %
+config.show_all %
+headers(display
+Select2MultipleWidget
+ActQuantity
+FirearmsAct
+FirearmsAuthority
+Calibre Group Name
+ObsoleteCalibreForm(ModelForm
+FirearmsAuthorityForm(ModelForm
+queryset=
+label="End Date
+FirearmsQuantityForm(ModelForm
+an Export Company
+CaseNote
+Withdrawal
+user_cache = authenticate(self.request
+Application
+CaseEmailForm(forms
+nth)s
+case_email_config
+web.domains.country.models
+CountryFactory(factory.django
+CountryTranslationFactory(factory.django
+max_chars=10
+name</label></td>
+TemplateFactory
+Maintain Templates
+New Endorsement
+pytest.raises(RuntimeError
+match="no
+#         RuntimeError
+assert lock_manager.is_table_locked(CaseReference
+assert lock_manager.is_table_locked(ImportApplication
+match="lock_tables
+WoodQuotaChecklist
+default=3
+self.importer_user
+in_progress_app
+CommandError(f"Can't
+# Fill
+exporter_vat_nr
+DummyRequest
+UID=$(shell
+@awk
+\nUsage:\n  make \033[36m
+substr($$0
+unset UID && .venv/bin
+unset UID && \
+ICMS_ALLOWED_HOSTS="unset" && \
+SQL
+python manage.py npm &&
+shell
+##
+@unset UID && \
+PGPASSWORD
+--rm
+release_patch
+Exporter
+access_request.response_reason
+f"/mailshot/{mailshot.id}/edit/
+f"/mailshot/{self.mailshot.id}/edit/
+f"/mailshot/{self.mailshot.pk}/retract/
+assert new_version.get_reference
+assert retracted.get_reference
+published.get_reference
+assert draft.get_reference
+Not Yet Assigned
+assert draft.last_version_for_ref
+paper_licence_flag
+ImportApplication.objects.create
+assert id(obj
+Main Application
+Section 5 of the Firearms Act 1968
+fields.field(form.reassignment
+name="close_request
+FormView
+FilterView
+Certificate Application Templates
+kwargs["data
+Create Certificate Application Template
+ilb_admin
+self.object.user_can_view
+form_class_for_application_type(self.object.application_type
+EditCATForm
+View Certificate Application Template
+Edit Certifcate Application Template
+type_.lower
+PKs
+CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View
+name=
+aria-required="true
+aria-required="false
+aria-label="Click
+>Emails</h4>
+Document Pack
+text</th>
+Endorsement</h4
+Importer Display
+Elm Street Imports
+Roy
+View Importer - Elm Street Imports
+non-European
+US Imports
+| Field         | Value
+Non-European
+Hey Ltd
+Elm Street
+Hey Ltd"
+Subcorp
+4 Beverly Hills
+Jane
+Jane-importer
+Ms Jane Doe\s+Individual
+Vary Applications/Licences
+JS Dependencies
+os.system("npm
+Roden St
+Exporter.objects.create
+address="14 Mafeking Rd
+Enfield
+self.create_user
+username="exporter_user
+last_name="Davis
+self.create_superuser("admin
+Old Admiralty Building\nLondon\n
+Acme Wonder Product
+SharingStatuses
+Maintain Commodity
+papua_awesome_guinea
+name="Test Group
+French
+Sindarin
+CountryTranslation.objects.create
+value="Stop Case" /></li>
+>SIGL</h4
+EC SIGLWood
+ContactForm
+form.cleaned_data["contact
+isinstance(org
+Matching Matching Obsolete Calibres</th>
+Edit Obsolete Calibre Group
+class="prompt west">Case
+# Try get_page_title
+PostActionMixin(object
+kwargs=kwargs
+UsageForm
+CommodityListView(ModelFilterView
+Maintain Commodities
+Commodity Type
+CommodityEditView(ModelUpdateView
+CommodityGroupListView(ModelFilterView
+qs.select_related("commodity_type").prefetch_related("commodities
+Commodities
+CommodityGroupEditView(ModelUpdateView
+CommodityGroupEditForm
+usage_pk
+ApplicantDetails
+CommodityDetails
+AssigneeDetails
+SearchResults
+aria-labelledby="tks1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED
+IntegrityError
+TestUser
+TestAccessRequestProcess
+CFSProduct
+CFSProductType
+generate_product_template_xlsx
+web.exporter_access
+exporters_with_agents(user
+# User
+redirect("export
+# Set
+# Refresh
+template.user_can_view(user
+Application Template
+PrepareCertManufactureForm(data
+CFSSchedule =
+Edit Schedule
+Edit Manufacturer
+cfs_delete_manufacturer
+CFSProduct =
+Edit Product
+Add Active Ingredient
+def cfs_edit_ingredient
+Edit Active Ingredient
+Edit Product Type Number
+CFS Product Upload
+CFS Product Upload Biocide
+product_spreadsheet_upload
+ForeignKeys
+schedule_to_copy
+idx
+f"Schedule
+view_gmp_document
+main_form.is_valid
+Edit CFS
+get_export_record_actions
+get_import_record_actions
+Reopen Case
+Request Variation"]
+Request Variation"
+Copy Application
+Create Template
+respond_task.refresh_from_db
+template_code="IAR_RFI_EMAIL
+fir.refresh_from_db
+ImporterAccessRequestFIRReviewTest(AuthTestCase
+test_list_importer_access_request_ok
+Search Importer Access Requests
+GDS
+Austria"
+Belarus
+Bhutan
+Botswana
+British Virgin Islands
+Burma (Myanamar
+Dem
+Dominican Republic"
+"European Union
+Falkland Islands
+Ghana
+Gibraltar
+Guernsey
+Jersey
+Jordan
+Korea (North
+Korea (South
+Liechtenstein
+Malta
+Mauritania
+Micronesia
+Nigeria
+Occupied Palestinian Territories
+Oman
+Paraguay
+Peru
+Puerto Rico
+Russian Federation
+Saint Helena
+Soloman Islands
+Tajikistan
+Trinidad &amp
+Tobago
+United Arab Emirates
+Uzbekistan
+convert_gbp_to_euro
+PriorSurveillanceApplication.objects.select_for_update
+EditSPSForm(data
+Prior Surveillance Import Licence - Edit
+Prior Surveillance Import Licence - Submit
+Prior Surveillance Import Licence - Add
+form.is_valid
+Prior Surveillance Import Licence - Edit Goods
+PeopleFilter
+UserDetailsUpdateForm
+Forest
+job_title="Chief Plumber
+username="melkor
+organisation="Evil Co.
+melkor
+job_title
+Windsor House
+CI
+GOV PaaS
+UI
+redis_data
+Adhoc License Application - Edit
+Adhoc License Application
+goods_pk
+Edit Goods
+commodity_group_data
+import_views.view_file
+CELERY_TASK_ALWAYS_EAGER =
+web.tests.file_upload_handler
+GoodsModel = Union
+ResponsePrepGoodsForm = Union
+SILSupplementaryReportFirearmSection5
+Maintain Obsolete Calibres
+Obsolete Calibre Group
+ClauseQuantityFormSet(request
+firearms_pk
+Take Ownership
+process.refresh_from_db
+Maintain Exporters
+Create Exporter
+test_detail_exporter_ok
+Countries</label></div
+ExporterFactory(name="Another
+Active Exporter
+Q(link__user__last_name__icontains
+Create{%
+section5_files
+https://stackoverflow.com/questions/7432142/django-template-display-model-verbose-names-objects
+PersonWidget
+ImporterIndividualForm(ModelForm
+ImporterOrganisationForm(ModelForm
+Entity Type
+Q(user__first_name__icontains
+BEST_FRIEND
+Organisation Name (Employer
+Date of Birth
+CaptchaForm(Form
+An Access Request
+Firearm Reports Management
+value="Add"/>
+Workbasket{%
+class="prompt north">Transaction /
+Ref
+for="g27
+value="g27/3">Importer Access
+class="prompt north">Company
+id="pg31
+for="g31
+class="prompt north">Filter Tag
+type="radio
+Information
+ICMS</h1
+The DIT Import Licensing Branch's
+Guidance</h2
+Need an Import Licence?</a
+TextilesChecklist
+EditTextilesForm(data
+usages = get_usage_data(app_type
+commodity_group_unit
+application_domain="IMA
+AgentForm
+OfficeForm
+Archive, CreateExporterAgent, Edit
+ExporterListView(ModelFilterView
+def create_office(request
+icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk
+assert resp.context["withdrawals"].count
+assert resp.context["current_withdrawal
+Checklist
+Application Updates
+assert current_task
+assert expected_task
+assert vr.reject_cancellation_reason
+the wood quota application
+self.wood_app.application_type
+REJECTED
+assert cd["process
+assert cd["page_title
+vr.refresh_from_db
+API
+/></button
+inline_field_with_label(field
+HiddenInput
+class="prompt {
+name="name_field
+name="postcode_field
+name="row_available_addresses
+class="prompt west">Please
+import_application(importer
+test_import_application_missing_importer_access_permission
+test_access_user
+test_access_application_denied_for_different_user
+rec.certificates %
+django_chunk_upload_handlers.clam_av
+validate_virus_check_result
+related_file_manager
+"Create File
+name="add_to_role
+this).closest('.country').remove
+Content-Type'
+id_importer').change(post_form
+Logs in the test_import_user
+"Creates a fa-dfl
+assert DFLApplication.objects.all().count
+Firearms and Ammunition (Deactivated Firearms Licence) - Edit
+status_code=200
+dfl_app_pk
+consignment_country.pk
+assert dfl_app.proof_checked
+assert dfl_app.goods_certificates.count
+assert goods_cert.issuing_country.pk
+assert goods_cert.is_active
+document_pk}
+Firearms and Ammunition (Deactivated Firearms Licence) - Edit Goods Certificate
+Proof Checked
+Goods Certificates
+Goods Certificate
+assert application.get_task(ImportApplication
+PBKDF2
+FOXPBKDF2SHA1Hasher(PBKDF2SHA1PasswordHasher
+Password-Based Key Derivation Function 2
+keylen
+hashlib
+Ossifrage
+hashlib.sha1
+b'9e8f1072bdf5ef042bd988c7da83e43b'
+bytearray(hm.digest
+key[:keylen].hex().upper
+assert password
+bytearray.fromhex(base_salt
+Steel (Quota
+Country of Origin
+ref
+AddCertificateForm(CertificateFormBase
+sensitive</div>'
+web.domains.legislation.models
+class="eight columns"></div
+Address</h3
+value="save_address
+RUN mkdir
+update -y &&
+-y && \
+libpangocairo-1.0-0
+SILApplication
+return FixtureData(importer
+test_filter_by_application_type(import_fixture_data
+ref 1
+ref 2
+import_fixture_data.request.user
+ref 3
+assert len(search_data.records
+test_derogation_commodity_details_correct(import_fixture_data
+DFL
+_create_ironsteel_application("ironsteel app
+test_opt_commodity_details_correct(import_fixture_data
+expected_commodity_codes=
+test_sps_commodity_details_correct(import_fixture_data
+expected_origin_country="Azerbaijan
+expected_commodity_codes=["111111
+Wood %
+ref 4
+test_get_search_results_spreadsheet(import_fixture_data
+test_get_export_search_results_spreadsheet(export_fixture_data
+create_gmp_application(export_fixture_data
+com.reference
+xlsx_data = get_search_results_spreadsheet("export
+assert case_refs
+create_test_app_statuses(import_fixture_data
+test_search_by_status(wt
+Oustanding Open Requests
+expected=["update
+FREE_SALE
+case_ref_pattern
+not_match_app
+bar/1110
+test_import_country_searches(import_fixture_data
+shipping_year=2022
+shipping_year="2022
+cp_category
+commodity_codes=["xx555555xx
+commodity_code="xx888888xx
+xx1%1xx"
+xx888888xx
+xx8%8xx
+# Test Export
+commodity_code=
+ProcessTypes.FA_DFL.value
+cp_commodity_codes=("6205200010"
+teg_commodities.append(_create_test_commodity(cc
+sps_kwargs
+export_fixture_data
+created_by
+import_fixture_data.importer_user
+kwargs.update(**extra_kwargs
+fixture_data.exporter_user
+.factories
+assert f"Process
+test_downcast_unknown
+Process(process_type="blaa
+ProductLegislation
+class="calibre
+class="calibre-status">{{calibre.status}}</td
+>Checklist</h4
+new_alternative_emails_formset
+new_personal_emails_formset
+new_user_phones_formset
+UsersListView(ModelFilterView
+Maintain Web User Accounts
+Account Status
+Password Disposition"}
+Account Status Changed
+BlockUser
+PeopleSearchView(ModelFilterView
+Search People"
+Organisation Address
+request.session["user_details
+save_manual_address
+POST
+id="pg48
+class="prompt west">Country
+Set Cover Letter
+Section 2
+Section 58
+Field
+Access Request Type  |
+CompressorExtension
+eval_ctx.autoescape
+Convert
+f'<li class="{class_attr}"><a
+show_all_attrs
+Central Contact
+kwargs={'org_type
+OILSupplementaryReportFirearmForm(data
+ArrayAgg
+get_fa_sil_applications(search_ids
+"Load the commodity details section
+# cp_commodity_codes & teg_commodity_codes
+>Further Questions</h4
+fields.field(form.fq_maintained_in_eu
+OfficeFactory(factory.django
+Test Cosmetics Regulation
+Test Legislation
+id="btnLogout">Logout</button
+ta.val
+a Certificate of Good Manufacturing Process
+NI
+the Department for International Trade
+the Office for Product Safety and Standards
+Good Manufacturing Practice
+Product Safety and Standards
+Certificate of Good Manufacturing Practice
+ExportApplication(ApplicationBase
+related_name="updated_export_cases
+\n".join(["Certificate Application
+CertificateOfFreeSaleApplication(ExportApplication
+Brand
+verbose_name=
+verbose_name="Address
+CFSProduct(models
+ForeignKey(CFSSchedule
+related_name="product_type_numbers
+Cosmetic Products Legislation
+ISO 17021
+# ISO_22716
+process.request_reason
+assert resp.context["notes"].count
+"Firearms Specific Import Licence Application
+the Firearms Act
+SILGoodsSection582Other(models
+NEEDDLE_FIRE
+Cup
+6mm
+2 7/8 inch
+checkbox_label="These
+schedule</p
+>Products</h4
+class="icon
+Download Template
+view_mailshot.css
+CountryNameFilter(FilterSet
+label="Country Name
+CountryCreateForm(ModelForm
+CountryEditForm(CountryCreateForm
+Group Comments
+Translation Set Name
+downloadForm.addEventListener("click
+views.detail_exporter
+views.create_exporter
+views.cfs_edit_product_type
+views.edit_com
+views.edit_gmp
+>Wood
+Next
+li><a
+exporter_vat_nr = models
+SIGL Wood
+group_for_afghanistan
+Create a Commodity
+group.commodities.add(*commodities
+"Create a Usage
+300px
+State
+the Firearms Act 1968
+Section 58(2) of the Firearms Act 1968
+Government
+Queensway House
+ApplicationsWithChecklist =
+CaseEmailConfig(NamedTuple
+OfficeFactory.create_batch(2
+/></li>
+OuterRef
+usage_records =
+commodity_end_data=
+CommodityGroup.objects.filter(usages__in
+Commodity.objects.filter(commoditygroup__in
+get_commodity_group_data
+cg.unit
+def get_usage_data(app_type
+WildcardField
+Search Users
+cd.get("submitted_to
+cd.get("licence_to
+cd.get("issue_to
+Reassignment User
+Consignment"
+CommodityGroup.objects.all
+Certificate Reference
+Case Decision"
+Manufacture
+process.get_reference
+# Specific
+TextilesApplication
+Common
+Response Preparation'
+ClauseQuantity
+Section5Authority
+ImporterListView(ModelFilterView
+ImporterFilter
+Maintain Importers"
+Importer Reg No
+Importer Entity Type
+CertificateApplicationTemplate.objects.get
+responsible_person_postcode
+UserTest(TestCase
+middle_initials="G
+House
+Victoria Street
+User.objects.create
+user.set_temp_password
+self.assertNotEqual(user.password
+assert actual_euros
+Importer Edit
+Bad Imports
+UserImportCertificateForm
+Firearms and Ammunition - Certificates
+Firearms and Ammunition - Create Certificate
+certificate_pk
+authority_pk
+Edit Firearm Supplementary Report
+NATURAL
+raise NotImplementedError(f"View
+KeyError
+GMPBrand
+A Certificate of Manufacture
+UK.</p
+Select Legislation
+product_type_number
+NIR
+EditGMPTemplateForm(EditGMPFormBase
+NotImplementedError(f"Type
+UserAdmin
+ModelAdmin
+CountryGroupAdmin
+label="Is Biocidal
+label="Is EU Cosmetics Regulation
+Ireland Legislation
+ProductLegislationForm(ModelForm
+ni_legislation
+get_usage_records
+BaseForm
+Convert Django
+CC
+Detail"
+Commodity.objects.filter(commodity_type__type="Wood
+Consignment</label></div
+assert response["Content-Disposition
+pdf =
+pdf
+Beneficiary</a></li
+Exported Goods
+labels["fq_maintained_in_eu"]) }}
+Firearms and Ammunition (OIL
+Firearms and Ammunition (Deactivated) Issuing Countries
+Firearms and Ammunition
+mapped_types_with_subtypes.keys
+firearms_authorities_list
+get_user_emails_by_ids(user_ids
+kwargs={'cat_pk
+Create Application
+title="Edit Template">Edit</a>
+Template">Restore</button
+ILB Case Officers:Import Application Case Officer
+PostAction
+Cancel
+>Commodity</h4
+prefix="blaa
+min_digits=0
+min_digits=5
+prefix="bluu
+pytest.raises(ValueError
+VERBOSE
+assert re.match(ref_pattern
+assert expected_reference
+Consent (Art
+Issuing Country
+Licence Document
+application_field(app.licence_start_date.strftime('%d-%b-%Y
+application_section("Purchaser / Acquirer of Firearms
+Legal Person
+Not Set"
+Firearms</h4
+the IMI Case Management
+selenium.webdriver.common.by import
+utils.go_to_page(context
+btnLogout").click
+user__email__icontains
+test_get_class_imp_or_exp(case_type
+Maintain Product Legislation
+New Product Legislation
+Test Calibre
+calibre =
+Obsolete Calibre (Test
+help_text="A
+Authority
+raise APIError
+ListSection5(ModelFilterView
+item.</div
+class="prompt west">Section
+HSE Emails'
+>Countries</h4
+Logout
+cursor.execute(sql
+views.submit_oil
+release_ownership_approval
+ExportSearchAdvancedForm
+form.cleaned_data["assign_to
+download_spreadsheet(request
+Config
+Store
+ParseResult
+return_url.path
+is_import
+"Load the SearchTerms
+SearchTerms
+commodity_code=cd.get("commodity_code
+cellpadding="0
+action.as_html(item
+Retracted
+Mailshot (New
+-pk
+Create Import Application
+ActiveFirearmsAuthorityManager(models
+Deactivation Certificate
+Shotgun Certificate
+CharField(max_length=200
+f"Obsolete Calibre Group
+f"Obsolete Calibre
+Obsolete Calibre (New
+Pending
+Current"
+Name / Address
+request.pk}}</span
+ExporterApprovalRequest
+ImporterApprovalRequest
+ExporterFactory(factory.django
+>Schedules</h4
+web.domains.case._import.fa.types import
+SanctionEmail
+Biocidal
+the Health and Safety Executive
+create_case_email
+email.send_email
+Edit Email
+add_response_case_email
+create_gmp_case_email
+template_code="CA_BEIS_EMAIL
+views.edit_opt
+views.submit_opt
+TemporaryFileUploadHandler
+CommodityFactory(factory.django
+CommodityGroupFactory(factory.django
+Celery
+app.config_from_object("django.conf
+DesiredCapabilities
+The Exporters Ltd.
+commoditySelect2
+submit-inline.html' %
+views.create_importer
+firearms/<int
+views.add_document_section5
+# Importer Agents
+mandatory_files - List
+TemplatesFilter
+template_name="Active Letter Template
+Endorsement Title
+Active Letter Template
+Test Title
+Test Endorsement
+goodsOnUKMarketRadios.forEach
+constructor(legislationSelect2
+return isEUCosmeticsRegulation && notExportOnly
+web.views.utils.countries
+Security Answer
+Share Contact Deails
+Floor/Room/Bay/Location
+Ms
+Robert (Bob
+instance.user.email
+email="email@example.com
+assert emails[0
+Reopen
+Report Completed
+application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y
+Date Reporting Completed
+fields.field(form.no_report_reason
+import_order_style
+E203
+bob =
+assert template.user_can_view(alice
+assert template.user_can_edit(bob
+assert template.user_can_edit(alice
+debug_toolbar.panels.timer
+TimerPanel
+ProfilingPanel
+os.environ
+html5shiv.min.js
+src/jquery.formset.js"],
+# Django Compressor
+DFLChecklistForm
+IronSteelChecklistForm
+ApplicationsWithChecklist
+response_prep_errors
+update_request_errors.add
+note_pk
+Edit Note
+scope="col">Is Dealer?</th>
+contact.last_name
+an Import Case Management System
+fields.field(form.email
+Admin Case
+FurtherInformationRequestFormTest(TestCase
+class="prompt west">Is
+class="prompt west">Obsolete
+document.cookie && document.cookie
+function(boolean
+self.get_filterset
+ModelUpdateView(RequireRegisteredMixin
+f"{object.id}/edit/
+Create Individual Agent
+kwargs={"importer_pk
+UserManager(BaseUserManager
+SuperUser
+ValueError("Superuser
+is_superuser
+fields.inline_field_with_label(form.issue_to
+Collection
+EmailMultiAlternatives
+utils.get_notification_emails(importer.user
+# Importer
+CompaniesHouseException
+test_api_raises_error
+Marks
+Variation Request
+Submit Variation Request'
+Variation Request"/
+web.domains.workbasket.actions
+CaseNote(models
+Import/ExportApplication
+DB
+the "Case Reference
+ICMSLST-812 - Popup
+Update Request
+View Notification
+Acknowledge Notification
+GA
+status__in=[st
+View Case
+Edit Firearms Authority
+firearms_authority.pk
+ImportContact(models
+LEGAL
+verbose_name="Street
+Road
+max_length=4
+Add Licence
+TestCreateApplication(AuthTestCase
+kwargs={"type_code
+TestCreateApplicationFromTemplate(AuthTestCase
+appl.refresh_from_db
+application_field(vr.requested_datetime.strftime('%d-%b-%Y
+Request Date
+Closed Date
+Reject/Cancel Variation Request
+views.add_certificate
+WorkbasketSection
+def app_completed_agent(db
+Ownership
+Authorise Documents
+assert len(actions
+GoodsWoodQuotaLicenceForm
+AgentImporterFactory
+office_importer
+TextilesCommodityWidget
+search_records|length
+case.</p></div
+Create Firearms Authority
+act_form
+Published Date
+Edit Group
+form.instance.offices.all
+inch
+name="login_id
+value='reset_password
+Reset
+@given
+create_user_named(context
+utils.create_active_user
+@when('an
+url_name
+@then('button
+assert utils.find_element_by_text(context
+@then('context
+Main Importer
+OPTLicenceForm(LicenceDateForm
+error_field_names=
+# Variation Decision
+application.importeraccessrequest.link_id
+delete_fir
+application.further_information_requests.filter
+Textarea
+DateFilter
+commodity_code =
+lookup_expr="gte
+quantity_threshold
+Mandatory for Iron, Steel, Aluminium and Textile
+CommodityGroupForm(ModelForm
+Group
+UsageForm(ModelForm
+Pick an Application Type
+class="prompt west">Country Group
+value="{{group.id}
+document.querySelector("#id_variation_refuse_reason
+Months)</th
+Block
+Sequence(lambda n: n
+ObsoleteCalibreFactory(factory.django
+MailshotFactory(factory.django
+ICMSMiddlewareContext
+assert isinstance(request.icms
+assert isinstance(request.icms.lock_manager
+BLOCKED
+SUSPENDED
+related_name="users_changed
+PositiveSmallIntegerField(default=0
+self.set_password(temp_password
+get_response
+Approval Request Flow
+OpenSans/OpenSans.css'
+UAT
+Section5Filter(FilterSet
+"Deactivated Firearms Licence Goods
+DFLSupplementaryReport(SupplementaryReportBase
+views.create_firearms_sil
+views.create_wood_quota
+include("web.domains.case._import.ironsteel.urls
+views.preview_licence
+EU Cosmetics Regulation
+Product Legislation (new
+section5.further_details
+CaseReference(models
+CharField(max_length=8
+AddressEntryType(models
+YesNoChoices(models
+assert context.browser.find_element(By
+Login Error Message Not Found
+Login Error Message Is
+max_length=15
+>Manufacturer</h4
+ISO
+manual_add_button(report
+Manual Add Firearm
+upload_document_button(report
+delete_firearm_button(firearm
+class="prompt west">Telephone(s)</label
+International Trade
+Log in</a>
+fields.field(form.is_biocidal
+Wood App Reference
+cubic metres
+save_app_data
+assert resp.context["previous_update_requests"].count
+assert page_errors
+assert sorted(error_field_names
+assert sorted(expected_pages_checked
+Collection of Case Urls
+Create Obsolete Calibre Group
+UserDetailsViewTest(AuthTestCase
+DerogationsSyriaChecklistOptionalForm
+node index.js
+Archive
+EditTemplate
+CFSScheduleTranslationParagraphsForm
+EndorsementUsage
+TemplateListView(ModelFilterView
+Application Domain
+Template Type
+Template Status
+view_cfs_schedule(request
+non-CFS_SCHEDULE
+assert len(english_paras
+EndorsementCreateView(ModelCreateView
+link_pk
+CFSDeclarationTranslationForm(request
+create_cfs_schedule_translation(request
+CFSScheduleTranslationParagraphsForm(english_paras
+name=english_para.name
+self.commodity_code
+CharField(max_length=25
+get_queryset_user(request.user
+get_queryset_admin(user
+# Import Applications
+value="Send
+Maintain Importers
+f"/importer/{self.importer.id}/edit/
+OrganisationAgentCreateViewTest(AuthTestCase
+self.agent.refresh_from_db
+AgentUnarchiveViewTest(AuthTestCase
+response =
+f"clause
+EUROPE
+ImporterManager
+dict(Importer
+Section 1</p>{%
+Section 5</p>{%
+process.military_police
+ExporterWidget
+web.domains.importer.widgets
+ImporterWidget
+LinkExporterAccessRequestForm(ModelForm
+# Commodity Management
+# Commodity Groups Management
+XPATH
+UserFactory(**args
+Response
+this.usages.hasOwnProperty(category) && this.usages[category].hasOwnProperty(country
+&& quantity > maxAllocation
+BDD
+Hey Ltd"'
+@given('non-European
+a.prev-link").click
+False"
+context.browser.find_element_by_id("btn-submit
+context.browser.find_element_by_id("btn-submit").click
+@then('importer
+assert field
+f"Unknown Office
+assert value
+assert re.match(value
+assert status.lower
+assert address.lower
+assert expected_value
+collections.abc
+CheckResult
+get_services_to_check
+CountryType[process.responsible_person_country].label
+Concat
+application_type.paper_licence_flag
+Licence Response Preparation
+Endorsement Response Preparation
+Cover Letter Preview
+IMI
+https://stackoverflow.com/questions/1941980/how-can-i-access-response-context-when-testing-a-jinja2-powered-django-view
+test_agent_export_user(django_user_model
+django_user_model.objects.get(username="test_agent_export_user
+django_user_model.objects.get(username="test_access_user
+ImporterAccessRequest.objects.get
+export_access_request_application(test_access_user
+ExporterAccessRequest.objects.get
+# obsolete calibre
+views.edit_obsolete_calibre_group
+views.archive_obsolete_calibre
+views.unarchive_obsolete_calibre
+Sanctions Import Ban")
+Contract Sign Date
+Provide
+the Syrian National Coalition for Opposition and
+Article 2 of
+Article 14 of
+EU Regulation
+formats:<br/>-
+United Kingdom:<br
+Retract
+Template - Test Template
+ModelBackend
+unauthenticated_user.account_status
+agents</p></td
+AccessRequestFactory(factory.django
+Edit Commodity Group
+DerogationAppplicationCreateViewTest(AuthTestCase
+Category Description
+process.is_pesticide_on_free_sale_uk
+resp.context["case_emails"].count
+views.edit_wood_quota
+views.submit_wood_quota
+ner_output_file.txt
+Cancel Authorisation
+ManageApplicationAction(self.user
+ViewApplicationAction(self.user
+assert sorted(names
+TEX
+Deactivated Firearms Import Licence
+category_flag
+related_name="import_application_types
+ChiefUsageTypes(models
+Surrendered
+verbose_name="Country Of Consignment
+get_users_with_perms(self.importer
+get_users_with_perms(self.agent
+\n".join(["Import Application"
+self.issue_date
+EndorsementImportApplication(models
+mark_as_exporter_agent(context
+RFD
+ChecklistFirearmsOILApplicationOptionalForm(ChecklistFirearmsOILApplicationForm
+user_passes_test
+CaptchaForm
+LoginForm
+request.POST.copy
+node.querySelector("div[name='address_type_field
+div.input
+choicesSelect[0
+# Import & Export
+TextilesChecklist(ChecklistBase
+ProductData
+products_file.multiple_chunks
+OrderedDict = OrderedDict
+enumerate(sheet.values
+Clean
+CustomError(f"Data
+Catch
+CFSProductForm
+product_type_form.is_valid
+CustomError(f"Product
+ingredient_form.is_valid
+submitted_by_email
+Request Type
+ListExporterAccessRequest(ModelFilterView
+Search Exporter Access Requests
+views_misc
+views_search.search_cases
+RequestVariationUpdateView.as_view
+views_note.edit_note
+ManageVariationsView.as_view
+name="start
+views_update_request.close_update_request
+views_email.create_case_email
+# Application Authorisation
+PersonalEmail(user=_user
+= mail.outbox[0
+assert isinstance(m
+assert m.body
+m.to[0
+len(o.to
+assert resp.context["firs"].count
+SILSupplementaryReportFirearmBase

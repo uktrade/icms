@@ -21,7 +21,7 @@ def grant_permission_to_user(context, username, codename):
 
 
 @given(
-    'user "{username}" exists with title "{title}" and first name "{first_name}" and last name "{last_name}"'
+    'user "{username}" exists with title "{title}" and first name "{first_name}" and last name "{last_name}"'  # /PS-IGNORE
 )
 def create_user_named(context, username, title, first_name, last_name):
     utils.create_active_user(

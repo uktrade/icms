@@ -64,7 +64,7 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         self.assertEqual(message, "You must enter this item")
 
     def test_wood_application_valid_for_ni_importer(self):
-        office = OfficeFactory.create(is_active=True, postcode="BT328bz")
+        office = OfficeFactory.create(is_active=True, postcode="BT328bz")  # /PS-IGNORE
         importer = ImporterFactory.create(is_active=True, offices=[office])
         user = ActiveUserFactory.create()
         assign_perm("web.is_contact_of_importer", user, importer)
@@ -80,7 +80,7 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         self.assertTrue(form.is_valid(), "Form has errors")
 
     def test_wood_application_invalid_for_english_importer(self):
-        office = OfficeFactory.create(is_active=True, postcode="S410SG")
+        office = OfficeFactory.create(is_active=True, postcode="S410SG")  # /PS-IGNORE
         importer = ImporterFactory.create(is_active=True, offices=[office])
         user = ActiveUserFactory.create()
         assign_perm("web.is_contact_of_importer", user, importer)

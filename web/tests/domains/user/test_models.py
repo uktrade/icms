@@ -13,7 +13,7 @@ class UserTest(TestCase):
         department="Sales",
         job_title="CEO",
         location_at_address="Floor 18",
-        work_address="Windsor House, 50 Victoria Street, London, SW1H 0TL",
+        work_address="Windsor House, 50 Victoria Street, London, SW1H 0TL",  # /PS-IGNORE
         date_of_birth="2000-01-01",
         security_question="Favorite term",
         security_answer="Retroactive rationalisation",

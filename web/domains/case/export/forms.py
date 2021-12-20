@@ -187,16 +187,14 @@ class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
         if val:
             raise forms.ValidationError(
                 mark_safe(
-                    """
-                    <div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>
-
-                    <p>A Certificate of Manufacture cannot be completed for a pesticide on free sale in the UK.</p>
-                    <p>To process this request contact the following:</p>
-                    <ul>
-                      <li>Agricultural pesticides - <a href="mailto:asg@hse.gsi.gov.uk">asg@hse.gsi.gov.uk</a>
-                      <li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gsi.gov.uk">biocidesenquiries@hse.gsi.gov.uk</a>
-                    </ul>
-                    </div>"""
+                    '<div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>'
+                    "<p>A Certificate of Manufacture cannot be completed for a pesticide on free sale in the UK.</p>"
+                    "<p>To process this request contact the following:</p>"
+                    "<ul>"
+                    '<li>Agricultural pesticides - <a href="mailto:asg@hse.gsi.gov.uk">asg@hse.gsi.gov.uk</a>'  # /PS-IGNORE
+                    '<li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gsi.gov.uk">biocidesenquiries@hse.gsi.gov.uk</a>'  # /PS-IGNORE
+                    "</ul>"
+                    "</div>"
                 )
             )
 
