@@ -8,7 +8,7 @@ class ConstabularyTest(TestCase):
         self,
         name="Test Constabulary",
         region=Constabulary.EAST_MIDLANDS,
-        email="test_constabulary@test.com",
+        email="test_constabulary@test.com",  # /PS-IGNORE
         is_active=True,
     ):
         return Constabulary.objects.create(
@@ -19,7 +19,7 @@ class ConstabularyTest(TestCase):
         constabulary = self.create_constabulary()
         self.assertTrue(isinstance(constabulary, Constabulary))
         self.assertEqual(constabulary.name, "Test Constabulary")
-        self.assertEqual(constabulary.email, "test_constabulary@test.com")
+        self.assertEqual(constabulary.email, "test_constabulary@test.com")  # /PS-IGNORE
         self.assertEqual(constabulary.region, Constabulary.EAST_MIDLANDS)
         self.assertTrue(constabulary.is_active)
 

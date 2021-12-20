@@ -72,7 +72,7 @@ class Command(BaseCommand):
         self.ilb_admin_user = User.objects.get(username="ilb_admin")
         self.importer_user = User.objects.get(username="importer_user")
         self.importer = Importer.objects.get(name="Dummy importer")
-        self.importer_office = self.importer.offices.get(postcode="BT12 5QB")
+        self.importer_office = self.importer.offices.get(postcode="BT12 5QB")  # /PS-IGNORE
         self.today = datetime.date.today()
 
         try:

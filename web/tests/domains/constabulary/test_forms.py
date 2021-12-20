@@ -15,19 +15,19 @@ class ConstabulariesFilterTest(TestCase):
         ConstabularyFactory(
             name="Test Constabulary",
             region=Constabulary.EAST_MIDLANDS,
-            email="test_constabulary@example.com",
+            email="test_constabulary@example.com",  # /PS-IGNORE
             is_active=False,
         )
         ConstabularyFactory(
             name="Big London Constabulary",
             region=Constabulary.EASTERN,
-            email="london_constabulary@example.com",
+            email="london_constabulary@example.com",  # /PS-IGNORE
             is_active=True,
         )
         ConstabularyFactory(
             name="That Constabulary",
             region=Constabulary.EASTERN,
-            email="that_constabulary@example.com",
+            email="that_constabulary@example.com",  # /PS-IGNORE
             is_active=True,
         )
 
@@ -66,7 +66,7 @@ class ConstabularyFormTest(TestCase):
             data={
                 "name": "Testing",
                 "region": Constabulary.WEST_MIDLANDS,
-                "email": "test@example.com",
+                "email": "test@example.com",  # /PS-IGNORE
             }
         )
         self.assertTrue(form.is_valid())

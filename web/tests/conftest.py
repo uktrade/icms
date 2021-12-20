@@ -118,12 +118,16 @@ def importer_contact(django_user_model):
 @pytest.fixture
 def office():
     """Fixture to get an office model instance (linked to importer)."""
-    return Office.objects.get(is_active=True, address="47 some way, someplace", postcode="BT180LZ")
+    return Office.objects.get(
+        is_active=True, address="47 some way, someplace", postcode="BT180LZ"  # /PS-IGNORE
+    )
 
 
 def exporter_office():
     """Fixture to get an office model instance (linked to exporter)."""
-    return Office.objects.get(is_active=True, address="47 some way, someplace", postcode="S410SG")
+    return Office.objects.get(
+        is_active=True, address="47 some way, someplace", postcode="S410SG"  # /PS-IGNORE
+    )
 
 
 @pytest.fixture

@@ -58,7 +58,7 @@ class SearchFormBase(forms.Form):
     reassignment_user = forms.ModelChoiceField(
         label="Reassignment User",
         help_text=(
-            "Search a contact. Contacts returned are matched against first/last name,"
+            "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
         ),
         queryset=User.objects.none(),
@@ -317,7 +317,7 @@ class ReassignmentUserForm(forms.Form):
     assign_to = forms.ModelChoiceField(
         label="Reassignment User",
         help_text=(
-            "Search a contact. Contacts returned are matched against first/last name,"
+            "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
         ),
         queryset=User.objects.none(),

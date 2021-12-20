@@ -71,15 +71,19 @@ requirements files: `make build`.
 
 To run the unit tests:
 
-`./run-tests.sh`
+`./run-tests-local.sh`
 
 To run tests for a single file in a non-distributed manner (faster):
 
-`./run-tests.sh --dist=no web/tests/foo/bar.by`
+`./run-tests-local.sh --dist=no web/tests/foo/bar.by`
 
 To run tests with a fresh test database:
 
-`./run-tests.sh --create-db`
+`./run-tests-local.sh --create-db`
+
+To run the tests with full coverage run (mainly done as part of CI pipeline):
+
+`./run-tests.sh`
 
 ## Code style
 
@@ -88,7 +92,25 @@ ICMS uses [Black](https://pypi.org/project/black/) for code formatting and
 
 - `make black` - Check code is formatted correctly
 - `make black_format` - Reformat all code
+- `make isort_format` - Orders imports
 - `make flake8` - Check code quality is up to scratch
+
+## PII Secret Check Hooks tool
+ICMS uses the following tool: [PII Secret Check Hooks](https://github.com/uktrade/pii-secret-check-hooks)
+
+PII tool files:
+- `.pre-commit-config.yaml` - Uncomment `args` line to send NER entities to a file (for easier viewing)
+- `pii-custom-regex.txt` - Add custom regexes for finding secret or PII identification
+- `pii-ner-exclude.txt` - False positives to exclude
+- `pii-secret-exclude.txt` - Files to exclude from the pii checks
+
+Common commands (local venv must be activated):
+- `pre-commit run --all-files` - Runs all pii check
+- `pre-commit autoupdate` - Get the latest version of the tool
+- `pre-commit gc; pre-commit clean` - Run if the hooks pass but the git commit fails
+
+Refer to its documentation for further details 
+
 
 ## Database schema generation
 

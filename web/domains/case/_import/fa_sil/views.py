@@ -66,15 +66,15 @@ def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig
 
     elif sil_section_type == "section582-obsolete":
         return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection582Obsolete,
-            form_class=forms.SILGoodsSection582ObsoleteForm,
+            model_class=models.SILGoodsSection582Obsolete,  # /PS-IGNORE
+            form_class=forms.SILGoodsSection582ObsoleteForm,  # /PS-IGNORE
             template="web/domains/case/import/fa-sil/goods/section582-obsolete.html",
         )
 
     elif sil_section_type == "section582-other":
         return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection582Other,
-            form_class=forms.SILGoodsSection582OtherForm,
+            model_class=models.SILGoodsSection582Other,  # /PS-IGNORE
+            form_class=forms.SILGoodsSection582OtherForm,  # /PS-IGNORE
             template="web/domains/case/import/fa-sil/goods/section582-other.html",
         )
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
@@ -101,14 +101,14 @@ def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEdit
 
     elif sil_section_type == "section582-obsolete":
         return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection582Obsolete,
-            form_class=forms.ResponsePrepSILGoodsSection582ObsoleteForm,
+            model_class=models.SILGoodsSection582Obsolete,  # /PS-IGNORE
+            form_class=forms.ResponsePrepSILGoodsSection582ObsoleteForm,  # /PS-IGNORE
         )
 
     elif sil_section_type == "section582-other":
         return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection582Other,
-            form_class=forms.ResponsePrepSILGoodsSection582OtherForm,
+            model_class=models.SILGoodsSection582Other,  # /PS-IGNORE
+            form_class=forms.ResponsePrepSILGoodsSection582OtherForm,  # /PS-IGNORE
         )
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
@@ -125,10 +125,10 @@ def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFire
         return forms.SILSupplementaryReportFirearmSection5Form
 
     elif sil_section_type == "section582-obsolete":
-        return forms.SILSupplementaryReportFirearmSection582ObsoleteForm
+        return forms.SILSupplementaryReportFirearmSection582ObsoleteForm  # /PS-IGNORE
 
     elif sil_section_type == "section582-other":
-        return forms.SILSupplementaryReportFirearmSection582OtherForm
+        return forms.SILSupplementaryReportFirearmSection582OtherForm  # /PS-IGNORE
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
@@ -144,10 +144,10 @@ def _get_report_firearm_model(sil_section_type: str) -> types.SILReportFirearmMo
         return models.SILSupplementaryReportFirearmSection5
 
     elif sil_section_type == "section582-obsolete":
-        return models.SILSupplementaryReportFirearmSection582Obsolete
+        return models.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
 
     elif sil_section_type == "section582-other":
-        return models.SILSupplementaryReportFirearmSection582Other
+        return models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 

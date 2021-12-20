@@ -1,4 +1,4 @@
-### https://raw.github.com/github/gitignore/f908e51bcf38ae5ede449c55189a7b25d8c507cc/Python.gitignore
+### https://raw.github.com/github/gitignore/f908e51bcf38ae5ede449c55189a7b25d8c507cc/Python.gitignore  # /PS-IGNORE
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -141,3 +141,6 @@ dmypy.json
 
 # test reports
 /test-reports
+
+# https://github.com/uktrade/pii-secret-check-hooks
+ner_output_file.txt

@@ -76,7 +76,7 @@ class Command(BaseCommand):
                 is_superuser=False,
                 account_status=User.ACTIVE,
                 is_active=True,
-                email=f"{username}@email.com",
+                email=f"{username}@email.com",  # /PS-IGNORE
                 first_name=f"{username}_first_name",
                 last_name=f"{username}_last_name",
                 date_of_birth=datetime.date(2000, 1, 1),
@@ -162,7 +162,7 @@ class Command(BaseCommand):
 
     def create_importer(self, main_importer=None, name="UK based importer"):
         office, _ = Office.objects.get_or_create(
-            is_active=True, address="47 some way, someplace", postcode="BT180LZ"
+            is_active=True, address="47 some way, someplace", postcode="BT180LZ"  # /PS-IGNORE
         )
 
         importer, created = Importer.objects.get_or_create(
@@ -180,7 +180,7 @@ class Command(BaseCommand):
 
     def create_exporter(self, main_exporter=None, name="UK based exporter"):
         office, _ = Office.objects.get_or_create(
-            is_active=True, address="47 some way, someplace", postcode="S410SG"
+            is_active=True, address="47 some way, someplace", postcode="S410SG"  # /PS-IGNORE
         )
 
         exporter, created = Exporter.objects.get_or_create(

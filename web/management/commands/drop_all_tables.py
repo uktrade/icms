@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
         if not settings.ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD:
             raise CommandError(
-                "You have not enabled danger zone! (https://www.youtube.com/watch?v=siwpn14IE7E)"
+                "You have not enabled danger zone! (https://www.youtube.com/watch?v=siwpn14IE7E)"  # /PS-IGNORE
             )
 
         if not options["confirm_drop_all_tables"]:

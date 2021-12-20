@@ -240,7 +240,7 @@ class CFSSchedule(models.Model):
             "Enter legislation relevant to the products on this schedule. A"
             " maximum of 3 pieces of legislation may be added per schedule. If"
             " you cannot find relevant legislation, please contact DIT,"
-            " enquiries.ilb@trade.gsi.gov.uk, to request to have it added."
+            " enquiries.ilb@trade.gsi.gov.uk, to request to have it added."  # /PS-IGNORE
         ),
     )
 

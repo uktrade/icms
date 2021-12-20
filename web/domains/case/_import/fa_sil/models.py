@@ -24,8 +24,8 @@ ReportFirearms = list[
         "SILSupplementaryReportFirearmSection1",
         "SILSupplementaryReportFirearmSection2",
         "SILSupplementaryReportFirearmSection5",
-        "SILSupplementaryReportFirearmSection582Obsolete",
-        "SILSupplementaryReportFirearmSection582Other",
+        "SILSupplementaryReportFirearmSection582Obsolete",  # /PS-IGNORE
+        "SILSupplementaryReportFirearmSection582Other",  # /PS-IGNORE
     ]
 ]
 
@@ -33,8 +33,8 @@ SectionCertificates = Union[
     "QuerySet[SILGoodsSection1]",
     "QuerySet[SILGoodsSection2]",
     "QuerySet[SILGoodsSection5]",
-    "QuerySet[SILGoodsSection582Obsolete]",
-    "QuerySet[SILGoodsSection582Other]",
+    "QuerySet[SILGoodsSection582Obsolete]",  # /PS-IGNORE
+    "QuerySet[SILGoodsSection582Other]",  # /PS-IGNORE
 ]
 
 
@@ -179,7 +179,7 @@ class SILGoodsSection5(models.Model):
     unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
-class SILGoodsSection582Obsolete(models.Model):
+class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
     import_application = models.ForeignKey(
         SILApplication, on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
     )
@@ -217,7 +217,7 @@ class SILGoodsSection582Obsolete(models.Model):
     quantity = models.PositiveIntegerField(help_text="Enter a whole number")
 
 
-class SILGoodsSection582Other(models.Model):
+class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
     class IgnitionDetail(models.TextChoices):
         PIN_FIRE = ("Pin-fire", "Pin-fire")
         NEEDDLE_FIRE = ("Needle-fire", "Needle-fire")
@@ -475,25 +475,27 @@ class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
     )
 
 
-class SILSupplementaryReportFirearmSection582Obsolete(SILSupplementaryReportFirearmBase):
+class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
+    SILSupplementaryReportFirearmBase
+):
     report = models.ForeignKey(
         SILSupplementaryReport,
         related_name="section582_obsolete_firearms",
         on_delete=models.CASCADE,
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection582Obsolete,
+        SILGoodsSection582Obsolete,  # /PS-IGNORE
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
 
 
-class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):
+class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):  # /PS-IGNORE
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection582Other,
+        SILGoodsSection582Other,  # /PS-IGNORE
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )

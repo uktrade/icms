@@ -6,7 +6,9 @@ INSTALLED_APPS += [
 ]
 
 SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
-DATABASES = {"default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")}
+DATABASES = {
+    "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
+}
 ALLOWED_HOSTS = ["localhost", "web"]
 DEBUG = True
 

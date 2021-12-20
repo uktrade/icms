@@ -22,7 +22,7 @@ class Command(BaseCommand):
             username=username,
             first_name=kwargs["first_name"],
             last_name=kwargs["last_name"],
-            email=f"{username}@example.com",
+            email=f"{username}@example.com",  # /PS-IGNORE
             is_active=True,
             title=kwargs["title"],
             password_disposition=User.FULL,
@@ -37,7 +37,9 @@ class Command(BaseCommand):
         assign_perm("web.is_contact_of_exporter", user, exporter)
 
         office = Office.objects.create(
-            is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London"
+            is_active=True,
+            postcode="SW1A 2HP",  # /PS-IGNORE
+            address="3 Whitehall Pl, Westminster, London",  # /PS-IGNORE
         )
         exporter.offices.add(office)
         self.stdout.write(f"Created exporter user with login/pass: {username}/password")

@@ -9,7 +9,10 @@ class TestUser:
     @pytest.fixture
     def user(self):
         test_user = User.objects.create_user(
-            username="tester", email="tester@example.com", first_name="Tester", last_name="Testing"
+            username="tester",
+            email="tester@example.com",  # /PS-IGNORE
+            first_name="Tester",
+            last_name="Testing",
         )
         test_user.set_password("TestPasS")
         test_user.save()
@@ -26,7 +29,9 @@ class TestUser:
 
     def test_store_duplicate_username(self, user):
         with pytest.raises(IntegrityError):
-            User.objects.create_user(username="tester", email="email@example.com").save()
+            User.objects.create_user(
+                username="tester", email="email@example.com"  # /PS-IGNORE
+            ).save()
 
 
 class TestAccessRequest:

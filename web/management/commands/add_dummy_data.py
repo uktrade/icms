@@ -49,12 +49,12 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="SW1A 1AA", address="Buckingham Palace, London"
+            is_active=True, postcode="SW1A 1AA", address="Buckingham Palace, London"  # /PS-IGNORE
         )
         exporter.offices.add(office)
 
         office = Office.objects.create(
-            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"
+            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"  # /PS-IGNORE
         )
         exporter.offices.add(office)
 
@@ -68,12 +68,14 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="SW1A 2HP", address="3 Whitehall Pl, Westminster, London"
+            is_active=True,
+            postcode="SW1A 2HP",  # /PS-IGNORE
+            address="3 Whitehall Pl, Westminster, London",  # /PS-IGNORE
         )
         importer.offices.add(office)
 
         office = Office.objects.create(
-            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"
+            is_active=True, postcode="BT12 5QB", address="902 Some place, Belfast"  # /PS-IGNORE
         )
         importer.offices.add(office)
 
@@ -89,7 +91,7 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="TW6 2LA", address="Nettleton Rd, London"
+            is_active=True, postcode="WT6 2AL", address="Some office road, London"  # /PS-IGNORE
         )
         agent_importer.offices.add(office)
 
@@ -102,7 +104,7 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="EN1 3SS", address="14 Mafeking Rd, Enfield"
+            is_active=True, postcode="S44 3SS", address="14 some way, Townsville"  # /PS-IGNORE
         )
         agent_exporter.offices.add(office)
 
@@ -204,7 +206,7 @@ class Command(BaseCommand):
             is_superuser=False,
             account_status=User.ACTIVE,
             is_active=True,
-            email=f"{username}@email.com",
+            email=f"{username}@email.com",  # /PS-IGNORE
             first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
@@ -238,7 +240,7 @@ class Command(BaseCommand):
 
         return User.objects.create_superuser(
             username=username,
-            email=f"{username}@email.com",
+            email=f"{username}@email.com",  # /PS-IGNORE
             password=password,
             first_name=username,
             last_name=username,

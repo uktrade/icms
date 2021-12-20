@@ -71,7 +71,7 @@ def test_create_firearms_authority():
         "issuing_constabulary": constabulary.pk,
         "linked_offices": office_one.pk,
         "reference": "12",
-        "postcode": "SW1A 0AA",
+        "postcode": "SW1A 0AA",  # /PS-IGNORE
         "address": "Westminster",
         "start_date": "23-Dec-2020",
         "end_date": "24-Dec-2020",

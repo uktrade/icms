@@ -72,25 +72,44 @@ class TestEmail(TestCase):
                 {
                     "active": True,
                     "personal": [
-                        {"email": "active_org_user@example.com", "notify": True},
-                        {"email": "active_org_user_second_email@example.com", "notify": True},
-                        {"email": "active_org_user_no_notify@example.com", "notify": False},
+                        {"email": "active_org_user@example.com", "notify": True},  # /PS-IGNORE
+                        {
+                            "email": "active_org_user_second_email@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        },
+                        {
+                            "email": "active_org_user_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
                     "alternative": [
-                        {"email": "active_org_user_alt@example.com", "notify": True},
-                        {"email": "active_org_user_alt_no_notify@example.com", "notify": False},
+                        {"email": "active_org_user_alt@example.com", "notify": True},  # /PS-IGNORE
+                        {
+                            "email": "active_org_user_alt_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
                 },
                 {
                     "active": True,
-                    "personal": [{"email": "second_active_org_user@example.com", "notify": True}],
+                    "personal": [
+                        {
+                            "email": "second_active_org_user@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        }
+                    ],
                     "alternative": [
-                        {"email": "second_active_org_user_alt@example.com", "notify": True}
+                        {
+                            "email": "second_active_org_user_alt@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        }
                     ],
                 },
                 {
                     "active": False,
-                    "personal": [{"email": "deactive_org_user@example.com", "notify": True}],
+                    "personal": [
+                        {"email": "deactive_org_user@example.com", "notify": True}  # /PS-IGNORE
+                    ],
                 },
             ],
         )
@@ -102,8 +121,12 @@ class TestEmail(TestCase):
             members=[
                 {
                     "active": True,
-                    "personal": [{"email": "archived_org_user@example.com", "notify": True}],
-                    "alternative": [{"email": "archived_org_user_alt@example.com", "notify": True}],
+                    "personal": [
+                        {"email": "archived_org_user@example.com", "notify": True}  # /PS-IGNORE
+                    ],
+                    "alternative": [
+                        {"email": "archived_org_user_alt@example.com", "notify": True}  # /PS-IGNORE
+                    ],
                 },
             ],
         )
@@ -115,8 +138,8 @@ class TestEmail(TestCase):
             user={
                 "active": True,
                 "personal": [
-                    {"email": "ind_importer_user@example.com", "notify": True},
-                    {"email": "ind_importer_no_notify@example.com", "notify": False},
+                    {"email": "ind_importer_user@example.com", "notify": True},  # /PS-IGNORE
+                    {"email": "ind_importer_no_notify@example.com", "notify": False},  # /PS-IGNORE
                 ],
             },
         )
@@ -128,8 +151,14 @@ class TestEmail(TestCase):
             user={
                 "active": True,
                 "personal": [
-                    {"email": "deactive_ind_importer_user@example.com", "notify": True},
-                    {"email": "deactive_ind_importer_no_notify@example.com", "notify": False},
+                    {
+                        "email": "deactive_ind_importer_user@example.com",  # /PS-IGNORE
+                        "notify": True,
+                    },
+                    {
+                        "email": "deactive_ind_importer_no_notify@example.com",  # /PS-IGNORE
+                        "notify": False,
+                    },
                 ],
             },
         )
@@ -142,23 +171,37 @@ class TestEmail(TestCase):
                 {
                     "active": True,
                     "personal": [
-                        {"email": "active_export_user@example.com", "notify": True},
-                        {"email": "active_export_user_no_notify@example.com", "notify": False},
+                        {"email": "active_export_user@example.com", "notify": True},  # /PS-IGNORE
+                        {
+                            "email": "active_export_user_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
                     "alternative": [
-                        {"email": "active_export_user_alt@example.com", "notify": True},
-                        {"email": "active_export_user_alt_no_notify@example.com", "notify": False},
+                        {
+                            "email": "active_export_user_alt@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        },
+                        {
+                            "email": "active_export_user_alt_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
                 },
                 {
                     "active": True,
                     "personal": [
-                        {"email": "second_active_export_user@example.com", "notify": True}
+                        {
+                            "email": "second_active_export_user@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        }
                     ],
                 },
                 {
                     "active": False,
-                    "personal": [{"email": "deactive_export_user@example.com", "notify": True}],
+                    "personal": [
+                        {"email": "deactive_export_user@example.com", "notify": True}  # /PS-IGNORE
+                    ],
                 },
             ],
         )
@@ -170,9 +213,14 @@ class TestEmail(TestCase):
             members=[
                 {
                     "active": True,
-                    "personal": [{"email": "archived_export_user@example.com", "notify": True}],
+                    "personal": [
+                        {"email": "archived_export_user@example.com", "notify": True}  # /PS-IGNORE
+                    ],
                     "alternative": [
-                        {"email": "archived_export_user_alt@example.com", "notify": True}
+                        {
+                            "email": "archived_export_user_alt@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        }
                     ],
                 },
             ],
@@ -186,43 +234,45 @@ class TestEmail(TestCase):
         email.send_email.delay(
             "Test subject",
             "Test message",
-            ["test@example.com", "test2@example.com"],
+            ["test@example.com", "test2@example.com"],  # /PS-IGNORE
             html_message="<p>Test message</p>",
         )
         outbox = mail.outbox
         assert len(outbox) == 1
-        assert "test@example.com" in outbox[0].to
-        assert "test2@example.com" in outbox[0].to
+        assert "test@example.com" in outbox[0].to  # /PS-IGNORE
+        assert "test2@example.com" in outbox[0].to  # /PS-IGNORE
 
     def test_multipart_email(self):
-        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])  # /PS-IGNORE
         m = mail.outbox[0]
         assert isinstance(m, mail.EmailMultiAlternatives)
 
     def test_mail_subject(self):
-        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])  # /PS-IGNORE
         m = mail.outbox[0]
         assert m.subject == "Subject"
 
     def test_mail_body(self):
-        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])  # /PS-IGNORE
         m = mail.outbox[0]
         assert m.body == "Message"
 
     def test_mail_from(self):
-        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])
+        email.send_email("Subject", "Message", ["test@example.com", "<p>Message</p>"])  # /PS-IGNORE
         m = mail.outbox[0]
 
         # Set in config/settings/non_prod_base.py
-        assert m.from_email == "enquiries.ilb@icms.trade.dev.uktrade.io"
+        assert m.from_email == "enquiries.ilb@icms.trade.dev.uktrade.io"  # /PS-IGNORE
 
     def test_mail_to(self):
         email.send_email(
-            "Subject", "Message", ["test@example.com", "test2@example.com", "<p>Message</p>"]
+            "Subject",
+            "Message",
+            ["test@example.com", "test2@example.com", "<p>Message</p>"],  # /PS-IGNORE
         )
         m = mail.outbox[0]
-        assert m.to[0] == "test@example.com"
-        assert m.to[1] == "test2@example.com"
+        assert m.to[0] == "test@example.com"  # /PS-IGNORE
+        assert m.to[1] == "test2@example.com"  # /PS-IGNORE
 
     def test_send_mailshot_to_importers(self):
         email.send_mailshot.delay(
@@ -235,14 +285,14 @@ class TestEmail(TestCase):
         # Testing by length
         for o in outbox:
             if len(o.to) == 3:
-                assert "active_org_user@example.com" in o.to
-                assert "active_org_user_second_email@example.com" in o.to
-                assert "active_org_user_alt@example.com" in o.to
+                assert "active_org_user@example.com" in o.to  # /PS-IGNORE
+                assert "active_org_user_second_email@example.com" in o.to  # /PS-IGNORE
+                assert "active_org_user_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 2:
-                assert "second_active_org_user@example.com" in o.to
-                assert "second_active_org_user_alt@example.com" in o.to
+                assert "second_active_org_user@example.com" in o.to  # /PS-IGNORE
+                assert "second_active_org_user_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                assert "ind_importer_user@example.com" in o.to
+                assert "ind_importer_user@example.com" in o.to  # /PS-IGNORE
             else:
                 raise AssertionError("Test failed with invalid email recipients")
 
@@ -257,9 +307,9 @@ class TestEmail(TestCase):
         # Testing by length
         for o in outbox:
             if len(o.to) == 2:
-                assert "active_export_user@example.com" in o.to
-                assert "active_export_user_alt@example.com" in o.to
+                assert "active_export_user@example.com" in o.to  # /PS-IGNORE
+                assert "active_export_user_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                assert "second_active_export_user@example.com" in o.to
+                assert "second_active_export_user@example.com" in o.to  # /PS-IGNORE
             else:
                 raise AssertionError("Test failed with invalid email recipients")

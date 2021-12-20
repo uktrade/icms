@@ -10,7 +10,7 @@ class UserFactory(factory.django.DjangoModelFactory):
         model = User
 
     username = factory.Sequence(lambda n: "User%s" % n)
-    email = factory.LazyAttribute(lambda u: "%s@example.com" % u.username)
+    email = factory.LazyAttribute(lambda u: "%s@example.com" % u.username)  # /PS-IGNORE
     first_name = factory.Faker("pystr", max_chars=20)
     last_name = factory.Faker("pystr", max_chars=20)
     title = factory.Faker("pystr", max_chars=5)
