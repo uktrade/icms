@@ -7,7 +7,7 @@ from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import update_process_tasks
+from web.domains.case.utils import end_process_task
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -34,10 +34,10 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     current_status: ClassVar[list[str]]
 
     # The expected current active task of the process record
-    current_task: ClassVar[Optional[str]] = None
+    current_task_type: ClassVar[Optional[str]] = None
 
-    # The next status to set.
-    next_status: ClassVar[str]
+    # The next status to set. (Can be optional)
+    next_status: ClassVar[Optional[str]] = None
 
     # The next task type to set
     next_task_type: ClassVar[str]
@@ -75,13 +75,14 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         return application
 
     def get_task(self) -> Optional[Task]:
-        """Load the current task"""
+        """Load the expected current task"""
+        task = None
         is_post = self.request.method == "POST"
 
-        if not self.current_task:
-            task = self.application.get_active_task(select_for_update=is_post)
-        else:
-            task = self.application.get_expected_task(self.current_task, select_for_update=is_post)
+        if self.current_task_type:
+            task = self.application.get_expected_task(
+                self.current_task_type, select_for_update=is_post
+            )
 
         return task
 
@@ -94,9 +95,10 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         return self.model.objects.all()
 
     def update_application_status(self, commit: bool = True) -> None:
-        """Set the application status to the next status"""
+        """Set the application status to the next status."""
 
-        self.application.status = self.next_status
+        if self.next_status:
+            self.application.status = self.next_status
 
         if commit:
             self.application.save()
@@ -104,7 +106,13 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     def update_application_tasks(self) -> None:
         """Update the application task set to the next task."""
 
-        update_process_tasks(self.application, self.task, self.next_task_type, self.request.user)
+        if self.current_task_type and self.task:
+            end_process_task(self.task, self.request.user)
+
+        if self.next_task_type:
+            Task.objects.create(
+                process=self.application, task_type=self.next_task_type, previous=self.task
+            )
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
@@ -115,3 +123,66 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         self.set_application_and_task()
 
         return super().post(request, *args, **kwargs)
+
+
+class ApplicationAndTaskRelatedObjectMixin:
+    """Useful when updating objects relating to an application.
+
+    e.g. A variation request associated with an application.
+    The task and status checks still need performing for the application.
+    """
+
+    application: ImpOrExp
+    task: Optional[Task] = None
+
+    # The expected current status of the process record
+    current_status: ClassVar[list[str]]
+
+    # The expected current active task of the process record
+    current_task_type: ClassVar[Optional[str]] = None
+
+    # The next status to set.
+    next_status: ClassVar[Optional[str]] = None
+
+    # The next task type to set
+    next_task_type: ClassVar[Optional[str]] = None
+
+    def set_application_and_task(self) -> None:
+        self.application = Process.objects.get(
+            pk=self.kwargs["application_pk"]  # type: ignore[attr-defined]
+        ).get_specific_model()
+
+        if self.current_task_type:
+            self.task = self.application.get_expected_task(
+                self.current_task_type, select_for_update=self.request.method == "POST"  # type: ignore[attr-defined]
+            )
+
+        self.application.check_expected_status(self.current_status)
+
+    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+        return super().get(request, *args, **kwargs)  # type: ignore[misc]
+
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+        return super().post(request, *args, **kwargs)  # type: ignore[misc]
+
+    def update_application_status(self, commit: bool = True) -> None:
+        """Set the application status to the next status."""
+
+        if self.next_status:
+            self.application.status = self.next_status
+
+        if commit:
+            self.application.save()
+
+    def update_application_tasks(self) -> None:
+        """Update the application task set to the next task."""
+
+        if self.current_task_type and self.task:
+            end_process_task(self.task, self.request.user)  # type: ignore[attr-defined]
+
+        if self.next_task_type:
+            Task.objects.create(
+                process=self.application, task_type=self.next_task_type, previous=self.task
+            )

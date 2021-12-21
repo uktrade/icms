@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.contrib import messages
@@ -12,7 +12,10 @@ from django.utils import timezone
 
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.domains.workbasket.actions import get_workbasket_actions
+from web.domains.workbasket.actions import (
+    get_workbasket_actions,
+    get_workbasket_applicant_actions,
+)
 from web.domains.workbasket.base import (
     WorkbasketAction,
     WorkbasketBase,
@@ -78,6 +81,11 @@ class VariationRequest(models.Model):
     reject_cancellation_reason = models.CharField(
         max_length=4000, null=True, verbose_name="Cancellation reason"
     )
+
+    update_request_reason = models.CharField(
+        max_length=4000, null=True, verbose_name="Description of the changes required"
+    )
+
     closed_datetime = models.DateTimeField(null=True)
     closed_by = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, related_name="closed_variations"
@@ -334,24 +342,30 @@ class ApplicationBase(WorkbasketBase, Process):
             is_post=False, name="View", url=reverse("case:view", kwargs=kwargs)
         )
 
-        task = self.get_active_task()
+        # Active tasks as a list of values
+        active_tasks = self.get_active_task_list()
 
         is_ilb_admin = user.has_perm("web.ilb_admin")
         include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if is_ilb_admin:
-            admin_actions = self._get_admin_actions(user, view_action, task, kwargs)
+            admin_actions = self._get_admin_actions(user, view_action, active_tasks, kwargs)
 
             if admin_actions:
-                r.actions.append(
+                r.sections.append(
                     WorkbasketSection(information=self.get_information(True), actions=admin_actions)
                 )
 
         if include_applicant_rows:
-            applicant_actions = self._get_applicant_actions(view_action, task, kwargs)
+            # TODO: Revisit when implementing ICMSLST-1368
+            # This method should return a list of sections.
+            # e.g.
+            # for section in applicant_sections:
+            #     r.sections.append(section)
+            applicant_actions = self._get_applicant_actions(user, view_action, active_tasks, kwargs)
 
             if applicant_actions:
-                r.actions.append(
+                r.sections.append(
                     WorkbasketSection(
                         information=self.get_information(False), actions=applicant_actions
                     )
@@ -363,7 +377,7 @@ class ApplicationBase(WorkbasketBase, Process):
         self,
         user: User,
         view_action: WorkbasketAction,
-        task: Optional[Task],
+        active_tasks: list[str],
         kwargs: dict[str, Any],
     ) -> list[WorkbasketAction]:
         admin_actions: list[WorkbasketAction] = []
@@ -386,14 +400,14 @@ class ApplicationBase(WorkbasketBase, Process):
             if case_owner != user:
                 admin_actions.append(view_action)
 
-            elif task and task.task_type == Task.TaskType.PROCESS:
+            elif Task.TaskType.PROCESS in active_tasks:
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
                     )
                 )
 
-            elif task and task.task_type == Task.TaskType.AUTHORISE:
+            elif Task.TaskType.AUTHORISE in active_tasks:
                 admin_actions.append(
                     WorkbasketAction(
                         is_post=False,
@@ -414,8 +428,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
             elif (
                 settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and task
-                and task.task_type == Task.TaskType.CHIEF_WAIT
+                and Task.TaskType.CHIEF_WAIT in active_tasks
             ):
                 admin_actions.append(
                     WorkbasketAction(
@@ -451,8 +464,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
             elif (
                 settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and task
-                and task.task_type == Task.TaskType.CHIEF_ERROR
+                and Task.TaskType.CHIEF_ERROR in active_tasks
             ):
                 admin_actions.append(
                     WorkbasketAction(
@@ -480,7 +492,11 @@ class ApplicationBase(WorkbasketBase, Process):
         return admin_actions
 
     def _get_applicant_actions(
-        self, view_action: WorkbasketAction, task: Optional[Task], kwargs: dict[str, Any]
+        self,
+        user: User,
+        view_action: WorkbasketAction,
+        active_tasks: list[str],
+        kwargs: dict[str, Any],
     ) -> list[WorkbasketAction]:
         applicant_actions: list[WorkbasketAction] = []
 
@@ -533,7 +549,7 @@ class ApplicationBase(WorkbasketBase, Process):
                     )
                 )
 
-            if task and task.task_type == Task.TaskType.PREPARE:
+            if Task.TaskType.PREPARE in active_tasks:
                 for update in self.current_update_requests():
                     if update.status == UpdateRequest.Status.OPEN:
                         applicant_actions.append(
@@ -595,6 +611,12 @@ class ApplicationBase(WorkbasketBase, Process):
                         url=reverse("case:ack-notification", kwargs=kwargs),
                     ),
                 )
+
+        elif self.status == self.Statuses.VARIATION_REQUESTED:
+            rv_actions = get_workbasket_applicant_actions(
+                user=user, case_type=kwargs["case_type"], application=self
+            )
+            applicant_actions.extend(rv_actions)
 
         return applicant_actions
 
@@ -682,10 +704,9 @@ class ApplicationBase(WorkbasketBase, Process):
 
     def is_rejected(self):
         """Is the application in a rejected state."""
+        active_tasks = self.get_active_task_list()
 
-        latest_task = self.get_active_task()
-
-        return self.status == self.Statuses.COMPLETED and latest_task == Task.TaskType.REJECTED
+        return self.status == self.Statuses.COMPLETED and Task.TaskType.REJECTED in active_tasks
 
 
 class CaseEmail(models.Model):

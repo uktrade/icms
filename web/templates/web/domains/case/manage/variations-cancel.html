@@ -6,7 +6,7 @@
 
 
 {% block content_actions_link %}
-  <a href="{{ icms_url('case:manage-variations', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+  <a href="{{ icms_url('case:variation-request-manage', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
      class="prev-link">
     Variations
   </a>
@@ -29,7 +29,7 @@
       </tr>
       <tr>
         <td>
-          {{ variation_request_fieldset(process, object, True, case_type) }}
+          {{ variation_request_fieldset(process, object, True, case_type, vr_num) }}
           {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
             {% for field in form %}
               {{ fields.field(field) }}

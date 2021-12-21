@@ -53,7 +53,7 @@ class WorkbasketRow:
     # information: Optional[str] = None
 
     # admin/applicant/etc actions go into their own block
-    actions: list[WorkbasketSection] = field(default_factory=list)
+    sections: list[WorkbasketSection] = field(default_factory=list)
 
 
 class WorkbasketBase:

@@ -51,19 +51,19 @@ def app_completed_agent(db, importer, test_agent_import_user, agent_importer):
 def test_actions_in_progress(app_in_progress, test_import_user):
     user_row = app_in_progress.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Resume", "Cancel"})
+    _check_actions(user_row.sections, expected_actions={"Resume", "Cancel"})
 
 
 def test_actions_submitted(app_submitted, test_import_user):
     user_row = app_submitted.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
 
 
 def test_actions_processing(app_processing, test_import_user):
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
 
 
 def test_actions_fir_withdrawal_update_request(app_processing, test_import_user):
@@ -71,7 +71,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
     _check_actions(
-        user_row.actions,
+        user_row.sections,
         expected_actions={"Pending Withdrawal", "View", "Respond FIR"},
     )
 
@@ -79,7 +79,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
     _check_actions(
-        user_row.actions,
+        user_row.sections,
         expected_actions={"Pending Withdrawal", "View", "Respond FIR", "Respond to Update Request"},
     )
 
@@ -88,7 +88,7 @@ def test_actions_authorise(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.AUTHORISE)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
 
 
 @override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
@@ -96,18 +96,18 @@ def test_actions_bypass_chief(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
 
 
 def test_actions_completed(app_completed, test_import_user):
     user_row = app_completed.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"Acknowledge Notification", "View"})
+    _check_actions(user_row.sections, expected_actions={"Acknowledge Notification", "View"})
 
 
 def test_actions_completed_acknowledged(app_completed, test_import_user):
@@ -115,7 +115,7 @@ def test_actions_completed_acknowledged(app_completed, test_import_user):
     app_completed.acknowledged_datetime = timezone.now()
     user_row = app_completed.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"View Notification", "View"})
+    _check_actions(user_row.sections, expected_actions={"View Notification", "View"})
 
 
 def test_actions_completed_acknowledged_agent(
@@ -125,32 +125,32 @@ def test_actions_completed_acknowledged_agent(
     app_completed_agent.acknowledged_datetime = timezone.now()
     agent_row = app_completed_agent.get_workbasket_row(test_agent_import_user)
 
-    _check_actions(agent_row.actions, expected_actions={"View Notification", "View"})
+    _check_actions(agent_row.sections, expected_actions={"View Notification", "View"})
 
     user_row = app_completed_agent.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.actions, expected_actions={"View Notification", "View"})
+    _check_actions(user_row.sections, expected_actions={"View Notification", "View"})
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_in_progress_ilb_admin(app_in_progress, test_icms_admin_user):
     admin_row = app_in_progress.get_workbasket_row(test_icms_admin_user)
 
-    assert admin_row.actions == []
+    assert admin_row.sections == []
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
     admin_row = app_submitted.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.actions, expected_actions={"Take Ownership", "View"})
+    _check_actions(admin_row.sections, expected_actions={"Take Ownership", "View"})
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_processing(app_processing, test_icms_admin_user):
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.actions, expected_actions={"Manage"})
+    _check_actions(admin_row.sections, expected_actions={"Manage"})
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -160,12 +160,12 @@ def test_admin_actions_fir_withdrawal_update_request(
     _create_fir_withdrawal(app_processing, test_import_user)
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.actions, expected_actions={"Manage"})
+    _check_actions(admin_row.sections, expected_actions={"Manage"})
 
     _create_update_request(app_processing)
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
-    assert admin_row.actions == []
+    assert admin_row.sections == []
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -174,7 +174,7 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(
-        admin_row.actions, expected_actions={"Cancel Authorisation", "Authorise Documents", "View"}
+        admin_row.sections, expected_actions={"Cancel Authorisation", "Authorise Documents", "View"}
     )
 
 
@@ -189,7 +189,7 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
         admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(
-        admin_row.actions,
+        admin_row.sections,
         expected_actions={
             "(TEST) Bypass CHIEF induce failure",
             "(TEST) Bypass CHIEF",
@@ -201,14 +201,14 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.actions, expected_actions={"Show Licence Details", "View"})
+    _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_completed(app_completed, test_icms_admin_user):
     admin_row = app_completed.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.actions, expected_actions={"View"})
+    _check_actions(admin_row.sections, expected_actions={"View"})
 
 
 def _check_actions(actions: list[WorkbasketSection], expected_actions: set[str]):
@@ -233,7 +233,7 @@ def _create_update_request(app):
 
 
 def _update_task(app, new_task_type):
-    task = app.get_active_task()
+    task = app.get_active_tasks().first()
     task.is_active = False
     task.save()
     Task.objects.create(process=app, task_type=new_task_type, previous=task)

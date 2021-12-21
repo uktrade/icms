@@ -373,7 +373,7 @@ class ImportApplication(ApplicationBase):
             importer_actions = self._get_importer_actions()
 
             if importer_actions:
-                r.actions.append(
+                r.sections.append(
                     WorkbasketSection(information=information, actions=importer_actions)
                 )
 

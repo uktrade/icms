@@ -8,6 +8,7 @@ from .views import (
     views_prepare_response,
     views_search,
     views_update_request,
+    views_variation_request,
     views_view_case,
 )
 
@@ -93,12 +94,6 @@ note_urls = [
 admin_urls = [
     path("manage/", views_misc.manage_case, name="manage"),
     path("take-ownership/", views_misc.take_ownership, name="take-ownership"),
-    path("variations/manage/", views_misc.ManageVariationsView.as_view(), name="manage-variations"),
-    path(
-        "variations/<int:variation_request_pk>/cancel",
-        views_misc.CancelVariationRequestView.as_view(),
-        name="cancel-variation-request",
-    ),
     path("release-ownership/", views_misc.release_ownership, name="release-ownership"),
     path("manage-withdrawals/", views_misc.manage_withdrawals, name="manage-withdrawals"),
 ]
@@ -110,6 +105,43 @@ applicant_urls = [
         "withdraw/<int:withdrawal_pk>/archive/",
         views_misc.archive_withdrawal,
         name="archive-withdrawal",
+    ),
+]
+
+variation_request_urls = [
+    path(
+        "admin/",
+        include(
+            [
+                path(
+                    "manage/",
+                    views_variation_request.VariationRequestManageView.as_view(),
+                    name="variation-request-manage",
+                ),
+                path(
+                    "<int:variation_request_pk>/cancel/",
+                    views_variation_request.VariationRequestCancelView.as_view(),
+                    name="variation-request-cancel",
+                ),
+                path(
+                    "<int:variation_request_pk>/request-update/",
+                    views_variation_request.VariationRequestRequestUpdateView.as_view(),
+                    name="variation-request-request-update",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "applicant/",
+        include(
+            [
+                path(
+                    "<int:variation_request_pk>/submit-update/",
+                    views_variation_request.VariationRequestRespondToUpdateRequestView.as_view(),
+                    name="variation-request-submit-update",
+                )
+            ]
+        ),
     ),
 ]
 
@@ -259,6 +291,9 @@ urlpatterns = [
                             #
                             # Emails (import/export)
                             path("emails/", include(email_urls)),
+                            #
+                            # Variation request URLS:
+                            path("variation-request/", include(variation_request_urls)),
                         ]
                     ),
                 ),

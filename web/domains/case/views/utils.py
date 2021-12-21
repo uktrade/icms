@@ -50,7 +50,7 @@ def get_current_task_and_readonly_status(
         is_readonly = not is_case_owner
 
     except ProcessError:
-        task = application.get_active_task()  # type: ignore[assignment]
+        task = application.get_active_tasks(False).first()
         is_readonly = True
 
     return task, is_readonly

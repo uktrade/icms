@@ -139,7 +139,7 @@ class ApprovalRequest(WorkbasketBase, Process):
                 )
             )
 
-        r.actions.append(WorkbasketSection(information=information, actions=actions))
+        r.sections.append(WorkbasketSection(information=information, actions=actions))
 
         return r
 

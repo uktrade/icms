@@ -1,0 +1,89 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% from "web/domains/case/variations/macros.html" import get_status_widget, variation_request_fieldset %}
+
+{% block extra_header %}
+  {{ super() }}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('workbasket') }}" class="prev-link">Workbasket</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+  <ul class="menu-out">
+    {{ icms_link(
+        request,
+        icms_url(
+          'case:variation-request-submit-update', kwargs={'application_pk': process.pk, 'case_type': case_type, 'variation_request_pk': object.pk}
+        ),
+        'Variations'
+      )
+    }}
+    {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
+    <li><a href="#" target="_blank">Sent Responses</a></li>
+  </ul>
+{% endblock %}
+
+{% block main_content %}
+  <table style="width: 100%">
+    <tbody>
+    <tr>
+      <td><h3>Variation Requests</h3></td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <fieldset>
+          <legend>
+            <strong>
+              Variation Request {{ vr_num }}
+            </strong>
+          </legend>
+          <div class="info-box info-box-info">
+            <div class="screen-reader-only">Information box,</div>
+            <p><strong>More information is required from you before this variation can be processed.</strong></p>
+            <p>{{ object.update_request_reason }}</p>
+            <p>Please update the fields below appropriately, then click 'Submit Update'.</p>
+          </div>
+
+          {% call forms.form(method='post', csrf_input=csrf_input) -%}
+            {{ application_field(get_status_widget("OPEN", "Open"), "Status", is_safe_html=True) }}
+            {% for field in form %}
+              {{ fields.field(field) }}
+            {% endfor %}
+
+            <div class="container">
+              <div class="row">
+                <div class="three columns"></div>
+                <div class="eight columns">
+                  <ul class="menu-out flow-across">
+                    <li>
+                      <input type="submit" name="action" class="primary-button button"
+                             value="Submit Update"/>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endcall %}
+        </fieldset>
+      </td>
+    </tr>
+    {% for vr in variation_requests %}
+      <tr>
+        <td>{{ variation_request_fieldset(process, vr, True, case_type, vr.vr_num) }}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+{% endblock %}

@@ -40,6 +40,7 @@ def manage_firs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
+        # TODO: ICMSLST-1344 This throws an exception - Access models don't have a case_worker
         task, readonly_view = get_current_task_and_readonly_status(
             application, case_type, request.user, Task.TaskType.PROCESS
         )

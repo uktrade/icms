@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Union
 
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
@@ -133,22 +133,8 @@ class Process(models.Model):
 
         return tasks.select_for_update() if select_for_update else tasks
 
-    def get_active_task(self, select_for_update: bool = False) -> "Optional[Task]":
-        """Get the only active task attached to this process. If there is more
-        than one active task, raises an error. If there is no active task,
-        returns None."""
-
-        tasks = self.tasks.filter(is_active=True)
-
-        if select_for_update:
-            tasks = tasks.select_for_update()
-
-        if len(tasks) == 1:
-            return tasks[0]
-        elif len(tasks) == 0:
-            return None
-        else:
-            raise errors.TaskError(f"Expected one/zero active tasks, got {len(tasks)}")
+    def get_active_task_list(self) -> list[str]:
+        return list(self.get_active_tasks(False).values_list("task_type", flat=True))
 
     def get_specific_model(self) -> "Process":
         """Downcast to specific model class."""
@@ -221,6 +207,10 @@ class Task(models.Model):
     class TaskType(models.TextChoices):
         PREPARE: str = ("prepare", "Prepare")  # type:ignore[assignment]
         PROCESS: str = ("process", "Process")  # type:ignore[assignment]
+        VR_REQUEST_CHANGE: str = (
+            "vr_request_change",
+            "VR_REQUEST_CHANGE",
+        )  # type:ignore[assignment]
         AUTHORISE: str = ("authorise", "Authorise")  # type:ignore[assignment]
         CHIEF_WAIT: str = ("chief_wait", "CHIEF_WAIT")  # type:ignore[assignment]
         CHIEF_ERROR: str = ("chief_error", "CHIEF_ERROR")  # type:ignore[assignment]
@@ -247,4 +237,4 @@ class Task(models.Model):
     )
 
     def __str__(self):
-        return f"{self.id}"
+        return f"Task(pk={self.id!r}, task_type={self.task_type!r})"

@@ -165,7 +165,7 @@ class ReopenApplicationView(
 
     # ApplicationTaskMixin Config
     current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
-    current_task = None
+    current_task_type = None
 
     next_status = ApplicationBase.Statuses.SUBMITTED
     next_task_type = Task.TaskType.PROCESS
@@ -187,18 +187,19 @@ class RequestVariationUpdateView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
 ):
     # ICMSLST-1240 Need to revisit permissions when they become more clear
+    # TODO: The applicant and admin can request a variation request.
     # PermissionRequiredMixin config
     permission_required = ["web.ilb_admin"]
 
     # ApplicationTaskMixin Config
     current_status = [ApplicationBase.Statuses.COMPLETED]
-    current_task = None
+    current_task_type = None
     next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
     next_task_type = Task.TaskType.PROCESS
 
     # FormView config
     form_class = VariationRequestForm
-    template_name = "web/domains/case/request-variation.html"
+    template_name = "web/domains/case/variation-request-add.html"
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         # Store the search url to create the return link later
@@ -211,11 +212,9 @@ class RequestVariationUpdateView(
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
-        variation_requests = (
-            self.application.variation_requests.all()
-            .order_by("-requested_datetime")
-            .annotate(vr_num=Window(expression=RowNumber()))
-        )
+        variation_requests = self.application.variation_requests.order_by(
+            "-requested_datetime"
+        ).annotate(vr_num=Window(expression=RowNumber()))
 
         return context | {
             "page_title": f"Application {self.application.get_reference()}",
