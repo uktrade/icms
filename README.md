@@ -106,6 +106,7 @@ PII tool files:
 
 Common commands (local venv must be activated):
 - `pre-commit run --all-files` - Runs all pii check
+- `pre-commit run` - Check files staged for commit (git add)
 - `pre-commit autoupdate` - Get the latest version of the tool
 - `pre-commit gc; pre-commit clean` - Run if the hooks pass but the git commit fails
 

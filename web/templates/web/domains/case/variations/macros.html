@@ -33,11 +33,11 @@
 {% endmacro %}
 
 
-{% macro variation_request_fieldset(application, vr, readonly, case_type) %}
+{% macro variation_request_fieldset(application, vr, readonly, case_type, vr_num) %}
   <fieldset>
     <legend>
       <strong>
-        Variation Request {{ vr.vr_num }}
+        Variation Request {{ vr_num }}
       </strong>
     </legend>
     {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}
@@ -56,25 +56,53 @@
     {% endif %}
 
     {% if vr.status == "OPEN" and not readonly %}
-      <div class="row">
-        <div class="three columns"></div>
-        <div class="six columns">
-          <ul class="menu-out flow-across">
-            <li>
-              <a
-                href="{{ icms_url("case:cancel-variation-request", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
-                class="button">
-                Reject/Cancel Variation Request
-              </a>
-            </li>
-
-            {# TODO: ICMSLST-1274 Implement action #}
-            <li><button class=" button">Request Update</button></li>
-          </ul>
+      {% if "vr_request_change" in application.get_active_task_list() %}
+        <h4>Update Request</h4>
+        <div class="container setoutForm">
+          <div class="row">
+            <div class="three columns"><label class="prompt west">Description of the changes required</label></div>
+            <div class="six columns">
+              <span class="text-widget ">{{ vr.update_request_reason }}</span>
+            </div>
+            <div class="three columns"></div>
+          </div>
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="six columns">
+              <ul class="menu-out flow-across">
+                <li>
+                  {# TODO: ICMSLST-1366 Implement withdraw request #}
+                  <button type="button" onclick="" class=" button">Withdraw Request</button>
+                </li>
+              </ul>
+            </div>
+            <div class="three columns"></div>
+          </div>
         </div>
-        <div class="three columns"></div>
-      </div>
+      {% else %}
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="six columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <a
+                  href="{{ icms_url("case:variation-request-cancel", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
+                  class="button">
+                  Reject/Cancel Variation Request
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ icms_url("case:variation-request-request-update", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
+                  class="button">
+                  Request Update
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="three columns"></div>
+        </div>
+      {% endif %}
     {% endif %}
-
   </fieldset>
 {% endmacro %}

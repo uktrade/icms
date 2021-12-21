@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
+from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.wood.models import WoodQuotaApplication
@@ -37,8 +38,15 @@ class TestReopenApplicationView:
         self.client = icms_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted):
+    def set_app(self, wood_app_submitted, test_icms_admin_user):
         self.wood_app = wood_app_submitted
+
+        # End the PROCESS task as we are testing reopening the application
+        task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = test_icms_admin_user
+        task.save()
 
     def test_reopen_application_when_stopped(self, wood_app_submitted):
         self.wood_app.status = WoodQuotaApplication.Statuses.STOPPED
@@ -91,10 +99,17 @@ class TestRequestVariationUpdateView:
         self.client = icms_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted):
+    def set_app(self, wood_app_submitted, test_icms_admin_user):
         self.wood_app = wood_app_submitted
         self.wood_app.status = WoodQuotaApplication.Statuses.COMPLETED
         self.wood_app.save()
+
+        # End the PROCESS task as we are testing with a completed application
+        task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = test_icms_admin_user
+        task.save()
 
     def test_get_search_url(self):
         url = SearchURLS.request_variation(self.wood_app.pk)

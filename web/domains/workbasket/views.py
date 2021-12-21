@@ -7,6 +7,7 @@ from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.access.approval.models import ApprovalRequest
+from web.domains.case.shared import ImpExpStatus
 from web.models import (
     AccessRequest,
     ExportApplication,
@@ -119,19 +120,22 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         )
     )
 
+    # TODO: I'm not sure why we are filtering on state.
+    # When its being processed by the admin (PROCESSING state) the "view" link should still show.
+    app_status_to_show = [
+        ImpExpStatus.COMPLETED,
+        ImpExpStatus.SUBMITTED,
+        ImpExpStatus.IN_PROGRESS,
+        ImpExpStatus.VARIATION_REQUESTED,
+    ]
+
     # Import Applications
     import_applications = (
         ImportApplication.objects.prefetch_related(
             Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
         )
         .filter(is_active=True)
-        .filter(
-            status__in=[
-                ImportApplication.Statuses.COMPLETED,
-                ImportApplication.Statuses.SUBMITTED,
-                ImportApplication.Statuses.IN_PROGRESS,
-            ]
-        )
+        .filter(status__in=app_status_to_show)
         .filter(
             # Either applications managed by contacts of importer
             (
@@ -155,13 +159,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
             Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
         )
         .filter(is_active=True)
-        .filter(
-            status__in=[
-                ExportApplication.Statuses.COMPLETED,
-                ExportApplication.Statuses.SUBMITTED,
-                ExportApplication.Statuses.IN_PROGRESS,
-            ]
-        )
+        .filter(status__in=app_status_to_show)
         .filter(
             # Either applications managed by contacts of exporter
             (

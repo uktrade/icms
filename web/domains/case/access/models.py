@@ -111,8 +111,6 @@ class AccessRequest(WorkbasketBase, Process):
 
         information = "\n".join(info_rows)
 
-        task = self.get_active_task()
-
         if user.has_perm("web.ilb_admin"):
             admin_actions: list[WorkbasketAction] = []
 
@@ -131,9 +129,9 @@ class AccessRequest(WorkbasketBase, Process):
                 ),
             )
 
-            r.actions.append(WorkbasketSection(information=information, actions=admin_actions))
+            r.sections.append(WorkbasketSection(information=information, actions=admin_actions))
 
-        if task and task.owner == user:
+        if self.submitted_by == user:
             owner_actions: list[WorkbasketAction] = [
                 WorkbasketAction(
                     is_post=False,
@@ -155,7 +153,7 @@ class AccessRequest(WorkbasketBase, Process):
                     ),
                 )
 
-            r.actions.append(WorkbasketSection(information=information, actions=owner_actions))
+            r.sections.append(WorkbasketSection(information=information, actions=owner_actions))
 
         return r
 

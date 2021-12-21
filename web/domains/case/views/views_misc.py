@@ -1,28 +1,21 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Window
-from django.db.models.functions import RowNumber
-from django.forms import ModelForm
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils import timezone
-from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, UpdateView
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.models import VariationRequest
-from web.domains.case.utils import update_process_tasks
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import Process, Task
+from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
@@ -30,7 +23,6 @@ from web.utils.validation import ApplicationErrors
 
 from .. import forms
 from ..app_checks import get_app_errors
-from ..shared import ImpExpStatus
 from ..types import ImpOrExp, ImpTypeOrExpType
 from ..utils import (
     check_application_permission,
@@ -632,112 +624,6 @@ def ack_notification(
             template_name="web/domains/case/ack-notification.html",
             context=context,
         )
-
-
-class ManageVariationsView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
-    """Case management view for viewing application variations."""
-
-    # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
-
-    # DetailView config
-    model = Process
-    pk_url_kwarg = "application_pk"
-    template_name = "web/domains/case/manage/manage-variations.html"
-
-    def get_context_data(self, **kwargs):
-        application = self.object.get_specific_model()
-        case_type = self.kwargs["case_type"]
-
-        task, readonly_view = get_current_task_and_readonly_status(
-            application,
-            case_type,
-            self.request.user,
-            Task.TaskType.PROCESS,
-            select_for_update=False,
-        )
-
-        context = super().get_context_data(**kwargs)
-
-        variation_requests = (
-            application.variation_requests.all()
-            .order_by("-requested_datetime")
-            .annotate(vr_num=Window(expression=RowNumber()))
-        )
-
-        return context | {
-            "page_title": f"Variations {application.get_reference()}",
-            "process": application,
-            "case_type": case_type,
-            "readonly_view": readonly_view,
-            "variation_requests": variation_requests,
-        }
-
-
-@method_decorator(transaction.atomic, name="post")
-class CancelVariationRequestView(PermissionRequiredMixin, LoginRequiredMixin, UpdateView):
-    """Case management view for cancelling a request variation."""
-
-    # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
-
-    # UpdateView config
-    success_url = reverse_lazy("workbasket")
-    pk_url_kwarg = "variation_request_pk"
-    model = VariationRequest
-    fields = ["reject_cancellation_reason"]
-    template_name = "web/domains/case/manage/cancel-variations.html"
-
-    # Extra typing for clarity
-    object: VariationRequest
-    application: ImpOrExp
-    task: Task
-
-    def set_application_and_task(self) -> None:
-        self.application = Process.objects.get(
-            pk=self.kwargs["application_pk"]
-        ).get_specific_model()
-
-        self.task = self.application.get_expected_task(
-            Task.TaskType.PROCESS, select_for_update=self.request.method == "POST"
-        )
-
-        self.application.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
-
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
-        self.set_application_and_task()
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
-        self.set_application_and_task()
-        return super().post(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        application = Process.objects.get(pk=self.kwargs["application_pk"]).get_specific_model()
-
-        return context | {
-            "page_title": f"Variations {application.get_reference()}",
-            "case_type": self.kwargs["case_type"],
-            "process": application,
-        }
-
-    def form_valid(self, form: ModelForm) -> HttpResponseRedirect:
-        result = super().form_valid(form)
-
-        # Having saved the cancellation reason we need to do a few things
-        self.object.refresh_from_db()
-        self.object.status = VariationRequest.CANCELLED
-        self.object.closed_datetime = timezone.now()
-        self.object.closed_by = self.request.user
-        self.object.save()
-
-        self.application.status = ImpExpStatus.COMPLETED
-        self.application.save()
-
-        update_process_tasks(self.application, self.task, Task.TaskType.ACK, self.request.user)
-
-        return result
 
 
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":

@@ -754,7 +754,7 @@ application.variation_refuse_reason
 f"Authorise Success: Application
 at.cover_letter_flag
 # Notification
-ManageVariationsView(PermissionRequiredMixin, LoginRequiredMixin
+VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin
 # Having
 User.objects.none
 formats:\n\
@@ -2105,7 +2105,7 @@ views_misc
 views_search.search_cases
 RequestVariationUpdateView.as_view
 views_note.edit_note
-ManageVariationsView.as_view
+VariationRequestManageView.as_view
 name="start
 views_update_request.close_update_request
 views_email.create_case_email
@@ -2118,3 +2118,20 @@ m.to[0
 len(o.to
 assert resp.context["firs"].count
 SILSupplementaryReportFirearmBase
+CaseURLS.variation_request_request_update(self.wood_app.pk
+assert self.vr.update_request_reason
+"Load the expected current task
+List, Union
+ICMSLST-1344
+self.application.variation_requests.count
+Submit Update
+button">Withdraw Request</button
+VariationRequestCancelView
+LoginRequiredMixin, DetailView
+Update
+self.current_task_type
+expected_actions={"Acknowledge Notification
+DATE_INPUT_FORMATS[0
+assert Task
+assert self.vr.update_request_reason is
+ICMSLST-1368

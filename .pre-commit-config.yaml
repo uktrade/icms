@@ -15,7 +15,7 @@ repos:
     -   id: pii_secret_file_content_ner
         files: ''
         language: python
-        # args: [--ner_output_file=ner_output_file.txt] # uncomment to output NER entities
+        args: [--ner_output_file=ner_output_file.txt] # uncomment to output NER entities
         pass_filenames: true
         require_serial: true
     -   id: hooks_version_check

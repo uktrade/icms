@@ -1,0 +1,57 @@
+{% extends "web/domains/case/manage/base.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "web/domains/case/variations/macros.html" import variation_request_fieldset %}
+
+
+{% block content_actions_link %}
+  <a href="{{ icms_url('case:variation-request-manage', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+     class="prev-link">
+    Variations
+  </a>
+{% endblock %}
+
+
+{% block main_content %}
+  <table style="width: 100%">
+    <tbody>
+      <tr>
+        <td><h3>Update Request</h3></td>
+      </tr>
+      <tr>
+        <td>
+          Request update
+          <br>
+          The variation update request will be sent to the applicant.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ variation_request_fieldset(process, object, True, case_type, vr_num) }}
+          {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+            {% for field in form %}
+              {{ fields.field(field) }}
+            {% endfor %}
+
+            <div class="container">
+              <div class="row">
+                <div class="three columns"></div>
+                <div class="eight columns">
+                  <ul class="menu-out flow-across">
+                    <li>
+                      <input
+                        type="submit"
+                        class="primary-button button"
+                        value="Confirm Cancellation" />
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endcall %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endblock %}
