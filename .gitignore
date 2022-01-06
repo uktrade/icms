@@ -143,4 +143,5 @@ dmypy.json
 /test-reports
 
 # https://github.com/uktrade/pii-secret-check-hooks
+.pii-secret-hook/
 ner_output_file.txt
