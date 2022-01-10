@@ -179,7 +179,7 @@ class GoodsDerogationsLicenceForm(forms.ModelForm):
     )
 
     value = forms.CharField(
-        label="Value (euro CIF)",
+        label="Value (GBP)",
         required=True,
     )
 
