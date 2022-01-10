@@ -2135,3 +2135,6 @@ DATE_INPUT_FORMATS[0
 assert Task
 assert self.vr.update_request_reason is
 ICMSLST-1368
+_st = ImpExpStatus
+WoodQuotaApplication(status=_st
+CertificateOfManufactureApplication(status=_st

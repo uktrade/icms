@@ -5,12 +5,13 @@ from typing import TYPE_CHECKING, Any, Iterable, Union
 
 from django.db import models
 from django.urls import reverse
-from django.utils.timezone import make_aware
+from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import ApplicationBase, CaseEmail, UpdateRequest
+from web.domains.case.models import CaseEmail, UpdateRequest
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExpT
 from web.domains.commodity.models import Commodity
 from web.domains.user.models import User
@@ -370,10 +371,7 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
     if terms.reassignment_search:
         model = model.filter(
             case_owner__isnull=False,
-            status__in=[
-                ApplicationBase.Statuses.PROCESSING,
-                ApplicationBase.Statuses.VARIATION_REQUESTED,
-            ],
+            status__in=[ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
         )
 
         if terms.reassignment_user:
@@ -409,14 +407,14 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
         model = model.filter(decision=terms.response_decision)
 
     if terms.submitted_date_start:
-        start_datetime = make_aware(
+        start_datetime = timezone.make_aware(
             datetime.datetime.combine(terms.submitted_date_start, datetime.datetime.min.time())
         )
 
         model = model.filter(submit_datetime__gte=start_datetime)
 
     if terms.submitted_date_end:
-        end_datetime = make_aware(
+        end_datetime = timezone.make_aware(
             datetime.datetime.combine(terms.submitted_date_end, datetime.datetime.max.time())
         )
 
@@ -519,7 +517,7 @@ def _apply_import_application_filter(
         commodity_filter = _get_commodity_code_filter(terms)
         model = model.filter(commodity_filter)
 
-    # TODO ICMSLST-686 Write test & implement
+    # TODO: ICMSLST-1370 Write test & implement
     if terms.under_appeal:
         ...
 
@@ -733,20 +731,20 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
     #   Status = COMPLETED
     #       Request Variation
 
-    if rec.status == ImportApplication.Statuses.COMPLETED:
-        # TODO: ICMSLST-686
-        actions.append(
-            types.SearchAction(
-                url=reverse(
-                    "case:search-request-variation",
-                    kwargs={"application_pk": rec.pk, "case_type": "import"},
-                ),
-                name="request-variation",
-                label="Request Variation",
-                icon="icon-redo2",
-                is_post=False,
+    if rec.status == ImpExpStatus.COMPLETED:
+        if rec.licence_end_date and rec.licence_end_date >= timezone.now().date():
+            actions.append(
+                types.SearchAction(
+                    url=reverse(
+                        "case:search-request-variation",
+                        kwargs={"application_pk": rec.pk, "case_type": "import"},
+                    ),
+                    name="request-variation",
+                    label="Request Variation",
+                    icon="icon-redo2",
+                    is_post=False,
+                )
             )
-        )
 
         if rec.decision == rec.REFUSE:
             # TODO: ICMSLST-1001
