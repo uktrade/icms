@@ -219,10 +219,11 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
             model_class=CertificateOfFreeSaleApplication,
             form_class=CreateExportApplicationForm,
             certificate_message=(
-                "If you are supplying the product to a client in the UK/EU then you do not require a certificate."
-                " Your client will need to apply for a certificate if they subsequently export it to one of their"
-                " clients outside of the EU.\n\n"
-                "DIT does not issue Certificates of Free Sale for food, foodsupplements, pesticides and CE marked medical devices."
+                "If you are supplying the product to a client in the UK then you do not require a certificate."
+                " Your client may need to apply for a certificate if they subsequently export"
+                " it to one of their clients outside of the UK."
+                "\n\nDIT does not issue Certificates of Free sale for food, drinks, supplements,"
+                " medical devices or pesticides."
             ),
         )
 
