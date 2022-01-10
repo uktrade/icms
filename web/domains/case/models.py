@@ -272,7 +272,9 @@ class ApplicationBase(WorkbasketBase, Process):
     reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
 
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
-    refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
+    refuse_reason = models.CharField(
+        max_length=4000, blank=True, null=True, verbose_name="Refusal reason"
+    )
 
     acknowledged_by = models.ForeignKey(
         User,
