@@ -43,6 +43,10 @@ migrations: ## make db migrations
 	docker-compose run --rm web python ./manage.py makemigrations web && \
 	docker-compose run --rm web chown "${UID}" web/migrations/*.py
 
+check_migrations: ## Check for missing migrations:
+	unset UID && \
+	docker-compose run --rm web python ./manage.py makemigrations --check --dry-run
+
 migrate: ## execute db migration
 	unset UID && \
 	docker-compose run --rm web python ./manage.py migrate
