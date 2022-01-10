@@ -31,16 +31,10 @@ class Exporter(Archivable, models.Model):
         return self.main_exporter is not None
 
     def __str__(self):
-        LABEL = ""
         if self.is_agent():
-            LABEL = "Exporter Agent"
-        else:
-            LABEL = "Exporter"
+            return f"Agent - {self.name}"
 
-        if self.id:
-            return LABEL + " - " + self.name
-        else:
-            return LABEL
+        return self.name
 
     class Meta:
         ordering = (

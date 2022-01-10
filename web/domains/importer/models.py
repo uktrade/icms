@@ -77,16 +77,10 @@ class Importer(Archivable, models.Model):
         return self.type == self.ORGANISATION
 
     def __str__(self):
-        LABEL = ""
         if self.is_agent():
-            LABEL = "Importer Agent"
-        else:
-            LABEL = "Importer"
+            return f"Agent - {self.display_name}"
 
-        if self.id:
-            return LABEL + " - " + self.display_name
-        else:
-            return LABEL
+        return self.display_name
 
     @property
     def display_name(self):
