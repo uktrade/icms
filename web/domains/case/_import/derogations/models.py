@@ -67,7 +67,7 @@ class DerogationsApplication(ImportApplication):
         decimal_places=2,
         null=True,
         validators=[at_least_0],
-        verbose_name="Value (euro CIF)",
+        verbose_name="Value (GBP)",
     )
 
     #  supporting documents
