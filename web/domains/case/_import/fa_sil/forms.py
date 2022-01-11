@@ -9,15 +9,11 @@ from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
-from web.forms.widgets import DateInput
+from web.forms.widgets import DateInput, RadioSelectInline
 
 from . import models
 
-TRUE_FALSE_CHOICES = (
-    ("unknown", "---------"),
-    (True, "Yes"),
-    (False, "No"),
-)
+YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")))
 
 
 class PrepareSILForm(forms.ModelForm):
@@ -44,6 +40,13 @@ class PrepareSILForm(forms.ModelForm):
             "additional_comments",
         )
 
+        widgets = {
+            "know_bought_from": YesNoRadioSelectInline,
+            "military_police": YesNoRadioSelectInline,
+            "eu_single_market": YesNoRadioSelectInline,
+            "manufactured": YesNoRadioSelectInline,
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -56,19 +59,9 @@ class PrepareSILForm(forms.ModelForm):
             country_groups__name="Firearms and Ammunition (SIL) COCs", is_active=True
         )
 
-        self.fields["know_bought_from"].required = True
-        self.fields["military_police"].required = True
-        self.fields["eu_single_market"].required = True
-        self.fields["manufactured"].required = True
-
-        yes_no_fields = ["know_bought_from", "military_police", "eu_single_market", "manufactured"]
-        for field in yes_no_fields:
-            # The default label for unknown is "Unknown"
-            self.fields[field].widget.choices = [
-                ("unknown", "---------"),
-                ("true", "Yes"),
-                ("false", "No"),
-            ]
+        # Bool fields are optional by default
+        for f in ["know_bought_from", "military_police", "eu_single_market", "manufactured"]:
+            self.fields[f].required = True
 
     def clean(self):
         cleaned_data = super().clean()
@@ -92,7 +85,7 @@ class SILGoodsSection1Form(forms.ModelForm):
         model = models.SILGoodsSection1
         fields = ("manufacture", "description", "quantity")
         widgets = {
-            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
@@ -115,7 +108,7 @@ class SILGoodsSection2Form(forms.ModelForm):
         model = models.SILGoodsSection2
         fields = ("manufacture", "description", "quantity")
         widgets = {
-            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
@@ -166,7 +159,7 @@ class SILGoodsSection5Form(forms.ModelForm):
         model = models.SILGoodsSection5
         fields = ("subsection", "manufacture", "description", "quantity", "unlimited_quantity")
         widgets = {
-            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
@@ -220,10 +213,10 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
             "quantity",
         )
         widgets = {
-            "curiosity_ornament": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "centrefire": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "original_chambering": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "curiosity_ornament": YesNoRadioSelectInline,
+            "centrefire": YesNoRadioSelectInline,
+            "manufacture": YesNoRadioSelectInline,
+            "original_chambering": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
             "obsolete_calibre": s2forms.Select2Widget,
         }
@@ -313,13 +306,13 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
             "bore_details",
         )
         widgets = {
-            "curiosity_ornament": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "manufacture": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "muzzle_loading": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "rimfire": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "ignition": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "chamber": forms.Select(choices=TRUE_FALSE_CHOICES),
-            "bore": forms.Select(choices=TRUE_FALSE_CHOICES),
+            "curiosity_ornament": YesNoRadioSelectInline,
+            "manufacture": YesNoRadioSelectInline,
+            "muzzle_loading": YesNoRadioSelectInline,
+            "rimfire": YesNoRadioSelectInline,
+            "ignition": YesNoRadioSelectInline,
+            "chamber": YesNoRadioSelectInline,
+            "bore": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
