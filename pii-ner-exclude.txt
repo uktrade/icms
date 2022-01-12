@@ -2139,3 +2139,6 @@ _st = ImpExpStatus
 WoodQuotaApplication(status=_st
 CertificateOfManufactureApplication(status=_st
 Bool
+EditFaSILForm(OptionalFormMixin
+SubmitFaSILForm(**form_kwargs
+assert self.app.applicant_reference

@@ -1,5 +1,6 @@
 from typing import NamedTuple
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -156,10 +157,11 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     errors = ApplicationErrors()
 
     edit_url = reverse("import:fa-sil:edit", kwargs={"application_pk": application.pk})
+    edit_url = f"{edit_url}?validate=1"
 
     # Check main form
     application_details_errors = PageErrors(page_name="Application details", url=edit_url)
-    application_form = forms.PrepareSILForm(data=model_to_dict(application), instance=application)
+    application_form = forms.SubmitFaSILForm(data=model_to_dict(application), instance=application)
     create_page_errors(application_form, application_details_errors)
     errors.add(application_details_errors)
 
@@ -319,18 +321,28 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.POST:
-            form = forms.PrepareSILForm(data=request.POST, instance=application)
+            form = forms.EditFaSILForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk})
                 )
+            else:
+                messages.error(request, "Failed to save application data, please correct errors.")
 
         else:
             initial = {} if application.contact else {"contact": request.user}
-            form = forms.PrepareSILForm(instance=application, initial=initial)
+            form_kwargs = {"instance": application, "initial": initial}
+
+            # query param to validate the form (useful when returning from submit link)
+            if request.GET.get("validate"):
+                form_kwargs |= {"data": model_to_dict(application)}
+                form = forms.SubmitFaSILForm(**form_kwargs)
+            else:
+                form = forms.EditFaSILForm(**form_kwargs)
 
         verified_section5 = application.importer.section5_authorities.currently_active()
         available_verified_section5 = verified_section5.exclude(

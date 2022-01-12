@@ -14,3 +14,13 @@ class ReadonlyFormMixin(Form):
 
     def save(self, *args, **kwargs):
         pass
+
+
+class OptionalFormMixin:
+    """Makes all form fields optional to allow partial saving."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)  # type: ignore[call-arg]
+
+        for f in self.fields:  # type: ignore[attr-defined]
+            self.fields[f].required = False  # type: ignore[attr-defined]
