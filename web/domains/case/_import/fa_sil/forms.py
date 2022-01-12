@@ -9,6 +9,7 @@ from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput, RadioSelectInline
 
 from . import models
@@ -16,7 +17,7 @@ from . import models
 YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")))
 
 
-class PrepareSILForm(forms.ModelForm):
+class FirearmSILFormBase(forms.ModelForm):
     additional_comments = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 4}))
 
     class Meta:
@@ -63,12 +64,27 @@ class PrepareSILForm(forms.ModelForm):
         for f in ["know_bought_from", "military_police", "eu_single_market", "manufactured"]:
             self.fields[f].required = True
 
+
+class EditFaSILForm(OptionalFormMixin, FirearmSILFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitFaSILForm(FirearmSILFormBase):
+    """Form used when submitting a FA_SIL application.
+
+    All fields are fully validated to ensure form is correct.
+    """
+
     def clean(self):
         cleaned_data = super().clean()
 
         # At least one section should be selected
         licence_for = ["section1", "section2", "section5", "section58_obsolete", "section58_other"]
         sections = (cleaned_data.get(section) for section in licence_for)
+
         if not any(sections):
             self.add_error("section1", "You must select at least one 'section'")
             self.add_error("section2", "You must select at least one 'section'")
