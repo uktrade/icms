@@ -71,19 +71,19 @@ requirements files: `make build`.
 
 To run the unit tests:
 
-`./run-tests-local.sh`
+`./run-tests.sh`
 
 To run tests for a single file in a non-distributed manner (faster):
 
-`./run-tests-local.sh --dist=no web/tests/foo/bar.by`
+`./run-tests.sh --dist=no web/tests/foo/bar.by`
 
 To run tests with a fresh test database:
 
-`./run-tests-local.sh --create-db`
+`./run-tests.sh --create-db`
 
 To run the tests with full coverage run (mainly done as part of CI pipeline):
 
-`./run-tests.sh`
+`make test`
 
 ## Code style
 

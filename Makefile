@@ -59,18 +59,18 @@ check-development: ## run Django check for development environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-    docker-compose run --rm web python ./manage.py check --settings=config.settings.development
+	docker-compose run --rm web python ./manage.py check --settings=config.settings.development
 
 check-staging: ## run Django check for staging environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-    docker-compose run --rm web python ./manage.py check --settings=config.settings.staging
+	docker-compose run --rm web python ./manage.py check --settings=config.settings.staging
 
 check-staging-with-deploy: ## run Django check for staging environment settings with deploy flag
 	unset UID && \
 	export DATABASE_URL="unset" && \
-    docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings.staging
+	docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings.staging
 
 COMMAND="help"
 manage: ## execute manage.py
@@ -179,8 +179,12 @@ debug: ## runs system in debug mode
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
 
-test: ## run tests (circleci; don't use locally)
-	./run-tests.sh --numprocesses 2
+test: ## run tests (circleci; don't use locally as it produces a coverage report)
+	./run-tests.sh \
+		--cov=web \
+		--cov=config \
+		--cov-report xml:test-reports/cov.xml \
+		--numprocesses 2
 
 accessibility: ## Generate accessibility reports
 	unset UID && \
