@@ -13,8 +13,7 @@ export ICMS_DEBUG=False
 # --create-db" to force re-creation of the test database.
 #
 # For speed run with --dist=no when testing a single file
-
-docker-compose run --rm web pytest --tb=short --cov=web --cov=config --cov-report xml:test-reports/cov.xml --dist=loadfile --tx=4*popen "$@"
+docker-compose run --rm web pytest --tb=short --dist=loadfile --tx=4*popen "$@"
 
 # With coverage (terminal report)
 # docker-compose run --rm web pytest --tb=short --cov=web --cov-report term-missing:skip-covered --dist=loadfile --tx=4*popen "$@"
