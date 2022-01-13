@@ -7,18 +7,18 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case import forms, models
+from web.domains.case.types import ImpOrExp
+from web.domains.case.utils import (
+    check_application_permission,
+    get_application_current_task,
+    get_case_page_title,
+)
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import email
 from web.types import AuthenticatedHttpRequest
 
-from .. import forms, models
-from ..types import ImpOrExp
-from ..utils import (
-    check_application_permission,
-    get_application_current_task,
-    get_case_page_title,
-)
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 
@@ -98,10 +98,7 @@ def manage_update_requests(
                 recipients = list(contacts.values_list("email", flat=True))
 
                 email.send_email.delay(
-                    update_request.request_subject,
-                    update_request.request_detail,
-                    recipients,
-                    update_request.email_cc_address_list,
+                    update_request.request_subject, update_request.request_detail, recipients
                 )
 
                 return redirect(reverse("workbasket"))

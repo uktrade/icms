@@ -126,6 +126,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         ImpExpStatus.COMPLETED,
         ImpExpStatus.SUBMITTED,
         ImpExpStatus.IN_PROGRESS,
+        ImpExpStatus.PROCESSING,
         ImpExpStatus.VARIATION_REQUESTED,
     ]
 

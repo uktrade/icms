@@ -65,7 +65,7 @@ class CloseCaseForm(forms.Form):
 class UpdateRequestForm(forms.ModelForm):
     class Meta:
         model = UpdateRequest
-        fields = ("request_subject", "email_cc_address_list", "request_detail")
+        fields = ("request_subject", "request_detail")
 
 
 class UpdateRequestResponseForm(forms.ModelForm):
