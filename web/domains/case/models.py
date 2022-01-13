@@ -111,19 +111,6 @@ class UpdateRequest(models.Model):
 
     request_subject = models.CharField(max_length=100, null=True)
     request_detail = models.TextField(null=True)
-
-    email_cc_address_list = ArrayField(
-        models.EmailField(max_length=254),
-        help_text=(
-            "You may enter a list of email addresses to CC this email to. Use a comma (,) to"
-            " seperate multiple addresses. E.g. john@smith.com,jane@smith.com"  # /PS-IGNORE
-        ),
-        verbose_name="Request CC Email Addresses",
-        size=15,
-        blank=True,
-        null=True,
-    )
-
     response_detail = models.TextField(
         verbose_name="Summary of Changes",
         null=True,
