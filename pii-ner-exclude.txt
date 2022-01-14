@@ -2142,3 +2142,24 @@ Bool
 EditFaSILForm(OptionalFormMixin
 SubmitFaSILForm(**form_kwargs
 assert self.app.applicant_reference
+https://
+LicenseDataCallback(View
+https://icms-hmrc.trade.dev.uktrade.digital/mail/update-licence/
+Hawk MAC
+django.core.cache
+django.utils.crypto import
+constant_time_compare
+Server-Authorization"
+HAWK_AUTH_KEY
+Raise Django's
+BadRequest
+HawkFail
+MULTI STATUS
+JsonResponse(data
+Server-Authorization
+hash="fake
+text="OK
+# Finished
+mock.patch("mohawk.sender
+Literal["GET
+Hawk
