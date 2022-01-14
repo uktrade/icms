@@ -292,3 +292,9 @@ HTML_MINIFY = True
 
 # Django Compressor
 COMPRESS_OFFLINE = True
+
+CHIEF_LICENSE_URL = env.str(
+    "CHIEF_LICENSE_URL", "https://icms-hmrc.trade.dev.uktrade.digital/mail/update-licence/"
+)
+HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms")
+HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
