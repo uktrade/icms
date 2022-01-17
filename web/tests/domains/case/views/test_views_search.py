@@ -5,12 +5,15 @@ from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
 from web.flow.models import Task
 from web.tests.helpers import SearchURLS
 
 if TYPE_CHECKING:
     from django.test.client import Client
+
+    from web.domains.case.export.models import CertificateOfManufactureApplication
 
 
 # TODO: ICMSLST-1240 Add permission tests for all views
@@ -49,7 +52,7 @@ class TestReopenApplicationView:
         task.save()
 
     def test_reopen_application_when_stopped(self, wood_app_submitted):
-        self.wood_app.status = WoodQuotaApplication.Statuses.STOPPED
+        self.wood_app.status = ImpExpStatus.STOPPED
         self.wood_app.save()
 
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
@@ -58,7 +61,7 @@ class TestReopenApplicationView:
         self._check_valid_response(resp, wood_app_submitted)
 
     def test_reopen_application_when_withdrawn(self, wood_app_submitted):
-        self.wood_app.status = WoodQuotaApplication.Statuses.WITHDRAWN
+        self.wood_app.status = ImpExpStatus.WITHDRAWN
         self.wood_app.save()
 
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
@@ -72,7 +75,7 @@ class TestReopenApplicationView:
             self.client.post(url)
 
     def test_reopen_application_unsets_caseworker(self, test_icms_admin_user, wood_app_submitted):
-        self.wood_app.status = WoodQuotaApplication.Statuses.STOPPED
+        self.wood_app.status = ImpExpStatus.STOPPED
         self.wood_app.case_owner = test_icms_admin_user
         self.wood_app.save()
 
@@ -101,7 +104,7 @@ class TestRequestVariationUpdateView:
     @pytest.fixture(autouse=True)
     def set_app(self, wood_app_submitted, test_icms_admin_user):
         self.wood_app = wood_app_submitted
-        self.wood_app.status = WoodQuotaApplication.Statuses.COMPLETED
+        self.wood_app.status = ImpExpStatus.COMPLETED
         self.wood_app.save()
 
         # End the PROCESS task as we are testing with a completed application
@@ -161,5 +164,47 @@ class TestRequestVariationUpdateView:
         assert not self.wood_app.variation_decision
         assert not self.wood_app.variation_refuse_reason
 
-        self.wood_app.check_expected_status([WoodQuotaApplication.Statuses.VARIATION_REQUESTED])
+        self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
         self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+
+
+class TestRequestVariationOpenRequestView:
+    client: "Client"
+    app: "CertificateOfManufactureApplication"
+
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, com_app_submitted, test_icms_admin_user):
+        self.app = com_app_submitted
+        self.app.status = ImpExpStatus.COMPLETED
+        # A completed app would have a case owner (to test it gets cleared)
+        self.app.case_owner = test_icms_admin_user
+        self.app.save()
+
+        # End the PROCESS task as we are testing with a completed application
+        task = self.app.get_expected_task(Task.TaskType.PROCESS)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = test_icms_admin_user
+        task.save()
+
+    def test_post_updates_status(self, test_icms_admin_user):
+        url = SearchURLS.open_variation(self.app.pk)
+
+        form_data = {"what_varied": "What was varied"}
+
+        response = self.client.post(url, data=form_data)
+        default_redirect_url = (
+            "/case/export/search/standard/results/?case_status=VARIATION_REQUESTED"
+        )
+
+        assertRedirects(response, default_redirect_url, 302)
+        self.app.refresh_from_db()
+
+        assert not self.app.case_owner
+
+        self.app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        self.app.get_expected_task(Task.TaskType.PROCESS)

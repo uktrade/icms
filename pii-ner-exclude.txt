@@ -2163,3 +2163,11 @@ text="OK
 mock.patch("mohawk.sender
 Literal["GET
 Hawk
+View Case'
+Case Variation"
+VariationRequestExportAppForm
+Opened Date
+vr.closed_by
+exporter_contact.pk
+add_variation_request(com_app
+Case"/></li

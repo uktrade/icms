@@ -794,11 +794,17 @@ def get_export_record_actions(rec: "ExportApplication", user: User) -> list[type
     #       Copy Application
     #       Create Template
 
-    if rec.status == st.COMPLETED:
-        # TODO: ICMSLST-1005
+    if rec.status == st.COMPLETED and user.has_perm("web.ilb_admin"):
         actions.append(
             types.SearchAction(
-                url="#", name="open-variation", label="Open Variation", icon="icon-redo2"
+                url=reverse(
+                    "case:search-open-variation",
+                    kwargs={"application_pk": rec.pk, "case_type": "export"},
+                ),
+                name="open-variation",
+                label="Open Variation",
+                icon="icon-redo2",
+                is_post=False,
             )
         )
 

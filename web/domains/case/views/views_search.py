@@ -15,6 +15,7 @@ from django.views.generic import FormView, View
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
+from web.domains.case.forms import VariationRequestExportAppForm, VariationRequestForm
 from web.domains.case.forms_search import (
     ExportSearchAdvancedForm,
     ExportSearchForm,
@@ -22,7 +23,7 @@ from web.domains.case.forms_search import (
     ImportSearchForm,
     ReassignmentUserForm,
 )
-from web.domains.case.models import ApplicationBase
+from web.domains.case.models import ApplicationBase, VariationRequest
 from web.domains.case.utils import get_variation_request_case_reference
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
@@ -32,8 +33,6 @@ from web.utils.search import (
     search_applications,
 )
 
-from ..forms import VariationRequestForm
-from ..models import VariationRequest
 from .mixins import ApplicationTaskMixin
 
 if TYPE_CHECKING:
@@ -182,34 +181,23 @@ class ReopenApplicationView(
         return HttpResponse(status=204)
 
 
-@method_decorator(transaction.atomic, name="post")
-class RequestVariationUpdateView(
+class RequestVariationOpenBase(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
 ):
-    # ICMSLST-1240 Need to revisit permissions when they become more clear
-    # TODO: The applicant and admin can request a variation request.
-    # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
-
-    # ApplicationTaskMixin Config
-    current_status = [ApplicationBase.Statuses.COMPLETED]
-    current_task_type = None
-    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
-    next_task_type = Task.TaskType.PROCESS
-
-    # FormView config
-    form_class = VariationRequestForm
-    template_name = "web/domains/case/variation-request-add.html"
+    """Base class for opening a variation request for import and export applications."""
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         # Store the search url to create the return link later
         referrer = self.request.META.get("HTTP_REFERER", "")
+
         if "search/standard" in referrer or "search/advanced" in referrer:
             self.request.session["search_results_url"] = referrer
 
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
+        """Returns context data for both import and export application variation requests."""
+
         context = super().get_context_data(**kwargs)
 
         variation_requests = self.application.variation_requests.order_by(
@@ -223,26 +211,6 @@ class RequestVariationUpdateView(
             "case_type": self.kwargs["case_type"],
             "variation_requests": variation_requests,
         }
-
-    def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
-        """Store the variation request before redirecting to the success url."""
-
-        variation_request: VariationRequest = form.save(commit=False)
-        variation_request.status = VariationRequest.OPEN
-        variation_request.requested_by = self.request.user
-        variation_request.save()
-
-        self.application.variation_requests.add(variation_request)
-        self.application.case_owner = None
-        self.application.variation_decision = None
-        self.application.variation_refuse_reason = None
-
-        self.application.reference = get_variation_request_case_reference(self.application)
-
-        self.update_application_status()
-        self.update_application_tasks()
-
-        return super().form_valid(form)
 
     def get_success_url(self) -> str:
         """Upon submitting a valid variation request return to the search screen."""
@@ -283,6 +251,79 @@ class RequestVariationUpdateView(
         query_params = {"case_status": self.application.Statuses.VARIATION_REQUESTED}
 
         return "".join((search_url, "?", parse.urlencode(query_params)))
+
+
+@method_decorator(transaction.atomic, name="post")
+class RequestVariationUpdateView(RequestVariationOpenBase):
+    # ICMSLST-1240 Need to revisit permissions when they become more clear
+    # TODO: The applicant and admin can request a variation request for import applications.
+    # PermissionRequiredMixin config
+    permission_required = ["web.ilb_admin"]
+
+    # ApplicationTaskMixin Config
+    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_task_type = None
+    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_task_type = Task.TaskType.PROCESS
+
+    # FormView config
+    form_class = VariationRequestForm
+    template_name = "web/domains/case/variation-request-add.html"
+
+    def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
+        """Store the variation request before redirecting to the success url."""
+
+        variation_request: VariationRequest = form.save(commit=False)
+        variation_request.status = VariationRequest.OPEN
+        variation_request.requested_by = self.request.user
+        variation_request.save()
+
+        self.application.variation_requests.add(variation_request)
+        self.application.case_owner = None
+        self.application.variation_decision = None
+        self.application.variation_refuse_reason = None
+
+        self.application.reference = get_variation_request_case_reference(self.application)
+
+        self.update_application_status()
+        self.update_application_tasks()
+
+        return super().form_valid(form)
+
+
+@method_decorator(transaction.atomic, name="post")
+class RequestVariationOpenRequestView(RequestVariationOpenBase):
+    """Admin view to open a variation request for an export application"""
+
+    # PermissionRequiredMixin config
+    permission_required = ["web.ilb_admin"]
+
+    # ApplicationTaskMixin Config
+    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_task_type = None
+    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_task_type = Task.TaskType.PROCESS
+
+    # FormView config
+    form_class = VariationRequestExportAppForm
+    template_name = "web/domains/case/variation-request-add.html"
+
+    def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
+        """Store the variation request before redirecting to the success url."""
+
+        variation_request: VariationRequest = form.save(commit=False)
+        variation_request.status = VariationRequest.OPEN
+        variation_request.requested_by = self.request.user
+        variation_request.save()
+
+        self.application.variation_requests.add(variation_request)
+        self.application.case_owner = None
+        self.application.reference = get_variation_request_case_reference(self.application)
+
+        self.update_application_status()
+        self.update_application_tasks()
+
+        return super().form_valid(form)
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

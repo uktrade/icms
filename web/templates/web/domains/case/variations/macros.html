@@ -33,7 +33,7 @@
 {% endmacro %}
 
 
-{% macro variation_request_fieldset(application, vr, readonly, case_type, vr_num) %}
+{% macro variation_request_fieldset(application, vr, readonly, vr_num) %}
   <fieldset>
     <legend>
       <strong>
@@ -86,14 +86,14 @@
             <ul class="menu-out flow-across">
               <li>
                 <a
-                  href="{{ icms_url("case:variation-request-cancel", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
+                  href="{{ icms_url("case:variation-request-cancel", kwargs={"case_type": "import", "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
                   class="button">
                   Reject/Cancel Variation Request
                 </a>
               </li>
               <li>
                 <a
-                  href="{{ icms_url("case:variation-request-request-update", kwargs={"case_type": case_type, "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
+                  href="{{ icms_url("case:variation-request-request-update", kwargs={"case_type": "import", "application_pk": application.pk, "variation_request_pk": vr.pk}) }}"
                   class="button">
                   Request Update
                 </a>
@@ -104,5 +104,44 @@
         </div>
       {% endif %}
     {% endif %}
+  </fieldset>
+{% endmacro %}
+
+{% macro export_application_variation_request_fieldset(application, vr, readonly, vr_num) %}
+  <fieldset>
+  <legend>
+    <strong>
+      Variation Request {{ vr_num }}
+    </strong>
+  </legend>
+  {{ application_field(get_status_widget(vr.status, vr.get_status_display()), "Status", is_safe_html=True) }}
+  {{ application_field(vr.requested_datetime.strftime('%d-%b-%Y %H:%M') , "Opened Date") }}
+  {{ application_field(vr.requested_by , "Opened By") }}
+  {{ application_field(vr.what_varied , "Variation Reason") }}
+
+  {% if vr.closed_datetime %}
+    {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y %H:%M'), "Cancelled Date") }}
+  {% endif %}
+
+  {% if vr.closed_by %}
+    {{ application_field(vr.closed_by, "Cancelled By") }}
+  {% endif %}
+
+  {% if vr.status == "OPEN" and not readonly %}
+    <div class="container setoutForm">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="six columns">
+          <ul class="menu-out flow-across">
+            <li>
+              {# TODO: ICMSLST-1239 Implement cancel variation #}
+              <button type="button" onclick="" class=" button">Cancel</button>
+            </li>
+          </ul>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    </div>
+  {% endif %}
   </fieldset>
 {% endmacro %}

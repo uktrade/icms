@@ -263,3 +263,12 @@ class VariationRequestForm(forms.ModelForm):
             "why_varied": forms.Textarea({"rows": 4, "cols": 50}),
             "when_varied": DateInput(),
         }
+
+
+class VariationRequestExportAppForm(forms.ModelForm):
+    class Meta:
+        model = VariationRequest
+        fields = ("what_varied",)
+        labels = {"what_varied": "Variation Reason"}
+
+        widgets = {"what_varied": forms.Textarea({"rows": 4, "cols": 50})}
