@@ -158,3 +158,12 @@ class SearchURLS:
             "case:search-request-variation",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
+
+    @staticmethod
+    def open_variation(application_pk):
+        case_type = "export"
+
+        return reverse(
+            "case:search-open-variation",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
+        )

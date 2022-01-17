@@ -46,6 +46,7 @@ class Command(BaseCommand):
         # Exporter
         exporter = self.create_exporter()
         self.create_exporter_user(exporter, "test_export_user")
+        self.create_exporter_user(exporter, "exporter_contact")
 
         agent_exporter = self.create_exporter(
             main_exporter=exporter, name="UK based agent exporter"

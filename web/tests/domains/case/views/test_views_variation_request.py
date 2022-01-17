@@ -2,7 +2,7 @@ import pytest
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
-from pytest_django.asserts import assertRedirects
+from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.domains.case.models import VariationRequest
 from web.domains.case.shared import ImpExpStatus
@@ -15,21 +15,20 @@ class TestVariationRequestManageView:
     def set_client(self, icms_admin_client):
         self.client = icms_admin_client
 
-    @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted):
-        self.wood_app = wood_app_submitted
-
-    def test_get_variations(self, test_icms_admin_user):
-        self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
+    def test_get_variations_for_import_application(self, test_icms_admin_user, wood_app_submitted):
+        wood_app = wood_app_submitted
+        self.client.post(CaseURLS.take_ownership(wood_app.pk))
 
         # Add a few previous variation requests
-        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.REJECTED)
-        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.ACCEPTED)
+        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.REJECTED)
+        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.ACCEPTED)
         # Add an open one last (as it's the latest)
-        _add_variation_request(self.wood_app, test_icms_admin_user, VariationRequest.OPEN)
+        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.OPEN)
 
-        response = self.client.get(CaseURLS.manage_variations(self.wood_app.pk))
+        response = self.client.get(CaseURLS.manage_variations(wood_app.pk))
+
         assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/manage/variations/import/manage.html")
 
         cd = response.context_data
         vrs = cd["variation_requests"]
@@ -38,6 +37,33 @@ class TestVariationRequestManageView:
             VariationRequest.OPEN,
             VariationRequest.ACCEPTED,
             VariationRequest.REJECTED,
+        ]
+
+        assert expected_status_order == [vr.status for vr in vrs]
+
+    def test_get_variations_for_export_application(self, test_icms_admin_user, com_app_submitted):
+        com_app = com_app_submitted
+
+        self.client.post(CaseURLS.take_ownership(com_app.pk))
+
+        # Add a few previous variation requests
+        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.CANCELLED)
+        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.CLOSED)
+        # Add an open one last (as it's the latest)
+        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.OPEN)
+
+        response = self.client.get(CaseURLS.manage_variations(com_app.pk, case_type="export"))
+
+        assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/manage/variations/export/manage.html")
+
+        cd = response.context_data
+        vrs = cd["variation_requests"]
+
+        expected_status_order = [
+            VariationRequest.OPEN,
+            VariationRequest.CLOSED,
+            VariationRequest.CANCELLED,
         ]
 
         assert expected_status_order == [vr.status for vr in vrs]

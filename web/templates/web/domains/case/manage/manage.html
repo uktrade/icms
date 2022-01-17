@@ -8,23 +8,25 @@
 
   {% if not readonly_view %}
     <h4>Case Stopping</h4>
-
-    <p>Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.</p>
-
-    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-      {{ fields.field(form.send_email, checkbox_label="Inform applicants that the case has been stopped") }}
-
-      <div class="container">
-        <div class="row">
-          <div class="three columns"></div>
-          <div class="eight columns">
-            <ul class="menu-out flow-across">
-              <li><input type="submit" class="primary-button button" value="Stop Case" /></li>
-            </ul>
+    {% if process.status != "VARIATION_REQUESTED" %}
+      <p>Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.</p>
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        {{ fields.field(form.send_email, checkbox_label="Inform applicants that the case has been stopped") }}
+        <div class="container">
+          <div class="row">
+            <div class="three columns"></div>
+            <div class="eight columns">
+              <ul class="menu-out flow-across">
+                <li><input type="submit" class="primary-button button" value="Stop Case"/></li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    {% endcall %}
+      {% endcall %}
+    {# Only show message when its an export application #}
+    {% elif case_type == "export" %}
+      <p>Case stopping not available for a case variation. Please use the variation screen to cancel the variation.</p>
+    {% endif %}
   {% endif %}
 
   {% if case_type == "import" %}

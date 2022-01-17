@@ -46,6 +46,11 @@ search_urls = [
                     views_search.RequestVariationUpdateView.as_view(),
                     name="search-request-variation",
                 ),
+                path(
+                    "open-variation",
+                    views_search.RequestVariationOpenRequestView.as_view(),
+                    name="search-open-variation",
+                ),
             ]
         ),
     ),

@@ -3,6 +3,14 @@
 <ul class="menu-out">
   {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}), process.get_reference()) }}
 
+  {% set all_vr = process.variation_requests.all() %}
+  {% if process.status == "COMPLETED" or all_vr.exists() %}
+    {% set all_vt_count = all_vr.count() %}
+    {% set open_vr_count = all_vr.filter(status="OPEN").count() %}
+    {% set vr_label = "Variations (" + open_vr_count|string + "/" + all_vt_count|string + ")" %}
+    {{ icms_link(request, icms_url('case:variation-request-manage', kwargs={'application_pk': process.pk, 'case_type': 'export'}), vr_label) }}
+  {% endif %}
+
   {% if process.process_type == "CertificateOfFreeSaleApplication" %}
     {{ icms_link(request, icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'HSE Emails') }}
 

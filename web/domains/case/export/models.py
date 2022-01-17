@@ -176,6 +176,13 @@ class ExportApplication(ApplicationBase):
     def get_specific_model(self) -> "ExportApplication":
         return super().get_specific_model()
 
+    def get_status_display(self):
+        # Export applications have a different label for Variation Requested
+        if self.status == self.Statuses.VARIATION_REQUESTED:
+            return "Case Variation"
+
+        return super().get_status_display()
+
 
 @final
 class CertificateOfManufactureApplication(ExportApplication):

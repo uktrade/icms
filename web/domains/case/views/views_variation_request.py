@@ -32,7 +32,6 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
     # DetailView config
     model = Process
     pk_url_kwarg = "application_pk"
-    template_name = "web/domains/case/manage/variations-manage.html"
 
     def get_context_data(self, **kwargs):
         application = self.object.get_specific_model()
@@ -59,6 +58,17 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
             "readonly_view": readonly_view,
             "variation_requests": variation_requests,
         }
+
+    def get_template_names(self) -> list[str]:
+        case_type = self.kwargs["case_type"]
+
+        if case_type == "import":
+            return ["web/domains/case/manage/variations/import/manage.html"]
+
+        if case_type == "export":
+            return ["web/domains/case/manage/variations/export/manage.html"]
+
+        raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
 @method_decorator(transaction.atomic, name="post")

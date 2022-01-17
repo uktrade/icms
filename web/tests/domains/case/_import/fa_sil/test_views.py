@@ -6,14 +6,14 @@ from django.urls import reverse
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case.shared import ImpExpStatus
 from web.flow.models import Task
-from web.tests.application_utils import create_app, save_app_data
+from web.tests.application_utils import create_import_app, save_app_data
 
 if TYPE_CHECKING:
     from django.test.client import Client
 
 
 def test_create_fa_sil(importer_client, importer, office):
-    app_pk = create_app(
+    app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-fa-sil",
         importer_pk=importer.pk,
@@ -35,7 +35,7 @@ class TestEditFirearmsSILApplication:
 
     @pytest.fixture(autouse=True)
     def set_app(self, set_client, importer, office):
-        app_pk = create_app(
+        app_pk = create_import_app(
             client=self.client,
             view_name="import:create-fa-sil",
             importer_pk=importer.pk,

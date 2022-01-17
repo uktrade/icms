@@ -72,12 +72,17 @@ class VariationRequest(models.Model):
     what_varied = models.CharField(
         max_length=4000, verbose_name="What would you like to vary about the current licence(s)"
     )
+
     why_varied = models.CharField(
-        max_length=4000, verbose_name="Why would you like to vary the licence(s) in this way"
+        max_length=4000,
+        verbose_name="Why would you like to vary the licence(s) in this way",
+        null=True,
     )
+
     when_varied = models.DateField(
-        verbose_name="What date would the varied licence(s) come into effect"
+        verbose_name="What date would the varied licence(s) come into effect", null=True
     )
+
     reject_cancellation_reason = models.CharField(
         max_length=4000, null=True, verbose_name="Cancellation reason"
     )

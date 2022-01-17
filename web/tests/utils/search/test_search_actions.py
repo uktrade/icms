@@ -33,11 +33,11 @@ test_import_arg_values = [
 
 
 @pytest.mark.parametrize(argnames="application, expected_actions", argvalues=test_import_arg_values)
-def test_get_import_application_search_actions(application, expected_actions):
+def test_get_import_application_search_actions(application, expected_actions, test_icms_admin_user):
     # get_import_record_actions calls reverse and expects a PK to be set.
     application.pk = 1
     # TODO: ICMSLST-1240 Add permission tests
-    user = None
+    user = test_icms_admin_user
 
     actions: list[types.SearchAction] = get_import_record_actions(application, user)
 
@@ -59,11 +59,11 @@ test_export_arg_values = [
 
 
 @pytest.mark.parametrize(argnames="application, expected_actions", argvalues=test_export_arg_values)
-def test_get_export_application_search_actions(application, expected_actions):
+def test_get_export_application_search_actions(application, expected_actions, test_icms_admin_user):
     # get_export_record_actions calls reverse and expects a PK to be set.
     application.pk = 1
     # TODO: ICMSLST-1240 Add permission tests
-    user = None
+    user = test_icms_admin_user
 
     actions = get_export_record_actions(application, user)
 
