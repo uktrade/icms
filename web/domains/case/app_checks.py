@@ -238,7 +238,8 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optiona
     )
 
     is_variation_requested = application.status == application.Statuses.VARIATION_REQUESTED
-    if is_variation_requested and not application.variation_decision:
+    is_import = case_type == "import"
+    if is_variation_requested and is_import and not application.variation_decision:
         prepare_errors.add(
             FieldError(
                 field_name="Variation Decision",

@@ -1,0 +1,27 @@
+{% extends "web/domains/case/manage/base.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "web/domains/case/variations/macros.html" import export_application_variation_request_fieldset %}
+
+
+{% block main_content %}
+
+<table style="width: 100%">
+  <tbody>
+  <tr>
+    <td><h3>Variations</h3></td>
+  </tr>
+  {% for vr in variation_requests %}
+    <tr>
+      <td>{{ export_application_variation_request_fieldset(process, vr, readonly_view, vr.vr_num) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if not variation_requests.count() %}
+  <div class="info-box info-box-info">There aren't any variation requests.</div>
+{% endif %}
+
+{% endblock %}

@@ -365,9 +365,11 @@ def start_authorisation(
 
         if request.method == "POST" and not application_errors.has_errors():
             if application.status == application.Statuses.VARIATION_REQUESTED:
-                vr = application.variation_requests.get(status=VariationRequest.OPEN)
-
-                if application.variation_decision == application.REFUSE:
+                if (
+                    application.is_import_application()
+                    and application.variation_decision == application.REFUSE
+                ):
+                    vr = application.variation_requests.get(status=VariationRequest.OPEN)
                     # Note: this is currently the last task when completed (I'm not sure its correct).
                     next_task = Task.TaskType.ACK
                     application.status = model_class.Statuses.COMPLETED
@@ -447,7 +449,11 @@ def authorise_documents(
                 else:
                     if application.status == model_class.Statuses.VARIATION_REQUESTED:
                         vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                        vr.status = VariationRequest.ACCEPTED
+                        vr.status = (
+                            VariationRequest.ACCEPTED
+                            if case_type == "import"
+                            else VariationRequest.CLOSED
+                        )
                         vr.save()
 
                     application.status = model_class.Statuses.COMPLETED

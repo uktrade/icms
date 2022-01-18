@@ -3,7 +3,7 @@
 {% import "forms/fields.html" as fields %}
 {% from "display/fields.html" import application_field %}
 
-{% from "web/domains/case/variations/macros.html" import get_status_widget, variation_request_fieldset %}
+{% from "web/domains/case/variations/macros.html" import get_status_widget, variation_request_fieldset, export_application_variation_request_fieldset %}
 
 {% block extra_header %}
   {{ super() }}
@@ -21,9 +21,14 @@
 
 {% block sidebar %}
   <ul class="menu-out">
-    {{ icms_link(request, icms_url('case:search-request-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
-    {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
-    <li><a href="#" target="_blank">Sent Responses</a></li>
+    {% if case_type == "import" %}
+      {{ icms_link(request, icms_url('case:search-request-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
+      {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Application', "_blank") }}
+      <li><a href="#" target="_blank">Sent Responses</a></li>
+    {% else %}
+      {{ icms_link(request, icms_url('case:search-open-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
+      {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Case', "_blank") }}
+    {% endif %}
   </ul>
 {% endblock %}
 
@@ -42,7 +47,9 @@
                 Variation Request {{ object.variation_requests.count() + 1 }}
               </strong>
             </legend>
-            To request a variation, enter the required fields, then click 'Submit Variation Request'.
+            {% if case_type == "import" %}
+              To request a variation, enter the required fields, then click 'Submit Variation Request'.
+            {% endif %}
 
             {% call forms.form(method='post', csrf_input=csrf_input) -%}
               {{ application_field(get_status_widget("DRAFT", "Draft"), "Status", is_safe_html=True) }}
@@ -56,8 +63,10 @@
                   <div class="eight columns">
                     <ul class="menu-out flow-across">
                       <li>
-                        <input type="submit" name="action" class="primary-button button"
-                               value="Submit Variation Request"/>
+                        <input
+                          type="submit" name="action" class="primary-button button"
+                          value="{% if case_type == "import" %}Submit Variation Request{% else %}Open{% endif %}"
+                        />
                       </li>
                     </ul>
                   </div>
@@ -69,7 +78,13 @@
       </tr>
       {% for vr in variation_requests %}
         <tr>
-          <td>{{ variation_request_fieldset(process, vr, True, case_type, vr.vr_num) }}</td>
+          <td>
+            {% if case_type == "import" %}
+              {{ variation_request_fieldset(process, vr, True, vr.vr_num) }}
+            {% else %}
+              {{ export_application_variation_request_fieldset(process, vr, True, vr.vr_num) }}
+            {% endif %}
+          </td>
         </tr>
       {% endfor %}
 

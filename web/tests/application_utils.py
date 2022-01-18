@@ -8,6 +8,10 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.export.models import (
+    CertificateOfManufactureApplication,
+    ExportApplicationType,
+)
 from web.domains.commodity.models import Commodity
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
@@ -17,6 +21,7 @@ from web.utils.commodity import get_active_commodities
 if TYPE_CHECKING:
     from django.test.client import Client
 
+    from web.domains.exporter.models import Exporter
     from web.domains.importer.models import Importer
     from web.domains.office.models import Office
     from web.domains.user.models import User
@@ -28,7 +33,7 @@ def create_in_progress_wood_app(
     """Creates a fully valid in progress wood application"""
 
     # Create the wood app
-    app_pk = create_app(
+    app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-wood-quota",
         importer_pk=importer.pk,
@@ -71,7 +76,7 @@ def create_in_progress_fa_dfl_app(
 ) -> DFLApplication:
     """Creates a fully valid in progress fa dfl application"""
 
-    app_pk = create_app(
+    app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-fa-dfl",
         importer_pk=importer.pk,
@@ -120,7 +125,36 @@ def create_in_progress_fa_dfl_app(
     return dfl_app
 
 
-def create_app(*, client: "Client", view_name: str, importer_pk: int, office_pk: int) -> int:
+def create_in_progress_com_app(
+    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+) -> CertificateOfManufactureApplication:
+    app_pk = create_export_app(
+        client=exporter_client,
+        type_code=ExportApplicationType.Types.MANUFACTURE.value,
+        exporter_pk=exporter.pk,
+        office_pk=office.pk,
+    )
+
+    form_data = {
+        "contact": exporter_contact.pk,
+        "countries": Country.objects.first().pk,
+        "is_pesticide_on_free_sale_uk": False,
+        "is_manufacturer": True,
+        "product_name": "Example product name",
+        "chemical_name": "Example chemical name",
+        "manufacturing_process": "Example manufacturing process",
+    }
+
+    save_app_data(
+        client=exporter_client, view_name="export:com-edit", app_pk=app_pk, form_data=form_data
+    )
+
+    com_app = CertificateOfManufactureApplication.objects.get(pk=app_pk)
+
+    return com_app
+
+
+def create_import_app(*, client: "Client", view_name: str, importer_pk: int, office_pk: int) -> int:
     """Creates an application and returns the primary key"""
 
     # TODO: Extend with agent and agent_office if needed
@@ -132,6 +166,19 @@ def create_app(*, client: "Client", view_name: str, importer_pk: int, office_pk:
     application_pk = int(re.search(r"\d+", resp.url).group(0))
 
     assert resp.status_code == 302
+
+    return application_pk
+
+
+def create_export_app(*, client: "Client", type_code: str, exporter_pk: int, office_pk: int) -> int:
+    url = reverse("export:create-application", kwargs={"type_code": type_code.lower()})
+
+    post_data = {"exporter": exporter_pk, "exporter_office": office_pk}
+    response = client.post(url, post_data)
+
+    application_pk = int(re.search(r"\d+", response.url).group(0))
+
+    assert response.status_code == 302
 
     return application_pk
 

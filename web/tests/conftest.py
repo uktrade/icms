@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from django.core.management import call_command
 from django.test import signals
@@ -14,10 +16,14 @@ from web.domains.office.models import Office
 from web.flow.models import Task
 
 from .application_utils import (
+    create_in_progress_com_app,
     create_in_progress_fa_dfl_app,
     create_in_progress_wood_app,
     submit_app,
 )
+
+if TYPE_CHECKING:
+    from web.domains.case.export.models import CertificateOfManufactureApplication
 
 ORIGINAL_JINJA2_RENDERER = Jinja2Template.render
 
@@ -116,6 +122,12 @@ def importer_contact(django_user_model):
 
 
 @pytest.fixture
+def exporter_contact(django_user_model):
+    """Fixture to get the user who is a contact of the test exporter."""
+    return django_user_model.objects.get(username="exporter_contact")
+
+
+@pytest.fixture
 def office():
     """Fixture to get an office model instance (linked to importer)."""
     return Office.objects.get(
@@ -123,6 +135,7 @@ def office():
     )
 
 
+@pytest.fixture
 def exporter_office():
     """Fixture to get an office model instance (linked to exporter)."""
     return Office.objects.get(
@@ -203,6 +216,9 @@ def wood_app_in_progress(
 
     app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
 
+    app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
+    app.get_expected_task(Task.TaskType.PREPARE)
+
     return app
 
 
@@ -216,7 +232,8 @@ def wood_app_submitted(importer_client, importer, office, test_import_user) -> W
 
     app.refresh_from_db()
 
-    assert app.get_task(ImportApplication.Statuses.SUBMITTED, Task.TaskType.PROCESS)
+    app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
+    app.get_expected_task(Task.TaskType.PROCESS)
 
     return app
 
@@ -229,6 +246,9 @@ def fa_dfl_app_in_progress(
 
     # Create the FA-DFL app
     app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
+
+    app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
+    app.get_expected_task(Task.TaskType.PREPARE)
 
     return app
 
@@ -243,6 +263,49 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_contact) ->
 
     app.refresh_from_db()
 
-    assert app.get_task(ImportApplication.Statuses.SUBMITTED, Task.TaskType.PROCESS)
+    app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
+    app.get_expected_task(Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def exporter_client(test_export_user) -> Client:
+    client = Client()
+
+    assert (
+        client.login(username=test_export_user.username, password="test") is True
+    ), "Failed to login"
+
+    return client
+
+
+@pytest.fixture()
+def com_app_in_progress(
+    exporter_client, exporter, exporter_office, exporter_contact
+) -> "CertificateOfManufactureApplication":
+
+    # Create the COM app
+    app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
+
+    app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
+    app.get_expected_task(Task.TaskType.PREPARE)
+
+    return app
+
+
+@pytest.fixture()
+def com_app_submitted(
+    exporter_client, exporter, exporter_office, exporter_contact
+) -> "CertificateOfManufactureApplication":
+    # Create the COM app
+    app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
+
+    submit_app(client=exporter_client, view_name="export:com-submit", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
+    app.get_expected_task(Task.TaskType.PROCESS)
 
     return app
