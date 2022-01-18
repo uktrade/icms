@@ -2172,3 +2172,10 @@ vr.closed_by
 exporter_contact.pk
 add_variation_request(com_app
 Case"/></li
+Closed Date" %
+CASE_REF_PATTERN = re.compile
+assert re.match(CASE_REF_PATTERN
+VariationRequestExportCancelForm(OptionalFormMixin
+VariationRequestCancelForm
+"Reuse the Variation Request Cancel
+Import & Export

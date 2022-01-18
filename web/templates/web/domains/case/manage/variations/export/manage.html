@@ -14,7 +14,7 @@
   </tr>
   {% for vr in variation_requests %}
     <tr>
-      <td>{{ export_application_variation_request_fieldset(process, vr, readonly_view, vr.vr_num) }}</td>
+      <td>{{ export_application_variation_request_fieldset(process, vr, readonly_view, vr.vr_num, csrf_input) }}</td>
     </tr>
   {% endfor %}
   </tbody>

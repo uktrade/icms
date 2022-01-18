@@ -13,6 +13,7 @@ from web.models.models import CaseReference
 from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
+from .models import VariationRequest
 from .shared import ImpExpStatus
 from .types import ImpOrExp, ImpOrExpOrAccess
 
@@ -60,14 +61,21 @@ def get_variation_request_case_reference(application: ImpOrExp) -> str:
     if ref == application.DEFAULT_REF:
         raise ValueError("Application has not been assigned yet.")
 
-    variations = application.variation_requests.count()
+    variations = application.variation_requests.all()
 
-    if not variations:
-        raise ValueError("Application has no variation requests.")
+    if not application.is_import_application():
+        variations = variations.filter(status__in=[VariationRequest.OPEN, VariationRequest.CLOSED])
 
-    prefix, year, reference = ref.split("/")[:3]
+    # e.g [prefix, year, reference]
+    case_ref_sections = ref.split("/")[:3]
+    variation_count = variations.count()
 
-    return "/".join([prefix, year, reference, str(variations)])
+    if variation_count:
+        # e.g. [prefix, year, reference, variation_count]
+        case_ref_sections.append(str(variation_count))
+
+    # Return the new joined up case reference
+    return "/".join(case_ref_sections)
 
 
 def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:

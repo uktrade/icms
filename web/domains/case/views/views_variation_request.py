@@ -12,11 +12,18 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, UpdateView
 
-from web.domains.case.forms import VariationRequestForm
+from web.domains.case.forms import (
+    VariationRequestCancelForm,
+    VariationRequestExportCancelForm,
+    VariationRequestForm,
+)
 from web.domains.case.models import VariationRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission
+from web.domains.case.utils import (
+    check_application_permission,
+    get_variation_request_case_reference,
+)
 from web.flow.models import Process, Task
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin
@@ -77,6 +84,9 @@ class VariationRequestCancelView(
 ):
     """Case management view for cancelling a request variation.
 
+    Used by both Import & Export applications
+    Import applications require a "reject_cancellation_reason"
+    Export applications simply call the endpoint with no form data.
     This is called when the variation was raised in error.
     """
 
@@ -94,7 +104,8 @@ class VariationRequestCancelView(
     success_url = reverse_lazy("workbasket")
     pk_url_kwarg = "variation_request_pk"
     model = VariationRequest
-    fields = ["reject_cancellation_reason"]
+
+    # Note: Only used for import applications
     template_name = "web/domains/case/manage/variations-cancel.html"
 
     # Extra typing for clarity
@@ -112,6 +123,12 @@ class VariationRequestCancelView(
             "vr_num": self.application.variation_requests.count(),
         }
 
+    def get_form_class(self):
+        if self.application.is_import_application():
+            return VariationRequestCancelForm
+
+        return VariationRequestExportCancelForm
+
     def form_valid(self, form: ModelForm) -> HttpResponseRedirect:
         result = super().form_valid(form)
 
@@ -121,6 +138,10 @@ class VariationRequestCancelView(
         self.object.closed_datetime = timezone.now()
         self.object.closed_by = self.request.user
         self.object.save()
+
+        # Export applications need the reference updating
+        if not self.application.is_import_application():
+            self.application.reference = get_variation_request_case_reference(self.application)
 
         self.update_application_status()
         self.update_application_tasks()
