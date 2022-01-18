@@ -107,7 +107,7 @@
   </fieldset>
 {% endmacro %}
 
-{% macro export_application_variation_request_fieldset(application, vr, readonly, vr_num) %}
+{% macro export_application_variation_request_fieldset(application, vr, readonly, vr_num, csrf_input) %}
   <fieldset>
   <legend>
     <strong>
@@ -120,11 +120,13 @@
   {{ application_field(vr.what_varied , "Variation Reason") }}
 
   {% if vr.closed_datetime %}
-    {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y %H:%M'), "Cancelled Date") }}
+    {% set label = "Cancellation Date" if vr.status == "CANCELLED" else "Closed Date" %}
+    {{ application_field(vr.closed_datetime.strftime('%d-%b-%Y %H:%M'), label) }}
   {% endif %}
 
   {% if vr.closed_by %}
-    {{ application_field(vr.closed_by, "Cancelled By") }}
+    {% set label = "Cancelled By" if vr.status == "CANCELLED" else "Closed By" %}
+    {{ application_field(vr.closed_by, label) }}
   {% endif %}
 
   {% if vr.status == "OPEN" and not readonly %}
@@ -134,8 +136,10 @@
         <div class="six columns">
           <ul class="menu-out flow-across">
             <li>
-              {# TODO: ICMSLST-1239 Implement cancel variation #}
-              <button type="button" onclick="" class=" button">Cancel</button>
+              <form method="post" action="{{ icms_url("case:variation-request-cancel", kwargs={"case_type": "export", "application_pk": application.pk, "variation_request_pk": vr.pk}) }}">
+                {{ csrf_input }}
+                <button type="submit" class="button">Cancel</button>
+              </form>
             </li>
           </ul>
         </div>

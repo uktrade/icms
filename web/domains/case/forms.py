@@ -8,6 +8,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.models import User
 from web.types import AuthenticatedHttpRequest
@@ -263,6 +264,16 @@ class VariationRequestForm(forms.ModelForm):
             "why_varied": forms.Textarea({"rows": 4, "cols": 50}),
             "when_varied": DateInput(),
         }
+
+
+class VariationRequestCancelForm(forms.ModelForm):
+    class Meta:
+        model = VariationRequest
+        fields = ("reject_cancellation_reason",)
+
+
+class VariationRequestExportCancelForm(OptionalFormMixin, VariationRequestCancelForm):
+    """Reuse the Variation Request Cancel form setting all fields as optional as they aren't required"""
 
 
 class VariationRequestExportAppForm(forms.ModelForm):

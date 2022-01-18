@@ -117,6 +117,40 @@ class TestVariationRequestCancelView:
         self.wood_app.get_expected_task(Task.TaskType.ACK, select_for_update=False)
 
 
+class TestVariationRequestCancelViewForExportApplication:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, set_client, com_app_submitted, test_icms_admin_user):
+        self.app = com_app_submitted
+        self.client.post(CaseURLS.take_ownership(self.app.pk))
+
+        self.app.refresh_from_db()
+        self.app.status = ImpExpStatus.VARIATION_REQUESTED
+        _add_variation_request(self.app, test_icms_admin_user, VariationRequest.OPEN)
+        self.app.save()
+
+    def test_cancel_variation_request_post(self, test_icms_admin_user):
+        vr = self.app.variation_requests.first()
+        resp = self.client.post(
+            CaseURLS.cancel_variation_request(self.app.pk, vr.pk, case_type="export")
+        )
+
+        assertRedirects(resp, reverse("workbasket"), 302)
+
+        self.app.refresh_from_db()
+        vr.refresh_from_db()
+
+        assert vr.status == VariationRequest.CANCELLED
+        assert vr.closed_by == test_icms_admin_user
+        assert vr.closed_datetime.date() == timezone.now().date()
+
+        self.app.check_expected_status([ImpExpStatus.COMPLETED])
+        self.app.get_expected_task(Task.TaskType.ACK, select_for_update=False)
+
+
 class TestVariationRequestRequestUpdateView:
     @pytest.fixture(autouse=True)
     def set_client(self, icms_admin_client):

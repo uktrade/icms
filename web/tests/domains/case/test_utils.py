@@ -18,6 +18,18 @@ def lock_manager():
     return Mock()
 
 
+CASE_REF_PATTERN = re.compile(
+    r"""
+        [a-z]+  # Prefix
+        /       # Separator
+        \d+     # Year
+        /       # Separator
+        \d+     # reference
+    """,
+    flags=re.IGNORECASE | re.VERBOSE,
+)
+
+
 @pytest.mark.django_db
 def test_digits(lock_manager):
     # put in two rows, neither of which should match the later calls
@@ -66,25 +78,9 @@ def test_unallocated_application_raises_error(wood_app_in_progress):
         get_variation_request_case_reference(wood_app_in_progress)
 
 
-def test_app_with_no_variation_requests_raises_error(wood_app_submitted):
-    with pytest.raises(ValueError, match="Application has no variation requests."):
-        get_variation_request_case_reference(wood_app_submitted)
-
-
-def test_get_variation_request_case_reference(wood_app_submitted, test_icms_admin_user):
-    ref_pattern = re.compile(
-        r"""
-            [a-z]+  # Prefix
-            /       # Separator
-            \d+     # Year
-            /       # Separator
-            \d+     # reference
-        """,
-        flags=re.IGNORECASE | re.VERBOSE,
-    )
-
+def test_get_wood_app_variation_request_case_reference(wood_app_submitted, test_icms_admin_user):
     initial_reference = wood_app_submitted.get_reference()
-    assert re.match(ref_pattern, initial_reference)
+    assert re.match(CASE_REF_PATTERN, initial_reference)
 
     # Add a variation request
     _add_variation_request(wood_app_submitted, test_icms_admin_user)
@@ -121,10 +117,75 @@ def test_get_variation_request_case_reference_with_existing_variations(
     assert expected_reference == actual_reference
 
 
-def _add_variation_request(
-    wood_application, user, what_varied="Dummy what_varied", status=VariationRequest.OPEN
+def test_get_com_app_variation_request_case_reference(com_app_submitted, test_icms_admin_user):
+    initial_reference = com_app_submitted.get_reference()
+    assert re.match(CASE_REF_PATTERN, initial_reference)
+
+    # Add a variation request
+    _add_variation_request(com_app_submitted, test_icms_admin_user)
+
+    expected_reference = f"{initial_reference}/1"
+    actual_reference = get_variation_request_case_reference(com_app_submitted)
+
+    assert expected_reference == actual_reference
+
+
+def test_get_com_app_variation_request_case_reference_with_existing_variations(
+    com_app_submitted, test_icms_admin_user
 ):
-    wood_application.variation_requests.create(
+
+    initial_reference = com_app_submitted.get_reference()
+
+    # Update an existing app reference (and set some dummy variation requests)
+    for i in range(5):
+        _add_variation_request(
+            com_app_submitted,
+            test_icms_admin_user,
+            f"What varied {i + 1}",
+            VariationRequest.CLOSED,
+        )
+    com_app_submitted.reference = f"{initial_reference}/5"
+    com_app_submitted.save()
+
+    # Add a new vr so that the suffix will change
+    open_vr = _add_variation_request(com_app_submitted, test_icms_admin_user)
+
+    expected_reference = f"{initial_reference}/6"
+    actual_reference = get_variation_request_case_reference(com_app_submitted)
+
+    assert expected_reference == actual_reference
+
+    # Update the OPEN variation request to CANCELLED.
+    open_vr.status = VariationRequest.CANCELLED
+    open_vr.save()
+
+    expected_reference = f"{initial_reference}/5"
+    actual_reference = get_variation_request_case_reference(com_app_submitted)
+
+    assert expected_reference == actual_reference
+
+
+def test_case_reference_correct_with_no_valid_variation_requests(
+    com_app_submitted, test_icms_admin_user
+):
+    _add_variation_request(
+        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
+    )
+    _add_variation_request(
+        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
+    )
+    _add_variation_request(
+        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
+    )
+
+    # This tests there is no variation part in the case reference
+    assert re.match(CASE_REF_PATTERN, com_app_submitted.get_reference())
+
+
+def _add_variation_request(
+    app, user, what_varied="Dummy what_varied", status=VariationRequest.OPEN
+) -> VariationRequest:
+    return app.variation_requests.create(
         status=status,
         what_varied=what_varied,
         why_varied="Dummy why_varied",

@@ -448,12 +448,18 @@ def authorise_documents(
                     )
                 else:
                     if application.status == model_class.Statuses.VARIATION_REQUESTED:
+                        is_import = case_type == "import"
+
                         vr = application.variation_requests.get(status=VariationRequest.OPEN)
                         vr.status = (
-                            VariationRequest.ACCEPTED
-                            if case_type == "import"
-                            else VariationRequest.CLOSED
+                            VariationRequest.ACCEPTED if is_import else VariationRequest.CLOSED
                         )
+
+                        # On export applications we record the date closed and who closed it.
+                        if not is_import:
+                            vr.closed_by = request.user
+                            vr.closed_datetime = timezone.now()
+
                         vr.save()
 
                     application.status = model_class.Statuses.COMPLETED
