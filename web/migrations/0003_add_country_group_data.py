@@ -135,7 +135,7 @@ def load_country_group_data_iron_and_steel_coc(apps, schema_editor):
         "Tajikistan",
         "Tanzania",
         "Thailand",
-        "Trinidad &amp; Tobago",
+        "Trinidad & Tobago",
         "Tunisia",
         "Turkey",
         "Turkmenistan",

@@ -2163,3 +2163,4 @@ text="OK
 mock.patch("mohawk.sender
 Literal["GET
 Hawk
+Trinidad & Tobago
