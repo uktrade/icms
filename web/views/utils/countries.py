@@ -150,7 +150,7 @@ def get():
         ("Tajikistan", "Tajikistan"),
         ("Tanzania", "Tanzania"),
         ("Thailand", "Thailand"),
-        ("Trinidad &amp; Tobago", "Trinidad &amp; Tobago"),
+        ("Trinidad & Tobago", "Trinidad & Tobago"),
         ("Tunisia", "Tunisia"),
         ("Turkey", "Turkey"),
         ("Turkmenistan", "Turkmenistan"),
