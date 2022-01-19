@@ -184,7 +184,7 @@ def load_country_data(apps, schema_editor):
                 hmrc_code="BG",
             ),
             Country(
-                name="Burma",
+                name="Myanmar (Burma)",
                 is_active=True,
                 type="SOVEREIGN_TERRITORY",
                 commission_code="676",

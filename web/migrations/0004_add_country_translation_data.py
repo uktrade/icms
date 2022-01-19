@@ -657,7 +657,7 @@ def add_country_translation(apps, schema_editor):
             ),
             CountryTranslation(
                 translation="Myanmar (Birmania)",
-                country=data.get_country(name="Burma"),
+                country=data.get_country(name="Myanmar (Burma)"),
                 translation_set=data.get_translation_set(name="Spanish"),
             ),
             CountryTranslation(
@@ -1487,7 +1487,7 @@ def add_country_translation(apps, schema_editor):
             ),
             CountryTranslation(
                 translation="Myanmar (Burma)",
-                country=data.get_country(name="Burma"),
+                country=data.get_country(name="Myanmar (Burma)"),
                 translation_set=data.get_translation_set(name="Turkish"),
             ),
             CountryTranslation(
@@ -2342,7 +2342,7 @@ def add_country_translation(apps, schema_editor):
             ),
             CountryTranslation(
                 translation="Myanmar (Birmanie)",
-                country=data.get_country(name="Burma"),
+                country=data.get_country(name="Myanmar (Burma)"),
                 translation_set=data.get_translation_set(name="French"),
             ),
             CountryTranslation(
@@ -3252,7 +3252,7 @@ def add_country_translation(apps, schema_editor):
             ),
             CountryTranslation(
                 translation="Mianmar (Birmânia)",
-                country=data.get_country(name="Burma"),
+                country=data.get_country(name="Myanmar (Burma)"),
                 translation_set=data.get_translation_set(name="Portuguese"),
             ),
             CountryTranslation(
@@ -4077,7 +4077,7 @@ def add_country_translation(apps, schema_editor):
             ),
             CountryTranslation(
                 translation="Мьянма (Бирма)",
-                country=data.get_country(name="Burma"),
+                country=data.get_country(name="Myanmar (Burma)"),
                 translation_set=data.get_translation_set(name="Russian"),
             ),
             CountryTranslation(
