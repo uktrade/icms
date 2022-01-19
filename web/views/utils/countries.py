@@ -28,7 +28,7 @@ def get():
         ("British Virgin Islands", "British Virgin Islands"),
         ("Brunei", "Brunei"),
         ("Bulgaria", "Bulgaria"),
-        ("Burma (Myanamar)", "Burma (Myanamar)"),
+        ("Myanmar (Burma)", "Myanmar (Burma)"),
         ("Cambodia", "Cambodia"),
         ("Canada", "Canada"),
         ("Chile", "Chile"),
