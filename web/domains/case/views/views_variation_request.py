@@ -7,10 +7,12 @@ from django.db.models import Window
 from django.db.models.functions import RowNumber
 from django.forms import ModelForm
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView, View
+from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.forms import (
     VariationRequestCancelForm,
@@ -25,6 +27,7 @@ from web.domains.case.utils import (
     get_variation_request_case_reference,
 )
 from web.flow.models import Process, Task
+from web.types import AuthenticatedHttpRequest
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin
 from .utils import get_current_task_and_readonly_status
@@ -161,6 +164,9 @@ class VariationRequestRequestUpdateView(
     next_status = None  # We will not be updating the status
     next_task_type = Task.TaskType.VR_REQUEST_CHANGE
 
+    # PermissionRequiredMixin
+    permission_required = ["web.ilb_admin"]
+
     # UpdateView config
     pk_url_kwarg = "variation_request_pk"
     model = VariationRequest
@@ -169,18 +175,6 @@ class VariationRequestRequestUpdateView(
 
     # Extra typing for clarity
     object: VariationRequest
-
-    def has_permission(self):
-        application = Process.objects.get(
-            pk=self.kwargs["application_pk"]  # type: ignore[attr-defined]
-        ).get_specific_model()
-
-        try:
-            check_application_permission(application, self.request.user, self.kwargs["case_type"])
-        except PermissionDenied:
-            return False
-
-        return True
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -203,6 +197,51 @@ class VariationRequestRequestUpdateView(
         return reverse(
             "case:variation-request-manage",
             kwargs={"application_pk": self.application.pk, "case_type": self.kwargs["case_type"]},
+        )
+
+
+@method_decorator(transaction.atomic, name="post")
+class VariationRequestCancelUpdateRequestView(
+    ApplicationAndTaskRelatedObjectMixin,
+    SingleObjectMixin,
+    PermissionRequiredMixin,
+    LoginRequiredMixin,
+    View,
+):
+    """View to allow admin to cancel the variation request update from the applicant."""
+
+    # ApplicationAndTaskRelatedObjectMixin
+    current_status = [ImpExpStatus.VARIATION_REQUESTED]
+    current_task_type = Task.TaskType.VR_REQUEST_CHANGE
+
+    # SingleObjectMixin
+    model = VariationRequest
+    pk_url_kwarg = "variation_request_pk"
+
+    # PermissionRequiredMixin
+    permission_required = ["web.ilb_admin"]
+
+    # View
+    http_method_names = ["post"]
+
+    # Extra typing for clarity
+    object: VariationRequest
+
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+        variation_request = self.get_object()
+        self.set_application_and_task()
+
+        # Reset the update request reason
+        variation_request.update_request_reason = None
+        variation_request.save()
+
+        # Close the task
+        self.update_application_tasks()
+
+        return redirect(
+            "case:variation-request-manage",
+            application_pk=self.application.pk,
+            case_type=self.kwargs["case_type"],
         )
 
 

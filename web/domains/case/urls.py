@@ -124,14 +124,26 @@ variation_request_urls = [
                     name="variation-request-manage",
                 ),
                 path(
-                    "<int:variation_request_pk>/cancel/",
-                    views_variation_request.VariationRequestCancelView.as_view(),
-                    name="variation-request-cancel",
-                ),
-                path(
-                    "<int:variation_request_pk>/request-update/",
-                    views_variation_request.VariationRequestRequestUpdateView.as_view(),
-                    name="variation-request-request-update",
+                    "<int:variation_request_pk>/",
+                    include(
+                        [
+                            path(
+                                "cancel/",
+                                views_variation_request.VariationRequestCancelView.as_view(),
+                                name="variation-request-cancel",
+                            ),
+                            path(
+                                "request-update/",
+                                views_variation_request.VariationRequestRequestUpdateView.as_view(),
+                                name="variation-request-request-update",
+                            ),
+                            path(
+                                "cancel-request-update/",
+                                views_variation_request.VariationRequestCancelUpdateRequestView.as_view(),
+                                name="variation-request-cancel-request-update",
+                            ),
+                        ]
+                    ),
                 ),
             ]
         ),

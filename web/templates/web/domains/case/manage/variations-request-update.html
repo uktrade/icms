@@ -28,7 +28,7 @@
       </tr>
       <tr>
         <td>
-          {{ variation_request_fieldset(process, object, True, vr_num) }}
+          {{ variation_request_fieldset(process, object, True, vr_num, csrf_input) }}
           {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
             {% for field in form %}
               {{ fields.field(field) }}

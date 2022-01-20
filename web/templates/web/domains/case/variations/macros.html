@@ -33,7 +33,7 @@
 {% endmacro %}
 
 
-{% macro variation_request_fieldset(application, vr, readonly, vr_num) %}
+{% macro variation_request_fieldset(application, vr, readonly, vr_num, csrf_input) %}
   <fieldset>
     <legend>
       <strong>
@@ -71,8 +71,10 @@
             <div class="six columns">
               <ul class="menu-out flow-across">
                 <li>
-                  {# TODO: ICMSLST-1366 Implement withdraw request #}
-                  <button type="button" onclick="" class=" button">Withdraw Request</button>
+                  <form method="post" action="{{ icms_url("case:variation-request-cancel-request-update", kwargs={"case_type": "import", "application_pk": application.pk, "variation_request_pk": vr.pk}) }}">
+                    {{ csrf_input }}
+                    <button type="submit" class="button">Withdraw Request</button>
+                  </form>
                 </li>
               </ul>
             </div>
