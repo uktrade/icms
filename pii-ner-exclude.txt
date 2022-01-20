@@ -2180,3 +2180,6 @@ VariationRequestCancelForm
 "Reuse the Variation Request Cancel
 Import & Export
 Myanmar (Burma
+add_variation_request(self.app
+Request</button>
+application_pk=self.application.pk

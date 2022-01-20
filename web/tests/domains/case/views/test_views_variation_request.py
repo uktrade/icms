@@ -187,6 +187,57 @@ class TestVariationRequestRequestUpdateView:
         assert self.vr.update_request_reason == "Dummy update request reason"
 
 
+class TestVariationRequestCancelUpdateRequestView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, set_client, wood_app_submitted, test_import_user):
+        self.app = wood_app_submitted
+        self.client.post(CaseURLS.take_ownership(self.app.pk))
+
+        self.app.refresh_from_db()
+        self.app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.app.save()
+
+        _add_variation_request(self.app, test_import_user, VariationRequest.OPEN)
+        self.vr = self.app.variation_requests.get(status=VariationRequest.OPEN)
+
+        self.client.post(
+            CaseURLS.variation_request_request_update(self.app.pk, self.vr.pk),
+            {"update_request_reason": "Dummy update request reason"},
+        )
+
+    @pytest.fixture(autouse=True)
+    def set_url(self, set_app):
+        self.url = CaseURLS.variation_request_cancel_update_request(self.app.pk, self.vr.pk)
+
+    def test_get_not_allowed(self):
+        response = self.client.get(self.url)
+
+        assert response.status_code == 405
+
+    def test_importer_client_forbidden(self, importer_client):
+        response = importer_client.post(self.url)
+
+        assert response.status_code == 403
+
+    def test_post_successful(self):
+        response = self.client.post(self.url)
+
+        redirect_url = CaseURLS.manage_variations(self.app.pk)
+        assertRedirects(response, redirect_url, 302)
+
+        self.app.refresh_from_db()
+        self.vr.refresh_from_db()
+
+        self.app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        assert Task.TaskType.VR_REQUEST_CHANGE not in self.app.get_active_task_list()
+
+        assert self.vr.update_request_reason is None
+
+
 class TestVariationRequestRespondToUpdateRequestView:
     @pytest.fixture(autouse=True)
     def set_client(self, importer_client, icms_admin_client):
