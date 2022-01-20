@@ -3,6 +3,7 @@ from collections import defaultdict
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, Union
 
+from dateutil import relativedelta
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -31,6 +32,8 @@ if TYPE_CHECKING:
     from web.domains.country.models import Country
 
 from . import app_data, types, utils
+
+THREE_YEARS_AGO = timezone.now().date() - relativedelta.relativedelta(years=3)
 
 
 def search_applications(
@@ -872,15 +875,31 @@ def get_export_record_actions(rec: "ExportApplication", user: User) -> list[type
     st = ExportApplication.Statuses
     actions: list[types.SearchAction] = []
 
-    # TODO: ICMSLST-1240: Add actions for Exporter / Exporter agents
     # Exporter / Exporter’s Agent actions:
-    #   Status != STOPPED or WITHDRAWN:
-    #       Copy Application
-    #       Create Template
-
-    if rec.status == st.COMPLETED and user.has_perm("web.ilb_admin"):
+    if not user.has_perm("web.ilb_admin"):
         actions.append(
             types.SearchAction(
+                url="#",
+                name="copy-application",
+                label="Copy Application",
+                icon="icon-copy",
+                is_post=True,
+            )
+        )
+        actions.append(
+            types.SearchAction(
+                url="#",
+                name="create-template",
+                label="Create Template",
+                icon="icon-magic-wand",
+                is_post=True,
+            )
+        )
+
+    # Case officer actions
+    else:
+        if rec.status == st.COMPLETED and rec.decision == rec.APPROVE:
+            open_variation_action = types.SearchAction(
                 url=reverse(
                     "case:search-open-variation",
                     kwargs={"application_pk": rec.pk, "case_type": "export"},
@@ -890,35 +909,30 @@ def get_export_record_actions(rec: "ExportApplication", user: User) -> list[type
                 icon="icon-redo2",
                 is_post=False,
             )
-        )
 
-        # TODO: ICMSLST-1006
-        # TODO: Revisit when implementing ICMSLST-1223
-        # Determine whether the Revoke Certificates should appear or not
-        actions.append(
-            types.SearchAction(
-                url="#", name="revoke-certificates", label="Revoke Certificates", icon="icon-undo2"
+            # TODO: ICMSLST-1006
+            revoke_certificate_action = types.SearchAction(
+                url="#",
+                name="revoke-certificates",
+                label="Revoke Certificates",
+                icon="icon-undo2",
             )
-        )
 
-    if rec.status in [st.STOPPED, st.WITHDRAWN]:
-        # TODO: ICMSLST-1213
-        actions.append(
-            types.SearchAction(url="#", name="reopen-case", label="Reopen Case", icon="icon-redo2")
-        )
-    else:
-        # TODO: ICMSLST-1002/ICMSLST-1226 (Depending on which ticket we do)
-        actions.append(
-            types.SearchAction(
-                url="#", name="copy-application", label="Copy Application", icon="icon-copy"
-            )
-        )
+            if rec.process_type in [ProcessTypes.CFS, ProcessTypes.COM]:
+                actions.extend([open_variation_action, revoke_certificate_action])
 
-        # TODO: ICMSLST-1241
-        actions.append(
-            types.SearchAction(
-                url="#", name="create-template", label="Create Template", icon="icon-magic-wand"
+            elif (
+                rec.process_type == ProcessTypes.GMP
+                and rec.latest_certificate_issue_date > THREE_YEARS_AGO
+            ):
+                actions.extend([open_variation_action, revoke_certificate_action])
+
+        if rec.status in [st.STOPPED, st.WITHDRAWN]:
+            # TODO: ICMSLST-1213
+            actions.append(
+                types.SearchAction(
+                    url="#", name="reopen-case", label="Reopen Case", icon="icon-redo2"
+                )
             )
-        )
 
     return actions
