@@ -45,7 +45,7 @@
     {{ application_field(vr.requested_by , "Requested By") }}
     {{ application_field(vr.what_varied , "What would you like to vary about the current licence(s)") }}
     {{ application_field(vr.why_varied , "Why would you like to vary the licence(s) in this way") }}
-    {{ application_field(vr.when_varied , "What date would the varied licence(s) come into effect") }}
+    {{ application_field(vr.when_varied.strftime('%d-%b-%Y') , "What date would the varied licence(s) come into effect") }}
 
     {% if vr.reject_cancellation_reason %}
       {{ application_field(vr.reject_cancellation_reason , "Cancellation reason") }}

@@ -2183,3 +2183,4 @@ Myanmar (Burma
 add_variation_request(self.app
 Request</button>
 application_pk=self.application.pk
+application_field(vr.when_varied.strftime('%d-%b-%Y
