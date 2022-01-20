@@ -435,6 +435,7 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         )
         .annotate(
             latest_certificate_pk=F("certificates__pk"),
+            latest_certificate_issue_date=F("certificates__issue_date"),
             latest_certificate_references=Subquery(cr_sub_query),
         )
         # The query generated uses `DISTINCT ON`
