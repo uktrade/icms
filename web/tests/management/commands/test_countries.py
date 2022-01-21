@@ -14,6 +14,7 @@ class TestReadCountryCSV:
         rows = [
             ["first", "row", "is" "junk"],
             ["id", "name", "is_active", "type", "commission_code", "hmrc_code", "foo", "bar"],
+            ["", "", "", "", "", "", "comment on foo", ""],
             ["a", "Mexico", "true", "X", "abc", "def", "Y", ""],
             ["b", "Canada", "false", "Y", "ghi", "jkl", "", "Y"],
         ]
@@ -42,7 +43,22 @@ class TestReadCountryCSV:
                 "type": "Y",
             },
         ]
-        assert groups == ["foo", "bar"]
+        assert groups == [
+            {"name": "foo", "comments": "comment on foo"},
+            {"name": "bar", "comments": ""},
+        ]
+
+    def test_read_headers_but_no_comments(self):
+        rows = [
+            ["id", "name", "is_active", "type", "commission_code", "hmrc_code", "foo"],
+        ]
+        fh = io.StringIO()
+        csv.writer(fh).writerows(rows)
+        fh.seek(0)
+        countries, groups = read_country_csv(fh)
+
+        assert countries == []
+        assert groups == [{"name": "foo", "comments": ""}]
 
     def test_read_bad_csv_format(self):
         rows = [["foo", "bar", "baz"]]
@@ -58,10 +74,12 @@ class TestWriteCountryCSV:
     def test_write_column_header(self):
         fh = io.StringIO()
         countries = []
-        groups = [CountryGroup(name="foo"), CountryGroup(name="bar")]
+        groups = [CountryGroup(name="foo", comments="comment"), CountryGroup(name="bar")]
         write_country_csv(countries, groups, dest=fh)
 
-        assert fh.getvalue() == "id,name,is_active,type,commission_code,hmrc_code,bar,foo\r\n"
+        assert fh.getvalue() == (
+            "id,name,is_active,type,commission_code,hmrc_code,bar,foo\r\n" ",,,,,,,comment\r\n"
+        )
 
     @pytest.mark.django_db
     def test_write_group_membership(self):
@@ -74,6 +92,7 @@ class TestWriteCountryCSV:
 
         assert fh.getvalue() == (
             f"id,name,is_active,type,commission_code,hmrc_code,Bar\r\n"
+            f",,,,,,\r\n"
             f"{foo.pk},Foo,True,,,,Y\r\n"
         )
 

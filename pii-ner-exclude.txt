@@ -2196,3 +2196,9 @@ is_active
 f"id
 next(csv.reader(io
 mock.patch("sys.stdin
+add_variation_request(self.app
+Request</button>
+application_pk=self.application.pk
+application_field(vr.when_varied.strftime('%d-%b-%Y
+# Country
+StopIteration

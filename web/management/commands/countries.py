@@ -16,8 +16,12 @@ MEMBERSHIP = "Y"
 
 
 class Command(BaseCommand):
+    help = "Import countries data from <stdin> or export to <stdout>"
+
     def add_arguments(self, parser):
-        parser.add_argument("operation", choices=["import", "export"])
+        parser.add_argument(
+            "operation", choices=["import", "export"], help="Import or export countries data"
+        )
 
     def handle(self, *args, **options):
         if options["operation"] == "export":
@@ -50,6 +54,10 @@ def write_country_csv(
     writer = csv.DictWriter(dest, fieldnames)
     writer.writeheader()
 
+    # Country group comments immediately below the column headers.
+    row = {group.name: group.comments for group in groups}
+    writer.writerow(row)
+
     for country in countries:
         row = dict(zip(COUNTRY_FIELDS, getter(country)))
         # Add a mark for each group this country belongs to.
@@ -57,10 +65,11 @@ def write_country_csv(
         writer.writerow(row)
 
 
-def read_country_csv(src: TextIO = sys.stdin) -> tuple[list[dict[str, Any]], list[str]]:
+def read_country_csv(src: TextIO = sys.stdin) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
     reader = csv.reader(src)
     header_start_len = len(COUNTRY_FIELDS)
 
+    groups = []
     groupnames = []
     countries = []
 
@@ -69,9 +78,18 @@ def read_country_csv(src: TextIO = sys.stdin) -> tuple[list[dict[str, Any]], lis
     for row in reader:
         if row[:header_start_len] == COUNTRY_FIELDS:
             # Nice. We found the header row. The country group names are the
-            # remaining column values in this row. Then the actual country
-            # data starts on the next row.
+            # remaining column values in this row. Following row is comments for
+            # the groups, after which we get the countries and membership.
             groupnames = row[header_start_len:]
+            try:
+                comments = next(reader)[header_start_len:]
+            except StopIteration:
+                # No more rows! But we need empty comments for the zip below.
+                comments = [""] * len(groupnames)
+
+            for name, comment in zip(groupnames, comments):
+                groups.append({"name": name, "comments": comment})
+
             break
     else:
         # We went through every row, no header found.
@@ -80,9 +98,9 @@ def read_country_csv(src: TextIO = sys.stdin) -> tuple[list[dict[str, Any]], lis
     # Remaining rows are country data.
     for row in reader:
         country: dict[str, Any] = dict(zip(COUNTRY_FIELDS, row[:header_start_len]))
-        groups = dict(zip(groupnames, row[header_start_len:]))
-        country["groups"] = [k for k, v in groups.items() if v == MEMBERSHIP]
+        member = dict(zip(groupnames, row[header_start_len:]))
+        country["groups"] = [k for k, v in member.items() if v == MEMBERSHIP]
 
         countries.append(country)
 
-    return countries, groupnames
+    return countries, groups

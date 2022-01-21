@@ -121,6 +121,16 @@ class CaseURLS:
         return reverse("case:variation-request-request-update", kwargs=kwargs)
 
     @staticmethod
+    def variation_request_cancel_update_request(application_pk: int, variation_request_pk: int):
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": "import",
+            "variation_request_pk": variation_request_pk,
+        }
+
+        return reverse("case:variation-request-cancel-request-update", kwargs=kwargs)
+
+    @staticmethod
     def variation_request_submit_update(
         application_pk: int, variation_request_pk: int, case_type: str = "import"
     ):

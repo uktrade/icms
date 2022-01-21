@@ -33,7 +33,7 @@
 {% endmacro %}
 
 
-{% macro variation_request_fieldset(application, vr, readonly, vr_num) %}
+{% macro variation_request_fieldset(application, vr, readonly, vr_num, csrf_input) %}
   <fieldset>
     <legend>
       <strong>
@@ -45,7 +45,7 @@
     {{ application_field(vr.requested_by , "Requested By") }}
     {{ application_field(vr.what_varied , "What would you like to vary about the current licence(s)") }}
     {{ application_field(vr.why_varied , "Why would you like to vary the licence(s) in this way") }}
-    {{ application_field(vr.when_varied , "What date would the varied licence(s) come into effect") }}
+    {{ application_field(vr.when_varied.strftime('%d-%b-%Y') , "What date would the varied licence(s) come into effect") }}
 
     {% if vr.reject_cancellation_reason %}
       {{ application_field(vr.reject_cancellation_reason , "Cancellation reason") }}
@@ -71,8 +71,10 @@
             <div class="six columns">
               <ul class="menu-out flow-across">
                 <li>
-                  {# TODO: ICMSLST-1366 Implement withdraw request #}
-                  <button type="button" onclick="" class=" button">Withdraw Request</button>
+                  <form method="post" action="{{ icms_url("case:variation-request-cancel-request-update", kwargs={"case_type": "import", "application_pk": application.pk, "variation_request_pk": vr.pk}) }}">
+                    {{ csrf_input }}
+                    <button type="submit" class="button">Withdraw Request</button>
+                  </form>
                 </li>
               </ul>
             </div>

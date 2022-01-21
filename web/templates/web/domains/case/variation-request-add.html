@@ -80,7 +80,7 @@
         <tr>
           <td>
             {% if case_type == "import" %}
-              {{ variation_request_fieldset(process, vr, True, vr.vr_num) }}
+              {{ variation_request_fieldset(process, vr, True, vr.vr_num, csrf_input) }}
             {% else %}
               {{ export_application_variation_request_fieldset(process, vr, True, vr.vr_num, csrf_input) }}
             {% endif %}
