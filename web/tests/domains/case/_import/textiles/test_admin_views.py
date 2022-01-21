@@ -5,6 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.textiles.models import TextilesApplication
+from web.domains.country.models import Country
 
 
 def _get_view_url(view_name, kwargs=None):
@@ -13,14 +14,16 @@ def _get_view_url(view_name, kwargs=None):
 
 def _add_goods_to_app(client, textiles_app_pk, test_import_user):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
+    belarus = Country.objects.get(name="Belarus")
+    ghana = Country.objects.get(name="Ghana")
 
     form_data = {
         "contact": test_import_user.pk,
         "applicant_reference": "New textiles",
         "goods_cleared": True,
         "shipping_year": 2021,
-        "origin_country": 16,
-        "consignment_country": 54,
+        "origin_country": belarus.pk,
+        "consignment_country": ghana.pk,
         "category_commodity_group": 122,
         "commodity": 1634,
         "goods_description": "A lot of textiles",
