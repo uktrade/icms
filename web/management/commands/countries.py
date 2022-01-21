@@ -1,3 +1,4 @@
+import argparse
 import csv
 import operator
 import sys
@@ -18,7 +19,7 @@ MEMBERSHIP = "Y"
 class Command(BaseCommand):
     help = "Import countries data from <stdin> or export to <stdout>"
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(
             "operation", choices=["import", "export"], help="Import or export countries data"
         )
