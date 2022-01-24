@@ -329,21 +329,11 @@ class ApplicationBase(WorkbasketBase, Process):
 
         r.company_agent = self.agent  # type: ignore[attr-defined]
 
-        # common kwargs
-        kwargs = {"application_pk": self.pk, "case_type": case_type}
-
-        view_action = WorkbasketAction(
-            is_post=False, name="View", url=reverse("case:view", kwargs=kwargs)
-        )
-
-        # Active tasks as a list of values
-        active_tasks = self.get_active_task_list()
-
         is_ilb_admin = user.has_perm("web.ilb_admin")
         include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if is_ilb_admin:
-            admin_actions = self._get_admin_actions(user, view_action, active_tasks, kwargs)
+            admin_actions = get_workbasket_actions(user=user, case_type=case_type, application=self)
 
             if admin_actions:
                 r.sections.append(
@@ -356,7 +346,9 @@ class ApplicationBase(WorkbasketBase, Process):
             # e.g.
             # for section in applicant_sections:
             #     r.sections.append(section)
-            applicant_actions = self._get_applicant_actions(user, view_action, active_tasks, kwargs)
+            applicant_actions = get_workbasket_applicant_actions(
+                user=user, case_type=case_type, application=self
+            )
 
             if applicant_actions:
                 r.sections.append(
@@ -367,250 +359,20 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return r
 
-    def _get_admin_actions(
-        self,
-        user: User,
-        view_action: WorkbasketAction,
-        active_tasks: list[str],
-        kwargs: dict[str, Any],
-    ) -> list[WorkbasketAction]:
-        admin_actions: list[WorkbasketAction] = []
-
-        case_owner = self.case_owner  # type: ignore[attr-defined]
-
-        if self.status == self.Statuses.SUBMITTED:
-            if not case_owner:
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="Take Ownership",
-                        url=reverse("case:take-ownership", kwargs=kwargs),
-                    ),
-                )
-
-                admin_actions.append(view_action)
-
-        elif self.status == self.Statuses.PROCESSING:
-            if case_owner != user:
-                admin_actions.append(view_action)
-
-            elif Task.TaskType.PROCESS in active_tasks:
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
-                    )
-                )
-
-            elif Task.TaskType.AUTHORISE in active_tasks:
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Authorise Documents",
-                        url=reverse("case:authorise-documents", kwargs=kwargs),
-                    )
-                )
-
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="Cancel Authorisation",
-                        url=reverse("case:cancel-authorisation", kwargs=kwargs),
-                    )
-                )
-
-                admin_actions.append(view_action)
-
-            elif (
-                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and Task.TaskType.CHIEF_WAIT in active_tasks
-            ):
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="(TEST) Bypass CHIEF",
-                        url=reverse(
-                            "import:bypass-chief",
-                            kwargs={"application_pk": self.pk, "chief_status": "success"},
-                        ),
-                    )
-                )
-
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="(TEST) Bypass CHIEF induce failure",
-                        url=reverse(
-                            "import:bypass-chief",
-                            kwargs={"application_pk": self.pk, "chief_status": "failure"},
-                        ),
-                    )
-                )
-
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=True,
-                        name="Monitor Progress",
-                        url="#TODO: ICMSLST-812 - Popup showing progress",
-                    )
-                )
-
-                admin_actions.append(view_action)
-
-            elif (
-                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and Task.TaskType.CHIEF_ERROR in active_tasks
-            ):
-                admin_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Show Licence Details",
-                        url="#TODO: ICMSLST-812 - CHIEF Dashboard",
-                    )
-                )
-
-                admin_actions.append(view_action)
-
-        elif self.status == self.Statuses.VARIATION_REQUESTED:
-            rv_actions = get_workbasket_actions(
-                user=user, case_type=kwargs["case_type"], application=self
-            )
-            admin_actions.extend(rv_actions)
-
-        elif self.status == self.Statuses.COMPLETED:
-            admin_actions.append(view_action)
-
-            if self.is_rejected():
-                # TODO: ICMSLST-19 A clear action should be added here (We don't have this endpoint atm)
-                ...
-
-        return admin_actions
-
     def _get_applicant_actions(
         self,
         user: User,
-        view_action: WorkbasketAction,
         active_tasks: list[str],
         kwargs: dict[str, Any],
     ) -> list[WorkbasketAction]:
         applicant_actions: list[WorkbasketAction] = []
 
-        if self.status == self.Statuses.SUBMITTED:
-            applicant_actions.append(view_action)
+        wb_actions = get_workbasket_applicant_actions(
+            user=user, case_type=kwargs["case_type"], application=self
+        )
 
-            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN, is_active=True):
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Pending Withdrawal",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-            else:
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Request Withdrawal",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-
-        elif self.status == self.Statuses.PROCESSING:
-            applicant_actions.append(view_action)
-
-            if self.withdrawals.filter(status=WithdrawApplication.STATUS_OPEN, is_active=True):
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Pending Withdrawal",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-            else:
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Request Withdrawal",
-                        url=reverse("case:withdraw-case", kwargs=kwargs),
-                    ),
-                )
-
-            for fir in self.further_information_requests.open():  # type: ignore[attr-defined]
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Respond FIR",
-                        url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
-                    )
-                )
-
-            if Task.TaskType.PREPARE in active_tasks:
-                for update in self.current_update_requests():
-                    if update.status == UpdateRequest.Status.OPEN:
-                        applicant_actions.append(
-                            WorkbasketAction(
-                                is_post=False,
-                                name="Respond to Update Request",
-                                url=reverse(
-                                    "case:start-update-request",
-                                    kwargs=kwargs | {"update_request_pk": update.pk},
-                                ),
-                            )
-                        )
-                    elif update.status in [
-                        UpdateRequest.Status.UPDATE_IN_PROGRESS,
-                        UpdateRequest.Status.RESPONDED,
-                    ]:
-                        applicant_actions.append(
-                            WorkbasketAction(
-                                is_post=False,
-                                name="Resume Update Request",
-                                url=reverse(
-                                    "case:respond-update-request",
-                                    kwargs=kwargs,
-                                ),
-                            )
-                        )
-
-        elif self.status == self.Statuses.IN_PROGRESS:
-            applicant_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Resume",
-                    url=reverse(self.get_edit_view_name(), kwargs={"application_pk": self.pk}),
-                )
-            )
-
-            applicant_actions.append(
-                WorkbasketAction(
-                    is_post=True,
-                    name="Cancel",
-                    url=reverse("case:cancel", kwargs=kwargs),
-                    confirm="Are you sure you want to cancel this draft application? All entered data will be lost.",
-                )
-            )
-
-        elif self.status == self.Statuses.COMPLETED:
-            applicant_actions.append(view_action)
-
-            if not self.is_rejected():
-                if self.acknowledged_by and self.acknowledged_datetime:
-                    action = "View Notification"
-                else:
-                    action = "Acknowledge Notification"
-
-                applicant_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name=action,
-                        url=reverse("case:ack-notification", kwargs=kwargs),
-                    ),
-                )
-
-        elif self.status == self.Statuses.VARIATION_REQUESTED:
-            rv_actions = get_workbasket_applicant_actions(
-                user=user, case_type=kwargs["case_type"], application=self
-            )
-            applicant_actions.extend(rv_actions)
+        if wb_actions:
+            applicant_actions.extend(wb_actions)
 
         return applicant_actions
 
@@ -680,7 +442,9 @@ class ApplicationBase(WorkbasketBase, Process):
 
         print("All tasks in order:")
         for t in all_tasks:
-            print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+            created = t.created.strftime("%Y/%m/%d %H:%M")
+            finished = t.finished.strftime("%Y/%m/%d %H:%M") if t.finished else ""
+            print(f"Task: {t.get_task_type_display()}, created={created!r}, finished={finished!r}")
 
         print("*-" * 40)
 
@@ -696,9 +460,11 @@ class ApplicationBase(WorkbasketBase, Process):
 
         return "Application Processing"
 
-    def is_rejected(self):
+    def is_rejected(self, active_tasks: list[str] = None):
         """Is the application in a rejected state."""
-        active_tasks = self.get_active_task_list()
+
+        if not active_tasks:
+            active_tasks = self.get_active_task_list()
 
         return self.status == self.Statuses.COMPLETED and Task.TaskType.REJECTED in active_tasks
 

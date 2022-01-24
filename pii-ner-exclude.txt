@@ -2203,3 +2203,23 @@ application_field(vr.when_varied.strftime('%d-%b-%Y
 # Country
 StopIteration
 ArgumentParser
+FIXME
+Admins
+View Application
+name="View Application
+Pending Withdrawal
+assert len(admin_row.sections
+CHIEF
+last_name="User
+App
+the View Application
+ChiefShowLicenceDetailsAction(Action
+self.application.withdrawals.filter(status="open
+Pending Withdrawal"
+Request Withdrawal
+wb_actions
+Application Update Requested
+Application Update in Progress
+Resume Update
+Resume Update Request
+Provide Report
