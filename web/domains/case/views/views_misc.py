@@ -371,6 +371,7 @@ def start_authorisation(
                 ):
                     vr = application.variation_requests.get(status=VariationRequest.OPEN)
                     # Note: this is currently the last task when completed (I'm not sure its correct).
+                    # FIXME: This needs to be fixed (As in ACK isn't the last status)
                     next_task = Task.TaskType.ACK
                     application.status = model_class.Statuses.COMPLETED
                     vr.status = VariationRequest.REJECTED
@@ -576,6 +577,8 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
+# TODO: Fix this endpoint
+# TODO: Then update "start_authorisation" to set the correct status / task
 @login_required
 def ack_notification(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -589,6 +592,7 @@ def ack_notification(
 
         check_application_permission(application, request.user, case_type)
 
+        # TODO: This task needs closing
         task = get_application_current_task(application, case_type, Task.TaskType.ACK)
 
         if request.POST:

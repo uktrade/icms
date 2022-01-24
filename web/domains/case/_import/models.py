@@ -1,9 +1,7 @@
 from typing import TYPE_CHECKING
 
-from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
-from django.urls import reverse
 from django.utils import timezone
 from guardian.shortcuts import get_users_with_perms
 
@@ -21,11 +19,6 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.domains.workbasket.base import (
-    WorkbasketAction,
-    WorkbasketRow,
-    WorkbasketSection,
-)
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoNAChoices
 
@@ -361,54 +354,6 @@ class ImportApplication(ApplicationBase):
 
     def get_workbasket_subject(self) -> str:
         return "\n".join(["Import Application", ProcessTypes(self.process_type).label])
-
-    def get_workbasket_row(self, user: User) -> WorkbasketRow:
-        r = super().get_workbasket_row(user)
-
-        is_importer_user = user.has_perm("web.importer_access")
-        include_importer_rows = is_importer_user or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
-
-        if include_importer_rows:
-            information = self.get_information(is_ilb_admin=user.has_perm("web.ilb_admin"))
-            importer_actions = self._get_importer_actions()
-
-            if importer_actions:
-                r.sections.append(
-                    WorkbasketSection(information=information, actions=importer_actions)
-                )
-
-        return r
-
-    def _get_importer_actions(self) -> list[WorkbasketAction]:
-        importer_actions: list[WorkbasketAction] = []
-
-        # Add provide report link for firearms supplementary report
-        if (
-            self.status == self.Statuses.COMPLETED
-            and self.application_type.type == ImportApplicationType.Types.FIREARMS
-            and not self.is_rejected()
-        ):
-
-            if self.process_type == ProcessTypes.FA_OIL:
-                supplementary_info = self.openindividuallicenceapplication.supplementary_info
-            elif self.process_type == ProcessTypes.FA_DFL:
-                supplementary_info = self.dflapplication.supplementary_info
-            elif self.process_type == ProcessTypes.FA_SIL:
-                supplementary_info = self.silapplication.supplementary_info
-            else:
-                supplementary_info = None
-
-            # Only show link if supplementary report is not complete
-            if supplementary_info and not supplementary_info.is_complete:
-                importer_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Provide Report",
-                        url=reverse("import:fa:provide-report", kwargs={"application_pk": self.pk}),
-                    ),
-                )
-
-        return importer_actions
 
     @property
     def application_approved(self):

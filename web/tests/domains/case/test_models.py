@@ -57,13 +57,13 @@ def test_actions_in_progress(app_in_progress, test_import_user):
 def test_actions_submitted(app_submitted, test_import_user):
     user_row = app_submitted.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_processing(app_processing, test_import_user):
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_fir_withdrawal_update_request(app_processing, test_import_user):
@@ -72,7 +72,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
 
     _check_actions(
         user_row.sections,
-        expected_actions={"Pending Withdrawal", "View", "Respond FIR"},
+        expected_actions={"Pending Withdrawal", "View Application", "Respond FIR"},
     )
 
     _create_update_request(app_processing)
@@ -80,7 +80,12 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
 
     _check_actions(
         user_row.sections,
-        expected_actions={"Pending Withdrawal", "View", "Respond FIR", "Respond to Update Request"},
+        expected_actions={
+            "Pending Withdrawal",
+            "View Application",
+            "Respond FIR",
+            "Respond to Update Request",
+        },
     )
 
 
@@ -88,7 +93,7 @@ def test_actions_authorise(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.AUTHORISE)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 @override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
@@ -96,18 +101,21 @@ def test_actions_bypass_chief(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     user_row = app_processing.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View"})
+    _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_completed(app_completed, test_import_user):
     user_row = app_completed.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"Acknowledge Notification", "View"})
+    _check_actions(
+        user_row.sections,
+        expected_actions={"Acknowledge Notification", "View Application", "Clear"},
+    )
 
 
 def test_actions_completed_acknowledged(app_completed, test_import_user):
@@ -115,7 +123,9 @@ def test_actions_completed_acknowledged(app_completed, test_import_user):
     app_completed.acknowledged_datetime = timezone.now()
     user_row = app_completed.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"View Notification", "View"})
+    _check_actions(
+        user_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
+    )
 
 
 def test_actions_completed_acknowledged_agent(
@@ -125,11 +135,15 @@ def test_actions_completed_acknowledged_agent(
     app_completed_agent.acknowledged_datetime = timezone.now()
     agent_row = app_completed_agent.get_workbasket_row(test_agent_import_user)
 
-    _check_actions(agent_row.sections, expected_actions={"View Notification", "View"})
+    _check_actions(
+        agent_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
+    )
 
     user_row = app_completed_agent.get_workbasket_row(test_import_user)
 
-    _check_actions(user_row.sections, expected_actions={"View Notification", "View"})
+    _check_actions(
+        user_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
+    )
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -144,6 +158,8 @@ def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
     admin_row = app_submitted.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(admin_row.sections, expected_actions={"Take Ownership", "View"})
+
+    _test_view_endpoint_is_case_management(app_submitted, admin_row.sections[0].actions)
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -174,8 +190,11 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(
-        admin_row.sections, expected_actions={"Cancel Authorisation", "Authorise Documents", "View"}
+        admin_row.sections,
+        expected_actions={"Cancel Authorisation", "Authorise Documents", "View"},
     )
+
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
 
 
 @override_settings(
@@ -198,17 +217,29 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
         },
     )
 
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
+
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_completed(app_completed, test_icms_admin_user):
     admin_row = app_completed.get_workbasket_row(test_icms_admin_user)
 
-    _check_actions(admin_row.sections, expected_actions={"View"})
+    # By default the admin shouldn't see anything
+    assert len(admin_row.sections) == 0
+
+    # Reject an application to see admin "Completed" actions
+    app_completed.case_owner = test_icms_admin_user
+    app_completed.save()
+    Task.objects.create(process=app_completed, task_type=Task.TaskType.REJECTED, previous=None)
+
+    admin_row = app_completed.get_workbasket_row(test_icms_admin_user)
+    _check_actions(admin_row.sections, expected_actions={"View Case", "Clear"})
 
 
 def _check_actions(actions: list[WorkbasketSection], expected_actions: set[str]):
@@ -252,3 +283,10 @@ def _create_wood_app(importer, test_import_user, status, agent=None, case_owner=
         status=status,
         case_owner=case_owner,
     )
+
+
+def _test_view_endpoint_is_case_management(application, actions):
+
+    # Check the view endpoint is the management link
+    view_action = next(a for a in actions if a.name == "View")
+    assert view_action.url == f"/case/import/{application.pk}/admin/manage/"

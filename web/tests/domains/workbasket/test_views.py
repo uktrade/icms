@@ -173,5 +173,5 @@ def _check_in_progress_workbasket(appl, html):
 
 
 def _check_submitted_workbasket(appl, html):
-    link = rf'<a href=".*/{appl.pk}/view/">\s*View\s*</a>'
+    link = rf'<a href=".*/{appl.pk}/view/">\s*View Application\s*</a>'
     assert re.search(link, html) is not None
