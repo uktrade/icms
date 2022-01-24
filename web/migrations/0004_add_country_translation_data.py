@@ -38,10 +38,6 @@ def add_country_translation(apps, schema_editor):
     CountryTranslation = apps.get_model("web", "CountryTranslation")
     Country = apps.get_model("web", "Country")
 
-    country = Country.objects.get(name="Macedonia  Former Yugoslav Republic of")
-    country.name = "Macedonia, Former Yugoslav Republic of"
-    country.save()
-
     data = DataLoader(Country, CountryTranslationSet)
     CountryTranslation.objects.bulk_create(
         [
