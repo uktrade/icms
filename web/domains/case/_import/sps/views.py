@@ -72,6 +72,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit",
             "supporting_documents": supporting_documents,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sps/edit.html", context)
@@ -142,6 +143,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "page_title": "Prior Surveillance Import Licence - Submit",
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)
@@ -179,6 +181,7 @@ def add_supporting_document(
             "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add supporting document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sps/add_supporting_document.html", context)
@@ -269,6 +272,7 @@ def add_contract_document(
             "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add contract document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sps/add_contract_document.html", context)
@@ -357,6 +361,7 @@ def edit_contract_document(
             "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit contract document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sps/edit_contract_document.html", context)

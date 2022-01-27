@@ -1394,6 +1394,7 @@ def add_gmp_document(
             "form": form,
             "page_title": f"Certificate of Good Manufacturing Practice - Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
             "prev_link": prev_link,
+            "case_type": "export",
         }
 
         return render(request, "web/domains/case/export/add_supporting_document.html", context)

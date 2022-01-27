@@ -84,6 +84,7 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "page_title": get_page_title("Edit"),
             "supporting_documents": supporting_documents,
             "show_further_details": show_fd,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/derogations/edit.html", context)
@@ -121,6 +122,7 @@ def add_supporting_document(
             "task": task,
             "form": form,
             "page_title": get_page_title("Add supporting document"),
+            "case_type": "import",
         }
 
         return render(
@@ -219,6 +221,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
             "page_title": get_page_title("Submit"),
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)

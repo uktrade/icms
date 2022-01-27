@@ -359,6 +359,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
             "available_verified_section5": available_verified_section5,
             "selected_section5": application.verified_section5.all(),
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-sil/edit.html", context)
@@ -379,6 +380,7 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
             "process": application,
             "task": task,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-sil/choose-goods-section.html", context)
@@ -418,6 +420,7 @@ def add_section(
             "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Add Goods",
+            "case_type": "import",
         }
 
         return render(request, config.template, context)
@@ -456,6 +459,7 @@ def edit_section(
             "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
+            "case_type": "import",
         }
 
         return render(request, config.template, context)
@@ -554,15 +558,21 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             if form.is_valid() and not errors.has_errors():
                 application.submit_application(request, task)
 
-                models.SILSupplementaryInfo.objects.create(import_application=application)
-
-                # TODO: replace with Endorsement Usage Template (ICMSLST-638)
-                endorsement = Template.objects.get(
-                    is_active=True,
-                    template_type=Template.ENDORSEMENT,
-                    template_name="Firearms Sanctions COO & COC (AC & AY)",
+                # Only create if needed
+                # This view gets called when an applicant submits changes
+                _, created = models.SILSupplementaryInfo.objects.get_or_create(
+                    import_application=application
                 )
-                application.endorsements.create(content=endorsement.template_content)
+
+                # Only add the endorsement template once too.
+                if created:
+                    # TODO: replace with Endorsement Usage Template (ICMSLST-638)
+                    endorsement = Template.objects.get(
+                        is_active=True,
+                        template_type=Template.ENDORSEMENT,
+                        template_name="Firearms Sanctions COO & COC (AC & AY)",
+                    )
+                    application.endorsements.create(content=endorsement.template_content)
 
                 return application.redirect_after_submit(request)
 
@@ -584,6 +594,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             "form": form,
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)
