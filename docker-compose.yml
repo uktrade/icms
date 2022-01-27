@@ -73,7 +73,7 @@ services:
     celery:
         build:
             context: .
-        command: celery --app=config.celery:app --loglevel=debug worker
+        command: celery --app=config.celery:app worker --loglevel=debug
         environment:
             - DJANGO_SETTINGS_MODULE
             - AWS_SES_ACCESS_KEY_ID
