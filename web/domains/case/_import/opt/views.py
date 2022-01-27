@@ -79,6 +79,7 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "page_title": "Outward Processing Trade Import Licence - Edit",
             "supporting_documents": supporting_documents,
             "prev_link": reverse("import:opt:edit", kwargs={"application_pk": application_pk}),
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/opt/edit.html", context)
@@ -124,6 +125,7 @@ def edit_compensating_products(
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
             "category_descriptions": category_descriptions,
             "category_label": category_label,
+            "case_type": "import",
         }
 
         return render(
@@ -166,6 +168,7 @@ def edit_temporary_exported_goods(
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",
+            "case_type": "import",
         }
 
         return render(
@@ -208,6 +211,7 @@ def edit_further_questions(
             "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/opt/edit-further-questions.html", context)
@@ -258,6 +262,7 @@ def edit_further_questions_shared(
             "supporting_documents": supporting_documents,
             "file_type": fq_type,
             "fq_page_name": get_fq_page_name(fq_type),
+            "case_type": "import",
         }
 
         return render(
@@ -377,6 +382,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "page_title": "Outward Processing Trade Import Licence - Submit",
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)
@@ -438,6 +444,7 @@ def add_document(
             "form": form,
             "page_title": "Outward Processing Trade Licence - Add supporting document",
             "prev_link": prev_link,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/opt/add_supporting_document.html", context)

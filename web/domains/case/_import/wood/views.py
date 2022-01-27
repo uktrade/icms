@@ -111,6 +111,7 @@ def add_supporting_document(
             "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add supporting document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/wood/add_supporting_document.html", context)
@@ -193,6 +194,7 @@ def add_contract_document(
             "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add contract document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/wood/add_contract_document.html", context)
@@ -263,6 +265,7 @@ def edit_contract_document(
             "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Edit contract document",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/wood/edit_contract_document.html", context)

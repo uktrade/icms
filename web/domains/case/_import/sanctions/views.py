@@ -84,6 +84,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
             "goods_list": goods_list,
             "supporting_documents": supporting_documents,
             "show_add_goods": show_add_goods,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sanctions/edit_application.html", context)
@@ -121,6 +122,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
             "form": goods_form,
             "page_title": "Sanctions and Adhoc License Application",
             "commodity_group_data": _get_sanctions_commodity_group_data(application),
+            "case_type": "import",
         }
         return render(
             request,
@@ -169,6 +171,7 @@ def edit_goods(
             "page_title": "Edit Goods",
             "commodity_group_data": commodity_group_data,
             "unit_label": unit_label,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sanctions/add_or_edit_goods.html", context)
@@ -276,6 +279,7 @@ def add_supporting_document(
             "task": task,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application",
+            "case_type": "import",
         }
         return render(request, "web/domains/case/import/sanctions/add_document.html", context)
 
@@ -396,5 +400,6 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
         "application_title": "Sanctions and Adhoc License Application",
         "declaration": declaration,
         "errors": errors if errors.has_errors() else None,
+        "case_type": "import",
     }
     return render(request, "web/domains/case/import/import-case-submit.html", context)

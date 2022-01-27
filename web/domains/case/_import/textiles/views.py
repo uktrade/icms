@@ -83,6 +83,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             "commodity_group_unit": selected_group.get("unit", ""),
             "usages": usages,
             "max_allocation": _get_max_allocation(application),
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/textiles/edit.html", context)
@@ -148,6 +149,7 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
             "max_allocation": _get_max_allocation(application),
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/textiles/submit.html", context)
@@ -183,6 +185,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
             "task": task,
             "form": form,
             "page_title": "Textiles (Quota) Import Licence - Add supporting document",
+            "case_type": "import",
         }
 
         return render(

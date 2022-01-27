@@ -85,6 +85,7 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "form": form,
             "page_title": _get_page_title("Edit"),
             "goods_list": goods_list,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-dfl/edit.html", context)
@@ -131,6 +132,7 @@ def add_goods_certificate(
             "task": task,
             "form": form,
             "page_title": _get_page_title("Add Goods Certificate"),
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-dfl/add_goods_certificate.html", context)
@@ -169,6 +171,7 @@ def edit_goods_certificate(
             "task": task,
             "form": form,
             "page_title": _get_page_title("Edit Goods Certificate"),
+            "case_type": "import",
         }
 
         return render(
@@ -285,7 +288,9 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
                 application.save()
 
-                DFLSupplementaryInfo.objects.create(import_application=application)
+                # Only create if needed
+                # This view gets called when an applicant submits changes
+                DFLSupplementaryInfo.objects.get_or_create(import_application=application)
 
                 return application.redirect_after_submit(request)
 
@@ -307,6 +312,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "form": form,
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)

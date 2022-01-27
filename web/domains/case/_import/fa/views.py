@@ -114,6 +114,7 @@ def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: i
             "task": task,
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms & Ammunition - Contacts",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa/import-contacts/list.html", context)
@@ -178,6 +179,7 @@ def create_import_contact(
             "task": task,
             "form": form,
             "page_title": "Firearms & Ammunition - Create Contact",
+            "case_type": "import",
         }
 
         return render(request, template, context)
@@ -239,6 +241,7 @@ def edit_import_contact(
             "task": task,
             "form": form,
             "page_title": "Firearms & Ammunition - Edit Contact",
+            "case_type": "import",
         }
 
         return render(request, template, context)
@@ -296,6 +299,7 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             "certificates": application.user_imported_certificates.active(),
             "verified_certificates": verified_certificates,
             "page_title": "Firearms and Ammunition - Certificates",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa/certificates/manage.html", context)
@@ -347,6 +351,7 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
             "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition - Create Certificate",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa/certificates/create.html", context)
@@ -392,6 +397,7 @@ def edit_certificate(
             "form": form,
             "page_title": f"Firearms and Ammunition - Edit Certificate '{certificate.reference}'",
             "certificate": certificate,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa/certificates/edit.html", context)

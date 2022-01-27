@@ -73,6 +73,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             "task": task,
             "form": form,
             "page_title": "Open Individual Import Licence - Edit",
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-oil/edit.html", context)
@@ -153,7 +154,9 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
                 application.save()
 
-                OILSupplementaryInfo.objects.create(import_application=application)
+                # Only create if needed
+                # This view gets called when an applicant submits changes
+                OILSupplementaryInfo.objects.get_or_create(import_application=application)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 endorsement = Template.objects.get(
@@ -183,6 +186,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             "form": form,
             "declaration": declaration,
             "errors": errors if errors.has_errors() else None,
+            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/import-case-submit.html", context)
