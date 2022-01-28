@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import messages
@@ -13,15 +13,10 @@ from django.utils import timezone
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.actions import (
-    get_workbasket_actions,
-    get_workbasket_applicant_actions,
+    get_workbasket_admin_sections,
+    get_workbasket_applicant_sections,
 )
-from web.domains.workbasket.base import (
-    WorkbasketAction,
-    WorkbasketBase,
-    WorkbasketRow,
-    WorkbasketSection,
-)
+from web.domains.workbasket.base import WorkbasketBase, WorkbasketRow
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -333,48 +328,22 @@ class ApplicationBase(WorkbasketBase, Process):
         include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if is_ilb_admin:
-            admin_actions = get_workbasket_actions(user=user, case_type=case_type, application=self)
-
-            if admin_actions:
-                r.sections.append(
-                    WorkbasketSection(information=self.get_information(True), actions=admin_actions)
-                )
-
-        if include_applicant_rows:
-            # TODO: Revisit when implementing ICMSLST-1368
-            # This method should return a list of sections.
-            # e.g.
-            # for section in applicant_sections:
-            #     r.sections.append(section)
-            applicant_actions = get_workbasket_applicant_actions(
+            admin_sections = get_workbasket_admin_sections(
                 user=user, case_type=case_type, application=self
             )
 
-            if applicant_actions:
-                r.sections.append(
-                    WorkbasketSection(
-                        information=self.get_information(False), actions=applicant_actions
-                    )
-                )
+            for section in admin_sections:
+                r.sections.append(section)
+
+        if include_applicant_rows:
+            applicant_sections = get_workbasket_applicant_sections(
+                user=user, case_type=case_type, application=self
+            )
+
+            for section in applicant_sections:
+                r.sections.append(section)
 
         return r
-
-    def _get_applicant_actions(
-        self,
-        user: User,
-        active_tasks: list[str],
-        kwargs: dict[str, Any],
-    ) -> list[WorkbasketAction]:
-        applicant_actions: list[WorkbasketAction] = []
-
-        wb_actions = get_workbasket_applicant_actions(
-            user=user, case_type=kwargs["case_type"], application=self
-        )
-
-        if wb_actions:
-            applicant_actions.extend(wb_actions)
-
-        return applicant_actions
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
         # this needs to be here to avoid circular dependencies

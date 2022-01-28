@@ -34,6 +34,7 @@ class EditApplicationAction(Action):
                     self.application.get_edit_view_name(),
                     kwargs={"application_pk": self.application.pk},
                 ),
+                section_label="Prepare Application",
             )
         ]
 
@@ -58,6 +59,7 @@ class CancelApplicationAction(Action):
                 name="Cancel",
                 url=reverse("case:cancel", kwargs=kwargs),
                 confirm="Are you sure you want to cancel this draft application? All entered data will be lost.",
+                section_label="Prepare Application",
             )
         ]
 
@@ -83,11 +85,19 @@ class ViewApplicationAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
+        sections = {
+            ImpExpStatus.SUBMITTED: "Application Submitted",
+            ImpExpStatus.PROCESSING: "Application Submitted",
+            ImpExpStatus.VARIATION_REQUESTED: "Application Submitted",
+            ImpExpStatus.COMPLETED: "Application View",
+        }
+
         return [
             WorkbasketAction(
                 is_post=False,
                 name="View Application",
                 url=reverse("case:view", kwargs=kwargs),
+                section_label=sections[self.status],
             )
         ]
 
@@ -101,19 +111,15 @@ class RespondToFurtherInformationRequestAction(Action):
         return correct_status and open_firs.exists()
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        # TODO: This is an action that requires multiple sections.
-        # e.g. information                                         | action label
-        #      "Further Information Request, 26 JAN 2022 15:36:53" | "Respond"
-        #      "Further Information Request, 26 JAN 2022 15:36:44" | "Respond"
-        # Respond FIR isn't correct
         kwargs = self.get_kwargs()
         open_firs = self.application.further_information_requests.open()
 
         return [
             WorkbasketAction(
                 is_post=False,
-                name="Respond FIR",
+                name="Respond",
                 url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
+                section_label=f"Further Information Request, {fir.requested_datetime.strftime('%d %b %Y %H:%M:%S')}",
             )
             for fir in open_firs.order_by("requested_datetime")
         ]
@@ -138,8 +144,6 @@ class RespondToUpdateRequestAction(Action):
         kwargs = self.get_kwargs()
         open_requests = self.application.current_update_requests().filter(status="OPEN")
 
-        # TODO: What the information should be
-        # Information: "Application Update Requested"
         # TODO: There *should* only ever be a single "Respond to Update Request" link
         return [
             WorkbasketAction(
@@ -149,6 +153,7 @@ class RespondToUpdateRequestAction(Action):
                     "case:start-update-request",
                     kwargs=kwargs | {"update_request_pk": update.pk},
                 ),
+                section_label="Application Update Requested",
             )
             for update in open_requests
         ]
@@ -177,18 +182,16 @@ class ResumeUpdateRequestAction(Action):
             status__in=["UPDATE_IN_PROGRESS", "RESPONDED"]
         )
 
-        # TODO: What the information and label should be
-        # Information: "Application Update in Progress"
-        # label: "Resume Update"
         # TODO: There *should* only ever be a single "Resume Update Request" link
         return [
             WorkbasketAction(
                 is_post=False,
-                name="Resume Update Request",
+                name="Resume Update",
                 url=reverse(
                     "case:respond-update-request",
                     kwargs=kwargs,
                 ),
+                section_label="Application Update in Progress",
             )
             for _ in in_progress_requests
         ]
@@ -216,7 +219,10 @@ class WithdrawApplicationAction(Action):
 
         return [
             WorkbasketAction(
-                is_post=False, name=name, url=reverse("case:withdraw-case", kwargs=kwargs)
+                is_post=False,
+                name=name,
+                url=reverse("case:withdraw-case", kwargs=kwargs),
+                section_label="Application Submitted",
             )
         ]
 
@@ -247,6 +253,7 @@ class SubmitVariationUpdateAction(Action):
                 is_post=False,
                 name="Submit Update",
                 url=reverse("case:variation-request-submit-update", kwargs=kwargs),
+                section_label="Update Variation Request",
             )
         ]
 
@@ -271,11 +278,15 @@ class AcknowledgeNotificationAction(Action):
         else:
             action_name = "Acknowledge Notification"
 
+        # TODO: Once split up correct label to use this format
+        # section_label = f"{action_name}, Notification of {FOO.strftime('%d %b %Y %H:%M:%S')}"
+
         return [
             WorkbasketAction(
                 is_post=False,
                 name=action_name,
                 url=reverse("case:ack-notification", kwargs=kwargs),
+                section_label=action_name,
             )
         ]
 
@@ -304,9 +315,6 @@ class ProvideFirearmsReportAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        # TODO: What the information and label should be
-        # Information: Firearms Supplementary Reporting
-        # label: Provide Report
         return [
             WorkbasketAction(
                 is_post=False,
@@ -314,6 +322,7 @@ class ProvideFirearmsReportAction(Action):
                 url=reverse(
                     "import:fa:provide-report", kwargs={"application_pk": self.application.pk}
                 ),
+                section_label="Firearms Supplementary Reporting",
             )
         ]
 

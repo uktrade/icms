@@ -1,6 +1,6 @@
-from .utils import get_workbasket_actions, get_workbasket_applicant_actions
+from .utils import get_workbasket_admin_sections, get_workbasket_applicant_sections
 
 __all__ = [
-    "get_workbasket_actions",
-    "get_workbasket_applicant_actions",
+    "get_workbasket_admin_sections",
+    "get_workbasket_applicant_sections",
 ]

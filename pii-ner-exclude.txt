@@ -343,7 +343,7 @@ WorkbasketAction
 self.get_kwargs
 # Post
 Misc
-get_workbasket_actions
+get_workbasket_admin_sections
 view.has_permission
 MenuItem
 sub_menu
@@ -2223,3 +2223,8 @@ Application Update in Progress
 Resume Update
 Resume Update Request
 Provide Report
+Application View
+get_workbasket_applicant_sections
+# Group
+Application Submitted
+Supplementary Reporting

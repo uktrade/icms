@@ -72,7 +72,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
 
     _check_actions(
         user_row.sections,
-        expected_actions={"Pending Withdrawal", "View Application", "Respond FIR"},
+        expected_actions={"Pending Withdrawal", "View Application", "Respond"},
     )
 
     _create_update_request(app_processing)
@@ -83,7 +83,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
         expected_actions={
             "Pending Withdrawal",
             "View Application",
-            "Respond FIR",
+            "Respond",
             "Respond to Update Request",
         },
     )
@@ -159,7 +159,7 @@ def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
 
     _check_actions(admin_row.sections, expected_actions={"Take Ownership", "View"})
 
-    _test_view_endpoint_is_case_management(app_submitted, admin_row.sections[0].actions)
+    _test_view_endpoint_is_case_management(app_submitted, admin_row.sections)
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -191,10 +191,10 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
 
     _check_actions(
         admin_row.sections,
-        expected_actions={"Cancel Authorisation", "Authorise Documents", "View"},
+        expected_actions={"Cancel Authorisation", "Authorise Documents", "View Case"},
     )
 
-    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections, "View Case")
 
 
 @override_settings(
@@ -217,13 +217,13 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
         },
     )
 
-    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user)
 
     _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
-    _test_view_endpoint_is_case_management(app_processing, admin_row.sections[0].actions)
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
 
 
 @override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
@@ -242,12 +242,16 @@ def test_admin_actions_completed(app_completed, test_icms_admin_user):
     _check_actions(admin_row.sections, expected_actions={"View Case", "Clear"})
 
 
-def _check_actions(actions: list[WorkbasketSection], expected_actions: set[str]):
-    # Only one set of actions
-    assert len(actions) == 1, f"One action expected but {len(actions)} passed"
+def _check_actions(sections: list[WorkbasketSection], expected_actions: set[str]):
+    """Combine all the actions in each section and test equal to the expected actions"""
+    all_actions = set()
 
-    row_actions = {r.name for r in actions[0].actions}
-    assert row_actions == expected_actions
+    for section in sections:
+        actions = section.actions
+        row_actions = {r.name for r in actions}
+        all_actions.update(row_actions)
+
+    assert all_actions == expected_actions
 
 
 def _create_fir_withdrawal(app, test_import_user):
@@ -285,8 +289,12 @@ def _create_wood_app(importer, test_import_user, status, agent=None, case_owner=
     )
 
 
-def _test_view_endpoint_is_case_management(application, actions):
-
+def _test_view_endpoint_is_case_management(application, sections, view_label="View"):
     # Check the view endpoint is the management link
-    view_action = next(a for a in actions if a.name == "View")
-    assert view_action.url == f"/case/import/{application.pk}/admin/manage/"
+    for section in sections:
+        for action in section.actions:
+            if action.name == view_label:
+                assert action.url == f"/case/import/{application.pk}/admin/manage/"
+                return
+
+    raise ValueError("Failed to find view ")
