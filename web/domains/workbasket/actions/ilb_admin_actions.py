@@ -32,12 +32,19 @@ class TakeOwnershipAction(Action):
                 is_post=True,
                 name="Take Ownership",
                 url=reverse("case:take-ownership", kwargs=kwargs),
+                section_label="Application Processing",
             )
         ]
 
 
 class ViewApplicationCaseAction(Action):
     """Case officer "View Case" link"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Used for sorting the view link in to a section (this is the default)
+        self.section_label = "Application Processing"
 
     def show_link(self) -> bool:
         show_link = False
@@ -54,6 +61,7 @@ class ViewApplicationCaseAction(Action):
             # An authorised application
             elif Task.TaskType.AUTHORISE in self.active_tasks:
                 show_link = True
+                self.section_label = "Authorise Documents"
 
             # App in CHIEF wait state
             elif (
@@ -76,16 +84,26 @@ class ViewApplicationCaseAction(Action):
         # An application rejected by the current case officer
         elif self.application.is_rejected(self.active_tasks) and self.is_case_owner():
             show_link = True
+            self.section_label = "View Case"
 
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
-        name = "View Case" if self.application.is_rejected(self.active_tasks) else "View"
+        is_rejected = self.application.is_rejected(self.active_tasks)
+        if is_rejected or Task.TaskType.AUTHORISE in self.active_tasks:
+            name = "View Case"
+        else:
+            name = "View"
 
         return [
-            WorkbasketAction(is_post=False, name=name, url=reverse("case:manage", kwargs=kwargs))
+            WorkbasketAction(
+                is_post=False,
+                name=name,
+                url=reverse("case:manage", kwargs=kwargs),
+                section_label=self.section_label,
+            )
         ]
 
 
@@ -109,7 +127,10 @@ class ManageApplicationAction(Action):
         kwargs = self.get_kwargs()
         return [
             WorkbasketAction(
-                is_post=False, name="Manage", url=reverse("case:manage", kwargs=kwargs)
+                is_post=False,
+                name="Manage",
+                url=reverse("case:manage", kwargs=kwargs),
+                section_label="Application Processing",
             )
         ]
 
@@ -134,6 +155,7 @@ class AuthoriseDocumentsAction(Action):
                 is_post=False,
                 name="Authorise Documents",
                 url=reverse("case:authorise-documents", kwargs=kwargs),
+                section_label="Authorise Documents",
             )
         ]
 
@@ -158,6 +180,7 @@ class CancelAuthorisationAction(Action):
                 is_post=True,
                 name="Cancel Authorisation",
                 url=reverse("case:cancel-authorisation", kwargs=kwargs),
+                section_label="Authorise Documents",
             )
         ]
 
@@ -189,6 +212,7 @@ class BypassChiefSuccessAction(Action):
                 is_post=True,
                 name="(TEST) Bypass CHIEF",
                 url=reverse("import:bypass-chief", kwargs=kwargs),
+                section_label="CHIEF Wait",
             )
         ]
 
@@ -220,6 +244,7 @@ class BypassChiefFailureAction(Action):
                 is_post=True,
                 name="(TEST) Bypass CHIEF induce failure",
                 url=reverse("import:bypass-chief", kwargs=kwargs),
+                section_label="CHIEF Wait",
             )
         ]
 
@@ -245,6 +270,7 @@ class ChiefMonitorProgressAction(Action):
                 is_post=True,
                 name="Monitor Progress",
                 url="#TODO: ICMSLST-812 - Popup showing progress",
+                section_label="CHIEF Wait",
             )
         ]
 
@@ -270,6 +296,7 @@ class ChiefShowLicenceDetailsAction(Action):
                 is_post=True,
                 name="Show Licence Details",
                 url="#TODO: ICMSLST-812 - CHIEF Dashboard",
+                section_label="CHIEF Error",
             )
         ]
 

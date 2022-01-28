@@ -23,9 +23,13 @@ class ClearApplicationAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        if self.is_ilb_admin:
+            section_label = "View Case"
+        else:
+            section_label = "Application View"
 
         # ICMSLST-19 Add clear action
-        return [WorkbasketAction(is_post=False, name="Clear", url="#")]
+        return [WorkbasketAction(is_post=False, name="Clear", url="#", section_label=section_label)]
 
 
 SHARED_ACTIONS: list[ActionT] = [

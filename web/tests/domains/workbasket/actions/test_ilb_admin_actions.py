@@ -4,7 +4,7 @@ from django.test import override_settings
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.shared import ImpExpStatus
 from web.domains.user.models import User
-from web.domains.workbasket.actions import get_workbasket_actions
+from web.domains.workbasket.actions import get_workbasket_admin_sections
 from web.domains.workbasket.actions.ilb_admin_actions import (
     AuthoriseDocumentsAction,
     CancelAuthorisationAction,
@@ -67,7 +67,7 @@ class TestAdminActions:
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "View"
+        assert wb_action.name == "View Case"
 
     @override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
     def test_view_case_action_is_shown_for_chief_views(self):
@@ -247,7 +247,7 @@ class TestAdminActions:
         action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
         assert not action.show_link()
 
-    def test_get_workbasket_actions(self, test_icms_admin_user):
+    def test_get_workbasket_sections(self, test_icms_admin_user):
         user = test_icms_admin_user
         case_type = "import"
         application = WoodQuotaApplication(
@@ -255,12 +255,14 @@ class TestAdminActions:
             status=self.ST.VARIATION_REQUESTED,
         )
 
-        actions = get_workbasket_actions(user, case_type, application)
-
-        names = [a.name for a in actions]
+        sections = get_workbasket_admin_sections(user, case_type, application)
+        names = []
+        for section in sections:
+            names.extend([a.name for a in section.actions])
 
         assert sorted(names) == ["Take Ownership", "View"]
 
-        # Check the view endpoint is the management link
-        view_action = next(a for a in actions if a.name == "View")
-        assert view_action.url == f"/case/import/{application.pk}/admin/manage/"
+        for section in sections:
+            for action in section.actions:
+                if action.name == "View":
+                    assert action.url == f"/case/import/{application.pk}/admin/manage/"

@@ -19,6 +19,10 @@ class WorkbasketAction:
     # confirmation popup text
     confirm: Optional[str] = None
 
+    # Optional section label
+    # Used to group actions of import / export applications
+    section_label: Optional[str] = None
+
 
 @dataclass
 class WorkbasketSection:
