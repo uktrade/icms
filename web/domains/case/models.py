@@ -413,9 +413,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         print("All tasks in order:")
         for t in all_tasks:
-            created = t.created.strftime("%Y/%m/%d %H:%M")
-            finished = t.finished.strftime("%Y/%m/%d %H:%M") if t.finished else ""
-            print(f"Task: {t.get_task_type_display()}, created={created!r}, finished={finished!r}")
+            print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
 
         print("*-" * 40)
 

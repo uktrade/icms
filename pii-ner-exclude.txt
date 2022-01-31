@@ -2203,7 +2203,6 @@ application_field(vr.when_varied.strftime('%d-%b-%Y
 # Country
 StopIteration
 ArgumentParser
-FIXME
 Admins
 View Application
 name="View Application
@@ -2231,3 +2230,6 @@ Supplementary Reporting
 assert self.app.get_active_task_list
 assert wood_application.get_active_task_list
 0.0.0.34
+Resume
+Show Licence Details
+Active Tasks

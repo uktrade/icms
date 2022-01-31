@@ -124,6 +124,8 @@ class RespondToFurtherInformationRequestAction(Action):
         ]
 
 
+# TODO: ICMSLST-1404 revisit
+# Replace with annotation or task instead of filtering current_update_requests
 class RespondToUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -156,6 +158,8 @@ class RespondToUpdateRequestAction(Action):
         ]
 
 
+# TODO: ICMSLST-1404 revisit
+# Replace with annotation or task instead of filtering current_update_requests
 class ResumeUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -192,6 +196,8 @@ class ResumeUpdateRequestAction(Action):
         ]
 
 
+# TODO: ICMSLST-1403 revisit
+# Replace with annotation or task instead of filtering withdrawals
 class WithdrawApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -211,7 +217,7 @@ class WithdrawApplicationAction(Action):
         kwargs = self.get_kwargs()
 
         # "open" instead of WithdrawApplication.STATUS_OPEN to avoid circular dependency
-        if self.application.withdrawals.filter(status="open", is_active=True):
+        if self.application.withdrawals.filter(status="open", is_active=True).exists():
             name = "Pending Withdrawal"
         else:
             name = "Request Withdrawal"
@@ -292,7 +298,6 @@ class AcknowledgeNotificationAction(Action):
         ]
 
 
-# TODO: The show_link logic needs replacing with a "provide report" task.
 class ProvideFirearmsReportAction(Action):
     def show_link(self) -> bool:
         if not self.application.is_import_application() or not self.is_importer_user:

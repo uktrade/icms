@@ -578,7 +578,6 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-# TODO: Then update "start_authorisation" to set the correct status / task
 @login_required
 def ack_notification(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
