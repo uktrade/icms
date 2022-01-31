@@ -254,6 +254,7 @@ class TestAdminActions:
             pk=1,
             status=self.ST.VARIATION_REQUESTED,
         )
+        application.active_tasks = []  # This is to fake the active_tasks annotation
 
         sections = get_workbasket_admin_sections(user, case_type, application)
         names = []

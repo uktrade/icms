@@ -1,6 +1,7 @@
 from itertools import chain
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Prefetch, Q, QuerySet
 from django.http.response import HttpResponse
 from django.shortcuts import render
@@ -38,6 +39,13 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "web/domains/workbasket/workbasket.html", context)
 
 
+# Used to get a list of active tasks for the application
+# Prevents a call to get_active_task_list for every application record.
+ACTIVE_TASK_ANNOTATION = ArrayAgg(
+    "tasks__task_type", distinct=True, filter=Q(tasks__is_active=True)
+)
+
+
 def _get_queryset_admin(user: User) -> chain[QuerySet]:
     exporter_access_requests = ExporterAccessRequest.objects.filter(
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
@@ -47,12 +55,16 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
         is_active=True, status=AccessRequest.Statuses.SUBMITTED
     ).prefetch_related(Prefetch("tasks", queryset=Task.objects.filter(is_active=True)))
 
-    export_applications = ExportApplication.objects.filter(is_active=True).prefetch_related(
-        Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
+    export_applications = (
+        ExportApplication.objects.filter(is_active=True)
+        .select_related("exporter", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
     )
 
-    import_applications = ImportApplication.objects.filter(is_active=True).prefetch_related(
-        Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
+    import_applications = (
+        ImportApplication.objects.filter(is_active=True)
+        .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
     )
 
     return chain(
@@ -135,6 +147,8 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         ImportApplication.objects.prefetch_related(
             Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
         )
+        .select_related("importer", "contact", "application_type", "submitted_by")
+        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
         .filter(is_active=True)
         .filter(status__in=app_status_to_show)
         .filter(
@@ -159,6 +173,8 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         ExportApplication.objects.prefetch_related(
             Prefetch("tasks", queryset=Task.objects.filter(is_active=True))
         )
+        .select_related("exporter", "contact", "application_type", "submitted_by")
+        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
         .filter(is_active=True)
         .filter(status__in=app_status_to_show)
         .filter(

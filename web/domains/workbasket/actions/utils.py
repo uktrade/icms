@@ -37,7 +37,8 @@ def get_workbasket_applicant_sections(
 def _get_workbasket_sections(
     user: "User", case_type: str, application: "ImpOrExp", workbasket_actions: list["ActionT"]
 ) -> list[WorkbasketSection]:
-    tasks = application.get_active_task_list()
+    # This is an annotation of all the active tasks linked to this application
+    tasks = application.active_tasks
 
     is_ilb_admin = user.has_perm("web.ilb_admin")
     is_importer_user = user.has_perm("web.importer_access")
