@@ -226,13 +226,12 @@ def test_start_authorisation_rejected_variation_requested_application(
     wood_application.refresh_from_db()
 
     wood_application.check_expected_status([ImpExpStatus.COMPLETED])
-    expected_task = wood_application.get_expected_task(Task.TaskType.ACK)
+    assert wood_application.get_active_task_list() == []
+
     vr = wood_application.variation_requests.first()
     assert vr.status == VariationRequest.REJECTED
     assert vr.reject_cancellation_reason == "test refuse reason"
     assert vr.closed_datetime.date() == timezone.now().date()
-
-    assert expected_task is not None
 
 
 class TestAuthoriseDocumentsView:

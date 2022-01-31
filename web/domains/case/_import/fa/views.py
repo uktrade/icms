@@ -22,6 +22,7 @@ from web.domains.case._import.fa_sil.forms import (
     SILSupplementaryInfoForm,
     SILSupplementaryReportForm,
 )
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -135,10 +136,10 @@ def create_import_contact(
         check_application_permission(application, request.user, "import")
 
         if application.status == application.Statuses.COMPLETED:
-            task = get_application_current_task(application, "import", Task.TaskType.ACK)
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+            application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING])
+            application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
             template = "web/domains/case/import/fa/import-contacts/create.html"
 
         if request.POST:
@@ -176,7 +177,6 @@ def create_import_contact(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms & Ammunition - Create Contact",
             "case_type": "import",
@@ -202,10 +202,10 @@ def edit_import_contact(
         person = get_object_or_404(ImportContact, pk=contact_pk)
 
         if application.status == application.Statuses.COMPLETED:
-            task = get_application_current_task(application, "import", Task.TaskType.ACK)
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+            application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING])
+            application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
             template = "web/domains/case/import/fa/import-contacts/edit.html"
 
         if request.POST:
@@ -238,7 +238,6 @@ def edit_import_contact(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms & Ammunition - Edit Contact",
             "case_type": "import",
@@ -259,7 +258,7 @@ def delete_import_contact(
 
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
-        get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         contact = application.importcontact_set.get(pk=contact_pk)
 
@@ -545,7 +544,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         form_class = _get_supplementary_info_form(application)
 
@@ -573,7 +572,6 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
@@ -620,8 +618,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         form_class = _get_supplementary_report_form(application)
@@ -645,7 +642,6 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
@@ -672,8 +668,7 @@ def edit_report(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         report: FaSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -703,7 +698,6 @@ def edit_report(
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),

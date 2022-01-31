@@ -142,9 +142,6 @@ def get_application_current_task(
                 [st.PROCESSING, st.VARIATION_REQUESTED], task_type, select_for_update
             )
 
-        elif task_type == Task.TaskType.ACK:
-            return application.get_task(st.COMPLETED, task_type, select_for_update)
-
         elif task_type == Task.TaskType.REJECTED:
             return application.get_task(st.COMPLETED, task_type, select_for_update)
 
@@ -212,6 +209,22 @@ def get_case_page_title(case_type: str, application: ImpOrExpOrAccess, page: str
         return f"Access Request - {page}"
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+# TODO: Revisit when implementing ICMSLST-1400
+def create_acknowledge_notification_task(application: ImpOrExp, previous_task: Optional[Task]):
+    """Create an ack task and clear the application acknowledged fields.
+
+    This will be updated in ICMSLST-1400 to support keeping a history of multiple notifications.
+    """
+
+    Task.objects.create(process=application, task_type=Task.TaskType.ACK, previous=previous_task)
+
+    if application.acknowledged_by or application.acknowledged_datetime:
+        application.acknowledged_by = None
+        application.acknowledged_datetime = None
+
+    application.save()
 
 
 def _has_importer_exporter_access(user: User, case_type: str) -> bool:

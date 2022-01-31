@@ -258,7 +258,8 @@ class SubmitVariationUpdateAction(Action):
         ]
 
 
-# TODO: ICMSLST-1362 This needs splitting up (along with the view)
+# TODO: Revisit when implementing ICMSLST-1400
+# Each notification needs a "Acknowledge" "View" and "Clear" action
 class AcknowledgeNotificationAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -278,7 +279,8 @@ class AcknowledgeNotificationAction(Action):
         else:
             action_name = "Acknowledge Notification"
 
-        # TODO: Once split up correct label to use this format
+        # TODO: Revisit when implementing ICMSLST-1400
+        # Use this format for each application acknowledgement
         # section_label = f"{action_name}, Notification of {FOO.strftime('%d %b %Y %H:%M:%S')}"
 
         return [

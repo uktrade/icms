@@ -13,6 +13,13 @@ from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.models import VariationRequest
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import (
+    check_application_permission,
+    create_acknowledge_notification_task,
+    get_application_current_task,
+    get_case_page_title,
+)
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.flow.models import Task
@@ -24,11 +31,6 @@ from web.utils.validation import ApplicationErrors
 from .. import forms
 from ..app_checks import get_app_errors
 from ..types import ImpOrExp, ImpTypeOrExpType
-from ..utils import (
-    check_application_permission,
-    get_application_current_task,
-    get_case_page_title,
-)
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
@@ -370,9 +372,7 @@ def start_authorisation(
                     and application.variation_decision == application.REFUSE
                 ):
                     vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                    # Note: this is currently the last task when completed (I'm not sure its correct).
-                    # FIXME: This needs to be fixed (As in ACK isn't the last status)
-                    next_task = Task.TaskType.ACK
+                    next_task = None
                     application.status = model_class.Statuses.COMPLETED
                     vr.status = VariationRequest.REJECTED
                     vr.reject_cancellation_reason = application.variation_refuse_reason
@@ -397,7 +397,8 @@ def start_authorisation(
             task.finished = timezone.now()
             task.save()
 
-            Task.objects.create(process=application, task_type=next_task, previous=task)
+            if next_task:
+                Task.objects.create(process=application, task_type=next_task, previous=task)
 
             return redirect(reverse("workbasket"))
 
@@ -466,9 +467,7 @@ def authorise_documents(
                     application.status = model_class.Statuses.COMPLETED
                     application.save()
 
-                    Task.objects.create(
-                        process=application, task_type=Task.TaskType.ACK, previous=task
-                    )
+                    create_acknowledge_notification_task(application, task)
 
                 messages.success(
                     request,
@@ -577,7 +576,6 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-# TODO: Fix this endpoint
 # TODO: Then update "start_authorisation" to set the correct status / task
 @login_required
 def ack_notification(
@@ -591,16 +589,20 @@ def ack_notification(
         )
 
         check_application_permission(application, request.user, case_type)
-
-        # TODO: This task needs closing
-        task = get_application_current_task(application, case_type, Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         if request.POST:
+            task = application.get_expected_task(Task.TaskType.ACK, select_for_update=True)
             form = forms.AckReceiptForm(request.POST)
+
             if form.is_valid():
                 application.acknowledged_by = request.user
                 application.acknowledged_datetime = timezone.now()
                 application.save()
+
+                task.is_active = False
+                task.finished = timezone.now()
+                task.save()
 
                 # TODO: ICMSLST-20
                 # Notification is not cleared and still appear in the workbasket
@@ -622,7 +624,6 @@ def ack_notification(
 
         context = {
             "process": application,
-            "task": task,
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "form": form,
             "primary_recipients": _get_primary_recipients(application),
