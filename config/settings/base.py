@@ -298,3 +298,9 @@ CHIEF_LICENSE_URL = env.str(
 )
 HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms")
 HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
+
+# Data migration settings
+ALLOW_DATA_MIGRATION = env.bool("ALLOW_DATA_MIGRATION", default=False)
+ICMS_V1_REPLICA_USER = env.str("ICMS_V1_REPLICA_USER", default="")
+ICMS_V1_REPLICA_PASSWORD = env.str("ICMS_V1_REPLICA_PASSWORD", default="")
+ICMS_V1_REPLICA_DSN = env.str("ICMS_V1_REPLICA_DSN", default="")
