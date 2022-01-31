@@ -145,3 +145,7 @@ dmypy.json
 # https://github.com/uktrade/pii-secret-check-hooks
 .pii-secret-hook/
 ner_output_file.txt
+
+# data migration
+oracle/
+.profile
