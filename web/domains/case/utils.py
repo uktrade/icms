@@ -119,10 +119,12 @@ def get_application_current_task(
         # importer/exporter edit the application
         # it can either be:
         #  - a fresh new application (IN_PROGRESS)
-        #  - an update requested (PROCESSING)
+        #  - an update requested (PROCESSING/VARIATION_REQUESTED)
         if task_type == Task.TaskType.PREPARE:
             return application.get_task(
-                [st.IN_PROGRESS, st.PROCESSING], task_type, select_for_update
+                [st.IN_PROGRESS, st.PROCESSING, st.VARIATION_REQUESTED],
+                task_type,
+                select_for_update,
             )
 
         elif task_type == Task.TaskType.PROCESS:

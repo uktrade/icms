@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/uktrade/pii-secret-check-hooks
-    rev: 0.0.0.33
+    rev: 0.0.0.34
     hooks:
     -   id: pii_secret_filename
         files: ''

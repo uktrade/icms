@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms, models
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
     check_application_permission,
@@ -180,9 +181,9 @@ def start_update_request(
         )
 
         check_application_permission(application, request.user, case_type)
-
-        get_application_current_task(application, case_type, Task.TaskType.PREPARE)
-
+        application.check_expected_status(
+            [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        )
         update_requests = application.update_requests.filter(is_active=True)
         update_request = get_object_or_404(
             update_requests.filter(is_active=True).filter(status=models.UpdateRequest.Status.OPEN),
