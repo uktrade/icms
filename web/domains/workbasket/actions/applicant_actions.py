@@ -104,8 +104,7 @@ class ViewApplicationAction(Action):
 
 class RespondToFurtherInformationRequestAction(Action):
     def show_link(self) -> bool:
-        # TODO: This will need to check ImpExpStatus.VARIATION_REQUESTED
-        correct_status = self.status in [ImpExpStatus.PROCESSING]
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         open_firs = self.application.further_information_requests.open()
 
         return correct_status and open_firs.exists()
@@ -129,9 +128,7 @@ class RespondToUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        # TODO: This will need to check ImpExpStatus.VARIATION_REQUESTED
-        # TODO: remember to update the view too
-        correct_status = self.status in [ImpExpStatus.PROCESSING]
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
         open_requests = self.application.current_update_requests().filter(status="OPEN")
 
@@ -163,9 +160,7 @@ class ResumeUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        # TODO: This will need to check ImpExpStatus.VARIATION_REQUESTED
-        # TODO: remember to update the view too
-        correct_status = self.status in [ImpExpStatus.PROCESSING]
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
         in_progress_requests = self.application.current_update_requests().filter(
             status__in=["UPDATE_IN_PROGRESS", "RESPONDED"]
@@ -201,7 +196,11 @@ class WithdrawApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        valid_statuses = [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING]
+        valid_statuses = [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
 
         if self.status in valid_statuses:
             show_link = True

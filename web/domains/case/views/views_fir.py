@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case.shared import ImpExpStatus
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -421,7 +422,9 @@ def respond_fir(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, case_type)
-
+        application.check_expected_status(
+            [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        )
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
         if request.POST:

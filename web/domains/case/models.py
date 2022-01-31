@@ -364,7 +364,9 @@ class ApplicationBase(WorkbasketBase, Process):
 
         # if case owner is present, an update request has just been filed
         if self.case_owner:
-            self.status = self.Statuses.PROCESSING
+            # Only change to processing if it's not a variation request
+            if self.status != self.Statuses.VARIATION_REQUESTED:
+                self.status = self.Statuses.PROCESSING
         else:
             self.status = self.Statuses.SUBMITTED
 

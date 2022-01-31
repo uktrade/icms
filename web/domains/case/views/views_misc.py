@@ -74,12 +74,9 @@ def withdraw_case(
         )
 
         check_application_permission(application, request.user, case_type)
-
-        if application.current_update_requests():
-            # application revert to prepare when update is requested
-            task = get_application_current_task(application, case_type, Task.TaskType.PREPARE)
-        else:
-            task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        application.check_expected_status(
+            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        )
 
         if request.POST:
             form = forms.WithdrawForm(request.POST)
@@ -103,7 +100,6 @@ def withdraw_case(
         context = {
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Withdrawals"),
             "form": form,
             "withdrawals": application.withdrawals.filter(is_active=True),
@@ -124,15 +120,11 @@ def archive_withdrawal(
         )
 
         check_application_permission(application, request.user, case_type)
+        application.check_expected_status(
+            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        )
 
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
-
-        if application.current_update_requests():
-            # application revert to prepare when update is requested
-            get_application_current_task(application, case_type, Task.TaskType.PREPARE)
-        else:
-            get_application_current_task(application, case_type, Task.TaskType.PROCESS)
-
         withdrawal.is_active = False
         withdrawal.save()
 
@@ -168,8 +160,18 @@ def manage_withdrawals(
 
                 # withdrawal accepted - case is closed, else case still open
                 if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
-                    application.status = model_class.Statuses.WITHDRAWN
-                    application.is_active = False
+                    if application.status == ImpExpStatus.VARIATION_REQUESTED:
+                        application.status = ImpExpStatus.COMPLETED
+                        # Close the open variation request if we are withdrawing the application / variation
+                        vr = application.variation_requests.get(status=VariationRequest.OPEN)
+                        vr.status = VariationRequest.WITHDRAWN
+                        vr.reject_cancellation_reason = application.variation_refuse_reason
+                        vr.closed_datetime = timezone.now()
+                        vr.save()
+                    else:
+                        application.status = model_class.Statuses.WITHDRAWN
+                        application.is_active = False
+
                     application.save()
 
                     task.is_active = False
