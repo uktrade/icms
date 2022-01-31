@@ -20,7 +20,10 @@ from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.models import VariationRequest
-from web.domains.case.utils import get_application_current_task
+from web.domains.case.utils import (
+    create_acknowledge_notification_task,
+    get_application_current_task,
+)
 from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
@@ -630,7 +633,7 @@ def bypass_chief(
             application.status = ImportApplication.Statuses.COMPLETED
             application.save()
 
-            Task.objects.create(process=application, task_type=Task.TaskType.ACK, previous=task)
+            create_acknowledge_notification_task(application, task)
 
         elif chief_status == "failure":
             Task.objects.create(

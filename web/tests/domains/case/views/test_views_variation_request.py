@@ -114,7 +114,7 @@ class TestVariationRequestCancelView:
         assert vr.closed_datetime.date() == timezone.now().date()
 
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        self.wood_app.get_expected_task(Task.TaskType.ACK, select_for_update=False)
+        assert self.wood_app.get_active_task_list() == []
 
 
 class TestVariationRequestCancelViewForExportApplication:
@@ -148,7 +148,7 @@ class TestVariationRequestCancelViewForExportApplication:
         assert vr.closed_datetime.date() == timezone.now().date()
 
         self.app.check_expected_status([ImpExpStatus.COMPLETED])
-        self.app.get_expected_task(Task.TaskType.ACK, select_for_update=False)
+        assert self.app.get_active_task_list() == []
 
 
 class TestVariationRequestRequestUpdateView:

@@ -9,6 +9,7 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -419,8 +420,7 @@ def add_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -448,7 +448,6 @@ def add_report_firearm_manual(
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
@@ -477,8 +476,7 @@ def edit_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
@@ -501,7 +499,6 @@ def edit_report_firearm_manual(
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
@@ -530,8 +527,7 @@ def add_report_firearm_upload(
         )
 
         check_application_permission(application, request.user, "import")
-
-        task = get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -564,7 +560,6 @@ def add_report_firearm_upload(
 
         context = {
             "process": application,
-            "task": task,
             "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
@@ -614,8 +609,7 @@ def add_report_firearm_no_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-
-        get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -648,8 +642,7 @@ def delete_report_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-
-        get_application_current_task(application, "import", Task.TaskType.ACK)
+        application.check_expected_status([ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

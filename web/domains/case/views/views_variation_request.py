@@ -98,7 +98,7 @@ class VariationRequestCancelView(
     current_task_type = Task.TaskType.PROCESS
 
     next_status = ImpExpStatus.COMPLETED
-    next_task_type = Task.TaskType.ACK
+    next_task_type = None
 
     # PermissionRequiredMixin config
     permission_required = ["web.ilb_admin"]
