@@ -991,3 +991,13 @@ Fragment Text
 Template Title
 f"These
 r"\[\[[A-Z_]+\]\
+Config
+View Config
+Cover Letter Response Preparation
+Endorsement Response Preparation
+EU Countries
+IMI
+Application Authorisation
+Acknowledge Notification
+"Load the expected current task
+Cover Letter Preview

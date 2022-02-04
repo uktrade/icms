@@ -33,7 +33,10 @@ def test_preview_cover_letter():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.get(f"/import/case/{process.pk}/cover-letter/preview/")
+    url = reverse(
+        "case:preview-cover-letter", kwargs={"application_pk": process.pk, "case_type": "import"}
+    )
+    response = client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
@@ -62,7 +65,11 @@ def test_preview_licence():
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
-    response = client.get(f"/import/case/{process.pk}/licence/preview/")
+
+    url = reverse(
+        "case:preview-licence", kwargs={"application_pk": process.pk, "case_type": "import"}
+    )
+    response = client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"

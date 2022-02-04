@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, List, Optional, Type
 
 import django.forms as django_forms
-import weasyprint
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -12,10 +11,9 @@ from django.db import models, transaction
 from django.db.models.functions import Concat
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
@@ -497,85 +495,6 @@ def delete_endorsement(
                 kwargs={"application_pk": application_pk, "case_type": "import"},
             )
         )
-
-
-@login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-@require_GET
-def preview_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
-        )
-
-        # TODO ICMSLST-836: Applications being authorise should use a separate view for the docs
-        if application.status == ImportApplication.Statuses.PROCESSING:
-            task = get_application_current_task(application, "import", Task.TaskType.AUTHORISE)
-        else:
-            task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Cover Letter Preview",
-            # TODO: licence_issue_date is a property and should probably be application.licence_start_date
-            "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
-            "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-        }
-
-        html_string = render_to_string(
-            request=request,
-            template_name="web/domains/case/import/manage/preview-cover-letter.html",
-            context=context,
-        )
-
-        html = weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri())
-        pdf_file = html.write_pdf()
-
-        response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = "filename=CoverLetter.pdf"
-
-        return response
-
-
-@login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-@require_GET
-def preview_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: ImportApplication = get_object_or_404(
-            ImportApplication.objects.select_for_update(), pk=application_pk
-        )
-
-        # TODO ICMSLST-836: Applications being authorise should use a separate view for the docs
-        if application.status == ImportApplication.Statuses.PROCESSING:
-            task = get_application_current_task(application, "import", Task.TaskType.AUTHORISE)
-        else:
-            task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
-
-        context = {
-            "process": application,
-            "task": task,
-            "page_title": "Licence Preview",
-            # TODO: licence_issue_date is a property and should probably be application.licence_start_date
-            "issue_date": application.licence_issue_date.strftime("%d %B %Y"),
-        }
-
-        # TODO: preview-licence.html contents are hard-coded and seem to be for
-        # a specific type of firearms application. needs to be generalized for
-        # other application types.
-        html_string = render_to_string(
-            request=request,
-            template_name="web/domains/case/import/manage/preview-licence.html",
-            context=context,
-        )
-
-        html = weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri())
-        pdf_file = html.write_pdf()
-
-        response = HttpResponse(pdf_file, content_type="application/pdf")
-        response["Content-Disposition"] = "filename=Licence.pdf"
-        return response
 
 
 # TODO: This can be replaced by the following:
