@@ -18,7 +18,7 @@
             <td>
                 {# TODO ICMSLST-836: Replace this link with final cover letter instead of preview #}
                 <a
-                    href="{{ icms_url('import:preview-cover-letter', kwargs={'application_pk': process.pk}) }}"
+                    href="{{ icms_url('case:preview-cover-letter', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
                     target="blank"
                     class="link-button inline-link-button icon-file-pdf button">
                     View PDF
@@ -35,7 +35,7 @@
             <td>
                 {# TODO ICMSLST-836: Replace this link with generated licence #}
                 <a
-                    href="{{ icms_url('import:preview-licence', kwargs={'application_pk': process.pk}) }}"
+                    href="{{ icms_url('case:preview-licence', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
                     target="blank"
                     class="link-button inline-link-button icon-file-pdf button">
                     View PDF
@@ -51,7 +51,7 @@
                 <td>
                     {# TODO: Replace this link with generated licence #}
                     <a
-                        href="{{ icms_url('import:preview-licence', kwargs={'application_pk': process.pk}) }}"
+                        href="{{ icms_url('case:preview-licence', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
                         target="blank"
                         class="link-button inline-link-button icon-file-pdf button">
                         View PDF

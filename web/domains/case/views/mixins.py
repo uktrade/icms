@@ -36,11 +36,11 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     # The expected current active task of the process record
     current_task_type: ClassVar[Optional[str]] = None
 
-    # The next status to set. (Can be optional)
+    # The next status to set.
     next_status: ClassVar[Optional[str]] = None
 
     # The next task type to set
-    next_task_type: ClassVar[str]
+    next_task_type: ClassVar[Optional[str]] = None
 
     http_method_names = ["get", "post"]
 
@@ -52,7 +52,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         super().__init__(*args, **kwargs)
 
     def setup(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
-        for attr in ["current_status", "next_status", "next_task_type"]:
+        for attr in ["current_status"]:
             if not hasattr(self, attr):
                 raise ImproperlyConfigured(f"The following class attribute must be set: {attr!r}")
 

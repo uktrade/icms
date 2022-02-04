@@ -5,6 +5,7 @@ from .views import (
     views_fir,
     views_misc,
     views_note,
+    views_pdf,
     views_prepare_response,
     views_search,
     views_update_request,
@@ -263,6 +264,16 @@ email_urls = [
     ),
 ]
 
+pdf_urls = [
+    path("preview-licence/", views_pdf.PreviewLicenceView.as_view(), name="preview-licence"),
+    path(
+        "preview-cover-letter/",
+        views_pdf.PreviewCoverLetterView.as_view(),
+        name="preview-cover-letter",
+    ),
+]
+
+
 urlpatterns = [
     path(
         "<casetype:case_type>/",
@@ -311,6 +322,9 @@ urlpatterns = [
                             #
                             # Variation request URLS:
                             path("variation-request/", include(variation_request_urls)),
+                            #
+                            # PDF generation URLs:
+                            path("pdf/", include(pdf_urls)),
                         ]
                     ),
                 ),
