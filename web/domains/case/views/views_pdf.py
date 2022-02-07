@@ -43,6 +43,12 @@ class PreviewLicenceView(PreviewLicenceBase):
             request=self.request,
         )
 
+        # TODO: Remove this when all the pdfs have been created
+        # Useful when debugging pdf layout
+        if "html" in self.request.GET:
+            html = pdf_gen.get_document_html()
+            return HttpResponse(html)
+
         return return_pdf(pdf_gen, "Licence.pdf")
 
 
