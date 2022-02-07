@@ -10,6 +10,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.importer.models import Importer
 from web.flow.models import Task
 from web.tests.domains.importer import factory as importer_factories
+from web.tests.domains.office import factory as office_factories
 from web.tests.domains.user import factory as user_factories
 from web.tests.flow import factories as process_factories
 
@@ -52,11 +53,17 @@ def test_preview_cover_letter():
 def test_preview_licence():
     ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
-    importer = importer_factories.ImporterFactory.create(type=Importer.ORGANISATION, user=user)
+    office = office_factories.OfficeFactory.create(
+        postcode="S93bl", address="""22 Some Avenue\nSome Way\nSome Town"""  # /PS-IGNORE
+    )
+    importer = importer_factories.ImporterFactory.create(
+        type=Importer.ORGANISATION, user=user, eori_number="GB123456789", name="Importer Name"
+    )
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
         importer=importer,
+        importer_office=office,
         created_by=user,
         last_updated_by=user,
         case_owner=ilb_admin,

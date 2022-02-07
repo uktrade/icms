@@ -7,6 +7,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
+from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
@@ -123,6 +124,50 @@ def create_in_progress_fa_dfl_app(
     dfl_app = DFLApplication.objects.get(pk=app_pk)
 
     return dfl_app
+
+
+def create_in_progress_fa_oil_app(
+    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+) -> OpenIndividualLicenceApplication:
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-oil",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    any_country = Country.objects.get(name="Any Country", is_active=True)
+
+    form_data = {
+        "contact": importer_contact.pk,
+        "applicant_reference": "applicant_reference value",
+        "section1": True,
+        "section2": True,
+        "origin_country": any_country.pk,
+        "consignment_country": any_country.pk,
+        "commodity_code": "ex Chapter 93",
+        "know_bought_from": False,
+    }
+    save_app_data(
+        client=importer_client, view_name="import:fa-oil:edit", app_pk=app_pk, form_data=form_data
+    )
+
+    post_data = {
+        "reference": "Certificate Reference Value",
+        "certificate_type": "registered",
+        "constabulary": Constabulary.objects.first().pk,
+        "date_issued": datetime.date.today().strftime("%d-%b-%Y"),
+        "expiry_date": datetime.date.today().strftime("%d-%b-%Y"),
+    }
+
+    add_app_file(
+        client=importer_client,
+        view_name="import:fa:create-certificate",
+        app_pk=app_pk,
+        post_data=post_data,
+    )
+    oil_app = OpenIndividualLicenceApplication.objects.get(pk=app_pk)
+
+    return oil_app
 
 
 def create_in_progress_com_app(

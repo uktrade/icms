@@ -6,8 +6,10 @@ from django.conf import settings
 from django.template.loader import render_to_string
 
 from web.domains.case.types import ImpOrExp
+from web.flow.models import ProcessTypes
 from web.types import AuthenticatedHttpRequest
 
+from . import utils
 from .types import DocumentTypes
 
 
@@ -26,6 +28,7 @@ class PdfGenerator:
 
         return pdf_file
 
+    # TODO: Remove this when all the pdfs have been created
     def get_document_html(self) -> str:
         return render_to_string(
             request=self.request,
@@ -42,6 +45,10 @@ class PdfGenerator:
             return "web/domains/case/import/manage/preview-cover-letter.html"
 
         if self.doc_type == DocumentTypes.LICENCE_PREVIEW:
+            if self.application.process_type == ProcessTypes.FA_OIL:
+                return "pdf/import/fa-oil-licence.html"
+
+            # Default
             return "web/domains/case/import/manage/preview-licence.html"
 
         raise ValueError(f"Unsupported document type: {self.doc_type}")
@@ -49,13 +56,15 @@ class PdfGenerator:
     def get_document_context(self) -> dict[str, Any]:
         """Return the document context"""
 
-        common_context: dict[str, Any] = {}
-        extra: dict[str, Any] = {}
+        common_context: dict[str, Any] = {
+            "process": self.application,  # TODO: Remove when default has been deleted
+            "page_title": "Licence Preview",
+            "preview_licence": self.doc_type == DocumentTypes.LICENCE_PREVIEW,
+        }
 
         # This will be extended to return the correct context for a given process & doc type
         if self.doc_type == DocumentTypes.COVER_LETTER:
             extra = {
-                "process": self.application,
                 "page_title": "Cover Letter Preview",
                 # TODO: licence_issue_date is a property and should probably be application.licence_start_date
                 "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
@@ -63,11 +72,16 @@ class PdfGenerator:
             }
 
         elif self.doc_type == DocumentTypes.LICENCE_PREVIEW:
-            extra = {
-                "process": self.application,
-                "page_title": "Licence Preview",
-                # TODO: licence_issue_date is a property and should probably be application.licence_start_date
-                "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
-            }
+            if self.application.process_type == ProcessTypes.FA_OIL:
+                extra = utils.get_fa_oil_licence_context(self.application, self.doc_type)
+
+            else:
+                extra = {
+                    "page_title": "Licence Preview",
+                    # TODO: licence_issue_date is a property and should probably be application.licence_start_date
+                    "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
+                }
+        else:
+            raise ValueError(f"Unsupported document type: {self.doc_type}")
 
         return common_context | extra
