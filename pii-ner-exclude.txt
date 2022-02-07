@@ -1001,3 +1001,20 @@ Application Authorisation
 Acknowledge Notification
 "Load the expected current task
 Cover Letter Preview
+UID=$(shell
+@awk
+\nUsage:\n  make \033[36m
+substr($$0
+unset UID && .venv/bin
+unset UID && \
+ICMS_ALLOWED_HOSTS="unset" && \
+docker_flake8
+SQL
+python manage.py npm &&
+shell
+##
+@unset UID && \
+PGPASSWORD
+--rm
+release_patch
+test_agent_export_user

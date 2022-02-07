@@ -1,9 +1,47 @@
-from django.db import migrations
+from web.models import CountryGroup, ExportApplicationType, ImportApplicationType
 
 
-def add_import_data(apps, schema_editor):
-    ImportApplicationType = apps.get_model("web", "ImportApplicationType")
+def add_export_application_type_data():
+    cfs_cg = CountryGroup.objects.get(name="Certificate of Free Sale Countries")
 
+    cfg_cg_for_com = CountryGroup.objects.get(
+        name="Certificate of Free Sale Country of Manufacture Countries"
+    )
+
+    com_cg = CountryGroup.objects.get(name="Certificate of Manufacture Countries")
+
+    gmp_cg = CountryGroup.objects.get(name="Goods Manufacturing Practice Countries")
+
+    ExportApplicationType.objects.create(
+        type_code="CFS",
+        type="Certificate of Free Sale",
+        allow_multiple_products=True,
+        generate_cover_letter=False,
+        allow_hse_authorization=False,
+        country_group=cfs_cg,
+        country_group_for_manufacture=cfg_cg_for_com,
+    )
+
+    ExportApplicationType.objects.create(
+        type_code="COM",
+        type="Certificate of Manufacture",
+        allow_multiple_products=False,
+        generate_cover_letter=False,
+        allow_hse_authorization=False,
+        country_group=com_cg,
+    )
+
+    ExportApplicationType.objects.create(
+        type_code="GMP",
+        type="Certificate of Good Manufacturing Practice",
+        allow_multiple_products=False,
+        generate_cover_letter=False,
+        allow_hse_authorization=False,
+        country_group=gmp_cg,
+    )
+
+
+def add_import_application_type_data():
     ImportApplicationType.objects.create(
         is_active=True,
         type="FA",
@@ -312,14 +350,3 @@ def add_import_data(apps, schema_editor):
         case_checklist_flag=True,
         importer_printable=False,
     )
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ("web", "0006_add_exportapplicationtype_data"),
-    ]
-
-    operations = [
-        migrations.RunPython(add_import_data),
-    ]
