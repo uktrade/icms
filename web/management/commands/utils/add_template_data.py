@@ -2,89 +2,89 @@ from datetime import datetime
 
 import pytz
 from django.conf import settings
-from django.db import migrations
+
+from web.models import CFSScheduleParagraph, CountryTranslationSet, Template
 
 
-def add_cfs_schedule_data(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
-    Para = apps.get_model("web", "CFSScheduleParagraph")
-
+def add_cfs_schedule_data():
     t = Template.objects.create(
         template_name="CFS Schedule template",
         template_type="CFS_SCHEDULE",
         application_domain="CA",
     )
 
-    Para.objects.bulk_create(
+    CFSScheduleParagraph.objects.bulk_create(
         [
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=1,
                 name="SCHEDULE_HEADER",
                 content="Schedule to Certificate of Free Sale",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=2,
                 name="SCHEDULE_INTRODUCTION",
                 content="[[EXPORTER_NAME]], of [[EXPORTER_ADDRESS_FLAT]] has made the following legal declaration in relation to the products listed in this schedule:",
             ),
-            Para(template=t, order=3, name="IS_MANUFACTURER", content="I am the manufacturer."),
-            Para(
+            CFSScheduleParagraph(
+                template=t, order=3, name="IS_MANUFACTURER", content="I am the manufacturer."
+            ),
+            CFSScheduleParagraph(
                 template=t,
                 order=4,
                 name="IS_NOT_MANUFACTURER",
                 content="I am not the manufacturer.",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=5,
                 name="EU_COSMETICS_RESPONSIBLE_PERSON",
                 content="I am the responsible person as defined by the EU Cosmetics Regulation 1223/2009 and I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in the EU Cosmetics Regulation 1223/2009",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=6,
                 name="LEGISLATION_STATEMENT",
                 content="I certify that these products meet the safety requirements set out under UK and EU legislation, specifically:",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=7,
                 name="ELIGIBILITY_ON_SALE",
                 content="These products are currently sold on the EU market.",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=8,
                 name="ELIGIBILITY_MAY_BE_SOLD",
                 content="These products meet the product safety requirements to be sold on the EU market.",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=9,
                 name="GOOD_MANUFACTURING_PRACTICE",
                 content="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK and EU law",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=10,
                 name="COUNTRY_OF_MAN_STATEMENT",
                 content="The products were manufactured in [[COUNTRY_OF_MANUFACTURE]]",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=11,
                 name="COUNTRY_OF_MAN_STATEMENT_WITH_NAME",
                 content="The products were manufactured in [[COUNTRY_OF_MANUFACTURE]] by [[MANUFACTURED_AT_NAME]]",
             ),
-            Para(
+            CFSScheduleParagraph(
                 template=t,
                 order=12,
                 name="COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS",
                 content="The products were manufactured in [[COUNTRY_OF_MANUFACTURE]] by [[MANUFACTURED_AT_NAME]] at [[MANUFACTURED_AT_ADDRESS_FLAT]]",
             ),
-            Para(template=t, order=13, name="PRODUCTS", content="Products"),
+            CFSScheduleParagraph(template=t, order=13, name="PRODUCTS", content="Products"),
         ]
     )
 
@@ -92,13 +92,11 @@ def add_cfs_schedule_data(apps, schema_editor):
 DATETIME_FORMAT = "%d-%b-%Y %H:%M:%S"
 
 
-def remove_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def remove_templates():
     Template.objects.all().delete()
 
 
-def add_cfs_declaration_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def add_cfs_declaration_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("01-MAY-2015 16:23:30", DATETIME_FORMAT), is_dst=None
@@ -146,9 +144,7 @@ def add_cfs_declaration_templates(apps, schema_editor):
     )
 
 
-def add_schedule_translation_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
-    CountryTranslationSet = apps.get_model("web", "CountryTranslationSet")
+def add_schedule_translation_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("13-FEB-2019 18:56:17", DATETIME_FORMAT), is_dst=None
@@ -162,8 +158,7 @@ def add_schedule_translation_templates(apps, schema_editor):
     )
 
 
-def add_declaration_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def add_declaration_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("13-APR-2018 16:40:06", DATETIME_FORMAT), is_dst=None
@@ -240,8 +235,7 @@ I, the undersigned, do hereby solemnly verify contents of my above affidavit are
     )
 
 
-def add_endorsement_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def add_endorsement_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("22-FEB-2019 13:04:04", DATETIME_FORMAT), is_dst=None
@@ -728,8 +722,7 @@ EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EE
     )
 
 
-def add_email_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def add_email_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("22-FEB-2019 12:50:10", DATETIME_FORMAT), is_dst=None
@@ -1066,8 +1059,7 @@ Yours sincerely,
     )
 
 
-def add_letter_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
+def add_letter_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("17-DEC-2013 17:10:00", DATETIME_FORMAT), is_dst=None
@@ -1180,9 +1172,7 @@ def add_letter_templates(apps, schema_editor):
     )
 
 
-def add_letter_fragment_templates(apps, schema_editor):
-    Template = apps.get_model("web", "Template")
-
+def add_letter_fragment_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("18-JUL-2019 18:50:23", DATETIME_FORMAT), is_dst=None
@@ -1203,21 +1193,3 @@ def add_letter_fragment_templates(apps, schema_editor):
         template_type="LETTER_FRAGMENT",
         application_domain="IMA",
     )
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ("web", "0004_add_country_translation_data"),
-    ]
-
-    operations = [
-        migrations.RunPython(add_cfs_schedule_data),
-        migrations.RunPython(add_cfs_declaration_templates),
-        migrations.RunPython(add_schedule_translation_templates),
-        migrations.RunPython(add_declaration_templates),
-        migrations.RunPython(add_endorsement_templates),
-        migrations.RunPython(add_email_templates),
-        migrations.RunPython(add_letter_templates),
-        migrations.RunPython(add_letter_fragment_templates),
-    ]

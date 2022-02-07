@@ -10,6 +10,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.management.commands.utils.load_data import load_app_test_data
 from web.models import ImportApplicationType
 
 
@@ -27,6 +28,8 @@ class Command(BaseCommand):
             return
 
         self.stdout.write("Adding test data for unit tests.")
+
+        load_app_test_data()
 
         # Access requests
         access_user = self.create_access_user("test_access_user")

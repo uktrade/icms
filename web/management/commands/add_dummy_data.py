@@ -12,6 +12,7 @@ from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.management.commands.utils.load_data import load_app_test_data
 from web.models import ImportApplicationType
 
 
@@ -31,6 +32,8 @@ class Command(BaseCommand):
             raise CommandError(
                 "Can only add dummy data in 'staging', 'dev' and 'local' environments!"
             )
+
+        load_app_test_data()
 
         # enable disabled application types so we can test/develop them
         ImportApplicationType.objects.filter(

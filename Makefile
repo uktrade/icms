@@ -72,7 +72,6 @@ check-staging-with-deploy: ## run Django check for staging environment settings 
 	export DATABASE_URL="unset" && \
 	docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings.staging
 
-COMMAND="help"
 manage: ## execute manage.py
 	unset UID && \
 	docker-compose run --rm web python ./manage.py ${COMMAND}

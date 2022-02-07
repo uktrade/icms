@@ -1,15 +1,11 @@
-import datetime
 from dataclasses import dataclass
 from datetime import date
 from itertools import islice
-from typing import TYPE_CHECKING, Iterable, Type
+from typing import Iterable, Type
 
 from django.utils import timezone
 
-if TYPE_CHECKING:
-    from web.domains.case._import.models import ImportApplicationType
-    from web.domains.commodity.models import CommodityGroup, Usage
-    from web.domains.country.models import Country
+from web.models import CommodityGroup, Country, ImportApplicationType, Usage
 
 
 @dataclass
@@ -298,3 +294,13 @@ class CommodityUsageDataLoader:
                     commodity_group_id=group_pk,
                     start_date=now.date(),
                 )
+
+
+def add_usage_data():
+    loader = CommodityUsageDataLoader(
+        usage=Usage,
+        import_application_type=ImportApplicationType,
+        country=Country,
+        commodity_group=CommodityGroup,
+    )
+    loader.create_usage_records()
