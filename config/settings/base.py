@@ -31,6 +31,7 @@ APP_ENV = env.str("APP_ENV", default="notset")
 
 INSTALLED_APPS = [
     "web",
+    "data_migration",
     "captcha",
     "compressor",
     "phonenumber_field",

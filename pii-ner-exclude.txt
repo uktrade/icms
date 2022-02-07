@@ -1018,3 +1018,16 @@ PGPASSWORD
 --rm
 release_patch
 test_agent_export_user
+Commodity Data
+LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
+V1
+XMLTABLE('/
+PATH
+VARCHAR2
+country_group_id
+xcgd
+validity_end_date
+QueryModel
+Import the V1
+Importing Reference Data
+NULL
