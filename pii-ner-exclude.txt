@@ -1048,3 +1048,19 @@ Certificate Reference Value
 GB1234567890
 Collection of Case Urls
 Revisit this - See
+Data Export
+skip_ia
+Import Application Data Imported
+paper_licence_flag
+category_flag
+quantity_unlimited_flag
+units_list_csv unit_list_csv
+multiple_commodities_flag
+coo_country_group_id origin_country_group_id
+xcgu.end_date
+impmgr.import_application_types
+ON
+master_country_group
+ON xcg.country_group_detail_id
+Data Import
+consignment_country_group_id

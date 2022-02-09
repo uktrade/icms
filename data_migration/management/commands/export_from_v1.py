@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
-from data_migration.queries import ref_query_model
+from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL
 
 
 class Command(BaseCommand):
@@ -20,6 +20,16 @@ class Command(BaseCommand):
             help="Number of results per query batch",
             default=1000,
             type=int,
+        )
+        parser.add_argument(
+            "--skip_ref",
+            help="Skip reference data export",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--skip_ia",
+            help="Skip import application data export",
+            action="store_true",
         )
 
     def handle(self, *args, **options):
@@ -36,7 +46,10 @@ class Command(BaseCommand):
 
         with cx_Oracle.connect(**connection_config) as connection:
             cursor = connection.cursor()
-            self._export_reference_data(cursor, batchsize)
+
+            self._export_data("reference", cursor, batchsize, options["skip_ref"])
+            self._export_data("import_application", cursor, batchsize, options["skip_ia"])
+
             cursor.close()
 
     def _format_data(self, column: str, data: Any) -> tuple[str, Any]:
@@ -50,10 +63,21 @@ class Command(BaseCommand):
     def _format_row(self, columns: list[str], row: list[Any]) -> dict[str, Any]:
         return dict(self._format_data(columns[i], data) for i, data in enumerate(row))
 
-    def _export_reference_data(self, cursor: cx_Oracle.Cursor, batchsize: int) -> None:
-        self.stdout.write("Exporting Reference Data...")
+    def _export_data(
+        self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, batchsize: int, skip: bool
+    ) -> None:
+        query_models = DATA_TYPE_QUERY_MODEL[data_type]
 
-        for query_model in ref_query_model:
+        # Form a more human readible name "foo_bar" -> "Foo Bar"
+        name = " ".join(dt.capitalize() for dt in data_type.split("_"))
+
+        if skip:
+            self.stdout.write(f"Skipping {name} Data Export")
+            return
+
+        self.stdout.write(f"Exporting {name} Data...")
+
+        for query_model in query_models:
             self.stdout.write(f"Exporting to {query_model.model.__name__} model")
             cursor.execute(query_model.query)
             columns = [col[0].lower() for col in cursor.description]
@@ -67,4 +91,4 @@ class Command(BaseCommand):
                     [query_model.model(**self._format_row(columns, row)) for row in rows]
                 )
 
-        self.stdout.write("Reference Data Export Complete!")
+        self.stdout.write(f"{name} Data Export Complete!")

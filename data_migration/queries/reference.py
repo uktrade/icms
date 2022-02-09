@@ -15,14 +15,17 @@ country = """
 
 
 country_group = """
-  SELECT country_group_detail_id id, group_name name, group_comments comments
+  SELECT country_group_detail_id id, country_group_id, group_name name, group_comments comments
   FROM bpmmgr.xview_country_groups xcg
+  WHERE group_status = 'ACTIVE'
 """
 
 
 country_group_country = """
-  SELECT country_group_detail_id countrygroup_id, country_id
+  SELECT xcgc.country_group_detail_id countrygroup_id, xcgc.country_id
   FROM bpmmgr.xview_country_group_countries xcgc
+  INNER JOIN bpmmgr.xview_country_groups xcg ON xcg.country_group_detail_id = xcgc.country_group_detail_id
+  WHERE xcg.group_status = 'ACTIVE'
 """
 
 

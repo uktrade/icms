@@ -1,8 +1,6 @@
-from typing import Any
-
 from django.db import models
 
-from .base import MigrationBase
+from data_migration.models.base import MigrationBase
 
 # Country Data
 
@@ -14,18 +12,15 @@ class Country(MigrationBase):
     commission_code = models.CharField(max_length=20, blank=False, null=False)
     hmrc_code = models.CharField(max_length=20, blank=False, null=False)
 
-    def excludes(self) -> list[str]:
-        return super().excludes() + ["status"]
-
-    def data_export(self) -> dict[str, Any]:
-        data = super().data_export()
-        data["is_active"] = self.status.lower() == "active"
-        return data
-
 
 class CountryGroup(MigrationBase):
+    country_group_id = models.CharField(max_length=15, unique=True)
     name = models.CharField(max_length=4000, blank=False, null=False, unique=True)
     comments = models.CharField(max_length=4000, blank=True, null=True)
+
+    @staticmethod
+    def get_excludes():
+        return ["country_group_id"]
 
 
 class CountryGroupCountry(MigrationBase):
@@ -36,14 +31,6 @@ class CountryGroupCountry(MigrationBase):
 class CountryTranslationSet(MigrationBase):
     name = models.CharField(max_length=100, blank=False, null=False)
     status = models.CharField(max_length=10, blank=False, null=False)
-
-    def excludes(self) -> list[str]:
-        return super().excludes() + ["status"]
-
-    def data_export(self) -> dict[str, Any]:
-        data = super().data_export()
-        data["is_active"] = self.status.lower() == "active"
-        return data
 
 
 class CountryTranslation(MigrationBase):
@@ -80,20 +67,15 @@ class Commodity(MigrationBase):
     start_datetime = models.DateTimeField(null=True)
     end_datetime = models.DateTimeField(null=True)
 
-    def excludes(self) -> list[str]:
-        return super().excludes() + ["status"]
-
-    def data_export(self) -> dict[str, Any]:
-        data = super().data_export()
-        data["is_active"] = self.status.lower() == "active"
-        data["commodity_type_id"] = self.commodity_type.pk
-        return data
+    @staticmethod
+    def get_includes() -> list[str]:
+        return ["commodity_type__id"]
 
 
 class CommodityGroup(MigrationBase):
     status = models.CharField(max_length=10, blank=False, null=False)
     group_type = models.CharField(max_length=20)
-    group_code = models.CharField(max_length=25)
+    group_code = models.CharField(max_length=25, unique=True)
     group_name = models.CharField(max_length=100, blank=True, null=True)
     group_description = models.CharField(max_length=4000, blank=True, null=True)
     commodity_type = models.ForeignKey(
@@ -103,27 +85,11 @@ class CommodityGroup(MigrationBase):
     start_datetime = models.DateTimeField(null=True)
     end_datetime = models.DateTimeField(null=True)
 
-    def excludes(self) -> list[str]:
-        return super().excludes() + ["status"]
-
-    def data_export(self) -> dict[str, Any]:
-        data = super().data_export()
-        data["is_active"] = self.status.lower() == "active"
-        data["commodity_type_id"] = self.commodity_type.pk
-        data["unit_id"] = self.unit and self.unit.pk
-        return data
+    @staticmethod
+    def get_includes() -> list[str]:
+        return ["commodity_type__id", "unit__id"]
 
 
 class CommodityGroupCommodity(MigrationBase):
     commodity = models.ForeignKey(Commodity, on_delete=models.CASCADE)
     commoditygroup = models.ForeignKey(CommodityGroup, on_delete=models.CASCADE)
-
-
-# TODO: ICMSLST-1422 Populate usage data
-class Usage(MigrationBase):
-    application_type_id = models.IntegerField()
-    country_id = models.IntegerField()
-    commodity_group_id = models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField(null=True)
-    maximum_allocation = models.IntegerField(null=True)
