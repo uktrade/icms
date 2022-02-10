@@ -1,5 +1,7 @@
 from django.urls import include, path
 
+from web.utils.pdf.types import DocumentTypes
+
 from .views import (
     views_email,
     views_fir,
@@ -265,11 +267,36 @@ email_urls = [
 ]
 
 pdf_urls = [
-    path("preview-licence/", views_pdf.PreviewLicenceView.as_view(), name="preview-licence"),
     path(
-        "preview-cover-letter/",
-        views_pdf.PreviewCoverLetterView.as_view(),
-        name="preview-cover-letter",
+        "licence/",
+        include(
+            [
+                path(
+                    "preview/",
+                    views_pdf.PreviewLicenceView.as_view(),
+                    name="licence-preview",
+                    kwargs={"document_type": DocumentTypes.LICENCE_PREVIEW},
+                ),
+                path(
+                    "pre-sign/",
+                    views_pdf.PreviewLicenceView.as_view(),
+                    name="licence-pre-sign",
+                    kwargs={"document_type": DocumentTypes.LICENCE_PRE_SIGN},
+                ),
+            ]
+        ),
+    ),
+    path(
+        "cover-letter/",
+        include(
+            [
+                path(
+                    "preview/",
+                    views_pdf.PreviewCoverLetterView.as_view(),
+                    name="preview-cover-letter",
+                ),
+            ]
+        ),
     ),
 ]
 

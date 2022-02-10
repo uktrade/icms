@@ -18,7 +18,7 @@
 
     {% if electronic_licence_flag %}
       <a
-        href="{{ icms_url('case:preview-licence', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
+        href="{{ icms_url('case:licence-preview', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
         target="blank"
         class="button">
         Preview Licence

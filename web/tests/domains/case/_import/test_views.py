@@ -74,13 +74,13 @@ def test_preview_licence():
     client.login(username=ilb_admin.username, password="test")
 
     url = reverse(
-        "case:preview-licence", kwargs={"application_pk": process.pk, "case_type": "import"}
+        "case:licence-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
     response = client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Licence.pdf"
+    assert response["Content-Disposition"] == "filename=Licence-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")

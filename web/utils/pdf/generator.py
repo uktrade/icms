@@ -46,7 +46,14 @@ class PdfGenerator:
 
         if self.doc_type == DocumentTypes.LICENCE_PREVIEW:
             if self.application.process_type == ProcessTypes.FA_OIL:
-                return "pdf/import/fa-oil-licence.html"
+                return "pdf/import/fa-oil-licence-preview.html"
+
+            # Default
+            return "web/domains/case/import/manage/preview-licence.html"
+
+        if self.doc_type == DocumentTypes.LICENCE_PRE_SIGN:
+            if self.application.process_type == ProcessTypes.FA_OIL:
+                return "pdf/import/fa-oil-licence-pre-sign.html"
 
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
@@ -71,7 +78,7 @@ class PdfGenerator:
                 "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
             }
 
-        elif self.doc_type == DocumentTypes.LICENCE_PREVIEW:
+        elif self.doc_type in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 extra = utils.get_fa_oil_licence_context(self.application, self.doc_type)
 
