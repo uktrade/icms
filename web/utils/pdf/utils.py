@@ -18,7 +18,7 @@ def get_fa_oil_licence_context(
         "goods_description": application.goods_description(),
         "licence_start_date": _get_licence_start_date(application),
         "licence_end_date": _get_licence_end_date(application),
-        "licence_number": "[[Licence Number]]",
+        "licence_number": _get_licence_number(application, doc_type),
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
         "importer_postcode": office.postcode,
@@ -42,6 +42,13 @@ def _get_licence_end_date(application: ImportApplication):
         return application.licence_end_date.strftime("%d %B %Y")
 
     return "Licence End Date not set"
+
+
+def _get_licence_number(application: ImportApplication, doc_type: DocumentTypes) -> str:
+    if doc_type == DocumentTypes.LICENCE_PRE_SIGN:
+        return "ICMSLST-1224: Real Licence Number"
+
+    return "[[Licence Number]]"
 
 
 def _get_importer_eori_numbers(application) -> list[str]:

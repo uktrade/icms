@@ -82,10 +82,12 @@
       <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
       <div class="flex-row" id="signature-and-date-issued">
         <div id="signature">
-          <p class="content bold">Signed by Import Licensing Branch</p>
-          <img alt="DIT Signature" src="{{ static('web/img/dit-dummy-signature.png') }}"/>
-          <p class="content bold">On behalf of the Secretary of State</p>
-          <p class="content bold">Department for International Trade</p>
+          {% block signature %}
+            <p class="content bold">Signed by Import Licensing Branch</p>
+            <img alt="DIT Signature" src="{{ static('web/img/dit-dummy-signature.png') }}"/>
+            <p class="content bold">On behalf of the Secretary of State</p>
+            <p class="content bold">Department for International Trade</p>
+          {% endblock %}
         </div>
         <div>
           <p class="content text-right">Date Issued: {{ licence_start_date }}</p>

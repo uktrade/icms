@@ -155,10 +155,16 @@ class CaseURLS:
         return reverse("case:authorise-documents", kwargs=kwargs)
 
     @staticmethod
-    def preview_licence(application_pk: int, case_type="import") -> str:
+    def licence_preview(application_pk: int, case_type="import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
-        return reverse("case:preview-licence", kwargs=kwargs)
+        return reverse("case:licence-preview", kwargs=kwargs)
+
+    @staticmethod
+    def licence_pre_sign(application_pk: int, case_type="import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:licence-pre-sign", kwargs=kwargs)
 
     @staticmethod
     def preview_cover_letter(application_pk: int, case_type="import") -> str:

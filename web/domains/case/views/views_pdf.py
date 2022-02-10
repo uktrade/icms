@@ -11,7 +11,7 @@ from web.utils.pdf import DocumentTypes, PdfGenerator
 from .mixins import ApplicationTaskMixin
 
 
-class PreviewLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View):
+class GenerateLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View):
     # ApplicationTaskMixin Config
     current_status = [
         ImpExpStatus.SUBMITTED,
@@ -35,11 +35,16 @@ class PreviewLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginReq
         return True
 
 
-class PreviewLicenceView(PreviewLicenceBase):
+class PreviewLicenceView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        document_type = self.kwargs["document_type"]
+
+        if document_type not in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
+            raise ValueError(f"Unable to preview document_type: {document_type}")
+
         pdf_gen = PdfGenerator(
             application=self.application,
-            doc_type=DocumentTypes.LICENCE_PREVIEW,
+            doc_type=document_type,
             request=self.request,
         )
 
@@ -49,10 +54,10 @@ class PreviewLicenceView(PreviewLicenceBase):
             html = pdf_gen.get_document_html()
             return HttpResponse(html)
 
-        return return_pdf(pdf_gen, "Licence.pdf")
+        return return_pdf(pdf_gen, "Licence-Preview.pdf")
 
 
-class PreviewCoverLetterView(PreviewLicenceBase):
+class PreviewCoverLetterView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         pdf_gen = PdfGenerator(
             application=self.application, doc_type=DocumentTypes.COVER_LETTER, request=self.request

@@ -3,13 +3,13 @@ import datetime
 from web.utils.pdf import types, utils
 
 
-def test_get_fa_oil_preview_context(oil_app, oil_expected_preview_context):
+def test_fa_oil_get_preview_context(oil_app, oil_expected_preview_context):
     actual_context = utils.get_fa_oil_licence_context(oil_app, types.DocumentTypes.LICENCE_PREVIEW)
 
     assert oil_expected_preview_context == actual_context
 
 
-def test_setting_licence_dates(oil_app, oil_expected_preview_context):
+def test_fa_oil_setting_licence_dates(oil_app, oil_expected_preview_context):
     oil_app.licence_start_date = datetime.date(2022, 1, 1)
     oil_app.licence_end_date = datetime.date(2025, 2, 21)
 
@@ -20,7 +20,7 @@ def test_setting_licence_dates(oil_app, oil_expected_preview_context):
     assert oil_expected_preview_context == actual_context
 
 
-def test_office_eori_override_number(oil_app, oil_expected_preview_context):
+def test_fa_oil_office_eori_override_number(oil_app, oil_expected_preview_context):
     oil_app.importer_office.eori_number = "GB_OVERRIDE"
 
     oil_expected_preview_context["eori_numbers"] = ["GB_OVERRIDE"]
@@ -29,7 +29,7 @@ def test_office_eori_override_number(oil_app, oil_expected_preview_context):
     assert oil_expected_preview_context == actual_context
 
 
-def test_ni_office_postcode_returns_two_eori_numbers(oil_app, oil_expected_preview_context):
+def test_fa_oil_ni_office_postcode_returns_two_eori_numbers(oil_app, oil_expected_preview_context):
     oil_app.importer_office.postcode = "BT125QB"  # /PS-IGNORE
 
     oil_expected_preview_context["importer_postcode"] = "BT125QB"  # /PS-IGNORE
@@ -39,7 +39,7 @@ def test_ni_office_postcode_returns_two_eori_numbers(oil_app, oil_expected_previ
     assert oil_expected_preview_context == actual_context
 
 
-def test_ni_office_postcode_returns_two_override_eori_numbers(
+def test_fa_oil_ni_office_postcode_returns_two_override_eori_numbers(
     oil_app, oil_expected_preview_context
 ):
     oil_app.importer_office.postcode = "BT125QB"  # /PS-IGNORE
@@ -49,4 +49,11 @@ def test_ni_office_postcode_returns_two_override_eori_numbers(
     oil_expected_preview_context["eori_numbers"] = ["GB_OVERRIDE", "XI_OVERRIDE"]
 
     actual_context = utils.get_fa_oil_licence_context(oil_app, types.DocumentTypes.LICENCE_PREVIEW)
+    assert oil_expected_preview_context == actual_context
+
+
+def test_fa_oil_get_pre_sign_context(oil_app, oil_expected_preview_context):
+    oil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+
+    actual_context = utils.get_fa_oil_licence_context(oil_app, types.DocumentTypes.LICENCE_PRE_SIGN)
     assert oil_expected_preview_context == actual_context

@@ -15,7 +15,12 @@ from web.utils.pdf import PdfGenerator, types
         (
             OpenIndividualLicenceApplication,
             types.DocumentTypes.LICENCE_PREVIEW,
-            "pdf/import/fa-oil-licence.html",
+            "pdf/import/fa-oil-licence-preview.html",
+        ),
+        (
+            OpenIndividualLicenceApplication,
+            types.DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/fa-oil-licence-pre-sign.html",
         ),
         # All other licence types use the default for LICENCE_PREVIEW
         (
@@ -59,6 +64,20 @@ def test_get_fa_oil_preview_licence_context(oil_app, oil_expected_preview_contex
     oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["process"] = oil_app
+
+    actual_context = generator.get_document_context()
+
+    assert oil_expected_preview_context == actual_context
+
+
+def test_get_fa_oil_licence_pre_sign_context(oil_app, oil_expected_preview_context):
+    request = AuthenticatedHttpRequest()
+    generator = PdfGenerator(oil_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+
+    oil_expected_preview_context["page_title"] = "Licence Preview"
+    oil_expected_preview_context["preview_licence"] = False
+    oil_expected_preview_context["process"] = oil_app
+    oil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
 
     actual_context = generator.get_document_context()
 
