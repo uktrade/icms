@@ -1,0 +1,41 @@
+#quantity-section {
+    display: flex;
+    flex-direction: column;
+}
+
+#quantity-section > main {
+    flex: 4;
+}
+
+#quantity-section > footer {
+    flex: 1
+}
+
+#quantity-table {
+    width: 100%;
+    height: 100%;
+}
+
+#quantity-table tr:first-child {
+    height: 5%;
+}
+
+#quantity-table tr:nth-child(n+2) {
+    height: 9.5%;
+}
+
+#quantity-table td {
+    font-size: 12px;
+    width: 25%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+
+footer p,
+footer li {
+    font-size: 10px;
+}

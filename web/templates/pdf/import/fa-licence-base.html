@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="ICMS import licence">
+  <title>{{ page_title }}</title>
+  <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
+  <link href="{{ static("web/css/pdfs/fa-common-licence-style.css") }}" rel="stylesheet">
+  {% block css %} {% endblock css %}
+  {% if preview_licence %}
+    <link href="{{ static("web/css/pdfs/import-licence-preview-style.css") }}" rel="stylesheet">
+  {% endif %}
+</head>
+<body>
+<header>
+  {% if paper_licence_only %}
+    <h3>DIT IMPORT LICENCE</h3>
+    <p class="content">under Article 2, Import of Goods (Control) Order 1954</p>
+  {% else %}
+    <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.</p>
+  {% endif %}
+
+  <div class="flex-row" id="reference-and-licence">
+    <div></div>
+    <div class="bordered">
+      <p class="content">Applicant's own reference</p>
+      {% if applicant_reference %}
+        <p class="content">{{ applicant_reference }}</p>
+      {% elif preview_licence %}
+        <p class="content" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <p class="content">Quote both references in all correspondence</p>
+    </div>
+
+    <div class="bordered">
+      <p class="content">Licence No.</p>
+      <p class="content" id="licence-number">{{ licence_number }}</p>
+    </div>
+  </div>
+
+  <p>Name of importer and address for licence.</p>
+  <div class="flex-row" id="address-and-logo">
+    <div>
+      <div class="bordered">
+        <p class="content">{{ importer_name }}</p>
+        {% for line in importer_address %}
+          <p class="content">{{ line }}</p>
+        {% endfor %}
+        <p class="content">{{ importer_postcode }}</p>
+        {% for number in eori_numbers %}
+          <p class="content text-right">{{ number }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div>
+      <img alt="DIT Logo" src="{{ static('web/img/dit_logo.png') }}"/>
+    </div>
+  </div>
+
+</header>
+{# TODO: ICMSLST-1430 Revisit how sections are grouped #}
+<main>
+  <p class="content">is hereby authorised by the Secretary of State to import into the United Kingdom in accordance with
+    the conditions set out below</p>
+  <div class="flex-row" id="commodities">
+    <div class="bordered">
+      <p class="content">Commodity Code<br/>ex Chapter 93</p>
+    </div>
+    <div class="bordered">
+      <p class="content">Country from which consigned<br/>{{ consignment_country }}</p>
+    </div>
+    <div class="bordered">
+      <p class="content">Country of origin<br/>{{ origin_country }}</p>
+    </div>
+  </div>
+  <div class="flex-row">
+    <div class="bordered">
+      {% block goods_section %} {% endblock %}
+      <br/>
+      {% if endorsements %}
+        {% for endorsement in endorsements %}
+          {% for line in endorsement %}
+            <p class="content">{{ line }}</p>
+          {% endfor %}
+          <br/>
+        {% endfor %}
+      {% elif preview_licence %}
+        <p class="content" id="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
+      {% endif %}
+      {# TODO: ICMSLST-1430 Revisit how sections are grouped #}
+      <br/><br/><br/>
+      <br/><br/><br/>
+      <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
+      <div class="flex-row" id="signature-and-date-issued">
+        <div id="signature">
+          {% block signature %}
+            <p class="content">Signed by Import Licensing Branch</p>
+            <img alt="DIT Signature" src="{{ static('web/img/dit-dummy-signature.png') }}"/>
+            <p class="content">On behalf of the Secretary of State</p>
+            <p class="content">Department for International Trade</p>
+          {% endblock %}
+        </div>
+        <div>
+          <p class="content text-right">Date Issued: {{ licence_start_date }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  {% if paper_licence_only %}
+    <p class="content">ENQUIRIES TO IMPORT LICENSING BRANCH, DETAILS OVERLEAF.</p>
+  {% endif %}
+  <p class="content">
+    The issue of this licence does not provide any guarantee that any additional Government permit or approval which may
+    be necessary to effect importation will be granted.
+  </p>
+  <br/>
+  <p class="content">This licence</p>
+  <ul>
+    <li>is not transferrable and may be used only for importations by the holder named above.</li>
+    <li>may be revoked at any time without reason given.</li>
+    <li>may be altered only by the Department for International Trade.</li>
+  </ul>
+</footer>
+
+{% block extra_section %}
+
+{% endblock %}
+</body>
+</html>

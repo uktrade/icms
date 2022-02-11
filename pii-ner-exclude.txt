@@ -1064,3 +1064,13 @@ master_country_group
 ON xcg.country_group_detail_id
 Data Import
 consignment_country_group_id
+DETAILS
+DocumentTypes
+Split
+Article 2,
+Import of Goods (Control) Order
+Date</td
+rowspan="2">7.</td>
+H.M. Revenue
+Import Licensing Branch
+Department for International Trade
