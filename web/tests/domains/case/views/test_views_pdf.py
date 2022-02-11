@@ -3,9 +3,24 @@ from pytest_django.asserts import assertRedirects
 from web.tests.helpers import CaseURLS
 
 
-def test_preview_licence_view(fa_oil_app_submitted, icms_admin_client):
-    url = CaseURLS.licence_preview(fa_oil_app_submitted.pk)
+def test_fa_oil_preview_licence_view(fa_oil_app_submitted, icms_admin_client):
+    _test_licence_preview(fa_oil_app_submitted, icms_admin_client)
 
+
+def test_fa_dfl_preview_licence_view(fa_dfl_app_submitted, icms_admin_client):
+    _test_licence_preview(fa_dfl_app_submitted, icms_admin_client)
+
+
+def test_fa_oil_pre_sign_licence_view(fa_oil_app_submitted, icms_admin_client):
+    _test_licence_pre_sign(fa_oil_app_submitted, icms_admin_client)
+
+
+def test_fa_dfl_pre_sign_licence_view(fa_dfl_app_submitted, icms_admin_client):
+    _test_licence_pre_sign(fa_dfl_app_submitted, icms_admin_client)
+
+
+def _test_licence_preview(app, icms_admin_client):
+    url = CaseURLS.licence_preview(app.pk)
     response = icms_admin_client.get(url)
 
     assert response.status_code == 200
@@ -17,9 +32,8 @@ def test_preview_licence_view(fa_oil_app_submitted, icms_admin_client):
     assert pdf.startswith(b"%PDF-")
 
 
-def test_licence_pre_sign_view(fa_oil_app_submitted, icms_admin_client):
-    url = CaseURLS.licence_pre_sign(fa_oil_app_submitted.pk)
-
+def _test_licence_pre_sign(app, icms_admin_client):
+    url = CaseURLS.licence_pre_sign(app.pk)
     response = icms_admin_client.get(url)
 
     assert response.status_code == 200

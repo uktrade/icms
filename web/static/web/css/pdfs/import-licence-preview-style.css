@@ -1,7 +1,17 @@
-p, li {
+p, li, h3 {
     color: grey;
 }
 
 #licence-number {
     color: darkorange;
+}
+
+#additional-remarks,
+#applicant-reference {
+    color: darkgreen;
+}
+
+
+#quantity-table {
+    color: grey;
 }

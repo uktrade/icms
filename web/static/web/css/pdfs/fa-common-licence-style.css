@@ -1,0 +1,83 @@
+p, li {
+    font-size: 12px;
+}
+
+p.content,
+ul {
+    margin: 0;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* TODO: ICMSLST-1430 Fix double bordering */
+.bordered {
+    border: 1px solid #000;
+}
+
+.bold {
+    font-weight: bold
+}
+
+/* Default flex for each flex item (equal spacing) */
+.flex-row > div,
+.flex-column > div {
+    flex: 1;
+}
+
+/* Padding for all p elements */
+div > p.content {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* Padding for first child in each section */
+div > p.content:first-child {
+    padding-top: 5px;
+}
+
+/* Ensure spacing after initial line */
+#reference-and-licence {
+    margin-top: 2em;
+}
+
+/* Minimum height for reference and licence divs */
+#reference-and-licence > div {
+    min-height: 3em;
+}
+
+/* DIT logo */
+#address-and-logo div:last-child {
+    flex: 2
+}
+
+#commodities > div {
+    min-height: 3em;
+}
+
+
+main {
+    margin-top: 2em;
+}
+
+footer {
+    margin-top: 1em;
+}
+
+/* Add padding to the last container */
+#signature-and-date-issued {
+    padding-bottom: 2em;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+ul li {
+    list-style-type: '-';
+}

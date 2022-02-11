@@ -47,6 +47,8 @@ class PdfGenerator:
         if self.doc_type == DocumentTypes.LICENCE_PREVIEW:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 return "pdf/import/fa-oil-licence-preview.html"
+            if self.application.process_type == ProcessTypes.FA_DFL:
+                return "pdf/import/fa-dfl-licence-preview.html"
 
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
@@ -54,6 +56,9 @@ class PdfGenerator:
         if self.doc_type == DocumentTypes.LICENCE_PRE_SIGN:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 return "pdf/import/fa-oil-licence-pre-sign.html"
+
+            if self.application.process_type == ProcessTypes.FA_DFL:
+                return "pdf/import/fa-dfl-licence-pre-sign.html"
 
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
@@ -63,10 +68,12 @@ class PdfGenerator:
     def get_document_context(self) -> dict[str, Any]:
         """Return the document context"""
 
+        # TODO: Split this out when doing cover letters.
         common_context: dict[str, Any] = {
             "process": self.application,  # TODO: Remove when default has been deleted
             "page_title": "Licence Preview",
             "preview_licence": self.doc_type == DocumentTypes.LICENCE_PREVIEW,
+            "paper_licence_only": self.application.issue_paper_licence_only or False,
         }
 
         # This will be extended to return the correct context for a given process & doc type
@@ -81,6 +88,9 @@ class PdfGenerator:
         elif self.doc_type in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 extra = utils.get_fa_oil_licence_context(self.application, self.doc_type)
+
+            elif self.application.process_type == ProcessTypes.FA_DFL:
+                extra = utils.get_fa_dfl_licence_context(self.application, self.doc_type)
 
             else:
                 extra = {

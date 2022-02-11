@@ -1,5 +1,6 @@
 from typing import Any
 
+from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.models import ImportApplication, OpenIndividualLicenceApplication
 
 from .types import DocumentTypes
@@ -15,6 +16,8 @@ def get_fa_oil_licence_context(
     return {
         "applicant_reference": application.applicant_reference,
         "importer_name": importer.display_name,
+        "consignment_country": "Any Country",
+        "origin_country": "Any Country",
         "goods_description": application.goods_description(),
         "licence_start_date": _get_licence_start_date(application),
         "licence_end_date": _get_licence_end_date(application),
@@ -28,6 +31,39 @@ def get_fa_oil_licence_context(
             for content in application.endorsements.all().values_list("content", flat=True)
         ],
     }
+
+
+def get_fa_dfl_licence_context(
+    application: DFLApplication, doc_type: DocumentTypes
+) -> dict[str, Any]:
+    importer = application.importer
+    office = application.importer_office
+
+    return {
+        "applicant_reference": application.applicant_reference,
+        "importer_name": importer.display_name,
+        "consignment_country": application.consignment_country.name,
+        "origin_country": application.origin_country.name,
+        "goods": _get_fa_dfl_goods(application),
+        "licence_start_date": _get_licence_start_date(application),
+        "licence_end_date": _get_licence_end_date(application),
+        "licence_number": _get_licence_number(application, doc_type),
+        "eori_numbers": _get_importer_eori_numbers(application),
+        "importer_address": office.address.split("\n"),
+        "importer_postcode": office.postcode,
+        # TODO: ICMSLST-1428 Revisit this - See nl2br
+        "endorsements": [
+            content.split("\r\n")
+            for content in application.endorsements.all().values_list("content", flat=True)
+        ],
+    }
+
+
+def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
+    return [
+        g.goods_description
+        for g in application.goods_certificates.all().order_by("created_datetime")
+    ]
 
 
 def _get_licence_start_date(application: ImportApplication):

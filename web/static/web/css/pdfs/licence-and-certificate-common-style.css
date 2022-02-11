@@ -1,0 +1,20 @@
+@page {
+    size: A4;
+    margin: 0.25cm 1cm;
+}
+
+@media print {
+    footer {
+        page-break-after: always;
+    }
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}

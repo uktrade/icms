@@ -1,10 +1,12 @@
 import datetime
+from unittest.mock import patch
 
 import pytest
 from django.conf import settings
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_sil.models import SILApplication
 from web.types import AuthenticatedHttpRequest
 from web.utils.pdf import PdfGenerator, types
 
@@ -22,10 +24,25 @@ from web.utils.pdf import PdfGenerator, types
             types.DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-oil-licence-pre-sign.html",
         ),
-        # All other licence types use the default for LICENCE_PREVIEW
         (
             DFLApplication,
             types.DocumentTypes.LICENCE_PREVIEW,
+            "pdf/import/fa-dfl-licence-preview.html",
+        ),
+        (
+            DFLApplication,
+            types.DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/fa-dfl-licence-pre-sign.html",
+        ),
+        # All other licence types use the default for LICENCE_PREVIEW
+        (
+            SILApplication,
+            types.DocumentTypes.LICENCE_PREVIEW,
+            "web/domains/case/import/manage/preview-licence.html",
+        ),
+        (
+            SILApplication,
+            types.DocumentTypes.LICENCE_PRE_SIGN,
             "web/domains/case/import/manage/preview-licence.html",
         ),
         # All licence types use the default for COVER_LETTER currently
@@ -63,6 +80,7 @@ def test_get_fa_oil_preview_licence_context(oil_app, oil_expected_preview_contex
 
     oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
 
     actual_context = generator.get_document_context()
@@ -76,6 +94,7 @@ def test_get_fa_oil_licence_pre_sign_context(oil_app, oil_expected_preview_conte
 
     oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = False
+    oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
     oil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
 
@@ -84,10 +103,49 @@ def test_get_fa_oil_licence_pre_sign_context(oil_app, oil_expected_preview_conte
     assert oil_expected_preview_context == actual_context
 
 
+@patch("web.utils.pdf.utils._get_fa_dfl_goods")
+def test_get_fa_dfl_preview_licence_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
+
+    request = AuthenticatedHttpRequest()
+    generator = PdfGenerator(dfl_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+
+    dfl_expected_preview_context["page_title"] = "Licence Preview"
+    dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
+    dfl_expected_preview_context["preview_licence"] = True
+    dfl_expected_preview_context["paper_licence_only"] = False
+    dfl_expected_preview_context["process"] = dfl_app
+
+    actual_context = generator.get_document_context()
+    print(actual_context)
+
+    assert dfl_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_dfl_goods")
+def test_get_fa_dfl_licence_pre_sign_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
+
+    request = AuthenticatedHttpRequest()
+    generator = PdfGenerator(dfl_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+
+    dfl_expected_preview_context["page_title"] = "Licence Preview"
+    dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
+    dfl_expected_preview_context["preview_licence"] = False
+    dfl_expected_preview_context["paper_licence_only"] = False
+    dfl_expected_preview_context["process"] = dfl_app
+    dfl_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+
+    actual_context = generator.get_document_context()
+    print(actual_context)
+
+    assert dfl_expected_preview_context == actual_context
+
+
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_preview_licence_context():
-    app = DFLApplication(
-        process_type=DFLApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
+    app = SILApplication(
+        process_type=SILApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
 
     request = AuthenticatedHttpRequest()
@@ -97,6 +155,7 @@ def test_get_default_preview_licence_context():
         "process": app,
         "page_title": "Licence Preview",
         "preview_licence": True,
+        "paper_licence_only": False,
         "issue_date": "21 April 2022",
     }
 
@@ -117,6 +176,7 @@ def test_get_default_cover_letter_context():
         "process": app,
         "page_title": "Cover Letter Preview",
         "preview_licence": False,
+        "paper_licence_only": False,
         "issue_date": "21 April 2022",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }

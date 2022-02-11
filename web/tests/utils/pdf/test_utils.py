@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from web.utils.pdf import types, utils
 
@@ -57,3 +58,24 @@ def test_fa_oil_get_pre_sign_context(oil_app, oil_expected_preview_context):
 
     actual_context = utils.get_fa_oil_licence_context(oil_app, types.DocumentTypes.LICENCE_PRE_SIGN)
     assert oil_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_dfl_goods")
+def test_fa_dfl_get_preview_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
+
+    dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
+    actual_context = utils.get_fa_dfl_licence_context(dfl_app, types.DocumentTypes.LICENCE_PREVIEW)
+
+    assert dfl_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_dfl_goods")
+def test_fa_dfl_get_pre_sign_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
+
+    dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
+    dfl_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+
+    actual_context = utils.get_fa_dfl_licence_context(dfl_app, types.DocumentTypes.LICENCE_PRE_SIGN)
+    assert dfl_expected_preview_context == actual_context
