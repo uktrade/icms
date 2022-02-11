@@ -41,7 +41,7 @@ class Command(BaseCommand):
         source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
         m2m_list = DATA_TYPE_M2M[data_type]
 
-        # Form a more human readible name "foo_bar" -> "Foo Bar"
+        # Form a more human readable name "foo_bar" -> "Foo Bar"
         name = " ".join(dt.capitalize() for dt in data_type.split("_"))
 
         if skip:
