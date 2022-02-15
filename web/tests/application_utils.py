@@ -8,6 +8,7 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
@@ -170,6 +171,89 @@ def create_in_progress_fa_oil_app(
     return oil_app
 
 
+def create_in_progress_fa_sil_app(
+    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+) -> SILApplication:
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-fa-sil",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    # Save a valid set of data.
+    origin_country = Country.objects.filter(
+        country_groups__name="Firearms and Ammunition (SIL) COCs"
+    ).first()
+    consignment_country = Country.objects.filter(
+        country_groups__name="Firearms and Ammunition (SIL) COOs"
+    ).first()
+
+    form_data = {
+        "contact": importer_contact.pk,
+        "applicant_reference": "applicant_reference value",
+        "section1": True,
+        "section2": True,
+        "section5": True,
+        "section58_obsolete": True,
+        "section58_other": True,
+        "military_police": True,
+        "eu_single_market": True,
+        "manufactured": False,
+        "other_description": "other_description",
+        "origin_country": origin_country.pk,
+        "consignment_country": consignment_country.pk,
+        "commodity_code": "ex Chapter 93",
+        "know_bought_from": False,
+    }
+    save_app_data(
+        client=importer_client, view_name="import:fa-sil:edit", app_pk=app_pk, form_data=form_data
+    )
+
+    post_data = {
+        "reference": "Certificate Reference Value",
+        "certificate_type": "registered",
+        "constabulary": Constabulary.objects.first().pk,
+        "date_issued": datetime.date.today().strftime("%d-%b-%Y"),
+        "expiry_date": datetime.date.today().strftime("%d-%b-%Y"),
+    }
+
+    add_app_file(
+        client=importer_client,
+        view_name="import:fa:create-certificate",
+        app_pk=app_pk,
+        post_data=post_data,
+    )
+
+    sil_app = SILApplication.objects.get(pk=app_pk)
+
+    sil_app.goods_section1.create(manufacture=False, description="Section 1 goods", quantity=111)
+    sil_app.goods_section2.create(manufacture=False, description="Section 2 goods", quantity=222)
+    sil_app.goods_section5.create(
+        manufacture=False,
+        description="Section 5 goods",
+        quantity=333,
+        subsection="section 5 subsection",
+    )
+    sil_app.goods_section582_obsoletes.create(
+        manufacture=False,
+        description="Section 58 obsoletes goods",
+        quantity=444,
+        obsolete_calibre="Obsolete calibre value",
+    )
+    sil_app.goods_section582_others.create(
+        manufacture=False, description="Section 58 other goods", quantity=555
+    )
+
+    add_app_file(
+        client=importer_client,
+        view_name="import:fa-sil:add-section5-document",
+        app_pk=app_pk,
+        post_data={},
+    )
+
+    return sil_app
+
+
 def create_in_progress_com_app(
     exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
 ) -> CertificateOfManufactureApplication:
@@ -264,5 +348,8 @@ def submit_app(*, client: "Client", view_name: str, app_pk: int) -> None:
 
     form_data = {"confirmation": "I AGREE"}
     response = client.post(submit_url, form_data)
+
+    if response.status_code == 200:
+        print(response.context["errors"])
 
     assertRedirects(response, reverse("workbasket"), 302)

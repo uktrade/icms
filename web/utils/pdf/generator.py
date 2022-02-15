@@ -49,6 +49,8 @@ class PdfGenerator:
                 return "pdf/import/fa-oil-licence-preview.html"
             if self.application.process_type == ProcessTypes.FA_DFL:
                 return "pdf/import/fa-dfl-licence-preview.html"
+            if self.application.process_type == ProcessTypes.FA_SIL:
+                return "pdf/import/fa-sil-licence-preview.html"
 
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
@@ -59,6 +61,9 @@ class PdfGenerator:
 
             if self.application.process_type == ProcessTypes.FA_DFL:
                 return "pdf/import/fa-dfl-licence-pre-sign.html"
+
+            if self.application.process_type == ProcessTypes.FA_SIL:
+                return "pdf/import/fa-sil-licence-pre-sign.html"
 
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
@@ -91,6 +96,9 @@ class PdfGenerator:
 
             elif self.application.process_type == ProcessTypes.FA_DFL:
                 extra = utils.get_fa_dfl_licence_context(self.application, self.doc_type)
+
+            elif self.application.process_type == ProcessTypes.FA_SIL:
+                extra = utils.get_fa_sil_licence_context(self.application, self.doc_type)
 
             else:
                 extra = {

@@ -2,6 +2,7 @@ import pytest
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
@@ -44,6 +45,20 @@ def dfl_app(importer, importer_office):
 
 
 @pytest.fixture()
+def sil_app(importer, importer_office):
+    sil_app = SILApplication(
+        applicant_reference="Applicant Reference",
+        process_type=SILApplication.PROCESS_TYPE,
+        importer=importer,
+        importer_office=importer_office,
+        consignment_country=Country(name="Poland"),
+        origin_country=Country(name="Ireland"),
+    )
+
+    return sil_app
+
+
+@pytest.fixture()
 def oil_expected_preview_context():
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
 
@@ -76,6 +91,26 @@ def dfl_expected_preview_context():
         "importer_name": "Importer Name",
         "consignment_country": "Spain",
         "origin_country": "Italy",
+        "goods": [],
+        "licence_start_date": "Licence Start Date not set",
+        "licence_end_date": "Licence End Date not set",
+        "licence_number": "[[Licence Number]]",
+        "eori_numbers": ["GB123456789"],
+        "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
+        "importer_postcode": "S93bl",  # /PS-IGNORE
+        "endorsements": [],
+    }
+
+
+@pytest.fixture()
+def sil_expected_preview_context():
+    """Returns the minimum expected context values - tests then override the different keys in the tests."""
+
+    return {
+        "applicant_reference": "Applicant Reference",
+        "importer_name": "Importer Name",
+        "consignment_country": "Poland",
+        "origin_country": "Ireland",
         "goods": [],
         "licence_start_date": "Licence Start Date not set",
         "licence_end_date": "Licence End Date not set",

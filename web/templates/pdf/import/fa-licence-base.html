@@ -85,14 +85,20 @@
           {% for line in endorsement %}
             <p class="content">{{ line }}</p>
           {% endfor %}
-          <br/>
+          {% if not loop.last %}<br/>{% endif %}
         {% endfor %}
       {% elif preview_licence %}
         <p class="content" id="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
       {% endif %}
+
+      {# Extra fixed text that can appear after the endorsements #}
+      {% block post_endorsement_statement %}
       {# TODO: ICMSLST-1430 Revisit how sections are grouped #}
       <br/><br/><br/>
       <br/><br/><br/>
+      {% endblock %}
+      <br/>
+
       <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
       <div class="flex-row" id="signature-and-date-issued">
         <div id="signature">

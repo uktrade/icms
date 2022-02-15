@@ -1,0 +1,37 @@
+{% extends "pdf/import/fa-licence-base.html" %}
+
+{% block css %}
+  <link href="{{ static("web/css/pdfs/fa-paper-licence-quantity-table-style.css") }}" rel="stylesheet">
+{% endblock %}
+
+{% block goods_section %}
+  <p class="content">Description of goods</p>
+
+  {% for description, quantity in goods %}
+    <p class="content">{{ description }}</p>
+    <p class="content">
+      {{ quantity }} {% if quantity != "Unlimited" %} units {% endif %}
+    </p>
+    {% if not loop.last %}<br/>{% endif %}
+  {% endfor %}
+{% endblock %}
+
+
+{% block post_endorsement_statement %}
+  <p class="content">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.
+  This licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible).
+  If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code.
+  If the item is not marked as set out above you have 28 days from entry into the UK to comply with this requirement.
+  If the item is being imported for deactivation, you have three months to either comply or have the item deactivated.
+  Items must be marked using the Latin alphabet and the Arabic numeral system.
+  The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used.
+  For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver.
+  Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p>
+{% endblock %}
+
+
+{% block extra_section %}
+  {% if paper_licence_only %}
+      {% include 'pdf/import/fa-paper-licence-quantity-table.html' %}
+  {% endif %}
+{% endblock %}

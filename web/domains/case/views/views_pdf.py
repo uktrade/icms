@@ -22,6 +22,8 @@ class GenerateLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
     # View Config
     http_method_names = ["get"]
 
+    # TODO: ICMSLST-1436 Add document_type permission checks.
+    # e.g. document_type == "pre-sign" check the app has been "authorised"
     def has_permission(self):
         self.set_application_and_task()
 

@@ -65,6 +65,11 @@ footer {
     margin-top: 1em;
 }
 
+footer p,
+footer li {
+    font-size: 10px;
+}
+
 /* Add padding to the last container */
 #signature-and-date-issued {
     padding-bottom: 2em;
