@@ -7,6 +7,7 @@ from django.conf import settings
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
+from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.types import AuthenticatedHttpRequest
 from web.utils.pdf import PdfGenerator, types
 
@@ -34,14 +35,24 @@ from web.utils.pdf import PdfGenerator, types
             types.DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-dfl-licence-pre-sign.html",
         ),
-        # All other licence types use the default for LICENCE_PREVIEW
         (
             SILApplication,
+            types.DocumentTypes.LICENCE_PREVIEW,
+            "pdf/import/fa-sil-licence-preview.html",
+        ),
+        (
+            SILApplication,
+            types.DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/fa-sil-licence-pre-sign.html",
+        ),
+        # All other licence types use the default for LICENCE_PREVIEW
+        (
+            WoodQuotaApplication,
             types.DocumentTypes.LICENCE_PREVIEW,
             "web/domains/case/import/manage/preview-licence.html",
         ),
         (
-            SILApplication,
+            WoodQuotaApplication,
             types.DocumentTypes.LICENCE_PRE_SIGN,
             "web/domains/case/import/manage/preview-licence.html",
         ),
@@ -117,7 +128,6 @@ def test_get_fa_dfl_preview_licence_context(mock_get_goods, dfl_app, dfl_expecte
     dfl_expected_preview_context["process"] = dfl_app
 
     actual_context = generator.get_document_context()
-    print(actual_context)
 
     assert dfl_expected_preview_context == actual_context
 
@@ -137,15 +147,59 @@ def test_get_fa_dfl_licence_pre_sign_context(mock_get_goods, dfl_app, dfl_expect
     dfl_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
 
     actual_context = generator.get_document_context()
-    print(actual_context)
 
     assert dfl_expected_preview_context == actual_context
 
 
+@patch("web.utils.pdf.utils._get_fa_sil_goods")
+def test_get_fa_sil_preview_licence_context(mock_get_goods, sil_app, sil_expected_preview_context):
+    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
+
+    request = AuthenticatedHttpRequest()
+    generator = PdfGenerator(sil_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+
+    sil_expected_preview_context["page_title"] = "Licence Preview"
+    sil_expected_preview_context["goods"] = [
+        ("goods one", 10),
+        ("goods two", 20),
+        ("goods three", 30),
+    ]
+    sil_expected_preview_context["preview_licence"] = True
+    sil_expected_preview_context["paper_licence_only"] = False
+    sil_expected_preview_context["process"] = sil_app
+
+    actual_context = generator.get_document_context()
+
+    assert sil_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_sil_goods")
+def test_get_fa_sil_licence_pre_sign_context(mock_get_goods, sil_app, sil_expected_preview_context):
+    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
+
+    request = AuthenticatedHttpRequest()
+    generator = PdfGenerator(sil_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+
+    sil_expected_preview_context["page_title"] = "Licence Preview"
+    sil_expected_preview_context["goods"] = [
+        ("goods one", 10),
+        ("goods two", 20),
+        ("goods three", 30),
+    ]
+    sil_expected_preview_context["preview_licence"] = False
+    sil_expected_preview_context["paper_licence_only"] = False
+    sil_expected_preview_context["process"] = sil_app
+    sil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+
+    actual_context = generator.get_document_context()
+
+    assert sil_expected_preview_context == actual_context
+
+
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_preview_licence_context():
-    app = SILApplication(
-        process_type=SILApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
+    app = WoodQuotaApplication(
+        process_type=WoodQuotaApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
 
     request = AuthenticatedHttpRequest()

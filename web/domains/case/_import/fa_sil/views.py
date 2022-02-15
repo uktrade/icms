@@ -613,7 +613,7 @@ def add_section5_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = case_forms.DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():

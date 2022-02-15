@@ -33,9 +33,3 @@ table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
 }
-
-
-footer p,
-footer li {
-    font-size: 10px;
-}

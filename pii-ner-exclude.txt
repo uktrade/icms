@@ -1074,3 +1074,94 @@ rowspan="2">7.</td>
 H.M. Revenue
 Import Licensing Branch
 Department for International Trade
+Section 1 of the Firearms Act 1968
+Section 2 of the Firearms Act 1968
+Section 5(1)(ac
+Processing (Update
+ORM
+Map
+Application Processing (IMA3) / Case Officer
+Authorise Documents (G2) / Authoriser
+Application Processing
+CFS/2021/00003
+COM/2021/00005
+9001809L (Paper
+Import Application's
+Import Application
+Exporter / Exporter
+Standard User
+Request Variation
+Reopen Case
+Export Application
+Exporter / Exporter’s
+Copy Application
+Create Template
+get_import_record_actions
+Extra
+Barrel
+Latin
+Arabic
+class="content">For
+Applicant Case Management" Views
+ILB Admin
+Close Case Processing
+f"Authorise Success: Application
+Withdrawal
+nth)s
+"Reuse the Variation Request Cancel
+f"{edit_url}?validate=1
+the wood quota application
+purpose_of_request
+f"Quantity
+TODO Add
+Resume
+Application Submitted
+Application View
+View Application
+Application Update Requested
+Resume Update Request
+Resume Update
+Application Update in Progress
+WithdrawApplication
+Pending Withdrawal"
+Request Withdrawal
+VariationRequest
+Submit Update
+Acknowledge
+View
+View Notification
+Provide Report
+Import/ExportApplication
+DB
+the "Case Reference
+Active Tasks
+View Case
+Outward Processing Trade
+SPS
+Prior Surveillance
+Deactivated Firearms Import Licence
+import_application_types_to
+Surrendered
+Variation Refusal Reason
+Exporter Status
+Brand
+Product Eligibility
+Schedule Statements
+Address Type
+Cosmetic Products Legislation
+Country of Responsible Person
+ISO 17021
+Admin
+"Load the SearchTerms
+Section 58(2) - Other
+Application Details - Certificates - Section 5
+Application Details - Documents - Section 5
+Section 5 Authorities
+Firearms and Ammunition (Specific Import Licence
+AC & AY
+LICENCE_NUMBER
+COUNTRY_OF_CONSIGNMENT
+Add Firearm Details
+Edit Firearm Details
+Calibre 1
+Calibre 2

@@ -1,6 +1,15 @@
 import datetime
 from unittest.mock import patch
 
+from web.domains.case._import.fa_sil.models import (
+    SILGoodsSection582Obsolete,  # /PS-IGNORE
+)
+from web.domains.case._import.fa_sil.models import SILGoodsSection582Other  # /PS-IGNORE
+from web.domains.case._import.fa_sil.models import (
+    SILGoodsSection1,
+    SILGoodsSection2,
+    SILGoodsSection5,
+)
 from web.utils.pdf import types, utils
 
 
@@ -79,3 +88,109 @@ def test_fa_dfl_get_pre_sign_context(mock_get_goods, dfl_app, dfl_expected_previ
 
     actual_context = utils.get_fa_dfl_licence_context(dfl_app, types.DocumentTypes.LICENCE_PRE_SIGN)
     assert dfl_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_sil_goods")
+def test_fa_sil_get_preview_context(mock_get_goods, sil_app, sil_expected_preview_context):
+    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
+
+    sil_expected_preview_context["goods"] = [
+        ("goods one", 10),
+        ("goods two", 20),
+        ("goods three", 30),
+    ]
+    actual_context = utils.get_fa_sil_licence_context(sil_app, types.DocumentTypes.LICENCE_PREVIEW)
+
+    assert sil_expected_preview_context == actual_context
+
+
+@patch("web.utils.pdf.utils._get_fa_sil_goods")
+def test_fa_sil_get_pre_sign_context(mock_get_goods, sil_app, sil_expected_preview_context):
+    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
+
+    sil_expected_preview_context["goods"] = [
+        ("goods one", 10),
+        ("goods two", 20),
+        ("goods three", 30),
+    ]
+    sil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+
+    actual_context = utils.get_fa_sil_licence_context(sil_app, types.DocumentTypes.LICENCE_PRE_SIGN)
+    assert sil_expected_preview_context == actual_context
+
+
+def test_section_1_get_fa_sil_goods_item():
+    section_1_goods = [
+        SILGoodsSection1(description="Goods 1", quantity=10),
+        SILGoodsSection1(description="Goods 2", quantity=20),
+    ]
+    expected_goods = [("Goods 1 test suffix", 10), ("Goods 2 test suffix", 20)]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section1", section_1_goods, "test suffix")
+
+    assert expected_goods == actual_goods
+
+
+def test_section_2_get_fa_sil_goods_item():
+    section_2_goods = [
+        SILGoodsSection2(description="Goods 3", quantity=30),
+        SILGoodsSection2(description="Goods 4", quantity=40),
+    ]
+    expected_goods = [("Goods 3 test suffix", 30), ("Goods 4 test suffix", 40)]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section2", section_2_goods, "test suffix")
+
+    assert expected_goods == actual_goods
+
+
+def test_section_5_get_fa_sil_goods_item():
+    section_5_goods = [
+        SILGoodsSection5(description="Goods 5", quantity=50),
+        SILGoodsSection5(description="Goods 6", unlimited_quantity=True),
+    ]
+
+    expected_goods = [("Goods 5 test suffix", 50), ("Goods 6 test suffix", "Unlimited")]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section5", section_5_goods, "test suffix")
+
+    assert expected_goods == actual_goods
+
+
+def test_section_58_other_get_fa_sil_goods_item():
+    section_58_other_goods = [
+        SILGoodsSection582Other(description="Goods 7", quantity=70),  # /PS-IGNORE
+        SILGoodsSection582Other(description="Goods 8", quantity=80),  # /PS-IGNORE
+    ]
+
+    expected_goods = [("Goods 7 test suffix", 70), ("Goods 8 test suffix", 80)]
+    actual_goods = utils.get_fa_sil_goods_item(
+        "goods_section582_others", section_58_other_goods, "test suffix"
+    )
+
+    assert expected_goods == actual_goods
+
+
+def test_section_58_obsolete_get_fa_sil_goods_item():
+    section_58_obsolete_goods = [
+        SILGoodsSection582Obsolete(  # /PS-IGNORE
+            description="Goods 9", quantity=90, obsolete_calibre="Calibre 1"
+        ),
+        SILGoodsSection582Obsolete(  # /PS-IGNORE
+            description="Goods 10", quantity=100, obsolete_calibre="Calibre 2"
+        ),
+    ]
+
+    expected_goods = [
+        ("Goods 9 chambered in the obsolete calibre Calibre 1 test suffix", 90),
+        ("Goods 10 chambered in the obsolete calibre Calibre 2 test suffix", 100),
+    ]
+
+    actual_goods = utils.get_fa_sil_goods_item(
+        "goods_section582_obsoletes", section_58_obsolete_goods, "test suffix"
+    )
+
+    assert expected_goods == actual_goods
+
+
+def test_invalid_section_returns_no_goods():
+    expected_goods = []
+    actual_goods = utils.get_fa_sil_goods_item("invalid_section", [], "test suffix")
+
+    assert expected_goods == actual_goods

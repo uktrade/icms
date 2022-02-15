@@ -11,12 +11,20 @@ def test_fa_dfl_preview_licence_view(fa_dfl_app_submitted, icms_admin_client):
     _test_licence_preview(fa_dfl_app_submitted, icms_admin_client)
 
 
+def test_fa_sil_preview_licence_view(fa_sil_app_submitted, icms_admin_client):
+    _test_licence_preview(fa_sil_app_submitted, icms_admin_client)
+
+
 def test_fa_oil_pre_sign_licence_view(fa_oil_app_submitted, icms_admin_client):
     _test_licence_pre_sign(fa_oil_app_submitted, icms_admin_client)
 
 
 def test_fa_dfl_pre_sign_licence_view(fa_dfl_app_submitted, icms_admin_client):
     _test_licence_pre_sign(fa_dfl_app_submitted, icms_admin_client)
+
+
+def test_fa_sil_pre_sign_licence_view(fa_sil_app_submitted, icms_admin_client):
+    _test_licence_pre_sign(fa_sil_app_submitted, icms_admin_client)
 
 
 def _test_licence_preview(app, icms_admin_client):

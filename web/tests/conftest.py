@@ -8,6 +8,7 @@ from jinja2 import Template as Jinja2Template
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
+from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
@@ -20,6 +21,7 @@ from .application_utils import (
     create_in_progress_com_app,
     create_in_progress_fa_dfl_app,
     create_in_progress_fa_oil_app,
+    create_in_progress_fa_sil_app,
     create_in_progress_wood_app,
     submit_app,
 )
@@ -278,6 +280,21 @@ def fa_oil_app_submitted(
     """A valid FA OIL application in the submitted state."""
 
     app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_contact)
+
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
+    app.get_expected_task(Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def fa_sil_app_submitted(importer_client, importer, office, importer_contact) -> SILApplication:
+    """A valid FA SIL application in the submitted state."""
+    app = create_in_progress_fa_sil_app(importer_client, importer, office, importer_contact)
 
     submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
 

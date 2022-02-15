@@ -188,7 +188,8 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov=web \
 		--cov=config \
 		--cov-report xml:test-reports/cov.xml \
-		--numprocesses 2
+		--numprocesses 2 \
+		--cov-fail-under 68
 
 accessibility: ## Generate accessibility reports
 	unset UID && \
