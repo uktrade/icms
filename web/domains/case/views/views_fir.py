@@ -149,7 +149,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
 
             if form.is_valid():
@@ -280,7 +280,7 @@ def _add_fir_file(
 
         fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -427,7 +427,7 @@ def respond_fir(
         )
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
 
             if form.is_valid():

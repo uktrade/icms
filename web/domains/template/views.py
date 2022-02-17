@@ -125,7 +125,7 @@ def edit_template(request, pk):
     else:
         raise UnknownTemplateTypeException(f"Unknown template type '{template.template_type}'")
 
-    if request.POST:
+    if request.method == "POST":
         form = TemplateForm(request.POST, instance=template)
         if form.is_valid():
             template = form.save()
@@ -173,7 +173,7 @@ def list_endorsement_usages(request):
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_endorsement_usage(request, pk):
     usage = get_object_or_404(EndorsementUsage, pk=pk)
-    if request.POST:
+    if request.method == "POST":
         form = EndorsementUsageForm(request.POST)
         if form.is_valid():
             linked_endorsement = form.cleaned_data["linked_endorsement"]
@@ -198,7 +198,7 @@ def archive_endorsement_usage_link(request, usage_pk, link_pk):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_cfs_declaration_translation(request):
-    if request.POST:
+    if request.method == "POST":
         form = CFSDeclarationTranslationForm(request.POST)
         if form.is_valid():
             template = form.save()
@@ -217,7 +217,7 @@ def create_cfs_declaration_translation(request):
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_cfs_declaration_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
-    if request.POST:
+    if request.method == "POST":
         form = CFSDeclarationTranslationForm(request.POST, instance=template)
         if form.is_valid():
             template = form.save()
@@ -234,7 +234,7 @@ def edit_cfs_declaration_translation(request, pk):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_cfs_schedule_translation(request):
-    if request.POST:
+    if request.method == "POST":
         form = CFSScheduleTranslationForm(request.POST)
 
         if form.is_valid():
@@ -263,7 +263,7 @@ def edit_cfs_schedule_translation(request, pk):
 
     assert len(english_paras) > 0
 
-    if request.POST:
+    if request.method == "POST":
         form = CFSScheduleTranslationForm(request.POST, instance=template)
 
         if form.is_valid():
@@ -300,7 +300,7 @@ def edit_cfs_schedule_translation_paragraphs(request, pk):
 
     assert len(english_paras) > 0
 
-    if request.POST:
+    if request.method == "POST":
         form = CFSScheduleTranslationParagraphsForm(english_paras, data=request.POST)
 
         if form.is_valid():

@@ -53,7 +53,7 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -98,7 +98,7 @@ def edit_compensating_products(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = CompensatingProductsOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -146,7 +146,7 @@ def edit_temporary_exported_goods(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = TemporaryExportedGoodsOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -189,7 +189,7 @@ def edit_further_questions(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -232,7 +232,7 @@ def edit_further_questions_shared(
 
         form_class = get_fq_form(fq_type)
 
-        if request.POST:
+        if request.method == "POST":
             has_files = application.documents.filter(is_active=True, file_type=fq_type).exists()
 
             form = form_class(data=request.POST, instance=application, has_files=has_files)
@@ -352,7 +352,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -420,7 +420,7 @@ def add_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -554,7 +554,7 @@ def response_preparation_edit_compensating_products(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = ResponsePrepCompensatingProductsOPTForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -595,7 +595,7 @@ def response_preparation_edit_temporary_exported_goods(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = ResponsePrepTemporaryExportedGoodsOPTForm(
                 data=request.POST, instance=application
             )

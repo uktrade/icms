@@ -89,7 +89,7 @@ class ListExporterAccessRequest(ModelFilterView):
 @login_required
 def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
-        if request.POST:
+        if request.method == "POST":
             form = forms.ImporterAccessRequestForm(data=request.POST)
 
             if form.is_valid():
@@ -139,7 +139,7 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
         form = forms.ExporterAccessRequestForm()
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.ExporterAccessRequestForm(data=request.POST)
 
             if form.is_valid():
@@ -200,7 +200,7 @@ def management(request, pk, entity):
 
         task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = Form(instance=application, data=request.POST)
             if form.is_valid():
                 form.save()
@@ -243,7 +243,7 @@ def management_response(request, pk, entity):
 
         task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)
             if form.is_valid():
                 form.save()

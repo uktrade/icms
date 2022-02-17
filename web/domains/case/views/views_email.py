@@ -146,7 +146,7 @@ def edit_case_email(
         )
 
         case_email_config = _get_case_email_config(application)
-        if request.POST:
+        if request.method == "POST":
             form = forms.CaseEmailForm(
                 request.POST, instance=case_email, case_email_config=case_email_config
             )
@@ -262,7 +262,7 @@ def add_response_case_email(
 
         case_email = get_object_or_404(application.case_emails, pk=case_email_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.CaseEmailResponseForm(request.POST, instance=case_email)
             if form.is_valid():
                 case_email = form.save(commit=False)

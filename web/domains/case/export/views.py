@@ -116,7 +116,7 @@ def create_export_application(
     else:
         app_template = None
 
-    if request.POST:
+    if request.method == "POST":
         form = config.form_class(request.POST, user=request.user)
 
         if form.is_valid():
@@ -246,7 +246,7 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         check_application_permission(application, request.user, "export")
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = PrepareCertManufactureForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -293,7 +293,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors.add(get_org_update_request_errors(application, "export"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -326,7 +326,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         check_application_permission(application, request.user, "export")
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditCFSForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -389,7 +389,7 @@ def cfs_edit_schedule(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = EditCFScheduleForm(data=request.POST, instance=schedule)
 
             if form.is_valid():
@@ -468,7 +468,7 @@ def cfs_set_manufacturer(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSManufacturerDetailsForm(data=request.POST, instance=schedule)
 
             if form.is_valid():
@@ -545,7 +545,7 @@ def cfs_add_product(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSProductForm(data=request.POST, schedule=schedule)
 
             if form.is_valid():
@@ -609,7 +609,7 @@ def cfs_edit_product(
             schedule.products.select_for_update(), pk=product_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSProductForm(data=request.POST, instance=product, schedule=schedule)
 
             if form.is_valid():
@@ -695,7 +695,7 @@ def cfs_add_ingredient(
             schedule.products.select_for_update(), pk=product_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSActiveIngredientForm(data=request.POST, product=product)
 
             if form.is_valid():
@@ -757,7 +757,7 @@ def cfs_edit_ingredient(
             product.active_ingredients.select_for_update(), pk=ingredient_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSActiveIngredientForm(data=request.POST, instance=ingredient, product=product)
 
             if form.is_valid():
@@ -855,7 +855,7 @@ def cfs_add_product_type(
             schedule.products.select_for_update(), pk=product_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSProductTypeForm(data=request.POST, product=product)
 
             if form.is_valid():
@@ -917,7 +917,7 @@ def cfs_edit_product_type(
             product.product_type_numbers.select_for_update(), pk=product_type_pk
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = CFSProductTypeForm(data=request.POST, instance=product_type, product=product)
 
             if form.is_valid():
@@ -1160,7 +1160,7 @@ def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors = _get_cfs_errors(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -1296,7 +1296,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditGMPForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -1370,7 +1370,7 @@ def add_gmp_document(
 
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -1465,7 +1465,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors.add(get_org_update_request_errors(application, "export"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -1544,7 +1544,7 @@ def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = GMPBrandForm(data=request.POST)
 
             if form.is_valid():
@@ -1589,7 +1589,7 @@ def gmp_edit_brand(
         if not instance:
             return redirect(reverse("export:gmp-edit", kwargs={"application_pk": application_pk}))
 
-        if request.POST:
+        if request.method == "POST":
             form = GMPBrandForm(instance=instance, data=request.POST)
 
             if form.is_valid():

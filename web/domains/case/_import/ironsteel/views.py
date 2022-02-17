@@ -52,7 +52,7 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditIronSteelForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -165,7 +165,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -217,7 +217,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -288,7 +288,7 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = AddCertificateForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -371,7 +371,7 @@ def edit_certificate(
 
         document = application.certificates.get(pk=document_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditCertificateForm(data=request.POST, instance=document)
 
             if form.is_valid():
@@ -457,7 +457,7 @@ def response_preparation_edit_goods(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -503,7 +503,7 @@ def response_preparation_edit_certificate(
 
         document = application.certificates.get(pk=document_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = ResponsePrepCertificateForm(data=request.POST, instance=document)
 
             if form.is_valid():

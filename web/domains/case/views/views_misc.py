@@ -78,7 +78,7 @@ def withdraw_case(
             [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         )
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.WithdrawForm(request.POST)
 
             if form.is_valid():
@@ -435,7 +435,7 @@ def authorise_documents(
 
         task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.AuthoriseForm(data=request.POST, request=request)
 
             if form.is_valid():
@@ -592,7 +592,7 @@ def ack_notification(
         check_application_permission(application, request.user, case_type)
         application.check_expected_status([ImpExpStatus.COMPLETED])
 
-        if request.POST:
+        if request.method == "POST":
             task = application.get_expected_task(Task.TaskType.ACK, select_for_update=True)
             form = forms.AckReceiptForm(request.POST)
 

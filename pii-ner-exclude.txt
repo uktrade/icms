@@ -1165,3 +1165,42 @@ Add Firearm Details
 Edit Firearm Details
 Calibre 1
 Calibre 2
+Contract Document"
+Edit Goods
+Provide
+Prior Surveillance Import Licence - Edit
+Prior Surveillance Import Licence - Submit
+Prior Surveillance Import Licence - Add
+Prior Surveillance Import Licence - Edit Goods
+commodity_group_unit
+Application Template
+Edit Product
+Add Active Ingredient
+Edit Active Ingredient
+Edit Product Type Number
+CFS Product Upload
+CFS Product Upload Biocide
+ForeignKeys
+Product Type Numbers"
+ICMSLST-1344
+Firearms and Ammunition - Certificates"
+Firearms and Ammunition - Create Certificate
+Edit Firearm Supplementary Report
+f"Unknown Firearm
+Add Goods Certificate
+Edit Goods Certificate
+Submit Application
+Adhoc License Application - Edit
+Adhoc License Application
+Commodity List
+Goods - Commodity Code
+Outward Processing Trade Import Licence - Edit
+Outward Processing Trade Import Licence - Edit Compensating Products
+Outward Processing Trade Import Licence - Edit Temporary Exported Goods
+Outward Processing Trade Import Licence - Edit Further Questions
+Compensating Products
+Temporary Exported Goods
+Further Questions - "
+Outward Processing Trade Import Licence - Submit
+Outward Processing Trade Licence - Add
+Outward Processing Trade Licence - Checklist

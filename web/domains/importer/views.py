@@ -80,7 +80,7 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     else:
         NotImplementedError(f"Unknown importer type {importer.type}")
 
-    if request.POST:
+    if request.method == "POST":
         form = ImporterForm(request.POST, instance=importer)
         if form.is_valid():
             form.save()
@@ -110,7 +110,7 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
     else:
         NotImplementedError(f"Unknown entity type {entity_type}")
 
-    if request.POST:
+    if request.method == "POST":
         form = ImporterForm(request.POST)
         if form.is_valid():
             importer: Importer = form.save()
@@ -133,7 +133,7 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
 def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = Section5AuthorityForm(importer, request.POST, request.FILES)
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
@@ -177,7 +177,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority, ClauseQuantity, extra=0, form=ClauseQuantityForm, can_delete=False
         )
@@ -255,7 +255,7 @@ def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = DocumentForm(data=request.POST, files=request.FILES)
 
         if form.is_valid():
@@ -315,7 +315,7 @@ def create_office(request, pk):
     else:
         Form = OfficeEORIForm
 
-    if request.POST:
+    if request.method == "POST":
         form = Form(request.POST)
         if form.is_valid():
             office = form.save()
@@ -344,7 +344,7 @@ def edit_office(request, importer_pk, office_pk):
     else:
         Form = OfficeEORIForm
 
-    if request.POST:
+    if request.method == "POST":
         form = Form(request.POST, instance=office)
         if form.is_valid():
             form.save()
@@ -398,7 +398,7 @@ def create_agent(
         NotImplementedError(f"Unknown entity type {entity_type}")
 
     initial = {"main_importer": importer_pk}
-    if request.POST:
+    if request.method == "POST":
         form = AgentForm(request.POST, initial=initial)
         if form.is_valid():
             agent = form.save()
@@ -429,7 +429,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     else:
         AgentForm = AgentIndividualForm
 
-    if request.POST:
+    if request.method == "POST":
         form = AgentForm(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()

@@ -173,7 +173,7 @@ def _details_update(request: AuthenticatedHttpRequest, action: str, pk: int) -> 
             forms["personal_emails_formset"] = new_personal_emails_formset(request)
             messages.success(request, "Central contact details have been saved.")
         else:
-            if request.POST:
+            if request.method == "POST":
                 messages.error(request, "Please correct the highlighted errors.")
 
     return render(
@@ -194,7 +194,7 @@ def _init_user_details_forms(
     user = User.objects.get(pk=pk)
     address = None
 
-    if request.POST:
+    if request.method == "POST":
         if action == "save_address":
             address = request.POST.get("address")
             data = request.session.pop("user_details")

@@ -145,7 +145,7 @@ def edit_goods(
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
-        if request.POST:
+        if request.method == "POST":
             form = GoodsForm(request.POST, instance=goods, application=application)
 
             if form.is_valid():
@@ -199,7 +199,7 @@ def edit_goods_licence(
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = GoodsSanctionsLicenceForm(request.POST, instance=goods)
 
             if form.is_valid():
@@ -374,7 +374,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():

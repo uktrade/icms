@@ -48,7 +48,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = PrepareWoodQuotaForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -92,7 +92,7 @@ def add_supporting_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -163,7 +163,7 @@ def add_contract_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -246,7 +246,7 @@ def edit_contract_document(
 
         document = application.contract_documents.get(pk=document_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditContractDocumentForm(data=request.POST, instance=document)
 
             if form.is_valid():
@@ -312,7 +312,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -404,7 +404,7 @@ def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = GoodsWoodQuotaLicenceForm(request.POST, instance=application)
 
             if form.is_valid():

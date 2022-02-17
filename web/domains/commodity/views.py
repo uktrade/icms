@@ -138,7 +138,7 @@ class CommodityGroupDetailView(ModelDetailView):
 def add_usage(request, pk):
     commodity_group = get_object_or_404(CommodityGroup, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = UsageForm(request.POST, initial={"commodity_group": pk})
         if form.is_valid():
             usage = form.save()
@@ -164,7 +164,7 @@ def edit_usage(request, commodity_group_pk, usage_pk):
     commodity_group = get_object_or_404(CommodityGroup, pk=commodity_group_pk)
     usage = get_object_or_404(Usage, pk=usage_pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = UsageForm(request.POST, instance=usage)
         if form.is_valid():
             form.save()
