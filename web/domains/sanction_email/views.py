@@ -27,7 +27,7 @@ class SanctionEmailsListView(ModelFilterView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_sanction_email(request):
-    if request.POST:
+    if request.method == "POST":
         form = forms.SanctionEmailForm(request.POST)
         if form.is_valid():
             sanction_email = form.save()
@@ -48,7 +48,7 @@ def create_sanction_email(request):
 def edit_sanction_email(request, pk):
     sanction_email = get_object_or_404(models.SanctionEmail, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = forms.SanctionEmailForm(request.POST, instance=sanction_email)
         if form.is_valid():
             form.save()

@@ -57,7 +57,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
         if not _has_permission(request.user):
             raise PermissionDenied
 
-        if request.POST:
+        if request.method == "POST":
             form = CreateCATForm(request.POST)
             if form.is_valid():
                 cat = form.save(commit=False)

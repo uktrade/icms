@@ -54,7 +54,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = PrepareOILForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -139,7 +139,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -261,7 +261,7 @@ def add_report_firearm_manual(
         supplementary_info: OILSupplementaryInfo = application.supplementary_info
         report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = OILSupplementaryReportFirearmForm(data=request.POST)
 
             if form.is_valid():
@@ -317,7 +317,7 @@ def edit_report_firearm_manual(
 
         report_firearm: OILSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = OILSupplementaryReportFirearmForm(data=request.POST, instance=report_firearm)
 
             if form.is_valid():
@@ -365,7 +365,7 @@ def add_report_firearm_upload(
         supplementary_info: OILSupplementaryInfo = application.supplementary_info
         report: OILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = OILSupplementaryReportUploadFirearmForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():

@@ -145,7 +145,7 @@ def edit_note(
                 )
             )
 
-        if request.POST:
+        if request.method == "POST":
             note_form = forms.CaseNoteForm(request.POST, instance=note)
 
             if note_form.is_valid():
@@ -195,7 +195,7 @@ def add_note_document(
 
         note = application.case_notes.get(pk=note_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():

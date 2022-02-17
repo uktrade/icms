@@ -223,7 +223,7 @@ def _create_application(
     if form_class is None:
         form_class = CreateImportApplicationForm
 
-    if request.POST:
+    if request.method == "POST":
         form = form_class(request.POST, user=request.user)
 
         if form.is_valid():
@@ -290,7 +290,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = CoverLetterForm(request.POST, instance=application)
 
             if form.is_valid():
@@ -341,7 +341,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         else:
             form_class = LicenceDateForm
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(request.POST, instance=application)
 
             if form.is_valid():
@@ -395,7 +395,7 @@ def _add_endorsement(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = Form(request.POST)
 
             if form.is_valid():
@@ -440,7 +440,7 @@ def edit_endorsement(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = EndorsementImportApplicationForm(request.POST, instance=endorsement)
 
             if form.is_valid():

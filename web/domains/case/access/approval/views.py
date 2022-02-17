@@ -47,7 +47,7 @@ def management_access_approval(
         except ApprovalRequest.DoesNotExist:
             approval_request = None
 
-        if request.POST:
+        if request.method == "POST":
             form = Form(application, data=request.POST)
             if form.is_valid():
 
@@ -223,7 +223,7 @@ def case_approval_respond(
 
         get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = ApprovalRequestResponseForm(request.POST, instance=approval)
             if form.is_valid():
                 approval = form.save(commit=False)

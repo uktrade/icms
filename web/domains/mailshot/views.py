@@ -321,7 +321,7 @@ def add_document(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> Http
     with transaction.atomic():
         mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():

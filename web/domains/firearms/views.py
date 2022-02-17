@@ -58,7 +58,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_obsolete_calibre_group(request):
-    if request.POST:
+    if request.method == "POST":
         form = ObsoleteCalibreGroupForm(request.POST)
         if form.is_valid():
             group = form.save(commit=False)
@@ -84,7 +84,7 @@ def create_obsolete_calibre_group(request):
 def edit_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = ObsoleteCalibreGroupForm(request.POST, instance=calibre_group)
         if form.is_valid():
             form.save()
@@ -140,7 +140,7 @@ def unarchive_obsolete_calibre_group(request, pk):
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_obsolete_calibre(request, calibre_group_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
-    if request.POST:
+    if request.method == "POST":
         form = ObsoleteCalibreForm(request.POST)
         if form.is_valid():
             calibre = form.save(commit=False)
@@ -173,7 +173,7 @@ def edit_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres, pk=calibre_pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = ObsoleteCalibreForm(request.POST, instance=calibre)
         if form.is_valid():
             form.save()
@@ -245,7 +245,7 @@ def view_obsolete_calibre_group(request, pk):
 def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = FirearmsAuthorityForm(importer, request.POST, request.FILES)
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
@@ -289,7 +289,7 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
         )
@@ -365,7 +365,7 @@ def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = DocumentForm(data=request.POST, files=request.FILES)
 
         if form.is_valid():

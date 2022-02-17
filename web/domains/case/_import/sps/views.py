@@ -47,7 +47,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditSPSForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -117,7 +117,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors.add(get_org_update_request_errors(application, "import"))
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -162,7 +162,7 @@ def add_supporting_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -235,7 +235,7 @@ def add_contract_document(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
 
             if application.contract_file:
@@ -339,7 +339,7 @@ def edit_contract_document(
 
         document = application.contract_file
 
-        if request.POST:
+        if request.method == "POST":
             form = EditContractDocumentForm(data=request.POST, instance=document)
 
             if not document:
@@ -379,7 +379,7 @@ def response_preparation_edit_goods(
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)
 
             if form.is_valid():

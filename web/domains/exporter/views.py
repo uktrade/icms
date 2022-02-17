@@ -38,7 +38,7 @@ class ExporterListView(ModelFilterView):
 def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = ExporterForm(request.POST, instance=exporter)
         if form.is_valid():
             form.save()
@@ -75,7 +75,7 @@ def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
-    if request.POST:
+    if request.method == "POST":
         form = ExporterForm(request.POST)
         if form.is_valid():
             exporter: Exporter = form.save()
@@ -92,7 +92,7 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_office(request, pk):
     exporter = get_object_or_404(Exporter, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = OfficeForm(request.POST)
         if form.is_valid():
             office = form.save()
@@ -117,7 +117,7 @@ def edit_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
     office = get_object_or_404(exporter.offices, pk=office_pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = OfficeForm(request.POST, instance=office)
         if form.is_valid():
             form.save()
@@ -162,7 +162,7 @@ def create_agent(request, exporter_pk):
     exporter: Exporter = get_object_or_404(Exporter, pk=exporter_pk)
 
     initial = {"main_exporter": exporter_pk}
-    if request.POST:
+    if request.method == "POST":
         form = AgentForm(request.POST, initial=initial)
         if form.is_valid():
             agent = form.save()
@@ -184,7 +184,7 @@ def create_agent(request, exporter_pk):
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent: Exporter = get_object_or_404(Exporter.objects.agents(), pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = AgentForm(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()

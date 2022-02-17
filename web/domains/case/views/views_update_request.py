@@ -191,7 +191,7 @@ def start_update_request(
         )
         previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
 
-        if request.POST:
+        if request.method == "POST":
             update_request.status = models.UpdateRequest.Status.UPDATE_IN_PROGRESS
             update_request.save()
 
@@ -238,7 +238,7 @@ def respond_update_request(
         )
         previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.UpdateRequestResponseForm(request.POST, instance=update_request)
             if form.is_valid():
                 update_request = form.save(commit=False)

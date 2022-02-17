@@ -44,7 +44,7 @@ def save_forms_to_session(request, forms):
 
 def remove_from_session(request, key):
     logger.debug('Removing "%s" from session', key)
-    if request.POST:
+    if request.method == "POST":
         data = request.session.pop(key)
         if data:
             return json.loads(data)

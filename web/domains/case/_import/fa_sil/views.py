@@ -321,7 +321,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.EditFaSILForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -401,7 +401,7 @@ def add_section(
 
         config = _get_sil_section_app_config(sil_section_type)
 
-        if request.POST:
+        if request.method == "POST":
             form = config.form_class(request.POST)
 
             if form.is_valid():
@@ -445,7 +445,7 @@ def edit_section(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = config.form_class(request.POST, instance=goods)
             if form.is_valid():
                 goods = form.save(commit=False)
@@ -512,7 +512,7 @@ def response_preparation_edit_goods(
         config = _get_sil_section_resp_prep_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = config.form_class(request.POST, instance=goods)
             if form.is_valid():
                 form.save()
@@ -553,7 +553,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
 
         errors = _get_sil_errors(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -810,7 +810,7 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
         )
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        if request.POST:
+        if request.method == "POST":
             form = forms.SILCoverLetterTemplateForm(request.POST)
             if form.is_valid():
                 template = form.cleaned_data["template"]
@@ -880,7 +880,7 @@ def add_report_firearm_manual(
 
         form_class = _get_report_firearm_form_class(sil_section_type)
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(data=request.POST)
 
             if form.is_valid():
@@ -943,7 +943,7 @@ def edit_report_firearm_manual(
 
         form_class = _get_report_firearm_form_class(sil_section_type)
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(instance=report_firearm, data=request.POST)
 
             if form.is_valid():

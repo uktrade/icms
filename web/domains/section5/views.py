@@ -29,7 +29,7 @@ class ListSection5(ModelFilterView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def create_section5(request):
-    if request.POST:
+    if request.method == "POST":
         form = Section5ClauseForm(request.POST)
         if form.is_valid():
             clause = form.save(commit=False)
@@ -47,7 +47,7 @@ def create_section5(request):
 def edit_section5(request, pk):
     clause = get_object_or_404(Section5Clause, pk=pk)
 
-    if request.POST:
+    if request.method == "POST":
         form = Section5ClauseForm(request.POST, instance=clause)
         if form.is_valid():
             clause = form.save(commit=False)

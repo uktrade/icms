@@ -62,7 +62,7 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = PrepareDFLForm(data=request.POST, instance=application)
 
             if form.is_valid():
@@ -103,7 +103,7 @@ def add_goods_certificate(
         check_application_permission(application, request.user, "import")
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
@@ -153,7 +153,7 @@ def edit_goods_certificate(
 
         document = application.goods_certificates.get(pk=document_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditDLFGoodsCertificateForm(data=request.POST, instance=document)
 
             if form.is_valid():
@@ -196,7 +196,7 @@ def edit_goods_certificate_description(
 
         document = application.goods_certificates.get(pk=document_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = EditDFLGoodsCertificateDescriptionForm(data=request.POST, instance=document)
 
             if form.is_valid():
@@ -271,7 +271,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors = _get_dfl_errors(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
@@ -426,7 +426,7 @@ def add_report_firearm_manual(
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = DFLSupplementaryReportFirearmForm(data=request.POST)
 
             if form.is_valid():
@@ -481,7 +481,7 @@ def edit_report_firearm_manual(
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = DFLSupplementaryReportFirearmForm(data=request.POST, instance=report_firearm)
 
             if form.is_valid():
@@ -533,7 +533,7 @@ def add_report_firearm_upload(
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
 
-        if request.POST:
+        if request.method == "POST":
             form = DFLSupplementaryReportUploadFirearmForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():

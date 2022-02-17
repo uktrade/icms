@@ -142,7 +142,7 @@ def create_import_contact(
             application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
             template = "web/domains/case/import/fa/import-contacts/create.html"
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(data=request.POST)
 
             if form.is_valid():
@@ -208,7 +208,7 @@ def edit_import_contact(
             application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
             template = "web/domains/case/import/fa/import-contacts/edit.html"
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(data=request.POST, instance=person)
 
             if form.is_valid():
@@ -315,7 +315,7 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = UserImportCertificateForm(
                 data=request.POST, application=application, files=request.FILES
             )
@@ -371,7 +371,7 @@ def edit_certificate(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.POST:
+        if request.method == "POST":
             form = UserImportCertificateForm(
                 data=request.POST, application=application, instance=certificate
             )
@@ -548,7 +548,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         form_class = _get_supplementary_info_form(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(
                 data=request.POST, instance=application.supplementary_info, application=application
             )
@@ -623,7 +623,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         form_class = _get_supplementary_report_form(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(data=request.POST, application=application)
 
             if form.is_valid():
@@ -675,7 +675,7 @@ def edit_report(
         report_type = _get_report_type(application)
         form_class = _get_supplementary_report_form(application)
 
-        if request.POST:
+        if request.method == "POST":
             form = form_class(data=request.POST, instance=report, application=application)
 
             if form.is_valid():
