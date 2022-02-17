@@ -1204,3 +1204,11 @@ Further Questions - "
 Outward Processing Trade Import Licence - Submit
 Outward Processing Trade Licence - Add
 Outward Processing Trade Licence - Checklist
+AOG
+GBSAN0000001B
+GBSIL0000002C
+GBSIL0000004E
+GBAOG0000005F
+0000010K
+0000014B
+ProcessTypes

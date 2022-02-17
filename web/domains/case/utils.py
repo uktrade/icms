@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -236,3 +236,54 @@ def _has_importer_exporter_access(user: User, case_type: str) -> bool:
         return user.has_perm("web.exporter_access")
 
     raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+# TODO: Decide where the reference code should live
+# It still needs integrating to the system and saving (once we know how we are modelling the data)
+# Not decided where the next_sequence_value is coming from yet.
+def get_import_application_licence_reference(
+    licence_type: Literal["electronic", "paper"],
+    process_type: str,
+    next_sequence_value: int,
+):
+    """Creates an import application licence reference.
+
+    Reference formats:
+        - Electronic licence: GBxxxNNNNNNNa
+        - Paper licence: NNNNNNNa
+
+    Reference breakdown:
+        - GB: reference prefix
+        - xxx: licence category
+        - NNNNNN: Next sequence value
+        - a: check digit
+
+    :param licence_type: Type of licence reference to create
+    :param process_type: ProcessTypes value
+    :param next_sequence_value: Number representing the next available sequence number.
+    """
+
+    check_digit = _get_check_digit(next_sequence_value)
+    sequence_and_check_digit = f"{next_sequence_value:07}{check_digit}"
+
+    if licence_type == "electronic":
+        prefix = {
+            ProcessTypes.DEROGATIONS: "SAN",
+            ProcessTypes.FA_DFL: "SIL",
+            ProcessTypes.FA_OIL: "OIL",
+            ProcessTypes.FA_SIL: "SIL",
+            ProcessTypes.IRON_STEEL: "AOG",
+            ProcessTypes.SPS: "AOG",
+            ProcessTypes.SANCTIONS: "SAN",
+            ProcessTypes.TEXTILES: "TEX",
+        }
+        xxx = prefix[process_type]  # type: ignore[index]
+
+        return f"GB{xxx}{sequence_and_check_digit}"
+
+    return sequence_and_check_digit
+
+
+def _get_check_digit(val: int) -> str:
+    idx = val % 13
+    return "ABCDEFGHXJKLM"[idx]

@@ -8,8 +8,10 @@ from django.utils import timezone
 from web.domains.case.models import VariationRequest
 from web.domains.case.utils import (
     allocate_case_reference,
+    get_import_application_licence_reference,
     get_variation_request_case_reference,
 )
+from web.flow.models import ProcessTypes
 from web.models.models import CaseReference
 
 
@@ -192,3 +194,31 @@ def _add_variation_request(
         when_varied=datetime.date.today(),
         requested_by=user,
     )
+
+
+def test_get_import_application_licence_reference():
+    tests = [
+        ("electronic", ProcessTypes.DEROGATIONS.value, 1, "GBSAN0000001B"),
+        ("electronic", ProcessTypes.FA_DFL.value, 2, "GBSIL0000002C"),
+        ("electronic", ProcessTypes.FA_OIL.value, 3, "GBOIL0000003D"),
+        ("electronic", ProcessTypes.FA_SIL.value, 4, "GBSIL0000004E"),
+        ("electronic", ProcessTypes.IRON_STEEL.value, 5, "GBAOG0000005F"),
+        ("electronic", ProcessTypes.SPS.value, 6, "GBAOG0000006G"),
+        ("electronic", ProcessTypes.SANCTIONS.value, 7, "GBSAN0000007H"),
+        ("electronic", ProcessTypes.TEXTILES.value, 8, "GBTEX0000008X"),
+        ("paper", ProcessTypes.DEROGATIONS.value, 9, "0000009J"),
+        ("paper", ProcessTypes.FA_DFL.value, 10, "0000010K"),
+        ("paper", ProcessTypes.FA_OIL.value, 11, "0000011L"),
+        ("paper", ProcessTypes.FA_SIL.value, 12, "0000012M"),
+        ("paper", ProcessTypes.IRON_STEEL.value, 13, "0000013A"),
+        ("paper", ProcessTypes.SPS.value, 14, "0000014B"),
+        ("paper", ProcessTypes.SANCTIONS.value, 15, "0000015C"),
+        ("paper", ProcessTypes.TEXTILES.value, 16, "0000016D"),
+    ]
+
+    for licence_type, process_type, next_sequence_value, expected_reference in tests:
+        actual_reference = get_import_application_licence_reference(
+            licence_type, process_type, next_sequence_value
+        )
+
+        assert expected_reference == actual_reference, f"Expected failed {expected_reference}"
