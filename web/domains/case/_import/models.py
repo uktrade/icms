@@ -15,6 +15,7 @@ from web.domains.case.models import (
 )
 from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country, CountryGroup
+from web.domains.file.models import File
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -418,3 +419,41 @@ class ChecklistBase(models.Model):
         default=False,
         verbose_name="Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved.",
     )
+
+
+class ImportApplicationLicence(models.Model):
+    # TODO: Add constraints (only one current record?)
+    # class Meta:
+    #     constraints = []
+    import_application = models.ForeignKey(
+        "ImportApplication", on_delete=models.PROTECT, related_name="licences"
+    )
+    is_active = models.BooleanField(default=True, verbose_name="current licence flag")
+
+    # TODO: This needs to replace the existing `issue_paper_licence_only` field
+    issue_paper_licence_only = models.BooleanField(
+        blank=False, null=True, verbose_name="Issue paper licence only?"
+    )
+
+    case_completion_date = models.DateField(verbose_name="Case Completion Date")
+
+    licence_start_date = models.DateField(verbose_name="Start Date")
+    licence_end_date = models.DateField(verbose_name="End Date")
+
+    # Added for debugging (not for application code)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class LicenceDocument(File):
+    class Type(models.TextChoices):
+        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
+        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
+
+    licence = models.ForeignKey(
+        "ImportApplicationLicence", related_name="documents", on_delete=models.PROTECT
+    )
+    document_type = models.CharField(max_length=12, choices=Type.choices)
+
+    # Only the LICENCE doc type has a reference
+    reference = models.CharField(max_length=13, verbose_name="Document Reference", null=True)
