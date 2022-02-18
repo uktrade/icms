@@ -261,7 +261,7 @@ def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow
             status=rec.get_status_display(),
             licence_type="Paper" if rec.issue_paper_licence_only else "Electronic",
             chief_usage_status=cus,
-            # TODO: Revisit when implementing ICMSLST-1048
+            # TODO: Revisit when implementing ICMSLST-1224
             licence_start_date=None,
             licence_end_date=None,
         ),
@@ -352,7 +352,7 @@ def _get_licence_reference(rec: ImportApplication) -> str:
         - The Electronic licence has a link to download the licence
     """
 
-    # TODO: Revisit when implementing ICMSLST-1048 (The correct field is rec.licence_reference)
+    # TODO: Revisit when implementing ICMSLST-1224 (The correct field is rec.licence_reference)
     if rec.issue_paper_licence_only:
         licence_reference = "9001809L (Paper)"
     else:
@@ -391,7 +391,7 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
         model = model.filter(reference_filter)
 
     if terms.licence_ref:
-        # TODO: Revisit when implementing ICMSLST-1048
+        # TODO: Revisit when implementing ICMSLST-1224
         # Need to wildcard match on the licence_reference field for Import Application's
 
         # TODO: Revisit when implementing ICMSLST-1223

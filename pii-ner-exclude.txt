@@ -1212,3 +1212,4 @@ GBAOG0000005F
 0000010K
 0000014B
 ProcessTypes
+"Creates an export application certificate reference

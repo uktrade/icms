@@ -190,7 +190,7 @@ class ImportApplication(ApplicationBase):
     licence_end_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
-    # TODO: Revisit when implementing ICMSLST-1048
+    # TODO: Revisit when implementing ICMSLST-1224
     # See def submit_application in ApplicationBase regarding making this unique
     licence_reference = models.CharField(max_length=100, null=True, unique=True)
 
