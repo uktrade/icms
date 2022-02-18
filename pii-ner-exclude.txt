@@ -1247,3 +1247,6 @@ Licences</h4
 download">Download
 TBC
 ChiefRequest
+Case Completion Date
+Cover Letter
+LICENCE

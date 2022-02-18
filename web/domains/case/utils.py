@@ -255,7 +255,7 @@ def get_import_application_licence_reference(
     Reference breakdown:
         - GB: reference prefix
         - xxx: licence category
-        - NNNNNN: Next sequence value
+        - NNNNNNN: Next sequence value (padded to 7 digits)
         - a: check digit
 
     :param licence_type: Type of licence reference to create
@@ -300,7 +300,7 @@ def get_export_application_certificate_reference(process_type: str, next_sequenc
     Reference breakdown:
         - XXX: licence category
         - YYYY: year certificate issued
-        - NNNNN: Next sequence value
+        - NNNNN: Next sequence value (padded to 5 digits)
     """
 
     today = datetime.date.today()

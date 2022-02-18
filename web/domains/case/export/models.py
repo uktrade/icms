@@ -511,3 +511,28 @@ class GMPBrand(models.Model):
     )
 
     brand_name = models.CharField(max_length=20, verbose_name="Name of the brand")
+
+
+class ExportApplicationCertificate(models.Model):
+    export_application = models.ForeignKey(
+        "ExportApplication", on_delete=models.PROTECT, related_name="certificates"
+    )
+    is_active = models.BooleanField(default=True, verbose_name="current licence flag")
+    issue_date = models.DateField(verbose_name="Issue Date")
+
+    # Added for debugging (not for application code)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class CertificateDocument(File):
+    class Type(models.TextChoices):
+        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
+        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
+
+    licence = models.ForeignKey(
+        "ExportApplicationCertificate", related_name="documents", on_delete=models.PROTECT
+    )
+
+    document_type = models.CharField(max_length=12, choices=Type.choices)
+    reference = models.CharField(max_length=14, verbose_name="Document Reference")
