@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Literal, Optional
 
 from django.core.exceptions import PermissionDenied
@@ -238,8 +239,7 @@ def _has_importer_exporter_access(user: User, case_type: str) -> bool:
     raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
-# TODO: Decide where the reference code should live
-# It still needs integrating to the system and saving (once we know how we are modelling the data)
+# TODO: Revisit when implementing ICMSLST-1405
 # Not decided where the next_sequence_value is coming from yet.
 def get_import_application_licence_reference(
     licence_type: Literal["electronic", "paper"],
@@ -287,3 +287,25 @@ def get_import_application_licence_reference(
 def _get_check_digit(val: int) -> str:
     idx = val % 13
     return "ABCDEFGHXJKLM"[idx]
+
+
+# TODO: Revisit when implementing ICMSLST-1405
+# Not decided where the next_sequence_value is coming from yet.
+def get_export_application_certificate_reference(process_type: str, next_sequence_value: int):
+    """Creates an export application certificate reference.
+
+    Reference formats:
+        - XXX/YYYY/NNNNN
+
+    Reference breakdown:
+        - XXX: licence category
+        - YYYY: year certificate issued
+        - NNNNN: Next sequence value
+    """
+
+    today = datetime.date.today()
+
+    prefix = {ProcessTypes.CFS: "CFS", ProcessTypes.COM: "COM", ProcessTypes.GMP: "GMP"}
+    xxx = prefix[process_type]  # type: ignore[index]
+
+    return f"{xxx}/{today.year}/{next_sequence_value:05}"
