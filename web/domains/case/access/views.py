@@ -12,7 +12,8 @@ from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
-from web.domains.case.utils import allocate_case_reference, get_application_current_task
+from web.domains.case.services import reference
+from web.domains.case.utils import get_application_current_task
 from web.flow.models import Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
@@ -94,14 +95,9 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             if form.is_valid():
                 application: ImporterAccessRequest = form.save(commit=False)
-
-                application.reference = allocate_case_reference(
-                    lock_manager=request.icms.lock_manager,
-                    prefix="IAR",
-                    use_year=False,
-                    min_digits=0,
+                application.reference = reference.get_importer_access_request_reference(
+                    request.icms.lock_manager
                 )
-
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
                 application.process_type = ImporterAccessRequest.PROCESS_TYPE
@@ -144,14 +140,9 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
             if form.is_valid():
                 application: ExporterAccessRequest = form.save(commit=False)
-
-                application.reference = allocate_case_reference(
-                    lock_manager=request.icms.lock_manager,
-                    prefix="EAR",
-                    use_year=False,
-                    min_digits=0,
+                application.reference = reference.get_exporter_access_request_reference(
+                    request.icms.lock_manager
                 )
-
                 application.submitted_by = request.user
                 application.last_updated_by = request.user
                 application.process_type = ExporterAccessRequest.PROCESS_TYPE

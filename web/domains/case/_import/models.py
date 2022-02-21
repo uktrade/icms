@@ -422,9 +422,6 @@ class ChecklistBase(models.Model):
 
 
 class ImportApplicationLicence(models.Model):
-    # TODO: Add constraints (only one current record?)
-    # class Meta:
-    #     constraints = []
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.PROTECT, related_name="licences"
     )

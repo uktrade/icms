@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
+from web.domains.case.services import reference
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.domains.workbasket.actions import (
@@ -256,7 +257,9 @@ class ApplicationBase(WorkbasketBase, Process):
     submit_datetime = models.DateTimeField(blank=True, null=True)
 
     # This is the "Case Reference" field
-    reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    reference = models.CharField(
+        max_length=100, blank=True, null=True, unique=True, verbose_name="Case Reference"
+    )
 
     decision = models.CharField(max_length=10, choices=DECISIONS, blank=True, null=True)
     refuse_reason = models.CharField(
@@ -346,20 +349,9 @@ class ApplicationBase(WorkbasketBase, Process):
         return r
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
-        # this needs to be here to avoid circular dependencies
-        from web.domains.case.utils import allocate_case_reference
-
-        if self.is_import_application():
-            prefix = "IMA"
-        else:
-            # TODO: Export application (Good Manufacturing Practice) apparently
-            # uses a "GA" prefix for some reason. put that in when/if we
-            # implement GMP application type.
-            prefix = "CA"
-
         if not self.reference:
-            self.reference = allocate_case_reference(
-                lock_manager=request.icms.lock_manager, prefix=prefix, use_year=True, min_digits=5
+            self.reference = reference.get_application_case_reference(
+                request.icms.lock_manager, application=self
             )
 
         # if case owner is present, an update request has just been filed

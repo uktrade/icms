@@ -10,48 +10,11 @@ from web.domains.case.export.models import ExportApplication
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
-from web.models.models import CaseReference
-from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
 from .models import VariationRequest
 from .shared import ImpExpStatus
 from .types import ImpOrExp, ImpOrExpOrAccess
-
-
-# TODO: ICMSLST-1175 Rename CaseReference
-def allocate_case_reference(
-    *, lock_manager: LockManager, prefix: str, use_year: bool, min_digits: int
-) -> str:
-    """Allocate and return new case reference.
-
-    NOTE: If case reference logic grows beyond this, consider a proper service
-    layer."""
-
-    lock_manager.ensure_tables_are_locked([CaseReference])
-
-    year: Optional[int]
-
-    if use_year:
-        year = timezone.now().year
-    else:
-        year = None
-
-    last_ref = CaseReference.objects.filter(prefix=prefix, year=year).order_by("reference").last()
-
-    if last_ref:
-        new_ref = last_ref.reference + 1
-    else:
-        new_ref = 1
-
-    CaseReference.objects.create(prefix=prefix, year=year, reference=new_ref)
-
-    new_ref_str = "%0*d" % (min_digits, new_ref)
-
-    if use_year:
-        return "/".join([prefix, str(year), new_ref_str])
-    else:
-        return "/".join([prefix, new_ref_str])
 
 
 def get_variation_request_case_reference(application: ImpOrExp) -> str:
