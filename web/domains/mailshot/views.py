@@ -15,7 +15,7 @@ from django.views.generic.detail import DetailView
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
-from web.domains.case.utils import allocate_case_reference
+from web.domains.case.services import reference
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -152,15 +152,13 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             mailshot.status = Mailshot.Statuses.PUBLISHED
             mailshot.published_datetime = timezone.now()
             mailshot.published_by = self.request.user
+
             if not mailshot.reference:
-                # TODO: ICMSLST-1175 Rename CaseReference
-                mailshot.reference = allocate_case_reference(
-                    lock_manager=self.request.icms.lock_manager,
-                    prefix="MAIL",
-                    use_year=False,
-                    min_digits=1,
+                mailshot.reference = reference.get_mailshot_reference(
+                    self.request.icms.lock_manager
                 )
                 mailshot.version = models.F("version") + 1
+
             mailshot.save()
 
         mailshot.refresh_from_db()

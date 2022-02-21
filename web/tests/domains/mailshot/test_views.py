@@ -2,7 +2,7 @@ from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case.utils import allocate_case_reference
+from web.domains.case.services import reference
 from web.domains.mailshot.models import Mailshot
 from web.domains.mailshot.views import MailshotListView
 from web.domains.user.models import User
@@ -352,13 +352,7 @@ def _create_mailshot(
 
     if reference_version:
         icms = ICMSMiddlewareContext()
-        # TODO: ICMSLST-1175 Rename CaseReference
-        mailshot.reference = allocate_case_reference(
-            lock_manager=icms.lock_manager,
-            prefix="MAIL",
-            use_year=False,
-            min_digits=1,
-        )
+        mailshot.reference = reference.get_mailshot_reference(icms.lock_manager)
         mailshot.version = F("version") + 1
         mailshot.save()
 
