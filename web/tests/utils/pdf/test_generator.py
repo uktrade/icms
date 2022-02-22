@@ -64,30 +64,30 @@ from web.utils.pdf import PdfGenerator, types
         ),
     ],
 )
-def test_get_template(AppCls, doc_type, expected_template):
+def test_get_template(AppCls, doc_type, expected_template, licence):
     request = AuthenticatedHttpRequest()
     app = AppCls(process_type=AppCls.PROCESS_TYPE)
 
-    generator = PdfGenerator(app, doc_type, request)
+    generator = PdfGenerator(app, licence, doc_type, request)
     actual_template = generator.get_template()
 
     assert expected_template == actual_template
 
 
-def test_get_template_raises_error_if_doc_type_unsupported():
+def test_get_template_raises_error_if_doc_type_unsupported(licence):
     request = AuthenticatedHttpRequest()
     app = OpenIndividualLicenceApplication(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE
     )
-    generator = PdfGenerator(app, "INVALID_DOC_TYPE", request)
+    generator = PdfGenerator(app, licence, "INVALID_DOC_TYPE", request)
 
     with pytest.raises(ValueError, match="Unsupported document type"):
         generator.get_template()
 
 
-def test_get_fa_oil_preview_licence_context(oil_app, oil_expected_preview_context):
+def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_preview_context):
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(oil_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW, request)
 
     oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = True
@@ -99,9 +99,9 @@ def test_get_fa_oil_preview_licence_context(oil_app, oil_expected_preview_contex
     assert oil_expected_preview_context == actual_context
 
 
-def test_get_fa_oil_licence_pre_sign_context(oil_app, oil_expected_preview_context):
+def test_get_fa_oil_licence_pre_sign_context(oil_app, licence, oil_expected_preview_context):
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(oil_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
     oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = False
@@ -115,11 +115,13 @@ def test_get_fa_oil_licence_pre_sign_context(oil_app, oil_expected_preview_conte
 
 
 @patch("web.utils.pdf.utils._get_fa_dfl_goods")
-def test_get_fa_dfl_preview_licence_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+def test_get_fa_dfl_preview_licence_context(
+    mock_get_goods, dfl_app, licence, dfl_expected_preview_context
+):
     mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(dfl_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+    generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PREVIEW, request)
 
     dfl_expected_preview_context["page_title"] = "Licence Preview"
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
@@ -133,11 +135,13 @@ def test_get_fa_dfl_preview_licence_context(mock_get_goods, dfl_app, dfl_expecte
 
 
 @patch("web.utils.pdf.utils._get_fa_dfl_goods")
-def test_get_fa_dfl_licence_pre_sign_context(mock_get_goods, dfl_app, dfl_expected_preview_context):
+def test_get_fa_dfl_licence_pre_sign_context(
+    mock_get_goods, dfl_app, licence, dfl_expected_preview_context
+):
     mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(dfl_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+    generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
     dfl_expected_preview_context["page_title"] = "Licence Preview"
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
@@ -152,11 +156,13 @@ def test_get_fa_dfl_licence_pre_sign_context(mock_get_goods, dfl_app, dfl_expect
 
 
 @patch("web.utils.pdf.utils._get_fa_sil_goods")
-def test_get_fa_sil_preview_licence_context(mock_get_goods, sil_app, sil_expected_preview_context):
+def test_get_fa_sil_preview_licence_context(
+    mock_get_goods, sil_app, licence, sil_expected_preview_context
+):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(sil_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+    generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PREVIEW, request)
 
     sil_expected_preview_context["page_title"] = "Licence Preview"
     sil_expected_preview_context["goods"] = [
@@ -174,11 +180,13 @@ def test_get_fa_sil_preview_licence_context(mock_get_goods, sil_app, sil_expecte
 
 
 @patch("web.utils.pdf.utils._get_fa_sil_goods")
-def test_get_fa_sil_licence_pre_sign_context(mock_get_goods, sil_app, sil_expected_preview_context):
+def test_get_fa_sil_licence_pre_sign_context(
+    mock_get_goods, sil_app, licence, sil_expected_preview_context
+):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(sil_app, types.DocumentTypes.LICENCE_PRE_SIGN, request)
+    generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
     sil_expected_preview_context["page_title"] = "Licence Preview"
     sil_expected_preview_context["goods"] = [
@@ -197,13 +205,13 @@ def test_get_fa_sil_licence_pre_sign_context(mock_get_goods, sil_app, sil_expect
 
 
 # TODO: Remove the default tests when every app type has been implemented
-def test_get_default_preview_licence_context():
+def test_get_default_preview_licence_context(licence):
     app = WoodQuotaApplication(
         process_type=WoodQuotaApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(app, types.DocumentTypes.LICENCE_PREVIEW, request)
+    generator = PdfGenerator(app, licence, types.DocumentTypes.LICENCE_PREVIEW, request)
 
     expected_context = {
         "process": app,
@@ -218,13 +226,13 @@ def test_get_default_preview_licence_context():
 
 
 # TODO: Remove the default tests when every app type has been implemented
-def test_get_default_cover_letter_context():
+def test_get_default_cover_letter_context(licence):
     app = DFLApplication(
         process_type=DFLApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
 
     request = AuthenticatedHttpRequest()
-    generator = PdfGenerator(app, types.DocumentTypes.COVER_LETTER, request)
+    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER, request)
 
     expected_context = {
         "process": app,
@@ -233,6 +241,8 @@ def test_get_default_cover_letter_context():
         "paper_licence_only": False,
         "issue_date": "21 April 2022",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "licence_start_date": "TODO: SET THIS VALUE",
+        "licence_end_date": "TODO: SET THIS VALUE",
     }
 
     actual_context = generator.get_document_context()
@@ -240,22 +250,22 @@ def test_get_default_cover_letter_context():
     assert expected_context == actual_context
 
 
-def test_get_document_context_raises_error_if_doc_type_unsupported():
+def test_get_document_context_raises_error_if_doc_type_unsupported(licence):
     request = AuthenticatedHttpRequest()
     app = OpenIndividualLicenceApplication(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE
     )
 
     with pytest.raises(ValueError, match="Unsupported document type"):
-        generator = PdfGenerator(app, "INVALID_DOC_TYPE", request)
+        generator = PdfGenerator(app, licence, "INVALID_DOC_TYPE", request)
         generator.get_document_context()
 
 
-def test_get_pdf(oil_app):
+def test_get_pdf(oil_app, licence):
     request = AuthenticatedHttpRequest()
     request.build_absolute_uri = lambda: "localhost"
 
-    generator = PdfGenerator(oil_app, types.DocumentTypes.LICENCE_PREVIEW, request)
+    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW, request)
     pdf_file = generator.get_pdf()
 
     # This tests doesn't actually do a great deal other than check it creates

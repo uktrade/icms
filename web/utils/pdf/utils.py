@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from web.domains.case._import.fa_dfl.models import DFLApplication
     from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
     from web.domains.case._import.fa_sil import models as sil_models
+    from web.domains.case._import.models import ImportApplicationLicence
     from web.models import ImportApplication
 
     SILGoods = Union[
@@ -20,7 +21,9 @@ if TYPE_CHECKING:
 
 
 def get_fa_oil_licence_context(
-    application: "OpenIndividualLicenceApplication", doc_type: DocumentTypes
+    application: "OpenIndividualLicenceApplication",
+    licence: "ImportApplicationLicence",
+    doc_type: DocumentTypes,
 ) -> dict[str, Any]:
 
     importer = application.importer
@@ -32,8 +35,8 @@ def get_fa_oil_licence_context(
         "consignment_country": "Any Country",
         "origin_country": "Any Country",
         "goods_description": application.goods_description(),
-        "licence_start_date": _get_licence_start_date(application),
-        "licence_end_date": _get_licence_end_date(application),
+        "licence_start_date": _get_licence_start_date(licence),
+        "licence_end_date": _get_licence_end_date(licence),
         "licence_number": _get_licence_number(application, doc_type),
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
@@ -47,7 +50,7 @@ def get_fa_oil_licence_context(
 
 
 def get_fa_dfl_licence_context(
-    application: "DFLApplication", doc_type: DocumentTypes
+    application: "DFLApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
 ) -> dict[str, Any]:
     importer = application.importer
     office = application.importer_office
@@ -58,8 +61,8 @@ def get_fa_dfl_licence_context(
         "consignment_country": application.consignment_country.name,
         "origin_country": application.origin_country.name,
         "goods": _get_fa_dfl_goods(application),
-        "licence_start_date": _get_licence_start_date(application),
-        "licence_end_date": _get_licence_end_date(application),
+        "licence_start_date": _get_licence_start_date(licence),
+        "licence_end_date": _get_licence_end_date(licence),
         "licence_number": _get_licence_number(application, doc_type),
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
@@ -73,7 +76,9 @@ def get_fa_dfl_licence_context(
 
 
 def get_fa_sil_licence_context(
-    application: "sil_models.SILApplication", doc_type: DocumentTypes
+    application: "sil_models.SILApplication",
+    licence: "ImportApplicationLicence",
+    doc_type: DocumentTypes,
 ) -> dict[str, Any]:
     importer = application.importer
     office = application.importer_office
@@ -84,8 +89,8 @@ def get_fa_sil_licence_context(
         "consignment_country": application.consignment_country.name,
         "origin_country": application.origin_country.name,
         "goods": _get_fa_sil_goods(application),
-        "licence_start_date": _get_licence_start_date(application),
-        "licence_end_date": _get_licence_end_date(application),
+        "licence_start_date": _get_licence_start_date(licence),
+        "licence_end_date": _get_licence_end_date(licence),
         "licence_number": _get_licence_number(application, doc_type),
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
@@ -162,16 +167,16 @@ def get_fa_sil_goods_item(
     return []
 
 
-def _get_licence_start_date(application: "ImportApplication"):
-    if application.licence_start_date:
-        return application.licence_start_date.strftime("%d %B %Y")
+def _get_licence_start_date(licence: "ImportApplicationLicence"):
+    if licence.licence_start_date:
+        return licence.licence_start_date.strftime("%d %B %Y")
 
     return "Licence Start Date not set"
 
 
-def _get_licence_end_date(application: "ImportApplication"):
-    if application.licence_end_date:
-        return application.licence_end_date.strftime("%d %B %Y")
+def _get_licence_end_date(licence: "ImportApplicationLicence"):
+    if licence.licence_end_date:
+        return licence.licence_end_date.strftime("%d %B %Y")
 
     return "Licence End Date not set"
 

@@ -14,7 +14,7 @@ def _get_view_url(view_name, kwargs=None):
 
 @pytest.fixture(autouse=True)
 def log_in_test_user(client, test_import_user):
-    "Logs in the test_import_user for all tests."
+    """Logs in the test_import_user for all tests."""
 
     assert (
         client.login(username=test_import_user.username, password="test") is True

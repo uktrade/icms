@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional, Type
+from typing import TYPE_CHECKING, Any, List, Type
 
 import django.forms as django_forms
 from django.conf import settings
@@ -44,7 +44,12 @@ from .forms import (
     OPTLicenceForm,
 )
 from .ironsteel.models import IronSteelApplication
-from .models import ImportApplication, ImportApplicationType
+from .models import (
+    ImportApplication,
+    ImportApplicationLicence,
+    ImportApplicationType,
+    get_paper_licence_only,
+)
 from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
 from .sps.models import PriorSurveillanceApplication
@@ -236,12 +241,18 @@ def _create_application(
             application.created_by = request.user
             application.last_updated_by = request.user
             application.application_type = at
-            application.issue_paper_licence_only = _get_paper_licence_only(at)
 
             with transaction.atomic():
                 application.save()
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PREPARE, owner=request.user
+                )
+
+                # Add a draft licence when creating an application
+                # Ensures we never have to check for None
+                application.licences.create(
+                    status=ImportApplicationLicence.Status.DRAFT,
+                    issue_paper_licence_only=get_paper_licence_only(at),
                 )
 
             return redirect(
@@ -259,25 +270,6 @@ def _create_application(
     }
 
     return render(request, "web/domains/case/import/create.html", context)
-
-
-def _get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
-    """Get initial value for `issue_paper_licence_only` field.
-
-    Some application types have a fixed value, others can choose it in the response
-    preparation screen.
-    """
-
-    # For when it is hardcoded True
-    if app_t.paper_licence_flag and not app_t.electronic_licence_flag:
-        return True
-
-    # For when it is hardcoded False
-    if app_t.electronic_licence_flag and not app_t.paper_licence_flag:
-        return False
-
-    # Default to None so the user can pick it later
-    return None
 
 
 @login_required
@@ -331,9 +323,13 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
+        form_kwargs: dict[str, Any] = {"instance": application.get_most_recent_licence()}
+
         if application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
             form_class = OPTLicenceForm
-            application = application.outwardprocessingtradeapplication
+            application = application.get_specific_model()
+            # Load the data from the opt record
+            form_kwargs["initial"] = {"reimport_period": application.reimport_period}
 
         elif application_type.paper_licence_flag and application_type.electronic_licence_flag:
             form_class = LicenceDateAndPaperLicenceForm
@@ -342,7 +338,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
             form_class = LicenceDateForm
 
         if request.method == "POST":
-            form = form_class(request.POST, instance=application)
+            form = form_class(request.POST, **form_kwargs)
 
             if form.is_valid():
                 form.save()
@@ -354,7 +350,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
                     )
                 )
         else:
-            form = form_class(instance=application)
+            form = form_class(**form_kwargs)
 
         context = {
             "case_type": "import",
@@ -622,6 +618,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
             "page_title": f"Case {self.object.get_reference()}",
             "case_type": "import",
             "contacts": self.object.importcontact_set.all(),
+            "licence": self.object.get_most_recent_licence(),
         }
 
         return super().get_context_data(**kwargs) | context

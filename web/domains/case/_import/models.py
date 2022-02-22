@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
@@ -187,12 +187,11 @@ class ImportApplication(ApplicationBase):
         max_length=4000, blank=True, null=True, verbose_name="Variation Refusal Reason"
     )
     issue_date = models.DateField(blank=True, null=True)
-    licence_start_date = models.DateField(blank=True, null=True)
-    licence_end_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
     # TODO: Revisit when implementing ICMSLST-1224
     # See def submit_application in ApplicationBase regarding making this unique
+    # TODO: This may move in the next PR
     licence_reference = models.CharField(max_length=100, null=True, unique=True)
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
@@ -274,14 +273,6 @@ class ImportApplication(ApplicationBase):
     )
 
     cover_letter = models.TextField(blank=True, null=True)
-
-    # A nullable boolean field that is either hardcoded or left to the user to
-    # set later depending on the application type.
-    issue_paper_licence_only = models.BooleanField(
-        blank=False,
-        null=True,
-        verbose_name="Issue paper licence only?",
-    )
 
     # Only relevant to firearms applications
     imi_submitted_by = models.ForeignKey(
@@ -368,6 +359,33 @@ class ImportApplication(ApplicationBase):
     def get_specific_model(self) -> "ImportApplication":
         return super().get_specific_model()
 
+    def get_most_recent_licence(self) -> "ImportApplicationLicence":
+        return self.licences.filter(
+            status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ]
+        ).order_by("-created_at")[0]
+
+
+def get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
+    """Get initial value for `issue_paper_licence_only` field.
+
+    Some application types have a fixed value, others can choose it in the response
+    preparation screen.
+    """
+
+    # For when it is hardcoded True
+    if app_t.paper_licence_flag and not app_t.electronic_licence_flag:
+        return True
+
+    # For when it is hardcoded False
+    if app_t.electronic_licence_flag and not app_t.paper_licence_flag:
+        return False
+
+    # Default to None so the user can pick it later
+    return None
+
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
@@ -422,24 +440,38 @@ class ChecklistBase(models.Model):
 
 
 class ImportApplicationLicence(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "DR"
+        ACTIVE = "AC"
+        ARCHIVED = "AR"
+
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.PROTECT, related_name="licences"
     )
-    is_active = models.BooleanField(default=True, verbose_name="current licence flag")
 
-    # TODO: This needs to replace the existing `issue_paper_licence_only` field
+    status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
+
+    # A nullable boolean field that is either hardcoded or left to the user to
+    # set later depending on the application type.
     issue_paper_licence_only = models.BooleanField(
         blank=False, null=True, verbose_name="Issue paper licence only?"
     )
 
-    case_completion_date = models.DateField(verbose_name="Case Completion Date")
+    # Values set by ilb admin indicating when the licence starts / ends
+    licence_start_date = models.DateField(verbose_name="Start Date", null=True)
+    licence_end_date = models.DateField(verbose_name="End Date", null=True)
 
-    licence_start_date = models.DateField(verbose_name="Start Date")
-    licence_end_date = models.DateField(verbose_name="End Date")
+    # Set when the case is marked as complete
+    case_completion_date = models.DateField(verbose_name="Case Completion Date", null=True)
 
-    # Added for debugging (not for application code)
+    # Values added when licence records are created / updated
+    # Used to get the most recent licence
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        ia_pk, st, ca = (self.import_application_id, self.status, self.created_at)
+        return f"ImportApplicationLicence(import_application={ia_pk}, status={st}, created_at={ca})"
 
 
 class LicenceDocument(File):
@@ -454,3 +486,7 @@ class LicenceDocument(File):
 
     # Only the LICENCE doc type has a reference
     reference = models.CharField(max_length=13, verbose_name="Document Reference", null=True)
+
+    def __str__(self):
+        l_pk, dt, ref = (self.licence_id, self.document_type, self.reference)
+        return f"LicenceDocument(licence={l_pk}, document_type={dt}, reference={ref})"

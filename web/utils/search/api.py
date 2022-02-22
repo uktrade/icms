@@ -7,7 +7,11 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import (
+    ImportApplication,
+    ImportApplicationLicence,
+    ImportApplicationType,
+)
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import CaseEmail, UpdateRequest
@@ -228,11 +232,13 @@ def _get_search_records(
 def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow:
     """Process the incoming application and return a result row."""
 
-    start_date = rec.licence_start_date.strftime("%d %b %Y") if rec.licence_start_date else None
-    end_date = rec.licence_end_date.strftime("%d %b %Y") if rec.licence_end_date else None
+    licence = rec.get_most_recent_licence()
+    start_date = (
+        licence.licence_start_date.strftime("%d %b %Y") if licence.licence_start_date else None
+    )
+    end_date = licence.licence_end_date.strftime("%d %b %Y") if licence.licence_end_date else None
     licence_validity = " - ".join(filter(None, (start_date, end_date)))
-
-    licence_reference = _get_licence_reference(rec)
+    licence_reference = _get_licence_reference(licence)
     commodity_details = app_data.get_commodity_details(rec)
 
     if rec.application_type.type == rec.application_type.Types.FIREARMS:
@@ -259,11 +265,10 @@ def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow
             application_type=rec.application_type.get_type_display(),
             application_sub_type=application_subtype,
             status=rec.get_status_display(),
-            licence_type="Paper" if rec.issue_paper_licence_only else "Electronic",
+            licence_type="Paper" if licence.issue_paper_licence_only else "Electronic",
             chief_usage_status=cus,
-            # TODO: Revisit when implementing ICMSLST-1224
-            licence_start_date=None,
-            licence_end_date=None,
+            licence_start_date=start_date,
+            licence_end_date=end_date,
         ),
         applicant_details=types.ApplicantDetails(
             organisation_name=rec.importer.name,
@@ -277,7 +282,7 @@ def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow
             assignee_name=assignee_name,
             reassignment_date=reassignment_date,
         ),
-        actions=get_import_record_actions(rec, user),
+        actions=get_import_record_actions(rec, licence, user),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
@@ -345,7 +350,7 @@ def _get_certificate_references(rec: ExportApplication) -> list[str]:
     return certificates
 
 
-def _get_licence_reference(rec: ImportApplication) -> str:
+def _get_licence_reference(licence: ImportApplicationLicence) -> str:
     """Retrieve the licence reference
 
     Notes when implementing:
@@ -353,7 +358,7 @@ def _get_licence_reference(rec: ImportApplication) -> str:
     """
 
     # TODO: Revisit when implementing ICMSLST-1224 (The correct field is rec.licence_reference)
-    if rec.issue_paper_licence_only:
+    if licence.issue_paper_licence_only:
         licence_reference = "9001809L (Paper)"
     else:
         licence_reference = "GBSAN9001624X (Electronic)"
@@ -489,7 +494,13 @@ def _apply_import_application_filter(
 
     if terms.licence_type:
         paper_only = terms.licence_type == "paper"
-        model = model.filter(issue_paper_licence_only=paper_only)
+        model = model.filter(
+            licences__status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ],
+            licences__issue_paper_licence_only=paper_only,
+        )
 
     if terms.chief_usage_status:
         model = model.filter(chief_usage_status=terms.chief_usage_status)
@@ -521,12 +532,23 @@ def _apply_import_application_filter(
     if terms.under_appeal:
         ...
 
-    # In legacy licencing assumes application state is in processing (We won't for now)
     if terms.licence_date_start:
-        model = model.filter(licence_start_date__gte=terms.licence_date_start)
+        model = model.filter(
+            licences__status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ],
+            licences__licence_start_date__gte=terms.licence_date_start,
+        )
 
     if terms.licence_date_end:
-        model = model.filter(licence_end_date__lte=terms.licence_date_end)
+        model = model.filter(
+            licences__status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ],
+            licences__licence_end_date__lte=terms.licence_date_end,
+        )
 
     if terms.issue_date_start:
         # TODO: Raise ticket to search by issue date when implemented
@@ -717,12 +739,16 @@ def _get_export_spreadsheet_rows(
         )
 
 
-def get_import_record_actions(rec: "ImportApplication", user: User) -> list[types.SearchAction]:
+def get_import_record_actions(
+    app: "ImportApplication", licence: ImportApplicationLicence, user: User
+) -> list[types.SearchAction]:
     """Get the available actions for the supplied import application.
 
-    :param rec: Import Application record.
+    :param app: Import Application record.
+    :param licence: Import Application Licence record.
     :param user: User performing search
     """
+
     st = ImportApplication.Statuses
     actions = []
 
@@ -731,13 +757,13 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
     #   Status = COMPLETED
     #       Request Variation
 
-    if rec.status == ImpExpStatus.COMPLETED:
-        if rec.licence_end_date and rec.licence_end_date >= timezone.now().date():
+    if app.status == ImpExpStatus.COMPLETED:
+        if licence.licence_end_date and licence.licence_end_date >= timezone.now().date():
             actions.append(
                 types.SearchAction(
                     url=reverse(
                         "case:search-request-variation",
-                        kwargs={"application_pk": rec.pk, "case_type": "import"},
+                        kwargs={"application_pk": app.pk, "case_type": "import"},
                     ),
                     name="request-variation",
                     label="Request Variation",
@@ -746,7 +772,7 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
                 )
             )
 
-        if rec.decision == rec.REFUSE:
+        if app.decision == app.REFUSE:
             # TODO: ICMSLST-1001
             actions.append(
                 types.SearchAction(
@@ -754,7 +780,7 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
                 )
             )
 
-        if rec.licence_end_date and rec.licence_end_date > datetime.date.today():
+        if licence.licence_end_date and licence.licence_end_date > datetime.date.today():
             # TODO: ICMSLST-999
             actions.append(
                 types.SearchAction(
@@ -762,12 +788,12 @@ def get_import_record_actions(rec: "ImportApplication", user: User) -> list[type
                 )
             )
 
-    elif rec.status in [st.STOPPED, st.WITHDRAWN]:
+    elif app.status in [st.STOPPED, st.WITHDRAWN]:
         actions.append(
             types.SearchAction(
                 url=reverse(
                     "case:search-reopen-case",
-                    kwargs={"application_pk": rec.pk, "case_type": "import"},
+                    kwargs={"application_pk": app.pk, "case_type": "import"},
                 ),
                 name="reopen-case",
                 label="Reopen Case",

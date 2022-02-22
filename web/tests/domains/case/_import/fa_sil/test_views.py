@@ -6,6 +6,7 @@ from django.urls import reverse
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case.shared import ImpExpStatus
 from web.flow.models import Task
+from web.models import ImportApplicationLicence
 from web.tests.application_utils import create_import_app, save_app_data
 
 if TYPE_CHECKING:
@@ -70,3 +71,9 @@ class TestEditFirearmsSILApplication:
         form = response.context["form"]
         message = form.errors["origin_country"][0]
         assert message == "You must enter this item"
+
+
+def test_fa_sil_app_submitted_has_a_licence(fa_sil_app_submitted):
+    assert fa_sil_app_submitted.licences.filter(
+        status=ImportApplicationLicence.Status.DRAFT
+    ).exists()

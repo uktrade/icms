@@ -824,7 +824,7 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
                         "CONTACT_NAME": application.contact,
                         "LICENCE_NUMBER": None,  # TODO: What should this be?
                         "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
-                        "LICENCE_END_DATE": application.licence_end_date,
+                        "LICENCE_END_DATE": application.get_most_recent_licence().licence_end_date,
                         "COUNTRY_OF_ORIGIN": application.origin_country.name,
                         "COUNTRY_OF_CONSIGNMENT": application.consignment_country.name,
                     }

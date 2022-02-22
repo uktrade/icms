@@ -50,7 +50,6 @@ def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
 
     # When refusing an application the only thing we check is the checklist.
     if application.decision == application.REFUSE:
-        # TODO: Revisit when doing ICMSLST-1219
         return application_errors
 
     # Check the response prep screen errors
@@ -253,8 +252,9 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optiona
         )
 
     elif case_type == "import" and application.decision == application.APPROVE:
-        start_date = application.licence_start_date
-        end_date = application.licence_end_date
+        licence = application.get_most_recent_licence()
+        start_date = licence.licence_start_date
+        end_date = licence.licence_end_date
 
         if not start_date:
             prepare_errors.add(
@@ -279,7 +279,7 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optiona
         app_t: ImportApplicationType = application.application_type
 
         if app_t.paper_licence_flag and app_t.electronic_licence_flag:
-            if application.issue_paper_licence_only is None:
+            if licence.issue_paper_licence_only is None:
                 prepare_errors.add(
                     FieldError(
                         field_name="Issue paper licence only?",

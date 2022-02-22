@@ -5,6 +5,7 @@ import weasyprint
 from django.conf import settings
 from django.template.loader import render_to_string
 
+from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
 from web.types import AuthenticatedHttpRequest
@@ -16,6 +17,7 @@ from .types import DocumentTypes
 @dataclass
 class PdfGenerator:
     application: ImpOrExp
+    licence: ImportApplicationLicence
     doc_type: DocumentTypes
     request: AuthenticatedHttpRequest
 
@@ -78,7 +80,7 @@ class PdfGenerator:
             "process": self.application,  # TODO: Remove when default has been deleted
             "page_title": "Licence Preview",
             "preview_licence": self.doc_type == DocumentTypes.LICENCE_PREVIEW,
-            "paper_licence_only": self.application.issue_paper_licence_only or False,
+            "paper_licence_only": self.licence.issue_paper_licence_only or False,
         }
 
         # This will be extended to return the correct context for a given process & doc type
@@ -88,17 +90,25 @@ class PdfGenerator:
                 # TODO: licence_issue_date is a property and should probably be application.licence_start_date
                 "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
                 "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+                "licence_start_date": "TODO: SET THIS VALUE",
+                "licence_end_date": "TODO: SET THIS VALUE",
             }
 
         elif self.doc_type in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
             if self.application.process_type == ProcessTypes.FA_OIL:
-                extra = utils.get_fa_oil_licence_context(self.application, self.doc_type)
+                extra = utils.get_fa_oil_licence_context(
+                    self.application, self.licence, self.doc_type
+                )
 
             elif self.application.process_type == ProcessTypes.FA_DFL:
-                extra = utils.get_fa_dfl_licence_context(self.application, self.doc_type)
+                extra = utils.get_fa_dfl_licence_context(
+                    self.application, self.licence, self.doc_type
+                )
 
             elif self.application.process_type == ProcessTypes.FA_SIL:
-                extra = utils.get_fa_sil_licence_context(self.application, self.doc_type)
+                extra = utils.get_fa_sil_licence_context(
+                    self.application, self.licence, self.doc_type
+                )
 
             else:
                 extra = {

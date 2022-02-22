@@ -98,6 +98,9 @@ def prepare_response(
             "readonly_view": readonly_view,
         }
 
+    if application.is_import_application():
+        context["licence"] = application.get_most_recent_licence()
+
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _prepare_fa_oil_response(

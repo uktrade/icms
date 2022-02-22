@@ -15,6 +15,7 @@ from web.domains.case._import.models import ImportApplication
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.user.models import User
+from web.models import ImportApplicationLicence
 from web.models.shared import FirearmCommodity
 from web.tests.helpers import check_page_errors
 
@@ -423,6 +424,9 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     application = DFLApplication.objects.get(pk=dfl_app_pk)
 
     assert application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+
+    # And it has a draft licence
+    assert application.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()
 
 
 # def test_edit_goods_certificate_description_get(admin_cl, complete_dfl_app_pk):

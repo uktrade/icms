@@ -1251,3 +1251,10 @@ Case Completion Date
 Cover Letter
 LICENCE
 f"IMA/{year}/00003
+LicenceDocument
+licence.licence_start_date.strftime('%d-%b-%Y
+Refactor
+AC
+Sent Further Information Requests
+Authorise Documents
+Import Application Licence

@@ -26,8 +26,8 @@
   {% endcall %}
 
   {% call application_section("Licence Details") %}
-    {{ application_field(app.licence_start_date.strftime('%d-%b-%Y'), "Date Issued") }}
-    {{ application_field(app.licence_end_date.strftime('%d-%b-%Y'), "Expiry Date") }}
+    {{ application_field(licence.licence_start_date.strftime('%d-%b-%Y'), "Date Issued") }}
+    {{ application_field(licence.licence_end_date.strftime('%d-%b-%Y'), "Expiry Date") }}
 
     {# TODO: Revisit when implementing ICMSLST-1224 #}
     {{ application_field(app.licence_reference or "GBSIL9001730K", "Reference Number") }}

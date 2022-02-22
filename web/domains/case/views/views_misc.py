@@ -12,6 +12,10 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case._import.models import (
+    ImportApplicationLicence,
+    get_paper_licence_only,
+)
 from web.domains.case.models import VariationRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
@@ -242,8 +246,20 @@ def take_ownership(
             application.status = model_class.Statuses.PROCESSING
 
             if case_type == "import":
+                # Create a draft licence if it doesn't already exist
+                # mainly when there has been a variation request.
+                licence, _ = application.licences.get_or_create(
+                    status=ImportApplicationLicence.Status.DRAFT,
+                    defaults={
+                        "issue_paper_licence_only": get_paper_licence_only(
+                            application.application_type
+                        )
+                    },
+                )
+
                 # Licence start date is set when ILB Admin takes the case
-                application.licence_start_date = timezone.now().date()
+                licence.licence_start_date = timezone.now().date()
+                licence.save()
 
             # TODO: Revisit when implementing ICMSLST-1169
             # We may need to create some more datetime fields
