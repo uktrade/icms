@@ -31,6 +31,8 @@ def test_preview_cover_letter():
         case_owner=ilb_admin,
     )
     process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    oil_app = process.get_specific_model()
+    oil_app.licences.create()
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
@@ -69,6 +71,8 @@ def test_preview_licence():
         case_owner=ilb_admin,
     )
     process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    oil_app = process.get_specific_model()
+    oil_app.licences.create()
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")

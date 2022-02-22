@@ -27,8 +27,10 @@ def test_get_app_errors_application_approved_no_errors(wood_application: WoodQuo
     wood_application.decision = wood_application.APPROVE
 
     # Set licence details
-    wood_application.licence_start_date = datetime.date.today()
-    wood_application.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    wood_application.licences.create(
+        licence_start_date=datetime.date.today(),
+        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
+    )
 
     # Create the checklist (fully valid)
     _add_valid_checklist(wood_application)
@@ -148,8 +150,11 @@ def test_get_app_errors_application_approved_variation_requested(
     wood_application.decision = wood_application.APPROVE
 
     # Set licence details
-    wood_application.licence_start_date = datetime.date.today()
-    wood_application.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    wood_application.licences.create(
+        licence_start_date=datetime.date.today(),
+        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
+    )
+
     wood_application.save()
 
     # Create the checklist (fully valid)

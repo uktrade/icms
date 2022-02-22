@@ -2,6 +2,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
+from web.models import ImportApplicationLicence
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS
 
@@ -67,3 +68,7 @@ def test_manage_checklist_post(icms_admin_client, wood_application):
     assert checklist.response_preparation is True
     assert checklist.authorisation is True
     assert checklist.sigl_wood_application_logged is True
+
+
+def test_wood_app_submitted_has_a_licence(wood_app_submitted):
+    assert wood_app_submitted.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()

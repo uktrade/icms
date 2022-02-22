@@ -105,21 +105,21 @@
     <tbody>
     <tr>
       <td>
-        {% if process.licence_start_date %}
-          {{ process.licence_start_date.strftime('%d-%b-%Y') }}
+        {% if licence.licence_start_date %}
+            {{ licence.licence_start_date.strftime('%d-%b-%Y') }}
         {% endif %}
-      </td>
-      <td>
-        {% if process.licence_end_date %}
-          {{ process.licence_end_date.strftime('%d-%b-%Y') }}
-        {% endif %}
-      </td>
+        </td>
+        <td>
+          {% if licence.licence_end_date %}
+            {{ licence.licence_end_date.strftime('%d-%b-%Y') }}
+          {% endif %}
+        </td>
       <td>{{ process.reimport_period|int }}</td>
       <td>
         <p>
-          {% if process.issue_paper_licence_only == True %}
+          {% if licence.issue_paper_licence_only == True %}
             Yes
-          {% elif process.issue_paper_licence_only == False %}
+          {% elif licence.issue_paper_licence_only == False %}
             No
           {% else %}
             Please select a value

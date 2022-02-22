@@ -3,6 +3,7 @@ import pytest
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
+from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
@@ -56,6 +57,11 @@ def sil_app(importer, importer_office):
     )
 
     return sil_app
+
+
+@pytest.fixture()
+def licence():
+    return ImportApplicationLicence()
 
 
 @pytest.fixture()

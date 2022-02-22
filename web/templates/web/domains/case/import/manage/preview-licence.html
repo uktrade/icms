@@ -136,8 +136,9 @@
             <br />
             <br />
             This licence will cease to be valid for importations after
-            {% if process.licence_end_date %}
-              {{ process.licence_end_date.strftime("%d %B %Y") }}.
+            {% if {{ licence_end_date }} %}
+              {# {{ licence_end_date.strftime("%d %B %Y") }} .#}
+              {{ licence_end_date }}
             {% else %}
               <strong>END DATE NOT SET.</strong>
             {% endif %}

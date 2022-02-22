@@ -514,13 +514,18 @@ class GMPBrand(models.Model):
 
 
 class ExportApplicationCertificate(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "DR"
+        ACTIVE = "AC"
+        ARCHIVED = "AR"
+
     export_application = models.ForeignKey(
         "ExportApplication", on_delete=models.PROTECT, related_name="certificates"
     )
-    is_active = models.BooleanField(default=True, verbose_name="current licence flag")
-    issue_date = models.DateField(verbose_name="Issue Date")
 
-    # Added for debugging (not for application code)
+    status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
+
+    issue_date = models.DateField(verbose_name="Issue Date")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

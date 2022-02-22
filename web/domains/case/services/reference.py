@@ -30,11 +30,11 @@ def get_mailshot_reference(lock_manager: "LockManager"):
 
 
 def get_importer_access_request_reference(lock_manager: "LockManager"):
-    return get_next_reference(lock_manager, prefix="IAR", use_year=False, min_digits=0)
+    return get_next_reference(lock_manager, prefix="IAR", use_year=False, min_digits=1)
 
 
 def get_exporter_access_request_reference(lock_manager: "LockManager"):
-    return get_next_reference(lock_manager, prefix="EAR", use_year=False, min_digits=0)
+    return get_next_reference(lock_manager, prefix="EAR", use_year=False, min_digits=1)
 
 
 def get_next_reference(
@@ -60,7 +60,7 @@ def get_next_reference(
 
     CaseReference.objects.create(prefix=prefix, year=year, reference=new_ref)
 
-    new_ref_str = "%0*d" % (min_digits, new_ref)
+    new_ref_str = f"{new_ref:0{min_digits}}"
 
     if use_year:
         return "/".join([prefix, str(year), new_ref_str])

@@ -46,6 +46,7 @@ class PreviewLicenceView(GenerateLicenceBase):
 
         pdf_gen = PdfGenerator(
             application=self.application,
+            licence=self.application.get_most_recent_licence(),
             doc_type=document_type,
             request=self.request,
         )
@@ -62,7 +63,10 @@ class PreviewLicenceView(GenerateLicenceBase):
 class PreviewCoverLetterView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         pdf_gen = PdfGenerator(
-            application=self.application, doc_type=DocumentTypes.COVER_LETTER, request=self.request
+            application=self.application,
+            licence=self.application.get_most_recent_licence(),
+            doc_type=DocumentTypes.COVER_LETTER,
+            request=self.request,
         )
 
         return return_pdf(pdf_gen, "CoverLetter.pdf")

@@ -12,7 +12,11 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case._import.models import (
+    ImportApplication,
+    ImportApplicationLicence,
+    ImportApplicationType,
+)
 from web.domains.case._import.opt.models import (
     CP_CATEGORIES,
     OutwardProcessingTradeApplication,
@@ -630,9 +634,11 @@ def test_search_by_submitted_end_date(import_fixture_data: FixtureData):
 def _test_search_by_licence_date(import_fixture_data: FixtureData):
     # Set the licence dates on a submitted application (26/AUG/2021 - 26/FEB/2022)
     application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 4")
-    application.licence_start_date = datetime.date(2021, 8, 26)
-    application.licence_end_date = datetime.date(2022, 2, 26)
     application.save()
+
+    application.licences.create(
+        licence_start_date=datetime.date(2021, 8, 26), licence_end_date=datetime.date(2022, 2, 26)
+    )
 
     # Should find the record when the search terms are the same day as the licence dates
     search_terms = SearchTerms(
@@ -1122,8 +1128,9 @@ def test_search_by_application_contact(
 
 def test_import_search_by_licence_type(import_fixture_data):
     wood = _create_wood_application("wood-app-ref", import_fixture_data)
-    wood.issue_paper_licence_only = True
-    wood.save()
+    licence = wood.licences.first()
+    licence.issue_paper_licence_only = True
+    licence.save()
 
     search_terms = SearchTerms(case_type="import", licence_type="electronic")
     results = search_applications(search_terms, import_fixture_data.request.user)
@@ -1861,6 +1868,7 @@ def _create_application(
         task_type=Task.TaskType.PREPARE,
         owner=import_fixture_data.importer_user,
     )
+    application.licences.create(status=ImportApplicationLicence.Status.DRAFT)
 
     if submit:
         _submit_application(application, import_fixture_data)

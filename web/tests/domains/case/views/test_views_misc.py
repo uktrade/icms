@@ -309,8 +309,10 @@ class TestAuthoriseDocumentsView:
 
 
 def _set_valid_licence(wood_application):
-    wood_application.licence_start_date = datetime.date.today()
-    wood_application.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    wood_application.licences.create(
+        licence_start_date=datetime.date.today(),
+        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
+    )
 
 
 def _add_valid_checklist(wood_application):

@@ -5,7 +5,6 @@ from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -154,7 +153,7 @@ class LicenceDateForm(forms.ModelForm):
     licence_end_date = forms.DateField(required=True, label="Licence End Date", widget=DateInput)
 
     class Meta:
-        model = models.ImportApplication
+        model = models.ImportApplicationLicence
         fields = ("licence_start_date", "licence_end_date")
 
     def clean(self):
@@ -177,7 +176,7 @@ class LicenceDateForm(forms.ModelForm):
 
 class LicenceDateAndPaperLicenceForm(LicenceDateForm):
     class Meta:
-        model = models.ImportApplication
+        model = models.ImportApplicationLicence
         fields = LicenceDateForm.Meta.fields + ("issue_paper_licence_only",)
 
     def __init__(self, *args, **kwargs):
@@ -193,9 +192,20 @@ class LicenceDateAndPaperLicenceForm(LicenceDateForm):
 
 
 class OPTLicenceForm(LicenceDateForm):
+    reimport_period = forms.DecimalField(
+        max_digits=9, decimal_places=2, min_value=0, label="Period for re-importation (months)"
+    )
+
     class Meta:
-        model = OutwardProcessingTradeApplication
-        fields = LicenceDateForm.Meta.fields + ("reimport_period",)
+        model = models.ImportApplicationLicence
+        fields = LicenceDateForm.Meta.fields
+
+    def save(self, commit=True):
+        super().save(commit)
+
+        opt_app = self.instance.import_application.get_specific_model()
+        opt_app.reimport_period = self.cleaned_data["reimport_period"]
+        opt_app.save()
 
 
 class EndorsementChoiceImportApplicationForm(forms.ModelForm):

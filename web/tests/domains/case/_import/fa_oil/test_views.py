@@ -7,6 +7,7 @@ from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplicat
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.importer.models import Importer
 from web.flow.models import Task
+from web.models import ImportApplicationLicence
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import OILApplicationFactory
 from web.tests.domains.importer.factory import ImporterFactory
@@ -87,6 +88,8 @@ def test_take_ownership():
         status="SUBMITTED", importer=importer, created_by=user, last_updated_by=user
     )
     TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    oil_app = process.get_specific_model()
+    oil_app.licences.create()
 
     ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     client = Client()
@@ -147,3 +150,9 @@ def test_close_case():
 
     task.refresh_from_db()
     assert task.is_active is False
+
+
+def test_fa_oil_app_submitted_has_a_licence(fa_oil_app_submitted):
+    assert fa_oil_app_submitted.licences.filter(
+        status=ImportApplicationLicence.Status.DRAFT
+    ).exists()

@@ -8,7 +8,10 @@ from django.db import transaction
 from django.utils.decorators import method_decorator
 
 from web.domains.case._import.forms import CreateWoodQuotaApplicationForm
-from web.domains.case._import.views import _get_paper_licence_only
+from web.domains.case._import.models import (
+    ImportApplicationType,
+    get_paper_licence_only,
+)
 from web.domains.case._import.wood.forms import (
     PrepareWoodQuotaForm,
     WoodQuotaChecklistForm,
@@ -24,7 +27,6 @@ from web.domains.importer.models import Importer
 from web.domains.user.models import User
 from web.flow.models import Task
 from web.middleware.common import ICMSMiddlewareContext
-from web.models import ImportApplicationType
 from web.models.shared import YesNoNAChoices
 
 
@@ -114,7 +116,6 @@ class Command(BaseCommand):
             application.created_by = self.importer_user
             application.last_updated_by = self.importer_user
             application.application_type = app_type
-            application.issue_paper_licence_only = _get_paper_licence_only(app_type)
 
             application.save()
             Task.objects.create(
@@ -171,8 +172,14 @@ class Command(BaseCommand):
         application.get_task(WoodQuotaApplication.Statuses.SUBMITTED, Task.TaskType.PROCESS)
         application.case_owner = self.ilb_admin_user
         application.status = WoodQuotaApplication.Statuses.PROCESSING
-        application.licence_start_date = self.today
         application.save()
+
+        application.licences.create(
+            licence_start_date=self.today,
+            issue_paper_licence_only=get_paper_licence_only(
+                ImportApplicationType.objects.get(type=ImportApplicationType.Types.WOOD_QUOTA)
+            ),
+        )
 
         # Populate checklist
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
