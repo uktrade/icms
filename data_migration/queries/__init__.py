@@ -19,6 +19,8 @@ def source_target_list(lst: list[str]):
     ]
 
 
+user_source_target = source_target_list(["User", "Importer", "Office"])
+
 ref_query_model = [
     QueryModel(reference.country, dm_models.Country),
     QueryModel(reference.country_group, dm_models.CountryGroup),
@@ -30,6 +32,8 @@ ref_query_model = [
     QueryModel(reference.commodity_group, dm_models.CommodityGroup),
     QueryModel(reference.commodity, dm_models.Commodity),
     QueryModel(reference.commodity_group_commodity, dm_models.CommodityGroupCommodity),
+    QueryModel(import_application.import_application_type, dm_models.ImportApplicationType),
+    QueryModel(import_application.usage, dm_models.Usage),
 ]
 
 ref_source_target = source_target_list(
@@ -42,6 +46,8 @@ ref_source_target = source_target_list(
         "CommodityType",
         "CommodityGroup",
         "Commodity",
+        "ImportApplicationType",
+        "Usage",
     ]
 )
 
@@ -51,13 +57,25 @@ ref_m2m = [
 ]
 
 ia_query_model = [
-    QueryModel(import_application.import_application_type, dm_models.ImportApplicationType),
-    QueryModel(import_application.usage, dm_models.Usage),
+    QueryModel(import_application.wood_application, dm_models.WoodQuotaApplication),
+    QueryModel(import_application.wood_checklist, dm_models.WoodQuotaChecklist),
+    QueryModel(import_application.textiles_application, dm_models.TextilesApplication),
+    QueryModel(import_application.textiles_checklist, dm_models.TextilesChecklist),
 ]
 
-ia_source_target = source_target_list(["ImportApplicationType", "Usage"])
+# Possibly refactor to import process and import application by process type
+ia_source_target = source_target_list(
+    [
+        "Process",
+        "ImportApplication",
+        "WoodQuotaApplication",
+        "WoodQuotaChecklist",
+        "TextilesApplication",
+        "TextilesChecklist",
+    ]
+)
 
-DATA_TYPE = Literal["reference", "import_application"]
+DATA_TYPE = Literal["reference", "import_application", "user"]
 
 DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
     "reference": ref_query_model,
@@ -65,11 +83,13 @@ DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
 }
 
 DATA_TYPE_SOURCE_TARGET: dict[str, list[SourceTarget]] = {
+    "user": user_source_target,
     "reference": ref_source_target,
     "import_application": ia_source_target,
 }
 
 DATA_TYPE_M2M: dict[str, list[M2M]] = {
+    "user": [],
     "reference": ref_m2m,
     "import_application": [],
 }

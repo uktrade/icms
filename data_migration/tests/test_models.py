@@ -2,7 +2,14 @@ import pytest
 
 from data_migration.models import MigrationBase
 
-from .factory import CountryFactory, CountryGroupFactory, ImportApplicationTypeFactory
+from .factory import (
+    CountryFactory,
+    CountryGroupFactory,
+    ImportApplicationFactory,
+    ImportApplicationTypeFactory,
+    ProcessFactory,
+    WoodQuotaApplicationFactory,
+)
 
 
 @pytest.mark.django_db
@@ -65,7 +72,7 @@ def test_import_application_type_related():
         "origin_country_group",
     ]
 
-    assert result == expected
+    assert sorted(result) == expected
 
 
 @pytest.mark.django_db
@@ -134,3 +141,83 @@ def test_import_application_type_data_export():
     assert result["endorsements_flag"] is False
     assert result["origin_country_group_id"] == 1234
     assert "origin_country_group__id" not in result
+
+
+@pytest.mark.django_db
+def test_import_application_get_data_export():
+    process = ProcessFactory(ima_id=1)
+    ia = ImportApplicationFactory(ima=process)
+    data = {k: None for k in ia.get_values()}
+    data["legacy_case_flag"] = "true"
+    data["licence_extended_flag"] = "false"
+    result = ia.data_export(data)
+
+    assert result["legacy_case_flag"] is True
+    assert result["under_appeal_flag"] is False
+    assert result["licence_extended_flag"] is False
+
+    assert sorted(result.keys()) == [
+        "acknowledged_by_id",
+        "acknowledged_datetime",
+        "agent_id",
+        "agent_office_id",
+        "applicant_reference",
+        "application_type_id",
+        "case_owner_id",
+        "chief_usage_status",
+        "commodity_group_id",
+        "consignment_country_id",
+        "contact_id",
+        "cover_letter",
+        "create_datetime",
+        "created_by_id",
+        "decision",
+        "id",
+        "imi_submit_datetime",
+        "imi_submitted_by_id",
+        "importer_id",
+        "importer_office_id",
+        "issue_date",
+        "issue_paper_licence_only",
+        "last_update_datetime",
+        "last_updated_by_id",
+        "legacy_case_flag",
+        "licence_end_date",
+        "licence_extended_flag",
+        "licence_reference",
+        "licence_start_date",
+        "origin_country_id",
+        "process_ptr_id",
+        "reference",
+        "refuse_reason",
+        "status",
+        "submit_datetime",
+        "submitted_by_id",
+        "under_appeal_flag",
+        "variation_decision",
+        "variation_no",
+        "variation_refuse_reason",
+    ]
+
+
+@pytest.mark.django_db
+def test_wood_application_get_data_export():
+    process = ProcessFactory(ima_id=1)
+    ia = ImportApplicationFactory(ima=process)
+    wood = WoodQuotaApplicationFactory(imad=ia)
+    data = {k: None for k in wood.get_values()}
+    result = wood.data_export(data)
+
+    assert sorted(result.keys()) == [
+        "additional_comments",
+        "commodity_id",
+        "exporter_address",
+        "exporter_name",
+        "exporter_vat_nr",
+        "goods_description",
+        "goods_qty",
+        "goods_unit",
+        "id",
+        "importapplication_ptr_id",
+        "shipping_year",
+    ]

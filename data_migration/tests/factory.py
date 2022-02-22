@@ -2,6 +2,7 @@ import random
 
 import factory
 import factory.fuzzy
+from django.utils import timezone
 
 from data_migration import models
 
@@ -61,3 +62,30 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     origin_country_group = factory.SubFactory(CountryGroupFactory)
     consignment_country_group = factory.SubFactory(CountryGroupFactory)
     master_country_group = factory.SubFactory(CountryGroupFactory)
+
+
+class ProcessFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Process
+
+    process_type = factory.fuzzy.FuzzyText(length=6)
+    is_active = random.choice([True, False])
+
+
+class ImportApplicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ImportApplication
+
+    ima = factory.SubFactory(ProcessFactory)
+    imad_id = random.randint(1, 100000)
+    status = factory.fuzzy.FuzzyText(length=6)
+    reference = factory.fuzzy.FuzzyText(length=6)
+    create_datetime = timezone.now()
+    application_type = factory.SubFactory(ImportApplicationTypeFactory)
+
+
+class WoodQuotaApplicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.WoodQuotaApplication
+
+    imad = factory.SubFactory(ImportApplicationFactory)

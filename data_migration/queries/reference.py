@@ -39,7 +39,7 @@ country_translation = """
 
 
 commodity_type = (
-    "SELECT commodity_type type_code, com_type_title type FROM impmgr.commodity_types ct"
+    "SELECT rownum id, commodity_type type_code, com_type_title type FROM impmgr.commodity_types ct"
 )
 
 
@@ -82,4 +82,7 @@ commodity_group_commodity = """
 """
 
 
-unit = "SELECT unit_type, description, short_desc short_description, hmrc_code FROM impmgr.units"
+unit = """
+SELECT unit_type, description, short_desc short_description, hmrc_code
+FROM impmgr.units
+"""
