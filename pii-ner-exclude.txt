@@ -1213,3 +1213,32 @@ GBAOG0000005F
 0000014B
 ProcessTypes
 "Creates an export application certificate reference
+f"Prod
+f"User Data Created
+xiad.legacy_case_flag
+xiad.variation_refuse_reason
+xiad.issue_date
+xiad.created_by_wua_id created_by_id
+xiad.last_updated_by_wua_id update_by_id
+xiad.coc_country_id consignment_country_id --
+ON ia.id =
+exporter_vat_nr VARCHAR2(4000
+XMLTYPE PATH '
+XMLTYPE PATH '/IMA
+xiad.ima_id LEFT JOIN
+ir.ima_id
+variation_no
+under_appeal_flag
+acknowledged_by
+licence_extended_flag
+xiad.last_updated_datetime last_update_datetime
+ON cl.import_application_id
+xiad.last_updated_by_wua_id
+xiad.agent_office_id
+process_ptr_id
+imad__created_by_id
+imad__last_updated_by_id
+agent_id"
+2 contact_id
+param db
+V2

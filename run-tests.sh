@@ -20,6 +20,7 @@ docker-compose run --rm web pytest --tb=short --dist=loadfile --tx=4*popen "$@"
 #  pytest --tb=short \
 #  --cov=web \
 #  --cov=config \
+#  --cov=data_migration \
 #  --cov-report term-missing \
 #  --dist=loadfile \
 #  --tx=4*popen "$@"
