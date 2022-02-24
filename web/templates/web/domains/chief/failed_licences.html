@@ -1,0 +1,45 @@
+{% extends "web/domains/chief/_base.html" %}
+
+{% block main_chief %}
+
+<h4>Failed Licences</h4>
+
+{% if failed_licences_count %}
+    <table>
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Sent Date</th>
+                <th>Received Date</th>
+                <th>Status</th>
+                <th>Error Code</th>
+                <th>Error Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in failed_licences %}
+            <tr>
+                <td>{{ row }}</td>
+                <td>{{ row }}</td>
+                <td>{{ row }}</td>
+                <td>{{ row }}</td>
+                <td>{{ row }}</td>
+                <td>{{ row }}</td>
+                <td>
+                    <ul class="menu-out">
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class=""link-button icon-redo2">Resend licence</a></li>
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-eye">View Case</a></li>
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-download">Download request XML</a></li>
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-pencil">Update importer details</a></li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="info-box info-box-success">There are no failed licences</div>
+{% endif %}
+
+{% endblock %}

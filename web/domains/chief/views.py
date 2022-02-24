@@ -4,11 +4,15 @@ from typing import Any
 import mohawk
 import mohawk.exc
 from django.conf import settings
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core import exceptions
 from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.crypto import constant_time_compare
-from django.views.generic import View
+from django.views.generic import TemplateView, View
+
+from web.domains.case._import.models import ImportApplication
+from web.flow.models import Task
 
 HAWK_ALGO = "sha256"
 HAWK_NONCE_EXPIRY = 60  # seconds
@@ -79,3 +83,45 @@ class LicenseDataCallback(View):
         # On success return either 207 MULTI STATUS or 208 ALREADY REPORTED.
         # 200 is a fail.
         return JsonResponse(data, status=http.HTTPStatus.MULTI_STATUS.value)
+
+
+class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
+    permission_required = "web.ilb_admin"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        # We need the counts for each type to show in the navigation tabs.
+        failed_licences = ImportApplication.objects.filter(
+            tasks__task_type=Task.TaskType.CHIEF_ERROR, tasks__is_active=True
+        )
+        pending_licences = ImportApplication.objects.filter(
+            tasks__task_type=Task.TaskType.CHIEF_WAIT, tasks__is_active=True
+        )
+
+        context = {
+            "failed_batches_count": 0,
+            "failed_batches": [],
+            "failed_licences_count": failed_licences.count(),
+            "failed_licences": failed_licences,
+            "pending_batches_count": 0,
+            "pending_batches": [],
+            "pending_licences_count": pending_licences.count(),
+            "pending_licences": pending_licences,
+        }
+
+        return super().get_context_data(**kwargs) | context
+
+
+class PendingBatches(_BaseTemplateView):
+    template_name = "web/domains/chief/pending_batches.html"
+
+
+class FailedBatches(_BaseTemplateView):
+    template_name = "web/domains/chief/failed_batches.html"
+
+
+class PendingLicences(_BaseTemplateView):
+    template_name = "web/domains/chief/pending_licences.html"
+
+
+class FailedLicences(_BaseTemplateView):
+    template_name = "web/domains/chief/failed_licences.html"

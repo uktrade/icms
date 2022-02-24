@@ -1,0 +1,44 @@
+{% extends "web/domains/chief/_base.html" %}
+
+{% block main_chief %}
+
+<h4>Pending Licences</h4>
+<div class="extra-info">
+    The next batch will be sent on TBC unless a response has not been received
+    from the previous batch.
+</div>
+
+{% if pending_licences_count %}
+    <table>
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in pending_licences %}
+            <tr>
+                <td>
+                    <span class="text-widget">{{ row.id }}</span>
+                </td>
+                <td>
+                    <span class="text-widget label small-label white-label">PENDING</span>
+                </td>
+                <td>
+                    <ul class="menu-out">
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-eye">View Case</a></li>
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-download">Download request XML</a></li>
+                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-pencil">Update importer details</a></li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="info-box info-box-success">There are no pending licences</div>
+{% endif %}
+
+{% endblock %}

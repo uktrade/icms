@@ -1,0 +1,25 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% block main_content %}
+
+<ul class="tabs">
+    <li>
+        {{ icms_link(request, icms_url('chief:pending-batches'), 'Waiting on HRMC response') }}
+    </li>
+    <li>
+        {{ icms_link(request, icms_url('chief:pending-licences'), 'Pending Licences') }}
+        <span class="label small-label white-label">{{ pending_licences_count }}</span>
+    </li>
+    <li>
+        {{ icms_link(request, icms_url('chief:failed-batches'), 'Failed Batches') }}
+        <span class="label small-label red-label">{{ failed_batches_count }}</span>
+    </li>
+    <li>
+        {{ icms_link(request, icms_url('chief:failed-licences'), 'Failed Licences') }}
+        <span class="label small-label red-label">{{ failed_licences_count }}</span>
+    </li>
+</ul>
+
+{% block main_chief %}{% endblock %}
+
+{% endblock main_content %}
