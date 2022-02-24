@@ -1,4 +1,6 @@
+import pytest
 from django.urls import reverse
+from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.chief.client import make_hawk_sender
 
@@ -36,3 +38,51 @@ class TestLicenseDataCallback:
         response = client.put(url, HTTP_AUTHORIZATION="Hawk foo")
 
         assert response.status_code == 400  # Bad request.
+
+
+@pytest.mark.django_db
+class TestPendingBatches:
+    def test_template_context(self, icms_admin_client):
+        url = reverse("chief:pending-batches")
+        response = icms_admin_client.get(url)
+
+        assert response.status_code == 200
+        assert response.context_data["pending_batches_count"] == 0
+        assert list(response.context_data["pending_batches"]) == []
+        assertTemplateUsed(response, "web/domains/chief/pending_batches.html")
+
+
+@pytest.mark.django_db
+class TestFailedBatches:
+    def test_template_context(self, icms_admin_client):
+        url = reverse("chief:failed-batches")
+        response = icms_admin_client.get(url)
+
+        assert response.status_code == 200
+        assert response.context_data["failed_batches_count"] == 0
+        assert list(response.context_data["failed_batches"]) == []
+        assertTemplateUsed(response, "web/domains/chief/failed_batches.html")
+
+
+@pytest.mark.django_db
+class TestPendingLicences:
+    def test_template_context(self, icms_admin_client):
+        url = reverse("chief:pending-licences")
+        response = icms_admin_client.get(url)
+
+        assert response.status_code == 200
+        assert response.context_data["pending_licences_count"] == 0
+        assert list(response.context_data["pending_licences"]) == []
+        assertTemplateUsed(response, "web/domains/chief/pending_licences.html")
+
+
+@pytest.mark.django_db
+class TestFailedLicences:
+    def test_template_context(self, icms_admin_client):
+        url = reverse("chief:failed-licences")
+        response = icms_admin_client.get(url)
+
+        assert response.status_code == 200
+        assert response.context_data["failed_licences_count"] == 0
+        assert list(response.context_data["failed_licences"]) == []
+        assertTemplateUsed(response, "web/domains/chief/failed_licences.html")
