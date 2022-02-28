@@ -1,21 +1,44 @@
-from django.db import connections
+from django.db import connections, transaction
 from django.db.models import Model, sql
 
-# Based on answer in
-# https://stackoverflow.com/questions/65420783/bulk-create-with-multi-table-inheritance-models
+from data_migration.models import Process
+
+set_seq_sql = """
+SELECT
+  setval(pg_get_serial_sequence('"{table_name}"','id')
+  , coalesce(max("id"), 1), max("id") IS NOT null)
+FROM "{table_name}";
+"""
 
 
-def bulk_create(model: Model, items: list[Model], db: str = "default") -> None:
-    """Custom bulk create to allow bulk create for table inheritance
+def bulk_create(model: Model, objs: list[Model]) -> None:
+    """Custom bulk create to allow bulk create for table inheritance and when specifying id
+
+    When passing ids to Model.objects.bulk_create in postgres, the sequence is not updated
+    automatically so requires being manually set. This would likely cause a race condition
+    if used at the same time as creating db objects in the system, so must only be used for
+    the data migration prior to going live.
 
     :param model: The model being created
     :param items: A list of new models populated with data
     :param db: The database being targeted
     """
+    db = model.objects.db
+    with transaction.atomic(using=db, savepoint=False):
+        connection = connections[db]
+        fields = model._meta.local_concrete_fields
+        query = sql.InsertQuery(model)
+        query.insert_values(fields, objs)
+        query.get_compiler(connection=connection).execute_sql()
 
-    connection = connections[db]
-    fields = model._meta.local_concrete_fields
-    query = sql.InsertQuery(model)
-    query.insert_values(fields, items)
-    query.get_compiler(connection=connection).execute_sql()
-    # TODO: Increment the sequence so autoincrement will work after running
+        # Postgres doesn't increase the sequence when specifying the pk when performing inserts
+        # We have to do this manually by executing sql
+        table_name = model._meta.db_table
+        seq_sql = set_seq_sql.format(table_name=table_name)
+        cursor = connection.cursor()
+        cursor.execute(seq_sql)
+        cursor.close()
+
+
+def new_process_pk() -> int:
+    return int(Process.objects.exists() and Process.objects.latest("pk").pk) + 1

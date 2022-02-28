@@ -1,14 +1,16 @@
 import argparse
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING
 
 import cx_Oracle
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-from django.utils import timezone
 
 from data_migration.models import ImportApplication, Process
 from data_migration.models.user import Importer, Office, User
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL
+
+from .utils.db import new_process_pk
+from .utils.format import format_name, format_row
 
 if TYPE_CHECKING:
     from django.db.models import Model
@@ -54,11 +56,11 @@ class Command(BaseCommand):
             "dsn": settings.ICMS_V1_REPLICA_DSN,
         }
 
+        if not options["skip_user"]:
+            self._create_user_data()
+
         with cx_Oracle.connect(**connection_config) as connection:
             cursor = connection.cursor()
-
-            if not options["skip_user"]:
-                self._create_user_data()
 
             self._export_data("reference", cursor, batchsize, options["skip_ref"])
             self._export_data("import_application", cursor, batchsize, options["skip_ia"])
@@ -76,9 +78,7 @@ class Command(BaseCommand):
         :param skip: Skips the export of the current data_type
         """
         query_models = DATA_TYPE_QUERY_MODEL[data_type]
-
-        # Form a more human readable name "foo_bar" -> "Foo Bar"
-        name = " ".join(dt.capitalize() for dt in data_type.split("_"))
+        name = format_name(data_type)
 
         if skip:
             self.stdout.write(f"Skipping {name} Data Export")
@@ -99,9 +99,7 @@ class Command(BaseCommand):
                 if data_type == "import_application":
                     self._export_ia_data(columns, list(rows), model)
                 else:
-                    model.objects.bulk_create(
-                        [model(**self._format_row(columns, row)) for row in rows]
-                    )
+                    model.objects.bulk_create([model(**format_row(columns, row)) for row in rows])
 
         self.stdout.write(f"{name} Data Export Complete!")
 
@@ -117,18 +115,18 @@ class Command(BaseCommand):
             # In V2 each application inherits from ImportApplication
             # ImportApplication inherit from Process
             # The pks much match the Process pk so we can't rely on autoincrement
-            start_pk = int(Process.objects.exists() and Process.objects.latest("pk").pk) + 1
+            start_pk = new_process_pk()
             process_fields = Process.fields()
             Process.objects.bulk_create(
                 [
-                    Process(**self._format_row(columns, row, process_fields, pk=start_pk + i))
+                    Process(**format_row(columns, row, process_fields, pk=start_pk + i))
                     for i, row in enumerate(rows)
                 ]
             )
             ia_fields = ImportApplication.fields()
             ImportApplication.objects.bulk_create(
                 [
-                    ImportApplication(**self._format_row(columns, row, ia_fields, pk=start_pk + i))
+                    ImportApplication(**format_row(columns, row, ia_fields, pk=start_pk + i))
                     for i, row in enumerate(rows)
                 ]
             )
@@ -136,55 +134,13 @@ class Command(BaseCommand):
             model_fields = model.fields()
             model.objects.bulk_create(
                 [
-                    model(**self._format_row(columns, row, model_fields, pk=start_pk + i))
+                    model(**format_row(columns, row, model_fields, pk=start_pk + i))
                     for i, row in enumerate(rows)
                 ]
             )
             # TODO: Create tasks for the application data
         else:
-            model.objects.bulk_create([model(**self._format_row(columns, row)) for row in rows])
-
-    def _format_data(self, column: str, data: Any) -> tuple[str, Any]:
-        """Applies formatting to the columns to be able to import into Django models
-
-        :param column: The column name being formatted
-        :param data: The data being formatted
-        """
-
-        if column.endswith("_datetime") and data:
-            # TODO: Check timezone how timezones work in django.
-            # Assumption that source is UTC and datetime is passed to models with source tz
-            data = timezone.utc.localize(data)
-
-        return (column, data)
-
-    def _format_row(
-        self,
-        columns: list[str],
-        row: list[Any],
-        includes: Optional[list[str]] = None,
-        pk: Optional[int] = None,
-    ) -> dict[str, Any]:
-        """Applies formatting to the row to be able to import into Django models
-
-        :param columns: The columns returned from the query
-        :param row: The row of data being formatted
-        :param includes: The fields to be used when creating the model instance
-        :param pk: The pk to set when creating the model instance
-        """
-        data = {}
-
-        for column, value in zip(columns, row):
-            if includes and column not in includes:
-                continue
-
-            k, v = self._format_data(column, value)
-            data[k] = v
-
-        if pk:
-            data["id"] = pk
-
-        return data
+            model.objects.bulk_create([model(**format_row(columns, row)) for row in rows])
 
     def _create_user_data(self):
         """Creates dummy user data prior to users being migrated"""

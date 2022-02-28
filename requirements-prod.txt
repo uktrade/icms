@@ -2,4 +2,3 @@
 
 # add packages needed only for prod deployments
 django-audit-log-middleware
-cx-Oracle==8.2.1
