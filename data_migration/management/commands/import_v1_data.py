@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 from data_migration.queries import DATA_TYPE, DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
 
 from .utils.db import bulk_create
+from .utils.format import format_name
 
 
 class Command(BaseCommand):
@@ -48,16 +49,13 @@ class Command(BaseCommand):
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
         source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
         m2m_list = DATA_TYPE_M2M[data_type]
-
-        # Form a more human readable name "foo_bar" -> "Foo Bar"
-        name = " ".join(dt.capitalize() for dt in data_type.split("_"))
+        name = format_name(data_type)
 
         if skip:
             self.stdout.write(f"Skipping {name} Data Import")
             return
 
         self.stdout.write(f"Importing {name} Data")
-
         for source, target in source_target_list:
             self.stdout.write(f"Importing {target.__name__} from {source.__name__}")
             objs = source.get_source_data()
@@ -84,6 +82,6 @@ class Command(BaseCommand):
                 if not batch:
                     break
 
-                through_table.objects.bulk_create(batch)
+                bulk_create(through_table, batch)
 
         self.stdout.write(f"{name} Data Imported!")

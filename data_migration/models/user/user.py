@@ -15,7 +15,6 @@ class User(MigrationBase):
     is_active = models.BooleanField(default=True)
     password = models.CharField(max_length=128)
     last_login = models.DateTimeField(blank=True, null=True)
-
     date_joined = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=20, blank=False, null=True)
     preferred_first_name = models.CharField(max_length=4000, blank=True, null=True)
