@@ -20,12 +20,10 @@ from web.domains.case.forms import (
     VariationRequestForm,
 )
 from web.domains.case.models import VariationRequest
+from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import (
-    check_application_permission,
-    get_variation_request_case_reference,
-)
+from web.domains.case.utils import check_application_permission
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -144,7 +142,9 @@ class VariationRequestCancelView(
 
         # Export applications need the reference updating
         if not self.application.is_import_application():
-            self.application.reference = get_variation_request_case_reference(self.application)
+            self.application.reference = reference.get_variation_request_case_reference(
+                self.application
+            )
 
         self.update_application_status()
         self.update_application_tasks()

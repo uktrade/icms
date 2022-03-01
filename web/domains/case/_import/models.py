@@ -9,13 +9,13 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
     CaseEmail,
+    CaseLicenceCertificateBase,
     CaseNote,
     UpdateRequest,
     VariationRequest,
 )
 from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country, CountryGroup
-from web.domains.file.models import File
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.template.models import Template
@@ -365,7 +365,7 @@ class ImportApplication(ApplicationBase):
                 ImportApplicationLicence.Status.DRAFT,
                 ImportApplicationLicence.Status.ACTIVE,
             ]
-        ).order_by("-created_at")[0]
+        ).latest("created_at")
 
 
 def get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
@@ -439,17 +439,10 @@ class ChecklistBase(models.Model):
     )
 
 
-class ImportApplicationLicence(models.Model):
-    class Status(models.TextChoices):
-        DRAFT = "DR"
-        ACTIVE = "AC"
-        ARCHIVED = "AR"
-
+class ImportApplicationLicence(CaseLicenceCertificateBase):
     import_application = models.ForeignKey(
-        "ImportApplication", on_delete=models.PROTECT, related_name="licences"
+        "ImportApplication", on_delete=models.CASCADE, related_name="licences"
     )
-
-    status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
 
     # A nullable boolean field that is either hardcoded or left to the user to
     # set later depending on the application type.
@@ -464,29 +457,6 @@ class ImportApplicationLicence(models.Model):
     # Set when the case is marked as complete
     case_completion_date = models.DateField(verbose_name="Case Completion Date", null=True)
 
-    # Values added when licence records are created / updated
-    # Used to get the most recent licence
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     def __str__(self):
         ia_pk, st, ca = (self.import_application_id, self.status, self.created_at)
         return f"ImportApplicationLicence(import_application={ia_pk}, status={st}, created_at={ca})"
-
-
-class LicenceDocument(File):
-    class Type(models.TextChoices):
-        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
-        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
-
-    licence = models.ForeignKey(
-        "ImportApplicationLicence", related_name="documents", on_delete=models.PROTECT
-    )
-    document_type = models.CharField(max_length=12, choices=Type.choices)
-
-    # Only the LICENCE doc type has a reference
-    reference = models.CharField(max_length=13, verbose_name="Document Reference", null=True)
-
-    def __str__(self):
-        l_pk, dt, ref = (self.licence_id, self.document_type, self.reference)
-        return f"LicenceDocument(licence={l_pk}, document_type={dt}, reference={ref})"

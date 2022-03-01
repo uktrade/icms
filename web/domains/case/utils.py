@@ -1,5 +1,4 @@
-import datetime
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -12,34 +11,8 @@ from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
 from web.utils.s3 import get_file_from_s3
 
-from .models import VariationRequest
 from .shared import ImpExpStatus
 from .types import ImpOrExp, ImpOrExpOrAccess
-
-
-def get_variation_request_case_reference(application: ImpOrExp) -> str:
-    """Get the case reference updated with the count of variations associated with the application."""
-
-    ref = application.get_reference()
-
-    if ref == application.DEFAULT_REF:
-        raise ValueError("Application has not been assigned yet.")
-
-    variations = application.variation_requests.all()
-
-    if not application.is_import_application():
-        variations = variations.filter(status__in=[VariationRequest.OPEN, VariationRequest.CLOSED])
-
-    # e.g [prefix, year, reference]
-    case_ref_sections = ref.split("/")[:3]
-    variation_count = variations.count()
-
-    if variation_count:
-        # e.g. [prefix, year, reference, variation_count]
-        case_ref_sections.append(str(variation_count))
-
-    # Return the new joined up case reference
-    return "/".join(case_ref_sections)
 
 
 def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
@@ -200,75 +173,3 @@ def _has_importer_exporter_access(user: User, case_type: str) -> bool:
         return user.has_perm("web.exporter_access")
 
     raise NotImplementedError(f"Unknown case_type {case_type}")
-
-
-# TODO: Revisit when implementing ICMSLST-1405
-# Not decided where the next_sequence_value is coming from yet.
-def get_import_application_licence_reference(
-    licence_type: Literal["electronic", "paper"],
-    process_type: str,
-    next_sequence_value: int,
-):
-    """Creates an import application licence reference.
-
-    Reference formats:
-        - Electronic licence: GBxxxNNNNNNNa
-        - Paper licence: NNNNNNNa
-
-    Reference breakdown:
-        - GB: reference prefix
-        - xxx: licence category
-        - NNNNNNN: Next sequence value (padded to 7 digits)
-        - a: check digit
-
-    :param licence_type: Type of licence reference to create
-    :param process_type: ProcessTypes value
-    :param next_sequence_value: Number representing the next available sequence number.
-    """
-
-    check_digit = _get_check_digit(next_sequence_value)
-    sequence_and_check_digit = f"{next_sequence_value:07}{check_digit}"
-
-    if licence_type == "electronic":
-        prefix = {
-            ProcessTypes.DEROGATIONS: "SAN",
-            ProcessTypes.FA_DFL: "SIL",
-            ProcessTypes.FA_OIL: "OIL",
-            ProcessTypes.FA_SIL: "SIL",
-            ProcessTypes.IRON_STEEL: "AOG",
-            ProcessTypes.SPS: "AOG",
-            ProcessTypes.SANCTIONS: "SAN",
-            ProcessTypes.TEXTILES: "TEX",
-        }
-        xxx = prefix[process_type]  # type: ignore[index]
-
-        return f"GB{xxx}{sequence_and_check_digit}"
-
-    return sequence_and_check_digit
-
-
-def _get_check_digit(val: int) -> str:
-    idx = val % 13
-    return "ABCDEFGHXJKLM"[idx]
-
-
-# TODO: Revisit when implementing ICMSLST-1405
-# Not decided where the next_sequence_value is coming from yet.
-def get_export_application_certificate_reference(process_type: str, next_sequence_value: int):
-    """Creates an export application certificate reference.
-
-    Reference formats:
-        - XXX/YYYY/NNNNN
-
-    Reference breakdown:
-        - XXX: licence category
-        - YYYY: year certificate issued
-        - NNNNN: Next sequence value (padded to 5 digits)
-    """
-
-    today = datetime.date.today()
-
-    prefix = {ProcessTypes.CFS: "CFS", ProcessTypes.COM: "COM", ProcessTypes.GMP: "GMP"}
-    xxx = prefix[process_type]  # type: ignore[index]
-
-    return f"{xxx}/{today.year}/{next_sequence_value:05}"

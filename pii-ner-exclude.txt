@@ -1261,3 +1261,13 @@ Import Application Licence
 coalesce(max("id
 TestUser
 REF
+OPEN & VariationRequest
+ILD
+ApplicationAndTaskRelatedObjectMixin Config
+update_request_reason
+f"LicenceDocumentReference(licence={l_pk}
+gmp_app
+GBTEX0000009J
+ECD
+Import Licences and Export Certificates
+f"{xxx}/{timezone.now().year}/{next_sequence_value:05
