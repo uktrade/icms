@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
@@ -462,3 +464,46 @@ class CaseEmail(models.Model):
     @property
     def is_draft(self):
         return self.status == self.Status.DRAFT
+
+
+class CaseLicenceCertificateBase(models.Model):
+    """Base class for Import Licences and Export Certificates"""
+
+    class Meta:
+        abstract = True
+
+    class Status(models.TextChoices):
+        DRAFT = "DR"
+        ACTIVE = "AC"
+        ARCHIVED = "AR"
+
+    status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
+
+    document_references = GenericRelation("CaseDocumentReference", object_id_field="process_id")
+
+    # Values added when records are created / updated, used to get the most recent one.
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class CaseDocumentReference(models.Model):
+    """All documents relevant to a case licence or certificate."""
+
+    class Type(models.TextChoices):
+        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
+        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
+
+    document = models.OneToOneField(File, on_delete=models.CASCADE, null=True)
+    document_type = models.CharField(max_length=12, choices=Type.choices)
+
+    # Nullable because import application cover letters don't have a reference.
+    reference = models.CharField(max_length=20, verbose_name="Document Reference", null=True)
+
+    # Fields to set up the generic model for import / export models.
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    process_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(fk_field="process_id")
+
+    def __str__(self):
+        p_id, dt, ref = (self.process_id, self.document_type, self.reference)
+        return f"CaseDocumentReference(process_id={p_id}, document_type={dt}, reference={ref})"

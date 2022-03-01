@@ -24,7 +24,7 @@ from web.domains.case.forms_search import (
     ReassignmentUserForm,
 )
 from web.domains.case.models import ApplicationBase, VariationRequest
-from web.domains.case.utils import get_variation_request_case_reference
+from web.domains.case.services import reference
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -283,7 +283,9 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
         self.application.variation_decision = None
         self.application.variation_refuse_reason = None
 
-        self.application.reference = get_variation_request_case_reference(self.application)
+        self.application.reference = reference.get_variation_request_case_reference(
+            self.application
+        )
 
         self.update_application_status()
         self.update_application_tasks()
@@ -318,7 +320,9 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
 
         self.application.variation_requests.add(variation_request)
         self.application.case_owner = None
-        self.application.reference = get_variation_request_case_reference(self.application)
+        self.application.reference = reference.get_variation_request_case_reference(
+            self.application
+        )
 
         self.update_application_status()
         self.update_application_tasks()

@@ -8,6 +8,7 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
     CaseEmail,
+    CaseLicenceCertificateBase,
     CaseNote,
     UpdateRequest,
     VariationRequest,
@@ -182,6 +183,14 @@ class ExportApplication(ApplicationBase):
             return "Case Variation"
 
         return super().get_status_display()
+
+    def get_most_recent_certificate(self) -> "ExportApplicationCertificate":
+        return self.certificates.filter(
+            status__in=[
+                ExportApplicationCertificate.Status.DRAFT,
+                ExportApplicationCertificate.Status.ACTIVE,
+            ]
+        ).latest("created_at")
 
 
 @final
@@ -513,31 +522,9 @@ class GMPBrand(models.Model):
     brand_name = models.CharField(max_length=20, verbose_name="Name of the brand")
 
 
-class ExportApplicationCertificate(models.Model):
-    class Status(models.TextChoices):
-        DRAFT = "DR"
-        ACTIVE = "AC"
-        ARCHIVED = "AR"
-
+class ExportApplicationCertificate(CaseLicenceCertificateBase):
     export_application = models.ForeignKey(
         "ExportApplication", on_delete=models.PROTECT, related_name="certificates"
     )
 
-    status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
-
-    issue_date = models.DateField(verbose_name="Issue Date")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
-class CertificateDocument(File):
-    class Type(models.TextChoices):
-        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
-        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
-
-    licence = models.ForeignKey(
-        "ExportApplicationCertificate", related_name="documents", on_delete=models.PROTECT
-    )
-
-    document_type = models.CharField(max_length=12, choices=Type.choices)
-    reference = models.CharField(max_length=14, verbose_name="Document Reference")
+    issue_date = models.DateField(verbose_name="Issue Date", null=True)
