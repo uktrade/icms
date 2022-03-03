@@ -6,9 +6,16 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import (
+    CaseLicenceCertificateBase,
+    ImportApplication,
+)
 from web.domains.case._import.wood.models import WoodQuotaChecklist
-from web.domains.case.models import UpdateRequest, VariationRequest
+from web.domains.case.models import (
+    CaseDocumentReference,
+    UpdateRequest,
+    VariationRequest,
+)
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.flow.models import Task
@@ -27,6 +34,9 @@ def wood_application(icms_admin_client, wood_app_submitted):
     """A submitted application owned by the ICMS admin user."""
     icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
+    licence = wood_app_submitted.get_most_recent_licence()
+    licence.issue_paper_licence_only = True
+    licence.save()
 
     return wood_app_submitted
 
@@ -135,6 +145,11 @@ def test_start_authorisation_approved_application_has_no_errors(
     )
     assert current_task is not None
 
+    licence_doc = wood_application.get_most_recent_licence().document_references.get(
+        document_type=CaseDocumentReference.Type.LICENCE
+    )
+    assert licence_doc.reference == "0000001B"
+
 
 def test_start_authorisation_refused_application_has_errors(icms_admin_client, wood_application):
     """Test start authorisation catches the correct errors for a refused application."""
@@ -175,6 +190,11 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     )
     assert current_task is not None
 
+    assert wood_application.licences.count() == 1
+    assert wood_application.licences.filter(
+        status=CaseLicenceCertificateBase.Status.ARCHIVED
+    ).exists()
+
 
 def test_start_authorisation_approved_variation_requested_application(
     icms_admin_client, wood_application, test_icms_admin_user
@@ -202,6 +222,11 @@ def test_start_authorisation_approved_variation_requested_application(
     assert vr.status == VariationRequest.OPEN
 
     assert expected_task is not None
+
+    licence_doc = wood_application.get_most_recent_licence().document_references.get(
+        document_type=CaseDocumentReference.Type.LICENCE
+    )
+    assert licence_doc.reference == "0000001B"
 
 
 def test_start_authorisation_rejected_variation_requested_application(
@@ -232,6 +257,11 @@ def test_start_authorisation_rejected_variation_requested_application(
     assert vr.status == VariationRequest.REJECTED
     assert vr.reject_cancellation_reason == "test refuse reason"
     assert vr.closed_datetime.date() == timezone.now().date()
+
+    assert wood_application.licences.count() == 1
+    assert wood_application.licences.filter(
+        status=CaseLicenceCertificateBase.Status.ARCHIVED
+    ).exists()
 
 
 class TestAuthoriseDocumentsView:
@@ -309,10 +339,11 @@ class TestAuthoriseDocumentsView:
 
 
 def _set_valid_licence(wood_application):
-    wood_application.licences.create(
-        licence_start_date=datetime.date.today(),
-        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
-    )
+    licence = wood_application.get_most_recent_licence()
+    licence.licence_start_date = datetime.date.today()
+    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.issue_paper_licence_only = True
+    licence.save()
 
 
 def _add_valid_checklist(wood_application):
