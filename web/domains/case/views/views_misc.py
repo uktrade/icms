@@ -16,7 +16,8 @@ from web.domains.case._import.models import (
     ImportApplicationLicence,
     get_paper_licence_only,
 )
-from web.domains.case.models import VariationRequest
+from web.domains.case.models import CaseDocumentReference, VariationRequest
+from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -39,6 +40,8 @@ from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+    from web.utils.lock_manager import LockManager
 
 
 # "Applicant Case Management" Views
@@ -384,6 +387,8 @@ def start_authorisation(
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
+            create_references = True
+
             if application.status == application.Statuses.VARIATION_REQUESTED:
                 if (
                     application.is_import_application()
@@ -398,6 +403,7 @@ def start_authorisation(
 
                     vr.save()
 
+                    create_references = False
                 else:
                     next_task = Task.TaskType.AUTHORISE
 
@@ -405,6 +411,8 @@ def start_authorisation(
                 if application.decision == application.REFUSE:
                     next_task = Task.TaskType.REJECTED
                     application.status = model_class.Statuses.COMPLETED
+                    create_references = False
+
                 else:
                     next_task = Task.TaskType.AUTHORISE
                     application.status = model_class.Statuses.PROCESSING
@@ -417,6 +425,11 @@ def start_authorisation(
 
             if next_task:
                 Task.objects.create(process=application, task_type=next_task, previous=task)
+
+            if create_references:
+                create_application_document_references(request.icms.lock_manager, application)
+            else:
+                archive_application_licence_or_certificate(application)
 
             return redirect(reverse("workbasket"))
 
@@ -434,6 +447,43 @@ def start_authorisation(
                 template_name="web/domains/case/authorisation.html",
                 context=context,
             )
+
+
+def create_application_document_references(
+    lock_manager: "LockManager", application: ImpOrExp
+) -> None:
+    """Create the document references for the draft licence."""
+
+    if application.is_import_application():
+        licence = application.get_most_recent_licence()
+
+        if licence.status != ImportApplicationLicence.Status.DRAFT:
+            raise ValueError("Can only create references for a draft application")
+
+        licence.document_references.create(document_type=CaseDocumentReference.Type.COVER_LETTER)
+        licence.document_references.create(
+            document_type=CaseDocumentReference.Type.LICENCE,
+            reference=reference.get_import_licence_reference(lock_manager, application),
+        )
+
+    else:
+        # Revisit when doing the following as multiple document_references need creating:
+        # https://uktrade.atlassian.net/browse/ICMSLST-1406
+        # https://uktrade.atlassian.net/browse/ICMSLST-1407
+        # https://uktrade.atlassian.net/browse/ICMSLST-1408
+        pass
+
+
+def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
+    """Archives the draft licence or certificate."""
+
+    if application.is_import_application():
+        l_or_c = application.get_most_recent_licence()
+    else:
+        l_or_c = application.get_most_recent_certificate()
+
+    l_or_c.status = l_or_c.Status.ARCHIVED
+    l_or_c.save()
 
 
 @login_required

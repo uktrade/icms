@@ -411,18 +411,6 @@ class ApplicationBase(WorkbasketBase, Process):
 
         print("*-" * 40)
 
-    def get_information(self, is_ilb_admin: bool):
-        """Return the latest information about an application.
-
-        TODO: This needs a lot of work to flesh out what it is supposed to show.
-        :param is_ilb_admin: This will probably be needed to determine what the user should see here...
-        """
-
-        if self.is_rejected():
-            return "View Case"
-
-        return "Application Processing"
-
     def is_rejected(self, active_tasks: list[str] = None):
         """Is the application in a rejected state."""
 

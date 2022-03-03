@@ -1,5 +1,6 @@
 from pytest_django.asserts import assertRedirects
 
+from web.domains.case.models import CaseDocumentReference
 from web.tests.helpers import CaseURLS
 
 
@@ -16,14 +17,17 @@ def test_fa_sil_preview_licence_view(fa_sil_app_submitted, icms_admin_client):
 
 
 def test_fa_oil_pre_sign_licence_view(fa_oil_app_submitted, icms_admin_client):
+    _add_pre_sign_document_reference(fa_oil_app_submitted)
     _test_licence_pre_sign(fa_oil_app_submitted, icms_admin_client)
 
 
 def test_fa_dfl_pre_sign_licence_view(fa_dfl_app_submitted, icms_admin_client):
+    _add_pre_sign_document_reference(fa_dfl_app_submitted)
     _test_licence_pre_sign(fa_dfl_app_submitted, icms_admin_client)
 
 
 def test_fa_sil_pre_sign_licence_view(fa_sil_app_submitted, icms_admin_client):
+    _add_pre_sign_document_reference(fa_sil_app_submitted)
     _test_licence_pre_sign(fa_sil_app_submitted, icms_admin_client)
 
 
@@ -75,3 +79,10 @@ def test_login_required(fa_oil_app_submitted, client):
         response = client.get(url)
         redirect_url = f"/?next={url}"
         assertRedirects(response, redirect_url, 302), f"URl failed to redirect: {url}"
+
+
+def _add_pre_sign_document_reference(application):
+    licence = application.get_most_recent_licence()
+    licence.document_references.create(
+        document_type=CaseDocumentReference.Type.LICENCE, reference="0000001B"
+    )
