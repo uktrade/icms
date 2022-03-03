@@ -1271,3 +1271,4 @@ GBTEX0000009J
 ECD
 Import Licences and Export Certificates
 f"{xxx}/{timezone.now().year}/{next_sequence_value:05
+Start Authorisation

@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Any, Union
 
+from web.domains.case.models import CaseDocumentReference
+
 from .types import DocumentTypes
 
 if TYPE_CHECKING:
@@ -183,7 +185,12 @@ def _get_licence_end_date(licence: "ImportApplicationLicence"):
 
 def _get_licence_number(application: "ImportApplication", doc_type: DocumentTypes) -> str:
     if doc_type == DocumentTypes.LICENCE_PRE_SIGN:
-        return "ICMSLST-1224: Real Licence Number"
+        licence = application.get_most_recent_licence()
+        licence_doc = licence.document_references.get(
+            document_type=CaseDocumentReference.Type.LICENCE
+        )
+
+        return licence_doc.reference
 
     return "[[Licence Number]]"
 

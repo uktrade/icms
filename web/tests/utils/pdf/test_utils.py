@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from web.domains.case._import.fa_sil.models import (
     SILGoodsSection582Obsolete,  # /PS-IGNORE
@@ -74,8 +74,11 @@ def test_fa_oil_ni_office_postcode_returns_two_override_eori_numbers(
     assert oil_expected_preview_context == actual_context
 
 
-def test_fa_oil_get_pre_sign_context(oil_app, licence, oil_expected_preview_context):
-    oil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+@patch("web.utils.pdf.utils._get_licence_number", return_value="0000001B")
+def test_fa_oil_get_pre_sign_context(
+    mock_get_licence, oil_app, licence, oil_expected_preview_context
+):
+    oil_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN
@@ -95,14 +98,14 @@ def test_fa_dfl_get_preview_context(mock_get_goods, dfl_app, licence, dfl_expect
     assert dfl_expected_preview_context == actual_context
 
 
-@patch("web.utils.pdf.utils._get_fa_dfl_goods")
-def test_fa_dfl_get_pre_sign_context(
-    mock_get_goods, dfl_app, licence, dfl_expected_preview_context
-):
-    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
-
+@patch.multiple(
+    "web.utils.pdf.utils",
+    _get_fa_dfl_goods=MagicMock(return_value=["goods one", "goods two", "goods three"]),
+    _get_licence_number=MagicMock(return_value="0000001B"),
+)
+def test_fa_dfl_get_pre_sign_context(dfl_app, licence, dfl_expected_preview_context, **mocks):
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
-    dfl_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+    dfl_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = utils.get_fa_dfl_licence_context(
         dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN
@@ -126,18 +129,20 @@ def test_fa_sil_get_preview_context(mock_get_goods, sil_app, licence, sil_expect
     assert sil_expected_preview_context == actual_context
 
 
-@patch("web.utils.pdf.utils._get_fa_sil_goods")
-def test_fa_sil_get_pre_sign_context(
-    mock_get_goods, sil_app, licence, sil_expected_preview_context
-):
-    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
-
+@patch.multiple(
+    "web.utils.pdf.utils",
+    _get_fa_sil_goods=MagicMock(
+        return_value=[("goods one", 10), ("goods two", 20), ("goods three", 30)]
+    ),
+    _get_licence_number=MagicMock(return_value="0000001B"),
+)
+def test_fa_sil_get_pre_sign_context(sil_app, licence, sil_expected_preview_context, **mocks):
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
         ("goods two", 20),
         ("goods three", 30),
     ]
-    sil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+    sil_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = utils.get_fa_sil_licence_context(
         sil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN

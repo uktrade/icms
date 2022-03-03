@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from django.conf import settings
@@ -99,7 +99,10 @@ def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_previ
     assert oil_expected_preview_context == actual_context
 
 
-def test_get_fa_oil_licence_pre_sign_context(oil_app, licence, oil_expected_preview_context):
+@patch("web.utils.pdf.utils._get_licence_number", return_value="0000001B")
+def test_get_fa_oil_licence_pre_sign_context(
+    licence_mock, oil_app, licence, oil_expected_preview_context
+):
     request = AuthenticatedHttpRequest()
     generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
@@ -107,7 +110,7 @@ def test_get_fa_oil_licence_pre_sign_context(oil_app, licence, oil_expected_prev
     oil_expected_preview_context["preview_licence"] = False
     oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
-    oil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+    oil_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = generator.get_document_context()
 
@@ -134,12 +137,14 @@ def test_get_fa_dfl_preview_licence_context(
     assert dfl_expected_preview_context == actual_context
 
 
-@patch("web.utils.pdf.utils._get_fa_dfl_goods")
+@patch.multiple(
+    "web.utils.pdf.utils",
+    _get_fa_dfl_goods=MagicMock(return_value=["goods one", "goods two", "goods three"]),
+    _get_licence_number=MagicMock(return_value="0000001B"),
+)
 def test_get_fa_dfl_licence_pre_sign_context(
-    mock_get_goods, dfl_app, licence, dfl_expected_preview_context
+    dfl_app, licence, dfl_expected_preview_context, **mocks
 ):
-    mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
-
     request = AuthenticatedHttpRequest()
     generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
@@ -148,7 +153,7 @@ def test_get_fa_dfl_licence_pre_sign_context(
     dfl_expected_preview_context["preview_licence"] = False
     dfl_expected_preview_context["paper_licence_only"] = False
     dfl_expected_preview_context["process"] = dfl_app
-    dfl_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+    dfl_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = generator.get_document_context()
 
@@ -179,12 +184,14 @@ def test_get_fa_sil_preview_licence_context(
     assert sil_expected_preview_context == actual_context
 
 
-@patch("web.utils.pdf.utils._get_fa_sil_goods")
-def test_get_fa_sil_licence_pre_sign_context(
-    mock_get_goods, sil_app, licence, sil_expected_preview_context
-):
-    mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
-
+@patch.multiple(
+    "web.utils.pdf.utils",
+    _get_fa_sil_goods=MagicMock(
+        return_value=[("goods one", 10), ("goods two", 20), ("goods three", 30)]
+    ),
+    _get_licence_number=MagicMock(return_value="0000001B"),
+)
+def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_preview_context):
     request = AuthenticatedHttpRequest()
     generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN, request)
 
@@ -197,7 +204,7 @@ def test_get_fa_sil_licence_pre_sign_context(
     sil_expected_preview_context["preview_licence"] = False
     sil_expected_preview_context["paper_licence_only"] = False
     sil_expected_preview_context["process"] = sil_app
-    sil_expected_preview_context["licence_number"] = "ICMSLST-1224: Real Licence Number"
+    sil_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = generator.get_document_context()
 
