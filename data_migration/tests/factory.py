@@ -32,7 +32,7 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
         model = models.ImportApplicationType
 
     status = random.choice(["ACTIVE", "INACTIVE"])
-    type = factory.fuzzy.FuzzyText(length=6)
+    type = "WD"
     sub_type = factory.fuzzy.FuzzyText(length=6)
     licence_type_code = factory.fuzzy.FuzzyText(length=6)
     sigl_flag = random.choice(["true", "false"])

@@ -5,8 +5,8 @@ from data_migration.models import Process
 
 set_seq_sql = """
 SELECT
-  setval(pg_get_serial_sequence('"{table_name}"','id')
-  , coalesce(max("id"), 1), max("id") IS NOT null)
+  setval(pg_get_serial_sequence('"{table_name}"','{pk_column}')
+  , coalesce(max("{pk_column}"), 1), max("{pk_column}") IS NOT null)
 FROM "{table_name}";
 """
 
@@ -24,6 +24,8 @@ def bulk_create(model: Model, objs: list[Model]) -> None:
     :param db: The database being targeted
     """
     db = model.objects.db
+    pk_column = model._meta.pk.column
+
     with transaction.atomic(using=db, savepoint=False):
         connection = connections[db]
         fields = model._meta.local_concrete_fields
@@ -34,7 +36,7 @@ def bulk_create(model: Model, objs: list[Model]) -> None:
         # Postgres doesn't increase the sequence when specifying the pk when performing inserts
         # We have to do this manually by executing sql
         table_name = model._meta.db_table
-        seq_sql = set_seq_sql.format(table_name=table_name)
+        seq_sql = set_seq_sql.format(table_name=table_name, pk_column=pk_column)
         cursor = connection.cursor()
         cursor.execute(seq_sql)
         cursor.close()

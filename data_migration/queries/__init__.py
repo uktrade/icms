@@ -3,6 +3,7 @@ from typing import Literal, NamedTuple
 from django.db.models import Model
 
 from data_migration import models as dm_models
+from data_migration.models import task
 from web import models as web_models
 
 from . import import_application, reference
@@ -93,3 +94,8 @@ DATA_TYPE_M2M: dict[str, list[M2M]] = {
     "reference": ref_m2m,
     "import_application": [],
 }
+
+TASK_LIST = [
+    task.PrepareTask,
+    task.ProcessTask,
+]

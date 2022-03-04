@@ -31,8 +31,6 @@ SELECT
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.issue_date
-  , xiad.licence_start_date
-  , xiad.licence_end_date
   , xiad.licence_extended licence_extended_flag
   , ir.licence_ref licence_reference
   , xiad.last_updated_datetime last_update_datetime
@@ -46,7 +44,6 @@ SELECT
   , 2 contact_id
   , xiad.coo_country_id origin_country_id
   , xiad.coc_country_id consignment_country_id
-  , 0 issue_paper_licence_only
   , NULL imi_submitted_by_id
   , xiad.date_provided_to_imi imi_submit_datetime
   , iat.id application_type_id
