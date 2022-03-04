@@ -4,7 +4,13 @@ from itertools import islice
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from data_migration.queries import DATA_TYPE, DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
+from data_migration.queries import (
+    DATA_TYPE,
+    DATA_TYPE_M2M,
+    DATA_TYPE_SOURCE_TARGET,
+    TASK_LIST,
+)
+from web.models import Task
 
 from .utils.db import bulk_create
 from .utils.format import format_name
@@ -31,8 +37,13 @@ class Command(BaseCommand):
             action="store_true",
         )
         parser.add_argument(
+            "--skip_task",
+            help="Skip the creation of tasks",
+            action="store_true",
+        )
+        parser.add_argument(
             "--skip_user",
-            help="Skip user data export",
+            help="Skip user data import",
             action="store_true",
         )
 
@@ -45,6 +56,7 @@ class Command(BaseCommand):
         self._import_data("user", options["skip_user"])
         self._import_data("reference", options["skip_ref"])
         self._import_data("import_application", options["skip_ia"])
+        self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
         source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
@@ -58,6 +70,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Importing {name} Data")
         for source, target in source_target_list:
             self.stdout.write(f"Importing {target.__name__} from {source.__name__}")
+
             objs = source.get_source_data()
 
             while True:
@@ -85,3 +98,17 @@ class Command(BaseCommand):
                 bulk_create(through_table, batch)
 
         self.stdout.write(f"{name} Data Imported!")
+
+    def _create_tasks(self, skip):
+        if skip:
+            self.stdout.write("Skipping Task Data Import")
+            return
+
+        self.stdout.write("Creating Task Data")
+
+        for task in TASK_LIST:
+            self.stdout.write(f"Creating {task.TASK_TYPE} tasks")
+
+            Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
+
+        self.stdout.write("Task Data Created!")

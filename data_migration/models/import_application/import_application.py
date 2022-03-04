@@ -41,8 +41,6 @@ class ImportApplication(MigrationBase):
     variation_decision = models.CharField(max_length=10, null=True)
     variation_refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
     issue_date = models.DateField(blank=True, null=True)
-    licence_start_date = models.DateField(blank=True, null=True)
-    licence_end_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)
     licence_reference = models.CharField(max_length=100, null=True, unique=True)
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
@@ -74,8 +72,6 @@ class ImportApplication(MigrationBase):
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
     cover_letter = models.TextField(blank=True, null=True)
-
-    issue_paper_licence_only = models.BooleanField(blank=False, null=True)
 
     imi_submitted_by = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, related_name="+"
