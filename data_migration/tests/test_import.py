@@ -106,6 +106,7 @@ ia_data_source_target = {
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
         (dm.WoodQuotaApplication, web.WoodQuotaApplication),
+        (dm.ImportApplicationLicence, web.ImportApplicationLicence),
     ],
 }
 
@@ -139,6 +140,7 @@ def test_import_wood_application_data():
             status = "PROCESSING"
         else:
             status = "COMPLETE"
+            dm.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
 
         ia = ImportApplicationFactory(
             pk=pk,
@@ -157,5 +159,17 @@ def test_import_wood_application_data():
     assert web.Process.objects.filter(id__in=pk_range).count() == 6
     assert web.ImportApplication.objects.filter(id__in=pk_range).count() == 6
     assert web.WoodQuotaApplication.objects.filter(id__in=pk_range).count() == 6
+    assert (
+        web.ImportApplicationLicence.objects.filter(
+            import_application_id__in=pk_range, status="DR"
+        ).count()
+        == 5
+    )
+    assert (
+        web.ImportApplicationLicence.objects.filter(
+            import_application_id__in=pk_range, status="AC"
+        ).count()
+        == 1
+    )
     assert web.Task.objects.filter(process_id__in=pk_range, task_type="prepare").count() == 3
     assert web.Task.objects.filter(process_id__in=pk_range, task_type="process").count() == 2
