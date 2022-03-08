@@ -1,15 +1,20 @@
 from typing import TYPE_CHECKING
 
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.db.models import F, OuterRef, Subquery
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import ImportApplication, ImportApplicationLicence
 from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
-from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
+from web.domains.case._import.sanctions.models import (
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+)
 from web.domains.case._import.sps.models import PriorSurveillanceApplication
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
@@ -17,7 +22,9 @@ from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    ExportApplicationCertificate,
 )
+from web.domains.case.models import CaseDocumentReference
 from web.flow.models import ProcessTypes
 
 if TYPE_CHECKING:
@@ -32,6 +39,8 @@ def get_derogations_applications(search_ids: list[int]) -> "QuerySet[Derogations
 
     applications = applications.select_related("commodity", "origin_country", "consignment_country")
 
+    applications = _add_import_licence_data(applications)
+
     return applications
 
 
@@ -40,6 +49,8 @@ def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]"
     applications = _apply_import_optimisation(applications)
 
     applications = applications.select_related("origin_country", "consignment_country")
+
+    applications = _add_import_licence_data(applications)
 
     return applications
 
@@ -50,6 +61,8 @@ def get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLi
 
     applications = applications.select_related("origin_country", "consignment_country")
 
+    applications = _add_import_licence_data(applications)
+
     return applications
 
 
@@ -58,6 +71,8 @@ def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]"
     applications = _apply_import_optimisation(applications)
 
     applications = applications.select_related("origin_country", "consignment_country")
+
+    applications = _add_import_licence_data(applications)
 
     return applications
 
@@ -70,6 +85,8 @@ def get_ironsteel_applications(search_ids: list[int]) -> "QuerySet[IronSteelAppl
         "origin_country", "consignment_country", "category_commodity_group", "commodity"
     )
 
+    applications = _add_import_licence_data(applications)
+
     return applications
 
 
@@ -79,10 +96,31 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
 
     applications = applications.select_related("cp_origin_country", "cp_processing_country")
 
-    applications = applications.annotate(
-        cp_commodity_codes=ArrayAgg("cp_commodities__commodity_code", distinct=True),
-        teg_commodity_codes=ArrayAgg("teg_commodities__commodity_code", distinct=True),
+    CpCommodities = OutwardProcessingTradeApplication.cp_commodities.through
+    TegCommodities = OutwardProcessingTradeApplication.teg_commodities.through
+
+    cp_commodity_codes_sq = (
+        CpCommodities.objects.filter(outwardprocessingtradeapplication_id=OuterRef("pk"))
+        .order_by()
+        .values("outwardprocessingtradeapplication")
+        .annotate(commodity_array=ArrayAgg("commodity__commodity_code"))
+        .values("commodity_array")
     )
+
+    teg_commodity_codes_sq = (
+        TegCommodities.objects.filter(outwardprocessingtradeapplication_id=OuterRef("pk"))
+        .order_by()
+        .values("outwardprocessingtradeapplication")
+        .annotate(commodity_array=ArrayAgg("commodity__commodity_code"))
+        .values("commodity_array")
+    )
+
+    applications = applications.annotate(
+        cp_commodity_codes=Subquery(cp_commodity_codes_sq),
+        teg_commodity_codes=Subquery(teg_commodity_codes_sq),
+    )
+
+    applications = _add_import_licence_data(applications)
 
     return applications
 
@@ -95,11 +133,18 @@ def get_sanctionadhoc_applications(
 
     applications = applications.select_related("origin_country", "consignment_country")
 
-    applications = applications.annotate(
-        commodity_codes=ArrayAgg(
-            "sanctionsandadhocapplicationgoods__commodity__commodity_code", distinct=True
-        )
+    # Need to annotate using the subquery now we are using `DISTINCT ON`
+    # https://docs.djangoproject.com/en/4.0/ref/models/expressions/#using-aggregates-within-a-subquery-expression
+    commodity_codes_sub_query = (
+        SanctionsAndAdhocApplicationGoods.objects.filter(import_application_id=OuterRef("id"))
+        .order_by()
+        .values("import_application")
+        .annotate(commodity_array=ArrayAgg("commodity__commodity_code", distinct=True))
+        .values("commodity_array")
     )
+    applications = applications.annotate(commodity_codes=Subquery(commodity_codes_sub_query))
+
+    applications = _add_import_licence_data(applications)
 
     return applications
 
@@ -109,6 +154,8 @@ def get_sps_applications(search_ids: list[int]) -> "QuerySet[PriorSurveillanceAp
     applications = _apply_import_optimisation(applications)
 
     applications = applications.select_related("origin_country", "consignment_country", "commodity")
+
+    applications = _add_import_licence_data(applications)
 
     return applications
 
@@ -121,6 +168,8 @@ def get_textiles_applications(search_ids: list[int]) -> "QuerySet[TextilesApplic
         "origin_country", "consignment_country", "category_commodity_group", "commodity"
     )
 
+    applications = _add_import_licence_data(applications)
+
     return applications
 
 
@@ -129,12 +178,16 @@ def get_wood_applications(search_ids: list[int]) -> "QuerySet[WoodQuotaApplicati
     applications = _apply_import_optimisation(applications)
     applications = applications.select_related("commodity")
 
+    applications = _add_import_licence_data(applications)
+
     return applications
 
 
 def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSaleApplication]":
     applications = CertificateOfFreeSaleApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
+
+    # TODO: ICMSLST-1443 Convert to subquery.
     applications = applications.annotate(
         manufacturer_countries=ArrayAgg("schedules__country_of_manufacture__name", distinct=True)
     )
@@ -275,7 +328,7 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
 
 def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
-    model = model.select_related("importer", "contact", "application_type")
+    model = model.select_related("importer", "contact", "application_type", "case_owner")
     model = model.annotate(order_by_datetime=utils.get_order_by_datetime("import"))
 
     return model
@@ -283,10 +336,43 @@ def _apply_import_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 
 def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
-    model = model.select_related("exporter", "contact")
+    model = model.select_related("exporter", "contact", "case_owner")
+
+    # TODO: ICMSLST-1443 Convert to subquery.
     model = model.annotate(
         origin_countries=ArrayAgg("countries__name", distinct=True),
         order_by_datetime=utils.get_order_by_datetime("export"),
     )
 
     return model
+
+
+def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
+    content_type_pk = get_content_type_pk("import")
+
+    sub_query = CaseDocumentReference.objects.filter(
+        document_type=CaseDocumentReference.Type.LICENCE,
+        content_type_id=content_type_pk,
+        object_id=OuterRef("licences__pk"),
+    )
+
+    model = (
+        model.annotate(
+            latest_licence_reference=Subquery(sub_query.values("reference")[:1]),
+            latest_licence_start_date=F("licences__licence_start_date"),
+            latest_licence_end_date=F("licences__licence_end_date"),
+            latest_licence_issue_paper_licence_only=F("licences__issue_paper_licence_only"),
+        )
+        # The query generated uses `DISTINCT ON`
+        # It ensures a 1 to 1 for the application and latest licence
+        .order_by("id", "-licences__created_at").distinct("id")
+    )
+
+    return model
+
+
+def get_content_type_pk(imp_or_exp: str) -> int:
+    if imp_or_exp == "import":
+        return ContentType.objects.get_for_model(ImportApplicationLicence).id
+    else:
+        return ContentType.objects.get_for_model(ExportApplicationCertificate).id

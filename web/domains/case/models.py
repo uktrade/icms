@@ -467,7 +467,7 @@ class CaseLicenceCertificateBase(models.Model):
 
     status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
 
-    document_references = GenericRelation("CaseDocumentReference", object_id_field="process_id")
+    document_references = GenericRelation("CaseDocumentReference")
 
     # Values added when records are created / updated, used to get the most recent one.
     created_at = models.DateTimeField(auto_now_add=True)
@@ -489,9 +489,9 @@ class CaseDocumentReference(models.Model):
 
     # Fields to set up the generic model for import / export models.
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    process_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(fk_field="process_id")
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
 
     def __str__(self):
-        p_id, dt, ref = (self.process_id, self.document_type, self.reference)
-        return f"CaseDocumentReference(process_id={p_id}, document_type={dt}, reference={ref})"
+        o_id, dt, ref = (self.object_id, self.document_type, self.reference)
+        return f"CaseDocumentReference(object_id={o_id}, document_type={dt}, reference={ref})"
