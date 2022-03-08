@@ -4,13 +4,14 @@ from itertools import islice
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
+from data_migration import models as dm
 from data_migration.queries import (
     DATA_TYPE,
     DATA_TYPE_M2M,
     DATA_TYPE_SOURCE_TARGET,
     TASK_LIST,
 )
-from web.models import Task
+from web import models as web
 
 from .utils.db import bulk_create
 from .utils.format import format_name
@@ -56,6 +57,7 @@ class Command(BaseCommand):
         self._import_data("user", options["skip_user"])
         self._import_data("reference", options["skip_ref"])
         self._import_data("import_application", options["skip_ia"])
+        self._create_draft_ia_licences(options["skip_ia"])
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
@@ -99,7 +101,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"{name} Data Imported!")
 
-    def _create_tasks(self, skip):
+    def _create_tasks(self, skip: bool) -> None:
         if skip:
             self.stdout.write("Skipping Task Data Import")
             return
@@ -109,6 +111,31 @@ class Command(BaseCommand):
         for task in TASK_LIST:
             self.stdout.write(f"Creating {task.TASK_TYPE} tasks")
 
-            Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
+            web.Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
 
         self.stdout.write("Task Data Created!")
+
+    def _create_draft_ia_licences(self, skip: bool) -> None:
+        if skip:
+            self.stdout.write("Skipping Creating Draft Import Application Licences")
+            return
+
+        self.stdout.write("Creating Draft Import Application Licences")
+        ia_pks = (
+            dm.ImportApplication.objects.filter(licences__isnull=True)
+            .values_list("pk", flat=True)
+            .iterator()
+        )
+
+        while True:
+            batch = [
+                web.ImportApplicationLicence(import_application_id=pk, status="DR")
+                for pk in islice(ia_pks, self.batch_size)
+            ]
+
+            if not batch:
+                break
+
+            web.ImportApplicationLicence.objects.bulk_create(batch)
+
+        self.stdout.write("Draft Import Application Licence Data Created!")

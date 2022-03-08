@@ -62,6 +62,7 @@ ia_query_model = [
     QueryModel(import_application.wood_checklist, dm_models.WoodQuotaChecklist),
     QueryModel(import_application.textiles_application, dm_models.TextilesApplication),
     QueryModel(import_application.textiles_checklist, dm_models.TextilesChecklist),
+    QueryModel(import_application.import_application_licence, dm_models.ImportApplicationLicence),
 ]
 
 # Possibly refactor to import process and import application by process type
@@ -73,6 +74,7 @@ ia_source_target = source_target_list(
         "WoodQuotaChecklist",
         "TextilesApplication",
         "TextilesChecklist",
+        "ImportApplicationLicence",
     ]
 )
 

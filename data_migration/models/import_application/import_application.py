@@ -129,6 +129,30 @@ class ChecklistBase(MigrationBase):
         return ["imad_id"]
 
 
+class ImportApplicationLicence(MigrationBase):
+    import_application = models.ForeignKey(
+        ImportApplication, on_delete=models.PROTECT, related_name="licences", to_field="imad_id"
+    )
+    status = models.TextField(max_length=2, default="DR")
+    issue_paper_licence_only = models.BooleanField(null=True)
+    licence_start_date = models.DateField(null=True)
+    licence_end_date = models.DateField(null=True)
+    case_completion_date = models.DateField(null=True)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["import_application_id"] = data.pop("import_application__id")
+        data["created_at"] = data.pop("created_datetime")
+
+        return data
+
+    @classmethod
+    def get_includes(cls) -> list[str]:
+        return ["import_application__id"]
+
+
 class ImportApplicationBase(MigrationBase):
     class Meta:
         abstract = True

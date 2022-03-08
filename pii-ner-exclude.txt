@@ -1278,3 +1278,7 @@ Task Data Created
 "Prepare Task
 Refine
 Start Authorisation
+Skipping Creating Draft Import Application Licences
+Creating Draft Import Application Licences
+ON ird.ir_id =
+updated_at

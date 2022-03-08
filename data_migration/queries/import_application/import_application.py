@@ -95,3 +95,21 @@ WHERE
   xiad.ima_type = '{ima_type}'
   AND xiad.status_control = 'C'
 """
+
+
+# TODO: Expand to cover all application types
+# TODO: Find how to determine if paper only
+
+import_application_licence = """
+SELECT
+  imad_id import_application_id
+  , created_datetime
+  , CASE licence_validity WHEN 'CURRENT' THEN 'AC' ELSE 'AR' END status
+  , licence_start_date
+  , licence_end_date
+FROM impmgr.ima_responses ir
+INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
+INNER JOIN impmgr.import_application_details iad ON iad.id = ird.imad_id
+WHERE response_type = 'TEX_QUOTA_LICENCE'
+AND iad.status_control = 'C'
+"""
