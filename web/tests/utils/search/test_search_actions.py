@@ -47,7 +47,9 @@ def test_get_import_application_search_actions(
     # TODO: ICMSLST-1240 Add permission tests
     user = test_icms_admin_user
 
-    actions: list[types.SearchAction] = get_import_record_actions(application, licence, user)
+    # Add a fake annotation to the application record.
+    application.latest_licence_end_date = licence.licence_end_date
+    actions: list[types.SearchAction] = get_import_record_actions(application, user)
 
     assert expected_actions == [a.label for a in actions]
 
