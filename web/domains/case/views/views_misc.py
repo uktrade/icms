@@ -24,6 +24,7 @@ from web.domains.case.utils import (
     create_acknowledge_notification_task,
     get_application_current_task,
     get_case_page_title,
+    set_application_licence_or_certificate_active,
 )
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -534,6 +535,8 @@ def authorise_documents(
 
                     application.status = model_class.Statuses.COMPLETED
                     application.save()
+
+                    set_application_licence_or_certificate_active(application)
 
                     create_acknowledge_notification_task(application, task)
 
