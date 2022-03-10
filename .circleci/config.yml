@@ -42,6 +42,10 @@ jobs:
                 command: make test
 
             - run:
+                name: run data migration unit tests
+                command: make migration_test
+
+            - run:
                   name: Publish unit test coverage
                   command: |
                       wget -O codecov.sh https://codecov.io/bash
