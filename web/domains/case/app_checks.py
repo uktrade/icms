@@ -49,7 +49,10 @@ def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
         application_errors.add(checklist_errors)
 
     # When refusing an application the only thing we check is the checklist.
-    if application.decision == application.REFUSE:
+    if (
+        application.status == application.Statuses.VARIATION_REQUESTED
+        and application.variation_decision == application.REFUSE
+    ) or application.decision == application.REFUSE:
         return application_errors
 
     # Check the response prep screen errors

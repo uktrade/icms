@@ -12,14 +12,12 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case._import.models import (
-    ImportApplicationLicence,
-    get_paper_licence_only,
-)
+from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
+    archive_application_licence_or_certificate,
     check_application_permission,
     create_acknowledge_notification_task,
     get_application_current_task,
@@ -250,20 +248,11 @@ def take_ownership(
             application.status = model_class.Statuses.PROCESSING
 
             if case_type == "import":
-                # Create a draft licence if it doesn't already exist
-                # mainly when there has been a variation request.
-                licence, _ = application.licences.get_or_create(
-                    status=ImportApplicationLicence.Status.DRAFT,
-                    defaults={
-                        "issue_paper_licence_only": get_paper_licence_only(
-                            application.application_type
-                        )
-                    },
-                )
-
                 # Licence start date is set when ILB Admin takes the case
-                licence.licence_start_date = timezone.now().date()
-                licence.save()
+                licence = application.get_most_recent_licence()
+                if not licence.licence_start_date:
+                    licence.licence_start_date = timezone.now().date()
+                    licence.save()
 
             # TODO: Revisit when implementing ICMSLST-1169
             # We may need to create some more datetime fields
@@ -461,30 +450,24 @@ def create_application_document_references(
         if licence.status != ImportApplicationLicence.Status.DRAFT:
             raise ValueError("Can only create references for a draft application")
 
-        licence.document_references.create(document_type=CaseDocumentReference.Type.COVER_LETTER)
-        licence.document_references.create(
-            document_type=CaseDocumentReference.Type.LICENCE,
-            reference=reference.get_import_licence_reference(lock_manager, application),
+        licence.document_references.get_or_create(
+            document_type=CaseDocumentReference.Type.COVER_LETTER
         )
 
+        if not licence.document_references.filter(
+            document_type=CaseDocumentReference.Type.LICENCE
+        ).exists():
+            # Only call `get_import_licence_reference` if needed as it creates a record in CaseReference
+            licence.document_references.create(
+                document_type=CaseDocumentReference.Type.LICENCE,
+                reference=reference.get_import_licence_reference(lock_manager, application),
+            )
     else:
         # Revisit when doing the following as multiple document_references need creating:
         # https://uktrade.atlassian.net/browse/ICMSLST-1406
         # https://uktrade.atlassian.net/browse/ICMSLST-1407
         # https://uktrade.atlassian.net/browse/ICMSLST-1408
         pass
-
-
-def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
-    """Archives the draft licence or certificate."""
-
-    if application.is_import_application():
-        l_or_c = application.get_most_recent_licence()
-    else:
-        l_or_c = application.get_most_recent_certificate()
-
-    l_or_c.status = l_or_c.Status.ARCHIVED
-    l_or_c.save()
 
 
 @login_required

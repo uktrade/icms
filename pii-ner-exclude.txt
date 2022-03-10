@@ -1284,3 +1284,6 @@ ON ird.ir_id =
 updated_at
 Convert
 -O codecov.sh https://codecov.io/bash
+get_import_licence_reference
+CaseReference
+ICMSLST-1477 Disable

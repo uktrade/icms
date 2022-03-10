@@ -1,9 +1,11 @@
+import datetime
 from typing import TYPE_CHECKING
 
 import pytest
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
+from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
@@ -107,6 +109,14 @@ class TestRequestVariationUpdateView:
         self.wood_app.status = ImpExpStatus.COMPLETED
         self.wood_app.save()
 
+        # A completed app must have an active licence
+        self.wood_app.licences.create(
+            status=ImportApplicationLicence.Status.ACTIVE,
+            issue_paper_licence_only=True,
+            licence_start_date=datetime.date(2020, 6, 14),
+            licence_end_date=datetime.date(2023, 9, 15),
+        )
+
         # End the PROCESS task as we are testing with a completed application
         task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
         task.is_active = False
@@ -141,6 +151,9 @@ class TestRequestVariationUpdateView:
     def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
+        live_licence = self.wood_app.get_most_recent_licence()
+        assert live_licence.status == ImportApplicationLicence.Status.ACTIVE
+
         form_data = {
             "what_varied": "What was varied",
             "why_varied": "Why was it varied",
@@ -166,6 +179,15 @@ class TestRequestVariationUpdateView:
 
         self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
         self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+
+        # Check the application's latest licence status is draft
+        latest_licence = self.wood_app.get_most_recent_licence()
+        assert latest_licence.status == ImportApplicationLicence.Status.DRAFT
+
+        # All the old values should have been copied over
+        assert live_licence.licence_start_date == latest_licence.licence_start_date
+        assert live_licence.licence_end_date == latest_licence.licence_end_date
+        assert live_licence.issue_paper_licence_only == latest_licence.issue_paper_licence_only
 
 
 class TestRequestVariationOpenRequestView:

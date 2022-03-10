@@ -60,6 +60,7 @@ from .models import (
     CFSProductType,
     CFSSchedule,
     ExportApplication,
+    ExportApplicationCertificate,
     ExportApplicationType,
     GMPFile,
     ProductLegislation,
@@ -150,6 +151,10 @@ def create_export_application(
                         is_active=True
                     ).first()
                     application.countries.add(country)
+
+                # Add a draft certificate when creating an application
+                # Ensures we never have to check for None
+                application.certificates.create(status=ExportApplicationCertificate.Status.DRAFT)
 
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})

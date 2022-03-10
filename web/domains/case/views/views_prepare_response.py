@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
@@ -98,8 +99,19 @@ def prepare_response(
             "readonly_view": readonly_view,
         }
 
+    # TODO: ICMSLST-1477 Disable actions when a variation request has been refused.
+
+    # Get the latest active licence if the variation is refused.
     if application.is_import_application():
-        context["licence"] = application.get_most_recent_licence()
+        if (
+            application.status == application.Statuses.VARIATION_REQUESTED
+            and application.variation_decision == application.REFUSE
+        ):
+            context["licence"] = application.licences.get(
+                status=ImportApplicationLicence.Status.ACTIVE
+            )
+        else:
+            context["licence"] = application.get_most_recent_licence()
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
