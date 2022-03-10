@@ -23,7 +23,10 @@ from web.domains.case.models import VariationRequest
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission
+from web.domains.case.utils import (
+    archive_application_licence_or_certificate,
+    check_application_permission,
+)
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -145,6 +148,9 @@ class VariationRequestCancelView(
             self.application.reference = reference.get_variation_request_case_reference(
                 self.application
             )
+
+        # Cancel the draft licence/Certificate
+        archive_application_licence_or_certificate(self.application)
 
         self.update_application_status()
         self.update_application_tasks()

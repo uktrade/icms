@@ -4,8 +4,9 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
-from web.domains.case.models import VariationRequest
+from web.domains.case.models import CaseLicenceCertificateBase, VariationRequest
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import set_application_licence_or_certificate_active
 from web.flow.models import Task
 from web.tests.helpers import CaseURLS
 
@@ -84,6 +85,11 @@ class TestVariationRequestCancelView:
         _add_variation_request(self.wood_app, test_icms_admin_user)
         self.wood_app.save()
 
+        # Set the draft licence active and create a second one
+        set_application_licence_or_certificate_active(self.wood_app)
+        self.active_licence = self.wood_app.get_most_recent_licence()
+        self.draft_licence = self.wood_app.licences.create()
+
     def test_cancel_variation_request_get(self):
         vr = self.wood_app.variation_requests.first()
         resp = self.client.get(CaseURLS.cancel_variation_request(self.wood_app.pk, vr.pk))
@@ -116,6 +122,13 @@ class TestVariationRequestCancelView:
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
         assert self.wood_app.get_active_task_list() == []
 
+        self.active_licence.refresh_from_db()
+        assert self.active_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
+
+        # Archived now the variation has been cancelled.
+        self.draft_licence.refresh_from_db()
+        assert self.draft_licence.status == CaseLicenceCertificateBase.Status.ARCHIVED
+
 
 class TestVariationRequestCancelViewForExportApplication:
     @pytest.fixture(autouse=True)
@@ -131,6 +144,11 @@ class TestVariationRequestCancelViewForExportApplication:
         self.app.status = ImpExpStatus.VARIATION_REQUESTED
         _add_variation_request(self.app, test_icms_admin_user, VariationRequest.OPEN)
         self.app.save()
+
+        # Set the draft licence active and create a second one
+        set_application_licence_or_certificate_active(self.app)
+        self.active_certificate = self.app.get_most_recent_certificate()
+        self.draft_certificate = self.app.certificates.create()
 
     def test_cancel_variation_request_post(self, test_icms_admin_user):
         vr = self.app.variation_requests.first()
@@ -149,6 +167,13 @@ class TestVariationRequestCancelViewForExportApplication:
 
         self.app.check_expected_status([ImpExpStatus.COMPLETED])
         assert self.app.get_active_task_list() == []
+
+        self.active_certificate.refresh_from_db()
+        assert self.active_certificate.status == CaseLicenceCertificateBase.Status.ACTIVE
+
+        # Archived now the variation has been cancelled.
+        self.draft_certificate.refresh_from_db()
+        assert self.draft_certificate.status == CaseLicenceCertificateBase.Status.ARCHIVED
 
 
 class TestVariationRequestRequestUpdateView:

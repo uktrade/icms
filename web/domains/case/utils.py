@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
+from web.domains.case.models import CaseLicenceCertificateBase
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
@@ -151,12 +152,39 @@ def get_case_page_title(case_type: str, application: ImpOrExpOrAccess, page: str
 
 
 def set_application_licence_or_certificate_active(application: ImpOrExp) -> None:
+    """Sets the latest draft licence to active and mark the previous active licence to archive."""
+
+    if application.is_import_application():
+        active_l_or_c = application.licences.filter(
+            status=CaseLicenceCertificateBase.Status.ACTIVE
+        ).first()
+        l_or_c = application.get_most_recent_licence()
+        l_or_c.case_completion_date = timezone.now().date()
+
+    else:
+        active_l_or_c = application.certificates.filter(
+            status=CaseLicenceCertificateBase.Status.ACTIVE
+        ).first()
+        l_or_c = application.get_most_recent_certificate()
+        l_or_c.issue_date = timezone.now().date()
+
+    if active_l_or_c:
+        active_l_or_c.status = CaseLicenceCertificateBase.Status.ARCHIVED
+        active_l_or_c.save()
+
+    l_or_c.status = CaseLicenceCertificateBase.Status.ACTIVE
+    l_or_c.save()
+
+
+def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
+    """Archives the draft licence or certificate."""
+
     if application.is_import_application():
         l_or_c = application.get_most_recent_licence()
     else:
         l_or_c = application.get_most_recent_certificate()
 
-    l_or_c.status = l_or_c.Status.ACTIVE
+    l_or_c.status = l_or_c.Status.ARCHIVED
     l_or_c.save()
 
 

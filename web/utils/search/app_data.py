@@ -357,7 +357,14 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     )
 
     model = (
-        model.annotate(
+        # Filter out archived licences before annotating with the latest licence.
+        model.filter(
+            licences__status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ]
+        )
+        .annotate(
             latest_licence_reference=Subquery(sub_query.values("reference")[:1]),
             latest_licence_start_date=F("licences__licence_start_date"),
             latest_licence_end_date=F("licences__licence_end_date"),
@@ -365,7 +372,8 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         )
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest licence
-        .order_by("id", "-licences__created_at").distinct("id")
+        .order_by("id", "-licences__created_at")
+        .distinct("id")
     )
 
     return model

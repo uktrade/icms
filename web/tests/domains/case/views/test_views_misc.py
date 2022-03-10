@@ -292,6 +292,9 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app = wood_app_submitted
 
+        licence = self.wood_app.get_most_recent_licence()
+        assert licence.status == CaseLicenceCertificateBase.Status.DRAFT
+
     def test_authorise_post_valid(self):
         post_data = {"password": "test"}
         resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
@@ -302,6 +305,9 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
         self.wood_app.get_expected_task(Task.TaskType.ACK)
+
+        latest_licence = self.wood_app.get_most_recent_licence()
+        assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
 
     def test_authorise_variation_request_post_valid(self, test_icms_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -321,6 +327,9 @@ class TestAuthoriseDocumentsView:
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED
 
+        latest_licence = self.wood_app.get_most_recent_licence()
+        assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
+
     def test_authorise_post_valid_for_app_requiring_chief(self):
         # Override the chief flag for the wood quota application type to send to chief.
         iat = self.wood_app.application_type
@@ -336,6 +345,10 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app.check_expected_status([ImpExpStatus.PROCESSING])
         self.wood_app.get_expected_task(Task.TaskType.CHIEF_WAIT)
+
+        # Latest licence is still draft until after chief submission.
+        latest_licence = self.wood_app.get_most_recent_licence()
+        assert latest_licence.status == CaseLicenceCertificateBase.Status.DRAFT
 
 
 def _set_valid_licence(wood_application):
