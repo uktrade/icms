@@ -21,6 +21,7 @@ from web.domains.case.models import VariationRequest
 from web.domains.case.utils import (
     create_acknowledge_notification_task,
     get_application_current_task,
+    set_application_licence_or_certificate_active,
 )
 from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
@@ -547,6 +548,8 @@ def bypass_chief(
 
             application.status = ImportApplication.Statuses.COMPLETED
             application.save()
+
+            set_application_licence_or_certificate_active(application)
 
             create_acknowledge_notification_task(application, task)
 

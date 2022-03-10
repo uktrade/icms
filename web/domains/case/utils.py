@@ -150,6 +150,16 @@ def get_case_page_title(case_type: str, application: ImpOrExpOrAccess, page: str
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
+def set_application_licence_or_certificate_active(application: ImpOrExp) -> None:
+    if application.is_import_application():
+        l_or_c = application.get_most_recent_licence()
+    else:
+        l_or_c = application.get_most_recent_certificate()
+
+    l_or_c.status = l_or_c.Status.ACTIVE
+    l_or_c.save()
+
+
 # TODO: Revisit when implementing ICMSLST-1400
 def create_acknowledge_notification_task(application: ImpOrExp, previous_task: Optional[Task]):
     """Create an ack task and clear the application acknowledged fields.
