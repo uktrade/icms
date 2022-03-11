@@ -185,6 +185,9 @@ class Command(BaseCommand):
         )
         self.stdout.write("Created following superusers: 'admin'")
 
+        self.create_pentest_users(importer, exporter, options["password"])
+        self.stdout.write("Created pentest users")
+
         create_certificate_application_templates(ilb_admin_user)
         create_certificate_application_templates(exporter_user)
 
@@ -199,8 +202,12 @@ class Command(BaseCommand):
         linked_exporters: Collection[Exporter] = (),
         linked_importer_agents: Collection[Importer] = (),
         linked_exporter_agents: Collection[Exporter] = (),
+        email: str = None,
     ) -> User:
         """Create normal system users"""
+
+        if not email:
+            email = f"{username}@email.com"  # /PS-IGNORE
 
         user = User.objects.create_user(
             username=username,
@@ -209,7 +216,7 @@ class Command(BaseCommand):
             is_superuser=False,
             account_status=User.ACTIVE,
             is_active=True,
-            email=f"{username}@email.com",  # /PS-IGNORE
+            email=email,
             first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
@@ -238,12 +245,15 @@ class Command(BaseCommand):
 
         return user
 
-    def create_superuser(self, username: str, password: str) -> User:
-        """Creat user to access django admin urls"""
+    def create_superuser(self, username: str, password: str, email=None) -> User:
+        """Create user to access django admin urls"""
+
+        if not email:
+            email = f"{username}@email.com"  # /PS-IGNORE
 
         return User.objects.create_superuser(
             username=username,
-            email=f"{username}@email.com",  # /PS-IGNORE
+            email=email,
             password=password,
             first_name=username,
             last_name=username,
@@ -251,6 +261,60 @@ class Command(BaseCommand):
             security_question="admin",
             security_answer="admin",
         )
+
+    def create_pentest_users(self, importer, exporter, password):
+        """Create users request for penetration testing."""
+
+        # ILB Admin user
+        self.create_user(
+            username="Apptest3001",
+            password=password,
+            first_name="First name (Apptest3001)",  # /PS-IGNORE
+            last_name="Last name (Apptest3001)",  # /PS-IGNORE
+            permissions=[
+                "importer_access",
+                "exporter_access",
+                "ilb_admin",
+                "mailshot_access",
+            ],
+            linked_importers=[importer],
+            linked_exporters=[exporter],
+            email="Apptest3001@prisminfosec.com",  # /PS-IGNORE
+        )
+
+        importer_users = [
+            "Apptest3002@prisminfosec.com",  # /PS-IGNORE
+            "Apptest3003@prisminfosec.com",  # /PS-IGNORE
+        ]
+        for user_email in importer_users:
+            username, _ = user_email.split("@")
+
+            self.create_user(
+                username=username,
+                password=password,
+                first_name=f"First name ({username})",  # /PS-IGNORE
+                last_name=f"Last name ({username})",  # /PS-IGNORE
+                permissions=["importer_access"],
+                linked_importers=[importer],
+                email=user_email,
+            )
+
+        importer_users = [
+            "Apptest3004@prisminfosec.com",  # /PS-IGNORE
+            "Apptest3005@prisminfosec.com",  # /PS-IGNORE
+        ]
+        for user_email in importer_users:
+            username, _ = user_email.split("@")
+
+            self.create_user(
+                username=username,
+                password=password,
+                first_name=f"First name ({username})",  # /PS-IGNORE
+                last_name=f"Last name ({username})",  # /PS-IGNORE
+                permissions=["exporter_access"],
+                linked_exporters=[exporter],
+                email=user_email,
+            )
 
     def _assign_permission(self, user, permission_codename):
         permission = Permission.objects.get(codename=permission_codename)
