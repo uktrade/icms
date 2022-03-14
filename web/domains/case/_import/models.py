@@ -189,9 +189,8 @@ class ImportApplication(ApplicationBase):
     issue_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
-    # TODO: Revisit when implementing ICMSLST-1224
-    # See def submit_application in ApplicationBase regarding making this unique
-    # TODO: This may move in the next PR
+    # TODO: Revisit when implementing ICMSLST-1479
+    # This needs to be a nullable foreign key to CaseReference
     licence_reference = models.CharField(max_length=100, null=True, unique=True)
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
