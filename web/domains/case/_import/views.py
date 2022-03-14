@@ -17,7 +17,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case.models import VariationRequest
+from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.utils import (
     create_acknowledge_notification_task,
     get_application_current_task,
@@ -617,11 +617,19 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
     )
 
     def get_context_data(self, **kwargs):
+        licence: ImportApplicationLicence = self.object.get_most_recent_licence()
+        licence_doc = licence.document_references.filter(
+            document_type=CaseDocumentReference.Type.LICENCE
+        ).first()
+
         context = {
             "page_title": f"Case {self.object.get_reference()}",
             "case_type": "import",
             "contacts": self.object.importcontact_set.all(),
             "licence": self.object.get_most_recent_licence(),
+            "licence_reference": licence_doc.reference if licence_doc else "",
+            # Set to true as all IMI applications are complete.
+            "readonly_view": True,
         }
 
         return super().get_context_data(**kwargs) | context
