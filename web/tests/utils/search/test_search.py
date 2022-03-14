@@ -36,7 +36,12 @@ from web.domains.case.export.models import (
     ExportApplicationType,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import ApplicationBase, CaseEmail, UpdateRequest
+from web.domains.case.models import (
+    ApplicationBase,
+    CaseDocumentReference,
+    CaseEmail,
+    UpdateRequest,
+)
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
@@ -634,8 +639,6 @@ def test_search_by_submitted_end_date(import_fixture_data: FixtureData):
 def _test_search_by_licence_date(import_fixture_data: FixtureData):
     # Set the licence dates on a submitted application (26/AUG/2021 - 26/FEB/2022)
     application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 4")
-    application.save()
-
     application.licences.create(
         licence_start_date=datetime.date(2021, 8, 26), licence_end_date=datetime.date(2022, 2, 26)
     )
@@ -1341,6 +1344,48 @@ def test_import_search_by_commodity_code(import_fixture_data):
 
         assert results.total_rows == 1
         check_application_references(results.records, app_ref)
+
+
+def test_import_search_by_document_reference(import_fixture_data):
+    l_type = CaseDocumentReference.Type.LICENCE
+    wood = _create_wood_application("wood-app-1-ref", import_fixture_data)
+    licence: ImportApplicationLicence = wood.licences.first()
+    licence.status = ImportApplicationLicence.Status.ACTIVE
+    licence.save()
+    licence.document_references.create(document_type=l_type, reference="GBSIL0000001B")
+
+    wood_2 = _create_wood_application("wood-app-2-ref", import_fixture_data)
+    licence: ImportApplicationLicence = wood_2.licences.first()
+    licence.status = ImportApplicationLicence.Status.ACTIVE
+    licence.save()
+    licence.document_references.create(document_type=l_type, reference="GBSIL0000002C")
+
+    # Search exact
+    search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
+    results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 1
+    check_application_references(results.records, "wood-app-1-ref")
+
+    # Search wildcard matches one app
+    search_terms = SearchTerms(case_type="import", licence_ref="%2c")
+    results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 1
+    check_application_references(results.records, "wood-app-2-ref")
+
+    # Search wildcard matches both
+    search_terms = SearchTerms(case_type="import", licence_ref="GB%0000%")
+    results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 2
+    check_application_references(results.records, "wood-app-2-ref", "wood-app-1-ref")
+
+    # Search filters excludes archived licences.
+    licence: ImportApplicationLicence = wood.licences.first()
+    licence.status = ImportApplicationLicence.Status.ARCHIVED
+    licence.save()
+
+    search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
+    results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 0
 
 
 def test_reassignment_search(
