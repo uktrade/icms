@@ -14,7 +14,7 @@ from web.domains.case._import.models import (
 )
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import CaseEmail, UpdateRequest
+from web.domains.case.models import CaseDocumentReference, CaseEmail, UpdateRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExpT
 from web.domains.commodity.models import Commodity
@@ -398,13 +398,22 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
         model = model.filter(reference_filter)
 
     if terms.licence_ref:
-        # TODO: Revisit when implementing ICMSLST-1224
-        # Need to wildcard match on the licence_reference field for Import Application's
+        if terms.case_type == "import":
+            licence_filter = get_wildcard_filter(
+                "licences__document_references__reference", terms.licence_ref
+            )
+            model = model.filter(
+                licence_filter,
+                licences__document_references__document_type=CaseDocumentReference.Type.LICENCE,
+                licences__status__in=[
+                    ImportApplicationLicence.Status.DRAFT,
+                    ImportApplicationLicence.Status.ACTIVE,
+                ],
+            )
 
-        # TODO: Revisit when implementing ICMSLST-1223
-        # We need to search one or more certificate references (No model field yet)
-
-        raise NotImplementedError("Searching by Licence Reference isn't supported yet")
+        else:
+            # TODO: Revisit when implementing ICMSLST-1444
+            raise NotImplementedError("Searching by Licence Reference isn't supported yet")
 
     if terms.case_status:
         filters = _get_status_to_filter(terms.case_type, terms.case_status)
