@@ -60,16 +60,18 @@ def get_variation_request_case_reference(application: "ImpOrExp") -> str:
 def get_import_licence_reference(lock_manager: "LockManager", application: "ImportApplication"):
     """Get the licence reference for the supplied import application"""
 
-    case_reference = _get_next_reference(
-        lock_manager, prefix=Prefix.IMPORT_LICENCE_DOCUMENT, use_year=False
-    )
+    if not application.licence_reference:
+        application.licence_reference = _get_next_reference(
+            lock_manager, prefix=Prefix.IMPORT_LICENCE_DOCUMENT, use_year=False
+        )
+        application.save()
 
     licence = application.get_most_recent_licence()
 
     licence_type = "paper" if licence.issue_paper_licence_only else "electronic"
 
     return _get_licence_reference(
-        licence_type, application.process_type, case_reference.reference  # type: ignore[arg-type]
+        licence_type, application.process_type, application.licence_reference.reference  # type: ignore[arg-type]
     )
 
 

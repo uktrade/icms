@@ -21,6 +21,7 @@ from web.domains.office.models import Office
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes
+from web.models.models import CaseReference
 from web.models.shared import YesNoNAChoices
 
 if TYPE_CHECKING:
@@ -189,9 +190,9 @@ class ImportApplication(ApplicationBase):
     issue_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
-    # TODO: Revisit when implementing ICMSLST-1479
-    # This needs to be a nullable foreign key to CaseReference
-    licence_reference = models.CharField(max_length=100, null=True, unique=True)
+    licence_reference = models.OneToOneField(
+        CaseReference, on_delete=models.PROTECT, related_name="+", null=True
+    )
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
 

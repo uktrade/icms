@@ -302,6 +302,36 @@ def test_get_application_case_and_licence_references(
     doc.reference = f"GMP/{today.year}/00003"
 
 
+def test_import_application_licence_reference_is_reused(
+    db, importer, office, test_import_user, lock_manager
+):
+    app = DFLApplication.objects.create(
+        created_by=test_import_user,
+        last_updated_by=test_import_user,
+        importer=importer,
+        importer_office=office,
+        process_type=DFLApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
+        ),
+    )
+    app.licences.create()
+    assert app.licence_reference is None
+
+    # This should set the reference
+    ref = reference.get_import_licence_reference(lock_manager, app)
+
+    assert ref == "GBSIL0000001B"
+    assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
+    assert app.licence_reference.reference == 1
+
+    # This should now reuse the same reference
+    ref = reference.get_import_licence_reference(lock_manager, app)
+    assert ref == "GBSIL0000001B"
+    assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
+    assert app.licence_reference.reference == 1
+
+
 def _get_licence_document(app):
     return app.get_most_recent_licence().document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
