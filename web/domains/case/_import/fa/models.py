@@ -45,7 +45,7 @@ class ImportContact(models.Model):
         ("no", "No"),
     )
 
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
+    import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE)
     entity = models.CharField(max_length=10, choices=ENTITIES)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200, null=True, blank=True)

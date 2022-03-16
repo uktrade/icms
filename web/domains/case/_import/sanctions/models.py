@@ -20,7 +20,7 @@ class SanctionsAndAdhocApplication(ImportApplication):
 
 
 class SanctionsAndAdhocApplicationGoods(models.Model):
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
+    import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE)
     commodity = models.ForeignKey(
         Commodity,
         on_delete=models.PROTECT,
