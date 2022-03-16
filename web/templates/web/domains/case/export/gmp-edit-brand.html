@@ -23,6 +23,6 @@
     {% for field_name in form.fields %}
       {{ fields.field(form[field_name]) }}
     {% endfor %}
-    <input type="submit" name="action" class="primary-button button" value="{{ 'Save' if instance else 'Add' }}" />
+    <input type="submit" name="action" class="primary-button button" value="Save" />
   {% endcall %}
 {% endblock %}
