@@ -6,19 +6,17 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
-from web.domains.case._import.models import (
-    CaseLicenceCertificateBase,
-    ImportApplication,
-)
 from web.domains.case._import.wood.models import WoodQuotaChecklist
 from web.domains.case.models import (
     CaseDocumentReference,
+    CaseLicenceCertificateBase,
     UpdateRequest,
     VariationRequest,
 )
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.flow.models import Task
+from web.models import Country
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
 from web.utils.validation import ApplicationErrors
@@ -31,7 +29,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def wood_application(icms_admin_client, wood_app_submitted):
-    """A submitted application owned by the ICMS admin user."""
+    """A submitted wood application owned by the ICMS admin user."""
     icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
     licence = wood_app_submitted.get_most_recent_licence()
@@ -41,12 +39,21 @@ def wood_application(icms_admin_client, wood_app_submitted):
     return wood_app_submitted
 
 
+@pytest.fixture
+def com_app(icms_admin_client, com_app_submitted):
+    """A submitted com application owned by the ICMS admin user."""
+    icms_admin_client.post(CaseURLS.take_ownership(com_app_submitted.pk, case_type="export"))
+    com_app_submitted.refresh_from_db()
+
+    return com_app_submitted
+
+
 def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
     resp = icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     assert resp.status_code == 302
 
     wood_app_submitted.refresh_from_db()
-    assert wood_app_submitted.get_task(ImportApplication.Statuses.PROCESSING, Task.TaskType.PROCESS)
+    assert wood_app_submitted.get_task(ImpExpStatus.PROCESSING, Task.TaskType.PROCESS)
 
 
 def test_take_ownership_in_progress(icms_admin_client: "Client", wood_app_in_progress):
@@ -71,7 +78,7 @@ def test_manage_case_close_case(icms_admin_client: "Client", wood_application):
 
     wood_application.refresh_from_db()
 
-    assert wood_application.status == wood_application.Statuses.STOPPED
+    assert wood_application.status == ImpExpStatus.STOPPED
 
 
 def test_manage_withdrawals_get(
@@ -141,7 +148,7 @@ def test_start_authorisation_approved_application_has_no_errors(
     wood_application.refresh_from_db()
 
     current_task = wood_application.get_task(
-        expected_state=ImportApplication.Statuses.PROCESSING, task_type=Task.TaskType.AUTHORISE
+        expected_state=ImpExpStatus.PROCESSING, task_type=Task.TaskType.AUTHORISE
     )
     assert current_task is not None
 
@@ -149,6 +156,60 @@ def test_start_authorisation_approved_application_has_no_errors(
         document_type=CaseDocumentReference.Type.LICENCE
     )
     assert licence_doc.reference == "0000001B"
+
+
+def test_start_authorisation_approved_application_has_no_errors_export_app(
+    icms_admin_client, com_app
+):
+    com_app.decision = com_app.APPROVE
+    com_app.save()
+
+    # Clear any countries and set them here to test the references
+    com_app.countries.all().delete()
+    finland = Country.objects.get(name="Finland")
+    germany = Country.objects.get(name="Germany")
+    poland = Country.objects.get(name="Poland")
+    com_app.countries.add(finland, germany, poland)
+
+    response = icms_admin_client.get(CaseURLS.authorise_application(com_app.pk, case_type="export"))
+    assert response.status_code == 200
+    errors: ApplicationErrors = response.context["errors"]
+    assert errors is None
+
+    # Now start authorisation
+    response = icms_admin_client.post(
+        CaseURLS.authorise_application(com_app.pk, case_type="export")
+    )
+
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    com_app.refresh_from_db()
+
+    current_task = com_app.get_task(
+        expected_state=ImpExpStatus.PROCESSING, task_type=Task.TaskType.AUTHORISE
+    )
+    assert current_task is not None
+
+    cert = com_app.get_most_recent_certificate()
+
+    assert cert.status == CaseLicenceCertificateBase.Status.DRAFT
+    assert cert.document_references.count() == 3
+
+    # Check the correct document references have been created
+    finland_dr = cert.document_references.get(
+        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=finland
+    )
+    germany_dr = cert.document_references.get(
+        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=germany
+    )
+    poland_dr = cert.document_references.get(
+        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=poland
+    )
+
+    this_year = datetime.date.today().year
+    assert finland_dr.reference == f"COM/{this_year}/00001"
+    assert germany_dr.reference == f"COM/{this_year}/00002"
+    assert poland_dr.reference == f"COM/{this_year}/00003"
 
 
 def test_start_authorisation_refused_application_has_errors(icms_admin_client, wood_application):
@@ -186,7 +247,7 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     wood_application.refresh_from_db()
 
     current_task = wood_application.get_task(
-        expected_state=ImportApplication.Statuses.COMPLETED, task_type=Task.TaskType.REJECTED
+        expected_state=ImpExpStatus.COMPLETED, task_type=Task.TaskType.REJECTED
     )
     assert current_task is not None
 

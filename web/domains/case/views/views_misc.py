@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING
+from itertools import product
+from typing import TYPE_CHECKING, Union
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -12,8 +13,18 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case._import.models import ImportApplicationLicence
-from web.domains.case.models import CaseDocumentReference, VariationRequest
+from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    ExportApplication,
+    ExportCertificateCaseDocumentReferenceData,
+)
+from web.domains.case.models import (
+    CaseDocumentReference,
+    CaseLicenceCertificateBase,
+    VariationRequest,
+)
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
@@ -26,7 +37,7 @@ from web.domains.case.utils import (
 )
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
@@ -447,7 +458,7 @@ def create_application_document_references(
     if application.is_import_application():
         licence = application.get_most_recent_licence()
 
-        if licence.status != ImportApplicationLicence.Status.DRAFT:
+        if licence.status != CaseLicenceCertificateBase.Status.DRAFT:
             raise ValueError("Can only create references for a draft application")
 
         licence.document_references.get_or_create(
@@ -463,11 +474,52 @@ def create_application_document_references(
                 reference=reference.get_import_licence_reference(lock_manager, application),
             )
     else:
-        # Revisit when doing the following as multiple document_references need creating:
-        # https://uktrade.atlassian.net/browse/ICMSLST-1406
-        # https://uktrade.atlassian.net/browse/ICMSLST-1407
-        # https://uktrade.atlassian.net/browse/ICMSLST-1408
-        pass
+        _create_export_application_document_references(lock_manager, application)
+
+
+def _create_export_application_document_references(
+    lock_manager: "LockManager", application: ExportApplication
+):
+    """Creates document reference records for Export applications."""
+
+    certificate = application.get_most_recent_certificate()
+
+    if certificate.status != CaseLicenceCertificateBase.Status.DRAFT:
+        raise ValueError("Can only create references for a draft application")
+
+    if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS]:
+        app: Union[
+            CertificateOfManufactureApplication, CertificateOfFreeSaleApplication
+        ] = application.get_specific_model()
+
+        for country in app.countries.all().order_by("name"):
+            cdr: "CaseDocumentReference" = certificate.document_references.create(
+                document_type=CaseDocumentReference.Type.CERTIFICATE,
+                reference=reference.get_export_certificate_reference(lock_manager, app),
+            )
+            ExportCertificateCaseDocumentReferenceData.objects.create(
+                case_document_reference=cdr, country=country
+            )
+
+    elif application.process_type == ProcessTypes.GMP:
+        gmp_app: CertificateOfGoodManufacturingPracticeApplication = (
+            application.get_specific_model()
+        )
+        countries = gmp_app.countries.all().order_by("name")
+        brands = gmp_app.brands.all().order_by("brand_name")
+
+        for country, brand in product(countries, brands):
+            cdr = certificate.document_references.create(
+                document_type=CaseDocumentReference.Type.CERTIFICATE,
+                reference=reference.get_export_certificate_reference(lock_manager, gmp_app),
+            )
+
+            ExportCertificateCaseDocumentReferenceData.objects.create(
+                case_document_reference=cdr, country=country, gmp_brand=brand
+            )
+
+    else:
+        raise NotImplementedError(f"Unknown process_type: {application.process_type}")
 
 
 @login_required
