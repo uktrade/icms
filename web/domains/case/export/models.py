@@ -7,6 +7,7 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
+    CaseDocumentReference,
     CaseEmail,
     CaseLicenceCertificateBase,
     CaseNote,
@@ -528,3 +529,39 @@ class ExportApplicationCertificate(CaseLicenceCertificateBase):
     )
 
     issue_date = models.DateField(verbose_name="Issue Date", null=True)
+
+    def __str__(self):
+        ea_pk, st, ca = (self.export_application_id, self.status, self.created_at)
+        return f"ExportApplicationCertificate(export_application_id={ea_pk}, status={st}, created_at={ca})"
+
+
+class ExportCertificateCaseDocumentReferenceData(models.Model):
+    """Extra information needed for Export Application CaseDocumentReference.
+
+    Export applications have multiple certificates.
+    """
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["case_document_reference", "country", "gmp_brand"],
+                name="cert_doc_ref_data_unique",
+            )
+        ]
+
+    case_document_reference = models.OneToOneField(
+        CaseDocumentReference, on_delete=models.CASCADE, related_name="reference_data"
+    )
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+
+    # Extra information for GMP applications
+    gmp_brand = models.ForeignKey("GMPBrand", on_delete=models.PROTECT, null=True)
+
+    def __str__(self):
+        return (
+            f"ExportCertificateCaseDocumentReferenceData("
+            f"case_document_reference_id={self.case_document_reference_id}"
+            f", country_id={self.country_id}"
+            f", gmp_brand_id={self.gmp_brand_id}"
+            f")"
+        )

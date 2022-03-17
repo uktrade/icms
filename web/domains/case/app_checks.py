@@ -50,7 +50,8 @@ def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
 
     # When refusing an application the only thing we check is the checklist.
     if (
-        application.status == application.Statuses.VARIATION_REQUESTED
+        application.is_import_application()
+        and application.status == application.Statuses.VARIATION_REQUESTED
         and application.variation_decision == application.REFUSE
     ) or application.decision == application.REFUSE:
         return application_errors

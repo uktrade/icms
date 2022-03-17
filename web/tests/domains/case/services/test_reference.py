@@ -285,10 +285,11 @@ def test_get_application_case_and_licence_references(
     doc = _get_licence_document(wood_app)
     assert doc.reference == "0000010K"
 
+    c_type = CaseDocumentReference.Type.CERTIFICATE
     for app in [com_app, cfs_app, gmp_app]:
         certificate = app.get_most_recent_certificate()
         ref = reference.get_export_certificate_reference(lock_manager, app)
-        certificate.document_references.create(document_type=l_type, reference=ref)
+        certificate.document_references.create(document_type=c_type, reference=ref)
 
     today = datetime.date.today()
 
@@ -340,7 +341,7 @@ def _get_licence_document(app):
 
 def _get_certificate_document(app):
     return app.get_most_recent_certificate().document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
+        document_type=CaseDocumentReference.Type.CERTIFICATE
     )
 
 

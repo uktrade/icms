@@ -478,8 +478,9 @@ class CaseDocumentReference(models.Model):
     """All documents relevant to a case licence or certificate."""
 
     class Type(models.TextChoices):
-        LICENCE: str = ("LICENCE", "Licence")  # type:ignore[assignment]
-        COVER_LETTER: str = ("COVER_LETTER", "Cover Letter")  # type:ignore[assignment]
+        LICENCE = ("LICENCE", "Licence")
+        CERTIFICATE = ("CERTIFICATE", "Certificate")
+        COVER_LETTER = ("COVER_LETTER", "Cover Letter")
 
     document = models.OneToOneField(File, on_delete=models.CASCADE, null=True)
     document_type = models.CharField(max_length=12, choices=Type.choices)
