@@ -22,6 +22,8 @@ from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
+    ExportApplication,
     ExportApplicationCertificate,
 )
 from web.domains.case.models import CaseDocumentReference
@@ -187,10 +189,20 @@ def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSa
     applications = CertificateOfFreeSaleApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
 
-    # TODO: ICMSLST-1443 Convert to subquery.
-    applications = applications.annotate(
-        manufacturer_countries=ArrayAgg("schedules__country_of_manufacture__name", distinct=True)
+    manufacturer_countries_sub_query = (
+        CFSSchedule.objects.filter(application_id=OuterRef("id"))
+        .order_by()
+        .values("application")
+        .annotate(
+            manufacturer_countries_array=ArrayAgg("country_of_manufacture__name", distinct=True)
+        )
+        .values("manufacturer_countries_array")
     )
+    applications = applications.annotate(
+        manufacturer_countries=Subquery(manufacturer_countries_sub_query)
+    )
+
+    applications = _add_export_certificate_data(applications)
 
     return applications
 
@@ -198,6 +210,7 @@ def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSa
 def get_com_applications(search_ids: list[int]) -> "QuerySet[CertificateOfManufactureApplication]":
     applications = CertificateOfManufactureApplication.objects.filter(pk__in=search_ids)
     applications = _apply_export_optimisation(applications)
+    applications = _add_export_certificate_data(applications)
 
     return applications
 
@@ -209,6 +222,7 @@ def get_gmp_applications(
         pk__in=search_ids
     )
     applications = _apply_export_optimisation(applications)
+    applications = _add_export_certificate_data(applications)
 
     return applications
 
@@ -338,9 +352,15 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     """Selects related tables used for import applications."""
     model = model.select_related("exporter", "contact", "case_owner")
 
-    # TODO: ICMSLST-1443 Convert to subquery.
+    origin_countries_sub_query = (
+        ExportApplication.objects.filter(id=OuterRef("id"))
+        .order_by()
+        .values("id")
+        .annotate(origin_countries_array=ArrayAgg("countries__name", distinct=True))
+        .values("origin_countries_array")
+    )
     model = model.annotate(
-        origin_countries=ArrayAgg("countries__name", distinct=True),
+        origin_countries=Subquery(origin_countries_sub_query),
         order_by_datetime=utils.get_order_by_datetime("export"),
     )
 
@@ -373,6 +393,39 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest licence
         .order_by("id", "-licences__created_at")
+        .distinct("id")
+    )
+
+    return model
+
+
+def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
+    content_type_pk = get_content_type_pk("export")
+
+    cr_sub_query = (
+        CaseDocumentReference.objects.filter(
+            document_type=CaseDocumentReference.Type.CERTIFICATE,
+            content_type_id=content_type_pk,
+            object_id=OuterRef("certificates__pk"),
+        )
+        .order_by()
+        .values("object_id")
+        .annotate(certificate_array=ArrayAgg("reference"))
+        .values("certificate_array")
+    )
+
+    model = (
+        # Filter out archived certificates before annotating with the latest certificate.
+        model.filter(
+            certificates__status__in=[
+                ExportApplicationCertificate.Status.DRAFT,
+                ExportApplicationCertificate.Status.ACTIVE,
+            ]
+        )
+        .annotate(latest_certificate_references=Subquery(cr_sub_query))
+        # The query generated uses `DISTINCT ON`
+        # It ensures a 1 to 1 for the application and latest certificate
+        .order_by("id", "-certificates__created_at")
         .distinct("id")
     )
 

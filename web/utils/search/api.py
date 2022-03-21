@@ -305,8 +305,6 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
     # This is an annotation and can have a value of [None] for in-progress apps
     origin_countries = [c for c in rec.origin_countries if c]
 
-    certificates = _get_certificate_references(rec)
-
     # TODO: Revisit when implementing ICMSLST-1169
     # assignee_title = "Authorise Documents (G2) / Authoriser"
     assignee_title = "Application Processing (CA50) / Case Officer"
@@ -319,7 +317,7 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
         case_reference=rec.get_reference(),
         application_type=app_type_label,
         status=rec.get_status_display(),
-        certificates=certificates,
+        certificates=rec.latest_certificate_references or [],
         origin_countries=origin_countries,
         organisation_name=rec.exporter.name,
         application_contact=application_contact,
@@ -335,22 +333,6 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
         actions=get_export_record_actions(rec, user),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
-
-
-def _get_certificate_references(rec: ExportApplication) -> list[str]:
-    """Retrieve the certificate references."""
-
-    # TODO: Revisit when implementing ICMSLST-1223
-    if rec.process_type == ProcessTypes.CFS:
-        certificates = ["CFS/2021/00001", "CFS/2021/00002", "CFS/2021/00003"]
-    elif rec.process_type == ProcessTypes.COM:
-        certificates = ["COM/2021/00004", "COM/2021/00005", "COM/2021/00006"]
-    elif rec.process_type == ProcessTypes.GMP:
-        certificates = ["GMP/2021/00007", "GMP/2021/00008", "GMP/2021/00009"]
-    else:
-        raise NotImplementedError(f"Unknown process type: {rec.process_type}")
-
-    return certificates
 
 
 def _get_licence_reference(rec: ImportApplication) -> str:
