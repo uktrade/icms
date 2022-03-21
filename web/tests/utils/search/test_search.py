@@ -12,11 +12,7 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import (
-    ImportApplication,
-    ImportApplicationLicence,
-    ImportApplicationType,
-)
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.models import (
     CP_CATEGORIES,
     OutwardProcessingTradeApplication,
@@ -40,6 +36,7 @@ from web.domains.case.models import (
     ApplicationBase,
     CaseDocumentReference,
     CaseEmail,
+    CaseLicenceCertificateBase,
     UpdateRequest,
 )
 from web.domains.case.utils import get_application_current_task
@@ -1133,6 +1130,9 @@ def test_import_search_by_licence_type(import_fixture_data):
     wood = _create_wood_application("wood-app-ref", import_fixture_data)
     licence = wood.licences.first()
     licence.issue_paper_licence_only = True
+    licence.document_references.create(
+        document_type=CaseDocumentReference.Type.LICENCE, reference="licence_reference"
+    )
     licence.save()
 
     search_terms = SearchTerms(case_type="import", licence_type="electronic")
@@ -1144,8 +1144,8 @@ def test_import_search_by_licence_type(import_fixture_data):
     results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
-
     check_application_references(results.records, "wood-app-ref")
+    assert results.records[0].case_status.licence_reference == "licence_reference (Paper)"
 
 
 def test_import_search_by_chief_usage_status(import_fixture_data):
@@ -1349,14 +1349,14 @@ def test_import_search_by_commodity_code(import_fixture_data):
 def test_import_search_by_document_reference(import_fixture_data):
     l_type = CaseDocumentReference.Type.LICENCE
     wood = _create_wood_application("wood-app-1-ref", import_fixture_data)
-    licence: ImportApplicationLicence = wood.licences.first()
-    licence.status = ImportApplicationLicence.Status.ACTIVE
+    licence: CaseLicenceCertificateBase = wood.licences.first()
+    licence.status = CaseLicenceCertificateBase.Status.ACTIVE
     licence.save()
     licence.document_references.create(document_type=l_type, reference="GBSIL0000001B")
 
     wood_2 = _create_wood_application("wood-app-2-ref", import_fixture_data)
-    licence: ImportApplicationLicence = wood_2.licences.first()
-    licence.status = ImportApplicationLicence.Status.ACTIVE
+    licence: CaseLicenceCertificateBase = wood_2.licences.first()
+    licence.status = CaseLicenceCertificateBase.Status.ACTIVE
     licence.save()
     licence.document_references.create(document_type=l_type, reference="GBSIL0000002C")
 
@@ -1379,8 +1379,8 @@ def test_import_search_by_document_reference(import_fixture_data):
     check_application_references(results.records, "wood-app-2-ref", "wood-app-1-ref")
 
     # Search filters excludes archived licences.
-    licence: ImportApplicationLicence = wood.licences.first()
-    licence.status = ImportApplicationLicence.Status.ARCHIVED
+    licence: CaseLicenceCertificateBase = wood.licences.first()
+    licence.status = CaseLicenceCertificateBase.Status.ARCHIVED
     licence.save()
 
     search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
@@ -1913,7 +1913,7 @@ def _create_application(
         task_type=Task.TaskType.PREPARE,
         owner=import_fixture_data.importer_user,
     )
-    application.licences.create(status=ImportApplicationLicence.Status.DRAFT)
+    application.licences.create(status=CaseLicenceCertificateBase.Status.DRAFT)
 
     if submit:
         _submit_application(application, import_fixture_data)
@@ -1959,6 +1959,7 @@ def _create_export_application(
     Task.objects.create(
         process=application, task_type=Task.TaskType.PREPARE, owner=fixture_data.exporter_user
     )
+    application.certificates.create(status=CaseLicenceCertificateBase.Status.DRAFT)
 
     for c in certificate_countries:
         country = Country.objects.get(name=c)
