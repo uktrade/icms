@@ -30,6 +30,7 @@ from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
     CFSSchedule,
     ExportApplicationType,
+    ExportCertificateCaseDocumentReferenceData,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
@@ -1349,13 +1350,13 @@ def test_import_search_by_commodity_code(import_fixture_data):
 def test_import_search_by_document_reference(import_fixture_data):
     l_type = CaseDocumentReference.Type.LICENCE
     wood = _create_wood_application("wood-app-1-ref", import_fixture_data)
-    licence: CaseLicenceCertificateBase = wood.licences.first()
+    licence = wood.licences.first()
     licence.status = CaseLicenceCertificateBase.Status.ACTIVE
     licence.save()
     licence.document_references.create(document_type=l_type, reference="GBSIL0000001B")
 
     wood_2 = _create_wood_application("wood-app-2-ref", import_fixture_data)
-    licence: CaseLicenceCertificateBase = wood_2.licences.first()
+    licence = wood_2.licences.first()
     licence.status = CaseLicenceCertificateBase.Status.ACTIVE
     licence.save()
     licence.document_references.create(document_type=l_type, reference="GBSIL0000002C")
@@ -1379,12 +1380,50 @@ def test_import_search_by_document_reference(import_fixture_data):
     check_application_references(results.records, "wood-app-2-ref", "wood-app-1-ref")
 
     # Search filters excludes archived licences.
-    licence: CaseLicenceCertificateBase = wood.licences.first()
+    licence = wood.licences.first()
     licence.status = CaseLicenceCertificateBase.Status.ARCHIVED
     licence.save()
 
     search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
     results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 0
+
+
+def test_export_search_by_document_reference(export_fixture_data):
+    c_type = CaseDocumentReference.Type.CERTIFICATE
+    cfs = _create_cfs_application(export_fixture_data)
+    cert = cfs.certificates.first()
+    cert.status = CaseLicenceCertificateBase.Status.ACTIVE
+    cert.save()
+    pairs = (
+        ("CFS/2021/00001", "Finland"),
+        ("CFS/2021/00002", "Germany"),
+        ("CFS/2021/00003", "Poland"),
+    )
+    for ref, country in pairs:
+        cdr = cert.document_references.create(document_type=c_type, reference=ref)
+        ExportCertificateCaseDocumentReferenceData.objects.create(
+            case_document_reference=cdr, country=Country.objects.get(name=country)
+        )
+
+    # Search exact
+    search_terms = SearchTerms(case_type="export", licence_ref="CFS/2021/00002")
+    results = search_applications(search_terms, export_fixture_data.request.user)
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, cfs.reference)
+
+    # Search wildcard matches one app
+    search_terms = SearchTerms(case_type="export", licence_ref="%/2021/%")
+    results = search_applications(search_terms, export_fixture_data.request.user)
+    assert results.total_rows == 1
+    check_export_application_case_reference(results.records, cfs.reference)
+
+    # Search filters excludes archived licences.
+    cert.status = CaseLicenceCertificateBase.Status.ARCHIVED
+    cert.save()
+
+    search_terms = SearchTerms(case_type="export", licence_ref="CFS/2021/0000%")
+    results = search_applications(search_terms, export_fixture_data.request.user)
     assert results.total_rows == 0
 
 
@@ -1828,9 +1867,7 @@ def _create_wood_application(
     )
 
 
-def _create_cfs_application(
-    export_fixture_data: ExportFixtureData, submit=True, country_of_manufacture="Peru"
-):
+def _create_cfs_application(export_fixture_data: ExportFixtureData, country_of_manufacture="Peru"):
     application_type = ExportApplicationType.objects.get(
         type_code=ExportApplicationType.Types.FREE_SALE
     )
