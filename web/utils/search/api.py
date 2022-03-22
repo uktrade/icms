@@ -7,14 +7,15 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case._import.models import (
-    ImportApplication,
-    ImportApplicationLicence,
-    ImportApplicationType,
-)
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import CaseDocumentReference, CaseEmail, UpdateRequest
+from web.domains.case.models import (
+    CaseDocumentReference,
+    CaseEmail,
+    CaseLicenceCertificateBase,
+    UpdateRequest,
+)
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExpT
 from web.domains.commodity.models import Commodity
@@ -388,14 +389,23 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
                 licence_filter,
                 licences__document_references__document_type=CaseDocumentReference.Type.LICENCE,
                 licences__status__in=[
-                    ImportApplicationLicence.Status.DRAFT,
-                    ImportApplicationLicence.Status.ACTIVE,
+                    CaseLicenceCertificateBase.Status.DRAFT,
+                    CaseLicenceCertificateBase.Status.ACTIVE,
                 ],
             )
 
         else:
-            # TODO: Revisit when implementing ICMSLST-1444
-            raise NotImplementedError("Searching by Licence Reference isn't supported yet")
+            licence_filter = get_wildcard_filter(
+                "certificates__document_references__reference", terms.licence_ref
+            )
+            model = model.filter(
+                licence_filter,
+                certificates__document_references__document_type=CaseDocumentReference.Type.CERTIFICATE,
+                certificates__status__in=[
+                    CaseLicenceCertificateBase.Status.DRAFT,
+                    CaseLicenceCertificateBase.Status.ACTIVE,
+                ],
+            )
 
     if terms.case_status:
         filters = _get_status_to_filter(terms.case_type, terms.case_status)
@@ -489,8 +499,8 @@ def _apply_import_application_filter(
         paper_only = terms.licence_type == "paper"
         model = model.filter(
             licences__status__in=[
-                ImportApplicationLicence.Status.DRAFT,
-                ImportApplicationLicence.Status.ACTIVE,
+                CaseLicenceCertificateBase.Status.DRAFT,
+                CaseLicenceCertificateBase.Status.ACTIVE,
             ],
             licences__issue_paper_licence_only=paper_only,
         )
@@ -528,8 +538,8 @@ def _apply_import_application_filter(
     if terms.licence_date_start:
         model = model.filter(
             licences__status__in=[
-                ImportApplicationLicence.Status.DRAFT,
-                ImportApplicationLicence.Status.ACTIVE,
+                CaseLicenceCertificateBase.Status.DRAFT,
+                CaseLicenceCertificateBase.Status.ACTIVE,
             ],
             licences__licence_start_date__gte=terms.licence_date_start,
         )
@@ -537,8 +547,8 @@ def _apply_import_application_filter(
     if terms.licence_date_end:
         model = model.filter(
             licences__status__in=[
-                ImportApplicationLicence.Status.DRAFT,
-                ImportApplicationLicence.Status.ACTIVE,
+                CaseLicenceCertificateBase.Status.DRAFT,
+                CaseLicenceCertificateBase.Status.ACTIVE,
             ],
             licences__licence_end_date__lte=terms.licence_date_end,
         )
