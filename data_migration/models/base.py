@@ -1,9 +1,12 @@
-from typing import Any, Generator
+from typing import Any, Generator, Tuple
 
 from django.db import models
+from lxml import etree
 
 
 class MigrationBase(models.Model):
+    PROCESS_PK: bool = False
+
     class Meta:
         abstract = True
 
@@ -26,6 +29,12 @@ class MigrationBase(models.Model):
         return data
 
     @classmethod
+    def models_to_populate(cls) -> list[str]:
+        """Returns a list of the model names that will be populated from data retrieved from V1"""
+
+        return [cls.__name__]
+
+    @classmethod
     def fields(cls) -> list[str]:
         """Returns the field names on the model"""
 
@@ -35,7 +44,7 @@ class MigrationBase(models.Model):
     def get_excludes(cls) -> list[str]:
         """List of fields to be excluded in the V2 import"""
 
-        return []
+        return [field for field in cls.fields() if field.endswith("_xml")]
 
     @classmethod
     def get_includes(cls) -> list[str]:
@@ -68,17 +77,45 @@ class MigrationBase(models.Model):
         related = cls.get_related()
         return cls.objects.select_related(*related).values(*values).iterator()
 
+    @classmethod
+    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
+        """Parses xml to bulk_create model objects from a list of xml strings
 
-class FileBase(MigrationBase):
-    class Meta:
-        abstract = True
+        :param batch: A list of parent_pk, xml string pairs.
+
+        Example batch: [(1, "<ROOT><ELEMENT /></ROOT>"), (2, "<ROOT><ELEMENT></ROOT>")]
+        """
+        return [cls.parse_xml_fields(pk, etree.fromstring(xml)) for pk, xml in batch]
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> models.Model:
+        """Retrieves data for fields from an ElementTree object
+
+        :param parent_pk: The pk of the parent model
+        :param xml: An xml tree from which the data for the model will be extracted
+        """
+        raise NotImplementedError("XML parsing must be defined")
+
+
+class File(MigrationBase):
+    # TODO ICMSLST-1495: Move this model out of base
+    is_active = models.BooleanField(default=True)
+    filename = models.CharField(max_length=300)
+    content_type = models.CharField(max_length=100)
+    file_size = models.IntegerField()
+    path = models.CharField(max_length=4000)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    # TODO ICMSLST-1495
+    # created_by = models.ForeignKey(User, on_delete=models.PROTECT)
 
 
 class Process(MigrationBase):
+    PROCESS_PK = True
+
     process_type = models.CharField(max_length=50, default=None)
     is_active = models.BooleanField(default=True, db_index=True)
     created = models.DateTimeField(auto_now_add=True)
-    finished = models.DateTimeField(blank=True, null=True)
+    finished = models.DateTimeField(null=True)
     ima_id = models.IntegerField(null=True, unique=True)
 
     @classmethod

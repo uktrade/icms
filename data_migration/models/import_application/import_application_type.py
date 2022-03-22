@@ -14,28 +14,28 @@ from data_migration.models.reference import (
 class ImportApplicationType(MigrationBase):
     status = models.CharField(max_length=10)
     type = models.CharField(max_length=70)
-    sub_type = models.CharField(max_length=70, blank=True, null=True)
+    sub_type = models.CharField(max_length=70, null=True)
     licence_type_code = models.CharField(max_length=20)
     sigl_flag = models.CharField(max_length=5)
     chief_flag = models.CharField(max_length=5)
-    chief_licence_prefix = models.CharField(max_length=10, blank=True, null=True)
+    chief_licence_prefix = models.CharField(max_length=10, null=True)
     paper_licence_flag = models.CharField(max_length=5)
     electronic_licence_flag = models.CharField(max_length=5)
     cover_letter_flag = models.CharField(max_length=5)
     cover_letter_schedule_flag = models.CharField(max_length=5)
     category_flag = models.CharField(max_length=5)
-    sigl_category_prefix = models.CharField(max_length=100, blank=True, null=True)
-    chief_category_prefix = models.CharField(max_length=10, blank=True, null=True)
+    sigl_category_prefix = models.CharField(max_length=100, null=True)
+    chief_category_prefix = models.CharField(max_length=10, null=True)
     default_licence_length_months = models.IntegerField(null=True)
     endorsements_flag = models.CharField(max_length=5)
-    default_commodity_desc = models.CharField(max_length=200, blank=True, null=True)
+    default_commodity_desc = models.CharField(max_length=200, null=True)
     quantity_unlimited_flag = models.CharField(max_length=5)
-    unit_list_csv = models.CharField(max_length=200, blank=True, null=True)
+    unit_list_csv = models.CharField(max_length=200, null=True)
     exp_cert_upload_flag = models.CharField(max_length=5)
     supporting_docs_upload_flag = models.CharField(max_length=5)
     multiple_commodities_flag = models.CharField(max_length=5)
-    guidance_file_url = models.CharField(max_length=4000, blank=True, null=True)
-    licence_category_description = models.CharField(max_length=1000, blank=True, null=True)
+    guidance_file_url = models.CharField(max_length=4000, null=True)
+    licence_category_description = models.CharField(max_length=1000, null=True)
     usage_auto_category_desc_flag = models.CharField(max_length=5)
     case_checklist_flag = models.CharField(max_length=5)
     importer_printable = models.CharField(max_length=5)
@@ -64,7 +64,7 @@ class ImportApplicationType(MigrationBase):
         CommodityType, on_delete=models.PROTECT, to_field="type_code", related_name="+", null=True
     )
     declaration_template_mnem = models.CharField(max_length=50)
-    # TODO when exporting template data
+    # TODO ICMSLST-1497: when exporting template data
     # declaration_template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
     default_commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.SET_NULL, to_field="group_code", null=True
@@ -72,7 +72,7 @@ class ImportApplicationType(MigrationBase):
 
     @staticmethod
     def get_excludes() -> list[str]:
-        # TODO include template when template data exported
+        # TODO ICMSLST-1497: include template when template data exported
         return ["declaration_template_mnem"]
 
     @staticmethod

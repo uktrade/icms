@@ -1,13 +1,14 @@
 import argparse
-from typing import TYPE_CHECKING
+from itertools import islice
+from typing import TYPE_CHECKING, Optional
 
 import cx_Oracle
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from data_migration.models import ImportApplication, Process
+from data_migration import models
 from data_migration.models.user import Importer, Office, User
-from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL
+from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, DATA_TYPE_XML
 
 from .utils.db import new_process_pk
 from .utils.format import format_name, format_row
@@ -48,7 +49,7 @@ class Command(BaseCommand):
         if not settings.ALLOW_DATA_MIGRATION or not settings.APP_ENV == "production":
             raise CommandError("Data migration has not been enabled for this environment")
 
-        batchsize = options["batchsize"]
+        self.batchsize = options["batchsize"]
 
         connection_config = {
             "user": settings.ICMS_V1_REPLICA_USER,
@@ -62,14 +63,12 @@ class Command(BaseCommand):
         with cx_Oracle.connect(**connection_config) as connection:
             cursor = connection.cursor()
 
-            self._export_data("reference", cursor, batchsize, options["skip_ref"])
-            self._export_data("import_application", cursor, batchsize, options["skip_ia"])
+            self._export_data("reference", cursor, options["skip_ref"])
+            self._export_data("import_application", cursor, options["skip_ia"])
 
             cursor.close()
 
-    def _export_data(
-        self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, batchsize: int, skip: bool
-    ) -> None:
+    def _export_data(self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, skip: bool) -> None:
         """Retrives data from V1 and creates the objects in the data_migration models
 
         :param data_type: The type of data being exported
@@ -92,55 +91,68 @@ class Command(BaseCommand):
             columns = [col[0].lower() for col in cursor.description]
 
             while True:
-                rows = cursor.fetchmany(batchsize)
+                rows = cursor.fetchmany(self.batchsize)
                 if not rows:
                     break
 
-                if data_type == "import_application":
-                    self._export_ia_data(columns, list(rows), model)
-                else:
-                    model.objects.bulk_create([model(**format_row(columns, row)) for row in rows])
+                self._export_model_data(columns, rows, model)
+
+        self._extract_xml_data(data_type)
 
         self.stdout.write(f"{name} Data Export Complete!")
 
-    def _export_ia_data(self, columns: list[str], rows: list[list[str]], model: "Model") -> None:
-        """Handles the creation of import application data in the data_migration models
+    def _export_model_data(
+        self, columns: list[str], rows: list[list[str]], base_model: "Model"
+    ) -> None:
+        """Handles the export of data to all the models populated by the data returned in the V1 query
 
         :param columns: The columns returned from the query
         :param rows: The rows of data returned from the query
         :param model: The model being targeted for creation
         """
+        process_pk: Optional[int] = new_process_pk() if base_model.PROCESS_PK else None
 
-        if model.__name__.endswith("Application"):
-            # In V2 each application inherits from ImportApplication
-            # ImportApplication inherit from Process
-            # The pks much match the Process pk so we can't rely on autoincrement
-            start_pk = new_process_pk()
-            process_fields = Process.fields()
-            Process.objects.bulk_create(
-                [
-                    Process(**format_row(columns, row, process_fields, pk=start_pk + i))
-                    for i, row in enumerate(rows)
-                ]
+        for name in base_model.models_to_populate():
+            model = getattr(models, name)
+            fields = model.fields()
+
+            if process_pk:
+                model.objects.bulk_create(
+                    [
+                        model(**format_row(columns, row, fields, pk=process_pk + i))
+                        for i, row in enumerate(rows)
+                    ]
+                )
+            else:
+                model.objects.bulk_create(
+                    [model(**format_row(columns, row, fields)) for row in rows]
+                )
+
+    def _extract_xml_data(self, data_type: DATA_TYPE) -> None:
+        """Iterates over the models listed for the specified data_type and parses the xml from their parent"""
+
+        xml_field_list = DATA_TYPE_XML[data_type]
+        name = format_name(data_type)
+
+        self.stdout.write(f"Extracting xml data for {name}")
+
+        for parent, field, child in xml_field_list:
+            self.stdout.write(
+                f"Extracting xml data from {parent.__name__}.{field} to {child.__name__}"
             )
-            ia_fields = ImportApplication.fields()
-            ImportApplication.objects.bulk_create(
-                [
-                    ImportApplication(**format_row(columns, row, ia_fields, pk=start_pk + i))
-                    for i, row in enumerate(rows)
-                ]
+            objs = (
+                parent.objects.filter(**{f"{field}__isnull": False}).values("pk", field).iterator()
             )
 
-            model_fields = model.fields()
-            model.objects.bulk_create(
-                [
-                    model(**format_row(columns, row, model_fields, pk=start_pk + i))
-                    for i, row in enumerate(rows)
-                ]
-            )
-            # TODO: Create tasks for the application data
-        else:
-            model.objects.bulk_create([model(**format_row(columns, row)) for row in rows])
+            while True:
+                batch = [(obj["pk"], obj[field]) for obj in islice(objs, self.batchsize)]
+
+                if not batch:
+                    break
+
+                child.objects.bulk_create(child.parse_xml(batch))
+
+        self.stdout.write("XML extraction complete")
 
     def _create_user_data(self):
         """Creates dummy user data prior to users being migrated"""

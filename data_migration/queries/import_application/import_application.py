@@ -1,8 +1,7 @@
-# TODO: Investigate case_owner_id
-# TODO: User fields need updating when user data is migrated
-# TODO: Find issue paper licence only
-# TODO: Find case owner
-# TODO: Determine if process is active from data
+# TODO ICMSLST-1493: Investigate case_owner_id
+# TODO ICMSLST-1493: Find issue paper licence only
+# TODO ICMSLST-1498: User fields need updating when user data is migrated
+# TODO ICMSLST-1493: Determine if process is active from data
 
 # xiad.submitted_by_wua_id submitted_by_id
 # xiad.created_by_wua_id created_by_id
@@ -54,20 +53,11 @@ FROM
 INNER JOIN impmgr.import_applications ia ON ia.id = xiad.ima_id
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xiad.ima_type AND iat.ima_sub_type = xiad.ima_sub_type
-INNER JOIN (
-  SELECT
-    ad.ima_id, ad.id imad_id, x.*
-  FROM impmgr.import_application_details ad,
-    XMLTABLE('/*'
-    PASSING ad.xml_data
-    COLUMNS
-      {columns}
-    ) x
-    WHERE status_control = 'C'
-  ) ia_details ON ia_details.ima_id = xiad.ima_id
-LEFT JOIN impmgr.ima_responses ir ON ir.ima_id = xiad.ima_id
+INNER JOIN ({subquery}) ia_details ON ia_details.ima_id = xiad.ima_id
+LEFT JOIN impmgr.ima_responses ir ON ir.ima_id = xiad.ima_id AND ir.licence_ref IS NOT NULL
 WHERE
   xiad.ima_type = '{ima_type}'
+  AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'
   AND xiad.status_control = 'C'
 """
 
@@ -93,12 +83,13 @@ INNER JOIN (
   ) cl ON cl.import_application_id = xiad.imad_id
 WHERE
   xiad.ima_type = '{ima_type}'
+  AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'
   AND xiad.status_control = 'C'
 """
 
 
-# TODO: Expand to cover all application types
-# TODO: Find how to determine if paper only
+# TODO ICMSLST-1494: Expand to cover all application types
+# TODO ICMSLST-1494: Find how to determine if paper only
 
 import_application_licence = """
 SELECT

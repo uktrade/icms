@@ -2,16 +2,17 @@ from typing import Any
 
 from django.db import models
 
-from data_migration.models.base import FileBase
+from data_migration.models.base import File, MigrationBase
 from data_migration.models.reference import Commodity, CommodityGroup
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase
 
-# TODO: Add wood supporting documents and contract documents
-# TODO: Add textiles supporting documents
+# TODO ICMSLST-1496: Add wood supporting documents and contract documents
+# TODO ICMSLST-1496: Add textiles supporting documents
 
 
-class WoodContractFile(FileBase):
+class WoodContractFile(MigrationBase):
+    file_ptr = models.ForeignKey(File, on_delete=models.CASCADE)
     reference = models.CharField(max_length=100)
     contract_date = models.DateField()
 
@@ -26,14 +27,9 @@ class WoodQuotaApplication(ImportApplicationBase):
     goods_description = models.CharField(max_length=100, null=True)
     goods_qty = models.DecimalField(null=True, max_digits=9, decimal_places=2)
     goods_unit = models.CharField(max_length=40, null=True)
-    additional_comments = models.CharField(max_length=4000, blank=True, null=True)
-    contract_files_xml = models.TextField(null=True, blank=True)
-    export_certs_xml = models.TextField(null=True, blank=True)
-
-    @classmethod
-    def get_excludes(cls):
-        excludes = super().get_excludes()
-        return excludes + ["contract_files_xml", "export_certs_xml"]
+    additional_comments = models.CharField(max_length=4000, null=True)
+    contract_files_xml = models.TextField(null=True)
+    export_certs_xml = models.TextField(null=True)
 
 
 class WoodQuotaChecklist(ChecklistBase):
@@ -67,12 +63,7 @@ class TextilesApplication(ImportApplicationBase):
         null=True,
         related_name="+",
     )
-    contract_files_xml = models.TextField(null=True, blank=True)
-
-    @classmethod
-    def get_excludes(cls):
-        excludes = super().get_excludes()
-        return excludes + ["contract_files_xml"]
+    contract_files_xml = models.TextField(null=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:

@@ -1,21 +1,16 @@
+from datetime import datetime
+
 import pytest
 
-from data_migration.models import MigrationBase
+from data_migration import models as dm
 
-from .factory import (
-    CountryFactory,
-    CountryGroupFactory,
-    ImportApplicationFactory,
-    ImportApplicationTypeFactory,
-    ProcessFactory,
-    WoodQuotaApplicationFactory,
-)
+from . import factory, xml_data
 
 
 @pytest.mark.django_db
 def test_active_status_data_export():
     data = {"id": 1, "name": "test", "status": "ACTIVE"}
-    result = MigrationBase.data_export(data)
+    result = dm.MigrationBase.data_export(data)
     assert len(result.keys()) == 3
     assert result["id"] == 1
     assert result["name"] == "test"
@@ -25,14 +20,14 @@ def test_active_status_data_export():
 @pytest.mark.django_db
 def test_inactive_status_data_export():
     data = {"id": 1, "name": "test", "status": "INACTIVE"}
-    result = MigrationBase.data_export(data)
+    result = dm.MigrationBase.data_export(data)
     assert len(result.keys()) == 3
     assert result["is_active"] is False
 
 
 @pytest.mark.django_db
 def test_country_get_values():
-    country = CountryFactory()
+    country = factory.CountryFactory()
     values = country.get_values()
     expected = ["commission_code", "hmrc_code", "id", "name", "status", "type"]
     assert sorted(values) == expected
@@ -40,14 +35,14 @@ def test_country_get_values():
 
 @pytest.mark.django_db
 def test_country_group_get_values():
-    country_group = CountryGroupFactory()
+    country_group = factory.CountryGroupFactory()
     values = country_group.get_values()
     assert sorted(values) == ["comments", "id", "name"]
 
 
 @pytest.mark.django_db
 def test_country_data_export():
-    country = CountryFactory(status="ACTIVE")
+    country = factory.CountryFactory(status="ACTIVE")
     data_dict = country.__dict__
     data_dict.pop("_state")
     data = country.data_export(data_dict)
@@ -62,7 +57,7 @@ def test_country_data_export():
 
 @pytest.mark.django_db
 def test_import_application_type_related():
-    iat = ImportApplicationTypeFactory()
+    iat = factory.ImportApplicationTypeFactory()
     result = iat.get_related()
     expected = [
         "commodity_type",
@@ -77,7 +72,7 @@ def test_import_application_type_related():
 
 @pytest.mark.django_db
 def test_import_application_type_values():
-    iat = ImportApplicationTypeFactory()
+    iat = factory.ImportApplicationTypeFactory()
     result = iat.get_values()
     expected = [
         "case_checklist_flag",
@@ -125,7 +120,7 @@ def test_import_application_type_values():
 
 @pytest.mark.django_db
 def test_import_application_type_data_export():
-    iat = ImportApplicationTypeFactory(sigl_flag="true", endorsements_flag="false")
+    iat = factory.ImportApplicationTypeFactory(sigl_flag="true", endorsements_flag="false")
     data_dict = iat.__dict__
     data_dict.pop("_state")
 
@@ -145,8 +140,8 @@ def test_import_application_type_data_export():
 
 @pytest.mark.django_db
 def test_import_application_get_data_export():
-    process = ProcessFactory(ima_id=1)
-    ia = ImportApplicationFactory(ima=process)
+    process = factory.ProcessFactory(ima_id=1)
+    ia = factory.ImportApplicationFactory(ima=process)
     data = {k: None for k in ia.get_values()}
     data["legacy_case_flag"] = "true"
     data["licence_extended_flag"] = "false"
@@ -199,9 +194,9 @@ def test_import_application_get_data_export():
 
 @pytest.mark.django_db
 def test_wood_application_get_data_export():
-    process = ProcessFactory(ima_id=1)
-    ia = ImportApplicationFactory(ima=process)
-    wood = WoodQuotaApplicationFactory(imad=ia)
+    process = factory.ProcessFactory(ima_id=1)
+    ia = factory.ImportApplicationFactory(ima=process)
+    wood = factory.WoodQuotaApplicationFactory(imad=ia)
     data = {k: None for k in wood.get_values()}
     result = wood.data_export(data)
 
@@ -218,3 +213,50 @@ def test_wood_application_get_data_export():
         "importapplication_ptr_id",
         "shipping_year",
     ]
+
+
+def test_oil_application_parse_xml():
+    reports = dm.OILSupplementaryReport.parse_xml(
+        [(1, xml_data.sr_upload_xml), (2, xml_data.sr_manual_xml)]
+    )
+
+    assert len(reports) == 3
+    sr1, sr2, sr3 = reports
+    assert sr1.transport == "AIR"
+    assert sr1.date_received == datetime.strptime("2021-10-14", "%Y-%m-%d").date()
+    assert sr1.supplementary_info_id == 1
+    assert sr2.transport == "RAIL"
+    assert sr2.date_received == datetime.strptime("2021-11-03", "%Y-%m-%d").date()
+    assert sr2.supplementary_info_id == 2
+    assert sr3.transport is None
+    assert sr3.date_received is None
+    assert sr3.supplementary_info_id == 2
+
+    firearms = dm.OILSupplementaryReportFirearm.parse_xml(
+        [(1, sr1.report_firearms_xml), (2, sr2.report_firearms_xml), (3, sr3.report_firearms_xml)]
+    )
+    assert len(firearms) == 4
+    f1, f2, f3, f4 = firearms
+    assert f1.is_upload is True
+    assert (f1.is_manual and f1.is_no_firearm) is False
+    assert f1.report_id == 1
+
+    assert f2.is_manual is True
+    assert (f2.is_upload and f2.is_no_firearm) is False
+    assert f2.serial_number == "N/A"
+    assert f2.calibre == "6MM"
+    assert f2.model == "A gun barrel"
+    assert f2.proofing == "no"
+    assert f2.report_id == 2
+
+    assert f3.is_manual is True
+    assert (f3.is_upload and f3.is_no_firearm) is False
+    assert f3.serial_number == "123456"
+    assert f3.calibre == ".30"
+    assert f3.model == "A gun"
+    assert f3.proofing == "yes"
+    assert f3.report_id == 2
+
+    assert f4.is_manual is True
+    assert (f4.is_upload and f4.is_no_firearm) is False
+    assert f4.report_id == 3
