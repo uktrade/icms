@@ -23,7 +23,7 @@ def format_row(
             continue
 
         if value and column.endswith("_datetime"):
-            # TODO: Check timezone how timezones work in django.
+            # TODO ICMSLST-1493: Check timezone how timezones work in django.
             # Assumption that source is UTC and datetime is passed to models with source tz
             value = timezone.utc.localize(value)
 

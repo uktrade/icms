@@ -10,20 +10,21 @@ from .import_application_type import ImportApplicationType
 
 
 class ImportApplication(MigrationBase):
+    PROCESS_PK = True
+
     ima = models.OneToOneField(Process, on_delete=models.PROTECT, to_field="ima_id")
     imad_id = models.IntegerField(unique=True)
     status = models.CharField(max_length=30)
-    submit_datetime = models.DateTimeField(blank=True, null=True)
-    reference = models.CharField(max_length=100, blank=True, null=True, unique=True)
-    decision = models.CharField(max_length=10, blank=True, null=True)
+    submit_datetime = models.DateTimeField(null=True)
+    reference = models.CharField(max_length=100, null=True, unique=True)
+    decision = models.CharField(max_length=10, null=True)
 
     refuse_reason = models.CharField(
         max_length=4000,
-        blank=True,
         null=True,
     )
 
-    # TODO: Find acknowledged fields in source or remove from model
+    # TODO ICMSLST-1493: Find acknowledged fields in source or remove from model
     acknowledged_by = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -32,20 +33,21 @@ class ImportApplication(MigrationBase):
     )
 
     acknowledged_datetime = models.DateTimeField(null=True)
-    applicant_reference = models.CharField(max_length=500, blank=True, null=True)
-    create_datetime = models.DateTimeField(blank=False, null=False)
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
+    applicant_reference = models.CharField(max_length=500, null=True)
+    create_datetime = models.DateTimeField(null=False)
+    variation_no = models.IntegerField(null=False, default=0)
     legacy_case_flag = models.CharField(max_length=5, null=True)
     chief_usage_status = models.CharField(max_length=1, null=True)
     under_appeal_flag = models.CharField(max_length=5, null=True)
     variation_decision = models.CharField(max_length=10, null=True)
-    variation_refuse_reason = models.CharField(max_length=4000, blank=True, null=True)
-    issue_date = models.DateField(blank=True, null=True)
+    variation_refuse_reason = models.CharField(max_length=4000, null=True)
+    issue_date = models.DateField(null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)
+    # TODO ICMSLST-1494: licence_reference is now a FK
     licence_reference = models.CharField(max_length=100, null=True, unique=True)
-    last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
+    last_update_datetime = models.DateTimeField(null=False, auto_now=True)
     application_type = models.ForeignKey(
-        ImportApplicationType, on_delete=models.PROTECT, blank=False, null=False
+        ImportApplicationType, on_delete=models.PROTECT, null=False
     )
 
     submitted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
@@ -68,10 +70,8 @@ class ImportApplication(MigrationBase):
     )
 
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
-    case_owner = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
-    )
-    cover_letter = models.TextField(blank=True, null=True)
+    case_owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    cover_letter = models.TextField(null=True)
 
     imi_submitted_by = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, related_name="+"
@@ -95,6 +95,9 @@ class ImportApplication(MigrationBase):
             if field.endswith("_flag"):
                 value = data[field]
                 data[field] = bool(value) and value.lower() == "true"
+
+        # TODO ICMSLST-1494: Fix when addressing licences. Nullify for now
+        data["licence_reference"] = None
 
         return data
 
@@ -154,6 +157,8 @@ class ImportApplicationLicence(MigrationBase):
 
 
 class ImportApplicationBase(MigrationBase):
+    PROCESS_PK = True
+
     class Meta:
         abstract = True
 
@@ -165,8 +170,12 @@ class ImportApplicationBase(MigrationBase):
 
     @classmethod
     def get_includes(cls) -> list[str]:
-        return ["imad__id"]
+        return super().get_includes() + ["imad__id"]
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return ["imad_id"]
+        return super().get_excludes() + ["imad_id"]
+
+    @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return ["Process", "ImportApplication", cls.__name__]

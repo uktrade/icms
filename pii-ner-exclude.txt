@@ -1289,3 +1289,30 @@ CaseReference
 ICMSLST-1477 Disable
 GMPBrand
 "Creates document reference records for Export
+FirearmsAuthority
+report_completed_by_id VARCHAR2(10
+know_bought_from VARCHAR2(10
+fa_authorities XMLTYPE PATH '
+is_complete"
+OILSupplementaryReport
+report_firearm_xml
+AIR
+is_complete VARCHAR(20
+x.know_bought_from
+x.additional_comments
+x.cover_letter
+x.constabulary_certs_xml
+x.is_complete
+x.no_report_reason
+fa_authorities_xml XMLTYPE PATH '
+XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST/*'
+is_complete
+NUMBER PATH '
+FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text
+FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST
+x.commodity_code
+XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
+ST</STREET_AND_NUMBER> <
+REGION</REGION
+TOWN</TOWN_CITY
+ImportContact

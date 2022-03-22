@@ -89,3 +89,31 @@ class WoodQuotaApplicationFactory(factory.django.DjangoModelFactory):
         model = models.WoodQuotaApplication
 
     imad = factory.SubFactory(ImportApplicationFactory)
+
+
+class OILApplicationFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.OpenIndividualLicenceApplication
+
+    imad = factory.SubFactory(ImportApplicationFactory)
+
+
+class OILSupplementaryInfoFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.OILSupplementaryInfo
+
+    imad = factory.SubFactory(OILApplicationFactory)
+
+
+class OILSupplementaryReportFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.OILSupplementaryReport
+
+    supplementary_info = factory.SubFactory(OILSupplementaryInfoFactory)
+
+
+class ImportContactFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ImportContact
+
+    import_application = factory.SubFactory(ImportApplicationFactory)

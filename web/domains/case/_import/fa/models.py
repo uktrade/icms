@@ -99,8 +99,10 @@ class SupplementaryReportBase(models.Model):
     class Meta:
         abstract = True
 
-    transport = models.CharField(choices=TransportType.choices, max_length=4, blank=False)
-    date_received = models.DateField(verbose_name="Date Received")
+    transport = models.CharField(
+        choices=TransportType.choices, max_length=4, blank=False, null=True
+    )
+    date_received = models.DateField(verbose_name="Date Received", null=True)
 
     bought_from = models.ForeignKey(
         ImportContact,
@@ -136,8 +138,8 @@ class SupplementaryReportFirearmBase(models.Model):
         abstract = True
 
     serial_number = models.CharField(max_length=100, null=True)
-    calibre = models.CharField(max_length=100, null=True)
-    model = models.CharField(max_length=100, verbose_name="Make and Model", null=True)
+    calibre = models.CharField(max_length=400, null=True)
+    model = models.CharField(max_length=400, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
     is_manual = models.BooleanField(default=False)
     is_upload = models.BooleanField(default=False)

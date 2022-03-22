@@ -23,8 +23,8 @@ def bulk_create(model: Model, objs: list[Model]) -> None:
     :param items: A list of new models populated with data
     :param db: The database being targeted
     """
+
     db = model.objects.db
-    pk_column = model._meta.pk.column
 
     with transaction.atomic(using=db, savepoint=False):
         connection = connections[db]
@@ -36,10 +36,11 @@ def bulk_create(model: Model, objs: list[Model]) -> None:
         # Postgres doesn't increase the sequence when specifying the pk when performing inserts
         # We have to do this manually by executing sql
         table_name = model._meta.db_table
+        pk_column = model._meta.pk.column
         seq_sql = set_seq_sql.format(table_name=table_name, pk_column=pk_column)
-        cursor = connection.cursor()
-        cursor.execute(seq_sql)
-        cursor.close()
+
+        with connection.cursor() as cursor:
+            cursor.execute(seq_sql)
 
 
 def new_process_pk() -> int:
