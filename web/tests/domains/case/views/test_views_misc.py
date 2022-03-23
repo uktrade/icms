@@ -171,6 +171,12 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     poland = Country.objects.get(name="Poland")
     com_app.countries.add(finland, germany, poland)
 
+    # start authorisation should clear any document_references
+    # create a dummy one here to test it.
+    cert = com_app.get_most_recent_certificate()
+    dr = cert.document_references.create(document_type=CaseDocumentReference.Type.CERTIFICATE)
+    pk_to_delete = dr.id
+
     response = icms_admin_client.get(CaseURLS.authorise_application(com_app.pk, case_type="export"))
     assert response.status_code == 200
     errors: ApplicationErrors = response.context["errors"]
@@ -210,6 +216,9 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     assert finland_dr.reference == f"COM/{this_year}/00001"
     assert germany_dr.reference == f"COM/{this_year}/00002"
     assert poland_dr.reference == f"COM/{this_year}/00003"
+
+    # explicitly check the old case_reference is gone
+    assert not cert.document_references.filter(pk=pk_to_delete).exists()
 
 
 def test_start_authorisation_refused_application_has_errors(icms_admin_client, wood_application):
