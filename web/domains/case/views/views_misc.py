@@ -487,6 +487,9 @@ def _create_export_application_document_references(
     if certificate.status != CaseLicenceCertificateBase.Status.DRAFT:
         raise ValueError("Can only create references for a draft application")
 
+    # Clear all document references as they may have changed
+    certificate.document_references.all().delete()
+
     if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS]:
         app: Union[
             CertificateOfManufactureApplication, CertificateOfFreeSaleApplication
