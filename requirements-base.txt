@@ -1,6 +1,6 @@
-celery==5.2.2
+celery[redis]==5.2.3
 cx-Oracle==8.2.1
-django-celery-results==2.0.1
+django-celery-results==2.3.0
 django-chunk-upload-handlers==0.0.11
 django-compressor==2.4
 django-environ==0.4.5
@@ -9,7 +9,7 @@ django-guardian==2.3.0
 django-htmlmin==0.11.0
 django-phonenumber-field==5.0.0
 django-recaptcha==2.0.6
-django-redis==4.12.1
+django-redis==5.2.0
 django-select2==7.4.2
 django-ses==1.0.3
 django-structlog==1.6.2
@@ -26,7 +26,6 @@ openpyxl==3.0.7
 phonenumbers==8.12.12
 psycogreen==1.0.2
 psycopg2-binary==2.8.6
-redis==3.5.3
 requests==2.24.0
 sentry-sdk==0.19.2
 structlog==20.1.0

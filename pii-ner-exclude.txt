@@ -1321,3 +1321,8 @@ DFLSupplementaryReport
 DFL
 WoodQuotaChecklist
 TextilesChecklist
+Values for Process.process_type
+Firearms and Ammunition (Specific Individual Import Licence
+FIRs
+Digital
+https://github.com/torchbox/django-recaptcha
