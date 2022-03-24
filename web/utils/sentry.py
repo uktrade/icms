@@ -40,4 +40,5 @@ def capture_exception() -> None:
     if sentry_initialized:
         sentry_sdk.capture_exception()
     else:
+        print("Sentry::capture_exception:")
         traceback.print_exc()

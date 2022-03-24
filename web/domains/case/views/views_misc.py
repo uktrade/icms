@@ -31,14 +31,14 @@ from web.domains.case.models import (
 )
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp, ImpTypeOrExpType
 from web.domains.case.utils import (
     archive_application_licence_or_certificate,
     check_application_permission,
-    create_acknowledge_notification_task,
+    end_process_task,
     get_application_current_task,
     get_case_page_title,
-    set_application_licence_or_certificate_active,
 )
 from web.domains.template.models import Template
 from web.domains.user.models import User
@@ -194,16 +194,11 @@ def manage_withdrawals(
 
                     application.save()
 
-                    task.is_active = False
-                    task.owner = request.user
-                    task.finished = timezone.now()
-                    task.save()
+                    end_process_task(task, request.user)
 
                     return redirect(reverse("workbasket"))
                 else:
-                    task.is_active = False
-                    task.finished = timezone.now()
-                    task.save()
+                    end_process_task(task)
 
                     Task.objects.create(
                         process=application, task_type=Task.TaskType.PROCESS, previous=task
@@ -328,9 +323,7 @@ def manage_case(
                 application.status = model_class.Statuses.STOPPED
                 application.save()
 
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
+                end_process_task(task)
 
                 if form.cleaned_data.get("send_email"):
                     template = Template.objects.get(template_code="STOP_CASE")
@@ -423,9 +416,7 @@ def start_authorisation(
 
             application.save()
 
-            task.is_active = False
-            task.finished = timezone.now()
-            task.save()
+            end_process_task(task)
 
             if next_task:
                 Task.objects.create(process=application, task_type=next_task, previous=task)
@@ -547,46 +538,21 @@ def authorise_documents(
             form = forms.AuthoriseForm(data=request.POST, request=request)
 
             if form.is_valid():
-                # TODO: ICMSLST-809 Check validation that is needed when generating license file
-                task.is_active = False
-                task.finished = timezone.now()
-                task.owner = request.user
-                task.save()
+                end_process_task(task, request.user)
+                Task.objects.create(
+                    process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
+                )
 
-                # TODO: ICMSLST-812 chief document submission - update application.chief_usage_status
-                if case_type == "import" and application.application_type.chief_flag:
-                    Task.objects.create(
-                        process=application, task_type=Task.TaskType.CHIEF_WAIT, previous=task
-                    )
-                else:
-                    if application.status == model_class.Statuses.VARIATION_REQUESTED:
-                        is_import = case_type == "import"
-
-                        vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                        vr.status = (
-                            VariationRequest.ACCEPTED if is_import else VariationRequest.CLOSED
-                        )
-
-                        # On export applications we record the date closed and who closed it.
-                        if not is_import:
-                            vr.closed_by = request.user
-                            vr.closed_datetime = timezone.now()
-
-                        vr.save()
-
-                    application.status = model_class.Statuses.COMPLETED
-                    application.save()
-
-                    set_application_licence_or_certificate_active(application)
-
-                    create_acknowledge_notification_task(application, task)
+                # Queues all documents to be created
+                create_case_document_pack(application, request.user)
 
                 messages.success(
                     request,
-                    f"Authorise Success: Application {application.reference} has been authorised",
+                    f"Authorise Success: Application {application.reference} has been queued for document signing",
                 )
 
                 return redirect(reverse("workbasket"))
+
         else:
             form = forms.AuthoriseForm(request=request)
 
@@ -646,7 +612,7 @@ class CheckCaseDocumentGenerationView(
             msg = "Failed to generate documents - Please reload the workbasket"
 
         elif Task.TaskType.DOCUMENT_SIGNING in active_tasks:
-            # TODO: Consider counting cert/licence documents (count with files / full count)
+            # TODO: ICMSLST-1532 Consider counting cert/licence documents (count with files / full count)
             msg = "Still processing documents"
 
         else:
@@ -726,10 +692,7 @@ def cancel_authorisation(
 
         application.save()
 
-        task.is_active = False
-        task.finished = timezone.now()
-        task.owner = request.user
-        task.save()
+        end_process_task(task, request.user)
 
         Task.objects.create(process=application, task_type=Task.TaskType.PROCESS, previous=task)
 
@@ -759,9 +722,7 @@ def ack_notification(
                 application.acknowledged_datetime = timezone.now()
                 application.save()
 
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
+                end_process_task(task)
 
                 # TODO: ICMSLST-20
                 # Notification is not cleared and still appear in the workbasket

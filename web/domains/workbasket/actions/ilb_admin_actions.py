@@ -197,6 +197,7 @@ class CancelAuthorisationAction(Action):
         ]
 
 
+# TODO: ICMSLST-1532 Revisit this and update workbasket to call this using javascript.
 class CheckCaseDocumentGenerationAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -241,7 +242,7 @@ class RecreateCaseDocumentsAction(Action):
             WorkbasketAction(
                 is_post=True,
                 name="Recreate Case Documents",
-                # TODO: Create a view to recreate failed documents
+                # TODO: ICMSLST-1531 Create a view to recreate failed documents
                 url="#",
                 section_label="Digital Signing Failed",
             )
@@ -312,8 +313,6 @@ class BypassChiefFailureAction(Action):
         ]
 
 
-# TODO: Work out if we need a monitor progress action for Chief as well as Documents
-# Check with ILB team / BA what happens when a document is waiting for chief submission.
 class ChiefMonitorProgressAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -334,7 +333,7 @@ class ChiefMonitorProgressAction(Action):
             WorkbasketAction(
                 is_post=True,
                 name="Monitor Progress",
-                url="#TODO: ICMSLST-812 - Popup showing progress",
+                url="#TODO: ICMSLST-1533 - Popup showing progress",
                 section_label="CHIEF Wait",
             )
         ]
@@ -360,7 +359,7 @@ class ChiefShowLicenceDetailsAction(Action):
             WorkbasketAction(
                 is_post=True,
                 name="Show Licence Details",
-                url="#TODO: ICMSLST-812 - CHIEF Dashboard",
+                url="#TODO: ICMSLST-1534 - CHIEF Dashboard",
                 section_label="CHIEF Error",
             )
         ]

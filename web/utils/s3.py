@@ -1,12 +1,14 @@
-from typing import Any
+from typing import IO, TYPE_CHECKING, Any
 
 import boto3
 from django.conf import settings
 
+if TYPE_CHECKING:
+    from mypy_boto3_s3 import Client as S3Client
 
-def get_s3_client() -> Any:
+
+def get_s3_client() -> "S3Client":
     """Get an S3 client."""
-
     extra_kwargs = {}
 
     if settings.AWS_S3_ENDPOINT_URL:
@@ -21,7 +23,7 @@ def get_s3_client() -> Any:
     )
 
 
-def get_file_from_s3(path: str, client: Any = None) -> bytes:
+def get_file_from_s3(path: str, client: "S3Client" = None) -> bytes:
     """Get contents of an object in S3."""
 
     if not client:
@@ -33,10 +35,23 @@ def get_file_from_s3(path: str, client: Any = None) -> bytes:
     return contents
 
 
-def delete_file_from_s3(path: str, client: Any = None) -> None:
+def delete_file_from_s3(path: str, client: "S3Client" = None) -> None:
     """Delete object in S3."""
 
     if not client:
         client = get_s3_client()
 
     client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=path)
+
+
+def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: "S3Client" = None) -> int:
+    """Upload file obj to s3 and return the size of the file (bytes)."""
+
+    if not client:
+        client = get_s3_client()
+
+    client.upload_fileobj(file_obj, Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+
+    object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+
+    return object_meta["ContentLength"]

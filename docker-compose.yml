@@ -74,7 +74,7 @@ services:
     celery:
         build:
             context: .
-        command: celery --app=config.celery:app worker --loglevel=debug
+        command: celery --app=config.celery:app worker --loglevel=info
         environment:
             - DJANGO_SETTINGS_MODULE
             - AWS_SES_ACCESS_KEY_ID
@@ -85,17 +85,18 @@ services:
             - .:/code
 
     localstack:
-        # https://github.com/localstack/localstack says that the web UI has been
-        # deprecated (PORT_WEB_UI / START_WEB), and needs a different image
-        # (localstack-full), so stick with this version.
-        image: localstack/localstack:0.11.3
+        container_name: localstack_main
+        image: localstack/localstack:0.14.2
         ports:
-            - "4567-4599:4567-4599"
-            - "8081:8080"
+            - "4510-4559:4510-4559"  # external service port range
+            - "4566:4566"            # LocalStack Edge Proxy
         environment:
-            - SERVICES=s3
-            - DEBUG=1
+            - DEBUG=0
             - DATA_DIR=/tmp/localstack/data
+            - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+            - DOCKER_HOST=unix:///var/run/docker.sock
+            - HOSTNAME_EXTERNAL="localstack"
+            - SERVICES=s3
         volumes:
             - ls_data:/tmp/localstack
             - "/var/run/docker.sock:/var/run/docker.sock"

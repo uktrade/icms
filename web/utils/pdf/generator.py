@@ -1,5 +1,6 @@
+import io
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 import weasyprint
 from django.conf import settings
@@ -8,7 +9,6 @@ from django.template.loader import render_to_string
 from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
-from web.types import AuthenticatedHttpRequest
 
 from . import utils
 from .types import DocumentTypes
@@ -19,21 +19,23 @@ class PdfGenerator:
     application: ImpOrExp
     licence: ImportApplicationLicence
     doc_type: DocumentTypes
-    request: AuthenticatedHttpRequest
 
-    def get_pdf(self) -> bytes:
+    def get_pdf(self, target: Optional[io.BytesIO] = None) -> Optional[bytes]:
+        """Write the pdf data to the optional target or return the PDF as bytes
+
+        :param target: Optional target to write to
+        :return: None if target is supplied else bytes
+        """
+
         html_string = self.get_document_html()
-        base_url = self.request.build_absolute_uri()
+        html = weasyprint.HTML(string=html_string, base_url=settings.PDF_DEFAULT_DOMAIN)
 
-        html = weasyprint.HTML(string=html_string, base_url=base_url)
-        pdf_file = html.write_pdf()
-
-        return pdf_file
+        return html.write_pdf(target=target)
 
     # TODO: Remove this when all the pdfs have been created
+    # See icms/web/domains/case/views/views_pdf.py for example
     def get_document_html(self) -> str:
         return render_to_string(
-            request=self.request,
             template_name=self.get_template(),
             context=self.get_document_context(),
         )
@@ -57,7 +59,8 @@ class PdfGenerator:
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
 
-        if self.doc_type == DocumentTypes.LICENCE_PRE_SIGN:
+        # TODO: ICMSLST-697 Revisit when signing the document (it may need its own context / template)
+        if self.doc_type in (DocumentTypes.LICENCE_PRE_SIGN, DocumentTypes.LICENCE_SIGNED):
             if self.application.process_type == ProcessTypes.FA_OIL:
                 return "pdf/import/fa-oil-licence-pre-sign.html"
 
@@ -94,7 +97,12 @@ class PdfGenerator:
                 "licence_end_date": "TODO: SET THIS VALUE",
             }
 
-        elif self.doc_type in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
+        # TODO: ICMSLST-697 Revisit when signing the document (it may need its own context / template)
+        elif self.doc_type in [
+            DocumentTypes.LICENCE_PREVIEW,
+            DocumentTypes.LICENCE_PRE_SIGN,
+            DocumentTypes.LICENCE_SIGNED,
+        ]:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 extra = utils.get_fa_oil_licence_context(
                     self.application, self.licence, self.doc_type

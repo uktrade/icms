@@ -161,11 +161,11 @@ psql: ## Starts psql
 all: requirements-web
 
 local_s3: ## creates s3 buckets on localstack container
-	aws --endpoint-url=http://localhost:4572 s3 mb s3://icms.local
-	aws --endpoint-url=http://localhost:4572 s3api put-bucket-acl --bucket icms.local --acl public-read
+	aws --endpoint-url=http://localhost:4566 s3 mb s3://icms.local
+	aws --endpoint-url=http://localhost:4566 s3api put-bucket-acl --bucket icms.local --acl public-read
 
 list_s3: ## list S3 bucket contents on localstack container
-	aws --endpoint-url=http://localhost:4572 s3 ls s3://icms.local
+	aws --endpoint-url=http://localhost:4566 s3 ls s3://icms.local --human-readable
 
 query_task_result: ## local development tool to query task results
 	unset UID && \

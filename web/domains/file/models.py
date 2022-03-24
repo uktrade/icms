@@ -36,3 +36,9 @@ class File(Archivable, models.Model):
 
     def human_readable_file_size(self):
         return humanize.naturalsize(self.file_size or 0)
+
+    def __str__(self):
+        props = ("is_active", "filename", "content_type", "file_size", "path")
+        attribute_values = ", ".join(f"{p}={getattr(self, p)!r}" for p in props)
+
+        return f"File({attribute_values})"
