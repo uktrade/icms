@@ -48,7 +48,6 @@ class PreviewLicenceView(GenerateLicenceBase):
             application=self.application,
             licence=self.application.get_most_recent_licence(),
             doc_type=document_type,
-            request=self.request,
         )
 
         # TODO: Remove this when all the pdfs have been created
@@ -66,7 +65,6 @@ class PreviewCoverLetterView(GenerateLicenceBase):
             application=self.application,
             licence=self.application.get_most_recent_licence(),
             doc_type=DocumentTypes.COVER_LETTER,
-            request=self.request,
         )
 
         return return_pdf(pdf_gen, "CoverLetter.pdf")

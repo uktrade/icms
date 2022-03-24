@@ -184,7 +184,8 @@ def _get_licence_end_date(licence: "ImportApplicationLicence"):
 
 
 def _get_licence_number(application: "ImportApplication", doc_type: DocumentTypes) -> str:
-    if doc_type == DocumentTypes.LICENCE_PRE_SIGN:
+    # TODO: ICMSLST-697 Revisit when signing the document (it may need its own context / template)
+    if doc_type in (DocumentTypes.LICENCE_PRE_SIGN, DocumentTypes.LICENCE_SIGNED):
         licence = application.get_most_recent_licence()
         licence_doc = licence.document_references.get(
             document_type=CaseDocumentReference.Type.LICENCE

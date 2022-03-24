@@ -15,10 +15,10 @@ SILENCED_SYSTEM_CHECKS = ["captcha.recaptcha_test_key_error"]
 
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
 AWS_REGION = "eu-west-2"
-AWS_ACCESS_KEY_ID = "dev"
-AWS_SECRET_ACCESS_KEY = "bar"
+AWS_ACCESS_KEY_ID = "test"
+AWS_SECRET_ACCESS_KEY = "test"
 AWS_STORAGE_BUCKET_NAME = "icms.local"
-AWS_S3_ENDPOINT_URL = "http://localstack:4572/"
+AWS_S3_ENDPOINT_URL = "http://localstack:4566/"
 
 # Debug toolbar config
 INTERNAL_IPS = ("127.0.0.1", "localhost")
@@ -83,3 +83,7 @@ HTML_MINIFY = False
 
 # Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
 COMPRESS_OFFLINE = False
+
+
+# Need to use the local docker-compose network name to access the static files.
+PDF_DEFAULT_DOMAIN = "http://web:8080/"
