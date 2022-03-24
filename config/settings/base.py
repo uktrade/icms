@@ -283,6 +283,7 @@ DEBUG_SHOW_ALL_WORKBASKET_ROWS = False
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 
 #  Google recaptcha. Using test keys on localhost
+# https://github.com/torchbox/django-recaptcha (The tool we are using)
 RECAPTCHA_PUBLIC_KEY = env.str("ICMS_RECAPTCHA_PUBLIC_KEY", default="")
 RECAPTCHA_PRIVATE_KEY = env.str("ICMS_RECAPTCHA_PRIVATE_KEY", default="")
 SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])
