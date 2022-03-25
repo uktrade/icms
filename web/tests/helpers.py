@@ -172,6 +172,12 @@ class CaseURLS:
 
         return reverse("case:preview-cover-letter", kwargs=kwargs)
 
+    @staticmethod
+    def check_document_generation(application_pk: int, case_type="import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:check-document-generation", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod

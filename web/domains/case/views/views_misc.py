@@ -1,18 +1,22 @@
 from itertools import product
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
+from django.views.generic import View
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case import forms
+from web.domains.case.app_checks import get_app_errors
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -27,6 +31,7 @@ from web.domains.case.models import (
 )
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import ImpOrExp, ImpTypeOrExpType
 from web.domains.case.utils import (
     archive_application_licence_or_certificate,
     check_application_permission,
@@ -43,9 +48,7 @@ from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors
 
-from .. import forms
-from ..app_checks import get_app_errors
-from ..types import ImpOrExp, ImpTypeOrExpType
+from .mixins import ApplicationTaskMixin
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
@@ -603,6 +606,54 @@ def authorise_documents(
             template_name="web/domains/case/authorise-documents.html",
             context=context,
         )
+
+
+class CheckDocumentGenerationView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
+    # View Config
+    http_method_names = ["get"]
+
+    # ApplicationTaskMixin Config
+    current_status = [
+        ImpExpStatus.PROCESSING,
+        ImpExpStatus.VARIATION_REQUESTED,
+        ImpExpStatus.COMPLETED,
+    ]
+
+    def has_permission(self):
+        self.set_application_and_task()
+
+        try:
+            check_application_permission(
+                self.application, self.request.user, self.kwargs["case_type"]
+            )
+        except PermissionDenied:
+            return False
+
+        return True
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+        active_tasks = self.application.get_active_task_list()
+
+        if (
+            self.application.status == ImpExpStatus.COMPLETED
+            or Task.TaskType.CHIEF_WAIT in active_tasks
+        ):
+            msg = "Documents generated successfully - Please reload the workbasket"
+
+        elif Task.TaskType.DOCUMENT_ERROR in active_tasks:
+            msg = "Failed to generate documents - Please reload the workbasket"
+
+        elif Task.TaskType.DOCUMENT_SIGNING in active_tasks:
+            # TODO: Consider counting cert/licence documents (count with files / full count)
+            msg = "Still processing documents"
+
+        else:
+            # TODO: Sent a sentry message instead to handle the error gracefully
+            raise Exception("Unknown state for application")
+
+        return JsonResponse(data={"msg": msg})
 
 
 @login_required
