@@ -1326,3 +1326,8 @@ Firearms and Ammunition (Specific Individual Import Licence
 FIRs
 Digital
 https://github.com/torchbox/django-recaptcha
+Digital Signing Failed"
+Show Licence Details
+Recreate Case Documents
+App
+self.get_kwargs

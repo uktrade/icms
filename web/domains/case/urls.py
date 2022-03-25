@@ -246,7 +246,7 @@ authorisation_urls = [
 case_progress_urls = [
     path(
         "check-document-generation/",
-        views_misc.CheckDocumentGenerationView.as_view(),
+        views_misc.CheckCaseDocumentGenerationView.as_view(),
         name="check-document-generation",
     )
 ]

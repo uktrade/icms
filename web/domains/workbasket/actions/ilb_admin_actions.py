@@ -77,6 +77,13 @@ class ViewApplicationCaseAction(Action):
             ):
                 show_link = True
 
+            elif (
+                Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
+                or Task.TaskType.DOCUMENT_ERROR in self.active_tasks
+            ):
+                show_link = True
+                self.section_label = "Authorise Documents"
+
         # An application being processed by another ilb admin (via a variation request)
         elif self.status == ImpExpStatus.VARIATION_REQUESTED and not self.is_case_owner():
             show_link = True
@@ -92,7 +99,12 @@ class ViewApplicationCaseAction(Action):
         kwargs = self.get_kwargs()
 
         is_rejected = self.application.is_rejected(self.active_tasks)
-        if is_rejected or Task.TaskType.AUTHORISE in self.active_tasks:
+        if (
+            is_rejected
+            or Task.TaskType.AUTHORISE in self.active_tasks
+            or Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
+            or Task.TaskType.DOCUMENT_ERROR in self.active_tasks
+        ):
             name = "View Case"
         else:
             name = "View"
@@ -185,6 +197,57 @@ class CancelAuthorisationAction(Action):
         ]
 
 
+class CheckCaseDocumentGenerationAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_task = Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
+
+        if correct_status and correct_task:
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        kwargs = self.get_kwargs()
+
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name="Monitor Progress",
+                url=reverse("case:check-document-generation", kwargs=kwargs),
+                section_label="Digital Signing",
+            )
+        ]
+
+
+class RecreateCaseDocumentsAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_task = Task.TaskType.DOCUMENT_ERROR in self.active_tasks
+
+        if correct_status and correct_task:
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        # kwargs = self.get_kwargs()
+
+        return [
+            WorkbasketAction(
+                is_post=True,
+                name="Recreate Case Documents",
+                # TODO: Create a view to recreate failed documents
+                url="#",
+                section_label="Digital Signing Failed",
+            )
+        ]
+
+
 class BypassChiefSuccessAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -249,6 +312,8 @@ class BypassChiefFailureAction(Action):
         ]
 
 
+# TODO: Work out if we need a monitor progress action for Chief as well as Documents
+# Check with ILB team / BA what happens when a document is waiting for chief submission.
 class ChiefMonitorProgressAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -302,13 +367,23 @@ class ChiefShowLicenceDetailsAction(Action):
 
 
 ILB_ADMIN_ACTIONS: list[ActionT] = [
+    #
+    # Management actions
     TakeOwnershipAction,
     ManageApplicationAction,
     AuthoriseDocumentsAction,
     CancelAuthorisationAction,
+    #
+    # Document Signing actions
+    CheckCaseDocumentGenerationAction,
+    RecreateCaseDocumentsAction,
+    #
+    # Chief actions
     BypassChiefSuccessAction,
     BypassChiefFailureAction,
     ChiefMonitorProgressAction,
     ChiefShowLicenceDetailsAction,
+    #
+    # View application action
     ViewApplicationCaseAction,
 ]
