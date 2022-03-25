@@ -212,8 +212,13 @@ class Task(models.Model):
             "VR_REQUEST_CHANGE",
         )  # type:ignore[assignment]
         AUTHORISE: str = ("authorise", "Authorise")  # type:ignore[assignment]
+
+        DOCUMENT_ERROR: str = ("document_error", "Digital signing error")  # type:ignore[assignment]
+        DOCUMENT_SIGNING: str = ("document_signing", "Digital signing")  # type:ignore[assignment]
+
         CHIEF_WAIT: str = ("chief_wait", "CHIEF_WAIT")  # type:ignore[assignment]
         CHIEF_ERROR: str = ("chief_error", "CHIEF_ERROR")  # type:ignore[assignment]
+
         ACK: str = ("acknowledge", "Acknowledge")  # type:ignore[assignment]
         REJECTED: str = ("rejected", "Rejected")  # type:ignore[assignment]
 

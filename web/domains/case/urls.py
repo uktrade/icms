@@ -243,6 +243,14 @@ authorisation_urls = [
     path("document-packs/", views_misc.view_document_packs, name="document-packs"),
 ]
 
+case_progress_urls = [
+    path(
+        "check-document-generation/",
+        views_misc.CheckDocumentGenerationView.as_view(),
+        name="check-document-generation",
+    )
+]
+
 ack_notification_urls = [
     path("", views_misc.ack_notification, name="ack-notification"),
 ]
@@ -340,6 +348,9 @@ urlpatterns = [
                             #
                             # Application Authorisation (import/export)
                             path("authorisation/", include(authorisation_urls)),
+                            #
+                            # Progress urls (import/export)
+                            path("progress/", include(case_progress_urls)),
                             #
                             # Acknowledge Notification (import/export)
                             path("ack-notification/", include(ack_notification_urls)),

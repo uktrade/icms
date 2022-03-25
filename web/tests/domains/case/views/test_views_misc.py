@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -419,6 +420,100 @@ class TestAuthoriseDocumentsView:
         # Latest licence is still draft until after chief submission.
         latest_licence = self.wood_app.get_most_recent_licence()
         assert latest_licence.status == CaseLicenceCertificateBase.Status.DRAFT
+
+
+class TestCheckDocumentGenerationView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, wood_app_submitted):
+        """Using the submitted app override the app to the state we want."""
+        wood_app_submitted.status = ImpExpStatus.PROCESSING
+        wood_app_submitted.save()
+
+        self.wood_app = wood_app_submitted
+        self._create_new_task(Task.TaskType.DOCUMENT_SIGNING)
+
+    def test_document_signing_in_progress(self):
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Still processing documents"
+
+    def test_document_signing_has_error(self):
+        self._create_new_task(Task.TaskType.DOCUMENT_ERROR)
+
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Failed to generate documents - Please reload the workbasket"
+
+    def test_document_signing_complete(self):
+        self.wood_app.status = ImpExpStatus.COMPLETED
+        self.wood_app.save()
+
+        task = self.wood_app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        content = json.loads(resp.content.decode("utf-8"))
+        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+
+    def test_document_signing_chief_wait(self):
+        self._create_new_task(Task.TaskType.CHIEF_WAIT)
+
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        content = json.loads(resp.content.decode("utf-8"))
+        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+
+    def test_document_signing_in_progress_variation_request(self):
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.wood_app.save()
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Still processing documents"
+
+    def test_document_signing_has_error_variation_request(self):
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.wood_app.save()
+        self._create_new_task(Task.TaskType.DOCUMENT_ERROR)
+
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Failed to generate documents - Please reload the workbasket"
+
+    def test_document_signing_chief_wait_variation_request(self):
+        self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.wood_app.save()
+        self._create_new_task(Task.TaskType.CHIEF_WAIT)
+
+        resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
+        assert resp.status_code == 200
+
+        content = json.loads(resp.content.decode("utf-8"))
+        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+
+    def _create_new_task(self, new_task):
+        task = self.wood_app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(process=self.wood_app, task_type=new_task, previous=task)
 
 
 def _set_valid_licence(wood_application):
