@@ -608,7 +608,7 @@ def authorise_documents(
         )
 
 
-class CheckDocumentGenerationView(
+class CheckCaseDocumentGenerationView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
 ):
     # View Config

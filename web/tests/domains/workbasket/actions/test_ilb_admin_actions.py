@@ -8,7 +8,9 @@ from web.domains.workbasket.actions import get_workbasket_admin_sections
 from web.domains.workbasket.actions.ilb_admin_actions import (
     AuthoriseDocumentsAction,
     CancelAuthorisationAction,
+    CheckCaseDocumentGenerationAction,
     ManageApplicationAction,
+    RecreateCaseDocumentsAction,
     TakeOwnershipAction,
     ViewApplicationCaseAction,
 )
@@ -125,6 +127,34 @@ class TestAdminActions:
         action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
         assert not action.show_link()
 
+    def test_view_case_is_shown_when_documents_are_being_signed(self):
+        # setup
+        self.app.status = self.ST.PROCESSING
+        self.app.case_owner = self.user
+        active_tasks = [Task.TaskType.DOCUMENT_SIGNING]
+
+        # test
+        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View Case"
+        assert wb_action.section_label == "Authorise Documents"
+
+    def test_view_case_is_shown_when_documents_signing_has_an_error(self):
+        # setup
+        self.app.status = self.ST.PROCESSING
+        self.app.case_owner = self.user
+        active_tasks = [Task.TaskType.DOCUMENT_ERROR]
+
+        # test
+        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View Case"
+        assert wb_action.section_label == "Authorise Documents"
+
     def test_view_case_action_not_shown(self):
         # setup (App still in progress)
         self.app.status = self.ST.IN_PROGRESS
@@ -133,6 +163,77 @@ class TestAdminActions:
 
         # test
         action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        assert not action.show_link()
+
+    def test_take_ownership_action_is_shown(self):
+        # setup
+        self.app.status = self.ST.VARIATION_REQUESTED
+        self.app.case_owner = None
+        active_tasks = []
+
+        # test
+        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Take Ownership"
+
+    def test_take_ownership_action_not_shown(self):
+        # setup (case owner is not set)
+        self.app.status = self.ST.VARIATION_REQUESTED
+        self.app.case_owner = self.user
+        active_tasks = []
+
+        # test
+        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
+        assert not action.show_link()
+
+    def test_manage_application_action_is_shown(self):
+        # setup
+        self.app.status = self.ST.VARIATION_REQUESTED
+        self.app.case_owner = self.user
+        active_tasks = [self.TT.PROCESS]
+
+        # test
+        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Manage"
+
+    def test_manage_application_action_not_shown(self):
+        # setup (case owner is not set)
+        self.app.status = self.ST.VARIATION_REQUESTED
+        self.app.case_owner = None
+        active_tasks = [self.TT.PROCESS]
+
+        # test
+        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        assert not action.show_link()
+
+    def test_clear_application_action_is_shown(self):
+        """Admins only see the clear link if its rejected and they are the case owner."""
+        # setup
+        self.app.status = self.ST.COMPLETED
+        self.app.case_owner = self.user
+        active_tasks = [Task.TaskType.REJECTED]
+
+        # test
+        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Clear"
+
+    def test_clear_application_action_not_shown(self):
+        """An app rejected by another case owner should not be shown"""
+        # setup
+        self.app.status = self.ST.COMPLETED
+        self.app.case_owner = User(first_name="Another", last_name="User")
+        active_tasks = [Task.TaskType.REJECTED]
+
+        # test
+        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
         assert not action.show_link()
 
     def test_authorise_documents_action_is_shown(self):
@@ -176,75 +277,58 @@ class TestAdminActions:
         action = CancelAuthorisationAction(self.user, "import", self.app, active_tasks, True, True)
         assert not action.show_link()
 
-    def test_manage_application_action_is_shown(self):
+    def test_check_case_document_generation_is_shown(self):
         # setup
-        self.app.status = self.ST.VARIATION_REQUESTED
-        self.app.case_owner = self.user
-        active_tasks = [self.TT.PROCESS]
+        active_tasks = [self.TT.DOCUMENT_SIGNING]
+
+        # tests
+        for status in (self.ST.PROCESSING, self.ST.VARIATION_REQUESTED):
+            self.app.status = status
+
+            action = CheckCaseDocumentGenerationAction(
+                self.user, "import", self.app, active_tasks, True, True
+            )
+            assert action.show_link()
+
+            wb_action = action.get_workbasket_actions()[0]
+            assert wb_action.name == "Monitor Progress"
+
+    def test_check_case_document_generation_is_not_shown(self):
+        # setup
+        self.app.status = self.ST.IN_PROGRESS
+        active_tasks = [self.TT.PREPARE]
 
         # test
-        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
-        assert action.show_link()
-
-        wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "Manage"
-
-    def test_manage_application_action_not_shown(self):
-        # setup (case owner is not set)
-        self.app.status = self.ST.VARIATION_REQUESTED
-        self.app.case_owner = None
-        active_tasks = [self.TT.PROCESS]
-
-        # test
-        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = CheckCaseDocumentGenerationAction(
+            self.user, "import", self.app, active_tasks, True, True
+        )
         assert not action.show_link()
 
-    def test_take_ownership_action_is_shown(self):
+    def test_recreate_case_documents_is_shown(self):
         # setup
-        self.app.status = self.ST.VARIATION_REQUESTED
-        self.app.case_owner = None
-        active_tasks = []
+        active_tasks = [self.TT.DOCUMENT_ERROR]
 
-        # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
-        assert action.show_link()
+        # tests
+        for status in (self.ST.PROCESSING, self.ST.VARIATION_REQUESTED):
+            self.app.status = status
 
-        wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "Take Ownership"
+            action = RecreateCaseDocumentsAction(
+                self.user, "import", self.app, active_tasks, True, True
+            )
+            assert action.show_link()
 
-    def test_take_ownership_action_not_shown(self):
-        # setup (case owner is not set)
-        self.app.status = self.ST.VARIATION_REQUESTED
-        self.app.case_owner = self.user
-        active_tasks = []
+            wb_action = action.get_workbasket_actions()[0]
+            assert wb_action.name == "Recreate Case Documents"
 
-        # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
-        assert not action.show_link()
-
-    def test_clear_application_action_is_shown(self):
-        """Admins only see the clear link if its rejected and they are the case owner."""
+    def test_recreate_case_documents_is_not_shown(self):
         # setup
-        self.app.status = self.ST.COMPLETED
-        self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.REJECTED]
+        self.app.status = self.ST.IN_PROGRESS
+        active_tasks = [self.TT.PREPARE]
 
         # test
-        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
-        assert action.show_link()
-
-        wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "Clear"
-
-    def test_clear_application_action_not_shown(self):
-        """An app rejected by another case owner should not be shown"""
-        # setup
-        self.app.status = self.ST.COMPLETED
-        self.app.case_owner = User(first_name="Another", last_name="User")
-        active_tasks = [Task.TaskType.REJECTED]
-
-        # test
-        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = RecreateCaseDocumentsAction(
+            self.user, "import", self.app, active_tasks, True, True
+        )
         assert not action.show_link()
 
     def test_get_workbasket_sections(self, test_icms_admin_user):

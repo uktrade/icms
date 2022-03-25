@@ -422,7 +422,7 @@ class TestAuthoriseDocumentsView:
         assert latest_licence.status == CaseLicenceCertificateBase.Status.DRAFT
 
 
-class TestCheckDocumentGenerationView:
+class TestCheckCaseDocumentGenerationView:
     @pytest.fixture(autouse=True)
     def set_client(self, icms_admin_client):
         self.client = icms_admin_client
