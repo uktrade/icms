@@ -91,6 +91,13 @@ class WoodQuotaApplicationFactory(factory.django.DjangoModelFactory):
     imad = factory.SubFactory(ImportApplicationFactory)
 
 
+class ImportContactFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.ImportContact
+
+    import_application = factory.SubFactory(ImportApplicationFactory)
+
+
 class OILApplicationFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.OpenIndividualLicenceApplication
@@ -112,8 +119,15 @@ class OILSupplementaryReportFactory(factory.django.DjangoModelFactory):
     supplementary_info = factory.SubFactory(OILSupplementaryInfoFactory)
 
 
-class ImportContactFactory(factory.django.DjangoModelFactory):
+class DFLApplicationFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = models.ImportContact
+        model = models.DFLApplication
 
-    import_application = factory.SubFactory(ImportApplicationFactory)
+    imad = factory.SubFactory(ImportApplicationFactory)
+
+
+class DFLSupplementaryInfoFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.DFLSupplementaryInfo
+
+    imad = factory.SubFactory(DFLApplicationFactory)

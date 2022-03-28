@@ -3,7 +3,8 @@ from typing import Any, Generator, Tuple
 from django.db import models
 from lxml import etree
 
-from data_migration.models.base import File, MigrationBase
+from data_migration.models.base import MigrationBase
+from data_migration.models.file import File
 from data_migration.models.user import User
 from data_migration.utils.format import (
     date_or_none,
@@ -12,11 +13,23 @@ from data_migration.utils.format import (
     xml_str_or_none,
 )
 
-from ..import_application import ImportApplication
+from ..import_application import ImportApplication, ImportApplicationBase
+
+
+class FirearmBase(ImportApplicationBase):
+    class Meta:
+        abstract = True
+
+    know_bought_from = models.BooleanField(null=True)
+    commodity_code = models.CharField(max_length=40, null=True)
+    commodities_xml = models.TextField(null=True)
+    constabulary_certs_xml = models.TextField(null=True)
+    fa_authorities_xml = models.TextField(null=True)
+    bought_from_details_xml = models.TextField(null=True)
 
 
 class UserImportCertificate(MigrationBase):
-    file_pkr = models.ForeignKey(File, on_delete=models.CASCADE)
+    file_pkr = models.ForeignKey(File, on_delete=models.CASCADE, null=True)
     # Populate this to be able to create the M2M relationship
     imad_id = models.IntegerField()
     reference = models.CharField(max_length=200)
@@ -25,6 +38,24 @@ class UserImportCertificate(MigrationBase):
     date_issued = models.DateField()
     expiry_date = models.DateField()
     updated_datetime = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
+        """Example XML
+
+        <FIREARMS_CERTIFICATE_LIST>
+            <FIREARMS_CERTIFICATE>
+            <TARGET_ID />
+            <CERTIFICATE_REF />
+            <CERTIFICATE_TYPE />
+            <CONSTABULARY />
+            <DATE_ISSUED />
+            <EXPIRY_DATE />
+            <ISSUING_COUNTRY />
+            </FIREARMS_CERTIFICATE>
+        </FIREARMS_CERTIFICATE_LIST>
+        """
+        return super().parse_xml(batch)
 
 
 class ImportContact(MigrationBase):

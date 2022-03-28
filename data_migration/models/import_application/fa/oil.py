@@ -1,13 +1,13 @@
 from django.db import models
 
-from data_migration.models.base import File
+from data_migration.models.file import File
 from data_migration.models.import_application.import_application import (
     ChecklistBase,
     ImportApplication,
-    ImportApplicationBase,
 )
 
 from .base import (
+    FirearmBase,
     SupplementaryInfoBase,
     SupplementaryReportBase,
     SupplementaryReportFirearmBase,
@@ -17,16 +17,10 @@ from .base import (
 # TODO ICMSLST-1496: M2M to FirearmsAuthority
 
 
-class OpenIndividualLicenceApplication(ImportApplicationBase):
+class OpenIndividualLicenceApplication(FirearmBase):
     imad = models.OneToOneField(ImportApplication, on_delete=models.PROTECT, to_field="imad_id")
     section1 = models.BooleanField(default=False)
     section2 = models.BooleanField(default=False)
-    know_bought_from = models.BooleanField(null=True)
-    commodity_code = models.CharField(max_length=40, null=True)
-    commodities_xml = models.TextField(null=True)
-    constabulary_certs_xml = models.TextField(null=True)
-    fa_authorities_xml = models.TextField(null=True)
-    bought_from_details_xml = models.TextField(null=True)
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
@@ -37,6 +31,7 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
     import_application = models.OneToOneField(
         OpenIndividualLicenceApplication,
         on_delete=models.PROTECT,
+        to_field="imad_id",
     )
 
     authority_required = models.CharField(
@@ -60,7 +55,6 @@ class OILSupplementaryInfo(SupplementaryInfoBase):
         related_name="supplementary_info",
         to_field="imad_id",
     )
-    supplementary_report_xml = models.TextField(null=True)
 
 
 class OILSupplementaryReport(SupplementaryReportBase):

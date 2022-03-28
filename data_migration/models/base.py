@@ -97,18 +97,6 @@ class MigrationBase(models.Model):
         raise NotImplementedError("XML parsing must be defined")
 
 
-class File(MigrationBase):
-    # TODO ICMSLST-1495: Move this model out of base
-    is_active = models.BooleanField(default=True)
-    filename = models.CharField(max_length=300)
-    content_type = models.CharField(max_length=100)
-    file_size = models.IntegerField()
-    path = models.CharField(max_length=4000)
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    # TODO ICMSLST-1495
-    # created_by = models.ForeignKey(User, on_delete=models.PROTECT)
-
-
 class Process(MigrationBase):
     PROCESS_PK = True
 
