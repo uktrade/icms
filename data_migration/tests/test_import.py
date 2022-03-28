@@ -273,3 +273,77 @@ def test_import_oil_data():
 
     assert oil2_ic.filter(pk=oil2_sr1.bought_from_id).exists()
     assert oil2_sr2.bought_from_id is None
+
+
+dfl_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+    ],
+    "import_application": [
+        (dm.ImportApplicationType, web.ImportApplicationType),
+        (dm.Process, web.Process),
+        (dm.ImportApplication, web.ImportApplication),
+        (dm.ImportContact, web.ImportContact),
+        (dm.DFLApplication, web.DFLApplication),
+        (dm.DFLSupplementaryInfo, web.DFLSupplementaryInfo),
+    ],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, dfl_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+def test_import_dfl_data():
+    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
+    dm.User.objects.create(id=user_pk, username="test_user")
+
+    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
+    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
+
+    factory.CountryFactory(id=1000, name="My Test Country")
+
+    cg = dm.CountryGroup.objects.create(country_group_id="DFL", name="DFL")
+
+    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
+    pk_range = list(range(process_pk, process_pk + 2))
+    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+
+    for i, pk in enumerate(pk_range):
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk)
+        dm.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
+
+        ia = factory.ImportApplicationFactory(
+            pk=pk,
+            ima=process,
+            status="COMPLETE",
+            imad_id=pk,
+            application_type=iat,
+            created_by_id=user_pk,
+            last_updated_by_id=user_pk,
+            importer_id=importer_pk,
+        )
+
+        factory.DFLApplicationFactory(pk=pk, imad=ia)
+        dm.ImportContact.objects.bulk_create(
+            dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
+        )
+
+    call_command("import_v1_data")
+
+    dfl_apps = web.DFLApplication.objects.filter(pk__in=pk_range)
+    assert dfl_apps.count() == 2
+
+    dfl1, dfl2 = dfl_apps
+
+    dfl1_ic = dfl1.importcontact_set.all()
+    assert dfl1_ic.count() == 2
+
+    dfl2_ic = dfl2.importcontact_set.all()
+    assert dfl2_ic.count() == 2

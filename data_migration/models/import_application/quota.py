@@ -2,7 +2,8 @@ from typing import Any
 
 from django.db import models
 
-from data_migration.models.base import File, MigrationBase
+from data_migration.models.base import MigrationBase
+from data_migration.models.file import File
 from data_migration.models.reference import Commodity, CommodityGroup
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase

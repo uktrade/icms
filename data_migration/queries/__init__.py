@@ -56,6 +56,7 @@ ref_m2m = [
 ]
 
 ia_query_model = [
+    QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
     QueryModel(import_application.wood_application, dm.WoodQuotaApplication),
     QueryModel(import_application.wood_checklist, dm.WoodQuotaChecklist),
@@ -70,6 +71,7 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "DFLApplication",
         "OpenIndividualLicenceApplication",
         "WoodQuotaApplication",
         "WoodQuotaChecklist",
@@ -82,6 +84,7 @@ ia_source_target = source_target_list(
 ia_m2m = []
 
 ia_xml = [
+    XML(dm.DFLApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.OpenIndividualLicenceApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.OILSupplementaryInfo, "supplementary_report_xml", dm.OILSupplementaryReport),
     XML(
