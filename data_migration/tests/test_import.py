@@ -126,7 +126,6 @@ def test_import_wood_application_data():
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk)
-
         if i < 3:
             status = "IN_PROGRESS"
         elif i < 4:
@@ -135,7 +134,6 @@ def test_import_wood_application_data():
             status = "PROCESSING"
         else:
             status = "COMPLETE"
-            dm.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -147,6 +145,10 @@ def test_import_wood_application_data():
             last_updated_by_id=user_pk,
             importer_id=importer_pk,
         )
+
+        if status == "COMPLETE":
+            dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
+
         factory.WoodQuotaApplicationFactory(pk=pk, imad=ia)
 
     call_command("import_v1_data")
@@ -212,35 +214,35 @@ def test_import_oil_data():
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk)
-        dm.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk + 7)
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
             status="COMPLETE",
-            imad_id=pk,
+            imad_id=pk + 7,
             application_type=iat,
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
             importer_id=importer_pk,
         )
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
-        oil = factory.OILApplicationFactory(pk=pk, imad=ia)
+        factory.OILApplicationFactory(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(
             dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
         )
 
         if i == 0:
             sr = factory.OILSupplementaryInfoFactory(
-                imad=oil, supplementary_report_xml=xml_data.sr_upload_xml
+                imad=ia, supplementary_report_xml=xml_data.sr_upload_xml
             )
             dm.OILSupplementaryReport.objects.bulk_create(
                 dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_upload_xml)])
             )
         else:
             sr = factory.OILSupplementaryInfoFactory(
-                imad=oil, supplementary_report_xml=xml_data.sr_manual_xml
+                imad=ia, supplementary_report_xml=xml_data.sr_manual_xml
             )
             dm.OILSupplementaryReport.objects.bulk_create(
                 dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_manual_xml)])
@@ -316,19 +318,20 @@ def test_import_dfl_data():
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk)
-        dm.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk + 7)
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
             status="COMPLETE",
-            imad_id=pk,
+            imad_id=pk + 7,
             application_type=iat,
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
             importer_id=importer_pk,
         )
+
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
         factory.DFLApplicationFactory(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(

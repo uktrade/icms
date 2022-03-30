@@ -28,10 +28,11 @@ class OpenIndividualLicenceApplication(FirearmBase):
 
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
-    import_application = models.OneToOneField(
-        OpenIndividualLicenceApplication,
+    imad = models.OneToOneField(
+        ImportApplication,
         on_delete=models.PROTECT,
         to_field="imad_id",
+        related_name="+",
     )
 
     authority_required = models.CharField(
@@ -50,9 +51,9 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
 
 class OILSupplementaryInfo(SupplementaryInfoBase):
     imad = models.OneToOneField(
-        OpenIndividualLicenceApplication,
+        ImportApplication,
         on_delete=models.CASCADE,
-        related_name="supplementary_info",
+        related_name="+",
         to_field="imad_id",
     )
 

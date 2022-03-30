@@ -1319,3 +1319,5 @@ ImportContact
 CONSTABULARY>1000</CONSTABULARY
 DFLSupplementaryReport
 DFL
+WoodQuotaChecklist
+TextilesChecklist
