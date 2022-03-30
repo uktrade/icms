@@ -109,7 +109,7 @@ class OILSupplementaryInfoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.OILSupplementaryInfo
 
-    imad = factory.SubFactory(OILApplicationFactory)
+    imad = factory.SubFactory(ImportApplicationFactory)
 
 
 class OILSupplementaryReportFactory(factory.django.DjangoModelFactory):
@@ -130,4 +130,4 @@ class DFLSupplementaryInfoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.DFLSupplementaryInfo
 
-    imad = factory.SubFactory(DFLApplicationFactory)
+    imad = factory.SubFactory(ImportApplicationFactory)

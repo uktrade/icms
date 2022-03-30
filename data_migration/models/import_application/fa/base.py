@@ -183,8 +183,7 @@ class SupplementaryInfoBase(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        data["import_application_id"] = data.pop("imad_id")
+        data["import_application_id"] = data.pop("imad__id")
         return data
 
 
@@ -213,12 +212,12 @@ class SupplementaryReportBase(MigrationBase):
         # We create a unique ID for the contact when extracting from V1 and link the fk here
 
         sub_query = ImportContact.objects.filter(
-            import_application_id=models.OuterRef("supplementary_info__imad__imad__pk"),
+            import_application_id=models.OuterRef("supplementary_info__imad__pk"),
             legacy_id=models.OuterRef("bought_from_legacy_id"),
         )
 
         return (
-            cls.objects.select_related("supplementary_info__imad__imad")
+            cls.objects.select_related("supplementary_info__imad")
             .annotate(bought_from_id=models.Subquery(sub_query.values("pk")[:1]))
             .values(*values)
             .iterator()

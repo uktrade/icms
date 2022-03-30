@@ -33,9 +33,9 @@ class DFLApplication(FirearmBase):
 class DFLGoodsCertificate(MigrationBase):
     file_pkr = models.ForeignKey(File, related_name="+", on_delete=models.PROTECT)
     imad = models.ForeignKey(
-        DFLApplication,
+        ImportApplication,
         on_delete=models.PROTECT,
-        related_name="goods_certificates",
+        related_name="+",
         to_field="imad_id",
     )
     goods_description = models.CharField(max_length=4096)
@@ -50,8 +50,8 @@ class DFLGoodsCertificate(MigrationBase):
 
 
 class DFLChecklist(ChecklistBase):
-    import_application = models.OneToOneField(
-        DFLApplication, on_delete=models.PROTECT, to_field="imad_id"
+    imad = models.OneToOneField(
+        ImportApplication, on_delete=models.PROTECT, to_field="imad_id", related_name="+"
     )
     deactivation_certificate_attached = models.CharField(max_length=3, null=True)
     deactivation_certificate_issued = models.CharField(max_length=3, null=True)
@@ -59,9 +59,9 @@ class DFLChecklist(ChecklistBase):
 
 class DFLSupplementaryInfo(SupplementaryInfoBase):
     imad = models.OneToOneField(
-        DFLApplication,
+        ImportApplication,
         on_delete=models.CASCADE,
-        related_name="supplementary_info",
+        related_name="+",
         to_field="imad_id",
     )
 

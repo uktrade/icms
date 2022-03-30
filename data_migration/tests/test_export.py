@@ -189,7 +189,6 @@ def test_extract_xml(mock_connect):
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type="OIL", ima_id=pk)
-        models.ImportApplicationLicence.objects.create(import_application_id=pk, status="AC")
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -202,8 +201,9 @@ def test_extract_xml(mock_connect):
             importer_id=importer_pk,
         )
 
-        oil = factory.OILApplicationFactory(pk=pk, imad=ia)
+        models.ImportApplicationLicence.objects.create(imad=ia, status="AC")
+        factory.OILApplicationFactory(pk=pk, imad=ia)
 
-        factory.OILSupplementaryInfoFactory(imad=oil, supplementary_report_xml=supp_xmls[i])
+        factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 
     call_command("export_from_v1", "--skip_user", "--skip_ref")

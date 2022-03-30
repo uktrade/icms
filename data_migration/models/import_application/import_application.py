@@ -115,7 +115,7 @@ class ChecklistBase(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["import_application_id"] = data.pop("import_application__id")
+        data["import_application_id"] = data.pop("imad__id")
 
         for field in data.keys():
             if field in ["response_preparation", "authorisation"]:
@@ -125,7 +125,7 @@ class ChecklistBase(MigrationBase):
 
     @classmethod
     def get_includes(cls) -> list[str]:
-        return ["import_application__id"]
+        return ["imad__id"]
 
     @classmethod
     def get_excludes(cls) -> list[str]:
@@ -133,7 +133,7 @@ class ChecklistBase(MigrationBase):
 
 
 class ImportApplicationLicence(MigrationBase):
-    import_application = models.ForeignKey(
+    imad = models.ForeignKey(
         ImportApplication, on_delete=models.PROTECT, related_name="licences", to_field="imad_id"
     )
     status = models.TextField(max_length=2, default="DR")
@@ -146,14 +146,18 @@ class ImportApplicationLicence(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["import_application_id"] = data.pop("import_application__id")
+        data["import_application_id"] = data.pop("imad__id")
         data["created_at"] = data.pop("created_datetime")
 
         return data
 
     @classmethod
     def get_includes(cls) -> list[str]:
-        return ["import_application__id"]
+        return ["imad__id"]
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["imad_id"]
 
 
 class ImportApplicationBase(MigrationBase):

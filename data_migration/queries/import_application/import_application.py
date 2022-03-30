@@ -93,7 +93,7 @@ WHERE
 
 import_application_licence = """
 SELECT
-  imad_id import_application_id
+  imad_id
   , created_datetime
   , CASE licence_validity WHEN 'CURRENT' THEN 'AC' ELSE 'AR' END status
   , licence_start_date

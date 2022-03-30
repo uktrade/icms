@@ -59,9 +59,9 @@ ia_query_model = [
     QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
     QueryModel(import_application.wood_application, dm.WoodQuotaApplication),
-    QueryModel(import_application.wood_checklist, dm.WoodQuotaChecklist),
+    # QueryModel(import_application.wood_checklist, dm.WoodQuotaChecklist),  TODO ICMSLST-1510
     QueryModel(import_application.textiles_application, dm.TextilesApplication),
-    QueryModel(import_application.textiles_checklist, dm.TextilesChecklist),
+    # QueryModel(import_application.textiles_checklist, dm.TextilesChecklist), TODO ICMSLST-1510
     QueryModel(import_application.import_application_licence, dm.ImportApplicationLicence),
 ]
 
@@ -74,9 +74,9 @@ ia_source_target = source_target_list(
         "DFLApplication",
         "OpenIndividualLicenceApplication",
         "WoodQuotaApplication",
-        "WoodQuotaChecklist",
+        # "WoodQuotaChecklist", TODO ICMSLST-1510
         "TextilesApplication",
-        "TextilesChecklist",
+        # "TextilesChecklist", TODO ICMSLST-1510
         "ImportApplicationLicence",
     ]
 )

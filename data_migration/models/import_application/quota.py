@@ -34,8 +34,8 @@ class WoodQuotaApplication(ImportApplicationBase):
 
 
 class WoodQuotaChecklist(ChecklistBase):
-    import_application = models.OneToOneField(
-        WoodQuotaApplication, on_delete=models.PROTECT, related_name="checklist", to_field="imad_id"
+    imad = models.OneToOneField(
+        ImportApplication, on_delete=models.PROTECT, related_name="+", to_field="imad_id"
     )
 
     sigl_wood_application_logged = models.CharField(max_length=5, null=True)
@@ -75,8 +75,8 @@ class TextilesApplication(ImportApplicationBase):
 
 
 class TextilesChecklist(ChecklistBase):
-    import_application = models.OneToOneField(
-        TextilesApplication, on_delete=models.PROTECT, related_name="checklist", to_field="imad_id"
+    imad = models.OneToOneField(
+        ImportApplication, on_delete=models.PROTECT, related_name="+", to_field="imad_id"
     )
 
     within_maximum_amount_limit = models.CharField(max_length=5, null=True)
