@@ -40,6 +40,7 @@ from web.domains.case.models import (
     CaseLicenceCertificateBase,
     UpdateRequest,
 )
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
@@ -1145,8 +1146,27 @@ def test_import_search_by_licence_type(import_fixture_data):
     results = search_applications(search_terms, import_fixture_data.request.user)
 
     assert results.total_rows == 1
+    assert results.records[0].case_status.licence_reference == ""
+    assert results.records[0].case_status.licence_reference_link == "#"
+
+    # Only a complete application will show the references
+    wood.status = ImpExpStatus.COMPLETED
+    wood.save()
+    search_terms = SearchTerms(case_type="import", licence_type="paper")
+    results = search_applications(search_terms, import_fixture_data.request.user)
+    assert results.total_rows == 1
+
     check_application_references(results.records, "wood-app-ref")
     assert results.records[0].case_status.licence_reference == "licence_reference (Paper)"
+    assert results.records[0].case_status.licence_reference_link == reverse(
+        "case:view-case-document",
+        kwargs={
+            "application_pk": wood.id,
+            "case_type": "import",
+            "object_pk": licence.pk,
+            "reference": "licence_reference",
+        },
+    )
 
 
 def test_import_search_by_chief_usage_status(import_fixture_data):

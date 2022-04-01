@@ -265,6 +265,7 @@ def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow
             applicant_reference=getattr(rec, "applicant_reference", ""),
             case_reference=rec.get_reference(),
             licence_reference=_get_licence_reference(rec),
+            licence_reference_link=_get_licence_reference_link(rec),
             licence_validity=licence_validity,
             application_type=rec.application_type.get_type_display(),
             application_sub_type=application_subtype,
@@ -318,7 +319,7 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
         case_reference=rec.get_reference(),
         application_type=app_type_label,
         status=rec.get_status_display(),
-        certificates=rec.latest_certificate_references or [],
+        certificates=_get_certificate_references_and_links(rec),
         origin_countries=origin_countries,
         organisation_name=rec.exporter.name,
         application_contact=application_contact,
@@ -337,18 +338,65 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
 
 
 def _get_licence_reference(rec: ImportApplication) -> str:
-    """Retrieve the licence reference
+    """Get the licence reference for the import application licence."""
 
-    Notes when implementing:
-        - The Electronic licence has a link to download the licence
-    """
-    if not rec.latest_licence_reference:
+    if not rec.latest_licence_reference or rec.status != ImpExpStatus.COMPLETED:
         return ""
 
     if rec.latest_licence_issue_paper_licence_only:
         return f"{rec.latest_licence_reference} (Paper)"
     else:
         return f"{rec.latest_licence_reference} (Electronic)"
+
+
+def _get_licence_reference_link(rec: ImportApplication) -> str:
+    """Get the licence reference link for the import application licence."""
+
+    if not rec.latest_licence_reference or rec.status != ImpExpStatus.COMPLETED:
+        return "#"
+
+    return reverse(
+        "case:view-case-document",
+        kwargs={
+            "application_pk": rec.id,
+            "case_type": "import",
+            "object_pk": rec.latest_licence_pk,
+            "reference": rec.latest_licence_reference,
+        },
+    )
+
+
+def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[str, str]]:
+    """Return a list of reference / url pairs for the export application certificate.
+
+    :param rec: Export Application
+    """
+    if not rec.latest_certificate_references or rec.status != ImpExpStatus.COMPLETED:
+        return []
+
+    # TODO: Revisit when we can generate an export certificate:
+    # https://uktrade.atlassian.net/browse/ICMSLST-1406
+    # https://uktrade.atlassian.net/browse/ICMSLST-1407
+    # https://uktrade.atlassian.net/browse/ICMSLST-1408
+    return [(reference, "#") for reference in rec.latest_certificate_references]
+
+    # The below code will be correct when we have certificate files uploaded to S3
+    # Uncomment when the export certificate documents have been created.
+    # return [
+    #     (
+    #         reference,
+    #         reverse(
+    #             "case:view-case-document",
+    #             kwargs={
+    #                 "application_pk": rec.id,
+    #                 "case_type": "export",
+    #                 "object_pk": rec.latest_certificate_pk,
+    #                 "reference": reference,
+    #             },
+    #         ),
+    #     )
+    #     for reference in rec.latest_certificate_references
+    # ]
 
 
 def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QuerySet[Model]":
@@ -724,7 +772,8 @@ def _get_export_spreadsheet_rows(
     records: list[types.ExportResultRow],
 ) -> Iterable[types.ExportSpreadsheetRow]:
     for row in records:
-        certificates = ", ".join(row.certificates)
+        # c is a two element tuple (certificate reference, certificate link)
+        certificates = ", ".join(c[0] for c in row.certificates)
         certificate_countries = ", ".join(row.origin_countries)
         manufacturer_countries = ", ".join(row.manufacturer_countries)
 
