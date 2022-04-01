@@ -4,8 +4,8 @@
   <tr><th scope="col"></th></tr>
   </thead>
   <tbody>
-  {% for licence_cert in rec.certificates %}
-    <tr><td><a href="#" target="_blank">{{ licence_cert }}</a></td></tr>
+  {% for (cert_reference, cert_link) in rec.certificates %}
+    <tr><td><a href="{{ cert_link }}">{{ cert_reference }}</a></td></tr>
   {% endfor %}
   </tbody>
 </table>

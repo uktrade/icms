@@ -73,6 +73,7 @@ class CaseStatus:
     chief_usage_status: Optional[str] = None  # Used in spreadsheet
     applicant_reference: Optional[str] = None
     licence_reference: Optional[str] = None
+    licence_reference_link: Optional[str] = None
     licence_validity: Optional[str] = None
 
 
@@ -133,8 +134,7 @@ class ExportResultRow:
     application_type: str
     status: str
 
-    # certificates fields
-    certificates: list[str]
+    certificates: list[tuple[str, str]]
 
     submitted_at: str
     # Used to order records

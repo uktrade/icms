@@ -385,6 +385,7 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
             ]
         )
         .annotate(
+            latest_licence_pk=F("licences__pk"),
             latest_licence_reference=Subquery(sub_query.values("reference")[:1]),
             latest_licence_start_date=F("licences__licence_start_date"),
             latest_licence_end_date=F("licences__licence_end_date"),
@@ -422,7 +423,10 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
                 ExportApplicationCertificate.Status.ACTIVE,
             ]
         )
-        .annotate(latest_certificate_references=Subquery(cr_sub_query))
+        .annotate(
+            latest_certificate_pk=F("certificates__pk"),
+            latest_certificate_references=Subquery(cr_sub_query),
+        )
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest certificate
         .order_by("id", "-certificates__created_at")
