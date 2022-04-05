@@ -93,7 +93,7 @@ def view_case_document(
     application_pk: int,
     case_type: str,
     object_pk: int,
-    reference: str,
+    casedocumentreference_pk: int,
 ) -> HttpResponse:
     """Return a case document pdf.
 
@@ -101,7 +101,7 @@ def view_case_document(
     :param application_pk: Application pk
     :param case_type: "import" or "export"
     :param object_pk: ImportApplicationLicence or ExportApplicationCertificate pk
-    :param reference: CaseDocumentReference reference value
+    :param casedocumentreference_pk: CaseDocumentReference pk
     :return: Case document pdf
     """
 
@@ -113,7 +113,7 @@ def view_case_document(
         pk=object_pk,
     )
 
-    cdr = get_object_or_404(obj.document_references, reference=reference)
+    cdr = get_object_or_404(obj.document_references, pk=casedocumentreference_pk)
 
     return view_application_file(
         user=request.user,

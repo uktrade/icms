@@ -18,10 +18,7 @@
   {% call application_section("Prior Consent (Art. 4) Details") %}
     {{ application_field("UK", "Issuing Country") }}
     {{ application_field("See 'Who bought the Firearms from countries'", "Country in which the firearms are located") }}
-
-    {# TODO: Revisit when implementing ICMSLST-836 - Needs to be a download licence link #}
-    {% set licence_download_url = "#" %}
-    {% set licence_hyperlink = "<a href='" + licence_download_url + "'>" + licence_reference + "</a>" %}
+    {% set licence_hyperlink = "<a href='" + licence_reference_link + "'>" + licence_reference + "</a>" %}
     {{ application_field(licence_hyperlink, "Licence Document", is_safe_html=True) }}
   {% endcall %}
 

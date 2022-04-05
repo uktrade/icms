@@ -340,20 +340,26 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
 def _get_licence_reference(rec: ImportApplication) -> str:
     """Get the licence reference for the import application licence."""
 
-    if not rec.latest_licence_reference or rec.status != ImpExpStatus.COMPLETED:
+    if not rec.latest_licence_cdr_data or rec.status != ImpExpStatus.COMPLETED:
         return ""
 
+    # Example value: [[8, 'GBSIL0000004E']]
+    _, reference = rec.latest_licence_cdr_data[0]
+
     if rec.latest_licence_issue_paper_licence_only:
-        return f"{rec.latest_licence_reference} (Paper)"
+        return f"{reference} (Paper)"
     else:
-        return f"{rec.latest_licence_reference} (Electronic)"
+        return f"{reference} (Electronic)"
 
 
 def _get_licence_reference_link(rec: ImportApplication) -> str:
     """Get the licence reference link for the import application licence."""
 
-    if not rec.latest_licence_reference or rec.status != ImpExpStatus.COMPLETED:
+    if not rec.latest_licence_cdr_data or rec.status != ImpExpStatus.COMPLETED:
         return "#"
+
+    # Example value: [[8, 'GBSIL0000004E']]
+    casedocumentreference_pk, _ = rec.latest_licence_cdr_data[0]
 
     return reverse(
         "case:view-case-document",
@@ -361,7 +367,7 @@ def _get_licence_reference_link(rec: ImportApplication) -> str:
             "application_pk": rec.id,
             "case_type": "import",
             "object_pk": rec.latest_licence_pk,
-            "reference": rec.latest_licence_reference,
+            "casedocumentreference_pk": casedocumentreference_pk,
         },
     )
 
@@ -378,7 +384,7 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
     # https://uktrade.atlassian.net/browse/ICMSLST-1406
     # https://uktrade.atlassian.net/browse/ICMSLST-1407
     # https://uktrade.atlassian.net/browse/ICMSLST-1408
-    return [(reference, "#") for reference in rec.latest_certificate_references]
+    return [(reference, "#") for (_, reference) in rec.latest_certificate_references]
 
     # The below code will be correct when we have certificate files uploaded to S3
     # Uncomment when the export certificate documents have been created.
@@ -391,11 +397,11 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
     #                 "application_pk": rec.id,
     #                 "case_type": "export",
     #                 "object_pk": rec.latest_certificate_pk,
-    #                 "reference": reference,
+    #                 "casedocumentreference_pk": cdr_pk,
     #             },
     #         ),
     #     )
-    #     for reference in rec.latest_certificate_references
+    #     for (cdr_pk, reference) in rec.latest_certificate_references
     # ]
 
 

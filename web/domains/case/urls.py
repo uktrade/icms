@@ -307,9 +307,7 @@ pdf_urls = [
         ),
     ),
     path(
-        # Note: Uses path converter instead of str for reference because of export app reference values:
-        # e.g. "COM/2022/00001"
-        "view-case-document/<int:object_pk>/<path:reference>",
+        "view-case-document/<int:object_pk>/<int:casedocumentreference_pk>",
         views_pdf.view_case_document,
         name="view-case-document",
     ),
