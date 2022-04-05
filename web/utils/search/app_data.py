@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F, OuterRef, Subquery
+from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
+from django.db.models import F, Func, OuterRef, Subquery
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
@@ -370,10 +370,18 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     content_type_pk = get_content_type_pk("import")
 
-    sub_query = CaseDocumentReference.objects.filter(
-        document_type=CaseDocumentReference.Type.LICENCE,
-        content_type_id=content_type_pk,
-        object_id=OuterRef("licences__pk"),
+    sub_query = (
+        CaseDocumentReference.objects.filter(
+            document_type=CaseDocumentReference.Type.LICENCE,
+            content_type_id=content_type_pk,
+            object_id=OuterRef("licences__pk"),
+        )
+        .order_by()
+        .values("object_id")
+        .annotate(
+            licence_cdr_data=JSONBAgg(Func(F("pk"), F("reference"), function="json_build_array"))
+        )
+        .values("licence_cdr_data")
     )
 
     model = (
@@ -386,7 +394,7 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         )
         .annotate(
             latest_licence_pk=F("licences__pk"),
-            latest_licence_reference=Subquery(sub_query.values("reference")[:1]),
+            latest_licence_cdr_data=Subquery(sub_query.values("licence_cdr_data")),
             latest_licence_start_date=F("licences__licence_start_date"),
             latest_licence_end_date=F("licences__licence_end_date"),
             latest_licence_issue_paper_licence_only=F("licences__issue_paper_licence_only"),
@@ -411,7 +419,9 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         )
         .order_by()
         .values("object_id")
-        .annotate(certificate_array=ArrayAgg("reference"))
+        .annotate(
+            certificate_array=JSONBAgg(Func(F("pk"), F("reference"), function="json_build_array"))
+        )
         .values("certificate_array")
     )
 

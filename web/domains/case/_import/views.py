@@ -622,12 +622,28 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
             document_type=CaseDocumentReference.Type.LICENCE
         ).first()
 
+        if licence_doc and licence_doc.document:
+            reference = licence_doc.reference
+            reference_link = reverse(
+                "case:view-case-document",
+                kwargs={
+                    "application_pk": self.object.id,
+                    "case_type": "import",
+                    "object_pk": licence.pk,
+                    "casedocumentreference_pk": licence_doc.pk,
+                },
+            )
+        else:
+            reference = ""
+            reference_link = "#"
+
         context = {
             "page_title": f"Case {self.object.get_reference()}",
             "case_type": "import",
             "contacts": self.object.importcontact_set.all(),
-            "licence": self.object.get_most_recent_licence(),
-            "licence_reference": licence_doc.reference if licence_doc else "",
+            "licence": licence,
+            "licence_reference": reference,
+            "licence_reference_link": reference_link,
             # Set to true as all IMI applications are complete.
             "readonly_view": True,
         }

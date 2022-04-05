@@ -32,7 +32,7 @@ from web.domains.case.models import (
 from web.domains.case.services import reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
-from web.domains.case.types import ImpOrExp, ImpTypeOrExpType
+from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
     archive_application_licence_or_certificate,
     check_application_permission,
@@ -627,6 +627,8 @@ class CheckCaseDocumentGenerationView(
 def view_document_packs(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """ILB Admin view to view the application documents before authorising."""
+
     with transaction.atomic():
         model_class = get_class_imp_or_exp(case_type)
         application: ImpOrExp = get_object_or_404(
@@ -643,7 +645,7 @@ def view_document_packs(
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
             "primary_recipients": _get_primary_recipients(application),
             "copy_recipients": _get_copy_recipients(application),
-            **get_document_context(case_type, application.application_type),
+            **get_document_context(application),
         }
 
         return render(
@@ -653,20 +655,73 @@ def view_document_packs(
         )
 
 
-def get_document_context(case_type: str, at: ImpTypeOrExpType) -> dict[str, str]:
-    if case_type == "import":
+def get_document_context(application: ImpOrExp) -> dict[str, str]:
+    at = application.application_type
+
+    if application.is_import_application():
+        licence = application.get_most_recent_licence()
+        licence_doc = licence.document_references.get(
+            document_type=CaseDocumentReference.Type.LICENCE
+        )
+        cover_letter = licence.document_references.get(
+            document_type=CaseDocumentReference.Type.COVER_LETTER
+        )
+
+        if application.status == ImpExpStatus.COMPLETED:
+            licence_url = reverse(
+                "case:view-case-document",
+                kwargs={
+                    "application_pk": application.id,
+                    "case_type": "import",
+                    "object_pk": licence.pk,
+                    "casedocumentreference_pk": licence_doc.pk,
+                },
+            )
+            cover_letter_url = reverse(
+                "case:view-case-document",
+                kwargs={
+                    "application_pk": application.id,
+                    "case_type": "import",
+                    "object_pk": licence.pk,
+                    "casedocumentreference_pk": cover_letter.pk,
+                },
+            )
+        else:
+            licence_url = reverse(
+                "case:licence-pre-sign",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
+            cover_letter_url = reverse(
+                "case:preview-cover-letter",
+                kwargs={"application_pk": application.pk, "case_type": "import"},
+            )
+
         context = {
             "cover_letter_flag": at.cover_letter_flag,
             "type_label": at.Types(at.type).label,
             "customs_copy": at.type == at.Types.OPT,
             "is_cfs": False,
+            "document_reference": licence_doc.reference,
+            "licence_url": licence_url,
+            "cover_letter_url": cover_letter_url,
         }
     else:
+        certificate_docs = application.get_most_recent_certificate().document_references.filter(
+            document_type=CaseDocumentReference.Type.CERTIFICATE
+        )
+        document_reference = ", ".join(c.reference for c in certificate_docs)
+
         context = {
             "cover_letter_flag": False,
             "type_label": at.type,
             "customs_copy": False,
             "is_cfs": at.type_code == at.Types.FREE_SALE,
+            "document_reference": document_reference,
+            # TODO: Revisit when we can generate an export certificate
+            # https://uktrade.atlassian.net/browse/ICMSLST-1406
+            # https://uktrade.atlassian.net/browse/ICMSLST-1407
+            # https://uktrade.atlassian.net/browse/ICMSLST-1408
+            "certificate_links": [],
         }
 
     return context
@@ -753,7 +808,7 @@ def ack_notification(
             "acknowledged": application.acknowledged_by and application.acknowledged_datetime,
             "org": org,
             "show_generation_status": False,
-            **get_document_context(case_type, application.application_type),
+            **get_document_context(application),
         }
 
         return render(

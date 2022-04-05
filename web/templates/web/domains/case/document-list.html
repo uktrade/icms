@@ -1,12 +1,3 @@
-
-{% if process.status == "COMPLETED" %}
-  {# TODO ICMSLST-836: Replace this link with generated licence #}
-  {% set licence_url = icms_url('case:licence-pre-sign', kwargs={'application_pk': process.pk, "case_type": case_type}) %}
-{% else %}
-  {% set licence_url = icms_url('case:licence-pre-sign', kwargs={'application_pk': process.pk, "case_type": case_type}) %}
-{% endif %}
-
-
 <table class="setoutList">
   <thead>
   <tr>
@@ -25,12 +16,8 @@
               <td>COMPLETE</td>
             {% endif %}
             <td>
-                {# TODO ICMSLST-836: Replace this link with final cover letter instead of preview #}
-                <a
-                    href="{{ icms_url('case:preview-cover-letter', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
-                    target="blank"
-                    class="link-button inline-link-button icon-file-pdf button">
-                    View PDF
+                <a href="{{ cover_letter_url }}" target="blank" class="link-button inline-link-button icon-file-pdf button">
+                  View PDF
                 </a>
             </td>
         </tr>
@@ -61,7 +48,11 @@
             </tr>
         {% endif %}
       {% elif case_type == "export" %}
-        {# TODO: ICMSLST-836 - Replace with documents generated #}
+        {# TODO: Revisit when we can generate an export certificate: #}
+        {# https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
+        {# https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
+        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
+        {# TODO: Use `certificate_links` to show all pdf links #}
         {% if is_cfs %}
             <tr>
                 <td>Certificates of Free Sale (CFS) issued by the United Kingdom (UK)</td>

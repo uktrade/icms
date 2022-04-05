@@ -1132,7 +1132,7 @@ def test_import_search_by_licence_type(import_fixture_data):
     wood = _create_wood_application("wood-app-ref", import_fixture_data)
     licence = wood.licences.first()
     licence.issue_paper_licence_only = True
-    licence.document_references.create(
+    cdr = licence.document_references.create(
         document_type=CaseDocumentReference.Type.LICENCE, reference="licence_reference"
     )
     licence.save()
@@ -1163,8 +1163,8 @@ def test_import_search_by_licence_type(import_fixture_data):
         kwargs={
             "application_pk": wood.id,
             "case_type": "import",
-            "object_pk": licence.pk,
-            "reference": "licence_reference",
+            "object_pk": licence.id,
+            "casedocumentreference_pk": cdr.id,
         },
     )
 

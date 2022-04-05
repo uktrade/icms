@@ -19,7 +19,7 @@
 
 {% block main_content %}
   <div class="container setoutForm">
-    {{ application_field("TODO ICMSLST-836 Set Licence Reference", "Reference") }}
+    {{ application_field(document_reference, "Reference") }}
     {{ application_field(org, "Issued to") }}
 
     {% for contact in primary_recipients %}
