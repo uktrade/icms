@@ -248,7 +248,12 @@ case_progress_urls = [
         "check-document-generation/",
         views_misc.CheckCaseDocumentGenerationView.as_view(),
         name="check-document-generation",
-    )
+    ),
+    path(
+        "recreate-case-documents/",
+        views_misc.RecreateCaseDocumentsView.as_view(),
+        name="recreate-case-documents",
+    ),
 ]
 
 ack_notification_urls = [

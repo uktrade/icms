@@ -1343,3 +1343,5 @@ GOV PaaS
 redis_data
 ContentLength
 application_pk: Application
+PermissionRequiredMixin Config
+Application {self.application.reference}
