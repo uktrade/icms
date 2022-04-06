@@ -10,6 +10,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from django.views.generic import View
@@ -46,6 +47,7 @@ from web.flow.models import ProcessTypes, Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
 from .mixins import ApplicationTaskMixin
@@ -587,19 +589,12 @@ class CheckCaseDocumentGenerationView(
         ImpExpStatus.COMPLETED,
     ]
 
-    def has_permission(self):
-        self.set_application_and_task()
-
-        try:
-            check_application_permission(
-                self.application, self.request.user, self.kwargs["case_type"]
-            )
-        except PermissionDenied:
-            return False
-
-        return True
+    # PermissionRequiredMixin Config
+    permission_required = ["web.ilb_admin"]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+
         active_tasks = self.application.get_active_task_list()
 
         if (
@@ -620,6 +615,47 @@ class CheckCaseDocumentGenerationView(
             raise Exception("Unknown state for application")
 
         return JsonResponse(data={"msg": msg})
+
+
+@method_decorator(transaction.atomic, name="post")
+class RecreateCaseDocumentsView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
+    # View Config
+    http_method_names = ["post"]
+
+    # ApplicationTaskMixin Config
+    current_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+    current_task_type = Task.TaskType.DOCUMENT_ERROR
+    next_task_type = Task.TaskType.DOCUMENT_SIGNING
+
+    # PermissionRequiredMixin Config
+    permission_required = ["web.ilb_admin"]
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+        """Deletes existing draft PDFs and regenerates case document pack"""
+        self.set_application_and_task()
+
+        if self.application.is_import_application():
+            l_or_c = self.application.get_most_recent_licence()
+        else:
+            l_or_c = self.application.get_most_recent_certificate()
+
+        s3_client = get_s3_client()
+        for cdr in l_or_c.document_references.all():
+            if cdr.document and cdr.document.path:
+                delete_file_from_s3(cdr.document.path, s3_client)
+
+        self.update_application_tasks()
+        create_case_document_pack(self.application, self.request.user)
+
+        messages.success(
+            request,
+            f"Recreate Case Documents Success:"
+            f" Application {self.application.reference} has been queued for document signing",
+        )
+
+        return redirect(reverse("workbasket"))
 
 
 @login_required

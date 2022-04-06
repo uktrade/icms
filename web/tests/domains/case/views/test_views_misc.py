@@ -436,6 +436,19 @@ class TestCheckCaseDocumentGenerationView:
         self.wood_app = wood_app_submitted
         self._create_new_task(Task.TaskType.DOCUMENT_SIGNING)
 
+    def test_ilb_admin_permission_required(self, importer_client, exporter_client):
+        url = CaseURLS.check_document_generation(self.wood_app.pk)
+
+        # self.client is an ilb_admin client
+        response = self.client.get(url)
+        assert response.status_code == 200
+
+        response = importer_client.get(url)
+        assert response.status_code == 403
+
+        response = exporter_client.get(url)
+        assert response.status_code == 403
+
     def test_document_signing_in_progress(self):
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
         assert resp.status_code == 200

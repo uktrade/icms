@@ -236,14 +236,13 @@ class RecreateCaseDocumentsAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        # kwargs = self.get_kwargs()
+        kwargs = self.get_kwargs()
 
         return [
             WorkbasketAction(
                 is_post=True,
                 name="Recreate Case Documents",
-                # TODO: ICMSLST-1531 Create a view to recreate failed documents
-                url="#",
+                url=reverse("case:recreate-case-documents", kwargs=kwargs),
                 section_label="Digital Signing Failed",
             )
         ]

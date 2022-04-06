@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
@@ -8,7 +7,7 @@ from django.views.generic import View
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission, view_application_file
+from web.domains.case.utils import view_application_file
 from web.domains.file.models import File
 from web.flow.models import Process
 from web.types import AuthenticatedHttpRequest
@@ -30,21 +29,13 @@ class GenerateLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
 
     # TODO: ICMSLST-1436 Add document_type permission checks.
     # e.g. document_type == "pre-sign" check the app has been "authorised"
-    def has_permission(self):
-        self.set_application_and_task()
-
-        try:
-            check_application_permission(
-                self.application, self.request.user, self.kwargs["case_type"]
-            )
-        except PermissionDenied:
-            return False
-
-        return True
+    permission_required = ["web.ilb_admin"]
 
 
 class PreviewLicenceView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        self.set_application_and_task()
+
         document_type = self.kwargs["document_type"]
 
         if document_type not in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
@@ -67,6 +58,8 @@ class PreviewLicenceView(GenerateLicenceBase):
 
 class PreviewCoverLetterView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        self.set_application_and_task()
+
         pdf_gen = PdfGenerator(
             application=self.application,
             licence=self.application.get_most_recent_licence(),
