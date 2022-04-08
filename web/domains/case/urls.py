@@ -3,6 +3,7 @@ from django.urls import include, path
 from web.utils.pdf.types import DocumentTypes
 
 from .views import (
+    views_case_history,
     views_email,
     views_fir,
     views_misc,
@@ -373,6 +374,13 @@ urlpatterns = [
                             #
                             # PDF generation URLs:
                             path("pdf/", include(pdf_urls)),
+                            #
+                            # Case history
+                            path(
+                                "case-history/",
+                                views_case_history.CaseHistoryView.as_view(),
+                                name="history",
+                            ),
                         ]
                     ),
                 ),

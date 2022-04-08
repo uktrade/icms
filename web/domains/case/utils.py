@@ -173,6 +173,10 @@ def set_application_licence_or_certificate_active(application: ImpOrExp) -> None
         active_l_or_c.save()
 
     l_or_c.status = CaseLicenceCertificateBase.Status.ACTIVE
+
+    # Record the case_reference to see when viewing the application history
+    l_or_c.case_reference = application.reference
+
     l_or_c.save()
 
 

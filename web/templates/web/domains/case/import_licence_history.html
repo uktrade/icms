@@ -1,0 +1,58 @@
+{% extends "web/domains/case/manage/base.html" %}
+
+{% block css %}
+  <style>
+      /* Override default margin that is applied to text-widget class. */
+      .text-widget. { margin-top: 0; }
+      .setoutForm .text-widget { margin-top: 0; }
+  </style>
+{% endblock %}
+
+
+{% block main_content %}
+  <h3>Responses</h3>
+  {% for l in licences %}
+    {% if l.variation_request %}
+      <p class="bold">Variation Request {{ l.variation_request[0] }} Response (case reference: {{ l.case_reference }})</p>
+    {% else %}
+      <h5>Initial Response (case reference: {{ l.case_reference }})</h5>
+    {% endif %}
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th scope="col">Response Type</th>
+        <th scope="col">Licence Reference</th>
+        <th scope="col">Case Completion Date</th>
+        <th scope="col">Licence Information</th>
+        <th scope="col">Documents</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for doc in l.documents %}
+        <tr>
+          <td><span class="text-widget">{{ application_type }} Import {{ doc.name }}</span></td>
+          <td>
+            {% if doc.reference %}
+              <span class="text-widget">{{ doc.reference }} {{ "(Paper)" if l.issue_paper_licence_only else "(Electronic)" }}</span>
+            {% endif %}
+          </td>
+          <td><span class="text-widget">{{ l.case_completion_date }}</span></td>
+          <td>
+            {% if doc.name == "Licence" %}
+              <div class="container setoutForm">
+                <div class="row">
+                  <span class="text-widget"><span class="bold">Start Date</span> {{ l.licence_start_date }}</span>
+                </div>
+                <div class="row">
+                  <span class="text-widget"><span class="bold">End Date</span> {{ l.licence_end_date }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </td>
+          <td><a href="{{ doc.url }}">View Firearms {{ doc.name }}</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+{% endblock %}

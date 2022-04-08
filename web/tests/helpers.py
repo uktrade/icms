@@ -178,6 +178,12 @@ class CaseURLS:
 
         return reverse("case:check-document-generation", kwargs=kwargs)
 
+    @staticmethod
+    def get_application_history(application_pk: int, case_type="import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:history", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod

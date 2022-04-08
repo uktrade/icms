@@ -469,6 +469,11 @@ class CaseLicenceCertificateBase(models.Model):
 
     document_references = GenericRelation("CaseDocumentReference")
 
+    # This is set when the licence / certificate is set to active.
+    case_reference = models.CharField(
+        max_length=100, null=True, unique=True, verbose_name="Case Reference"
+    )
+
     # Values added when records are created / updated, used to get the most recent one.
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

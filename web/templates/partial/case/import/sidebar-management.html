@@ -84,6 +84,7 @@
   {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
 
   <li>
-    <a href="#">Responses</a>
+    {# TODO: Check for any complete licences / certificates #}
+    {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Responses') }}
   </li>
 </ul>
