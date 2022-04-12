@@ -61,13 +61,20 @@ class Command(BaseCommand):
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
-        source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
-        m2m_list = DATA_TYPE_M2M[data_type]
         name = format_name(data_type)
 
         if skip:
             self.stdout.write(f"Skipping {name} Data Import")
             return
+
+        self._import_model(data_type)
+        self._import_m2m(data_type)
+
+        self.stdout.write(f"{name} Data Imported!")
+
+    def _import_model(self, data_type: DATA_TYPE) -> None:
+        source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
+        name = format_name(data_type)
 
         self.stdout.write(f"Importing {name} Data")
         for source, target in source_target_list:
@@ -82,24 +89,25 @@ class Command(BaseCommand):
 
                 bulk_create(target, batch)
 
+    def _import_m2m(self, data_type: DATA_TYPE) -> None:
+        m2m_list = DATA_TYPE_M2M[data_type]
+        name = format_name(data_type)
         self.stdout.write(f"Importing {name} M2M relationships")
 
         for source, target, field in m2m_list:
             self.stdout.write(f"Importing {target.__name__}_{field} from {source.__name__}")
+
             through_table = getattr(target, field).through
             objs = source.get_source_data()
 
             while True:
                 batch = [
-                    through_table(**source.data_export(obj))
-                    for obj in islice(objs, self.batch_size)
+                    through_table(**source.m2m_export(obj)) for obj in islice(objs, self.batch_size)
                 ]
                 if not batch:
                     break
 
                 bulk_create(through_table, batch)
-
-        self.stdout.write(f"{name} Data Imported!")
 
     def _create_tasks(self, skip: bool) -> None:
         if skip:

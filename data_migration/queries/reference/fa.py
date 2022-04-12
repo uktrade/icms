@@ -5,7 +5,7 @@ SELECT
   , constabulary_name name
   , constabulary_region region
   , email_address email
-FROM IMPMGR.XVIEW_CONSTABULARY_DETAILS xcd
-WHERE STATUS_CONTROL = 'C'
+FROM impmgr.xview_constabulary_details xcd
+WHERE status_control = 'C'
 ORDER BY con_id
 """

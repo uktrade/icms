@@ -4,6 +4,7 @@ import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import override_settings
+from django.utils import timezone
 
 from data_migration import models as dm
 from data_migration.queries import DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
@@ -180,6 +181,8 @@ oil_data_source_target = {
     "reference": [
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
+        (dm.Constabulary, web.Constabulary),
+        (dm.File, web.File),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -189,7 +192,18 @@ oil_data_source_target = {
         (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
+        (dm.UserImportCertificate, web.UserImportCertificate),
     ],
+}
+
+oil_data_m2m = {
+    "import_application": [
+        (
+            dm.UserImportCertificate,
+            web.OpenIndividualLicenceApplication,
+            "user_imported_certificates",
+        )
+    ]
 }
 
 
@@ -197,16 +211,13 @@ oil_data_source_target = {
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_M2M, oil_data_m2m)
 def test_import_oil_data():
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
-
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
-
     factory.CountryFactory(id=1000, name="My Test Country")
-
     cg = dm.CountryGroup.objects.create(country_group_id="OIL", name="OIL")
 
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
@@ -214,20 +225,19 @@ def test_import_oil_data():
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk + 7)
-
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_OIL, ima_id=pk + 7)
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
-            status="COMPLETE",
+            status="IN_PROGRESS",
             imad_id=pk + 7,
             application_type=iat,
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
             importer_id=importer_pk,
+            submit_datetime=None if i == 0 else timezone.now(),
         )
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
-
         factory.OILApplicationFactory(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(
             dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
@@ -240,7 +250,37 @@ def test_import_oil_data():
             dm.OILSupplementaryReport.objects.bulk_create(
                 dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_upload_xml)])
             )
+            ft1 = dm.FileTarget.objects.create()
+            factory.UserImportCertificateFactory(
+                target=ft1, import_application=ia, certificate_type="registered"
+            )
+            ft2 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft2)
+            factory.UserImportCertificateFactory(
+                target=ft2, import_application=ia, certificate_type="registered", expiry_date=None
+            )
+            ft3 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft3)
+            factory.UserImportCertificateFactory(
+                target=ft3, import_application=ia, certificate_type="registered", constabulary=None
+            )
+            ft4 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft4)
+            factory.UserImportCertificateFactory(
+                target=ft4, import_application=ia, certificate_type="registered", reference=None
+            )
+            ft5 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft5)
+            factory.UserImportCertificateFactory(
+                target=ft5, import_application=ia, certificate_type="registered", reference="ABC"
+            )
         else:
+            ft = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft)
+
+            factory.UserImportCertificateFactory(
+                target=ft, import_application=ia, certificate_type="registered"
+            )
             sr = factory.OILSupplementaryInfoFactory(
                 imad=ia, supplementary_report_xml=xml_data.sr_manual_xml
             )
@@ -275,6 +315,10 @@ def test_import_oil_data():
 
     assert oil2_ic.filter(pk=oil2_sr1.bought_from_id).exists()
     assert oil2_sr2.bought_from_id is None
+
+    assert oil1.user_imported_certificates.count() == 1
+    assert oil1.user_imported_certificates.filter(reference="ABC").count() == 1
+    assert oil2.user_imported_certificates.count() == 1
 
 
 dfl_data_source_target = {

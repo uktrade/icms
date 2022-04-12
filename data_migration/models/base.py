@@ -1,4 +1,4 @@
-from typing import Any, Generator, Tuple
+from typing import Any, Generator, Optional, Tuple
 
 from django.db import models
 from lxml import etree
@@ -27,6 +27,15 @@ class MigrationBase(models.Model):
             data["is_active"] = status.lower() == "active"
 
         return data
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """Returns the data required to populate the M2M through table for a model
+
+        :param data: The dictionary of data for the model instance
+        """
+
+        return cls.data_export(data)
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
@@ -88,7 +97,7 @@ class MigrationBase(models.Model):
         return [cls.parse_xml_fields(pk, etree.fromstring(xml)) for pk, xml in batch]
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> models.Model:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[models.Model]:
         """Retrieves data for fields from an ElementTree object
 
         :param parent_pk: The pk of the parent model

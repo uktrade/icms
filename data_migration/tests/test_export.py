@@ -207,3 +207,14 @@ def test_extract_xml(mock_connect):
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 
     call_command("export_from_v1", "--skip_user", "--skip_ref")
+
+    reports = models.OILSupplementaryReport.objects.filter(supplementary_info__imad_id__in=pk_range)
+    assert reports.count() == 4
+    assert reports.filter(transport="AIR").count() == 1
+    assert reports.filter(transport="RAIL").count() == 1
+    assert reports.filter(transport__isnull=True).count() == 2
+
+    firearms = models.OILSupplementaryReportFirearm.objects.filter(report__in=reports)
+    assert firearms.count() == 5
+    assert firearms.filter(is_upload=True, is_manual=False, is_no_firearm=False).count() == 1
+    assert firearms.filter(is_upload=False, is_manual=True, is_no_firearm=False).count() == 4

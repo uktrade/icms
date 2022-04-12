@@ -131,3 +131,44 @@ class DFLSupplementaryInfoFactory(factory.django.DjangoModelFactory):
         model = models.DFLSupplementaryInfo
 
     imad = factory.SubFactory(ImportApplicationFactory)
+
+
+class FileFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.File
+
+    filename = factory.fuzzy.FuzzyText(length=6)
+    content_type = factory.fuzzy.FuzzyText(length=6)
+    file_size = random.randint(1, 100000)
+    path = factory.fuzzy.FuzzyText(length=6)
+    created_datetime = timezone.datetime.now()
+
+
+class DFLGoodsCertificateFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.DFLGoodsCertificate
+
+    goods_description = factory.fuzzy.FuzzyText(length=6)
+    deactivated_certificate_reference = factory.fuzzy.FuzzyText(length=6)
+
+
+class ConstabularyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Constabulary
+
+    name = factory.fuzzy.FuzzyText(length=6)
+    region = factory.fuzzy.FuzzyText(length=3)
+    email = factory.fuzzy.FuzzyText(length=6)
+
+
+class UserImportCertificateFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.UserImportCertificate
+
+    target = factory.SubFactory(FileFactory)
+    constabulary = factory.SubFactory(ConstabularyFactory)
+    reference = factory.fuzzy.FuzzyText(length=6)
+    certificate_type = factory.fuzzy.FuzzyText(length=6)
+    date_issued = timezone.datetime(2020, 1, 1)
+    expiry_date = timezone.datetime(2020, 1, 1)
+    updated_datetime = timezone.datetime(2020, 1, 1)
