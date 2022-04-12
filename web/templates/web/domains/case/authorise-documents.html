@@ -19,8 +19,6 @@
 
 {% block main_content %}
   {{ application_field(process.get_reference() + " Response Documents", "Document Set Title") }}
-  {# TODO: ICMSLST-809 - Display a count of all documents which generation status is not complete #}
-
   {% include "web/domains/case/manage/document-packs-list.html" %}
 
   <h3>Sign & Authorise</h3>

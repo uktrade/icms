@@ -1,0 +1,27 @@
+{% extends base_template %}
+
+{% block main_content %}
+  <h3>Issued Certificates</h3>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th scope="col">Case Reference</th>
+      <th scope="col">Issue Date</th>
+      <th scope="col">Documents</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for c in certificates %}
+      <tr>
+        <td><span class="text-widget">{{ c.reference }}</span></td>
+        <td><span class="text-widget">{{ c.issue_date }}</span></td>
+        <td>
+          {% for doc in c.documents %}
+            <a style="display: block" href="{{ doc.url }}">{{ doc.name }}</a>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

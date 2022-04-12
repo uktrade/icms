@@ -573,8 +573,6 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self) -> "QuerySet[ImportApplication]":
         """Return all applications that have been acknowledged."""
-
-        # TODO: ICMSLST-809 Revisit when the licence file has been generated (to filter on correct task)
         imi_eu_countries = CountryGroup.objects.get(name="EU Countries (IMI Cases)").countries.all()
 
         qs = (
