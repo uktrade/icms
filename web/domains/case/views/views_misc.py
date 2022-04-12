@@ -597,24 +597,27 @@ class CheckCaseDocumentGenerationView(
 
         active_tasks = self.application.get_active_task_list()
 
+        reload_workbasket = False
+
         if (
             self.application.status == ImpExpStatus.COMPLETED
             or Task.TaskType.CHIEF_WAIT in active_tasks
         ):
-            msg = "Documents generated successfully - Please reload the workbasket"
+            msg = "Documents generated successfully"
+            reload_workbasket = True
 
         elif Task.TaskType.DOCUMENT_ERROR in active_tasks:
-            msg = "Failed to generate documents - Please reload the workbasket"
+            msg = "Failed to generate documents"
+            reload_workbasket = True
 
         elif Task.TaskType.DOCUMENT_SIGNING in active_tasks:
-            # TODO: ICMSLST-1532 Consider counting cert/licence documents (count with files / full count)
-            msg = "Still processing documents"
+            msg = "Documents are still being generated"
 
         else:
             # TODO: Sent a sentry message instead to handle the error gracefully
             raise Exception("Unknown state for application")
 
-        return JsonResponse(data={"msg": msg})
+        return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})
 
 
 @method_decorator(transaction.atomic, name="post")

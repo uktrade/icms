@@ -16,6 +16,9 @@ class WorkbasketAction:
     # link name
     name: str
 
+    # execute and process the action in the browser (GET only)
+    is_ajax: bool = False
+
     # confirmation popup text
     confirm: Optional[str] = None
 

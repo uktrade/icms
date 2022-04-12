@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -454,7 +453,8 @@ class TestCheckCaseDocumentGenerationView:
         assert resp.status_code == 200
 
         resp_data = resp.json()
-        assert resp_data["msg"] == "Still processing documents"
+        assert resp_data["msg"] == "Documents are still being generated"
+        assert resp_data["reload_workbasket"] is False
 
     def test_document_signing_has_error(self):
         self._create_new_task(Task.TaskType.DOCUMENT_ERROR)
@@ -463,7 +463,8 @@ class TestCheckCaseDocumentGenerationView:
         assert resp.status_code == 200
 
         resp_data = resp.json()
-        assert resp_data["msg"] == "Failed to generate documents - Please reload the workbasket"
+        assert resp_data["msg"] == "Failed to generate documents"
+        assert resp_data["reload_workbasket"] is True
 
     def test_document_signing_complete(self):
         self.wood_app.status = ImpExpStatus.COMPLETED
@@ -477,8 +478,9 @@ class TestCheckCaseDocumentGenerationView:
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
         assert resp.status_code == 200
 
-        content = json.loads(resp.content.decode("utf-8"))
-        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Documents generated successfully"
+        assert resp_data["reload_workbasket"] is True
 
     def test_document_signing_chief_wait(self):
         self._create_new_task(Task.TaskType.CHIEF_WAIT)
@@ -486,8 +488,9 @@ class TestCheckCaseDocumentGenerationView:
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
         assert resp.status_code == 200
 
-        content = json.loads(resp.content.decode("utf-8"))
-        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Documents generated successfully"
+        assert resp_data["reload_workbasket"] is True
 
     def test_document_signing_in_progress_variation_request(self):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -496,7 +499,8 @@ class TestCheckCaseDocumentGenerationView:
         assert resp.status_code == 200
 
         resp_data = resp.json()
-        assert resp_data["msg"] == "Still processing documents"
+        assert resp_data["msg"] == "Documents are still being generated"
+        assert resp_data["reload_workbasket"] is False
 
     def test_document_signing_has_error_variation_request(self):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -507,7 +511,8 @@ class TestCheckCaseDocumentGenerationView:
         assert resp.status_code == 200
 
         resp_data = resp.json()
-        assert resp_data["msg"] == "Failed to generate documents - Please reload the workbasket"
+        assert resp_data["msg"] == "Failed to generate documents"
+        assert resp_data["reload_workbasket"] is True
 
     def test_document_signing_chief_wait_variation_request(self):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -517,8 +522,9 @@ class TestCheckCaseDocumentGenerationView:
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
         assert resp.status_code == 200
 
-        content = json.loads(resp.content.decode("utf-8"))
-        assert content["msg"] == "Documents generated successfully - Please reload the workbasket"
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Documents generated successfully"
+        assert resp_data["reload_workbasket"] is True
 
     def _create_new_task(self, new_task):
         task = self.wood_app.tasks.get(is_active=True)

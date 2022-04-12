@@ -1373,3 +1373,17 @@ FileTarget
 CTest
 x.commodity_code commodity_group_id
 certificate.date_issued.strftime('%d-%b-%Y
+el.on('click
+Workbasket{%
+class="prompt north">Transaction /
+for="g27
+value="g27/3">Importer Access
+class="prompt north">Company
+id="pg31
+for="g31
+class="prompt north">Filter Tag
+type="radio
+Information
+GET/POST
+this.d.find('.approve').click
+location.reload(

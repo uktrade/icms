@@ -219,6 +219,7 @@ class CheckCaseDocumentGenerationAction(Action):
                 name="Monitor Progress",
                 url=reverse("case:check-document-generation", kwargs=kwargs),
                 section_label="Digital Signing",
+                is_ajax=True,
             )
         ]
 
