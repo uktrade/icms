@@ -1,5 +1,5 @@
-var Dialogue = function () {
-    confirmationDialog =
+const Dialogue = function () {
+    const confirmationDialog =
         '<div class="modal-popover-container">' +
         '<div class="modal-popover small-popover modal-alert-confirm">'+
             '<div class="modal-popover-content" role="alertdialog">'+
@@ -18,45 +18,54 @@ var Dialogue = function () {
         '</div>'
 
     return {
-        show : function(message, successCallback){
-            if ($('body').find('.modal-popover-container:visible').length) {
+        d: $(confirmationDialog).clone(),
+        show: function (message, successCallback) {
+            const $body = $('body');
+
+            if ($body.find('.modal-popover-container:visible').length) {
                 // Don't create modal if one already exist.
-                console.log('Another dialogue is visible, not showing this one');
+                console.error('Another dialogue is visible, not showing this one');
                 return;
             }
 
-            var dialog = $(confirmationDialog).clone();
-            dialog.find('.modal-popover-text').html(message);
-            $('body').append(dialog);
+            this.d.find('.modal-popover-text').html(message);
+            $body.append(this.d);
 
-            $(dialog).find('.abort').click(function(e){
-                e.preventDefault();
-                $(dialog).remove();
-            });
+            this.d.find('.abort').click(
+              (e) => {
+                  e.preventDefault();
+                  this.close();
+              });
 
-            $(dialog).find('.approve').click(function(e){
-                e.preventDefault();
-                if (successCallback) {
-                    return successCallback();
-                }
-            });
+            this.d.find('.approve').click(
+              (e) => {
+                  e.preventDefault();
+                  if (successCallback) {
+                      return successCallback();
+                  }
+              });
         },
 
-        bindTo: function(el, message){
-            var that = this;
-            el.on('click', function(evt){
+        bindTo: function (el, message) {
+            let that = this;
+
+            el.on('click', function (evt) {
                 evt.preventDefault();
-                that.show(message, function(){
-                    var form  = el.closest('form');
+                that.show(message, function () {
+                    var form = el.closest('form');
                     console.log('running default callback');
-                    var input=$("<input>")
-                        .attr("type",  "hidden")
-                        .attr("name",  el.attr('name'))
-                        .attr("value", el.attr('value'));
+                    var input = $("<input>")
+                      .attr("type", "hidden")
+                      .attr("name", el.attr('name'))
+                      .attr("value", el.attr('value'));
                     form.append(input);
                     form.submit();
                 });
             });
+        },
+
+        close: function() {
+            this.d.remove();
         }
     };
 };
