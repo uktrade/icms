@@ -11,6 +11,7 @@ from web.flow.models import Process, ProcessTypes
 if TYPE_CHECKING:
     from web.domains.case._import.models import ImportApplication
     from web.domains.case.export.models import ExportApplication
+    from web.domains.case.models import CaseDocumentReference
 
 
 class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
@@ -99,7 +100,41 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         }
 
     def _get_certificate_context(self, application: "ExportApplication"):
-        return {}
+        certificates = (
+            application.certificates.filter(case_reference__isnull=False)
+            .prefetch_related("document_references")
+            .order_by("-created_at")
+        )
+
+        return {
+            "certificates": [
+                {
+                    "reference": cert.case_reference,
+                    "issue_date": cert.issue_date.strftime("%d-%b-%Y"),
+                    "documents": [
+                        {
+                            "name": _get_cdr_name(application, doc),
+                            "url": "#",
+                            # TODO: Revisit when we can generate an export certificate: #}
+                            # https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
+                            # https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
+                            # https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
+                            # "url": reverse(
+                            #     "case:view-case-document",
+                            #     kwargs={
+                            #         "application_pk": application.id,
+                            #         "case_type": "export",
+                            #         "object_pk": cert.pk,
+                            #         "casedocumentreference_pk": doc.pk,
+                            #     },
+                            # ),
+                        }
+                        for doc in cert.document_references.all()
+                    ],
+                }
+                for cert in certificates
+            ]
+        }
 
     def get_template_names(self) -> list[str]:
         case_type = self.kwargs["case_type"]
@@ -111,3 +146,14 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             return ["web/domains/case/export_certificate_history.html"]
 
         raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
+def _get_cdr_name(app: "ExportApplication", cdr: "CaseDocumentReference") -> str:
+    app_label = ProcessTypes(app.process_type).label
+
+    if cdr.reference_data.gmp_brand:
+        brand = f" ({cdr.reference_data.gmp_brand.brand_name})"
+    else:
+        brand = ""
+
+    return f"{cdr.reference} - {app_label}{brand} ({cdr.reference_data.country.name})"

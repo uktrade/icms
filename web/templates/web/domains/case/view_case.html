@@ -14,10 +14,14 @@
       {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': ct}), 'View Application') }}
 
       {% if process.status == "COMPLETED" %}
-        {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sent Responses' ) }}
+        {% if process.is_import_application() %}
+          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sent Responses' ) }}
 
-        {% if process.is_import_application() and process.application_type.type == "FA" %}
-          {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+          {% if process.application_type.type == "FA" %}
+            {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+          {% endif %}
+        {% else %}
+          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'export'}), "Issued Certificates" ) }}
         {% endif %}
       {% endif %}
     </ul>
