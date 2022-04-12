@@ -3,8 +3,6 @@
 {% import "forms/fields.html" as fields %}
 {% from "display/fields.html" import application_field %}
 
-{% block sidebar %}{% endblock %}
-
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
@@ -16,6 +14,24 @@
     </ul>
   </div>
 {% endblock %}
+
+{% block sidebar %}
+    {% if process.supplementary_info.is_complete %}
+      <ul class="menu-out">
+        {% set ct = "import" if process.is_import_application() else "export" %}
+        {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': ct}), 'View Application') }}
+
+        {% if process.status == "COMPLETED" %}
+          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sent Responses' ) }}
+
+          {% if process.is_import_application() and process.application_type.type == "FA" %}
+            {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+          {% endif %}
+        {% endif %}
+      </ul>
+    {% endif %}
+{% endblock %}
+
 
 {% block main_content %}
   {% if process.supplementary_info.is_complete %}
