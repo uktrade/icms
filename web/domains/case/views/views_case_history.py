@@ -37,8 +37,14 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         case_type = self.kwargs["case_type"]
         base_context = super().get_context_data(**kwargs)
 
+        if self.request.user.has_perm("web.ilb_admin"):
+            base_template = "web/domains/case/manage/base.html"
+        else:
+            base_template = "web/domains/case/view_case.html"
+
         common_context = {
-            # TODO: Fix all management page_title context to be the following
+            "base_template": base_template,
+            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "page_title": f"Case {application.reference}",
             "application_type": ProcessTypes(application.process_type).label,
             "process": application,
