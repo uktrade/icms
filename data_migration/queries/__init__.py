@@ -33,6 +33,7 @@ ref_query_model = [
     QueryModel(reference.commodity_group_commodity, dm.CommodityGroupCommodity),
     QueryModel(import_application.import_application_type, dm.ImportApplicationType),
     QueryModel(import_application.usage, dm.Usage),
+    QueryModel(reference.constabularies, dm.Constabulary),
 ]
 
 ref_source_target = source_target_list(
@@ -47,6 +48,7 @@ ref_source_target = source_target_list(
         "Commodity",
         "ImportApplicationType",
         "Usage",
+        "Constabulary",
     ]
 )
 
@@ -56,6 +58,8 @@ ref_m2m = [
 ]
 
 ia_query_model = [
+    QueryModel(import_application.fa_file_target, dm.FileTarget),
+    QueryModel(import_application.fa_certificates, dm.File),
     QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
     QueryModel(import_application.wood_application, dm.WoodQuotaApplication),
@@ -68,6 +72,7 @@ ia_query_model = [
 # Possibly refactor to import process and import application by process type
 ia_source_target = source_target_list(
     [
+        "File",
         "Process",
         "ImportApplication",
         "ImportContact",
@@ -78,14 +83,20 @@ ia_source_target = source_target_list(
         "TextilesApplication",
         # "TextilesChecklist", TODO ICMSLST-1510
         "ImportApplicationLicence",
+        "UserImportCertificate",
     ]
 )
 
-ia_m2m = []
+ia_m2m = [
+    M2M(
+        dm.UserImportCertificate, web.OpenIndividualLicenceApplication, "user_imported_certificates"
+    ),
+]
 
 ia_xml = [
     XML(dm.DFLApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.OpenIndividualLicenceApplication, "bought_from_details_xml", dm.ImportContact),
+    XML(dm.OpenIndividualLicenceApplication, "fa_certs_xml", dm.UserImportCertificate),
     XML(dm.OILSupplementaryInfo, "supplementary_report_xml", dm.OILSupplementaryReport),
     XML(
         dm.OILSupplementaryReport,

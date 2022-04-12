@@ -24,7 +24,7 @@
         <td>{{ certificate.reference }}</td>
         <td>{{ certificate.get_certificate_type_display() }}</td>
         <td>{{ certificate.constabulary.name }}</td>
-        <td>{{ certificate.date_issued.strftime('%d-%b-%Y') }}</td>
+        <td>{{ certificate.date_issued and certificate.date_issued.strftime('%d-%b-%Y') }}</td>
         <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
         <td>
             <a

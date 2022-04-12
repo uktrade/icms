@@ -1355,3 +1355,21 @@ west">Start Date</label></div>
 class="bold">End Date</span
 FA
 HSE Emails'
+fa_certs_xml
+fa_certs_xml XMLTYPE PATH '
+target_id
+TARGET_ID>1234</TARGET_ID
+REF A</CERTIFICATE_REF
+REF B</CERTIFICATE_REF
+ON sld.id = DEREF(fv.secure_lob_ref).id
+fv.path
+create_by_wua_id created_by
+CONCAT(id
+ON fv.target_id
+file_ptr_id
+dfl_application_id
+ON fft.ff_id =
+FileTarget
+CTest
+x.commodity_code commodity_group_id
+certificate.date_issued.strftime('%d-%b-%Y

@@ -141,11 +141,13 @@ class Command(BaseCommand):
                 f"Extracting xml data from {parent.__name__}.{field} to {child.__name__}"
             )
             objs = (
-                parent.objects.filter(**{f"{field}__isnull": False}).values("pk", field).iterator()
+                parent.objects.filter(**{f"{field}__isnull": False})
+                .values_list("pk", field)
+                .iterator()
             )
 
             while True:
-                batch = [(obj["pk"], obj[field]) for obj in islice(objs, self.batchsize)]
+                batch = list(islice(objs, self.batchsize))
 
                 if not batch:
                     break

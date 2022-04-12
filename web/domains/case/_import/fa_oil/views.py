@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
+from web.domains.case._import.fa.forms import UserImportCertificateForm
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.shared import ImpExpStatus
@@ -121,6 +122,25 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 )
             )
 
+            errors.add(page_errors)
+
+        user_imported_certificates = application.user_imported_certificates.filter(is_active=True)
+
+        for cert in user_imported_certificates:
+            page_errors = PageErrors(
+                page_name=f"Certificate - {cert.reference}",
+                url=reverse(
+                    "import:fa:edit-certificate",
+                    kwargs={"application_pk": application_pk, "certificate_pk": cert.pk},
+                ),
+            )
+
+            create_page_errors(
+                UserImportCertificateForm(
+                    data=model_to_dict(cert), instance=cert, application=application
+                ),
+                page_errors,
+            )
             errors.add(page_errors)
 
         if application.know_bought_from and not application.importcontact_set.exists():

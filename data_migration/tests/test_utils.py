@@ -1,11 +1,13 @@
 from datetime import datetime
 
 import pytest
+from django.forms import ValidationError
 from django.utils import timezone
 
 from data_migration.management.commands.utils.db import bulk_create, new_process_pk
 from data_migration.management.commands.utils.format import format_name, format_row
 from data_migration.models import Process
+from data_migration.utils.format import date_or_none
 
 
 @pytest.mark.parametrize(
@@ -54,3 +56,25 @@ def test_bulk_create():
     assert Process.objects.filter(id=pk + 1, process_type="BTest").count() == 1
     obj = Process.objects.create(process_type="CTest")
     assert obj.pk == pk + 2
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        (None, None),
+        ("", None),
+        ("2014-10-01", datetime(2014, 10, 1).date()),
+        ("01-10-2014", datetime(2014, 10, 1).date()),
+        ("01-10-14", datetime(2014, 10, 1).date()),
+        ("01/10/2014", datetime(2014, 10, 1).date()),
+        ("01/10/14", datetime(2014, 10, 1).date()),
+    ],
+)
+def test_date_or_none(test_input, expected):
+    assert date_or_none(test_input) == expected
+
+
+def test_date_or_none_exception():
+    with pytest.raises(ValidationError) as excinfo:
+        date_or_none("2014-10-01T00:00:00")
+    assert "Date not in parsable format" in str(excinfo.value)

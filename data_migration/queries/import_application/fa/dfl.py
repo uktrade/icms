@@ -12,7 +12,7 @@ SELECT
     , ad.id imad_id
     , CASE x.proof_checked WHEN 'true' THEN 1 ELSE 0 END proof_checked
     , CASE x.deactivated_firearm WHEN 'DEACTIVATED_FIREARM' THEN 1 ELSE 0 END deactivated_firearm
-    , x.commodity_code
+    , x.commodity_code commodity_group_id
     , CASE x.know_bought_from WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END know_bought_from
     , x.additional_comments
     , x.cover_letter
