@@ -1,5 +1,6 @@
 import os
 
+import gunicorn
 from psycogreen.gevent import patch_psycopg
 
 ICMS_WEB_PORT = os.environ.get("ICMS_WEB_PORT", 8080)
@@ -12,6 +13,7 @@ worker_connections = f"{ICMS_WORKER_CONNECTIONS}"
 accesslog = "-"
 errorlog = "-"
 proc_name = "icms"
+gunicorn.SERVER_SOFTWARE = proc_name
 
 
 def post_fork(server, worker):
