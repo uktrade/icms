@@ -155,22 +155,15 @@ def create_import_contact(
                 _update_know_bought_from(application)
 
                 if application.status == application.Statuses.COMPLETED:
-                    return redirect(
-                        reverse(
-                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
-                        )
+                    url = reverse(
+                        "import:fa:provide-report", kwargs={"application_pk": application_pk}
+                    )
+                else:
+                    url = reverse(
+                        "import:fa:list-import-contacts", kwargs={"application_pk": application_pk}
                     )
 
-                return redirect(
-                    reverse(
-                        "import:fa:edit-import-contact",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "entity": entity,
-                            "contact_pk": import_contact.pk,
-                        },
-                    )
-                )
+                return redirect(url)
         else:
             form = form_class()
 
@@ -215,22 +208,16 @@ def edit_import_contact(
                 form.save()
 
                 if application.status == application.Statuses.COMPLETED:
-                    return redirect(
-                        reverse(
-                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
-                        )
+                    url = reverse(
+                        "import:fa:provide-report", kwargs={"application_pk": application_pk}
                     )
 
-                return redirect(
-                    reverse(
-                        "import:fa:edit-import-contact",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "entity": entity,
-                            "contact_pk": contact_pk,
-                        },
+                else:
+                    url = reverse(
+                        "import:fa:list-import-contacts", kwargs={"application_pk": application_pk}
                     )
-                )
+
+                return redirect(url)
 
         else:
             form = form_class(instance=person)
@@ -258,21 +245,29 @@ def delete_import_contact(
 
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.COMPLETED])
 
         contact = application.importcontact_set.get(pk=contact_pk)
 
-        if application.supplementary_info.reports.filter(bought_from=contact).exists():
-            messages.error(
-                request,
-                f"Cannot delete {contact} who is set as bought from in a supplementary report.",
+        if application.status == ImpExpStatus.COMPLETED:
+            if application.supplementary_info.reports.filter(bought_from=contact).exists():
+                messages.error(
+                    request,
+                    f"Cannot delete {contact} who is set as bought from in a supplementary report.",
+                )
+            else:
+                contact.delete()
+
+            return redirect(
+                reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
             )
+
         else:
             contact.delete()
 
-        return redirect(
-            reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
-        )
+            return redirect(
+                reverse("import:fa:list-import-contacts", kwargs={"application_pk": application_pk})
+            )
 
 
 @login_required
