@@ -16,8 +16,8 @@ urlpatterns = [
                         [
                             path(
                                 "manage/",
-                                views.list_import_contacts,
-                                name="list-import-contacts",
+                                views.manage_import_contacts,
+                                name="manage-import-contacts",
                             ),
                             path(
                                 "<entity>/",

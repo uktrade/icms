@@ -77,7 +77,6 @@ def test_edit_dfl_post_invalid(client, dfl_app_pk):
     assertFormError(response, "form", "contact", "You must enter this item")
     assertFormError(response, "form", "commodity_code", "You must enter this item")
     assertFormError(response, "form", "constabulary", "You must enter this item")
-    assertFormError(response, "form", "know_bought_from", "This field cannot be blank.")
 
 
 def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
@@ -99,7 +98,6 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
         "contact": importer_contact.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
-        "know_bought_from": False,
     }
     response = client.post(url, form_data)
 
@@ -115,7 +113,6 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     assert dfl_app.contact.pk == importer_contact.pk
     assert dfl_app.commodity_code == FirearmCommodity.EX_CHAPTER_93.value
     assert dfl_app.constabulary.pk == constabulary.pk
-    assert dfl_app.know_bought_from is False
 
 
 def test_add_goods_document_get(client, dfl_app_pk):
@@ -293,11 +290,16 @@ def test_submit_dfl_get(client, dfl_app_pk):
             "Contact",
             "Commodity Code",
             "Constabulary",
-            "Do you know who you plan to buy/obtain these items from?",
         ],
     )
 
     check_page_errors(errors, "Goods Certificates", ["Goods Certificate"])
+
+    check_page_errors(
+        errors,
+        "Details of who bought from",
+        ["Do you know who you plan to buy/obtain these items from?"],
+    )
 
 
 def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
@@ -325,11 +327,16 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
             "Contact",
             "Commodity Code",
             "Constabulary",
-            "Do you know who you plan to buy/obtain these items from?",
         ],
     )
 
     check_page_errors(errors, "Goods Certificates", ["Goods Certificate"])
+
+    check_page_errors(
+        errors,
+        "Details of who bought from",
+        ["Do you know who you plan to buy/obtain these items from?"],
+    )
 
     assertFormError(response, "form", "confirmation", "You must enter this item")
 
@@ -355,10 +362,16 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
         "contact": importer_contact.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
-        "know_bought_from": True,
     }
     edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
     client.post(edit_url, form_data)
+
+    # Save the know bought from to make the application valid.
+    form_data = {"know_bought_from": True}
+    client.post(
+        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": dfl_app_pk}),
+        form_data,
+    )
 
     # now we have a valid application submit the application again to see the know_bought_from error
     response = client.post(submit_url, form_data)
@@ -371,11 +384,15 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
 
     Create the main application
     create a document
+    Save the know bought from value
     submit the application
     """
 
     edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
     add_goods_url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
+    know_bought_from_url = reverse(
+        "import:fa:manage-import-contacts", kwargs={"application_pk": dfl_app_pk}
+    )
     submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
     dfl_countries = Country.objects.filter(
@@ -414,6 +431,10 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
 
     # Save the goods certificate
     client.post(add_goods_url, form_data)
+
+    # Save the know bought from
+    form_data = {"know_bought_from": False}
+    client.post(know_bought_from_url, form_data)
 
     form_data = {"confirmation": "I AGREE"}
     response = client.post(submit_url, form_data)

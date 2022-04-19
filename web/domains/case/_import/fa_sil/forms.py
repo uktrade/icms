@@ -10,11 +10,9 @@ from web.domains.country.models import Country
 from web.domains.firearms.models import ObsoleteCalibre
 from web.domains.template.models import Template
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput, RadioSelectInline
+from web.forms.widgets import DateInput, YesNoRadioSelectInline
 
 from . import models
-
-YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")))
 
 
 class FirearmSILFormBase(forms.ModelForm):
@@ -37,12 +35,10 @@ class FirearmSILFormBase(forms.ModelForm):
             "eu_single_market",
             "manufactured",
             "commodity_code",
-            "know_bought_from",
             "additional_comments",
         )
 
         widgets = {
-            "know_bought_from": YesNoRadioSelectInline,
             "military_police": YesNoRadioSelectInline,
             "eu_single_market": YesNoRadioSelectInline,
             "manufactured": YesNoRadioSelectInline,
@@ -61,7 +57,7 @@ class FirearmSILFormBase(forms.ModelForm):
         )
 
         # Bool fields are optional by default
-        for f in ["know_bought_from", "military_police", "eu_single_market", "manufactured"]:
+        for f in ["military_police", "eu_single_market", "manufactured"]:
             self.fields[f].required = True
 
 

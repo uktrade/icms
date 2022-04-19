@@ -101,7 +101,6 @@ def create_in_progress_fa_dfl_app(
         "consignment_country": consignment_country.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
-        "know_bought_from": False,
     }
     save_app_data(
         client=importer_client, view_name="import:fa-dfl:edit", app_pk=app_pk, form_data=form_data
@@ -122,6 +121,13 @@ def create_in_progress_fa_dfl_app(
         app_pk=app_pk,
         post_data=post_data,
     )
+
+    # Set the know_bought_from value
+    form_data = {"know_bought_from": False}
+    importer_client.post(
+        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
+    )
+
     dfl_app = DFLApplication.objects.get(pk=app_pk)
 
     return dfl_app
@@ -166,6 +172,13 @@ def create_in_progress_fa_oil_app(
         app_pk=app_pk,
         post_data=post_data,
     )
+
+    # Set the know_bought_from value
+    form_data = {"know_bought_from": False}
+    importer_client.post(
+        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
+    )
+
     oil_app = OpenIndividualLicenceApplication.objects.get(pk=app_pk)
 
     return oil_app
@@ -249,6 +262,12 @@ def create_in_progress_fa_sil_app(
         view_name="import:fa-sil:add-section5-document",
         app_pk=app_pk,
         post_data={},
+    )
+
+    # Set the know_bought_from value
+    form_data = {"know_bought_from": False}
+    importer_client.post(
+        reverse("import:fa:manage-import-contacts", kwargs={"application_pk": app_pk}), form_data
     )
 
     return sil_app

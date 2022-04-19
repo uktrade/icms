@@ -70,9 +70,7 @@ class DFLApplication(ImportApplication):
     goods_certificates = models.ManyToManyField(DFLGoodsCertificate, related_name="dfl_application")
 
     know_bought_from = models.BooleanField(
-        blank=False,
-        null=True,
-        verbose_name="Do you know who you plan to buy/obtain these items from?",
+        null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
     )
 
     def __str__(self):

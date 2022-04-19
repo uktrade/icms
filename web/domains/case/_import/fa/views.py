@@ -40,6 +40,7 @@ from web.models import (
 from web.types import AuthenticatedHttpRequest
 
 from .forms import (
+    ImportContactKnowBoughtFromForm,
     ImportContactLegalEntityForm,
     ImportContactPersonForm,
     UserImportCertificateForm,
@@ -98,7 +99,9 @@ def manage_constabulary_emails(
 
 
 @login_required
-def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+def manage_import_contacts(
+    request: AuthenticatedHttpRequest, *, application_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -109,6 +112,25 @@ def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: i
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
+        if request.method == "POST":
+            form = ImportContactKnowBoughtFromForm(data=request.POST, application=application)
+
+            if form.is_valid():
+                application.know_bought_from = form.cleaned_data["know_bought_from"]
+                application.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:manage-import-contacts",
+                        kwargs={"application_pk": application_pk},
+                    )
+                )
+        else:
+            form = ImportContactKnowBoughtFromForm(
+                initial={"know_bought_from": application.know_bought_from},
+                application=application,
+            )
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
@@ -116,6 +138,7 @@ def list_import_contacts(request: AuthenticatedHttpRequest, *, application_pk: i
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms & Ammunition - Contacts",
             "case_type": "import",
+            "form": form,
         }
 
         return render(request, "web/domains/case/import/fa/import-contacts/list.html", context)
@@ -160,7 +183,8 @@ def create_import_contact(
                     )
                 else:
                     url = reverse(
-                        "import:fa:list-import-contacts", kwargs={"application_pk": application_pk}
+                        "import:fa:manage-import-contacts",
+                        kwargs={"application_pk": application_pk},
                     )
 
                 return redirect(url)
@@ -214,7 +238,8 @@ def edit_import_contact(
 
                 else:
                     url = reverse(
-                        "import:fa:list-import-contacts", kwargs={"application_pk": application_pk}
+                        "import:fa:manage-import-contacts",
+                        kwargs={"application_pk": application_pk},
                     )
 
                 return redirect(url)
@@ -266,7 +291,9 @@ def delete_import_contact(
             contact.delete()
 
             return redirect(
-                reverse("import:fa:list-import-contacts", kwargs={"application_pk": application_pk})
+                reverse(
+                    "import:fa:manage-import-contacts", kwargs={"application_pk": application_pk}
+                )
             )
 
 

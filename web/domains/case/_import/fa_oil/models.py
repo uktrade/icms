@@ -26,7 +26,9 @@ class OpenIndividualLicenceApplication(ImportApplication):
     section1 = models.BooleanField(verbose_name="Section 1", default=True)
     section2 = models.BooleanField(verbose_name="Section 2", default=True)
 
-    know_bought_from = models.BooleanField(null=True)
+    know_bought_from = models.BooleanField(
+        null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
+    )
 
     user_imported_certificates = models.ManyToManyField(
         UserImportCertificate, related_name="oil_application"
