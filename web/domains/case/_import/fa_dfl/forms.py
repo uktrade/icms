@@ -25,7 +25,6 @@ class PrepareDFLForm(forms.ModelForm):
             "contact",
             "commodity_code",
             "constabulary",
-            "know_bought_from",
         )
 
         help_texts = {
@@ -46,15 +45,6 @@ class PrepareDFLForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["proof_checked"].required = True
-        self.fields["know_bought_from"].required = True
-
-        # The default label for unknown is "Unknown"
-        self.fields["know_bought_from"].widget.choices = [
-            ("unknown", "---------"),
-            ("true", "Yes"),
-            ("false", "No"),
-        ]
-
         self.fields["contact"].queryset = application_contacts(self.instance)
 
         countries = Country.objects.filter(

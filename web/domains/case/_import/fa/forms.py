@@ -1,9 +1,32 @@
 from django import forms
 
 from web.domains.file.utils import ICMSFileField
-from web.forms.widgets import DateInput
+from web.forms.widgets import DateInput, YesNoRadioSelectInline
 
 from .models import ImportContact, UserImportCertificate
+from .types import FaImportApplication
+
+
+class ImportContactKnowBoughtFromForm(forms.Form):
+    know_bought_from = forms.NullBooleanField(
+        label="Do you know who you plan to buy/obtain these items from?",
+        widget=YesNoRadioSelectInline,
+    )
+
+    def __init__(self, *args, application: FaImportApplication, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.app = application
+
+    def clean_know_bought_from(self):
+        bought_from = self.cleaned_data["know_bought_from"]
+
+        if bought_from is None:
+            raise forms.ValidationError("This field is required.")
+
+        if bought_from is False and self.app.importcontact_set.exists():
+            raise forms.ValidationError("Please remove contacts before setting this to No.")
+
+        return bought_from
 
 
 class ImportContactPersonForm(forms.ModelForm):

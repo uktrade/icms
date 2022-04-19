@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects, assertTemplateUsed
+from pytest_django.asserts import assertFormError, assertRedirects, assertTemplateUsed
 
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
@@ -27,6 +27,7 @@ def dfl_app(test_import_user, importer, office):
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.IN_PROGRESS,
+        know_bought_from=False,
     )
 
     app.tasks.create(task_type=Task.TaskType.PREPARE)
@@ -45,11 +46,13 @@ def dfl_app(test_import_user, importer, office):
     return app
 
 
-class TestListImportContactsView:
+class TestManageImportContactsView:
     @pytest.fixture(autouse=True)
     def setup(self, dfl_app):
         self.app = dfl_app
-        self.url = reverse("import:fa:list-import-contacts", kwargs={"application_pk": self.app.pk})
+        self.url = reverse(
+            "import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}
+        )
 
     def test_permission(self, icms_admin_client, importer_client, exporter_client):
         response = icms_admin_client.get(self.url)
@@ -60,6 +63,36 @@ class TestListImportContactsView:
 
         response = exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_successful(self, importer_client):
+        assert self.app.know_bought_from is False
+
+        response = importer_client.post(self.url, data={"know_bought_from": True})
+
+        assertRedirects(
+            response,
+            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
+            HTTPStatus.FOUND,
+        )
+
+        self.app.refresh_from_db()
+        assert self.app.know_bought_from is True
+
+    def test_form_errors(self, importer_client):
+        # Test field is required
+        response = importer_client.post(self.url, data={"know_bought_from": ""})
+        assertFormError(response, "form", "know_bought_from", "This field is required.")
+
+        # Test setting to false errors when there are import contacts.
+        self.app.know_bought_from = True
+        self.app.save()
+        response = importer_client.post(self.url, data={"know_bought_from": False})
+        assertFormError(
+            response,
+            "form",
+            "know_bought_from",
+            "Please remove contacts before setting this to No.",
+        )
 
 
 class TestCreateImportContactView:
@@ -111,7 +144,7 @@ class TestCreateImportContactView:
 
         assertRedirects(
             response,
-            reverse("import:fa:list-import-contacts", kwargs={"application_pk": self.app.pk}),
+            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
             HTTPStatus.FOUND,
         )
 
@@ -200,7 +233,7 @@ class TestEditImportContactView:
 
         assertRedirects(
             response,
-            reverse("import:fa:list-import-contacts", kwargs={"application_pk": self.app.pk}),
+            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
             HTTPStatus.FOUND,
         )
 
@@ -263,7 +296,7 @@ class TestDeleteImportContactView:
 
         assertRedirects(
             response,
-            reverse("import:fa:list-import-contacts", kwargs={"application_pk": self.app.pk}),
+            reverse("import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}),
             status_code=HTTPStatus.FOUND,
         )
 

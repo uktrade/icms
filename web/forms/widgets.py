@@ -23,6 +23,8 @@ class RadioSelectInline(RadioSelect):
     display_inline = True
 
 
+YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")))
+
 #  class Textarea(Textarea):
 #      template_name = 'forms/widgets/textarea.html'
 

@@ -25,22 +25,12 @@ class PrepareOILForm(forms.ModelForm):
             "origin_country",
             "consignment_country",
             "commodity_code",
-            "know_bought_from",
         )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["know_bought_from"].required = True
 
         self.fields["contact"].queryset = application_contacts(self.instance)
-
-        # The default label for unknown is "Unknown"
-        self.fields["know_bought_from"].widget.choices = [
-            ("unknown", "---------"),
-            ("true", "Yes"),
-            ("false", "No"),
-        ]
-
         self.fields["origin_country"].empty_label = None
         self.fields["consignment_country"].empty_label = None
 

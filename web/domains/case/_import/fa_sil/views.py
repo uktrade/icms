@@ -10,7 +10,10 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case import forms as case_forms
-from web.domains.case._import.fa.forms import UserImportCertificateForm
+from web.domains.case._import.fa.forms import (
+    ImportContactKnowBoughtFromForm,
+    UserImportCertificateForm,
+)
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.shared import ImpExpStatus
@@ -168,19 +171,22 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     errors.add(application_details_errors)
 
     # Check know bought from
-    if application.know_bought_from and not application.importcontact_set.exists():
-        page_errors = PageErrors(
-            page_name="Details of who bought from",
-            url=reverse(
-                "import:fa:list-import-contacts", kwargs={"application_pk": application.pk}
-            ),
-        )
+    bought_from_errors = PageErrors(
+        page_name="Details of who bought from",
+        url=reverse("import:fa:manage-import-contacts", kwargs={"application_pk": application.pk}),
+    )
 
-        page_errors.add(
+    kbf_form = ImportContactKnowBoughtFromForm(
+        data={"know_bought_from": application.know_bought_from}, application=application
+    )
+    create_page_errors(kbf_form, bought_from_errors)
+
+    if application.know_bought_from and not application.importcontact_set.exists():
+        bought_from_errors.add(
             FieldError(field_name="Person", messages=["At least one person must be added"])
         )
 
-        errors.add(page_errors)
+    errors.add(bought_from_errors)
 
     # Goods validation
     if application.section1 and not application.goods_section1.filter(is_active=True).exists():

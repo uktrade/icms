@@ -95,7 +95,9 @@ class SILApplication(ImportApplication):
     )
 
     # Details of who bought from
-    know_bought_from = models.BooleanField(null=True)
+    know_bought_from = models.BooleanField(
+        null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
+    )
 
     # misc
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
