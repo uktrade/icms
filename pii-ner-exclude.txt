@@ -1396,3 +1396,5 @@ Section 58(2
 Section 2 or Section 5
 COVER_FIREARMS_SEC5"
 Save
+report__supplementary_info__imad
+XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS

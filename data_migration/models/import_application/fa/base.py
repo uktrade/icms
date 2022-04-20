@@ -168,9 +168,7 @@ class UserImportCertificate(MigrationBase):
                 "certificate_type": FA_TYPE_CODES[certificate_type],
                 "constabulary_id": constabulary_id,
                 "date_issued": date_or_none(date_issued),
-                "date_issued_str": date_issued,
                 "expiry_date": date_or_none(expiry_date),
-                "expiry_date_str": expiry_date,
             }
         )
 
@@ -402,6 +400,11 @@ class SupplementaryReportFirearmBase(MigrationBase):
     is_manual = models.BooleanField(default=False)
     is_upload = models.BooleanField(default=False)
     is_no_firearm = models.BooleanField(default=False)
+    goods_certificate_legacy_id = models.PositiveIntegerField(null=True)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["goods_certificate_legacy_id"]
 
     @classmethod
     def parse_xml(cls, batch: list[Tuple[int, str]]) -> list["SupplementaryReportFirearmBase"]:
@@ -421,14 +424,20 @@ class SupplementaryReportFirearmBase(MigrationBase):
         for parent_pk, xml in batch:
             xml_tree = etree.fromstring(xml)
             goods_xml_list = xml_tree.xpath("GOODS_LINE")
-            for goods_xml in goods_xml_list:
+            for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
                 reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
                 if reporting_mode == "MANUAL":
                     report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
                     for report_firearm_xml in report_firearm_xml_list:
-                        model_list.append(cls.parse_manual_xml(parent_pk, report_firearm_xml))
+                        obj = cls.parse_manual_xml(parent_pk, report_firearm_xml)
+                        obj.goods_certificate_legacy_id = ordinal
+                        model_list.append(obj)
                 elif reporting_mode == "UPLOAD":
-                    model_list.append(cls(report_id=parent_pk, is_upload=True))
+                    model_list.append(
+                        cls(
+                            report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal
+                        )
+                    )
                     # TODO ICMSLST-1496: Report firearms need to connect to documents
                     # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
                 else:

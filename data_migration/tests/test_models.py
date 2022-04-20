@@ -260,3 +260,21 @@ def test_oil_application_parse_xml():
     assert f4.is_manual is True
     assert (f4.is_upload and f4.is_no_firearm) is False
     assert f4.report_id == 3
+
+
+def test_dfl_goods_parse_xml():
+    goods = dm.DFLGoodsCertificate.parse_xml([(1, xml_data.dfl_goods_cert)])
+    assert len(goods) == 2
+    gc1, gc2 = goods
+
+    assert gc1.dfl_application_id == 1
+    assert gc1.deactivated_certificate_reference == "REF A"
+    assert gc1.goods_description == "Test Commodity A"
+    assert gc1.issuing_country_id == 1
+    assert gc1.target_id == 1234
+
+    assert gc2.dfl_application_id == 1
+    assert gc2.deactivated_certificate_reference == "REF B"
+    assert gc2.goods_description == "Test Commodity B"
+    assert gc2.issuing_country_id == 2
+    assert gc2.target_id == 5678
