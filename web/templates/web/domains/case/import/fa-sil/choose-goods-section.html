@@ -17,44 +17,58 @@
 
 {% block main_content %}
   <h3>Add goods</h3>
+  {% if has_goods %}
+    <p>Add Licence for:</p>
 
-  <p>Add Licence for:</p>
+    <ul class="big-menu-out-prompt">
+      {% if process.section1 %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section1'}) }}">
+            Section 1
+          </a>
+        </li>
+      {% endif %}
 
-  <ul class="big-menu-out-prompt">
-    <li>
-      <a
-        href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section1'}) }}">
-        Section 1
-      </a>
-    </li>
+      {% if process.section2 %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section2'}) }}">
+            Section 2
+          </a>
+        </li>{% endif %}
 
-    <li>
-      <a
-        href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section2'}) }}">
-        Section 2
-      </a>
-    </li>
+      {% if process.section5 %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5'}) }}">
+            Section 5
+          </a>
+        </li>
+      {% endif %}
 
-    <li>
-      <a
-      href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section5'}) }}">
-        Section 5
-      </a>
-    </li>
+      {% if process.section58_obsolete %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-obsolete'}) }}">
+            Section 58(2) - Obsolete Calibre
+          </a>
+        </li>
+      {% endif %}
 
-    <li>
-      <a
-      href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-obsolete'}) }}">
-        Section 58(2) - Obsolete Calibre
-      </a>
-    </li>
-
-    <li>
-      <a
-      href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-other'}) }}">
-        Section 58(2) - Other
-      </a>
-    </li>
-  </ul>
+      {% if process.section58_other %}
+        <li>
+          <a
+            href="{{ icms_url('import:fa-sil:add-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-other'}) }}">
+            Section 58(2) - Other
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  {% else %}
+    <div class="info-box info-box-warning">
+      You must select at least one section before you can add licences for goods items.
+    </div>
+  {% endif %}
 
 {% endblock %}
