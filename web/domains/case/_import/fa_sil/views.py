@@ -394,23 +394,26 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
 
 @login_required
 def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
-    with transaction.atomic():
-        application: models.SILApplication = get_object_or_404(
-            models.SILApplication.objects.select_for_update(), pk=application_pk
-        )
-        check_application_permission(application, request.user, "import")
+    application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
+    check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+    task = get_application_current_task(application, "import", Task.TaskType.PREPARE, False)
 
-        context = {
-            "process_template": "web/domains/case/import/partials/process.html",
-            "process": application,
-            "task": task,
-            "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
-            "case_type": "import",
-        }
+    has_goods = any(
+        getattr(application, s)
+        for s in ("section1", "section2", "section5", "section58_obsolete", "section58_other")
+    )
 
-        return render(request, "web/domains/case/import/fa-sil/choose-goods-section.html", context)
+    context = {
+        "process_template": "web/domains/case/import/partials/process.html",
+        "process": application,
+        "task": task,
+        "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
+        "case_type": "import",
+        "has_goods": has_goods,
+    }
+
+    return render(request, "web/domains/case/import/fa-sil/choose-goods-section.html", context)
 
 
 @login_required
