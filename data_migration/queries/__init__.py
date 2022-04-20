@@ -77,7 +77,14 @@ ia_source_target = source_target_list(
         "ImportApplication",
         "ImportContact",
         "DFLApplication",
+        "DFLGoodsCertificate",
+        "DFLSupplementaryInfo",
+        "DFLSupplementaryReport",
+        "DFLSupplementaryReportFirearm",
         "OpenIndividualLicenceApplication",
+        "OILSupplementaryInfo",
+        "OILSupplementaryReport",
+        "OILSupplementaryReportFirearm",
         "WoodQuotaApplication",
         # "WoodQuotaChecklist", TODO ICMSLST-1510
         "TextilesApplication",
@@ -89,12 +96,20 @@ ia_source_target = source_target_list(
 
 ia_m2m = [
     M2M(
-        dm.UserImportCertificate, web.OpenIndividualLicenceApplication, "user_imported_certificates"
+        dm.DFLGoodsCertificate,
+        web.DFLApplication,
+        "goods_certificates",
+    ),
+    M2M(
+        dm.UserImportCertificate,
+        web.OpenIndividualLicenceApplication,
+        "user_imported_certificates",
     ),
 ]
 
 ia_xml = [
     XML(dm.DFLApplication, "bought_from_details_xml", dm.ImportContact),
+    XML(dm.DFLApplication, "fa_goods_certs_xml", dm.DFLGoodsCertificate),
     XML(dm.OpenIndividualLicenceApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.OpenIndividualLicenceApplication, "fa_certs_xml", dm.UserImportCertificate),
     XML(dm.OILSupplementaryInfo, "supplementary_report_xml", dm.OILSupplementaryReport),

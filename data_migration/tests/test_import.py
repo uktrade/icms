@@ -192,6 +192,7 @@ oil_data_source_target = {
         (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
+        (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
         (dm.UserImportCertificate, web.UserImportCertificate),
     ],
 }
@@ -281,11 +282,20 @@ def test_import_oil_data():
             factory.UserImportCertificateFactory(
                 target=ft, import_application=ia, certificate_type="registered"
             )
-            sr = factory.OILSupplementaryInfoFactory(
+            si = factory.OILSupplementaryInfoFactory(
                 imad=ia, supplementary_report_xml=xml_data.sr_manual_xml
             )
             dm.OILSupplementaryReport.objects.bulk_create(
-                dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_manual_xml)])
+                dm.OILSupplementaryReport.parse_xml([(si.pk, xml_data.sr_manual_xml)])
+            )
+            sr = dm.OILSupplementaryReport.objects.order_by("-pk").first()
+            dm.OILSupplementaryReportFirearm.objects.create(
+                report=sr,
+                is_manual=True,
+                goods_certificate_legacy_id=1,
+                serial_number=i,
+                model=i,
+                calibre=i,
             )
 
     call_command("import_v1_data")
@@ -333,11 +343,26 @@ dfl_data_source_target = {
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
         (dm.Process, web.Process),
+        (dm.File, web.File),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
         (dm.DFLApplication, web.DFLApplication),
+        (dm.DFLGoodsCertificate, web.DFLGoodsCertificate),
         (dm.DFLSupplementaryInfo, web.DFLSupplementaryInfo),
+        (dm.DFLSupplementaryReport, web.DFLSupplementaryReport),
+        (dm.DFLSupplementaryReportFirearm, web.DFLSupplementaryReportFirearm),
     ],
+}
+
+
+dfl_data_m2m = {
+    "import_application": [
+        (
+            dm.DFLGoodsCertificate,
+            web.DFLApplication,
+            "goods_certificates",
+        )
+    ]
 }
 
 
@@ -345,7 +370,7 @@ dfl_data_source_target = {
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, dfl_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_M2M, dfl_data_m2m)
 def test_import_dfl_data():
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
@@ -353,7 +378,7 @@ def test_import_dfl_data():
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
 
-    factory.CountryFactory(id=1000, name="My Test Country")
+    c = factory.CountryFactory(id=1000, name="My Test Country")
 
     cg = dm.CountryGroup.objects.create(country_group_id="DFL", name="DFL")
 
@@ -377,9 +402,29 @@ def test_import_dfl_data():
 
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
-        factory.DFLApplicationFactory(pk=pk, imad=ia)
+        dfl = factory.DFLApplicationFactory(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(
             dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
+        )
+        ft = dm.FileTarget.objects.create()
+        factory.FileFactory(created_by_id=user_pk, target=ft)
+        factory.DFLGoodsCertificateFactory(
+            target=ft, dfl_application=dfl, legacy_id=1, issuing_country=c
+        )
+        si = factory.DFLSupplementaryInfoFactory(imad=ia)
+        sr = dm.DFLSupplementaryReport.objects.create(
+            supplementary_info=si,
+            transport="AIR",
+            date_received=timezone.datetime(2020, 1, 1).date(),
+            bought_from_legacy_id=1,
+        )
+        dm.DFLSupplementaryReportFirearm.objects.create(
+            report=sr,
+            is_manual=True,
+            goods_certificate_legacy_id=1,
+            serial_number=i,
+            model=i,
+            calibre=i,
         )
 
     call_command("import_v1_data")
@@ -389,8 +434,22 @@ def test_import_dfl_data():
 
     dfl1, dfl2 = dfl_apps
 
-    dfl1_ic = dfl1.importcontact_set.all()
-    assert dfl1_ic.count() == 2
+    assert dfl1.goods_certificates.count() == 1
+    assert dfl2.goods_certificates.count() == 1
 
-    dfl2_ic = dfl2.importcontact_set.all()
-    assert dfl2_ic.count() == 2
+    gc1 = dfl1.goods_certificates.first()
+    gc2 = dfl2.goods_certificates.first()
+
+    sr1 = dfl1.supplementary_info.reports.all()
+    assert sr1.count() == 1
+    assert sr1.first().firearms.count() == 1
+
+    rf1 = sr1.first().firearms.first()
+    assert rf1.goods_certificate == gc1
+
+    sr2 = dfl2.supplementary_info.reports.all()
+    assert sr2.count() == 1
+    assert sr2.first().firearms.count() == 1
+
+    rf2 = sr2.first().firearms.first()
+    assert rf2.goods_certificate == gc2

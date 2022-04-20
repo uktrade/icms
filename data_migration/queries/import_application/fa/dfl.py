@@ -16,8 +16,6 @@ SELECT
     , CASE x.know_bought_from WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END know_bought_from
     , x.additional_comments
     , x.cover_letter
-    , x.commodities_xml
-    , x.constabulary_certs_xml
     , x.fa_authorities_xml
     , x.bought_from_details_xml
     , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml
@@ -25,6 +23,7 @@ SELECT
     , x.no_report_reason
     , CASE WHEN x.completed_by_id IS NOT NULL THEN 2 ELSE NULL END completed_by_id
     , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
+    , XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS", XMLCONCAT(commodities_xml, fa_certs_xml))) fa_goods_certs_xml
   FROM impmgr.import_application_details ad,
     XMLTABLE('/*'
     PASSING ad.xml_data
@@ -35,7 +34,7 @@ SELECT
       , know_bought_from VARCHAR2(10) PATH '/IMA/APP_DETAILS/SH_DETAILS/IS_SELLER_HOLDER_PROVIDED[not(fox-error)]/text()'
       , additional_comments VARCHAR2(4000) PATH '/IMA/APP_DETAILS/FA_DETAILS/ADDITIONAL_INFORMATION[not(fox-error)]/text()'
       , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/COMMODITY_LIST'
-      , constabulary_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
+      , fa_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
       , fa_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_AUTHORITIES/AUTHORITY_LIST'
       , bought_from_details_xml XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
       , no_report_reason VARCHAR2(4000) PATH '/IMA/FA_REPORTS/NO_FIREARMS_REPORTED_DETAILS/NO_FIREARMS_REPORTED_REASON[not(fox-error)]/text()'
