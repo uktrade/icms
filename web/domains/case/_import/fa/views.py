@@ -299,6 +299,11 @@ def delete_import_contact(
 
 @login_required
 def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
+    """View to manage common certificates across all firearms applications.
+
+    Extended to include application specific certificates for FA-SIL applications.
+    """
+
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
@@ -313,6 +318,19 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             is_active=True
         ).annotate(selected=selected_verified)
 
+        extra_context = {}
+
+        # FA-SIL specific context
+        if application.process_type == ProcessTypes.FA_SIL:
+            verified_section5 = application.importer.section5_authorities.currently_active()
+            available_verified_section5 = verified_section5.exclude(
+                pk__in=application.verified_section5.all()
+            )
+            extra_context["user_section5"] = application.user_section5.filter(is_active=True)
+            extra_context["verified_section5"] = verified_section5
+            extra_context["available_verified_section5"] = available_verified_section5
+            extra_context["selected_section5"] = application.verified_section5.all()
+
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
@@ -321,7 +339,7 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             "verified_certificates": verified_certificates,
             "page_title": "Firearms and Ammunition - Certificates",
             "case_type": "import",
-        }
+        } | extra_context
 
         return render(request, "web/domains/case/import/fa/certificates/manage.html", context)
 
