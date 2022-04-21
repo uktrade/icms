@@ -1399,3 +1399,8 @@ Save
 report__supplementary_info__imad
 XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS
 Section 5 Authority Documents
+SILSupplementaryReport
+M2M
+x.section58_other
+x.other_description
+XMLTYPE.getClobVal(fa_certs_xml

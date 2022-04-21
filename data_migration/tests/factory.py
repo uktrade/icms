@@ -7,6 +7,17 @@ from django.utils import timezone
 from data_migration import models
 
 
+class FileFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.File
+
+    filename = factory.fuzzy.FuzzyText(length=6)
+    content_type = factory.fuzzy.FuzzyText(length=6)
+    file_size = random.randint(1, 100000)
+    path = factory.fuzzy.FuzzyText(length=6)
+    created_datetime = timezone.datetime.now()
+
+
 class CountryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Country
@@ -84,25 +95,11 @@ class ImportApplicationFactory(factory.django.DjangoModelFactory):
     application_type = factory.SubFactory(ImportApplicationTypeFactory)
 
 
-class WoodQuotaApplicationFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.WoodQuotaApplication
-
-    imad = factory.SubFactory(ImportApplicationFactory)
-
-
 class ImportContactFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.ImportContact
 
     import_application = factory.SubFactory(ImportApplicationFactory)
-
-
-class OILApplicationFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.OpenIndividualLicenceApplication
-
-    imad = factory.SubFactory(ImportApplicationFactory)
 
 
 class OILSupplementaryInfoFactory(factory.django.DjangoModelFactory):
@@ -119,29 +116,11 @@ class OILSupplementaryReportFactory(factory.django.DjangoModelFactory):
     supplementary_info = factory.SubFactory(OILSupplementaryInfoFactory)
 
 
-class DFLApplicationFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.DFLApplication
-
-    imad = factory.SubFactory(ImportApplicationFactory)
-
-
 class DFLSupplementaryInfoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.DFLSupplementaryInfo
 
     imad = factory.SubFactory(ImportApplicationFactory)
-
-
-class FileFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.File
-
-    filename = factory.fuzzy.FuzzyText(length=6)
-    content_type = factory.fuzzy.FuzzyText(length=6)
-    file_size = random.randint(1, 100000)
-    path = factory.fuzzy.FuzzyText(length=6)
-    created_datetime = timezone.datetime.now()
 
 
 class DFLGoodsCertificateFactory(factory.django.DjangoModelFactory):

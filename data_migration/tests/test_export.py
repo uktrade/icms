@@ -202,7 +202,7 @@ def test_extract_xml(mock_connect):
         )
 
         models.ImportApplicationLicence.objects.create(imad=ia, status="AC")
-        factory.OILApplicationFactory(pk=pk, imad=ia)
+        models.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 

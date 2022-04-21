@@ -29,7 +29,6 @@ class DFLApplication(FirearmBase):
     deactivated_firearm = models.BooleanField(default=True)
     proof_checked = models.BooleanField(default=False)
     constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
-    fa_goods_certs_xml = models.TextField(null=True)
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
@@ -61,7 +60,7 @@ class DFLGoodsCertificate(MigrationBase):
         values = cls.get_values() + ["file_ptr_id"]
         sub_query = File.objects.filter(target_id=OuterRef("target_id"))
 
-        # Exclude unsubmitted applications where reference, constabulary or expiry_date are null
+        # Exclude unsubmitted applications where goods description, reference or issuing country are null
         exclude_query = Q(dfl_application__imad__submit_datetime__isnull=True) & Q(
             Q(goods_description__isnull=True)
             | Q(deactivated_certificate_reference__isnull=True)

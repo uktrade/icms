@@ -196,7 +196,7 @@ def test_import_application_get_data_export():
 def test_wood_application_get_data_export():
     process = factory.ProcessFactory(ima_id=1)
     ia = factory.ImportApplicationFactory(ima=process)
-    wood = factory.WoodQuotaApplicationFactory(imad=ia)
+    wood = dm.WoodQuotaApplication.objects.create(imad=ia)
     data = {k: None for k in wood.get_values()}
     result = wood.data_export(data)
 

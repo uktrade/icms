@@ -150,7 +150,7 @@ def test_import_wood_application_data():
         if status == "COMPLETE":
             dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
-        factory.WoodQuotaApplicationFactory(pk=pk, imad=ia)
+        dm.WoodQuotaApplication.objects.create(pk=pk, imad=ia)
 
     call_command("import_v1_data")
 
@@ -193,18 +193,7 @@ oil_data_source_target = {
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
         (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
-        (dm.UserImportCertificate, web.UserImportCertificate),
     ],
-}
-
-oil_data_m2m = {
-    "import_application": [
-        (
-            dm.UserImportCertificate,
-            web.OpenIndividualLicenceApplication,
-            "user_imported_certificates",
-        )
-    ]
 }
 
 
@@ -212,7 +201,7 @@ oil_data_m2m = {
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, oil_data_m2m)
+@mock.patch.dict(DATA_TYPE_M2M, {})
 def test_import_oil_data():
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
@@ -239,7 +228,7 @@ def test_import_oil_data():
             submit_datetime=None if i == 0 else timezone.now(),
         )
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
-        factory.OILApplicationFactory(pk=pk, imad=ia)
+        dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(
             dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
         )
@@ -251,37 +240,7 @@ def test_import_oil_data():
             dm.OILSupplementaryReport.objects.bulk_create(
                 dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_upload_xml)])
             )
-            ft1 = dm.FileTarget.objects.create()
-            factory.UserImportCertificateFactory(
-                target=ft1, import_application=ia, certificate_type="registered"
-            )
-            ft2 = dm.FileTarget.objects.create()
-            factory.FileFactory(created_by_id=user_pk, target=ft2)
-            factory.UserImportCertificateFactory(
-                target=ft2, import_application=ia, certificate_type="registered", expiry_date=None
-            )
-            ft3 = dm.FileTarget.objects.create()
-            factory.FileFactory(created_by_id=user_pk, target=ft3)
-            factory.UserImportCertificateFactory(
-                target=ft3, import_application=ia, certificate_type="registered", constabulary=None
-            )
-            ft4 = dm.FileTarget.objects.create()
-            factory.FileFactory(created_by_id=user_pk, target=ft4)
-            factory.UserImportCertificateFactory(
-                target=ft4, import_application=ia, certificate_type="registered", reference=None
-            )
-            ft5 = dm.FileTarget.objects.create()
-            factory.FileFactory(created_by_id=user_pk, target=ft5)
-            factory.UserImportCertificateFactory(
-                target=ft5, import_application=ia, certificate_type="registered", reference="ABC"
-            )
         else:
-            ft = dm.FileTarget.objects.create()
-            factory.FileFactory(created_by_id=user_pk, target=ft)
-
-            factory.UserImportCertificateFactory(
-                target=ft, import_application=ia, certificate_type="registered"
-            )
             si = factory.OILSupplementaryInfoFactory(
                 imad=ia, supplementary_report_xml=xml_data.sr_manual_xml
             )
@@ -325,10 +284,6 @@ def test_import_oil_data():
 
     assert oil2_ic.filter(pk=oil2_sr1.bought_from_id).exists()
     assert oil2_sr2.bought_from_id is None
-
-    assert oil1.user_imported_certificates.count() == 1
-    assert oil1.user_imported_certificates.filter(reference="ABC").count() == 1
-    assert oil2.user_imported_certificates.count() == 1
 
 
 dfl_data_source_target = {
@@ -387,7 +342,7 @@ def test_import_dfl_data():
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk + 7)
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_DFL, ima_id=pk + 7)
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -402,7 +357,7 @@ def test_import_dfl_data():
 
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
-        dfl = factory.DFLApplicationFactory(pk=pk, imad=ia)
+        dfl = dm.DFLApplication.objects.create(pk=pk, imad=ia)
         dm.ImportContact.objects.bulk_create(
             dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
         )
@@ -453,3 +408,129 @@ def test_import_dfl_data():
 
     rf2 = sr2.first().firearms.first()
     assert rf2.goods_certificate == gc2
+
+
+uic_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+        (dm.Constabulary, web.Constabulary),
+        (dm.File, web.File),
+    ],
+    "import_application": [
+        (dm.ImportApplicationType, web.ImportApplicationType),
+        (dm.Process, web.Process),
+        (dm.ImportApplication, web.ImportApplication),
+        (dm.ImportContact, web.ImportContact),
+        (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
+        (dm.SILApplication, web.SILApplication),
+        (dm.UserImportCertificate, web.UserImportCertificate),
+    ],
+}
+
+uic_data_m2m = {
+    "import_application": [
+        (
+            dm.UserImportCertificate,
+            web.OpenIndividualLicenceApplication,
+            "user_imported_certificates",
+        ),
+        (
+            dm.UserImportCertificate,
+            web.SILApplication,
+            "user_imported_certificates",
+        ),
+    ]
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, uic_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, uic_data_m2m)
+def test_import_user_import_certificate_data():
+    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
+    dm.User.objects.create(id=user_pk, username="test_user")
+    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
+    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
+    factory.CountryFactory(id=1000, name="My Test Country")
+    cg = dm.CountryGroup.objects.create(country_group_id="OIL", name="OIL")
+
+    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
+    pk_range = list(range(process_pk, process_pk + 2))
+    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+
+    for i, pk in enumerate(pk_range):
+        process = factory.ProcessFactory(
+            pk=pk,
+            process_type=web.ProcessTypes.FA_OIL if i == 0 else web.ProcessTypes.FA_SIL,
+            ima_id=pk + 7,
+        )
+
+        ia = factory.ImportApplicationFactory(
+            pk=pk,
+            ima=process,
+            status="IN_PROGRESS",
+            imad_id=pk + 7,
+            application_type=iat,
+            created_by_id=user_pk,
+            last_updated_by_id=user_pk,
+            importer_id=importer_pk,
+            submit_datetime=None if i == 0 else timezone.now(),
+        )
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
+
+        if i == 0:
+            dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
+
+            ft1 = dm.FileTarget.objects.create()
+            factory.UserImportCertificateFactory(
+                target=ft1, import_application=ia, certificate_type="registered"
+            )
+            ft2 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft2)
+            factory.UserImportCertificateFactory(
+                target=ft2, import_application=ia, certificate_type="registered", expiry_date=None
+            )
+            ft3 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft3)
+            factory.UserImportCertificateFactory(
+                target=ft3, import_application=ia, certificate_type="registered", constabulary=None
+            )
+            ft4 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft4)
+            factory.UserImportCertificateFactory(
+                target=ft4, import_application=ia, certificate_type="registered", reference=None
+            )
+            ft5 = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft5)
+            factory.UserImportCertificateFactory(
+                target=ft5, import_application=ia, certificate_type="registered", reference="ABC"
+            )
+
+        else:
+            dm.SILApplication.objects.create(pk=pk, imad=ia)
+
+            ft = dm.FileTarget.objects.create()
+            factory.FileFactory(created_by_id=user_pk, target=ft)
+
+            factory.UserImportCertificateFactory(
+                target=ft, import_application=ia, certificate_type="registered", reference="DEF"
+            )
+
+    call_command("import_v1_data")
+
+    assert web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).count() == 1
+    oil = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).first()
+    assert oil.user_imported_certificates.count() == 1
+    assert oil.user_imported_certificates.filter(reference="ABC").count() == 1
+
+    assert web.SILApplication.objects.filter(pk__in=pk_range).count() == 1
+    sil = web.SILApplication.objects.filter(pk__in=pk_range).first()
+    assert sil.user_imported_certificates.count() == 1
+    assert sil.user_imported_certificates.filter(reference="DEF").count() == 1

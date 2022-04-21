@@ -79,7 +79,7 @@ class SupplementaryInfoBase(models.Model):
     )
 
     no_report_reason = models.CharField(
-        max_length=1000,
+        max_length=4000,
         null=True,
         blank=True,
         verbose_name=(

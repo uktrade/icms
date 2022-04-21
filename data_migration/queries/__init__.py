@@ -60,6 +60,7 @@ ref_m2m = [
 ia_query_model = [
     QueryModel(import_application.fa_file_target, dm.FileTarget),
     QueryModel(import_application.fa_certificates, dm.File),
+    QueryModel(import_application.sil_application, dm.SILApplication),
     QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
     QueryModel(import_application.wood_application, dm.WoodQuotaApplication),
@@ -76,6 +77,9 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "SILApplication",
+        "SILSupplementaryInfo",
+        "SILSupplementaryReport",
         "DFLApplication",
         "DFLGoodsCertificate",
         "DFLSupplementaryInfo",
@@ -108,8 +112,17 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    XML(dm.SILApplication, "bought_from_details_xml", dm.ImportContact),
+    XML(dm.SILApplication, "fa_certs_xml", dm.UserImportCertificate),
+    XML(dm.SILSupplementaryInfo, "supplementary_report_xml", dm.SILSupplementaryReport),
     XML(dm.DFLApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.DFLApplication, "fa_goods_certs_xml", dm.DFLGoodsCertificate),
+    XML(dm.DFLSupplementaryInfo, "supplementary_report_xml", dm.DFLSupplementaryReport),
+    XML(
+        dm.DFLSupplementaryReport,
+        "report_firearms_xml",
+        dm.DFLSupplementaryReportFirearm,
+    ),
     XML(dm.OpenIndividualLicenceApplication, "bought_from_details_xml", dm.ImportContact),
     XML(dm.OpenIndividualLicenceApplication, "fa_certs_xml", dm.UserImportCertificate),
     XML(dm.OILSupplementaryInfo, "supplementary_report_xml", dm.OILSupplementaryReport),
