@@ -261,9 +261,8 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
 
     # Verified Section 5
     if application.section5 and importer_has_section5 and not selected_section5:
-        section_errors = PageErrors(
-            page_name="Application Details - Certificates - Section 5", url=edit_url
-        )
+        url = reverse("import:fa:manage-certificates", kwargs={"application_pk": application.pk})
+        section_errors = PageErrors(page_name="Certificates - Section 5 Authority", url=url)
         section_errors.add(
             FieldError(
                 field_name="Verified Section 5 Authorities",
@@ -280,9 +279,10 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         and not importer_has_section5
         and not application.user_section5.filter(is_active=True).exists()
     ):
-        section_errors = PageErrors(
-            page_name="Application Details - Documents - Section 5", url=edit_url
+        url = reverse(
+            "import:fa-sil:add-section5-document", kwargs={"application_pk": application.pk}
         )
+        section_errors = PageErrors(page_name="Certificates - Section 5 Authority", url=url)
         section_errors.add(
             FieldError(
                 field_name="Section 5 Authorities",
@@ -371,20 +371,11 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
             else:
                 form = forms.EditFaSILForm(**form_kwargs)
 
-        verified_section5 = application.importer.section5_authorities.currently_active()
-        available_verified_section5 = verified_section5.exclude(
-            pk__in=application.verified_section5.all()
-        )
-
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "task": task,
             "form": form,
-            "user_section5": application.user_section5.filter(is_active=True),
-            "verified_section5": verified_section5,
-            "available_verified_section5": available_verified_section5,
-            "selected_section5": application.verified_section5.all(),
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit",
             "case_type": "import",
         }
@@ -586,6 +577,15 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
+
+                # Check if we need to remove any section five documents
+                if not application.section5:
+                    # Archive the section5 files
+                    application.user_section5.all().update(is_active=False)
+
+                    # Clear any verified section 5 links.
+                    application.verified_section5.clear()
+
                 application.submit_application(request, task)
 
                 # Only create if needed
@@ -651,7 +651,9 @@ def add_section5_document(
                 create_file_model(document, request.user, application.user_section5)
 
                 return redirect(
-                    reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "import:fa:manage-certificates", kwargs={"application_pk": application_pk}
+                    )
                 )
         else:
             form = case_forms.DocumentForm()
@@ -683,7 +685,9 @@ def archive_section5_document(
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
 
 
 @require_GET
@@ -717,7 +721,9 @@ def add_verified_section5(
 
         application.verified_section5.add(section5)
 
-        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required
@@ -736,7 +742,9 @@ def delete_verified_section5(
 
         application.verified_section5.remove(section5)
 
-        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:fa:manage-certificates", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required
