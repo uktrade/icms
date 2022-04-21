@@ -1,7 +1,7 @@
 from typing import Any, Generator, Optional, Tuple
 
 from django.db import models
-from django.db.models import OuterRef, Q, Subquery
+from django.db.models import F, OuterRef, Q, Subquery
 from lxml import etree
 
 from data_migration.models.base import MigrationBase
@@ -35,6 +35,7 @@ class FirearmBase(ImportApplicationBase):
     fa_certs_xml = models.TextField(null=True)
     fa_authorities_xml = models.TextField(null=True)
     bought_from_details_xml = models.TextField(null=True)
+    fa_goods_certs_xml = models.TextField(null=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -82,11 +83,7 @@ class UserImportCertificate(MigrationBase):
 
     @classmethod
     def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "id": data["id"],
-            "userimportcertificate_id": data["file_ptr_id"],
-            "openindividuallicenceapplication_id": data["import_application_id"],
-        }
+        return data
 
     @classmethod
     def get_source_data(cls) -> Generator:
@@ -110,6 +107,29 @@ class UserImportCertificate(MigrationBase):
             .exclude(file_ptr_id__isnull=True)
             .exclude(exclude_query)
             .values(*values)
+            .iterator()
+        )
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        sub_query = File.objects.filter(target_id=OuterRef("target_id"))
+
+        # Exclude unsubmitted applications where reference, constabulary or expiry_date are null
+        exclude_query = Q(import_application__submit_datetime__isnull=True) & Q(
+            Q(reference__isnull=True) | Q(constabulary__isnull=True) | Q(expiry_date__isnull=True)
+        )
+        m2m_id = f"{target._meta.model_name}_id"
+        return (
+            cls.objects.select_related("target")
+            .prefetch_related("target__files")
+            .filter(import_application__ima__process_type=target.PROCESS_TYPE)
+            .exclude(exclude_query)
+            .annotate(
+                userimportcertificate_id=Subquery(sub_query.values("pk")[:1]),
+                **{m2m_id: F("import_application_id")},
+            )
+            .exclude(userimportcertificate_id__isnull=True)
+            .values("userimportcertificate_id", "id", m2m_id)
             .iterator()
         )
 
@@ -279,7 +299,7 @@ class SupplementaryInfoBase(MigrationBase):
     completed_datetime = models.DateTimeField(null=True)
     completed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="+")
     no_report_reason = models.CharField(
-        max_length=1000,
+        max_length=4000,
         null=True,
     )
     supplementary_report_xml = models.TextField(null=True)
@@ -442,7 +462,13 @@ class SupplementaryReportFirearmBase(MigrationBase):
                     # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
                 else:
                     # TODO ICMSLST-1496: Check no firearms reported
-                    model_list.append(cls(is_no_firearm=True))
+                    model_list.append(
+                        cls(
+                            report_id=parent_pk,
+                            is_no_firearm=True,
+                            goods_certificate_legacy_id=ordinal,
+                        )
+                    )
 
         return model_list
 

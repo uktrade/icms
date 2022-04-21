@@ -98,7 +98,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Importing {target.__name__}_{field} from {source.__name__}")
 
             through_table = getattr(target, field).through
-            objs = source.get_source_data()
+            objs = source.get_m2m_data(target)
 
             while True:
                 batch = [

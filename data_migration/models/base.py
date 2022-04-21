@@ -87,6 +87,12 @@ class MigrationBase(models.Model):
         return cls.objects.select_related(*related).values(*values).iterator()
 
     @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        """Queries the model to get the queryset of data for the M2M through table"""
+
+        return cls.get_source_data()
+
+    @classmethod
     def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
         """Parses xml to bulk_create model objects from a list of xml strings
 
