@@ -1,10 +1,10 @@
 window.addEventListener('load', (event) => {
-  const boughtFrom = document.querySelector('#id_know_bought_from');
-  const boughtFromInfoBox = document.querySelector('#know-bought-from-info-box');
+  "use strict";
 
-  boughtFrom.addEventListener('change', (e) => {
-    const displayStyle = e.target.value == 'false' ? 'block': 'none';
-    boughtFromInfoBox.style.display = displayStyle;
-  });
+  const showBoughtFrom = UTILS.getShowElementFunc("#know-bought-from-info-box")
+  const boughtFromRadios = document.querySelectorAll("input[type=radio][name=know_bought_from]")
 
+  boughtFromRadios.forEach((radio) => radio.addEventListener("change", (e) => {
+    showBoughtFrom(e.target.value.toLowerCase() === "false")
+  }));
 });
