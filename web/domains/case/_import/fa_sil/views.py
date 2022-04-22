@@ -294,12 +294,14 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         errors.add(section_errors)
 
     # Certificates errors
+    correct_section = any((application.section1, application.section2, application.section5))
+
     has_certificates = (
         application.user_imported_certificates.filter(is_active=True).exists()
         or application.verified_certificates.filter(is_active=True).exists()
     )
 
-    if application.section1 and not has_certificates:
+    if correct_section and not has_certificates:
         certificate_errors = PageErrors(
             page_name="Certificates",
             url=reverse("import:fa:manage-certificates", kwargs={"application_pk": application.pk}),

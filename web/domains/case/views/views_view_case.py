@@ -123,17 +123,17 @@ def _view_fa_oil(
     return render(request, "web/domains/case/import/fa-oil/view.html", context)
 
 
-def _view_fa_sil(
-    request: AuthenticatedHttpRequest, application: OpenIndividualLicenceApplication
-) -> HttpResponse:
+def _view_fa_sil(request: AuthenticatedHttpRequest, application: SILApplication) -> HttpResponse:
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "verified_certificates": application.verified_certificates.filter(is_active=True),
         "certificates": application.user_imported_certificates.active(),
-        "verified_section5": application.importer.section5_authorities.currently_active(),
         "user_section5": application.user_section5.filter(is_active=True),
+        "verified_section5": application.verified_section5.exists(),
+        "available_verified_section5": None,
+        "selected_section5": application.verified_section5.all(),
         "contacts": application.importcontact_set.all(),
     }
 
