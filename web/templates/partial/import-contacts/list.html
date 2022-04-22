@@ -51,7 +51,10 @@
                             kwargs={'application_pk': process.pk, 'entity': contact.entity, 'contact_pk': contact.pk}) }}"
                   class="form-inline">
                   {{ csrf_input }}
-                  <button type="submit" class="button link-button icon-bin">
+                  <button
+                    type="submit" class="button link-button icon-bin"
+                    data-confirm="Are you sure you want to delete these details of who you bought the items from?"
+                  >
                     Delete
                   </button>
                 </form>
