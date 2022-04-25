@@ -34,7 +34,7 @@
 {% block main_content %}
   <h3>Licence For Section 5</h3>
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     {{ fields.field(form.subsection, show_optional_indicator=False) }}
     {{ fields.field(form.manufacture, show_optional_indicator=False) }}
     {{ fields.field(form.description, show_optional_indicator=False) }}

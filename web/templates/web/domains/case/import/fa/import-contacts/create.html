@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block main_content %}
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     {% for field in form %}
       {{fields.field(field)}}
     {% endfor %}

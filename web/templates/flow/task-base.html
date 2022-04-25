@@ -47,7 +47,7 @@
 
   {% block before_form %}{% endblock %}
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
 
     {% block form_content %}{% endblock %}
 

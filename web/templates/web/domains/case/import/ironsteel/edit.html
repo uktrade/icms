@@ -13,7 +13,7 @@
     {{ super() }}
   {% endblock %}
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
 
   {% include "partial/case/application-contact-details.html" %}
 

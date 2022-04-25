@@ -13,7 +13,7 @@
     <div class="three columns"></div>
   </div>
 
-   {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+   {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data', class="prevent-data-loss") -%}
     {% for field in form %}
       {% if field.name != "document" %}
         {{fields.field(field)}}

@@ -5,7 +5,7 @@
     {{ super() }}
   {% endblock %}
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     <h4>Temporary Exported Goods</h4>
     {{ fields.field(form.teg_origin_country) }}
     {{ fields.field(form.teg_total_quantity) }}
