@@ -29,7 +29,7 @@
 {% block main_content %}
   <h3>Licence For Section 1</h3>
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     {% for field in form %}
       {{ fields.field(field) }}
     {% endfor %}

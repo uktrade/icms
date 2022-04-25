@@ -34,7 +34,7 @@
 {% block main_content %}
   <h3>Licence For Section 58(2) - Obsolete Calibre</h3>
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
 
     {{ fields.field(form.curiosity_ornament) }}
 

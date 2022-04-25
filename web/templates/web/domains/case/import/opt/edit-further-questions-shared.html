@@ -9,7 +9,7 @@
    {% endblock %}
 
    <h4>Further Questions - {{ fq_page_name }}</h4>
-   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
      {% for field in form %}
        {{ fields.field(field) }}
      {% endfor %}

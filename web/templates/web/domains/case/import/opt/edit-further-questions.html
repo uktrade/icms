@@ -8,7 +8,7 @@
      {{ super() }}
    {% endblock %}
 
-   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
      <h4>Further Questions</h4>
      {{ fields.field(form.fq_similar_to_own_factory) }}
      {{ fields.field(form.fq_manufacturing_within_eu) }}
