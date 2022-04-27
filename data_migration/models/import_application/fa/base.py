@@ -1,28 +1,14 @@
-from typing import Any, Generator, Optional, Tuple
+from typing import Any, Generator
 
 from django.db import models
 from django.db.models import F, OuterRef, Q, Subquery
-from lxml import etree
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileTarget
 from data_migration.models.reference import CommodityGroup
 from data_migration.models.user import User
-from data_migration.utils.format import (
-    date_or_none,
-    get_xml_val,
-    str_to_yes_no,
-    xml_str_or_none,
-)
 
 from ..import_application import ImportApplication, ImportApplicationBase
-
-FA_TYPE_CODES = {
-    "DEACTIVATED": "deactivated",
-    "RFD": "registered",
-    # "SHOTGUN": "shotgun", TODO ICMSLST-1519 correct the key to match V1
-    # "FA": "firearms",  TODO ICMSLST-1519 correct the key to match V1
-}
 
 
 class FirearmBase(ImportApplicationBase):
@@ -133,65 +119,6 @@ class UserImportCertificate(MigrationBase):
             .iterator()
         )
 
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
-        """Example XML
-
-        <FIREARMS_CERTIFICATE_LIST>
-          <FIREARMS_CERTIFICATE />
-        </FIREARMS_CERTIFICATE_LIST>
-        """
-        model_list = []
-        for parent_pk, xml_str in batch:
-            xml_tree = etree.fromstring(xml_str)
-            xml_list = xml_tree.xpath("FIREARMS_CERTIFICATE")
-            for xml in xml_list:
-                obj = cls.parse_xml_fields(parent_pk, xml)
-
-                if obj:
-                    model_list.append(obj)
-        return model_list
-
-    @classmethod
-    def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> Optional["UserImportCertificate"]:
-        """Example XML structure
-
-        <FIREARMS_CERTIFICATE>
-          <TARGET_ID />
-          <CERTIFICATE_REF />
-          <CERTIFICATE_TYPE />
-          <CONSTABULARY />
-          <DATE_ISSUED />
-          <EXPIRY_DATE />
-          <ISSUING_COUNTRY />
-        </FIREARMS_CERTIFICATE>
-        """
-        target_id = get_xml_val(xml, "./TARGET_ID/text()")
-        certificate_type = get_xml_val(xml, "./CERTIFICATE_TYPE/text()")
-
-        if not target_id or not certificate_type:
-            # There needs to be an file and certificate_type associated with the data
-            return None
-
-        reference = get_xml_val(xml, "./CERTIFICATE_REF/text()")
-        constabulary_id = get_xml_val(xml, "./CONSTABULARY/text()")
-        date_issued = get_xml_val(xml, "./DATE_ISSUED/text()")
-        expiry_date = get_xml_val(xml, "./EXPIRY_DATE/text()")
-
-        return cls(
-            **{
-                "import_application_id": parent_pk,
-                "target_id": target_id,
-                "reference": reference,
-                "certificate_type": FA_TYPE_CODES[certificate_type],
-                "constabulary_id": constabulary_id,
-                "date_issued": date_or_none(date_issued),
-                "expiry_date": date_or_none(expiry_date),
-            }
-        )
-
 
 class ImportContact(MigrationBase):
     import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
@@ -210,81 +137,6 @@ class ImportContact(MigrationBase):
     dealer = models.CharField(max_length=10, null=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
-
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list["ImportContact"]:
-        """Example XML structure
-
-        <SELLER_HOLDER_LIST>
-          <SELLER_HOLDER />
-        </SELLER_HOLDER_LIST>
-        """
-
-        model_list = []
-        for parent_pk, xml_str in batch:
-            xml_tree = etree.fromstring(xml_str)
-            xml_list = xml_tree.xpath("SELLER_HOLDER")
-            for xml in xml_list:
-                model_list.append(cls.parse_xml_fields(parent_pk, xml))
-        return model_list
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> "ImportContact":
-        """Example XML structure
-
-        <SELLER_HOLDER>
-          <PERSON_DETAILS>
-            <PERSON_TYPE />
-            <LEGAL_PERSON_NAME />
-            <REGISTRATION_NUMBER />
-            <FIRST_NAME />
-            <SURNAME />
-          </PERSON_DETAILS>
-          <ADDRESS>
-            <STREET_AND_NUMBER />
-            <TOWN_CITY />
-            <POSTCODE />
-            <REGION />
-            <COUNTRY />
-          </ADDRESS>
-          <IS_DEALER_FLAG />
-          <SELLER_HOLDER_ID />
-          <UPDATE_FLAG />
-        </SELLER_HOLDER>
-        """
-
-        legacy_id = get_xml_val(xml, "./SELLER_HOLDER_ID/text()")
-        entity = get_xml_val(xml, "./PERSON_DETAILS/PERSON_TYPE/text()")
-        entity = entity.lower().strip("_person")
-        if entity == "legal":
-            first_name = get_xml_val(xml, "./PERSON_DETAILS/LEGAL_PERSON_NAME/text()")
-        else:
-            first_name = get_xml_val(xml, "./PERSON_DETAILS/FIRST_NAME/text()")
-        last_name = get_xml_val(xml, "./PERSON_DETAILS/SURNAME/text()")
-        registration_number = get_xml_val(xml, "./PERSON_DETAILS/REGISTRATION_NUMBER/text()")
-        street = get_xml_val(xml, "./ADDRESS/STREET_AND_NUMBER/text()")
-        city = get_xml_val(xml, "./ADDRESS/TOWN_CITY/text()")
-        postcode = get_xml_val(xml, "./ADDRESS/POSTCODE/text()")
-        region = get_xml_val(xml, "./ADDRESS/REGION/text()")
-        dealer = get_xml_val(xml, "./IS_DEALER_FLAG/text()")
-        country_id = get_xml_val(xml, "./ADDRESS/COUNTRY/text()")
-
-        return cls(
-            **{
-                "import_application_id": parent_pk,
-                "legacy_id": legacy_id,
-                "entity": entity,
-                "first_name": first_name,
-                "last_name": last_name,
-                "registration_number": registration_number,
-                "street": street,
-                "city": city,
-                "postcode": postcode,
-                "region": region,
-                "dealer": str_to_yes_no(dealer),
-                "country_id": country_id,
-            }
-        )
 
     @classmethod
     def get_excludes(cls) -> list[str]:
@@ -358,56 +210,6 @@ class SupplementaryReportBase(MigrationBase):
             .iterator()
         )
 
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list["SupplementaryReportBase"]:
-        """Example XML structure
-
-        <FA_SUPPLEMENTARY_REPORT_LIST>
-          <FA_SUPPLEMENTARY_REPORT />
-        </FA_SUPPLEMENTARY_REPORT_LIST>
-        """
-        model_list = []
-        for parent_pk, xml in batch:
-            xml_tree = etree.fromstring(xml)
-            report_xml_list = xml_tree.xpath("FA_SUPPLEMENTARY_REPORT")
-            for report_xml in report_xml_list:
-                model_list.append(cls.parse_xml_fields(parent_pk, report_xml))
-        return model_list
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> "SupplementaryReportBase":
-        """Example XML structure
-
-        <FA_SUPPLEMENTARY_REPORT>
-          <HISTORICAL_REPORT_LIST />
-          <FA_SUPPLEMENTARY_REPORT_DETAILS>
-            <GOODS_LINE_LIST />
-            <MODE_OF_TRANSPORT />
-            <RECEIVED_DATE />
-            <REPORT_SELLER_HOLDER />
-            <REPORT_SUBMITTED_FLAG />
-            <SUBMITTED_BY_WUA_ID />
-            <SUBMITTED_DATETIME />
-            <FA_REPORT_ID />
-          </FA_SUPPLEMENTARY_REPORT_DETAILS>
-        </FA_SUPPLEMENTARY_REPORT>
-        """
-
-        transport = get_xml_val(xml, ".//MODE_OF_TRANSPORT[not(fox-error)]/text()")
-        date_received = get_xml_val(xml, ".//RECEIVED_DATE[not(fox-error)]/text()")
-        report_firearms_xml = get_xml_val(xml, ".//GOODS_LINE_LIST")
-        bought_from_legacy_id = get_xml_val(xml, ".//REPORT_SELLER_HOLDER[not(fox-error)]/text()")
-
-        return cls(
-            **{
-                "supplementary_info_id": parent_pk,
-                "transport": transport,
-                "date_received": date_or_none(date_received),
-                "bought_from_legacy_id": bought_from_legacy_id,
-                "report_firearms_xml": xml_str_or_none(report_firearms_xml),
-            }
-        )
-
 
 class SupplementaryReportFirearmBase(MigrationBase):
     class Meta:
@@ -425,79 +227,3 @@ class SupplementaryReportFirearmBase(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["goods_certificate_legacy_id"]
-
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list["SupplementaryReportFirearmBase"]:
-        """Example XML structure
-
-        <GOODS_LINE_LIST>
-          <GOODS_LINE>
-            <FA_REPORTING_MODE />
-            <FIREARMS_DETAILS_LIST>
-              <FIREARMS_DETAILS />
-            </FIREARMS_DETAILS_LIST>
-          </GOODS_LINE>
-        </GOODS_LINE_LIST>
-        """
-
-        model_list = []
-        for parent_pk, xml in batch:
-            xml_tree = etree.fromstring(xml)
-            goods_xml_list = xml_tree.xpath("GOODS_LINE")
-            for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
-                reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
-                if reporting_mode == "MANUAL":
-                    report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
-                    for report_firearm_xml in report_firearm_xml_list:
-                        obj = cls.parse_manual_xml(parent_pk, report_firearm_xml)
-                        obj.goods_certificate_legacy_id = ordinal
-                        model_list.append(obj)
-                elif reporting_mode == "UPLOAD":
-                    model_list.append(
-                        cls(
-                            report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal
-                        )
-                    )
-                    # TODO ICMSLST-1496: Report firearms need to connect to documents
-                    # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
-                else:
-                    # TODO ICMSLST-1496: Check no firearms reported
-                    model_list.append(
-                        cls(
-                            report_id=parent_pk,
-                            is_no_firearm=True,
-                            goods_certificate_legacy_id=ordinal,
-                        )
-                    )
-
-        return model_list
-
-    @classmethod
-    def parse_manual_xml(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> "SupplementaryReportFirearmBase":
-        """Exmaple XML structure
-
-        <FIREARMS_DETAILS>
-          <SERIAL_NUMBER />
-          <CALIBRE />
-          <MAKE_MODEL />
-          <PROOFING />
-        </FIREARMS_DETAILS>
-        """
-
-        serial_number = get_xml_val(xml, ".//SERIAL_NUMBER/text()")
-        calibre = get_xml_val(xml, ".//CALIBRE/text()")
-        model = get_xml_val(xml, ".//MAKE_MODEL/text()")
-        proofing = get_xml_val(xml, ".//PROOFING/text()")
-
-        return cls(
-            **{
-                "report_id": parent_pk,
-                "serial_number": serial_number,
-                "calibre": calibre,
-                "model": model,
-                "proofing": str_to_yes_no(proofing),
-                "is_manual": True,
-            }
-        )

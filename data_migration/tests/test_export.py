@@ -8,6 +8,7 @@ from django.test import override_settings
 
 from data_migration import models
 from data_migration.queries import DATA_TYPE_QUERY_MODEL, DATA_TYPE_XML
+from data_migration.utils import xml_parser
 
 from . import factory, xml_data
 
@@ -149,21 +150,9 @@ def test_export_data(mock_connect):
     DATA_TYPE_XML,
     {
         "import_application": [
-            (
-                models.OpenIndividualLicenceApplication,
-                "bought_from_details_xml",
-                models.ImportContact,
-            ),
-            (
-                models.OILSupplementaryInfo,
-                "supplementary_report_xml",
-                models.OILSupplementaryReport,
-            ),
-            (
-                models.OILSupplementaryReport,
-                "report_firearms_xml",
-                models.OILSupplementaryReportFirearm,
-            ),
+            xml_parser.ImportContactParser,
+            xml_parser.OILSupplementaryReportParser,
+            xml_parser.OILReportFirearmParser,
         ]
     },
 )

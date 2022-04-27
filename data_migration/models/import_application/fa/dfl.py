@@ -1,8 +1,7 @@
-from typing import Any, Generator, Tuple
+from typing import Any, Generator
 
 from django.db import models
 from django.db.models import OuterRef, Q, Subquery
-from lxml import etree
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileTarget
@@ -12,7 +11,6 @@ from data_migration.models.import_application.import_application import (
 )
 from data_migration.models.reference.country import Country
 from data_migration.models.reference.fa import Constabulary
-from data_migration.utils.format import get_xml_val, int_or_none
 
 from .base import (
     FirearmBase,
@@ -99,85 +97,6 @@ class DFLGoodsCertificate(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["legacy_id", "target_id"]
-
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
-        """Example XML
-
-        <FA_GOODS_CERTS>
-          <COMMODITY_LIST>
-            <COMMODITY />
-          </COMMODITY_LIST>
-          <FIREARMS_CERTIFICATE_LIST>
-            <FIREARMS_CERTIFICATE />
-          </FIREARMS_CERTIFICATE_LIST>
-        </FA_GOODS_CERTS>
-        """
-
-        model_list = []
-        for parent_pk, xml_str in batch:
-            xml_tree = etree.fromstring(xml_str)
-
-            # The XML for this model is spread across two different XML elements.
-            # First we get a list of each of the elements
-            cert_list = xml_tree.xpath("FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE")
-            commodity_list = xml_tree.xpath("COMMODITY_LIST/COMMODITY")
-
-            # Zip the elements together, as they are related by their ordinal
-            xml_zip = zip(cert_list, commodity_list)
-            for i, (cert_xml, commodity_xml) in enumerate(xml_zip, start=1):
-
-                # Combine the elements under a single node so we can parse the data for the model
-                xml = etree.Element("FA_GOODS_CERT")
-                xml.append(cert_xml)
-                xml.append(commodity_xml)
-                obj = cls.parse_xml_fields(parent_pk, xml)
-
-                # Add the legacy ordinal to the object so it can be referenced later
-                # The supplementary reports will use the same ordinal to link to the correct goods
-                obj.legacy_ordinal = i
-                model_list.append(obj)
-        return model_list
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> "DFLGoodsCertificate":
-        """Example XML structure
-
-        <FA_GOODS_CERT>
-          <FIREARMS_CERTIFICATE>
-            <TARGET_ID />
-            <CERTIFICATE_REF />
-            <CERTIFICATE_TYPE />
-            <CONSTABULARY />
-            <DATE_ISSUED />
-            <EXPIRY_DATE />
-            <ISSUING_COUNTRY />
-          </FIREARMS_CERTIFICATE>
-          <COMMODITY>
-            <COMMODITY_DESC />
-            <OBSOLETE_CALIBRE />
-            <QUANTITY />
-            <QUANTITY_UNLIMITED />
-            <QUANTITY_UNLIMITED_FLAG />
-            <UNIT />
-          </COMMODITY>
-        </FA_GOODS_CERT>
-        """
-
-        target_id = get_xml_val(xml, "./FIREARMS_CERTIFICATE/TARGET_ID/text()")
-        reference = get_xml_val(xml, "./FIREARMS_CERTIFICATE/CERTIFICATE_REF/text()")
-        issuing_country = get_xml_val(xml, "./FIREARMS_CERTIFICATE/ISSUING_COUNTRY/text()")
-        description = get_xml_val(xml, "./COMMODITY/COMMODITY_DESC/text()")
-
-        return cls(
-            **{
-                "dfl_application_id": parent_pk,
-                "target_id": int_or_none(target_id),
-                "deactivated_certificate_reference": reference,
-                "goods_description": description,
-                "issuing_country_id": int_or_none(issuing_country),
-            }
-        )
 
 
 class DFLChecklist(ChecklistBase):
