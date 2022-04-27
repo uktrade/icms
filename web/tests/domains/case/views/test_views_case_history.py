@@ -27,7 +27,7 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
     _add_valid_checklist(app)
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.authorise_application(app.pk))
+    response = icms_admin_client.post(CaseURLS.start_authorisation(app.pk))
     assertRedirects(response, reverse("workbasket"), 302)
 
     # Now fake complete the app
