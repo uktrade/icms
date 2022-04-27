@@ -108,7 +108,7 @@ def test_start_authorisation_approved_application_has_errors(icms_admin_client, 
     wood_application.update_requests.create(status=UpdateRequest.Status.OPEN)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == 200
 
     errors: ApplicationErrors = response.context["errors"]
@@ -135,13 +135,13 @@ def test_start_authorisation_approved_application_has_no_errors(
     _add_valid_checklist(wood_application)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == 200
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
 
     assertRedirects(response, reverse("workbasket"), 302)
 
@@ -177,15 +177,13 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     dr = cert.document_references.create(document_type=CaseDocumentReference.Type.CERTIFICATE)
     pk_to_delete = dr.id
 
-    response = icms_admin_client.get(CaseURLS.authorise_application(com_app.pk, case_type="export"))
+    response = icms_admin_client.get(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
     assert response.status_code == 200
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(
-        CaseURLS.authorise_application(com_app.pk, case_type="export")
-    )
+    response = icms_admin_client.post(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
 
     assertRedirects(response, reverse("workbasket"), 302)
 
@@ -227,7 +225,7 @@ def test_start_authorisation_refused_application_has_errors(icms_admin_client, w
     wood_application.decision = wood_application.REFUSE
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == 200
 
     errors: ApplicationErrors = response.context["errors"]
@@ -243,14 +241,14 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     _add_valid_checklist(wood_application)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == 200
 
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), 302)
 
     wood_application.refresh_from_db()
@@ -282,7 +280,7 @@ def test_start_authorisation_approved_variation_requested_application(
     wood_application.save()
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), 302)
     wood_application.refresh_from_db()
 
@@ -316,7 +314,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     wood_application.save()
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.authorise_application(wood_application.pk))
+    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), 302)
     wood_application.refresh_from_db()
 

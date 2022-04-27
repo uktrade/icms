@@ -45,7 +45,9 @@ from web.domains.case.utils import get_application_current_task
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import ProcessTypes, Task
+from web.models import DFLChecklist
 from web.models.shared import FirearmCommodity, YesNoChoices
+from web.tests.helpers import CaseURLS
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
 from web.utils.search import (
     SearchTerms,
@@ -121,7 +123,7 @@ def test_filter_wood(import_fixture_data: FixtureData):
 
     _test_search_by_status(
         ImportApplicationType.Types.WOOD_QUOTA,
-        ImportApplication.Statuses.SUBMITTED,
+        ImpExpStatus.SUBMITTED,
         import_fixture_data.request.user,
         expected=["Wood ref 3", "Wood ref 2", "Wood ref 1"],
     )
@@ -810,40 +812,39 @@ def test_case_statuses(import_fixture_data: FixtureData):
     _create_test_app_statuses(import_fixture_data)
 
     wt = ImportApplicationType.Types.WOOD_QUOTA
-    st = ImportApplication.Statuses
     user = import_fixture_data.request.user
-    _test_search_by_status(wt, st.COMPLETED, user, expected=["completed"])
+    _test_search_by_status(wt, ImpExpStatus.COMPLETED, user, expected=["completed"])
 
     # TODO: ICMSLST-1105 filter Oustanding Open Requests
     # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
 
-    _test_search_by_status(wt, st.PROCESSING, user, expected=["update", "fir", "processing"])
+    _test_search_by_status(
+        wt, ImpExpStatus.PROCESSING, user, expected=["update", "fir", "processing"]
+    )
     _test_search_by_status(wt, "FIR_REQUESTED", user, expected=["fir"])
 
     # TODO: ICMSLST-1104: filter SIGL
     # _test_search_by_status(wt, scs.PROCESSING_SIGL, "sigl")
 
     _test_search_by_status(wt, "UPDATE_REQUESTED", user, expected=["update"])
-    _test_search_by_status(wt, st.REVOKED, user, expected=["revoked"])
-    _test_search_by_status(wt, st.STOPPED, user, expected=["stopped"])
-    _test_search_by_status(wt, st.SUBMITTED, user, expected=["submitted"])
-    _test_search_by_status(wt, st.VARIATION_REQUESTED, user, expected=["variation"])
-    _test_search_by_status(wt, st.WITHDRAWN, user, expected=["withdrawn"])
+    _test_search_by_status(wt, ImpExpStatus.REVOKED, user, expected=["revoked"])
+    _test_search_by_status(wt, ImpExpStatus.STOPPED, user, expected=["stopped"])
+    _test_search_by_status(wt, ImpExpStatus.SUBMITTED, user, expected=["submitted"])
+    _test_search_by_status(wt, ImpExpStatus.VARIATION_REQUESTED, user, expected=["variation"])
+    _test_search_by_status(wt, ImpExpStatus.WITHDRAWN, user, expected=["withdrawn"])
 
     with pytest.raises(NotImplementedError):
         _test_search_by_status(wt, "unknown status", user, ["should raise"])
 
 
 def test_export_case_statuses(export_fixture_data: ExportFixtureData):
-    st = ApplicationBase.Statuses
-
     gmp = _create_gmp_application(export_fixture_data)
-    gmp.status = st.PROCESSING
+    gmp.status = ImpExpStatus.PROCESSING
     gmp.save()
     gmp.case_emails.create(status=CaseEmail.Status.OPEN)
 
     cfs = _create_cfs_application(export_fixture_data)
-    cfs.status = st.PROCESSING
+    cfs.status = ImpExpStatus.PROCESSING
     cfs.save()
     cfs.case_emails.create(status=CaseEmail.Status.OPEN)
 
@@ -1027,7 +1028,7 @@ def test_export_returns_in_progress_applications(export_fixture_data: ExportFixt
     )
     assert results.records[1].status == "In Progress"
 
-    search_terms = SearchTerms(case_type="export", case_status=ApplicationBase.Statuses.IN_PROGRESS)
+    search_terms = SearchTerms(case_type="export", case_status=ImpExpStatus.IN_PROGRESS)
     results = search_applications(search_terms, export_fixture_data.request.user)
 
     assert results.total_rows == 1
@@ -1456,7 +1457,7 @@ def test_reassignment_search(
     # We need to be the icms case officer to post to the take-ownership endpoint
     client.force_login(test_icms_admin_user)
 
-    assert wood_app.status == ImportApplication.Statuses.SUBMITTED
+    assert wood_app.status == ImpExpStatus.SUBMITTED
 
     take_ownership_url = reverse(
         "case:take-ownership", kwargs={"application_pk": wood_app.pk, "case_type": "import"}
@@ -1471,7 +1472,7 @@ def test_reassignment_search(
     assert response.status_code == 302
 
     wood_app.refresh_from_db()
-    assert wood_app.status == ImportApplication.Statuses.PROCESSING
+    assert wood_app.status == ImpExpStatus.PROCESSING
     assert wood_app.case_owner == test_icms_admin_user
 
     search_terms = SearchTerms(
@@ -1513,6 +1514,41 @@ def test_reassignment_search(
 
     assert results.total_rows == 1
     check_export_application_case_reference(results.records, gmp_app.reference)
+
+
+def test_can_search_refused_application(
+    fa_dfl_app_submitted, icms_admin_client, test_icms_admin_user
+):
+    app = fa_dfl_app_submitted
+    # Take ownership
+    r = icms_admin_client.post(CaseURLS.take_ownership(app.pk))
+    assert r.status_code == 302
+
+    # Create a checklist
+    DFLChecklist.objects.create(
+        import_application=app,
+        deactivation_certificate_attached=YesNoChoices.yes,
+        deactivation_certificate_issued=YesNoChoices.yes,
+        case_update=YesNoChoices.yes,
+        fir_required=YesNoChoices.yes,
+        response_preparation=True,
+        validity_period_correct=YesNoChoices.yes,
+        endorsements_listed=YesNoChoices.yes,
+        authorisation=True,
+    )
+
+    # Refuse the application
+    app.decision = app.REFUSE
+    app.save()
+
+    r = icms_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assert r.status_code == 302
+
+    # Test we can search by it
+    search_terms = SearchTerms(case_type="import", case_status=ImpExpStatus.COMPLETED)
+    results = search_applications(search_terms, test_icms_admin_user)
+    assert results.total_rows == 1
+    assert len(results.records) == 1
 
 
 def check_application_references(
@@ -2057,7 +2093,7 @@ def _create_test_commodity_group(category_commodity_group: str, commodity: Commo
 
 
 def _create_test_app_statuses(import_fixture_data):
-    st = ApplicationBase.Statuses
+    st = ImpExpStatus
     _create_wood_application("completed", import_fixture_data, override_status=st.COMPLETED)
 
     # TODO: ICMSLST-1105: filter Oustanding Open Requests

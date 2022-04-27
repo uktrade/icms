@@ -304,8 +304,9 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
 
     manufacturer_countries = []
     if rec.process_type == ProcessTypes.CFS:
-        # This is an annotation and can have a value of [None] for in-progress apps
-        manufacturer_countries = [c for c in rec.manufacturer_countries if c]
+        # Can be None or a list of country names (can contain None for empty schedules)
+        if rec.manufacturer_countries:
+            manufacturer_countries = [c for c in rec.manufacturer_countries if c]
 
     # This is an annotation and can have a value of [None] for in-progress apps
     origin_countries = [c for c in rec.origin_countries if c]

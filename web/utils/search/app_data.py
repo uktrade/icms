@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
-from django.db.models import F, Func, OuterRef, Subquery
+from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
@@ -370,11 +370,24 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
 def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     content_type_pk = get_content_type_pk("import")
 
+    # This join will be used for all licence annotations
+    # it creates a left join with extra conditions on the ON clause
+    valid_licences_annotation = FilteredRelation(
+        "licences",
+        condition=Q(
+            licences__status__in=[
+                ImportApplicationLicence.Status.DRAFT,
+                ImportApplicationLicence.Status.ACTIVE,
+            ]
+        ),
+    )
+
+    # Sub query that references the above "valid_licences" annotation
     sub_query = (
         CaseDocumentReference.objects.filter(
             document_type=CaseDocumentReference.Type.LICENCE,
             content_type_id=content_type_pk,
-            object_id=OuterRef("licences__pk"),
+            object_id=OuterRef("valid_licences__pk"),
         )
         .order_by()
         .values("object_id")
@@ -385,24 +398,17 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     )
 
     model = (
-        # Filter out archived licences before annotating with the latest licence.
-        model.filter(
-            licences__status__in=[
-                ImportApplicationLicence.Status.DRAFT,
-                ImportApplicationLicence.Status.ACTIVE,
-            ]
-        )
-        .annotate(
-            latest_licence_pk=F("licences__pk"),
+        model.annotate(
+            valid_licences=valid_licences_annotation,
+            latest_licence_pk=F("valid_licences__pk"),
             latest_licence_cdr_data=Subquery(sub_query.values("licence_cdr_data")),
-            latest_licence_start_date=F("licences__licence_start_date"),
-            latest_licence_end_date=F("licences__licence_end_date"),
-            latest_licence_issue_paper_licence_only=F("licences__issue_paper_licence_only"),
+            latest_licence_start_date=F("valid_licences__licence_start_date"),
+            latest_licence_end_date=F("valid_licences__licence_end_date"),
+            latest_licence_issue_paper_licence_only=F("valid_licences__issue_paper_licence_only"),
         )
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest licence
-        .order_by("id", "-licences__created_at")
-        .distinct("id")
+        .order_by("id", "-valid_licences__created_at").distinct("id")
     )
 
     return model
@@ -411,11 +417,23 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
 def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     content_type_pk = get_content_type_pk("export")
 
+    # This join will be used for all certificate annotations
+    # it creates a left join with extra conditions on the ON clause
+    valid_certificates_annotation = FilteredRelation(
+        "certificates",
+        condition=Q(
+            certificates__status__in=[
+                ExportApplicationCertificate.Status.DRAFT,
+                ExportApplicationCertificate.Status.ACTIVE,
+            ]
+        ),
+    )
+
     cr_sub_query = (
         CaseDocumentReference.objects.filter(
             document_type=CaseDocumentReference.Type.CERTIFICATE,
             content_type_id=content_type_pk,
-            object_id=OuterRef("certificates__pk"),
+            object_id=OuterRef("valid_certificates__pk"),
         )
         .order_by()
         .values("object_id")
@@ -426,22 +444,15 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
     )
 
     model = (
-        # Filter out archived certificates before annotating with the latest certificate.
-        model.filter(
-            certificates__status__in=[
-                ExportApplicationCertificate.Status.DRAFT,
-                ExportApplicationCertificate.Status.ACTIVE,
-            ]
-        )
-        .annotate(
-            latest_certificate_pk=F("certificates__pk"),
-            latest_certificate_issue_date=F("certificates__issue_date"),
+        model.annotate(
+            valid_certificates=valid_certificates_annotation,
+            latest_certificate_pk=F("valid_certificates__pk"),
+            latest_certificate_issue_date=F("valid_certificates__issue_date"),
             latest_certificate_references=Subquery(cr_sub_query),
         )
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest certificate
-        .order_by("id", "-certificates__created_at")
-        .distinct("id")
+        .order_by("id", "-valid_certificates__created_at").distinct("id")
     )
 
     return model

@@ -143,7 +143,7 @@ class CaseURLS:
         return reverse("case:variation-request-submit-update", kwargs=kwargs)
 
     @staticmethod
-    def authorise_application(application_pk: int, case_type: str = "import") -> str:
+    def start_authorisation(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:start-authorisation", kwargs=kwargs)
