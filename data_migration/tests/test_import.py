@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from data_migration import models as dm
 from data_migration.queries import DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
+from data_migration.utils import xml_parser
 from web import models as web
 
 from . import factory, xml_data
@@ -229,24 +230,26 @@ def test_import_oil_data():
         )
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
         dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
-        dm.ImportContact.objects.bulk_create(
-            dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
-        )
+        data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
+        dm.ImportContact.objects.bulk_create(data[dm.ImportContact])
 
         if i == 0:
             sr = factory.OILSupplementaryInfoFactory(
                 imad=ia, supplementary_report_xml=xml_data.sr_upload_xml
             )
-            dm.OILSupplementaryReport.objects.bulk_create(
-                dm.OILSupplementaryReport.parse_xml([(sr.pk, xml_data.sr_upload_xml)])
+            data = xml_parser.OILSupplementaryReportParser.parse_xml(
+                [(sr.pk, xml_data.sr_upload_xml)]
             )
+            dm.OILSupplementaryReport.objects.bulk_create(data[dm.OILSupplementaryReport])
         else:
             si = factory.OILSupplementaryInfoFactory(
                 imad=ia, supplementary_report_xml=xml_data.sr_manual_xml
             )
-            dm.OILSupplementaryReport.objects.bulk_create(
-                dm.OILSupplementaryReport.parse_xml([(si.pk, xml_data.sr_manual_xml)])
+            data = xml_parser.OILSupplementaryReportParser.parse_xml(
+                [(si.pk, xml_data.sr_manual_xml)]
             )
+            dm.OILSupplementaryReport.objects.bulk_create(data[dm.OILSupplementaryReport])
+
             sr = dm.OILSupplementaryReport.objects.order_by("-pk").first()
             dm.OILSupplementaryReportFirearm.objects.create(
                 report=sr,
@@ -358,9 +361,9 @@ def test_import_dfl_data():
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
 
         dfl = dm.DFLApplication.objects.create(pk=pk, imad=ia)
-        dm.ImportContact.objects.bulk_create(
-            dm.ImportContact.parse_xml([(pk, xml_data.import_contact_xml)])
-        )
+        data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
+        dm.ImportContact.objects.bulk_create(data[dm.ImportContact])
+
         ft = dm.FileTarget.objects.create()
         factory.FileFactory(created_by_id=user_pk, target=ft)
         factory.DFLGoodsCertificateFactory(

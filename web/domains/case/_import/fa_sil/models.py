@@ -133,7 +133,7 @@ class SILGoodsSection1(models.Model):
         ),
     )
 
-    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection2(models.Model):
@@ -154,7 +154,7 @@ class SILGoodsSection2(models.Model):
         ),
     )
 
-    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection5(models.Model):
@@ -177,7 +177,9 @@ class SILGoodsSection5(models.Model):
         ),
     )
 
-    quantity = models.PositiveIntegerField(blank=True, null=True, help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(
+        blank=True, null=True, help_text="Enter a whole number"
+    )
     unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
@@ -216,7 +218,7 @@ class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
         ),
     )
 
-    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
 
 class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
@@ -297,7 +299,7 @@ class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
         ),
     )
 
-    quantity = models.PositiveIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
 
 class SILChecklist(ChecklistBase):

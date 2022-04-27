@@ -1,9 +1,10 @@
-from typing import Literal, NamedTuple
+from typing import Literal, NamedTuple, Type
 
 from django.db.models import Model
 
 from data_migration import models as dm
 from data_migration.models import task
+from data_migration.utils import xml_parser
 from web import models as web
 
 from . import import_application, reference
@@ -11,7 +12,6 @@ from . import import_application, reference
 QueryModel = NamedTuple("QueryModel", [("query", str), ("model", Model)])
 SourceTarget = NamedTuple("SourceTarget", [("source", Model), ("target", Model)])
 M2M = NamedTuple("M2M", [("source", Model), ("target", Model), ("field", str)])
-XML = NamedTuple("XML", [("parent", Model), ("field", str), ("child", Model)])
 
 
 def source_target_list(lst: list[str]):
@@ -78,6 +78,12 @@ ia_source_target = source_target_list(
         "ImportApplication",
         "ImportContact",
         "SILApplication",
+        "SILGoodsSection1",
+        "SILGoodsSection2",
+        "SILGoodsSection5",
+        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
+        # "SILGoodsSection582Obsolete",  # /PS-IGNORE
+        "SILGoodsSection582Other",  # /PS-IGNORE
         "SILSupplementaryInfo",
         "SILSupplementaryReport",
         "DFLApplication",
@@ -100,6 +106,11 @@ ia_source_target = source_target_list(
 
 ia_m2m = [
     M2M(
+        dm.UserImportCertificate,
+        web.SILApplication,
+        "user_imported_certificates",
+    ),
+    M2M(
         dm.DFLGoodsCertificate,
         web.DFLApplication,
         "goods_certificates",
@@ -112,25 +123,15 @@ ia_m2m = [
 ]
 
 ia_xml = [
-    XML(dm.SILApplication, "bought_from_details_xml", dm.ImportContact),
-    XML(dm.SILApplication, "fa_certs_xml", dm.UserImportCertificate),
-    XML(dm.SILSupplementaryInfo, "supplementary_report_xml", dm.SILSupplementaryReport),
-    XML(dm.DFLApplication, "bought_from_details_xml", dm.ImportContact),
-    XML(dm.DFLApplication, "fa_goods_certs_xml", dm.DFLGoodsCertificate),
-    XML(dm.DFLSupplementaryInfo, "supplementary_report_xml", dm.DFLSupplementaryReport),
-    XML(
-        dm.DFLSupplementaryReport,
-        "report_firearms_xml",
-        dm.DFLSupplementaryReportFirearm,
-    ),
-    XML(dm.OpenIndividualLicenceApplication, "bought_from_details_xml", dm.ImportContact),
-    XML(dm.OpenIndividualLicenceApplication, "fa_certs_xml", dm.UserImportCertificate),
-    XML(dm.OILSupplementaryInfo, "supplementary_report_xml", dm.OILSupplementaryReport),
-    XML(
-        dm.OILSupplementaryReport,
-        "report_firearms_xml",
-        dm.OILSupplementaryReportFirearm,
-    ),
+    xml_parser.ImportContactParser,
+    xml_parser.UserImportCertificateParser,
+    xml_parser.SILGoodsParser,
+    xml_parser.SILSupplementaryReportParser,
+    xml_parser.DFLGoodsCertificateParser,
+    xml_parser.DFLSupplementaryReportParser,
+    xml_parser.DFLReportFirearmParser,
+    xml_parser.SILSupplementaryReportParser,
+    xml_parser.OILReportFirearmParser,
 ]
 
 DATA_TYPE = Literal["reference", "import_application", "user"]
@@ -152,7 +153,7 @@ DATA_TYPE_M2M: dict[str, list[M2M]] = {
     "import_application": ia_m2m,
 }
 
-DATA_TYPE_XML: dict[str, list[XML]] = {
+DATA_TYPE_XML: dict[str, list[Type[xml_parser.BaseXmlParser]]] = {
     "user": [],
     "reference": [],
     "import_application": ia_xml,

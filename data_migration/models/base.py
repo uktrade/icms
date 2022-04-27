@@ -1,7 +1,6 @@
-from typing import Any, Generator, Optional, Tuple
+from typing import Any, Generator
 
 from django.db import models
-from lxml import etree
 
 
 class MigrationBase(models.Model):
@@ -53,7 +52,9 @@ class MigrationBase(models.Model):
     def get_excludes(cls) -> list[str]:
         """List of fields to be excluded in the V2 import"""
 
-        return [field for field in cls.fields() if field.endswith("_xml")]
+        return [
+            field for field in cls.fields() if field.endswith("_xml") or field == "legacy_ordinal"
+        ]
 
     @classmethod
     def get_includes(cls) -> list[str]:
@@ -91,25 +92,6 @@ class MigrationBase(models.Model):
         """Queries the model to get the queryset of data for the M2M through table"""
 
         return cls.get_source_data()
-
-    @classmethod
-    def parse_xml(cls, batch: list[Tuple[int, str]]) -> list[models.Model]:
-        """Parses xml to bulk_create model objects from a list of xml strings
-
-        :param batch: A list of parent_pk, xml string pairs.
-
-        Example batch: [(1, "<ROOT><ELEMENT /></ROOT>"), (2, "<ROOT><ELEMENT></ROOT>")]
-        """
-        return [cls.parse_xml_fields(pk, etree.fromstring(xml)) for pk, xml in batch]
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[models.Model]:
-        """Retrieves data for fields from an ElementTree object
-
-        :param parent_pk: The pk of the parent model
-        :param xml: An xml tree from which the data for the model will be extracted
-        """
-        raise NotImplementedError("XML parsing must be defined")
 
 
 class Process(MigrationBase):

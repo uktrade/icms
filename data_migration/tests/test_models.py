@@ -1,10 +1,8 @@
-from datetime import datetime
-
 import pytest
 
 from data_migration import models as dm
 
-from . import factory, xml_data
+from . import factory
 
 
 @pytest.mark.django_db
@@ -213,68 +211,3 @@ def test_wood_application_get_data_export():
         "importapplication_ptr_id",
         "shipping_year",
     ]
-
-
-def test_oil_application_parse_xml():
-    reports = dm.OILSupplementaryReport.parse_xml(
-        [(1, xml_data.sr_upload_xml), (2, xml_data.sr_manual_xml)]
-    )
-
-    assert len(reports) == 3
-    sr1, sr2, sr3 = reports
-    assert sr1.transport == "AIR"
-    assert sr1.date_received == datetime.strptime("2021-10-14", "%Y-%m-%d").date()
-    assert sr1.supplementary_info_id == 1
-    assert sr2.transport == "RAIL"
-    assert sr2.date_received == datetime.strptime("2021-11-03", "%Y-%m-%d").date()
-    assert sr2.supplementary_info_id == 2
-    assert sr3.transport is None
-    assert sr3.date_received is None
-    assert sr3.supplementary_info_id == 2
-
-    firearms = dm.OILSupplementaryReportFirearm.parse_xml(
-        [(1, sr1.report_firearms_xml), (2, sr2.report_firearms_xml), (3, sr3.report_firearms_xml)]
-    )
-    assert len(firearms) == 4
-    f1, f2, f3, f4 = firearms
-    assert f1.is_upload is True
-    assert (f1.is_manual and f1.is_no_firearm) is False
-    assert f1.report_id == 1
-
-    assert f2.is_manual is True
-    assert (f2.is_upload and f2.is_no_firearm) is False
-    assert f2.serial_number == "N/A"
-    assert f2.calibre == "6MM"
-    assert f2.model == "A gun barrel"
-    assert f2.proofing == "no"
-    assert f2.report_id == 2
-
-    assert f3.is_manual is True
-    assert (f3.is_upload and f3.is_no_firearm) is False
-    assert f3.serial_number == "123456"
-    assert f3.calibre == ".30"
-    assert f3.model == "A gun"
-    assert f3.proofing == "yes"
-    assert f3.report_id == 2
-
-    assert f4.is_manual is True
-    assert (f4.is_upload and f4.is_no_firearm) is False
-    assert f4.report_id == 3
-
-
-def test_dfl_goods_parse_xml():
-    goods = dm.DFLGoodsCertificate.parse_xml([(1, xml_data.dfl_goods_cert)])
-    assert len(goods) == 2
-    gc1, gc2 = goods
-
-    assert gc1.dfl_application_id == 1
-    assert gc1.deactivated_certificate_reference == "REF A"
-    assert gc1.goods_description == "Test Commodity A"
-    assert gc1.issuing_country_id == 1
-    assert gc1.target_id == 1234
-
-    assert gc2.dfl_application_id == 1
-    assert gc2.deactivated_certificate_reference == "REF B"
-    assert gc2.goods_description == "Test Commodity B"
-    assert gc2.issuing_country_id == 2
-    assert gc2.target_id == 5678

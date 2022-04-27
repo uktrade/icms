@@ -131,20 +131,14 @@ class Command(BaseCommand):
     def _extract_xml_data(self, data_type: DATA_TYPE) -> None:
         """Iterates over the models listed for the specified data_type and parses the xml from their parent"""
 
-        xml_field_list = DATA_TYPE_XML[data_type]
+        parser_list = DATA_TYPE_XML[data_type]
         name = format_name(data_type)
 
         self.stdout.write(f"Extracting xml data for {name}")
 
-        for parent, field, child in xml_field_list:
-            self.stdout.write(
-                f"Extracting xml data from {parent.__name__}.{field} to {child.__name__}"
-            )
-            objs = (
-                parent.objects.filter(**{f"{field}__isnull": False})
-                .values_list("pk", field)
-                .iterator()
-            )
+        for parser in parser_list:
+            self.stdout.write(parser.log_message())
+            objs = parser.get_queryset()
 
             while True:
                 batch = list(islice(objs, self.batchsize))
@@ -152,7 +146,8 @@ class Command(BaseCommand):
                 if not batch:
                     break
 
-                child.objects.bulk_create(child.parse_xml(batch))
+                for model, data in parser.parse_xml(batch).items():
+                    model.objects.bulk_create(data)
 
         self.stdout.write("XML extraction complete")
 
