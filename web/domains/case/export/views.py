@@ -152,6 +152,9 @@ def create_export_application(
                     ).first()
                     application.countries.add(country)
 
+                elif application_type.type_code == ExportApplicationType.Types.FREE_SALE:
+                    application.schedules.create(created_by=request.user)
+
                 # Add a draft certificate when creating an application
                 # Ensures we never have to check for None
                 application.certificates.create(status=ExportApplicationCertificate.Status.DRAFT)

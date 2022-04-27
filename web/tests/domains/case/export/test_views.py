@@ -1,9 +1,14 @@
+import re
+
 import pytest
 from django.urls import reverse, reverse_lazy
 from guardian.shortcuts import assign_perm
-from pytest_django.asserts import assertTemplateUsed
+from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
-from web.domains.case.export.models import ExportApplicationType
+from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplication,
+    ExportApplicationType,
+)
 from web.domains.cat.models import CertificateApplicationTemplate
 from web.domains.country.models import Country
 from web.domains.user.models import User
@@ -247,3 +252,17 @@ class TestSubmitCom(AuthTestCase):
 
         with self.assertRaises(Exception, msg="Expected one active task, got 0"):
             self.client.get(self.url)
+
+
+def test_create_csf_app_has_a_schedule(exporter_client, exporter, exporter_office):
+    url = reverse("export:create-application", kwargs={"type_code": "cfs"})
+    data = {"exporter": exporter.pk, "exporter_office": exporter_office.pk}
+
+    response = exporter_client.post(url, data)
+
+    application_pk = re.search(r"\d+", response.url).group(0)
+    expected_url = reverse("export:cfs-edit", kwargs={"application_pk": application_pk})
+    assertRedirects(response, expected_url, 302)
+
+    cfs_app = CertificateOfFreeSaleApplication.objects.get(pk=application_pk)
+    assert cfs_app.schedules.count() == 1
