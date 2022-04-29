@@ -82,7 +82,7 @@ class AccessRequest(WorkbasketBase, Process):
             return self.submitted_by.email
         return None
 
-    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
         r = WorkbasketRow()
 
         r.reference = self.reference
@@ -103,15 +103,15 @@ class AccessRequest(WorkbasketBase, Process):
 
         info_rows = ["Access Request"]
 
-        if self.further_information_requests.open():
+        if self.annotation_open_fir_pks:
             info_rows.append("Further Information Requested")
 
-        if self.approval_requests.filter(is_active=True) and user.has_perm("web.ilb_admin"):
+        if is_ilb_admin and self.annotation_has_open_approval_request:
             info_rows.append("Approval Requested")
 
         information = "\n".join(info_rows)
 
-        if user.has_perm("web.ilb_admin"):
+        if is_ilb_admin:
             admin_actions: list[WorkbasketAction] = []
 
             if self.process_type == "ExporterAccessRequest":
@@ -142,8 +142,8 @@ class AccessRequest(WorkbasketBase, Process):
                 )
             ]
 
-            for fir in self.further_information_requests.open():
-                kwargs = {"application_pk": self.pk, "fir_pk": fir.pk, "case_type": "access"}
+            for fir_pk in self.annotation_open_fir_pks:
+                kwargs = {"application_pk": self.pk, "fir_pk": fir_pk, "case_type": "access"}
 
                 owner_actions.append(
                     WorkbasketAction(

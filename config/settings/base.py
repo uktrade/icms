@@ -311,3 +311,6 @@ ICMS_V1_REPLICA_PASSWORD = env.str("ICMS_V1_REPLICA_PASSWORD", default="")
 ICMS_V1_REPLICA_DSN = env.str("ICMS_V1_REPLICA_DSN", default="")
 ICMS_PROD_USER = env.str("ICMS_PROD_USER", default="")
 ICMS_PROD_PASSWORD = env.str("ICMS_PROD_PASSWORD", default="")
+
+# Workbasket pagination setting
+WORKBASKET_PER_PAGE = env.int("WORKBASKET_PER_PAGE", 100)
