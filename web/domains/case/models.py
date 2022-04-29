@@ -366,6 +366,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         self.submit_datetime = timezone.now()
         self.submitted_by = request.user
+        self.update_order_datetime()
         self.save()
 
         task.is_active = False

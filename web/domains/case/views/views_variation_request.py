@@ -151,7 +151,7 @@ class VariationRequestCancelView(
 
         # Cancel the draft licence/Certificate
         archive_application_licence_or_certificate(self.application)
-
+        self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
 
@@ -194,7 +194,8 @@ class VariationRequestRequestUpdateView(
 
     def form_valid(self, form: ModelForm) -> HttpResponseRedirect:
         result = super().form_valid(form)
-
+        self.application.update_order_datetime()
+        self.application.save()
         self.update_application_tasks()
 
         return result
@@ -289,6 +290,8 @@ class VariationRequestRespondToUpdateRequestView(
         self.object.save()
 
         self.update_application_tasks()
+        self.application.update_order_datetime()
+        self.application.save()
 
         return result
 

@@ -115,6 +115,9 @@ def withdraw_case(
                 withdrawal.request_by = request.user
                 withdrawal.save()
 
+                application.update_order_datetime()
+                application.save()
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.WithdrawForm()
@@ -194,6 +197,7 @@ def manage_withdrawals(
                         application.status = model_class.Statuses.WITHDRAWN
                         application.is_active = False
 
+                    application.update_order_datetime()
                     application.save()
 
                     end_process_task(task, request.user)
@@ -269,6 +273,7 @@ def take_ownership(
             # We may need to create some more datetime fields
 
         application.case_owner = request.user
+        application.update_order_datetime()
         application.save()
 
         return redirect(
@@ -297,6 +302,7 @@ def release_ownership(
             application.status = model_class.Statuses.SUBMITTED
 
         application.case_owner = None
+        application.update_order_datetime()
         application.save()
 
         return redirect(reverse("workbasket"))
@@ -416,6 +422,7 @@ def start_authorisation(
                     next_task = Task.TaskType.AUTHORISE
                     application.status = model_class.Statuses.PROCESSING
 
+            application.update_order_datetime()
             application.save()
 
             end_process_task(task)
@@ -545,6 +552,9 @@ def authorise_documents(
                     process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
                 )
 
+                application.update_order_datetime()
+                application.save()
+
                 # Queues all documents to be created
                 create_case_document_pack(application, request.user)
 
@@ -651,6 +661,9 @@ class RecreateCaseDocumentsView(
 
         self.update_application_tasks()
         create_case_document_pack(self.application, self.request.user)
+
+        self.application.update_order_datetime()
+        self.application.save()
 
         messages.success(
             request,
@@ -784,6 +797,7 @@ def cancel_authorisation(
         if application.status != model_class.Statuses.VARIATION_REQUESTED:
             application.status = model_class.Statuses.PROCESSING
 
+        application.update_order_datetime()
         application.save()
 
         end_process_task(task, request.user)
@@ -814,6 +828,7 @@ def ack_notification(
             if form.is_valid():
                 application.acknowledged_by = request.user
                 application.acknowledged_datetime = timezone.now()
+                application.update_order_datetime()
                 application.save()
 
                 end_process_task(task)
