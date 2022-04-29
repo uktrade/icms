@@ -102,6 +102,9 @@ def manage_update_requests(
                     update_request.request_subject, update_request.request_detail, recipients
                 )
 
+                application.update_order_datetime()
+                application.save()
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.UpdateRequestForm(
@@ -195,6 +198,9 @@ def start_update_request(
             update_request.status = models.UpdateRequest.Status.UPDATE_IN_PROGRESS
             update_request.save()
 
+            application.update_order_datetime()
+            application.save()
+
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application_pk})
             )
@@ -247,6 +253,9 @@ def respond_update_request(
                 update_request.response_by = request.user
                 update_request.response_datetime = timezone.now()
                 update_request.save()
+
+                application.update_order_datetime()
+                application.save()
 
                 return redirect(
                     reverse(

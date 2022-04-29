@@ -43,6 +43,15 @@ def check_application_permission(application: ImpOrExpOrAccess, user: User, case
         raise PermissionDenied
 
 
+def _has_importer_exporter_access(user: User, case_type: str) -> bool:
+    if case_type == "import":
+        return user.has_perm("web.importer_access")
+    elif case_type == "export":
+        return user.has_perm("web.exporter_access")
+
+    raise NotImplementedError(f"Unknown case_type {case_type}")
+
+
 def get_application_current_task(
     application: ImpOrExpOrAccess, case_type: str, task_type: str, select_for_update: bool = True
 ) -> Task:
@@ -206,12 +215,3 @@ def create_acknowledge_notification_task(application: ImpOrExp, previous_task: O
         application.acknowledged_datetime = None
 
     application.save()
-
-
-def _has_importer_exporter_access(user: User, case_type: str) -> bool:
-    if case_type == "import":
-        return user.has_perm("web.importer_access")
-    elif case_type == "export":
-        return user.has_perm("web.exporter_access")
-
-    raise NotImplementedError(f"Unknown case_type {case_type}")

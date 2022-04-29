@@ -9,6 +9,7 @@ from django.db.models.functions import RowNumber
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
@@ -129,7 +130,7 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
             else:
                 apps = ExportApplication.objects.select_for_update().filter(pk__in=applications)
 
-            apps.update(case_owner=new_case_owner)
+            apps.update(case_owner=new_case_owner, order_datetime=timezone.now())
         else:
             return HttpResponse(status=400)
 
@@ -182,6 +183,7 @@ class ReopenApplicationView(
         self.set_application_and_task()
         self.application.case_owner = None
 
+        self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
 
@@ -293,7 +295,7 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
         self.application.reference = reference.get_variation_request_case_reference(
             self.application
         )
-
+        self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
 
@@ -344,6 +346,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
             self.application
         )
 
+        self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
 

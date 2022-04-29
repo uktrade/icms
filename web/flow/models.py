@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 from . import errors
 
@@ -57,6 +58,9 @@ class Process(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(blank=True, null=True)
+
+    # Used to order the workbasket - Changes when a variety of actions are performed
+    order_datetime = models.DateTimeField(default=timezone.now)
 
     def get_expected_task(self, task_type: str, *, select_for_update=True) -> "Task":
         """Get the expected active current task"""
@@ -195,6 +199,9 @@ class Process(models.Model):
 
         else:
             raise NotImplementedError(f"Unknown process_type {pt}")
+
+    def update_order_datetime(self) -> None:
+        self.order_datetime = timezone.now()
 
 
 class Task(models.Model):

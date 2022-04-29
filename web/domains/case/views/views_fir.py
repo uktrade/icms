@@ -161,6 +161,9 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
                     notify.further_information_requested(fir, contacts)
 
+                    application.update_order_datetime()
+                    application.save()
+
                 return _manage_fir_redirect(application_pk, case_type)
         else:
             form = fir_forms.FurtherInformationRequestForm(instance=fir)
@@ -436,6 +439,9 @@ def respond_fir(
                 fir.status = FurtherInformationRequest.RESPONDED
                 fir.response_by = request.user
                 fir.save()
+
+                application.update_order_datetime()
+                application.save()
 
                 notify.further_information_responded(application, fir)
 
