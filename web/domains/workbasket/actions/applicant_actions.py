@@ -1,3 +1,4 @@
+import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
 from django.urls import reverse
@@ -105,83 +106,68 @@ class ViewApplicationAction(Action):
 class RespondToFurtherInformationRequestAction(Action):
     def show_link(self) -> bool:
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
-        open_firs = self.application.further_information_requests.open()
 
-        return correct_status and open_firs.exists()
+        return correct_status and self.application.annotation_open_fir_pairs
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        open_firs = self.application.further_information_requests.open()
 
         return [
             WorkbasketAction(
                 is_post=False,
                 name="Respond",
-                url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir.pk}),
-                section_label=f"Further Information Request, {fir.requested_datetime.strftime('%d %b %Y %H:%M:%S')}",
+                url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir_pk}),
+                section_label=f"Further Information Request, {datetime.datetime.fromisoformat(requested_datetime).strftime('%d %b %Y %H:%M:%S')}",
             )
-            for fir in open_firs.order_by("requested_datetime")
+            for fir_pk, requested_datetime in self.application.annotation_open_fir_pairs
         ]
 
 
-# TODO: ICMSLST-1404 revisit
-# Replace with annotation or task instead of filtering current_update_requests
 class RespondToUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
-        open_requests = self.application.current_update_requests().filter(status="OPEN")
 
-        if correct_status and correct_task and open_requests.exists():
+        if correct_status and correct_task and self.application.annotation_open_ur_pks:
             show_link = True
 
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        open_requests = self.application.current_update_requests().filter(status="OPEN")
 
-        # TODO: There *should* only ever be a single "Respond to Update Request" link
+        # Note: There *should* only ever be a single "Respond to Update Request" link
         return [
             WorkbasketAction(
                 is_post=False,
                 name="Respond to Update Request",
                 url=reverse(
                     "case:start-update-request",
-                    kwargs=kwargs | {"update_request_pk": update.pk},
+                    kwargs=kwargs | {"update_request_pk": update_pk},
                 ),
                 section_label="Application Update Requested",
             )
-            for update in open_requests
+            for update_pk in self.application.annotation_open_ur_pks
         ]
 
 
-# TODO: ICMSLST-1404 revisit
-# Replace with annotation or task instead of filtering current_update_requests
 class ResumeUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
-        in_progress_requests = self.application.current_update_requests().filter(
-            status__in=["UPDATE_IN_PROGRESS", "RESPONDED"]
-        )
 
-        if correct_status and correct_task and in_progress_requests.exists():
+        if correct_status and correct_task and self.application.annotation_has_in_progress_ur:
             show_link = True
 
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        in_progress_requests = self.application.current_update_requests().filter(
-            status__in=["UPDATE_IN_PROGRESS", "RESPONDED"]
-        )
 
-        # TODO: There *should* only ever be a single "Resume Update Request" link
         return [
             WorkbasketAction(
                 is_post=False,
@@ -192,12 +178,9 @@ class ResumeUpdateRequestAction(Action):
                 ),
                 section_label="Application Update in Progress",
             )
-            for _ in in_progress_requests
         ]
 
 
-# TODO: ICMSLST-1403 revisit
-# Replace with annotation or task instead of filtering withdrawals
 class WithdrawApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
@@ -216,8 +199,7 @@ class WithdrawApplicationAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
-        # "open" instead of WithdrawApplication.STATUS_OPEN to avoid circular dependency
-        if self.application.withdrawals.filter(status="open", is_active=True).exists():
+        if self.application.annotation_has_withdrawal:
             name = "Pending Withdrawal"
         else:
             name = "Request Withdrawal"

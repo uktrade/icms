@@ -307,7 +307,7 @@ class ApplicationBase(WorkbasketBase, Process):
     def get_reference(self) -> str:
         return self.reference or self.DEFAULT_REF
 
-    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
         """Get data to show in the workbasket."""
 
         r = WorkbasketRow()
@@ -329,7 +329,6 @@ class ApplicationBase(WorkbasketBase, Process):
 
         r.company_agent = self.agent  # type: ignore[attr-defined]
 
-        is_ilb_admin = user.has_perm("web.ilb_admin")
         include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
 
         if is_ilb_admin:

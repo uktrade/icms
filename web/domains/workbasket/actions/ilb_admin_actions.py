@@ -197,7 +197,6 @@ class CancelAuthorisationAction(Action):
         ]
 
 
-# TODO: ICMSLST-1532 Revisit this and update workbasket to call this using javascript.
 class CheckCaseDocumentGenerationAction(Action):
     def show_link(self) -> bool:
         show_link = False

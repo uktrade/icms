@@ -66,7 +66,7 @@ class WorkbasketRow:
 class WorkbasketBase:
     """Base class for every Process subclass that wants to be shown in the workbasket."""
 
-    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
         """Get data to show in the workbasket."""
 
         raise NotImplementedError

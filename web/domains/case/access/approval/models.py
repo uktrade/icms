@@ -76,7 +76,7 @@ class ApprovalRequest(WorkbasketBase, Process):
     def is_complete(self):
         return self.status == self.COMPLETED
 
-    def get_workbasket_row(self, user: User) -> WorkbasketRow:
+    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
         r = WorkbasketRow()
 
         r.reference = self.access_request.reference
