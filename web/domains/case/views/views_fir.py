@@ -12,7 +12,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 
@@ -41,10 +41,16 @@ def manage_firs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        # TODO: ICMSLST-1344 This throws an exception - Access models don't have a case_worker
-        task, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
-        )
+        # Access requests don't have a case_owner so can't call get_current_task_and_readonly_status
+        if application.process_type in [ProcessTypes.EAR, ProcessTypes.IAR]:
+            task = get_application_current_task(
+                application, case_type, Task.TaskType.PROCESS, select_for_update=False
+            )
+            readonly_view = False
+        else:
+            task, readonly_view = get_current_task_and_readonly_status(
+                application, case_type, request.user, Task.TaskType.PROCESS
+            )
 
         if case_type in ["import", "export"]:
             show_firs = True
