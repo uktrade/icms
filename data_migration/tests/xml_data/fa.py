@@ -42,53 +42,56 @@ import_contact_xml = """
 </SELLER_HOLDER_LIST>
 """.strip()
 
+sr_upload_goods = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST/>
+    <FILE_UPLOAD_LIST>
+      <FILE_UPLOAD>
+          <FILE_CONTENT>
+            <filename>a file.pdf</filename>
+            <content-type>application/pdf</content-type>
+            <browser-content-type>application/pdf</browser-content-type>
+            <original-file-location>a file.pdf</original-file-location>
+            <size>1234</size>
+            <status>complete</status>
+            <status-message>Upload complete</status-message>
+            <system-message/>
+            <readable-error-message/>
+            <upload-date-time>2021-11-08T08:29:59</upload-date-time>
+            <file-upload-type>file</file-upload-type>
+            <file-id>abcdefg</file-id>
+            <character-encoding>not specified</character-encoding>
+            <diagnostic-info>
+              <filename>a file.pdf</filename>
+              <content-type>application/pdf</content-type>
+              <browser-content-type>application/pdf</browser-content-type>
+              <original-file-location>a file.pdf</original-file-location>
+              <estimated-size>1234</estimated-size>
+              <status>complete</status>
+              <status-message>Upload complete</status-message>
+              <system-message/>
+              <readable-error-message/>
+              <upload-date-time>2021-11-08T08:29:59</upload-date-time>
+              <file-id>abcde</file-id>
+            </diagnostic-info>
+          </FILE_CONTENT>
+      </FILE_UPLOAD>
+    </FILE_UPLOAD_LIST>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
+""".strip()
 
 sr_upload_xml = """
 <FA_SUPPLEMENTARY_REPORT_LIST>
   <FA_SUPPLEMENTARY_REPORT>
     <FA_SUPPLEMENTARY_REPORT_DETAILS>
-      <GOODS_LINE_LIST>
-        <GOODS_LINE>
-          <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
-          <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-          <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
-          <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
-          <FIREARMS_DETAILS_LIST/>
-          <FILE_UPLOAD_LIST>
-            <FILE_UPLOAD>
-                <FILE_CONTENT>
-                  <filename>a file.pdf</filename>
-                  <content-type>application/pdf</content-type>
-                  <browser-content-type>application/pdf</browser-content-type>
-                  <original-file-location>a file.pdf</original-file-location>
-                  <size>1234</size>
-                  <status>complete</status>
-                  <status-message>Upload complete</status-message>
-                  <system-message/>
-                  <readable-error-message/>
-                  <upload-date-time>2021-11-08T08:29:59</upload-date-time>
-                  <file-upload-type>file</file-upload-type>
-                  <file-id>abcdefg</file-id>
-                  <character-encoding>not specified</character-encoding>
-                  <diagnostic-info>
-                    <filename>a file.pdf</filename>
-                    <content-type>application/pdf</content-type>
-                    <browser-content-type>application/pdf</browser-content-type>
-                    <original-file-location>a file.pdf</original-file-location>
-                    <estimated-size>1234</estimated-size>
-                    <status>complete</status>
-                    <status-message>Upload complete</status-message>
-                    <system-message/>
-                    <readable-error-message/>
-                    <upload-date-time>2021-11-08T08:29:59</upload-date-time>
-                    <file-id>abcde</file-id>
-                  </diagnostic-info>
-                </FILE_CONTENT>
-            </FILE_UPLOAD>
-          </FILE_UPLOAD_LIST>
-          <GOODS_ITEM_SUBMIT/>
-        </GOODS_LINE>
-      </GOODS_LINE_LIST>
+      {}
       <MODE_OF_TRANSPORT>AIR</MODE_OF_TRANSPORT>
       <RECEIVED_DATE>2021-10-14</RECEIVED_DATE>
       <REPORT_SELLER_HOLDER>1</REPORT_SELLER_HOLDER>
@@ -99,36 +102,109 @@ sr_upload_xml = """
     </FA_SUPPLEMENTARY_REPORT_DETAILS>
   </FA_SUPPLEMENTARY_REPORT>
 </FA_SUPPLEMENTARY_REPORT_LIST>
+""".strip().format(
+    sr_upload_goods
+)
+
+
+sr_manual_goods_1 = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>N/A</SERIAL_NUMBER>
+        <CALIBRE>6MM</CALIBRE>
+        <MAKE_MODEL>A gun barrel</MAKE_MODEL>
+        <PROOFING>N</PROOFING>
+      </FIREARMS_DETAILS>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>123456</SERIAL_NUMBER>
+        <CALIBRE>.30</CALIBRE>
+        <MAKE_MODEL>A gun</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
 """.strip()
+
+sr_manual_goods_2 = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>Ammunition</SERIAL_NUMBER>
+        <CALIBRE>mixed</CALIBRE>
+        <MAKE_MODEL>Various</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
+""".strip()
+
+
+sr_manual_goods_3 = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>321</SERIAL_NUMBER>
+        <CALIBRE>100</CALIBRE>
+        <MAKE_MODEL>Test A</MAKE_MODEL>
+        <PROOFING>N</PROOFING>
+      </FIREARMS_DETAILS>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>543</SERIAL_NUMBER>
+        <CALIBRE>55</CALIBRE>
+        <MAKE_MODEL>Test B</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>11</SERIAL_NUMBER>
+        <CALIBRE>120</CALIBRE>
+        <MAKE_MODEL>Test C</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
+""".strip()
+
 
 sr_manual_xml = """
 <FA_SUPPLEMENTARY_REPORT_LIST>
   <FA_SUPPLEMENTARY_REPORT>
     <FA_SUPPLEMENTARY_REPORT_DETAILS>
-      <GOODS_LINE_LIST>
-        <GOODS_LINE>
-          <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
-          <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
-          <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
-          <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
-          <FIREARMS_DETAILS_LIST>
-            <FIREARMS_DETAILS>
-              <SERIAL_NUMBER>N/A</SERIAL_NUMBER>
-              <CALIBRE>6MM</CALIBRE>
-              <MAKE_MODEL>A gun barrel</MAKE_MODEL>
-              <PROOFING>N</PROOFING>
-            </FIREARMS_DETAILS>
-            <FIREARMS_DETAILS>
-              <SERIAL_NUMBER>123456</SERIAL_NUMBER>
-              <CALIBRE>.30</CALIBRE>
-              <MAKE_MODEL>A gun</MAKE_MODEL>
-              <PROOFING>Y</PROOFING>
-            </FIREARMS_DETAILS>
-          </FIREARMS_DETAILS_LIST>
-          <FILE_UPLOAD_LIST/>
-          <GOODS_ITEM_SUBMIT/>
-        </GOODS_LINE>
-      </GOODS_LINE_LIST>
+      {0}
       <MODE_OF_TRANSPORT>RAIL</MODE_OF_TRANSPORT>
       <RECEIVED_DATE>2021-11-03</RECEIVED_DATE>
       <REPORT_SELLER_HOLDER>1</REPORT_SELLER_HOLDER>
@@ -141,24 +217,7 @@ sr_manual_xml = """
   <FA_SUPPLEMENTARY_REPORT>
     <HISTORICAL_REPORT_LIST/>
     <FA_SUPPLEMENTARY_REPORT_DETAILS>
-      <GOODS_LINE_LIST>
-        <GOODS_LINE>
-          <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
-          <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-          <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
-          <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
-          <FIREARMS_DETAILS_LIST>
-            <FIREARMS_DETAILS>
-              <SERIAL_NUMBER>Ammunition</SERIAL_NUMBER>
-              <CALIBRE>mixed</CALIBRE>
-              <MAKE_MODEL>Various</MAKE_MODEL>
-              <PROOFING>Y</PROOFING>
-            </FIREARMS_DETAILS>
-          </FIREARMS_DETAILS_LIST>
-          <FILE_UPLOAD_LIST/>
-          <GOODS_ITEM_SUBMIT/>
-        </GOODS_LINE>
-      </GOODS_LINE_LIST>
+      {1}
       <MODE_OF_TRANSPORT/>
       <RECEIVED_DATE/>
       <REPORT_SELLER_HOLDER/>
@@ -169,7 +228,35 @@ sr_manual_xml = """
     </FA_SUPPLEMENTARY_REPORT_DETAILS>
   </FA_SUPPLEMENTARY_REPORT>
 </FA_SUPPLEMENTARY_REPORT_LIST>
-""".strip()
+""".strip().format(
+    sr_manual_goods_1, sr_manual_goods_2
+)
+
+
+sr_manual_xml_5_goods = """
+<FA_SUPPLEMENTARY_REPORT_LIST>
+  <FA_SUPPLEMENTARY_REPORT>
+    <FA_SUPPLEMENTARY_REPORT_DETAILS>
+      {0}
+      {1}
+      {2}
+      {3}
+      <MODE_OF_TRANSPORT>RAIL</MODE_OF_TRANSPORT>
+      <RECEIVED_DATE>2021-11-03</RECEIVED_DATE>
+      <REPORT_SELLER_HOLDER>1</REPORT_SELLER_HOLDER>
+      <REPORT_SUBMITTED_FLAG>true</REPORT_SUBMITTED_FLAG>
+      <SUBMITTED_BY_WUA_ID>2</SUBMITTED_BY_WUA_ID>
+      <SUBMITTED_DATETIME>2021-11-07T13:41:00</SUBMITTED_DATETIME>
+      <FA_REPORT_ID>1</FA_REPORT_ID>
+    </FA_SUPPLEMENTARY_REPORT_DETAILS>
+  </FA_SUPPLEMENTARY_REPORT>
+</FA_SUPPLEMENTARY_REPORT_LIST>
+""".strip().format(
+    sr_manual_goods_1.rstrip("</GOODS_LINE_LIST>"),
+    sr_manual_goods_2.lstrip("<GOODS_LINE_LIST>").rstrip("</GOODS_LINE_LIST>"),
+    sr_manual_goods_3.lstrip("<GOODS_LINE_LIST>").rstrip("</GOODS_LINE_LIST>"),
+    sr_manual_goods_1.lstrip("<GOODS_LINE_LIST>"),
+)
 
 
 sr_list = """
@@ -424,3 +511,39 @@ sil_goods = """
   </COMMODITY>
 </COMMODITY_LIST>
 """.strip()
+
+sil_goods_sec_1 = """
+<COMMODITY_LIST>
+  <COMMODITY>
+    <SECTION>SEC1</SECTION>
+    <SECTION_5_CLAUSE />
+    <COMMODITY_DESC>Test Gun</COMMODITY_DESC>
+    <OBSOLETE_CALIBRE>
+      <OC_ID />
+      <NA_FLAG>false</NA_FLAG>
+    </OBSOLETE_CALIBRE>
+    <QUANTITY>5</QUANTITY>
+    <QUANTITY_UNLIMITED>Unlimited</QUANTITY_UNLIMITED>
+    <QUANTITY_UNLIMITED_FLAG>false</QUANTITY_UNLIMITED_FLAG>
+    <UNIT>UNITS</UNIT>
+    <MANUFACTURED_BEFORE_1900>N</MANUFACTURED_BEFORE_1900>
+    <CURIOSITY_OR_ORNAMENT />
+    <CURIOSITY_STATEMENT_AGREED />
+    <BREECH_LOADING_CENTREFIRE />
+    <MANUFACTURED_AFTER_1899_BEFORE_1939 />
+    <ORIGINAL_CHAMBERING />
+    <MUZZLE_LOADING />
+    <OTHER_BREECH_RIMFIRE_CARTRIDGE />
+    <OTHER_BREECH_RIMFIRE_CARTRIDGE_SPECIFIED />
+    <OTHER_IGNITION_SYSTEM />
+    <OTHER_IGNITION_SYSTEM_SPECIFIED />
+    <OTHER_IGNITION_SYSTEM_SPECIFIED_OTHER />
+    <SHOTGUN_PUNTGUN_RIFLE_LISTED_CARTRIDGES />
+    <SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE />
+    <SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE_SPECIFIED />
+    <OTHER_OPTIONS_ERROR></OTHER_OPTIONS_ERROR>
+    <S58_2_YES_ANSWER_COUNT></S58_2_YES_ANSWER_COUNT>
+    <OBSOLETE_CALIBRE_SELECTED></OBSOLETE_CALIBRE_SELECTED>
+  </COMMODITY>
+</COMMODITY_LIST>
+"""

@@ -1,14 +1,26 @@
+from typing import Generator, Optional, Type
+
 from django.db import models
+from django.db.models import OuterRef, Subquery
 
 from data_migration.models.base import MigrationBase
 
 from ..import_application import ImportApplication
-from .base import FirearmBase, SupplementaryInfoBase, SupplementaryReportBase
+from .base import (
+    FirearmBase,
+    SupplementaryInfoBase,
+    SupplementaryReportBase,
+    SupplementaryReportFirearmBase,
+)
 
 
 class SILApplication(FirearmBase):
     imad = models.OneToOneField(
-        ImportApplication, on_delete=models.PROTECT, to_field="imad_id", unique=True
+        ImportApplication,
+        on_delete=models.PROTECT,
+        to_field="imad_id",
+        unique=True,
+        related_name="sil",
     )
     section1 = models.BooleanField(default=False)
     section2 = models.BooleanField(default=False)
@@ -29,6 +41,14 @@ class SILApplication(FirearmBase):
 # TODO ICMSLST-1548: SILUserSection5 M2M
 # TODO ICMSLST-1548: Section5Authority M2M
 # TODO ICMSLST-1548: FirearmAuthorityM2M
+
+
+class SILSection(MigrationBase):
+    import_application = models.ForeignKey(
+        SILApplication, on_delete=models.PROTECT, related_name="goods_section"
+    )
+    legacy_ordinal = models.IntegerField()
+    section = models.CharField(max_length=20)
 
 
 class SILGoodsSection1(MigrationBase):
@@ -112,7 +132,7 @@ class SILSupplementaryInfo(SupplementaryInfoBase):
     imad = models.OneToOneField(
         ImportApplication,
         on_delete=models.CASCADE,
-        related_name="+",
+        related_name="supplementary_info",
         to_field="imad_id",
     )
 
@@ -120,4 +140,76 @@ class SILSupplementaryInfo(SupplementaryInfoBase):
 class SILSupplementaryReport(SupplementaryReportBase):
     supplementary_info = models.ForeignKey(
         SILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+    )
+
+
+class SILReportFirearmBase(SupplementaryReportFirearmBase):
+    class Meta:
+        abstract = True
+
+    GOODS_MODEL: Optional[Type[models.Model]] = None
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        if not cls.GOODS_MODEL:
+            raise NotImplementedError("GOODS_MODEL must be defined on the model")
+
+        values = cls.get_values() + ["goods_certificate_id"]
+        sub_query = cls.GOODS_MODEL.objects.filter(
+            legacy_ordinal=OuterRef("goods_certificate_legacy_id"),
+            import_application_id=OuterRef("report__supplementary_info__imad__id"),
+        )
+
+        return (
+            cls.objects.select_related("report__supplementary_info__imad")
+            .annotate(
+                goods_certificate_id=Subquery(sub_query.values("pk")[:1]),
+            )
+            .exclude(goods_certificate_id__isnull=True)
+            .values(*values)
+            .iterator()
+        )
+
+
+class SILSupplementaryReportFirearmSection1(SILReportFirearmBase):
+    GOODS_MODEL = SILGoodsSection1
+
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section1_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection2(SILReportFirearmBase):
+    GOODS_MODEL = SILGoodsSection2
+
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section2_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection5(SILReportFirearmBase):
+    GOODS_MODEL = SILGoodsSection5
+
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section5_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSection582Obsolete(SILReportFirearmBase):  # /PS-IGNORE
+    GOODS_MODEL = SILGoodsSection582Obsolete  # /PS-IGNORE
+
+    report = models.ForeignKey(
+        SILSupplementaryReport,
+        related_name="section582_obsolete_firearms",
+        on_delete=models.CASCADE,
+    )
+
+
+class SILSupplementaryReportFirearmSection582Other(SILReportFirearmBase):  # /PS-IGNORE
+    GOODS_MODEL = SILGoodsSection582Other  # /PS-IGNORE
+
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
     )

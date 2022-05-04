@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Generator, Optional
 
 from lxml import etree
 
@@ -8,7 +8,6 @@ from data_migration.utils.format import (
     date_or_none,
     get_xml_val,
     int_or_none,
-    str_or_blank,
     str_to_bool,
     str_to_yes_no,
     xml_str_or_none,
@@ -159,6 +158,11 @@ class SILGoodsParser(BaseXmlParser):
             commodity_list = xml_tree.xpath(cls.ROOT_NODE)
 
             for i, xml in enumerate(commodity_list, start=1):
+                section = get_xml_val(xml, "./SECTION/text()")
+
+                if not section:
+                    continue
+
                 obj = cls.parse_xml_fields(parent_pk, xml)
 
                 if not obj:
@@ -166,6 +170,16 @@ class SILGoodsParser(BaseXmlParser):
 
                 obj.legacy_ordinal = i
                 model_lists[obj._meta.model].append(obj)
+
+                # Populate the SILSection model so we know which section model to retrieve the goods info
+                sil_section = dm.SILSection(
+                    **{
+                        "section": section,
+                        "legacy_ordinal": i,
+                        "import_application_id": parent_pk,
+                    }
+                )
+                model_lists[dm.SILSection].append(sil_section)
 
         return model_lists
 
@@ -202,10 +216,6 @@ class SILGoodsParser(BaseXmlParser):
         """
 
         section = get_xml_val(xml, "./SECTION/text()")
-
-        if not section:
-            return None
-
         return getattr(cls, f"parse_{section.lower()}")(parent_pk, xml)
 
     @classmethod
@@ -289,16 +299,16 @@ class SILGoodsParser(BaseXmlParser):
             | {
                 "acknowledgment": str_to_bool(acknowledgment),
                 "bore": str_to_bool(bore),
-                "bore_details": str_or_blank(bore_details),
+                "bore_details": bore_details or "",
                 "chamber": str_to_bool(chamber),
                 "curiosity_ornament": str_to_bool(curiosity_ornament),
                 "ignition": str_to_bool(ignition),
-                "ignition_details": str_or_blank(ignition_details),
-                "ignition_other": str_or_blank(ignition_other),
+                "ignition_details": ignition_details or "",
+                "ignition_other": ignition_other or "",
                 "manufacture": str_to_bool(manufacture),
                 "muzzle_loading": str_to_bool(muzzle_loading),
                 "rimfire": str_to_bool(rimfire),
-                "rimfire_details": str_or_blank(rimfire_details),
+                "rimfire_details": rimfire_details or "",
             }
         )
 
@@ -387,12 +397,14 @@ class ReportFirearmParser(BaseXmlParser):
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
             for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
                 reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
+
                 if reporting_mode == "MANUAL":
                     report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
                     for report_firearm_xml in report_firearm_xml_list:
                         obj = cls.parse_manual_xml(parent_pk, report_firearm_xml)
                         obj.goods_certificate_legacy_id = ordinal
                         model_list[obj._meta.model].append(obj)
+
                 elif reporting_mode == "UPLOAD":
                     model_list[cls.MODEL].append(
                         cls.MODEL(
@@ -401,6 +413,7 @@ class ReportFirearmParser(BaseXmlParser):
                     )
                     # TODO ICMSLST-1496: Report firearms need to connect to documents
                     # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
+
                 else:
                     # TODO ICMSLST-1496: Check no firearms reported
                     model_list[cls.MODEL].append(
@@ -453,6 +466,112 @@ class DFLReportFirearmParser(ReportFirearmParser):
 class OILReportFirearmParser(ReportFirearmParser):
     MODEL = dm.OILSupplementaryReportFirearm
     PARENT = dm.OILSupplementaryReport
+
+
+class SILReportFirearmParser(BaseXmlParser):
+    ROOT_NODE = "/GOODS_LINE_LIST/GOODS_LINE"
+    SECTION_MODEL = {
+        "SEC1": dm.SILSupplementaryReportFirearmSection1,
+        "SEC2": dm.SILSupplementaryReportFirearmSection2,
+        "SEC5": dm.SILSupplementaryReportFirearmSection5,
+        "OBSOLETE_CALIBRE": dm.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+        "OTHER": dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+    }
+
+    @classmethod
+    def get_queryset(cls) -> Generator:
+        supplementary_info = "import_application__imad__supplementary_info"
+        reports = f"{supplementary_info}__reports"
+        xml_field = f"{reports}__report_firearms_xml"
+
+        return (
+            dm.SILSection.objects.select_related(supplementary_info)
+            .prefetch_related(reports)
+            .filter(**{f"{xml_field}__isnull": False})
+            .values_list(f"{reports}__pk", xml_field, "section", "legacy_ordinal")
+            .iterator()
+        )
+
+    @classmethod
+    def parse_xml(cls, batch: BatchT) -> ModelListT:
+        """Example XML structure
+
+        <GOODS_LINE_LIST>
+          <GOODS_LINE>
+            <FA_REPORTING_MODE />
+            <FIREARMS_DETAILS_LIST>
+              <FIREARMS_DETAILS />
+            </FIREARMS_DETAILS_LIST>
+          </GOODS_LINE>
+        </GOODS_LINE_LIST>
+        """
+
+        model_list: ModelListT = defaultdict(list)
+
+        for parent_pk, xml, section, ordinal in batch:
+            xml_tree = etree.fromstring(xml)
+            goods_index = ordinal - 1
+            goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
+            goods_xml = goods_xml_list[goods_index]
+            reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
+
+            model = cls.SECTION_MODEL[section]
+
+            if reporting_mode == "MANUAL":
+                report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
+                for report_firearm_xml in report_firearm_xml_list:
+                    obj = cls.parse_manual_xml(parent_pk, model, report_firearm_xml)
+                    obj.goods_certificate_legacy_id = ordinal
+                    model_list[model].append(obj)
+
+            elif reporting_mode == "UPLOAD":
+                model_list[model].append(
+                    model(report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal)
+                )
+                # TODO ICMSLST-1496: Report firearms need to connect to documents
+                # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
+
+            else:
+                # TODO ICMSLST-1496: Check no firearms reported
+                model_list[model].append(
+                    model(
+                        report_id=parent_pk,
+                        is_no_firearm=True,
+                        goods_certificate_legacy_id=ordinal,
+                    )
+                )
+
+        return model_list
+
+    @classmethod
+    def parse_manual_xml(
+        cls, parent_pk: int, goods_model: "Model", xml: etree.ElementTree
+    ) -> "Model":
+        """Exmaple XML structure
+
+        <FIREARMS_DETAILS>
+          <SERIAL_NUMBER />
+          <CALIBRE />
+          <MAKE_MODEL />
+          <PROOFING />
+        </FIREARMS_DETAILS>
+        """
+
+        serial_number = get_xml_val(xml, ".//SERIAL_NUMBER/text()")
+        calibre = get_xml_val(xml, ".//CALIBRE/text()")
+        model = get_xml_val(xml, ".//MAKE_MODEL/text()")
+        proofing = get_xml_val(xml, ".//PROOFING/text()")
+
+        return goods_model(
+            **{
+                "report_id": parent_pk,
+                "serial_number": serial_number,
+                "calibre": calibre,
+                "model": model,
+                "proofing": str_to_yes_no(proofing),
+                "is_manual": True,
+            }
+        )
 
 
 class DFLGoodsCertificateParser(BaseXmlParser):

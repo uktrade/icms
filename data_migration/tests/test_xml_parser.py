@@ -128,3 +128,63 @@ def test_sil_goods_parse_xml():
     assert sec5_other.rimfire is True
     assert sec5_other.rimfire_details == ".32 rimfire"
     assert sec5_other.legacy_ordinal == 5
+
+    sil_sections = data[dm.SILSection]
+    assert len(sil_sections) == 5
+
+    assert sil_sections[0].section == "SEC1"
+    assert sil_sections[0].legacy_ordinal == 1
+
+    assert sil_sections[1].section == "SEC2"
+    assert sil_sections[1].legacy_ordinal == 2
+
+    assert sil_sections[2].section == "SEC5"
+    assert sil_sections[2].legacy_ordinal == 3
+
+    assert sil_sections[3].section == "OBSOLETE_CALIBRE"
+    assert sil_sections[3].legacy_ordinal == 4
+
+    assert sil_sections[4].section == "OTHER"
+    assert sil_sections[4].legacy_ordinal == 5
+
+
+def test_sil_report_firearms_parse_xml():
+    data = xml_parser.SILReportFirearmParser.parse_xml(
+        [
+            (1, xml_data.sr_upload_goods, "SEC1", 1),
+            (2, xml_data.sr_manual_goods_3, "SEC5", 1),
+            (2, xml_data.sr_manual_goods_3, "SEC2", 2),
+        ]
+    )
+
+    sec1_data = data[dm.SILSupplementaryReportFirearmSection1]
+    assert len(sec1_data) == 1
+    sec1 = sec1_data[0]
+    assert sec1.goods_certificate_legacy_id == 1
+    assert sec1.report_id == 1
+    assert sec1.is_upload is True
+    assert sec1.is_manual is False
+    assert sec1.is_no_firearm is False
+
+    sec2_data = data[dm.SILSupplementaryReportFirearmSection2]
+    assert len(sec2_data) == 1
+    sec2 = sec2_data[0]
+    assert sec2.goods_certificate_legacy_id == 2
+    assert sec2.report_id == 2
+    assert sec2.is_upload is False
+    assert sec2.is_manual is True
+    assert sec2.is_no_firearm is False
+
+    sec5_data = data[dm.SILSupplementaryReportFirearmSection5]
+    assert len(sec5_data) == 2
+    sec5_1, sec5_2 = sec5_data
+    assert sec5_1.goods_certificate_legacy_id == 1
+    assert sec5_1.report_id == 2
+    assert sec5_1.is_upload is False
+    assert sec5_1.is_manual is True
+    assert sec5_1.is_no_firearm is False
+    assert sec5_2.goods_certificate_legacy_id == 1
+    assert sec5_2.report_id == 2
+    assert sec5_2.is_upload is False
+    assert sec5_2.is_manual is True
+    assert sec5_2.is_no_firearm is False

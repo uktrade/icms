@@ -86,6 +86,12 @@ ia_source_target = source_target_list(
         "SILGoodsSection582Other",  # /PS-IGNORE
         "SILSupplementaryInfo",
         "SILSupplementaryReport",
+        "SILSupplementaryReportFirearmSection1",
+        "SILSupplementaryReportFirearmSection2",
+        "SILSupplementaryReportFirearmSection5",
+        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
+        # "SILSupplementaryReportFirearmSection582Obsolete", # /PS-IGNORE
+        "SILSupplementaryReportFirearmSection582Other",  # /PS-IGNORE
         "DFLApplication",
         "DFLGoodsCertificate",
         "DFLSupplementaryInfo",
@@ -127,10 +133,11 @@ ia_xml = [
     xml_parser.UserImportCertificateParser,
     xml_parser.SILGoodsParser,
     xml_parser.SILSupplementaryReportParser,
+    xml_parser.SILReportFirearmParser,
     xml_parser.DFLGoodsCertificateParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,
-    xml_parser.SILSupplementaryReportParser,
+    xml_parser.OILSupplementaryReportParser,
     xml_parser.OILReportFirearmParser,
 ]
 

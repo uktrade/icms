@@ -78,10 +78,3 @@ def str_to_yes_no(y_n_str: Optional[str]) -> Optional[str]:
         return "no"
 
     return None
-
-
-def str_or_blank(str_val: Optional[str]) -> Optional[str]:
-    if not str_val:
-        return ""
-
-    return str_val

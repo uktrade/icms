@@ -10,7 +10,7 @@ from data_migration import models
 from data_migration.queries import DATA_TYPE_QUERY_MODEL, DATA_TYPE_XML
 from data_migration.utils import xml_parser
 
-from . import factory, xml_data
+from . import factory, utils, xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)
@@ -88,56 +88,13 @@ def test_create_user_exists(mock_connect):
     assert models.User.objects.count() == 1
 
 
-class MockCursor:
-    def __init__(self, *args, **kwargs):
-        self.fetched = False
-        self.rows = None
-        self.description = [("country_group_id",), ("name",), ("comments",)]
-
-    @staticmethod
-    def execute(query):
-        return
-
-    @staticmethod
-    def close():
-        return
-
-    def fetchmany(self, *args):
-        if not self.fetched:
-            self.rows = self.fetch_rows()
-            self.fetched = True
-
-        return next(self.rows)
-
-    @staticmethod
-    def fetch_rows():
-        yield [
-            ("A", "TEST GROUP A", None),
-            ("B", "TEST GROUP B", "Comment B"),
-            ("C", "TEST GROUP C", "Comment C"),
-        ]
-        yield None
-
-
-class MockConnect:
-    def __enter__(self, *args, **kwargs):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        pass
-
-    @staticmethod
-    def cursor():
-        return MockCursor()
-
-
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"reference": [("REF", models.CountryGroup)]})
 @mock.patch.object(cx_Oracle, "connect")
 def test_export_data(mock_connect):
-    mock_connect.return_value = MockConnect()
+    mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1", "--skip_user", "--skip_ia")
     assert models.CountryGroup.objects.filter(country_group_id__in=["A", "B", "C"]).count() == 3
 
@@ -159,7 +116,7 @@ def test_export_data(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_extract_xml(mock_connect):
 
-    mock_connect.return_value = MockConnect()
+    mock_connect.return_value = utils.MockConnect()
     user_pk = models.User.objects.count() + 1
     models.User.objects.create(id=user_pk, username="test_import_user")
 
