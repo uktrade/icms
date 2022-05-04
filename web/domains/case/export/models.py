@@ -525,7 +525,7 @@ class GMPBrand(models.Model):
 
 class ExportApplicationCertificate(CaseLicenceCertificateBase):
     export_application = models.ForeignKey(
-        "ExportApplication", on_delete=models.PROTECT, related_name="certificates"
+        "ExportApplication", on_delete=models.CASCADE, related_name="certificates"
     )
 
     issue_date = models.DateField(verbose_name="Issue Date", null=True)

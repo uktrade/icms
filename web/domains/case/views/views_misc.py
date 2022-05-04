@@ -80,7 +80,7 @@ def cancel_case(
 
         application.delete()
 
-        messages.success(request, "Application has been canceled.")
+        messages.success(request, "Application has been cancelled.")
 
         return redirect(reverse("workbasket"))
 
