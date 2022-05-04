@@ -1,7 +1,7 @@
-import datetime
 from typing import TYPE_CHECKING, Any, Optional
 
 from django.urls import reverse
+from django.utils.dateparse import parse_datetime
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketAction
@@ -117,7 +117,7 @@ class RespondToFurtherInformationRequestAction(Action):
                 is_post=False,
                 name="Respond",
                 url=reverse("case:respond-fir", kwargs=kwargs | {"fir_pk": fir_pk}),
-                section_label=f"Further Information Request, {datetime.datetime.fromisoformat(requested_datetime).strftime('%d %b %Y %H:%M:%S')}",
+                section_label=f"Further Information Request, {parse_datetime(requested_datetime).strftime('%d %b %Y %H:%M:%S')}",
             )
             for fir_pk, requested_datetime in self.application.annotation_open_fir_pairs
         ]
