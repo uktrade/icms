@@ -1,10 +1,10 @@
 from collections import defaultdict
-from typing import Generator, Optional, Tuple, Type, Union
+from typing import Generator, Optional, Type, Union
 
 from django.db.models import Model, QuerySet
 from lxml import etree
 
-BatchT = list[Tuple[int, str]]
+BatchT = list[tuple]
 ModelListT = dict[Type[Model], list[Model]]
 
 

@@ -215,7 +215,7 @@ class SupplementaryReportFirearmBase(MigrationBase):
     class Meta:
         abstract = True
 
-    serial_number = models.CharField(max_length=100, null=True)
+    serial_number = models.CharField(max_length=400, null=True)
     calibre = models.CharField(max_length=400, null=True)
     model = models.CharField(max_length=400, null=True)
     proofing = models.CharField(max_length=3, null=True, default=None)

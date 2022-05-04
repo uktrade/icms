@@ -137,7 +137,7 @@ class SupplementaryReportFirearmBase(models.Model):
     class Meta:
         abstract = True
 
-    serial_number = models.CharField(max_length=100, null=True)
+    serial_number = models.CharField(max_length=400, null=True)
     calibre = models.CharField(max_length=400, null=True)
     model = models.CharField(max_length=400, verbose_name="Make and Model", null=True)
     proofing = models.CharField(max_length=3, choices=YesNoChoices.choices, null=True, default=None)
