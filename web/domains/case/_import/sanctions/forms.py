@@ -3,12 +3,13 @@ from django import forms
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.forms.mixins import OptionalFormMixin
 from web.utils.commodity import get_usage_commodities, get_usage_records
 
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
 
-class SanctionsAndAdhocLicenseForm(forms.ModelForm):
+class SanctionsAndAdhocLicenseFormBase(forms.ModelForm):
     exporter_name = forms.CharField(
         label="Exporter Name",
         required=False,
@@ -43,6 +44,20 @@ class SanctionsAndAdhocLicenseForm(forms.ModelForm):
             country_groups__name="Sanctions and Adhoc License Countries of shipping (consignment)",
             is_active=True,
         )
+
+
+class EditSanctionsAndAdhocLicenseForm(OptionalFormMixin, SanctionsAndAdhocLicenseFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitSanctionsAndAdhocLicenseForm(SanctionsAndAdhocLicenseFormBase):
+    """Form used when submitting a FA_DFL application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class GoodsForm(forms.ModelForm):
