@@ -2,7 +2,7 @@ from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.sanctions.forms import (
     GoodsForm,
-    SanctionsAndAdhocLicenseForm,
+    SubmitSanctionsAndAdhocLicenseForm,
 )
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
@@ -54,7 +54,7 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
             "exporter_name": None,
             "exporter_address": None,
         }
-        form = SanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenseForm(
             data, instance=self.process, initial={"contact": self.user}
         )
         self.assertTrue(form.is_valid(), form.errors)
@@ -67,7 +67,7 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
             "exporter_name": None,
             "exporter_address": None,
         }
-        form = SanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenseForm(
             data, instance=self.process, initial={"contact": self.user}
         )
         self.assertFalse(form.is_valid())
@@ -75,7 +75,7 @@ class SanctionsAndAdhocImportAppplicationFormTest(AuthTestCase):
 
     def test_sa_form_invalid_without_required_fields(self):
         data = {"exporter_name": None, "exporter_address": None}
-        form = SanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenseForm(
             data, instance=self.process, initial={"contact": self.user}
         )
         self.assertFalse(form.is_valid())

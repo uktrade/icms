@@ -1,4 +1,5 @@
 import structlog as logging
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -13,6 +14,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -33,7 +35,12 @@ from web.utils.validation import (
 )
 
 from .. import views as import_views
-from .forms import GoodsForm, GoodsSanctionsLicenceForm, SanctionsAndAdhocLicenseForm
+from .forms import (
+    EditSanctionsAndAdhocLicenseForm,
+    GoodsForm,
+    GoodsSanctionsLicenceForm,
+    SubmitSanctionsAndAdhocLicenseForm,
+)
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
 logger = logging.getLogger(__name__)
@@ -50,21 +57,24 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = SanctionsAndAdhocLicenseForm(data=request.POST, instance=application)
+        form = get_application_form(
+            application,
+            request,
+            EditSanctionsAndAdhocLicenseForm,
+            SubmitSanctionsAndAdhocLicenseForm,
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
                 )
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = SanctionsAndAdhocLicenseForm(instance=application, initial=initial)
 
         # Check if the main application is valid when showing add goods link
-        show_add_goods = SanctionsAndAdhocLicenseForm(
+        show_add_goods = SubmitSanctionsAndAdhocLicenseForm(
             instance=application, data=model_to_dict(application)
         ).is_valid()
 
@@ -329,12 +339,14 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         errors = ApplicationErrors()
 
-        page_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}),
-        )
+        edit_url = reverse("import:sanctions:edit", kwargs={"application_pk": application.pk})
+        edit_url = f"{edit_url}?validate"
+
+        page_errors = PageErrors(page_name="Application details", url=edit_url)
         create_page_errors(
-            SanctionsAndAdhocLicenseForm(data=model_to_dict(application), instance=application),
+            SubmitSanctionsAndAdhocLicenseForm(
+                data=model_to_dict(application), instance=application
+            ),
             page_errors,
         )
 
