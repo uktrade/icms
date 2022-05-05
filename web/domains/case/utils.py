@@ -236,7 +236,7 @@ def get_application_form(
 
         # query param to fully validate the form.
         if "validate" in request.GET:
-            form_kwargs |= {"data": model_to_dict(application)}
+            form_kwargs["data"] = model_to_dict(application)
             form = submit_form(**form_kwargs)
         else:
             form = edit_form(**form_kwargs)
