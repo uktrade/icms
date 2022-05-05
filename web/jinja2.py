@@ -10,13 +10,13 @@ from django.db.models import Model
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.formats import get_format
-from jinja2 import Environment, evalcontextfilter
+from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
 
 from web.menu import Menu
 
 
-@evalcontextfilter
+@pass_eval_context
 def nl2br(eval_ctx, value):
     paragraph_re = re.compile(r"(?:\r\n|\r|\n){2,}")
     paragraphs = paragraph_re.split(escape(value))
