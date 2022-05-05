@@ -5,6 +5,7 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.forms.mixins import OptionalFormMixin
 
 from . import models
 from .widgets import TextilesCategoryCommodityGroupWidget, TextilesCommodityWidget
@@ -17,7 +18,7 @@ def _get_shipping_year_selection():
     return range(current_year, current_year + 11)
 
 
-class EditTextilesForm(forms.ModelForm):
+class TextilesFormBase(forms.ModelForm):
     class Meta:
         model = models.TextilesApplication
         fields = (
@@ -68,6 +69,20 @@ class EditTextilesForm(forms.ModelForm):
         self.fields["consignment_country"].queryset = Country.objects.filter(
             country_groups__name="Textile COCs", is_active=True
         )
+
+
+class EditTextilesForm(OptionalFormMixin, TextilesFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitTextilesForm(TextilesFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class TextilesChecklistForm(ChecklistBaseForm):

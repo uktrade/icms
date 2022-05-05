@@ -77,6 +77,6 @@ def test_textiles_app_edit(client, textiles_app_pk, test_import_user):
 
 def test_textiles_app_edit_invalid_form_data(client, textiles_app_pk):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
-    response = client.post(url, data={})
+    response = client.post(url, data={"shipping_year": "invalid form data"})
 
     assert response.status_code == 200
