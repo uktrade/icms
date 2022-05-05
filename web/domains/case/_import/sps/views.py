@@ -12,6 +12,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
     view_application_file_direct,
 )
@@ -32,6 +33,7 @@ from .forms import (
     EditContractDocumentForm,
     EditSPSForm,
     ResponsePrepGoodsForm,
+    SubmitSPSForm,
 )
 from .models import PriorSurveillanceApplication, PriorSurveillanceContractFile
 
@@ -47,21 +49,21 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = EditSPSForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditSPSForm, SubmitSPSForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 instance: PriorSurveillanceApplication = form.save(commit=False)
-                instance.value_eur = convert_gbp_to_euro(instance.value_gbp)
+
+                if instance.value_gbp:
+                    instance.value_eur = convert_gbp_to_euro(instance.value_gbp)
+
                 instance.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:sps:edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = EditSPSForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
@@ -91,12 +93,12 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors = ApplicationErrors()
 
-        edit_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("import:sps:edit", kwargs={"application_pk": application_pk}),
-        )
+        edit_url = reverse("import:sps:edit", kwargs={"application_pk": application.pk})
+        edit_url = f"{edit_url}?validate"
+
+        edit_errors = PageErrors(page_name="Application details", url=edit_url)
         create_page_errors(
-            EditSPSForm(data=model_to_dict(application), instance=application), edit_errors
+            SubmitSPSForm(data=model_to_dict(application), instance=application), edit_errors
         )
 
         errors.add(edit_errors)

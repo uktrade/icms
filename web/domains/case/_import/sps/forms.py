@@ -3,12 +3,13 @@ from django import forms
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
+from web.forms.mixins import OptionalFormMixin
 from web.utils.currency import get_euro_exchange_rate
 
 from . import models
 
 
-class EditSPSForm(forms.ModelForm):
+class SPSFormBase(forms.ModelForm):
     class Meta:
         model = models.PriorSurveillanceApplication
         fields = (
@@ -46,6 +47,20 @@ class EditSPSForm(forms.ModelForm):
             f"Converted at a rate of 1 GBP to {exchange_rate} EUR, rounded up"
             f" to the nearest EUR."
         )
+
+
+class EditSPSForm(OptionalFormMixin, SPSFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitSPSForm(SPSFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean_quantity(self) -> int:
         quantity: int = self.cleaned_data["quantity"]
