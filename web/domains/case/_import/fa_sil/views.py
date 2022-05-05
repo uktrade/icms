@@ -20,6 +20,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -162,7 +163,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     errors = ApplicationErrors()
 
     edit_url = reverse("import:fa-sil:edit", kwargs={"application_pk": application.pk})
-    edit_url = f"{edit_url}?validate=1"
+    edit_url = f"{edit_url}?validate"
 
     # Check main form
     application_details_errors = PageErrors(page_name="Application details", url=edit_url)
@@ -349,9 +350,11 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = forms.EditFaSILForm(data=request.POST, instance=application)
+        form = get_application_form(
+            application, request, forms.EditFaSILForm, forms.SubmitFaSILForm
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
                 messages.success(request, "Application data saved")
@@ -361,17 +364,6 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
                 )
             else:
                 messages.error(request, "Failed to save application data, please correct errors.")
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form_kwargs = {"instance": application, "initial": initial}
-
-            # query param to validate the form (useful when returning from submit link)
-            if request.GET.get("validate"):
-                form_kwargs |= {"data": model_to_dict(application)}
-                form = forms.SubmitFaSILForm(**form_kwargs)
-            else:
-                form = forms.EditFaSILForm(**form_kwargs)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",

@@ -66,10 +66,16 @@ def test_edit_dfl_get(client, dfl_app_pk):
     )
 
 
-def test_edit_dfl_post_invalid(client, dfl_app_pk):
+def test_validate_query_param_shows_errors(client, dfl_app_pk):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
-    response = client.post(url, {"foo": "bar"})
+    response = client.get(url)
+    assert response.status_code == 200
+    form = response.context["form"]
+    assert not form.errors
+
+    response = client.get(f"{url}?validate")
+    assert response.status_code == 200
 
     assertFormError(response, "form", "proof_checked", "You must enter this item")
     assertFormError(response, "form", "origin_country", "You must enter this item")

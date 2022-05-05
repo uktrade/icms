@@ -66,7 +66,7 @@ class TestEditFirearmsSILApplication:
         assert not form.errors
 
         # Validate every field to check for any errors
-        response = self.client.get(f"{edit_url}?validate=1")
+        response = self.client.get(f"{edit_url}?validate")
         assert response.status_code == 200
         form = response.context["form"]
         message = form.errors["origin_country"][0]

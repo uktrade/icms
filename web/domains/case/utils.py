@@ -1,6 +1,8 @@
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
+from django import forms
 from django.core.exceptions import PermissionDenied
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.utils import timezone
 
@@ -10,6 +12,7 @@ from web.domains.case.models import CaseLicenceCertificateBase
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
 from .shared import ImpExpStatus
@@ -215,3 +218,27 @@ def create_acknowledge_notification_task(application: ImpOrExp, previous_task: O
         application.acknowledged_datetime = None
 
     application.save()
+
+
+def get_application_form(
+    application: ImpOrExp,
+    request: AuthenticatedHttpRequest,
+    edit_form: Type[forms.ModelForm],
+    submit_form: Type[forms.ModelForm],
+) -> forms.ModelForm:
+    """Create a form instance - Used in all edit application views."""
+
+    if request.method == "POST":
+        form = edit_form(data=request.POST, instance=application)
+    else:
+        initial = {} if application.contact else {"contact": request.user}
+        form_kwargs = {"instance": application, "initial": initial}
+
+        # query param to fully validate the form.
+        if "validate" in request.GET:
+            form_kwargs |= {"data": model_to_dict(application)}
+            form = submit_form(**form_kwargs)
+        else:
+            form = edit_form(**form_kwargs)
+
+    return form
