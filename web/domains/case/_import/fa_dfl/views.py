@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -14,6 +15,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -37,7 +39,8 @@ from .forms import (
     DFLSupplementaryReportUploadFirearmForm,
     EditDFLGoodsCertificateDescriptionForm,
     EditDLFGoodsCertificateForm,
-    PrepareDFLForm,
+    EditFaDFLForm,
+    SubmitFaDFLForm,
 )
 from .models import (
     DFLApplication,
@@ -63,18 +66,16 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = PrepareDFLForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditFaDFLForm, SubmitFaDFLForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
+
                 return redirect(
                     reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = PrepareDFLForm(instance=application, initial=initial)
 
         goods_list = application.goods_certificates.filter(is_active=True).select_related(
             "issuing_country"
@@ -324,16 +325,18 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
     errors = ApplicationErrors()
 
     edit_url = reverse("import:fa-dfl:edit", kwargs={"application_pk": application.pk})
+    edit_url = f"{edit_url}?validate"
+    add_goods_url = reverse("import:fa-dfl:add-goods", kwargs={"application_pk": application.pk})
 
     # Check main form
     application_details_errors = PageErrors(page_name="Application details", url=edit_url)
-    application_form = PrepareDFLForm(data=model_to_dict(application), instance=application)
+    application_form = SubmitFaDFLForm(data=model_to_dict(application), instance=application)
     create_page_errors(application_form, application_details_errors)
     errors.add(application_details_errors)
 
     # Check goods certificates
     if not application.goods_certificates.exists():
-        goods_errors = PageErrors(page_name="Goods Certificates", url=edit_url)
+        goods_errors = PageErrors(page_name="Goods Certificates", url=add_goods_url)
         goods_errors.add(
             FieldError(
                 field_name="Goods Certificate", messages=["At least one certificate must be added"]

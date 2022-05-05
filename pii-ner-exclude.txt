@@ -1107,7 +1107,6 @@ f"Authorise Success: Application
 Withdrawal
 nth)s
 "Reuse the Variation Request Cancel
-f"{edit_url}?validate=1
 the wood quota application
 purpose_of_request
 f"Quantity
@@ -1415,3 +1414,4 @@ Migration of ObsoleteCalibre model
 Test Revolver
 5_1_ABA
 href="?page=
+f"{url}?validate

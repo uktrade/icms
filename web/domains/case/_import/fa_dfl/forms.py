@@ -5,13 +5,14 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.models import Country
 
 from . import models
 
 
-class PrepareDFLForm(forms.ModelForm):
+class FirearmDFLFormBase(forms.ModelForm):
     deactivated_firearm = forms.BooleanField(disabled=True, label="Firearms Licence for")
 
     class Meta:
@@ -53,6 +54,20 @@ class PrepareDFLForm(forms.ModelForm):
         )
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
+
+
+class EditFaDFLForm(OptionalFormMixin, FirearmDFLFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitFaDFLForm(FirearmDFLFormBase):
+    """Form used when submitting a FA_DFL application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class AddDLFGoodsCertificateForm(forms.ModelForm):
