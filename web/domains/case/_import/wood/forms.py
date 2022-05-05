@@ -71,7 +71,7 @@ class EditWoodQuotaForm(OptionalFormMixin, WoodQuotaFormBase):
 
 
 class SubmitWoodQuotaForm(WoodQuotaFormBase):
-    """Form used when submitting a wood application.
+    """Form used when submitting the application.
 
     All fields are fully validated to ensure form is correct.
     """
