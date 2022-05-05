@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.db.models import Sum
@@ -13,6 +14,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -37,6 +39,7 @@ from .forms import (
     IronSteelChecklistOptionalForm,
     ResponsePrepCertificateForm,
     ResponsePrepGoodsForm,
+    SubmitIronSteelForm,
 )
 from .models import IronSteelApplication, IronSteelChecklist
 
@@ -52,19 +55,16 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = EditIronSteelForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditIronSteelForm, SubmitIronSteelForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:ironsteel:edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = EditIronSteelForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         certificates = application.certificates.filter(is_active=True)
@@ -107,12 +107,12 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         errors = ApplicationErrors()
 
-        edit_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("import:ironsteel:edit", kwargs={"application_pk": application_pk}),
-        )
+        edit_url = reverse("import:ironsteel:edit", kwargs={"application_pk": application.pk})
+        edit_url = f"{edit_url}?validate"
+
+        edit_errors = PageErrors(page_name="Application details", url=edit_url)
         create_page_errors(
-            EditIronSteelForm(data=model_to_dict(application), instance=application), edit_errors
+            SubmitIronSteelForm(data=model_to_dict(application), instance=application), edit_errors
         )
         errors.add(edit_errors)
 

@@ -11,6 +11,7 @@ from web.domains.case._import.ironsteel.widgets import (
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
+from web.forms.mixins import OptionalFormMixin
 
 from . import models
 
@@ -22,7 +23,7 @@ def _get_shipping_year_selection():
     return range(current_year, current_year + 11)
 
 
-class EditIronSteelForm(forms.ModelForm):
+class IronSteelFormBase(forms.ModelForm):
     class Meta:
         model = models.IronSteelApplication
         fields = (
@@ -75,6 +76,20 @@ class EditIronSteelForm(forms.ModelForm):
         self.fields["consignment_country"].queryset = Country.objects.filter(
             country_groups__name="Iron and Steel (Quota) COCs", is_active=True
         )
+
+
+class EditIronSteelForm(OptionalFormMixin, IronSteelFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitIronSteelForm(IronSteelFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class CertificateFormBase(forms.ModelForm):
