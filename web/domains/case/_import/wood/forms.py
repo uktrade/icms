@@ -6,6 +6,7 @@ from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.commodity.models import Commodity
 from web.domains.file.utils import ICMSFileField
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.utils.commodity import get_active_commodities
 
@@ -19,7 +20,7 @@ def _get_year_selection():
     return range(current_year, current_year + 11)
 
 
-class PrepareWoodQuotaForm(forms.ModelForm):
+class WoodQuotaFormBase(forms.ModelForm):
     shipping_year = forms.IntegerField(
         help_text="""Year of shipment should normally be that shown on any
         export licence or other export authorisation from the exporting country
@@ -60,6 +61,20 @@ class PrepareWoodQuotaForm(forms.ModelForm):
         self.fields["commodity"].queryset = get_active_commodities(
             Commodity.objects.filter(commodity_type__type="Wood")
         )
+
+
+class EditWoodQuotaForm(OptionalFormMixin, WoodQuotaFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitWoodQuotaForm(WoodQuotaFormBase):
+    """Form used when submitting a wood application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class AddContractDocumentForm(forms.ModelForm):

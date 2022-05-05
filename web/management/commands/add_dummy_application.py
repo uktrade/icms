@@ -13,7 +13,7 @@ from web.domains.case._import.models import (
     get_paper_licence_only,
 )
 from web.domains.case._import.wood.forms import (
-    PrepareWoodQuotaForm,
+    SubmitWoodQuotaForm,
     WoodQuotaChecklistForm,
 )
 from web.domains.case._import.wood.models import (
@@ -126,7 +126,7 @@ class Command(BaseCommand):
             raise CommandError(f"Can't create application: {form.errors}")
 
         # Fill out the main form
-        form = PrepareWoodQuotaForm(
+        form = SubmitWoodQuotaForm(
             instance=application,
             data={
                 "contact": self.importer_user.pk,
