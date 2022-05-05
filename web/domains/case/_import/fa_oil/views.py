@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -16,6 +17,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -34,9 +36,10 @@ from web.utils.validation import (
 from .forms import (
     ChecklistFirearmsOILApplicationForm,
     ChecklistFirearmsOILApplicationOptionalForm,
+    EditFaOILForm,
     OILSupplementaryReportFirearmForm,
     OILSupplementaryReportUploadFirearmForm,
-    PrepareOILForm,
+    SubmitFaOILForm,
 )
 from .models import (
     ChecklistFirearmsOILApplication,
@@ -58,19 +61,17 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
+        form = get_application_form(application, request, EditFaOILForm, SubmitFaOILForm)
+
         if request.method == "POST":
-            form = PrepareOILForm(data=request.POST, instance=application)
 
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:fa-oil:edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = PrepareOILForm(instance=application, initial=initial)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -97,12 +98,12 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors = ApplicationErrors()
 
-        page_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("import:fa-oil:edit", kwargs={"application_pk": application_pk}),
-        )
+        edit_url = reverse("import:fa-oil:edit", kwargs={"application_pk": application_pk})
+        edit_url = f"{edit_url}?validate"
+
+        page_errors = PageErrors(page_name="Application details", url=edit_url)
         create_page_errors(
-            PrepareOILForm(data=model_to_dict(application), instance=application), page_errors
+            SubmitFaOILForm(data=model_to_dict(application), instance=application), page_errors
         )
         errors.add(page_errors)
 
