@@ -1,7 +1,7 @@
 from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
-from web.domains.case._import.derogations.forms import DerogationsForm
+from web.domains.case._import.derogations.forms import SubmitDerogationsForm
 from web.domains.commodity.models import Commodity
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
@@ -58,7 +58,7 @@ class DerogationsFormTest(AuthTestCase):
             "unit": "kilos",
             "value": "2.00",
         }
-        form = DerogationsForm(data, instance=self.process, initial={"contact": self.user})
+        form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
         self.assertTrue(form.is_valid(), form.errors)
 
     def test_da_form_invalid_with_wrong_country(self):
@@ -70,13 +70,13 @@ class DerogationsFormTest(AuthTestCase):
             "contract_completion_date": timezone.now(),
             "explanation": "Test explanation",
         }
-        form = DerogationsForm(data, instance=self.process, initial={"contact": self.user})
+        form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors)
 
     def test_da_form_invalid_without_required_fields(self):
         data = {}
-        form = DerogationsForm(data, instance=self.process, initial={"contact": self.user})
+        form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
         self.assertFalse(form.is_valid())
         self.assertTrue(form.errors)
         self.assertEqual(len(form.errors), 11)

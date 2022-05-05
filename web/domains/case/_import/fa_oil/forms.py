@@ -48,7 +48,7 @@ class EditFaOILForm(OptionalFormMixin, FirearmOILFormBase):
 
 
 class SubmitFaOILForm(FirearmOILFormBase):
-    """Form used when submitting a FA_OIL application.
+    """Form used when submitting the application.
 
     All fields are fully validated to ensure form is correct.
     """

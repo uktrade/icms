@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -11,6 +12,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
 from web.domains.country.models import Country
@@ -29,10 +31,11 @@ from .. import views as import_views
 from .forms import (
     DerogationsChecklistForm,
     DerogationsChecklistOptionalForm,
-    DerogationsForm,
     DerogationsSyriaChecklistForm,
     DerogationsSyriaChecklistOptionalForm,
+    EditDerogationsForm,
     GoodsDerogationsLicenceForm,
+    SubmitDerogationsForm,
 )
 from .models import DerogationsApplication, DerogationsChecklist
 
@@ -50,9 +53,11 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         syria = Country.objects.get(name="Syria")
 
-        if request.method == "POST":
-            form = DerogationsForm(data=request.POST, instance=application)
+        form = get_application_form(
+            application, request, EditDerogationsForm, SubmitDerogationsForm
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 application = form.save(commit=False)
 
@@ -64,13 +69,11 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     application.civilian_purpose_details = None
 
                 application.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:derogations:edit", kwargs={"application_pk": application_pk})
                 )
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = DerogationsForm(instance=application, initial=initial)
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
@@ -336,12 +339,12 @@ def get_page_title(page: str) -> str:
 def _get_derogations_errors(application: DerogationsApplication) -> ApplicationErrors:
     errors = ApplicationErrors()
 
-    page_errors = PageErrors(
-        page_name="Application details",
-        url=reverse("import:derogations:edit", kwargs={"application_pk": application.pk}),
-    )
+    edit_url = reverse("import:derogations:edit", kwargs={"application_pk": application.pk})
+    edit_url = f"{edit_url}?validate"
+
+    page_errors = PageErrors(page_name="Application details", url=edit_url)
     create_page_errors(
-        DerogationsForm(data=model_to_dict(application), instance=application), page_errors
+        SubmitDerogationsForm(data=model_to_dict(application), instance=application), page_errors
     )
     errors.add(page_errors)
 

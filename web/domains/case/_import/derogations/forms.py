@@ -6,6 +6,7 @@ from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
 from web.domains.country.models import Country
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.utils.commodity import get_usage_records
 
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from web.domains.commodity.models import Commodity
 
 
-class DerogationsForm(forms.ModelForm):
+class DerogationsFormBase(forms.ModelForm):
     class Meta:
         model = DerogationsApplication
         fields = (
@@ -58,6 +59,20 @@ class DerogationsForm(forms.ModelForm):
             country_groups__name="Non EU Single Countries", is_active=True
         )
         self.fields["consignment_country"].queryset = non_eu_countries
+
+
+class EditDerogationsForm(OptionalFormMixin, DerogationsFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitDerogationsForm(DerogationsFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean(self):
         """Check if the quantity exceeds the maximum_allocation if set."""

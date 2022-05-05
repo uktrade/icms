@@ -54,7 +54,7 @@ class EditSanctionsAndAdhocLicenseForm(OptionalFormMixin, SanctionsAndAdhocLicen
 
 
 class SubmitSanctionsAndAdhocLicenseForm(SanctionsAndAdhocLicenseFormBase):
-    """Form used when submitting a FA_DFL application.
+    """Form used when submitting the application.
 
     All fields are fully validated to ensure form is correct.
     """
