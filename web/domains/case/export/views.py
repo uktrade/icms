@@ -1406,7 +1406,8 @@ def add_gmp_document(
             "process": application,
             "task": task,
             "form": form,
-            "page_title": f"Certificate of Good Manufacturing Practice - Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
+            "page_title": "Certificate of Good Manufacturing Practice - Add supporting document",
+            "page_subtitle": f"Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
             "prev_link": prev_link,
             "case_type": "export",
         }
