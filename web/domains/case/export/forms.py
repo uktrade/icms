@@ -560,8 +560,18 @@ class EditGMPFormBase(forms.ModelForm):
         self.fields["auditor_certified"].required = False
 
 
-class EditGMPForm(EditGMPFormBase):
-    """Form used when a user tries to save an application - contains all application specific cleaning logic."""
+class EditGMPForm(OptionalFormMixin, EditGMPFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitGMPForm(EditGMPFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean(self) -> dict[str, Any]:
         cleaned_data: dict[str, Any] = super().clean()
@@ -620,15 +630,8 @@ class EditGMPForm(EditGMPFormBase):
         return cleaned_data
 
 
-class EditGMPTemplateForm(EditGMPFormBase):
-    """All fields are optional and only have basic model checks."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Used to enable partial saving (when creating from a template)
-        for f in self.fields:
-            self.fields[f].required = False
+class EditGMPTemplateForm(OptionalFormMixin, EditGMPFormBase):
+    """GMP Template form."""
 
 
 def form_class_for_application_type(type_code: str) -> Type[ModelForm]:

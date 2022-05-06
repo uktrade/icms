@@ -52,6 +52,7 @@ from .forms import (
     ProductsFileUploadForm,
     SubmitCFSScheduleForm,
     SubmitCOMForm,
+    SubmitGMPForm,
     form_class_for_application_type,
 )
 from .models import (
@@ -1312,9 +1313,9 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = EditGMPForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditGMPForm, SubmitGMPForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 application = form.save(commit=False)
 
@@ -1335,16 +1336,13 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                     application.auditor_certified = None
 
                 application.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
                 )
 
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = EditGMPForm(instance=application, initial=initial)
-
-        form_valid = EditGMPForm(data=model_to_dict(application), instance=application).is_valid()
+        form_valid = SubmitGMPForm(data=model_to_dict(application), instance=application).is_valid()
         show_iso_table = (
             form_valid
             and application.gmp_certificate_issued == application.CertificateTypes.ISO_22716
@@ -1465,12 +1463,12 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
-        page_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("export:gmp-edit", kwargs={"application_pk": application_pk}),
-        )
 
-        main_form = EditGMPForm(data=model_to_dict(application), instance=application)
+        edit_url = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
+        edit_url = f"{edit_url}?validate"
+
+        page_errors = PageErrors(page_name="Application details", url=edit_url)
+        main_form = SubmitGMPForm(data=model_to_dict(application), instance=application)
 
         create_page_errors(main_form, page_errors)
         errors.add(page_errors)
