@@ -1,8 +1,9 @@
-from typing import Any
+from typing import Any, Type
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.forms.models import model_to_dict
+from django.forms.models import ModelForm, model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -13,6 +14,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -24,14 +26,18 @@ from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
 from .forms import (
-    CompensatingProductsOPTForm,
+    EditCompensatingProductsOPTForm,
+    EditFurtherQuestionsOPTForm,
     EditOPTForm,
-    FurtherQuestionsOPTForm,
+    EditTemporaryExportedGoodsOPTForm,
     OPTChecklistForm,
     OPTChecklistOptionalForm,
     ResponsePrepCompensatingProductsOPTForm,
     ResponsePrepTemporaryExportedGoodsOPTForm,
-    TemporaryExportedGoodsOPTForm,
+    SubmitCompensatingProductsOPTForm,
+    SubmitFurtherQuestionsOPTForm,
+    SubmitOptForm,
+    SubmitTemporaryExportedGoodsOPTForm,
 )
 from .models import (
     CP_CATEGORIES,
@@ -53,19 +59,16 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = EditOPTForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditOPTForm, SubmitOptForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("import:opt:edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = EditOPTForm(instance=application, initial=initial)
 
         supporting_documents = application.documents.filter(
             is_active=True, file_type=OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT
@@ -98,11 +101,14 @@ def edit_compensating_products(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = CompensatingProductsOPTForm(data=request.POST, instance=application)
+        form = _get_opt_form_instance(
+            application, request, EditCompensatingProductsOPTForm, SubmitCompensatingProductsOPTForm
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse(
@@ -110,9 +116,6 @@ def edit_compensating_products(
                         kwargs={"application_pk": application_pk},
                     )
                 )
-
-        else:
-            form = CompensatingProductsOPTForm(instance=application)
 
         category_descriptions = _get_compensating_products_category_descriptions()
         category_label = category_descriptions.get(application.cp_category, "")
@@ -146,11 +149,17 @@ def edit_temporary_exported_goods(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = TemporaryExportedGoodsOPTForm(data=request.POST, instance=application)
+        form = _get_opt_form_instance(
+            application,
+            request,
+            EditTemporaryExportedGoodsOPTForm,
+            SubmitTemporaryExportedGoodsOPTForm,
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse(
@@ -158,9 +167,6 @@ def edit_temporary_exported_goods(
                         kwargs={"application_pk": application_pk},
                     )
                 )
-
-        else:
-            form = TemporaryExportedGoodsOPTForm(instance=application)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -189,11 +195,14 @@ def edit_further_questions(
 
         task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = FurtherQuestionsOPTForm(data=request.POST, instance=application)
+        form = _get_opt_form_instance(
+            application, request, EditFurtherQuestionsOPTForm, SubmitFurtherQuestionsOPTForm
+        )
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse(
@@ -201,9 +210,6 @@ def edit_further_questions(
                         kwargs={"application_pk": application_pk},
                     )
                 )
-
-        else:
-            form = FurtherQuestionsOPTForm(instance=application)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
@@ -215,6 +221,28 @@ def edit_further_questions(
         }
 
         return render(request, "web/domains/case/import/opt/edit-further-questions.html", context)
+
+
+def _get_opt_form_instance(
+    application: OutwardProcessingTradeApplication,
+    request: AuthenticatedHttpRequest,
+    edit_form: Type[ModelForm],
+    submit_form: Type[ModelForm],
+) -> ModelForm:
+    """Create a form instance for one of several OPT forms."""
+
+    if request.method == "POST":
+        form = edit_form(data=request.POST, instance=application)
+    else:
+        form_kwargs = {"instance": application}
+
+        if "validate" in request.GET:
+            form_kwargs["data"] = model_to_dict(application)
+            form = submit_form(**form_kwargs)
+        else:
+            form = edit_form(**form_kwargs)
+
+    return form
 
 
 @login_required
@@ -239,6 +267,7 @@ def edit_further_questions_shared(
 
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse(
@@ -283,48 +312,42 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         errors = ApplicationErrors()
 
-        edit_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("import:opt:edit", kwargs={"application_pk": application_pk}),
-        )
-        create_page_errors(
-            EditOPTForm(data=model_to_dict(application), instance=application), edit_errors
-        )
+        app_kwargs = {"application_pk": application_pk}
+        app_data = model_to_dict(application)
+
+        edit_url = reverse("import:opt:edit", kwargs=app_kwargs)
+        edit_url = f"{edit_url}?validate"
+
+        edit_errors = PageErrors(page_name="Application details", url=edit_url)
+        create_page_errors(SubmitOptForm(data=app_data, instance=application), edit_errors)
         errors.add(edit_errors)
 
-        cp_errors = PageErrors(
-            page_name="Compensating Products",
-            url=reverse(
-                "import:opt:edit-compensating-products", kwargs={"application_pk": application_pk}
-            ),
-        )
+        comp_prod_url = reverse("import:opt:edit-compensating-products", kwargs=app_kwargs)
+        comp_prod_url = f"{comp_prod_url}?validate"
+
+        cp_errors = PageErrors(page_name="Compensating Products", url=comp_prod_url)
         create_page_errors(
-            CompensatingProductsOPTForm(data=model_to_dict(application), instance=application),
+            SubmitCompensatingProductsOPTForm(data=app_data, instance=application),
             cp_errors,
         )
         errors.add(cp_errors)
 
-        teg_errors = PageErrors(
-            page_name="Temporary Exported Goods",
-            url=reverse(
-                "import:opt:edit-temporary-exported-goods",
-                kwargs={"application_pk": application_pk},
-            ),
-        )
+        exp_goods_url = reverse("import:opt:edit-temporary-exported-goods", kwargs=app_kwargs)
+        exp_goods_url = f"{exp_goods_url}?validate"
+
+        teg_errors = PageErrors(page_name="Temporary Exported Goods", url=exp_goods_url)
         create_page_errors(
-            TemporaryExportedGoodsOPTForm(data=model_to_dict(application), instance=application),
+            SubmitTemporaryExportedGoodsOPTForm(data=app_data, instance=application),
             teg_errors,
         )
         errors.add(teg_errors)
 
-        fq_errors = PageErrors(
-            page_name="Further Questions",
-            url=reverse(
-                "import:opt:edit-further-questions", kwargs={"application_pk": application_pk}
-            ),
-        )
+        further_qs_url = reverse("import:opt:edit-further-questions", kwargs=app_kwargs)
+        further_qs_url = f"{further_qs_url}?validate"
+
+        fq_errors = PageErrors(page_name="Further Questions", url=further_qs_url)
         create_page_errors(
-            FurtherQuestionsOPTForm(data=model_to_dict(application), instance=application),
+            SubmitFurtherQuestionsOPTForm(data=app_data, instance=application),
             fq_errors,
         )
         errors.add(fq_errors)
@@ -342,9 +365,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             )
 
             create_page_errors(
-                form_class(
-                    data=model_to_dict(application), instance=application, has_files=has_files
-                ),
+                form_class(data=app_data, instance=application, has_files=has_files),
                 fq_shared_errors,
             )
 
