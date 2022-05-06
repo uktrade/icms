@@ -1,5 +1,5 @@
 import re
-from typing import Any, Optional
+from typing import Any, Optional, Type
 
 import structlog as logging
 from django import forms
@@ -16,6 +16,7 @@ from web.domains.file.utils import ICMSFileField
 from web.domains.legislation.models import ProductLegislation
 from web.domains.office.models import Office
 from web.domains.user.models import User
+from web.forms.mixins import OptionalFormMixin
 from web.models.shared import AddressEntryType, YesNoChoices
 
 from .models import (
@@ -164,8 +165,6 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
             "countries": Select2MultipleWidget,
         }
 
-
-class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["is_pesticide_on_free_sale_uk"].required = True
@@ -177,6 +176,20 @@ class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
             is_active=True
         )
         self.fields["countries"].queryset = application_countries
+
+
+class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitCOMForm(PrepareCertManufactureFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean_is_pesticide_on_free_sale_uk(self):
         val = self.cleaned_data["is_pesticide_on_free_sale_uk"]
@@ -220,12 +233,8 @@ class PrepareCertManufactureForm(PrepareCertManufactureFormBase):
         return val
 
 
-class PrepareCertManufactureTemplateForm(PrepareCertManufactureFormBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for fname in self.fields:
-            self.fields[fname].required = False
+class EditCOMTemplateForm(OptionalFormMixin, PrepareCertManufactureFormBase):
+    """COM Template form."""
 
 
 class EditCFSFormBase(forms.ModelForm):
@@ -612,13 +621,14 @@ class EditGMPTemplateForm(EditGMPFormBase):
             self.fields[f].required = False
 
 
-def form_class_for_application_type(type_code: str) -> ModelForm:
-    types_forms: dict[Any, ModelForm] = {
+def form_class_for_application_type(type_code: str) -> Type[ModelForm]:
+    types_forms: dict[Any, Type[ModelForm]] = {
         # These form classes have no required fields, no data cleaning methods.
         ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
         ExportApplicationType.Types.GMP: EditGMPTemplateForm,
-        ExportApplicationType.Types.MANUFACTURE: PrepareCertManufactureTemplateForm,
+        ExportApplicationType.Types.MANUFACTURE: EditCOMTemplateForm,
     }
+
     try:
         return types_forms[type_code]
     except KeyError:
