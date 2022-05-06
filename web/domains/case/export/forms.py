@@ -264,15 +264,11 @@ class EditCFSForm(EditCFSFormBase):
         self.fields["countries"].queryset = application_countries
 
 
-class EditCFSTemplateForm(EditCFSFormBase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        for fname in self.fields:
-            self.fields[fname].required = False
+class EditCFSTemplateForm(OptionalFormMixin, EditCFSFormBase):
+    """CFS Template form."""
 
 
-class EditCFScheduleForm(forms.ModelForm):
+class CFSScheduleFormBase(forms.ModelForm):
     class Meta:
         model = CFSSchedule
         fields = (
@@ -307,6 +303,20 @@ class EditCFScheduleForm(forms.ModelForm):
         self.fields["legislations"].queryset = ProductLegislation.objects.filter(
             is_active=True
         ).order_by("name")
+
+
+class EditCFScheduleForm(OptionalFormMixin, CFSScheduleFormBase):
+    """Form used when editing the CFS schedule.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitCFSScheduleForm(CFSScheduleFormBase):
+    """Form used when submitting the CFS schedule.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean(self):
         cleaned_data: dict[str, Any] = super().clean()
