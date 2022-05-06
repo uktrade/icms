@@ -1,9 +1,10 @@
-from typing import Generator, Optional, Type
+from typing import Any, Generator, Optional, Type
 
 from django.db import models
 from django.db.models import OuterRef, Subquery
 
 from data_migration.models.base import MigrationBase
+from data_migration.models.reference import ObsoleteCalibre
 
 from ..import_application import ImportApplication
 from .base import (
@@ -96,14 +97,30 @@ class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
     )
     is_active = models.BooleanField(default=True)
     curiosity_ornament = models.BooleanField(null=True)
-    acknowledgment = models.BooleanField(default=False)
+    acknowledgement = models.BooleanField(default=False)
     centrefire = models.BooleanField(null=True)
     manufacture = models.BooleanField(null=True)
     original_chambering = models.BooleanField(null=True)
-    obsolete_calibre_id = models.IntegerField(null=True)
+    obsolete_calibre = models.ForeignKey(
+        ObsoleteCalibre, on_delete=models.PROTECT, to_field="legacy_id"
+    )
     description = models.CharField(max_length=4096)
     quantity = models.PositiveBigIntegerField()
     legacy_ordinal = models.PositiveIntegerField()
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+        data["obsolete_calibre"] = data.pop("obsolete_calibre_name")
+        return data
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["obsolete_calibre_id"]
+
+    @classmethod
+    def get_includes(cls) -> list[str]:
+        return super().get_includes() + ["obsolete_calibre__name"]
 
 
 class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
@@ -112,7 +129,7 @@ class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
     )
     is_active = models.BooleanField(default=True)
     curiosity_ornament = models.BooleanField(null=True)
-    acknowledgment = models.BooleanField(default=False)
+    acknowledgement = models.BooleanField(default=False)
     manufacture = models.BooleanField(null=True)
     muzzle_loading = models.BooleanField(null=True)
     rimfire = models.BooleanField(null=True)

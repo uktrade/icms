@@ -34,6 +34,8 @@ ref_query_model = [
     QueryModel(import_application.import_application_type, dm.ImportApplicationType),
     QueryModel(import_application.usage, dm.Usage),
     QueryModel(reference.constabularies, dm.Constabulary),
+    QueryModel(reference.obsolete_calibre_group, dm.ObsoleteCalibreGroup),
+    QueryModel(reference.obsolete_calibre, dm.ObsoleteCalibre),
 ]
 
 ref_source_target = source_target_list(
@@ -49,6 +51,8 @@ ref_source_target = source_target_list(
         "ImportApplicationType",
         "Usage",
         "Constabulary",
+        "ObsoleteCalibreGroup",
+        "ObsoleteCalibre",
     ]
 )
 
@@ -81,16 +85,14 @@ ia_source_target = source_target_list(
         "SILGoodsSection1",
         "SILGoodsSection2",
         "SILGoodsSection5",
-        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
-        # "SILGoodsSection582Obsolete",  # /PS-IGNORE
+        "SILGoodsSection582Obsolete",  # /PS-IGNORE
         "SILGoodsSection582Other",  # /PS-IGNORE
         "SILSupplementaryInfo",
         "SILSupplementaryReport",
         "SILSupplementaryReportFirearmSection1",
         "SILSupplementaryReportFirearmSection2",
         "SILSupplementaryReportFirearmSection5",
-        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
-        # "SILSupplementaryReportFirearmSection582Obsolete", # /PS-IGNORE
+        "SILSupplementaryReportFirearmSection582Obsolete",  # /PS-IGNORE
         "SILSupplementaryReportFirearmSection582Other",  # /PS-IGNORE
         "DFLApplication",
         "DFLGoodsCertificate",
