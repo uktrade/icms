@@ -216,7 +216,7 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
         model = models.SILGoodsSection582Obsolete  # /PS-IGNORE
         fields = (
             "curiosity_ornament",
-            "acknowledgment",
+            "acknowledgement",
             "centrefire",
             "manufacture",
             "original_chambering",
@@ -257,12 +257,12 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
 
         return curiosity_ornament
 
-    def clean_acknowledgment(self):
-        acknowledgment = self.cleaned_data["acknowledgment"]
-        if not acknowledgment:
+    def clean_acknowledgement(self):
+        acknowledgement = self.cleaned_data["acknowledgement"]
+        if not acknowledgement:
             raise forms.ValidationError("You must acknowledge the above statement")
 
-        return acknowledgment
+        return acknowledgement
 
     def clean_manufacture(self):
         manufacture = self.cleaned_data["manufacture"]
@@ -303,7 +303,7 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
         model = models.SILGoodsSection582Other  # /PS-IGNORE
         fields = (
             "curiosity_ornament",
-            "acknowledgment",
+            "acknowledgement",
             "manufacture",
             "description",
             "quantity",
@@ -349,12 +349,12 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
 
         return curiosity_ornament
 
-    def clean_acknowledgment(self):
-        acknowledgment = self.cleaned_data["acknowledgment"]
-        if not acknowledgment:
+    def clean_acknowledgement(self):
+        acknowledgement = self.cleaned_data["acknowledgement"]
+        if not acknowledgement:
             raise forms.ValidationError("You must acknowledge the above statement")
 
-        return acknowledgment
+        return acknowledgement
 
     def clean_manufacture(self):
         manufacture = self.cleaned_data["manufacture"]

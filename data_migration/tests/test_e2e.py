@@ -32,6 +32,8 @@ sil_data_source_target = {
     "reference": [
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
+        (dm.ObsoleteCalibreGroup, web.ObsoleteCalibreGroup),
+        (dm.ObsoleteCalibre, web.ObsoleteCalibre),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -43,16 +45,17 @@ sil_data_source_target = {
         (dm.SILGoodsSection1, web.SILGoodsSection1),
         (dm.SILGoodsSection2, web.SILGoodsSection2),
         (dm.SILGoodsSection5, web.SILGoodsSection5),
-        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
-        # (dm.SILGoodsSection582Obsolete, web.SILGoodsSection582Obsolete),  # /PS-IGNORE
+        (dm.SILGoodsSection582Obsolete, web.SILGoodsSection582Obsolete),  # /PS-IGNORE
         (dm.SILGoodsSection582Other, web.SILGoodsSection582Other),  # /PS-IGNORE
         (dm.SILSupplementaryInfo, web.SILSupplementaryInfo),
         (dm.SILSupplementaryReport, web.SILSupplementaryReport),
         (dm.SILSupplementaryReportFirearmSection1, web.SILSupplementaryReportFirearmSection1),
         (dm.SILSupplementaryReportFirearmSection2, web.SILSupplementaryReportFirearmSection2),
         (dm.SILSupplementaryReportFirearmSection5, web.SILSupplementaryReportFirearmSection5),
-        # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
-        # (dm.SILSupplementaryReportFirearmSection582Obsolete, web.SILSupplementaryReportFirearmSection582Obsolete),  # /PS-IGNORE
+        (
+            dm.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+            web.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+        ),
         (
             dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
             web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
@@ -79,6 +82,10 @@ def test_import_sil_data(mock_connect):
 
     factory.CountryFactory(id=1000, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="SIL", name="SIL")
+
+    ocg = dm.ObsoleteCalibreGroup.objects.create(name="Test OC Group", order=1, legacy_id=1)
+    dm.ObsoleteCalibre.objects.create(legacy_id=444, calibre_group=ocg, name="Test OC", order=1)
+
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
     pk_range = list(range(process_pk, process_pk + 2))
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
@@ -157,15 +164,34 @@ def test_import_sil_data(mock_connect):
 
     call_command("import_v1_data")
 
-    sil1_f = {"goods_certificate__import_application": sil1.pk}
-    sil2_f = {"goods_certificate__import_application": sil2.pk}
+    sil1_f = {"import_application_id": sil1.pk}
+    sil2_f = {"import_application_id": sil2.pk}
+
+    assert web.SILGoodsSection1.objects.filter(**sil1_f).count() == 1
+    assert web.SILGoodsSection1.objects.filter(**sil2_f).count() == 1
+    assert web.SILGoodsSection2.objects.filter(**sil1_f).count() == 1
+    assert web.SILGoodsSection5.objects.filter(**sil1_f).count() == 1
+    assert web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
+    sil_oc = web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).first()  # /PS-IGNORE
+    assert sil_oc.obsolete_calibre == "Test OC"
+    assert web.SILGoodsSection582Other.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
+
+    oc = web.ObsoleteCalibre.objects.get(name="Test OC")
+    assert oc.calibre_group.name == "Test OC Group"
+
+    sil1_f = {"goods_certificate__import_application_id": sil1.pk}
+    sil2_f = {"goods_certificate__import_application_id": sil2.pk}
 
     assert web.SILSupplementaryReportFirearmSection1.objects.filter(**sil1_f).count() == 2
     assert web.SILSupplementaryReportFirearmSection1.objects.filter(**sil2_f).count() == 1
     assert web.SILSupplementaryReportFirearmSection2.objects.filter(**sil1_f).count() == 1
     assert web.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
-    # TODO ICMSLST-1555: Migration of ObsoleteCalibre model
-    # assert web.SILSupplementaryReportFirearmSection582Obsolete.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
+    assert (
+        web.SILSupplementaryReportFirearmSection582Obsolete.objects.filter(  # /PS-IGNORE
+            **sil1_f
+        ).count()
+        == 1
+    )
     assert (
         web.SILSupplementaryReportFirearmSection582Other.objects.filter(  # /PS-IGNORE
             **sil1_f

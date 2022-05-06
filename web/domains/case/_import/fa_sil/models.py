@@ -192,7 +192,7 @@ class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
     curiosity_ornament = models.BooleanField(
         verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?", null=True
     )
-    acknowledgment = models.BooleanField(
+    acknowledgement = models.BooleanField(
         verbose_name="Do you acknowledge the above statement?", default=False
     )
 
@@ -208,7 +208,7 @@ class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
         verbose_name="Does the firearm retain its original chambering?", null=True
     )
 
-    obsolete_calibre = models.CharField(max_length=50, verbose_name="Obsolete Calibre")
+    obsolete_calibre = models.CharField(max_length=200, verbose_name="Obsolete Calibre")
 
     description = models.CharField(
         max_length=4096,
@@ -239,7 +239,7 @@ class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
     curiosity_ornament = models.BooleanField(
         verbose_name="Do you intend to possess the firearm as a 'curiosity or ornament'?", null=True
     )
-    acknowledgment = models.BooleanField(
+    acknowledgement = models.BooleanField(
         verbose_name="Do you acknowledge the above statement?",
         default=False,
     )

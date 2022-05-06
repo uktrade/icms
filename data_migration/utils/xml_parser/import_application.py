@@ -258,7 +258,7 @@ class SILGoodsParser(BaseXmlParser):
     def parse_obsolete_calibre(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
 
-        acknowledgment = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
+        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
         centrefire = get_xml_val(xml, "./BREECH_LOADING_CENTREFIRE/text()")
         curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT/text()")
         manufacture = get_xml_val(xml, "./MANUFACTURED_AFTER_1899_BEFORE_1939/text()")
@@ -268,7 +268,7 @@ class SILGoodsParser(BaseXmlParser):
         return dm.SILGoodsSection582Obsolete(  # /PS-IGNORE
             **data
             | {
-                "acknowledgment": str_to_bool(acknowledgment),
+                "acknowledgement": str_to_bool(acknowledgement),
                 "centrefire": str_to_bool(centrefire),
                 "curiosity_ornament": str_to_bool(curiosity_ornament),
                 "manufacture": str_to_bool(manufacture),
@@ -281,7 +281,7 @@ class SILGoodsParser(BaseXmlParser):
     def parse_other(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
 
-        acknowledgment = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
+        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
         bore = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE/text()")
         bore_details = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE_SPECIFIED/text()")
         chamber = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_LISTED_CARTRIDGES/text()")
@@ -297,7 +297,7 @@ class SILGoodsParser(BaseXmlParser):
         return dm.SILGoodsSection582Other(  # /PS-IGNORE
             **data
             | {
-                "acknowledgment": str_to_bool(acknowledgment),
+                "acknowledgement": str_to_bool(acknowledgement),
                 "bore": str_to_bool(bore),
                 "bore_details": bore_details or "",
                 "chamber": str_to_bool(chamber),
